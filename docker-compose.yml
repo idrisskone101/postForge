@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postforge
+      POSTGRES_PASSWORD: postforge
+      POSTGRES_DB: postforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postforge_pgdata:/var/lib/postgresql/data
+
+volumes:
+  postforge_pgdata:

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model GenerationJob {
+  id            String   @id @default(uuid())
+  type          String   // "image" | "video"
+  model         String   // model ID from registry
+  status        String   @default("queued") // queued | processing | completed | failed
+  prompt        String
+  input         Json     // full request parameters
+  output        Json?    // generation result
+  falRequestId  String?  // fal.ai request ID for async polling
+  estimatedCost Float?
+  actualCost    Float?
+  durationMs    Int?
+  error         String?
+  createdAt     DateTime @default(now())
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  outputs GeneratedFile[]
+  tags    String[]
+
+  @@index([status])
+  @@index([type])
+  @@index([model])
+  @@index([createdAt])
+}
+
+model GeneratedFile {
+  id            String   @id @default(uuid())
+  jobId         String
+  job           GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  type          String   // "image" | "video"
+  originalUrl   String
+  localPath     String
+  filename      String
+  mimeType      String
+  width         Int?
+  height        Int?
+  durationSec   Float?
+  fileSizeBytes Int?
+  createdAt     DateTime @default(now())
+
+  @@index([jobId])
+  @@index([type])
+}
+
+model CostLog {
+  id        String   @id @default(uuid())
+  jobId     String
+  model     String
+  type      String   // "image" | "video"
+  amount    Float    // USD
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([model])
+}
