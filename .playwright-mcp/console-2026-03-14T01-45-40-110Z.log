@@ -1,0 +1,196 @@
+[     752ms] [ERROR] Access to fetch at 'http://localhost:3000/api/avatars' from origin 'http://localhost:3001' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3001/ugc-clone:0
+[     752ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:3000/api/avatars:0
+[     753ms] [ERROR] Failed to load avatars: TypeError: Failed to fetch
+    at apiGet (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:29:28)
+    at fetchAvatars (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:1169:173)
+    at AvatarPicker.useEffect (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:1179:13)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:14876:22)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:965:74)
+    at commitHookEffectListMount (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:7266:167)
+    at commitHookPassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:7301:60)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8786:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8745:970)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8737:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8700:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8757:17) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[     757ms] [ERROR] Access to fetch at 'http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc' from origin 'http://localhost:3001' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3001/ugc-clone:0
+[     757ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc:0
+[     757ms] [ERROR] Failed to load clone jobs: TypeError: Failed to fetch
+    at apiGet (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:29:28)
+    at UGCCloneQueue.useCallback[fetchJobs] (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3590:177)
+    at UGCCloneQueue.useEffect (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3601:13)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:14876:22)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:965:74)
+    at commitHookEffectListMount (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:7266:167)
+    at commitHookPassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:7301:60)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8786:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8800:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at reconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8785:17)
+    at recursivelyTraverseReconnectPassiveEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8773:13)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8745:970)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8737:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8700:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8757:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8757:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17)
+    at recursivelyTraversePassiveMountEffects (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8683:316)
+    at commitPassiveMountOnFiber (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:8695:17) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[   30597ms] [ERROR] Access to fetch at 'http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc' from origin 'http://localhost:3001' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3001/ugc-clone:0
+[   30597ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc:0
+[   30597ms] [ERROR] Failed to load clone jobs: TypeError: Failed to fetch
+    at apiGet (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:29:28)
+    at UGCCloneQueue.useCallback[fetchJobs] (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3590:177)
+    at UGCCloneQueue.useEffect.interval (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3605:21) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[   60582ms] [ERROR] Access to fetch at 'http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc' from origin 'http://localhost:3001' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3001/ugc-clone:0
+[   60582ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc:0
+[   60583ms] [ERROR] Failed to load clone jobs: TypeError: Failed to fetch
+    at apiGet (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:29:28)
+    at UGCCloneQueue.useCallback[fetchJobs] (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3590:177)
+    at UGCCloneQueue.useEffect.interval (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3605:21) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[   90585ms] [ERROR] Access to fetch at 'http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc' from origin 'http://localhost:3001' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3001/ugc-clone:0
+[   90585ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:3000/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc:0
+[   90585ms] [ERROR] Failed to load clone jobs: TypeError: Failed to fetch
+    at apiGet (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:29:28)
+    at UGCCloneQueue.useCallback[fetchJobs] (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3590:177)
+    at UGCCloneQueue.useEffect.interval (http://localhost:3001/_next/static/chunks/src_32e381c4._.js:3605:21) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[   91589ms] [ERROR] WebSocket connection to 'ws://localhost:3001/_next/webpack-hmr?id=XT04pKNf9EvoeFXUZ_JOD' failed:  @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:10878
+[   91590ms] [ERROR] Failed to fetch RSC payload for http://localhost:3001/ugc-clone. Falling back to browser navigation. TypeError: Failed to fetch
+    at createFetch (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:2588:24)
+    at fetchServerResponse (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:2490:27)
+    at fetchMissingDynamicData (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:3654:75)
+    at spawnDynamicRequests (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:3501:35)
+    at navigateToSeededRoute (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:7741:50)
+    at refreshDynamicData (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:8347:58)
+    at hmrRefreshReducer (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:8513:51)
+    at clientReducer (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9081:65)
+    at Object.action (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9310:55)
+    at runAction (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9215:38)
+    at dispatchAction (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9278:9)
+    at Object.dispatch (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9308:40)
+    at http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:1489:29
+    at startTransition (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_react-dom_d19f9ff6._.js:5500:31)
+    at dispatch (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:1488:13)
+    at dispatchAppRouterAction (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:1470:5)
+    at http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9439:61
+    at startTransition (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_a8f11176._.js:1279:31)
+    at Object.hmrRefresh (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:9438:40)
+    at http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:11620:64
+    at startTransition (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_compiled_a8f11176._.js:1279:31)
+    at processMessage (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:11619:44)
+    at WebSocket.handleMessage (http://localhost:3001/_next/static/chunks/b2b3e_next_dist_client_121ab40e._.js:10914:52) @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127
+[   99370ms] [ERROR] In HTML, %s cannot be a descendant of <%s>.
+This will cause a hydration error.%s <button> button 
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url="/ugc-clone" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} segmentPath={[...]} ...>
+        <SegmentViewNode type="page" pagePath="ugc-clone/...">
+          <SegmentTrieNode>
+          <UGCClonePage>
+            <div className="relative m...">
+              <div>
+              <div>
+              <div className="relative z...">
+                <header>
+                <UGCCloneForm>
+                  <div className="grid grid-...">
+                    <div className="lg:col-spa...">
+                      <div>
+                      <div className="launch-car...">
+                        <div>
+                        <AvatarPicker selectedId={null} onSelect={function bound dispatchSetState}>
+                          <div className="space-y-3">
+                            <div>
+                            <input>
+                            <div className="grid grid-...">
+                              <button>
+                              <button>
+                              <button>
+>                             <button
+>                               type="button"
+>                               onClick={function onClick}
+>                               className="group relative aspect-square rounded-2xl overflow-hidden border-2 transitio..."
+>                             >
+                                <img>
+>                               <button
+>                                 type="button"
+>                                 onClick={function onClick}
+>                                 className="absolute top-1.5 right-1.5 size-6 rounded-full bg-black/60 text-white fle..."
+>                               >
+                                ...
+                              ...
+                    ...
+                  ...
+                ...
+        ...
+      ...
+ @ http://localhost:3001/_next/static/chunks/b2b3e_next_dist_77a734fe._.js:3127

@@ -64,3 +64,18 @@ model CostLog {
   @@index([createdAt])
   @@index([model])
 }
+
+model Avatar {
+  id            String   @id @default(uuid())
+  name          String
+  localPath     String
+  filename      String
+  mimeType      String
+  width         Int?
+  height        Int?
+  fileSizeBytes Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
+}
