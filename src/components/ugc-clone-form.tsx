@@ -239,10 +239,12 @@ export function UGCCloneForm() {
     setSubmitError(null);
 
     try {
+      // Don't send the scene direction prompt to video generation when using a
+      // reference image — it already captures the scene. Extra prompt text is noise
+      // that confuses the motion control model.
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
         tiktokVideoPath: videoInfo.localPath,
         avatarId,
-        prompt: prompt || undefined,
         keepOriginalSound,
         model: selectedModel,
         referenceImageFileId: selectedRefFileId,

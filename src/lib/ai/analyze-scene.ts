@@ -184,6 +184,9 @@ function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
     // Face swap instruction — must be explicit and early
     `Use the face from the uploaded reference image exactly as-is. Keep the facial bone structure, eye color, eyebrow shape, and skin texture 100% consistent with the reference. Place this person naturally into the scene below.`,
 
+    // Quality matching — critical: output must look like the TikTok frame, not better
+    `Match the exact image quality of the second reference image. Do not improve, sharpen, upscale, or clean up the quality. If the reference frame is slightly soft, grainy, or has compression artifacts, the output should have the same level of softness and imperfection. The output must be visually indistinguishable in quality from the reference frame.`,
+
     // Scene & environment (from Gemini analysis)
     json.scene.environment,
     json.scene.objects !== "None" && json.scene.objects !== "none"

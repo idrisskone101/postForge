@@ -6,8 +6,11 @@ import { ensurePollerRunning } from "@/lib/jobs/poller";
 import { storage } from "@/lib/storage";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 
-// Default prompts for motion control — keep minimal and scene-focused.
-// Motion comes from the reference video; the prompt describes the scene context only.
+// Default prompts for motion control.
+// When a reference image is provided, it already contains the avatar in the scene,
+// so we use a bare-minimum prompt — let the image speak for itself.
+const DEFAULT_CLONE_PROMPT_WITH_REF =
+  "Person performing the actions from the reference video, consistent appearance";
 const DEFAULT_CLONE_PROMPT_V3 =
   "@Element1 in the scene, natural environment lighting, consistent background, seamless scene continuity";
 const DEFAULT_CLONE_PROMPT_V2 =
@@ -44,14 +47,14 @@ export async function generateClone(
   const avatarFullPath = storage.getFullPath(avatar.localPath);
   const videoFullPath = storage.getFullPath(request.tiktokVideoPath);
 
+  const hasRefImage = !!request.referenceImageFileId;
   let sceneImageUrl: string;
-  let avatarUrl: string;
+  let avatarUrl: string | null = null;
   let videoUrl: string;
 
-  if (request.referenceImageFileId) {
-    // Use the pre-generated reference image as the scene image.
-    // This image has the avatar's face composited into the video's environment,
-    // giving Kling both the correct face identity AND scene context.
+  if (hasRefImage) {
+    // Reference image already has the avatar composited into the scene.
+    // We only need the reference image + the TikTok video — no separate avatar upload.
     const refFile = await prisma.generatedFile.findUnique({
       where: { id: request.referenceImageFileId },
     });
@@ -59,19 +62,20 @@ export async function generateClone(
       throw new Error(`Reference image file not found: ${request.referenceImageFileId}`);
     }
     const refFullPath = storage.getFullPath(refFile.localPath);
-    [sceneImageUrl, avatarUrl, videoUrl] = await Promise.all([
+    [sceneImageUrl, videoUrl] = await Promise.all([
       uploadToFalStorage(refFullPath),
-      uploadToFalStorage(avatarFullPath),
       uploadToFalStorage(videoFullPath),
     ]);
   } else {
-    // Fall back to extracting a frame from the reference video
+    // No reference image — fall back to extracting a frame + sending avatar separately
     const referenceFramePath = await extractReferenceFrame(videoFullPath);
-    [avatarUrl, sceneImageUrl, videoUrl] = await Promise.all([
+    let avatarUrlResult: string;
+    [avatarUrlResult, sceneImageUrl, videoUrl] = await Promise.all([
       uploadToFalStorage(avatarFullPath),
       uploadToFalStorage(referenceFramePath),
       uploadToFalStorage(videoFullPath),
     ]);
+    avatarUrl = avatarUrlResult;
   }
 
   const rawDuration = request.durationSec ?? model.defaults.duration ?? 5;
@@ -79,12 +83,19 @@ export async function generateClone(
   const duration = Math.max(minDuration, Math.round(rawDuration));
   const estimatedCost = calculateEstimatedCost(modelId, { durationSec: duration });
 
-  // Resolve the final prompt — V3 uses @Element1 for facial binding, V2 does not.
+  // Resolve the final prompt.
+  // When a reference image is provided, keep it minimal — the image already
+  // contains the avatar in the scene, so extra scene/identity description is noise.
+  // Only use @Element1 and elements array when there's NO reference image (fallback path).
   const isV3 = modelId.startsWith("kling-3.0");
   const userPrompt = request.prompt?.trim();
   let finalPrompt: string;
-  if (userPrompt) {
-    // If user provided a prompt but didn't reference the element, prepend it (V3 only)
+
+  if (hasRefImage) {
+    // Minimal prompt — reference image handles identity + scene
+    finalPrompt = userPrompt || DEFAULT_CLONE_PROMPT_WITH_REF;
+  } else if (userPrompt) {
+    // No reference image — V3 uses @Element1 for facial binding
     finalPrompt = isV3 && !userPrompt.includes("@Element1")
       ? `@Element1 ${userPrompt}`
       : isV3 ? userPrompt : userPrompt.replace(/@Element1\s*/g, "");
@@ -113,8 +124,9 @@ export async function generateClone(
   });
 
   try {
-    // Build fal input — only documented parameters for
-    // fal-ai/kling-video/v3/standard/motion-control
+    // Build fal input for motion-control endpoint.
+    // When a reference image is provided, it already contains the avatar —
+    // skip the elements array to avoid conflicting identity signals.
     const falInput: Record<string, unknown> = {
       image_url: sceneImageUrl,
       video_url: videoUrl,
@@ -122,8 +134,8 @@ export async function generateClone(
       prompt: finalPrompt,
     };
 
-    // V3: Element binding — avatar face injected via @Element1 into the reference scene
-    if (isV3) {
+    // Only use element binding when there's NO reference image (fallback path)
+    if (!hasRefImage && isV3 && avatarUrl) {
       falInput.elements = [
         { frontal_image_url: avatarUrl, reference_image_urls: [avatarUrl] },
       ];
