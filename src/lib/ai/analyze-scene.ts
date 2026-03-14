@@ -68,16 +68,16 @@ TikTok videos are recorded using the iPhone FRONT-FACING (selfie) CAMERA. This m
 IMPORTANT RULES:
 1. IGNORE all text overlays, captions, watermarks, hashtags, TikTok UI elements, and username text. Describe ONLY the underlying visual scene.
 2. Describe the scene, lighting, camera angle, and environment in detail so the AI model can recreate it.
-3. The "subject" section should describe what the person in the frame is DOING (pose, expression, gesture) — NOT their identity/appearance, since we'll be replacing them with the reference person.
+3. The "subject" section should describe ONLY what the person is DOING (pose, gesture, body position) — NOT their appearance. Do NOT describe hair color, hair style, skin tone, face shape, eye color, body type, or any physical characteristics of the person in the frame. The ENTIRE person will be replaced by a reference image — face, hair, body, everything.
 4. Output ONLY valid JSON with no markdown formatting, no code fences, no explanation.
 
 Output this exact JSON structure:
 {
   "subject": {
-    "description": "What the person is doing — pose, gesture, activity. NEVER mention holding a phone — the phone is the camera taking this photo.",
-    "expression": "Facial expression and mood — casual and unposed. Mouth may be slightly open mid-speech, eyes relaxed, direct gaze into camera or looking slightly off. NOT a practiced influencer expression.",
-    "skin": "Bare natural skin as seen through iPhone front camera. No makeup or minimal makeup. Visible pores on nose and cheeks at normal viewing distance. Slight natural shine on forehead and nose. Minor under-eye shadows. Uneven skin tone — slightly darker or redder in some areas. Lips natural color, possibly slightly dry. Apple's computational processing smooths skin subtly but does NOT erase texture. This is NOT airbrushed or poreless — it's just normal skin on a phone camera.",
-    "pose": "Body position. If arms are raised, they are gesturing or the arm is cropped at frame edge (holding the phone behind the camera). Do NOT describe anyone holding or looking at a phone."
+    "description": "What the person is doing — pose, gesture, activity ONLY. Do NOT describe their hair, skin, face, or any physical features — those will come from a separate reference image. NEVER mention holding a phone — the phone is the camera taking this photo.",
+    "expression": "Describe ONLY the type of expression (smiling, neutral, talking, laughing) — do NOT describe facial features, skin details, or hair.",
+    "skin": "Leave this as: 'Determined by avatar reference image'",
+    "pose": "Body position and gesture ONLY. If arms are raised, they are gesturing or the arm is cropped at frame edge (holding the phone behind the camera). Do NOT describe anyone holding or looking at a phone. Do NOT describe body type, hair, or physical appearance."
   },
   "camera": {
     "device": "iPhone front-facing camera, 12MP f/2.2 wide-angle ~23mm equivalent lens.",
@@ -104,23 +104,23 @@ Output this exact JSON structure:
     "accessories": "Any accessories visible — small earrings, hair ties, etc. Minimal or none."
   },
   "tiktok_aesthetic": {
-    "vibe": "Casual UGC creator in their own space. Not trying to look good for the camera — just grabbed the phone and started talking. The environment isn't cleaned up or staged. Hair may be messy or air-dried. No ring light, no tripod, no backdrop.",
+    "vibe": "Casual UGC creator in their own space. Not trying to look good for the camera — just grabbed the phone and started talking. The environment isn't cleaned up or staged. No ring light, no tripod, no backdrop.",
     "color_grading": "No color grading whatsoever. iPhone auto white balance — slightly warm under indoor light, neutral to slightly cool near windows. Smart HDR creates slightly lifted/washed shadows and controlled highlights. Skin tones are natural but imperfect — slightly warm or slightly uneven depending on the lighting. Colors are muted and natural, not vibrant or saturated.",
     "texture": "Slightly soft overall — characteristic of the iPhone front camera which is lower resolution and sharpness than the rear. Fine detail in hair and fabric is a bit mushy, not crisp. No heavy noise or grain in good light, but not clean/smooth either. Just normal phone camera texture.",
-    "imperfections": "Natural imperfections that come from zero preparation: messy or air-dried hair with flyaways, slightly uneven lighting across the face, bare skin with visible pores and natural shine, under-eye shadows, subtle wide-angle distortion on features closest to the lens edges. These should be PRESENT but SUBTLE — not exaggerated.",
+    "imperfections": "Natural imperfections from zero preparation: slightly uneven lighting across the face, subtle wide-angle distortion on features closest to the lens edges. Do NOT describe hair or skin appearance — those come from the avatar reference image.",
     "feel": "This should look like a frame grabbed from someone's front camera — the kind of image that exists in the camera roll between screenshots and food photos. Completely unstaged, unlit, unedited. Normal."
   },
   "compositing": {
-    "instruction": "Place the reference image person naturally into this exact scene, as if THEY are the one being recorded by the front-facing selfie camera. Match the pose and framing. No phone should be visible — the phone IS the camera. The person should be looking directly into the camera lens.",
+    "instruction": "Place the reference image person — with ALL of their physical characteristics (face, hair, body type, skin tone) — naturally into this exact scene, as if THEY are the one being recorded by the front-facing selfie camera. Use THEIR hair, not the original subject's hair. Match the pose and framing only. No phone should be visible — the phone IS the camera.",
     "lighting_match": "Face lighting should match the ambient light direction and color temperature of the scene exactly. If the light comes from a window to the left, the left side of the face should be slightly brighter.",
     "perspective": "Selfie camera perspective — arm's length or propped-up distance, the phone is never visible in frame. Slight wide-angle distortion is expected.",
-    "integration": "Skin tone should look natural under the scene's lighting. No obvious compositing edges. The person should look like they belong in this room."
+    "integration": "The avatar person's natural skin tone and hair should look natural under the scene's lighting. No obvious compositing edges. The person should look like they belong in this room."
   },
   "text_overlays": {
     "detected": "Yes/No — list any text overlays seen",
     "instruction": "IGNORE all text overlays. Do NOT reproduce any text, captions, watermarks, hashtags, or TikTok UI elements in the generated image."
   },
-  "style": "Unedited iPhone front camera selfie. Shot on iPhone front-facing 12MP f/2.2 wide-angle. Slightly soft focus, flat tonal range from Smart HDR, natural warm color cast. Bare skin with real texture — visible pores, natural shine, no makeup or minimal makeup. Hair unstyled. Casual clothing. Ambient room lighting only — no ring light, no studio light. Background is a real lived-in space. This image should be indistinguishable from a real selfie in someone's camera roll.",
+  "style": "Unedited iPhone front camera selfie. Shot on iPhone front-facing 12MP f/2.2 wide-angle. Slightly soft focus, flat tonal range from Smart HDR, natural warm color cast. The person's face, hair, and body must exactly match the first reference image (the avatar). Ambient room lighting only — no ring light, no studio light. Background is a real lived-in space. This image should be indistinguishable from a real selfie in someone's camera roll.",
   "negative": "person holding phone, phone visible in frame, phone screen visible, looking at phone, deformed face, extra limbs, extra fingers, bad anatomy, blurry face, watermark, text overlay, caption text, hashtag text, TikTok UI, username watermark, collage, cartoon, anime, illustration, 3D render, studio lighting, professional DSLR, mirrorless camera, ring light, ring light reflection, softbox, beauty dish, beauty lighting, three-point lighting, overly retouched, plastic skin, poreless skin, airbrushed skin, glossy magazine skin, stock photo, fashion photography, editorial look, beauty shot, oversaturated, HDR look, perfectly sharp, tack sharp, 8K, ultra detailed, hyper-realistic render, flawless skin, perfect skin, beauty filter, FaceTune, color graded, cinematic color, film look"
 }`;
 
@@ -181,11 +181,8 @@ function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
   const parts: string[] = [
     heicPrefix,
 
-    // Face swap instruction — must be explicit and early
-    `Use the face from the uploaded reference image exactly as-is. Keep the facial bone structure, eye color, eyebrow shape, and skin texture 100% consistent with the reference. Place this person naturally into the scene below.`,
-
-    // Quality matching — critical: output must look like the TikTok frame, not better
-    `Match the exact image quality of the second reference image. Do not improve, sharpen, upscale, or clean up the quality. If the reference frame is slightly soft, grainy, or has compression artifacts, the output should have the same level of softness and imperfection. The output must be visually indistinguishable in quality from the reference frame.`,
+    // Full identity swap — image_urls are the avatar, reference_images is the scene
+    `The uploaded reference images show the avatar person. Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. Only adopt the POSE, BODY POSITION, BACKGROUND, and CAMERA ANGLE from the scene description and scene reference below — everything about WHO the person IS comes from the avatar images.`,
 
     // Scene & environment (from Gemini analysis)
     json.scene.environment,
@@ -194,9 +191,8 @@ function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
       : "",
     json.scene.atmosphere,
 
-    // Subject pose & expression (what the person is doing, not who they are)
+    // Subject pose ONLY — no appearance details (those come from avatar)
     json.subject.description,
-    json.subject.expression,
     json.clothing.outfit,
 
     // Lighting (critical for matching)
@@ -211,14 +207,11 @@ function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
 
     // iPhone front camera characteristics — natural, unpolished, not degraded
     `Slightly soft focus throughout, flat tonal range from Smart HDR.`,
-    `Real bare skin — visible pores, natural shine on forehead and nose, uneven skin tone, no makeup.`,
     `Ambient room lighting only, no ring light, no studio light.`,
-    json.tiktok_aesthetic.imperfections,
     json.tiktok_aesthetic.color_grading,
 
     // Compositing integration
     json.compositing.lighting_match,
-    json.compositing.integration,
 
     // User instructions (already appended to compositing.instruction)
     json.compositing.instruction.includes("Additional instructions:")

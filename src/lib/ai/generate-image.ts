@@ -6,7 +6,8 @@ import { logCost } from "@/lib/costs/tracker";
 import { storage, downloadFromUrl } from "@/lib/storage";
 
 export async function generateImage(
-  request: ImageGenerationRequest
+  request: ImageGenerationRequest,
+  postProcess?: (buffer: Buffer) => Promise<Buffer>,
 ): Promise<string> {
   const model = getModel(request.model);
   if (!model) {
@@ -28,7 +29,7 @@ export async function generateImage(
   });
 
   // Fire-and-forget: do not await
-  executeImageGeneration(job.id, request).catch((err) =>
+  executeImageGeneration(job.id, request, postProcess).catch((err) =>
     failJob(job.id, err.message).catch(console.error)
   );
 
@@ -37,7 +38,8 @@ export async function generateImage(
 
 async function executeImageGeneration(
   jobId: string,
-  request: ImageGenerationRequest
+  request: ImageGenerationRequest,
+  postProcess?: (buffer: Buffer) => Promise<Buffer>,
 ): Promise<void> {
   const model = getModel(request.model)!;
   const startTime = Date.now();
@@ -64,9 +66,13 @@ async function executeImageGeneration(
     input.negative_prompt = request.negativePrompt;
   }
 
+  // image_urls = strong identity binding (character/face)
+  // reference_images = lighter influence (scene/style reference)
+  // Both can be sent simultaneously to separate identity from style.
   if (request.imageUrls && request.imageUrls.length > 0) {
     input.image_urls = request.imageUrls;
-  } else if (request.referenceImageUrls && request.referenceImageUrls.length > 0) {
+  }
+  if (request.referenceImageUrls && request.referenceImageUrls.length > 0) {
     input.reference_images = request.referenceImageUrls;
   }
 
@@ -92,7 +98,13 @@ async function executeImageGeneration(
   const images = data.images ?? [];
 
   await Promise.all(images.map(async (image, i) => {
-    const { buffer, contentType } = await downloadFromUrl(image.url);
+    let { buffer, contentType } = await downloadFromUrl(image.url);
+
+    // Apply post-processing if provided (e.g., color/quality matching)
+    if (postProcess) {
+      buffer = await postProcess(buffer);
+      contentType = "image/jpeg"; // post-process outputs JPEG
+    }
 
     const extension = contentType.includes("png") ? "png" : "jpg";
     const filename = `${jobId}-${i}.${extension}`;

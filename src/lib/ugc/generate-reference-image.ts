@@ -38,23 +38,25 @@ export async function generateReferenceImage(
   const { promptJson, promptString, negativePrompt } =
     await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt);
 
-  // Upload avatar AND the TikTok frame to fal storage.
-  // Passing the actual frame as a reference lets nano-banana-2 match
-  // the real visual quality, lighting, and vibe — not just a text description.
+  // Upload avatar and TikTok frame.
+  // Avatar goes into image_urls (3x for identity dominance).
+  // TikTok frame goes into reference_images (scene/background/angle context).
+  // This keeps identity and scene in separate channels — the model uses the avatar
+  // for WHO the person is, and the frame for WHERE they are and the camera angle.
+  // FFmpeg then post-processes to match the frame's color/quality characteristics.
   const [avatarUrl, frameUrl] = await Promise.all([
     uploadToFalStorage(avatarFullPath),
     uploadToFalStorage(referenceFramePath),
   ]);
 
-  // Generate image using edit endpoint with avatar + TikTok frame as references.
-  // Avatar first (primary identity), frame second (scene/quality reference).
   const jobId = await generateImage({
     prompt: promptString,
     negativePrompt,
     model: modelId,
     aspectRatio: "9:16",
     numImages: 1,
-    imageUrls: [avatarUrl, frameUrl],
+    imageUrls: [avatarUrl, avatarUrl, avatarUrl],
+    referenceImageUrls: [frameUrl],
     editEndpoint: true,
   });
 
