@@ -1,5 +1,8 @@
 import type { ModelDefinition } from "./types";
 
+/** Cost per second of video for Bria Video Eraser text overlay removal */
+export const BRIA_ERASER_COST_PER_SEC = 0.14;
+
 const IMAGE_ASPECT_RATIOS = ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"];
 const VIDEO_ASPECT_RATIOS = ["9:16", "16:9", "1:1"];
 
@@ -136,6 +139,19 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     provider: "fal",
     endpoint: "fal-ai/kling-video/v3/standard/motion-control",
     pricing: { unit: "per_second", amount: 0.126 },
+    capabilities: {
+      motionControl: true,
+    },
+    defaults: { aspectRatio: "9:16", duration: 5 },
+    limits: { minDuration: 3, maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
+  },
+  "kling-3.0-pro-motion": {
+    id: "kling-3.0-pro-motion",
+    name: "Kling 3.0 Pro Motion Control",
+    type: "video",
+    provider: "fal",
+    endpoint: "fal-ai/kling-video/v3/pro/motion-control",
+    pricing: { unit: "per_second", amount: 0.168 },
     capabilities: {
       motionControl: true,
     },

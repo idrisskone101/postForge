@@ -1,10 +1,9 @@
-import { execFile } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { randomUUID } from "crypto";
-
-const execFileAsync = promisify(execFile);
+import { execFileAsync, FFMPEG } from "./ffmpeg";
+import { storage } from "@/lib/storage";
+import { extractThumbnailToDisk } from "./thumbnail";
 
 const TIKTOK_URL_PATTERN = /^https?:\/\/(www\.|vm\.|vt\.)?tiktok\.com\//;
 const MAX_DURATION_SEC = 30;
@@ -16,12 +15,19 @@ export interface TikTokDownloadResult {
   durationSec: number;
   width: number;
   height: number;
+  fileSizeBytes: number | null;
+  thumbnailPath: string | null;
+  label: string;
+  canonicalUrl: string;
 }
 
-interface TikTokMetadata {
+export interface TikTokMetadata {
   duration: number;
   width: number;
   height: number;
+  canonicalUrl: string;
+  uploader: string | null;
+  videoId: string | null;
 }
 
 export function validateTikTokUrl(url: string): void {
@@ -30,7 +36,7 @@ export function validateTikTokUrl(url: string): void {
   }
 }
 
-async function fetchMetadata(url: string): Promise<TikTokMetadata> {
+export async function fetchMetadata(url: string): Promise<TikTokMetadata> {
   const { stdout } = await execFileAsync("yt-dlp", ["--dump-json", "--no-warnings", url], {
     timeout: 30_000,
   });
@@ -40,14 +46,29 @@ async function fetchMetadata(url: string): Promise<TikTokMetadata> {
     duration: data.duration ?? 0,
     width: data.width ?? 0,
     height: data.height ?? 0,
+    canonicalUrl: data.webpage_url || url,
+    uploader: data.uploader || data.channel || null,
+    videoId: data.id || null,
   };
 }
 
-export async function downloadTikTok(url: string): Promise<TikTokDownloadResult> {
+export function extractLabel(metadata: TikTokMetadata, url: string): string {
+  if (metadata.uploader) {
+    const name = metadata.uploader.startsWith("@") ? metadata.uploader : `@${metadata.uploader}`;
+    return metadata.videoId ? `${name} - ${metadata.videoId}` : name;
+  }
+  // Fallback: parse URL for @username
+  const match = url.match(/@([^/]+)/);
+  if (match) return `@${match[1]}`;
+  return `TikTok ${metadata.videoId || "video"}`;
+}
+
+
+export async function downloadTikTok(url: string, existingMetadata?: TikTokMetadata): Promise<TikTokDownloadResult> {
   validateTikTokUrl(url);
 
-  // Get metadata first
-  const metadata = await fetchMetadata(url);
+  // Get metadata first (skip if already provided)
+  const metadata = existingMetadata ?? await fetchMetadata(url);
 
   if (metadata.duration > MAX_DURATION_SEC) {
     throw new Error(
@@ -57,8 +78,7 @@ export async function downloadTikTok(url: string): Promise<TikTokDownloadResult>
 
   // Prepare output path
   const today = new Date().toISOString().split("T")[0];
-  const basePath = process.env.STORAGE_LOCAL_PATH || "./data/outputs";
-  const dir = path.resolve(basePath, "tiktok-sources", today);
+  const dir = path.resolve(storage.getFullPath("tiktok-sources"), today);
   await fs.mkdir(dir, { recursive: true });
 
   const id = randomUUID();
@@ -80,11 +100,29 @@ export async function downloadTikTok(url: string): Promise<TikTokDownloadResult>
 
   const localPath = path.join("tiktok-sources", today, filename);
 
+  // Get file size
+  let fileSizeBytes: number | null = null;
+  try {
+    const stat = await fs.stat(fullPath);
+    fileSizeBytes = stat.size;
+  } catch {
+    // ignore
+  }
+
+  // Extract thumbnail
+  const thumbnailPath = await extractThumbnailToDisk(fullPath, dir);
+
+  const label = extractLabel(metadata, url);
+
   return {
     localPath,
     filename,
     durationSec: metadata.duration,
     width: metadata.width,
     height: metadata.height,
+    fileSizeBytes,
+    thumbnailPath,
+    label,
+    canonicalUrl: metadata.canonicalUrl,
   };
 }

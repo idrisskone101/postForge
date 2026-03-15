@@ -34,9 +34,13 @@ export async function generateReferenceImage(
   // Extract first frame from the TikTok video
   const referenceFramePath = await extractReferenceFrame(videoFullPath);
 
-  // Analyze the frame with Gemini to build a detailed scene prompt
+  // Analyze the frame with Gemini to build a detailed scene prompt.
+  // We pass poseEmphasis=true so the prompt explicitly describes the exact
+  // starting pose — this ensures the reference image matches frame 0 of the
+  // video, preventing the motion control model from needing to interpolate
+  // from a mismatched pose at the start.
   const { promptJson, promptString, negativePrompt } =
-    await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt);
+    await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt, { poseEmphasis: true });
 
   // Upload avatar and TikTok frame.
   // Avatar 3x + frame 1x in image_urls — avatar dominates identity at 3:1 ratio

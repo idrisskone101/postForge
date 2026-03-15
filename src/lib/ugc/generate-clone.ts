@@ -1,3 +1,4 @@
+import * as fs from "fs/promises";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { createJob, failJob } from "@/lib/jobs/queue";
@@ -5,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import { storage } from "@/lib/storage";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
+import { eraseTextFromVideo } from "@/lib/ugc/erase-text";
+import { normalizeVideoForMotionControl } from "@/lib/ugc/normalize-video";
 
 // Default prompts for motion control.
 // When a reference image is provided, it already contains the avatar in the scene,
@@ -24,6 +27,7 @@ export interface CloneGenerationRequest {
   modelId?: string;
   referenceImageFileId?: string;
   durationSec?: number;
+  removeTextOverlays?: boolean;
 }
 
 export async function generateClone(
@@ -45,7 +49,26 @@ export async function generateClone(
 
   // Resolve full paths
   const avatarFullPath = storage.getFullPath(avatar.localPath);
-  const videoFullPath = storage.getFullPath(request.tiktokVideoPath);
+
+  // Optional: strip text overlays from the reference video before motion control.
+  // This runs Bria Video Eraser on fal.ai and saves a cleaned copy locally.
+  let videoPath = request.tiktokVideoPath;
+  let textErasureCost = 0;
+  if (request.removeTextOverlays) {
+    const rawDurationForErase = request.durationSec ?? 5;
+    console.log(`[ugc-clone] Erasing text overlays from video (${rawDurationForErase}s)...`);
+    const eraseResult = await eraseTextFromVideo(videoPath, rawDurationForErase);
+    videoPath = eraseResult.cleanedPath;
+    textErasureCost = eraseResult.cost;
+    console.log(`[ugc-clone] Text erasure complete → ${videoPath} (cost: $${textErasureCost.toFixed(3)})`);
+  }
+
+  // Normalize video for optimal motion control: constant 30fps CFR,
+  // trim to first scene (removes app screenshots / product cuts at end).
+  const rawVideoFullPath = storage.getFullPath(videoPath);
+  console.log("[ugc-clone] Normalizing video for motion control (30fps CFR, scene trim)...");
+  const videoFullPath = await normalizeVideoForMotionControl(rawVideoFullPath);
+  console.log(`[ugc-clone] Normalized video → ${videoFullPath}`);
 
   const hasRefImage = !!request.referenceImageFileId;
   let sceneImageUrl: string;
@@ -76,12 +99,24 @@ export async function generateClone(
       uploadToFalStorage(videoFullPath),
     ]);
     avatarUrl = avatarUrlResult;
+
+    // Clean up temp reference frame
+    fs.unlink(referenceFramePath).catch((err) => {
+      console.warn(`[ugc-clone] Failed to cleanup reference frame: ${referenceFramePath}`, err);
+    });
+  }
+
+  // Clean up temp normalized video (already uploaded to fal storage)
+  if (videoFullPath !== rawVideoFullPath) {
+    fs.unlink(videoFullPath).catch((err) => {
+      console.warn(`[ugc-clone] Failed to cleanup normalized video: ${videoFullPath}`, err);
+    });
   }
 
   const rawDuration = request.durationSec ?? model.defaults.duration ?? 5;
   const minDuration = model.limits.minDuration ?? 1;
   const duration = Math.max(minDuration, Math.round(rawDuration));
-  const estimatedCost = calculateEstimatedCost(modelId, { durationSec: duration });
+  const estimatedCost = calculateEstimatedCost(modelId, { durationSec: duration }) + textErasureCost;
 
   // Resolve the final prompt.
   // When a reference image is provided, keep it minimal — the image already
@@ -125,18 +160,15 @@ export async function generateClone(
 
   try {
     // Build fal input for motion-control endpoint.
-    // When a reference image is provided, it already contains the avatar —
-    // skip the elements array to avoid conflicting identity signals.
+    // NOTE: The motion control endpoint only accepts: image_url, video_url,
+    // character_orientation, prompt, keep_original_sound, elements.
+    // Parameters like cfg_scale, duration, aspect_ratio, negative_prompt
+    // are silently ignored — output duration/aspect come from the reference video.
     const falInput: Record<string, unknown> = {
       image_url: sceneImageUrl,
       video_url: videoUrl,
       character_orientation: "video",
       prompt: finalPrompt,
-      cfg_scale: 0.5,
-      duration,
-      aspect_ratio: "9:16",
-      negative_prompt:
-        "deformed face, extra limbs, extra fingers, bad anatomy, blurry face, distorted features, unnatural pose",
     };
 
     // Only use element binding when there's NO reference image (fallback path)

@@ -130,7 +130,8 @@ Output this exact JSON structure:
  */
 export async function analyzeSceneAndBuildPrompt(
   frameImagePath: string,
-  userPrompt?: string
+  userPrompt?: string,
+  options?: { poseEmphasis?: boolean }
 ): Promise<{
   promptJson: ScenePromptJSON;
   promptString: string;
@@ -160,7 +161,7 @@ export async function analyzeSceneAndBuildPrompt(
     promptJson.compositing.instruction += ` Additional instructions: ${userPrompt.trim()}`;
   }
 
-  const promptString = buildNaturalLanguagePrompt(promptJson);
+  const promptString = buildNaturalLanguagePrompt(promptJson, options?.poseEmphasis);
   const negativePrompt = promptJson.negative;
 
   return { promptJson, promptString, negativePrompt };
@@ -172,17 +173,28 @@ export async function analyzeSceneAndBuildPrompt(
  * produces AI-looking outputs; natural language with iPhone camera tokens
  * triggers the model's photorealistic training weights.
  */
-function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
+function buildNaturalLanguagePrompt(json: ScenePromptJSON, poseEmphasis?: boolean): string {
   // Random iPhone-style filename — triggers "real photo" associations
   // from the model's training data (millions of real photos had these filenames).
   const imgNum = Math.floor(Math.random() * 9000) + 1000;
   const heicPrefix = `IMG_${imgNum}.HEIC`;
+
+  // When poseEmphasis is true, we strongly emphasize the exact starting pose
+  // from frame 0. This ensures the reference image matches the video's opening
+  // frame, preventing the motion control model from interpolating between
+  // a mismatched pose and the video's starting position.
+  const poseInstruction = poseEmphasis
+    ? `CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: ${json.subject.pose}. ${json.subject.description}. Their expression must be: ${json.subject.expression}. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose.`
+    : "";
 
   const parts: string[] = [
     heicPrefix,
 
     // Full identity swap — first 3 images are avatar, 4th is scene frame
     `The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images.`,
+
+    // Pose emphasis (when generating for motion control)
+    poseInstruction,
 
     // Scene & environment (from Gemini analysis)
     json.scene.environment,
