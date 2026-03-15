@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       await prisma.tikTokSource.delete({ where: { id: existing.id } });
     }
 
-    // Download the video
-    const result = await downloadTikTok(url);
+    // Download the video (pass metadata to avoid duplicate yt-dlp call)
+    const result = await downloadTikTok(url, metadata);
 
     // Persist to database
     const source = await prisma.tikTokSource.create({

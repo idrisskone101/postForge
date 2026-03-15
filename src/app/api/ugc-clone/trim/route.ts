@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { trimVideo } from "@/lib/ugc/trim-video";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
-import { execFileAsync } from "@/lib/ugc/ffmpeg";
+import { extractThumbnailToDisk } from "@/lib/ugc/thumbnail";
 import * as path from "path";
-import { randomUUID } from "crypto";
-
-const FFMPEG = process.env.FFMPEG_PATH || "/opt/homebrew/bin/ffmpeg";
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,26 +59,9 @@ export async function POST(request: NextRequest) {
     // so the trimmed video becomes the saved source
     if (sourceId && typeof sourceId === "string") {
       // Generate a new thumbnail from the trimmed video
-      let thumbnailPath: string | null = null;
-      try {
-        const trimmedFullPath = storage.getFullPath(result.localPath);
-        const dir = path.dirname(trimmedFullPath);
-        const thumbFilename = `${randomUUID()}.jpg`;
-        const thumbFullPath = path.join(dir, thumbFilename);
-        await execFileAsync(FFMPEG, [
-          "-i", trimmedFullPath,
-          "-vframes", "1",
-          "-ss", "0.5",
-          "-vf", "scale=320:-1",
-          "-q:v", "4",
-          "-y",
-          thumbFullPath,
-        ], { timeout: 15_000 });
-        const basePath = path.resolve(process.env.STORAGE_LOCAL_PATH || "./data/outputs");
-        thumbnailPath = path.relative(basePath, thumbFullPath);
-      } catch {
-        // Thumbnail generation failed — not critical
-      }
+      const trimmedFullPath = storage.getFullPath(result.localPath);
+      const dir = path.dirname(trimmedFullPath);
+      const thumbnailPath = await extractThumbnailToDisk(trimmedFullPath, dir);
 
       const updateData: Record<string, unknown> = {
         localPath: result.localPath,

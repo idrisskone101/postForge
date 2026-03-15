@@ -6,10 +6,9 @@ import { uploadToFalStorage } from "@/lib/ai/fal-client";
 import { storage } from "@/lib/storage";
 import { execFileAsync as ffmpegExec, FFMPEG } from "./ffmpeg";
 
-const BRIA_ERASER_ENDPOINT = "bria/video/erase/prompt";
+import { BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
 
-/** Cost per second of video for Bria Video Eraser */
-export const BRIA_ERASER_COST_PER_SEC = 0.14;
+const BRIA_ERASER_ENDPOINT = "bria/video/erase/prompt";
 
 interface EraseTextResult {
   /** Relative path to the cleaned video (storage-relative) */
@@ -58,7 +57,9 @@ export async function eraseTextFromVideo(
   const videoUrl = await uploadToFalStorage(cfrFullPath);
 
   // Clean up the temp CFR file
-  fs.unlink(cfrFullPath).catch(() => {});
+  fs.unlink(cfrFullPath).catch((err) => {
+    console.warn(`[erase-text] Failed to cleanup CFR temp file: ${cfrFullPath}`, err);
+  });
 
   // Try multiple prompts — TikTok text overlays (bold hooks, effects, shadows)
   // often fail detection with generic "text". Try increasingly specific prompts.
@@ -119,12 +120,19 @@ export async function eraseTextFromVideo(
   if (!response.ok) {
     throw new Error(`Failed to download cleaned video: ${response.status}`);
   }
-  const buffer = Buffer.from(await response.arrayBuffer());
-  await fs.writeFile(cleanedFullPath, buffer);
+  if (!response.body) {
+    throw new Error("Response body is null");
+  }
+  const { createWriteStream } = await import("fs");
+  const { Readable } = await import("stream");
+  const { pipeline } = await import("stream/promises");
+  await pipeline(
+    Readable.fromWeb(response.body as import("stream/web").ReadableStream),
+    createWriteStream(cleanedFullPath)
+  );
 
   // Build storage-relative path
-  const basePath = path.resolve(process.env.STORAGE_LOCAL_PATH || "./data/outputs");
-  const cleanedPath = path.relative(basePath, cleanedFullPath);
+  const cleanedPath = storage.getRelativePath(cleanedFullPath);
 
   const cost = BRIA_ERASER_COST_PER_SEC * durationSec;
 

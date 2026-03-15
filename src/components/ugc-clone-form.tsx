@@ -10,11 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
+import { calculateEstimatedCost, getModel, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
 import { apiGet, apiPost } from "@/lib/api/client";
-
-/** Cost per second for Bria Video Eraser text removal (matches server-side constant) */
-const BRIA_ERASER_COST_PER_SEC = 0.14;
 import {
   Loader2,
   Scissors,
@@ -181,7 +178,7 @@ export function UGCCloneForm() {
   const latestEntry = refImages[refImages.length - 1] ?? null;
   const isGenerating = latestEntry?.status === "generating";
 
-  const handleVideoDownloaded = (info: TikTokVideoInfo) => {
+  const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
     setOriginalVideoInfo(info);
     setShowTrimmer(false);

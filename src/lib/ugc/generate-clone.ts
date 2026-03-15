@@ -1,3 +1,4 @@
+import * as fs from "fs/promises";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { createJob, failJob } from "@/lib/jobs/queue";
@@ -98,6 +99,18 @@ export async function generateClone(
       uploadToFalStorage(videoFullPath),
     ]);
     avatarUrl = avatarUrlResult;
+
+    // Clean up temp reference frame
+    fs.unlink(referenceFramePath).catch((err) => {
+      console.warn(`[ugc-clone] Failed to cleanup reference frame: ${referenceFramePath}`, err);
+    });
+  }
+
+  // Clean up temp normalized video (already uploaded to fal storage)
+  if (videoFullPath !== rawVideoFullPath) {
+    fs.unlink(videoFullPath).catch((err) => {
+      console.warn(`[ugc-clone] Failed to cleanup normalized video: ${videoFullPath}`, err);
+    });
   }
 
   const rawDuration = request.durationSec ?? model.defaults.duration ?? 5;

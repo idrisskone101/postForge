@@ -1,5 +1,8 @@
 import type { ModelDefinition } from "./types";
 
+/** Cost per second of video for Bria Video Eraser text overlay removal */
+export const BRIA_ERASER_COST_PER_SEC = 0.14;
+
 const IMAGE_ASPECT_RATIOS = ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"];
 const VIDEO_ASPECT_RATIOS = ["9:16", "16:9", "1:1"];
 

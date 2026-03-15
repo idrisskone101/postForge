@@ -38,7 +38,7 @@ interface SavedSource {
 }
 
 interface TikTokInputProps {
-  onDownloaded: (info: TikTokVideoInfo) => void;
+  onDownloaded: (info: TikTokVideoInfo | null) => void;
   videoInfo: TikTokVideoInfo | null;
   refreshKey?: number;
 }
@@ -110,7 +110,7 @@ export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInput
       setSavedSources((prev) => prev.filter((s) => s.id !== id));
       // If the deleted source was selected, clear it
       if (videoInfo?.id === id) {
-        onDownloaded(null as unknown as TikTokVideoInfo);
+        onDownloaded(null);
       }
     } catch (err) {
       console.error("Failed to delete source:", err);

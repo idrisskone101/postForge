@@ -1,11 +1,9 @@
-import { execFile } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { randomUUID } from "crypto";
-import { execFileAsync as ffmpegExec, FFMPEG } from "./ffmpeg";
-
-const execFileAsync = promisify(execFile);
+import { execFileAsync, FFMPEG } from "./ffmpeg";
+import { storage } from "@/lib/storage";
+import { extractThumbnailToDisk } from "./thumbnail";
 
 const TIKTOK_URL_PATTERN = /^https?:\/\/(www\.|vm\.|vt\.)?tiktok\.com\//;
 const MAX_DURATION_SEC = 30;
@@ -23,7 +21,7 @@ export interface TikTokDownloadResult {
   canonicalUrl: string;
 }
 
-interface TikTokMetadata {
+export interface TikTokMetadata {
   duration: number;
   width: number;
   height: number;
@@ -65,35 +63,12 @@ export function extractLabel(metadata: TikTokMetadata, url: string): string {
   return `TikTok ${metadata.videoId || "video"}`;
 }
 
-async function extractThumbnail(
-  videoFullPath: string,
-  outputDir: string
-): Promise<string | null> {
-  try {
-    const thumbFilename = `${randomUUID()}.jpg`;
-    const thumbFullPath = path.join(outputDir, thumbFilename);
-    await ffmpegExec(FFMPEG, [
-      "-i", videoFullPath,
-      "-vframes", "1",
-      "-ss", "0.5",
-      "-vf", "scale=320:-1",
-      "-q:v", "4",
-      "-y",
-      thumbFullPath,
-    ], { timeout: 15_000 });
-    // Return path relative to storage base
-    const basePath = process.env.STORAGE_LOCAL_PATH || "./data/outputs";
-    return path.relative(path.resolve(basePath), thumbFullPath);
-  } catch {
-    return null;
-  }
-}
 
-export async function downloadTikTok(url: string): Promise<TikTokDownloadResult> {
+export async function downloadTikTok(url: string, existingMetadata?: TikTokMetadata): Promise<TikTokDownloadResult> {
   validateTikTokUrl(url);
 
-  // Get metadata first
-  const metadata = await fetchMetadata(url);
+  // Get metadata first (skip if already provided)
+  const metadata = existingMetadata ?? await fetchMetadata(url);
 
   if (metadata.duration > MAX_DURATION_SEC) {
     throw new Error(
@@ -103,8 +78,7 @@ export async function downloadTikTok(url: string): Promise<TikTokDownloadResult>
 
   // Prepare output path
   const today = new Date().toISOString().split("T")[0];
-  const basePath = process.env.STORAGE_LOCAL_PATH || "./data/outputs";
-  const dir = path.resolve(basePath, "tiktok-sources", today);
+  const dir = path.resolve(storage.getFullPath("tiktok-sources"), today);
   await fs.mkdir(dir, { recursive: true });
 
   const id = randomUUID();
@@ -136,7 +110,7 @@ export async function downloadTikTok(url: string): Promise<TikTokDownloadResult>
   }
 
   // Extract thumbnail
-  const thumbnailPath = await extractThumbnail(fullPath, dir);
+  const thumbnailPath = await extractThumbnailToDisk(fullPath, dir);
 
   const label = extractLabel(metadata, url);
 

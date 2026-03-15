@@ -56,6 +56,10 @@ export class LocalStorageDriver implements StorageProvider {
   getFullPath(localPath: string): string {
     return path.resolve(this.basePath, localPath);
   }
+
+  getRelativePath(fullPath: string): string {
+    return path.relative(path.resolve(this.basePath), fullPath);
+  }
 }
 
 export async function downloadFromUrl(

@@ -71,14 +71,19 @@ async function detectFirstSceneChange(
   try {
     // ffmpeg writes filter output to stderr; -f null always "succeeds" but
     // execFile may reject if ffmpeg returns non-zero, so we catch and parse
-    const result = await execFileAsync(FFMPEG, [
-      "-i", videoFullPath,
-      "-filter:v", "select='gt(scene,0.4)',showinfo",
-      "-f", "null",
-      "-",
-    ], { timeout: 30_000 }).catch((err: { stderr?: string }) => ({ stdout: "", stderr: err.stderr ?? "" }));
-
-    const output = ("stderr" in result ? result.stderr : "") || "";
+    let output = "";
+    try {
+      const result = await execFileAsync(FFMPEG, [
+        "-i", videoFullPath,
+        "-filter:v", "select='gt(scene,0.4)',showinfo",
+        "-f", "null",
+        "-",
+      ], { timeout: 30_000 });
+      output = result.stderr || "";
+    } catch (err: unknown) {
+      // ffmpeg writes filter output to stderr and may exit non-zero
+      output = (err as { stderr?: string }).stderr ?? "";
+    }
 
     // showinfo outputs lines like: [Parsed_showinfo_1 ... pts_time:5.5 ...]
     const match = output.match(/pts_time:\s*([\d.]+)/);
