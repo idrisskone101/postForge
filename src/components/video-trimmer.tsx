@@ -10,6 +10,7 @@ interface VideoTrimmerProps {
   durationSec: number;
   width: number;
   height: number;
+  sourceId?: string;
   onTrimmed: (info: {
     localPath: string;
     filename: string;
@@ -35,6 +36,7 @@ export function VideoTrimmer({
   durationSec,
   width,
   height,
+  sourceId,
   onTrimmed,
   onCancel,
 }: VideoTrimmerProps) {
@@ -165,6 +167,7 @@ export function VideoTrimmer({
         localPath: videoPath,
         startTime: snap(startTime),
         endTime: snap(endTime),
+        sourceId,
       });
       onTrimmed(result);
     } catch (err) {

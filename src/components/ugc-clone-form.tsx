@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
 import { apiGet, apiPost } from "@/lib/api/client";
+
+/** Cost per second for Bria Video Eraser text removal (matches server-side constant) */
+const BRIA_ERASER_COST_PER_SEC = 0.14;
 import {
   Loader2,
   Scissors,
@@ -84,6 +87,7 @@ export function UGCCloneForm() {
   const [videoInfo, setVideoInfo] = useState<TikTokVideoInfo | null>(null);
   const [originalVideoInfo, setOriginalVideoInfo] = useState<TikTokVideoInfo | null>(null);
   const [showTrimmer, setShowTrimmer] = useState(false);
+  const [sourcesRefreshKey, setSourcesRefreshKey] = useState(0);
 
   // Step 2: Avatar
   const [avatarId, setAvatarId] = useState<string | null>(null);
@@ -91,7 +95,8 @@ export function UGCCloneForm() {
   // Step 3: Settings
   const [prompt, setPrompt] = useState("");
   const [keepOriginalSound, setKeepOriginalSound] = useState(true);
-  const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-2.6-motion">("kling-3.0-motion");
+  const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -100,6 +105,7 @@ export function UGCCloneForm() {
   const videoCost = calculateEstimatedCost(selectedModel, { durationSec });
   const imageCost = calculateEstimatedCost("nano-banana-2", { numImages: 1 });
   const pricePerSec = getModel(selectedModel)?.pricing.amount ?? 0;
+  const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
 
   const canSubmit = videoInfo && avatarId && !isSubmitting;
 
@@ -182,8 +188,14 @@ export function UGCCloneForm() {
   };
 
   const handleTrimmed = (info: { localPath: string; filename: string; durationSec: number; width: number; height: number }) => {
-    setVideoInfo(info);
+    // Update both videoInfo and originalVideoInfo so the trimmed version
+    // becomes the canonical source (the DB record was already updated by the API)
+    const updated = { ...videoInfo, ...info };
+    setVideoInfo(updated);
+    setOriginalVideoInfo(updated);
     setShowTrimmer(false);
+    // Refresh saved sources list to reflect the updated duration/thumbnail
+    setSourcesRefreshKey((k) => k + 1);
   };
 
   const handleCancelTrim = () => {
@@ -246,6 +258,7 @@ export function UGCCloneForm() {
         tiktokVideoPath: videoInfo.localPath,
         avatarId,
         keepOriginalSound,
+        removeTextOverlays,
         model: selectedModel,
         referenceImageFileId: selectedRefFileId,
         durationSec,
@@ -437,10 +450,16 @@ export function UGCCloneForm() {
                     <span className="text-white/80">Video generation (estimated)</span>
                     <span className="font-medium">{formatCost(videoCost)}</span>
                   </div>
+                  {removeTextOverlays && (
+                    <div className="flex justify-between">
+                      <span className="text-white/80">Text overlay removal</span>
+                      <span className="font-medium">{formatCost(textErasureCost)}</span>
+                    </div>
+                  )}
                   <div className="border-t border-white/20 pt-2 flex justify-between">
                     <span className="font-bold">Total</span>
                     <span className="text-2xl font-extrabold">
-                      {formatCost((totalRefCost || imageCost) + videoCost)}
+                      {formatCost((totalRefCost || imageCost) + videoCost + textErasureCost)}
                     </span>
                   </div>
                 </div>
@@ -520,7 +539,7 @@ export function UGCCloneForm() {
                 TikTok Source
               </h3>
             </div>
-            <TikTokInput onDownloaded={handleVideoDownloaded} videoInfo={videoInfo} />
+            <TikTokInput onDownloaded={handleVideoDownloaded} videoInfo={videoInfo} refreshKey={sourcesRefreshKey} />
 
             {/* Trim button — show after download, when trimmer is not open */}
             {videoInfo && !showTrimmer && (
@@ -547,6 +566,7 @@ export function UGCCloneForm() {
                   durationSec={originalVideoInfo.durationSec}
                   width={originalVideoInfo.width}
                   height={originalVideoInfo.height}
+                  sourceId={videoInfo.id}
                   onTrimmed={handleTrimmed}
                   onCancel={handleCancelTrim}
                 />
@@ -589,8 +609,9 @@ export function UGCCloneForm() {
                 </label>
                 <div className="flex gap-2">
                   {([
-                    { id: "kling-3.0-motion" as const, label: "Kling 3.0", price: "$0.126/s", badge: "Best quality" },
-                    { id: "kling-2.6-motion" as const, label: "Kling 2.6", price: "$0.07/s", badge: "Budget" },
+                    { id: "kling-3.0-motion" as const, label: "Kling 3.0", price: "$0.126/s" },
+                    { id: "kling-3.0-pro-motion" as const, label: "Kling 3.0 Pro", price: "$0.168/s" },
+                    { id: "kling-2.6-motion" as const, label: "Kling 2.6", price: "$0.07/s" },
                   ]).map((opt) => (
                     <button
                       key={opt.id}
@@ -611,6 +632,11 @@ export function UGCCloneForm() {
                 {selectedModel === "kling-3.0-motion" && (
                   <p className="text-[10px] text-accent-green">
                     V3 includes facial element binding for better identity preservation.
+                  </p>
+                )}
+                {selectedModel === "kling-3.0-pro-motion" && (
+                  <p className="text-[10px] text-accent-green">
+                    V3 Pro — higher quality output with improved motion fidelity.
                   </p>
                 )}
                 {selectedModel === "kling-2.6-motion" && (
@@ -675,6 +701,23 @@ export function UGCCloneForm() {
                   onCheckedChange={setKeepOriginalSound}
                 />
               </div>
+
+              {/* Remove Text Overlays */}
+              <div className="flex items-center justify-between rounded-2xl border border-border p-4">
+                <div>
+                  <p className="text-sm font-medium">Remove Text Overlays</p>
+                  <p className="text-xs text-muted-foreground">
+                    Strip hook text &amp; captions before motion control
+                    {removeTextOverlays && (
+                      <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
+                    )}
+                  </p>
+                </div>
+                <Switch
+                  checked={removeTextOverlays}
+                  onCheckedChange={setRemoveTextOverlays}
+                />
+              </div>
             </div>
           </div>
 
@@ -688,12 +731,15 @@ export function UGCCloneForm() {
               <div className="flex justify-between items-end">
                 <div>
                   <span className="text-4xl font-extrabold tracking-tight">
-                    {formatCost(imageCost + videoCost)}
+                    {formatCost(imageCost + videoCost + textErasureCost)}
                   </span>
                 </div>
                 <div className="text-right text-xs space-y-1">
                   <p className="text-white/70">Ref image: {formatCost(imageCost)}</p>
                   <p className="text-white/70">Video: {durationSec}s @ ${pricePerSec}/s</p>
+                  {removeTextOverlays && (
+                    <p className="text-white/70">Text removal: {formatCost(textErasureCost)}</p>
+                  )}
                 </div>
               </div>
             </div>

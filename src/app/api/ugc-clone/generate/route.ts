@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
       modelId: body.model,
       referenceImageFileId: body.referenceImageFileId,
       durationSec: typeof body.durationSec === "number" ? body.durationSec : undefined,
+      removeTextOverlays: body.removeTextOverlays === true,
     });
 
     return NextResponse.json(

@@ -3,6 +3,7 @@ import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { randomUUID } from "crypto";
+import { execFileAsync as ffmpegExec, FFMPEG } from "./ffmpeg";
 
 const execFileAsync = promisify(execFile);
 
@@ -16,12 +17,19 @@ export interface TikTokDownloadResult {
   durationSec: number;
   width: number;
   height: number;
+  fileSizeBytes: number | null;
+  thumbnailPath: string | null;
+  label: string;
+  canonicalUrl: string;
 }
 
 interface TikTokMetadata {
   duration: number;
   width: number;
   height: number;
+  canonicalUrl: string;
+  uploader: string | null;
+  videoId: string | null;
 }
 
 export function validateTikTokUrl(url: string): void {
@@ -30,7 +38,7 @@ export function validateTikTokUrl(url: string): void {
   }
 }
 
-async function fetchMetadata(url: string): Promise<TikTokMetadata> {
+export async function fetchMetadata(url: string): Promise<TikTokMetadata> {
   const { stdout } = await execFileAsync("yt-dlp", ["--dump-json", "--no-warnings", url], {
     timeout: 30_000,
   });
@@ -40,7 +48,45 @@ async function fetchMetadata(url: string): Promise<TikTokMetadata> {
     duration: data.duration ?? 0,
     width: data.width ?? 0,
     height: data.height ?? 0,
+    canonicalUrl: data.webpage_url || url,
+    uploader: data.uploader || data.channel || null,
+    videoId: data.id || null,
   };
+}
+
+export function extractLabel(metadata: TikTokMetadata, url: string): string {
+  if (metadata.uploader) {
+    const name = metadata.uploader.startsWith("@") ? metadata.uploader : `@${metadata.uploader}`;
+    return metadata.videoId ? `${name} - ${metadata.videoId}` : name;
+  }
+  // Fallback: parse URL for @username
+  const match = url.match(/@([^/]+)/);
+  if (match) return `@${match[1]}`;
+  return `TikTok ${metadata.videoId || "video"}`;
+}
+
+async function extractThumbnail(
+  videoFullPath: string,
+  outputDir: string
+): Promise<string | null> {
+  try {
+    const thumbFilename = `${randomUUID()}.jpg`;
+    const thumbFullPath = path.join(outputDir, thumbFilename);
+    await ffmpegExec(FFMPEG, [
+      "-i", videoFullPath,
+      "-vframes", "1",
+      "-ss", "0.5",
+      "-vf", "scale=320:-1",
+      "-q:v", "4",
+      "-y",
+      thumbFullPath,
+    ], { timeout: 15_000 });
+    // Return path relative to storage base
+    const basePath = process.env.STORAGE_LOCAL_PATH || "./data/outputs";
+    return path.relative(path.resolve(basePath), thumbFullPath);
+  } catch {
+    return null;
+  }
 }
 
 export async function downloadTikTok(url: string): Promise<TikTokDownloadResult> {
@@ -80,11 +126,29 @@ export async function downloadTikTok(url: string): Promise<TikTokDownloadResult>
 
   const localPath = path.join("tiktok-sources", today, filename);
 
+  // Get file size
+  let fileSizeBytes: number | null = null;
+  try {
+    const stat = await fs.stat(fullPath);
+    fileSizeBytes = stat.size;
+  } catch {
+    // ignore
+  }
+
+  // Extract thumbnail
+  const thumbnailPath = await extractThumbnail(fullPath, dir);
+
+  const label = extractLabel(metadata, url);
+
   return {
     localPath,
     filename,
     durationSec: metadata.duration,
     width: metadata.width,
     height: metadata.height,
+    fileSizeBytes,
+    thumbnailPath,
+    label,
+    canonicalUrl: metadata.canonicalUrl,
   };
 }

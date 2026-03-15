@@ -79,3 +79,20 @@ model Avatar {
 
   @@index([createdAt])
 }
+
+model TikTokSource {
+  id            String   @id @default(uuid())
+  label         String
+  originalUrl   String   @unique
+  localPath     String
+  filename      String
+  durationSec   Float
+  width         Int
+  height        Int
+  fileSizeBytes Int?
+  thumbnailPath String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
+}

@@ -142,6 +142,19 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     defaults: { aspectRatio: "9:16", duration: 5 },
     limits: { minDuration: 3, maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
   },
+  "kling-3.0-pro-motion": {
+    id: "kling-3.0-pro-motion",
+    name: "Kling 3.0 Pro Motion Control",
+    type: "video",
+    provider: "fal",
+    endpoint: "fal-ai/kling-video/v3/pro/motion-control",
+    pricing: { unit: "per_second", amount: 0.168 },
+    capabilities: {
+      motionControl: true,
+    },
+    defaults: { aspectRatio: "9:16", duration: 5 },
+    limits: { minDuration: 3, maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
+  },
 };
 
 export function getModel(modelId: string): ModelDefinition | undefined {

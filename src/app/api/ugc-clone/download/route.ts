@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { downloadTikTok } from "@/lib/ugc/download-tiktok";
+import { downloadTikTok, validateTikTokUrl, fetchMetadata } from "@/lib/ugc/download-tiktok";
+import { prisma } from "@/lib/db";
+import { storage } from "@/lib/storage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +14,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await downloadTikTok(body.url);
+    const url = body.url.trim();
+    validateTikTokUrl(url);
 
-    return NextResponse.json(result);
+    // Fetch metadata to get canonical URL for dedup
+    const metadata = await fetchMetadata(url);
+    const canonicalUrl = metadata.canonicalUrl;
+
+    // Check for existing record
+    const existing = await prisma.tikTokSource.findUnique({
+      where: { originalUrl: canonicalUrl },
+    });
+
+    if (existing) {
+      // Verify file still exists on disk
+      const fileExists = await storage.exists(existing.localPath);
+      if (fileExists) {
+        return NextResponse.json(existing);
+      }
+      // Stale record — file missing, delete and re-download
+      await prisma.tikTokSource.delete({ where: { id: existing.id } });
+    }
+
+    // Download the video
+    const result = await downloadTikTok(url);
+
+    // Persist to database
+    const source = await prisma.tikTokSource.create({
+      data: {
+        label: result.label,
+        originalUrl: result.canonicalUrl,
+        localPath: result.localPath,
+        filename: result.filename,
+        durationSec: result.durationSec,
+        width: result.width,
+        height: result.height,
+        fileSizeBytes: result.fileSizeBytes,
+        thumbnailPath: result.thumbnailPath,
+      },
+    });
+
+    return NextResponse.json(source, { status: 201 });
   } catch (error) {
     console.error("TikTok download error:", error);
     return NextResponse.json(
