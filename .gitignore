@@ -40,6 +40,9 @@ data/outputs/videos/*
 !data/outputs/images/.gitkeep
 !data/outputs/videos/.gitkeep
 
+# TikTok source videos
+data/outputs/tiktok-sources/
+
 # vercel
 .vercel
 
