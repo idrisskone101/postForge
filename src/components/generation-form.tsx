@@ -24,6 +24,12 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
+import {
+  FloatingToolbar,
+  ToolbarHeading,
+  ToolbarDivider,
+  ToolbarLabel,
+} from "@/components/floating-toolbar";
 
 interface GenerationFormProps {
   models: ModelDefinition[];
@@ -331,43 +337,41 @@ export function GenerationForm({ models }: GenerationFormProps) {
         </div>
       </div>
 
-      {/* Fixed Bottom Generation Bar */}
-      <div className="fixed bottom-0 left-0 md:left-24 right-0 h-20 bg-card/90 backdrop-blur-xl border-t border-border px-6 md:px-12 z-50">
-        <div className="max-w-[1200px] mx-auto h-full flex items-center justify-between gap-4">
-          {/* Desktop config summary */}
-          <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="font-bold uppercase tracking-wider text-[10px]">Current Config</span>
+      <FloatingToolbar
+        summary={
+          <>
+            <ToolbarHeading>Current Config</ToolbarHeading>
             {model && (
               <>
-                <span className="text-border">|</span>
-                <span className="font-mono">{model.name}</span>
-                <span className="text-border">|</span>
-                <span className="font-mono">{aspectRatio}</span>
-                {isImage && <><span className="text-border">|</span><span className="font-mono">{numImages} img</span></>}
+                <ToolbarDivider />
+                <ToolbarLabel>{model.name}</ToolbarLabel>
+                <ToolbarDivider />
+                <ToolbarLabel>{aspectRatio}</ToolbarLabel>
+                {isImage && <><ToolbarDivider /><ToolbarLabel>{numImages} img</ToolbarLabel></>}
               </>
             )}
-          </div>
-          <div className="md:hidden" />
-          <Button
-            size="lg"
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            className="bg-accent-coral text-white font-bold px-8 py-3 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-3 uppercase tracking-wider"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Forging...
-              </>
-            ) : (
-              <>
-                Execute Generation
-                <ArrowRight className="size-4" />
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      >
+        <Button
+          size="lg"
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          className="bg-accent-coral text-white font-bold px-8 py-3 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-3 uppercase tracking-wider"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Forging...
+            </>
+          ) : (
+            <>
+              Execute Generation
+              <ArrowRight className="size-4" />
+            </>
+          )}
+        </Button>
+      </FloatingToolbar>
     </>
   );
 }
