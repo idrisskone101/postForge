@@ -13,6 +13,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Images, Download, Trash2, X, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
@@ -106,74 +112,49 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
   const totalCount = items.length - deletedIds.size;
 
   return (
-    <div className="p-6 lg:p-8 space-y-8 animate-fade-in-up">
-      {/* Header */}
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-3">
-          {/* Floating badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-coral/10 text-accent-coral text-xs font-medium animate-fade-in-up"
-            style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
-          >
-            <span className="size-2 rounded-full bg-accent-coral animate-pulse" />
-            Curating Magic
-          </div>
-          <h1
-            className="text-4xl sm:text-5xl font-semibold tracking-tight animate-fade-in-up"
-            style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
-          >
-            Gallery Forge
-          </h1>
-          <p
-            className="text-muted-foreground animate-fade-in-up"
-            style={{ animationDelay: "0.3s", animationFillMode: "backwards" }}
-          >
-            Your creative collection, beautifully organized
-          </p>
-        </div>
-
-        {/* Filter + Sort pills */}
-        <div
-          className="flex items-center gap-3 flex-wrap animate-fade-in-up"
-          style={{ animationDelay: "0.4s", animationFillMode: "backwards" }}
-        >
-          {/* Type filter pills */}
-          <div className="flex items-center gap-2">
+    <div className="p-6 lg:p-8 space-y-6 animate-fade-in-up">
+      {/* Header — inline with filters */}
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold tracking-tight">Gallery</h1>
+          <div className="h-4 w-px bg-border" />
+          {/* Filter controls */}
+          <div className="flex items-center gap-1.5">
             {filterOptions.map((opt) => (
               <button
                 key={opt.value}
                 type="button"
                 onClick={() => setTypeFilter(opt.value)}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
                   typeFilter === opt.value
-                    ? "bg-accent-coral text-white shadow-md"
-                    : "bg-card border border-border text-foreground hover:border-accent-coral/40 hover:text-accent-coral"
+                    ? "bg-accent-coral text-white"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {opt.label}
               </button>
             ))}
           </div>
-
-          {/* Sort pill */}
-          <button
-            type="button"
-            onClick={() =>
-              setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"))
-            }
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-card border border-border text-foreground hover:border-accent-coral/40 hover:text-accent-coral transition-all duration-200"
-          >
-            <ArrowUpDown className="size-3.5" />
-            {sortOrder === "newest" ? "Newest" : "Oldest"}
-          </button>
         </div>
+
+        {/* Sort button */}
+        <button
+          type="button"
+          onClick={() =>
+            setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"))
+          }
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted/50 border border-border text-foreground/80 hover:bg-muted transition-all duration-150"
+        >
+          <ArrowUpDown className="size-3" />
+          {sortOrder === "newest" ? "Newest" : "Oldest"}
+        </button>
       </div>
 
       {/* Gallery content */}
       {totalCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
-          <Images className="size-16 mb-4 opacity-40" />
+          <Images className="size-12 mb-4 opacity-40" />
           <p className="text-lg font-medium">No media yet</p>
           <p className="text-sm mt-2">
             Generated images and videos will appear here once you start
@@ -182,7 +163,7 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
         </div>
       ) : (
         <>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             {filtered.length} of {totalCount} items
           </p>
           <GalleryGrid
@@ -194,74 +175,100 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
         </>
       )}
 
-      {/* Bulk action bar */}
+      {/* Bulk action bar — floating, right-aligned */}
       {selectionCount > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#1F2937] rounded-[32px] px-6 py-3 flex items-center gap-4 shadow-2xl">
-          {/* Coral count circle */}
-          <div className="flex items-center gap-3">
-            <span className="size-8 rounded-full bg-accent-coral text-white text-sm font-bold flex items-center justify-center">
-              {selectionCount}
-            </span>
-            <span className="text-sm font-medium text-white">
-              asset{selectionCount !== 1 ? "s" : ""} selected
-            </span>
+        <TooltipProvider>
+          <div className="fixed bottom-8 right-8 md:right-12 z-50 flex items-center gap-4 bg-card border border-border rounded-xl p-2 px-4 shadow-2xl animate-fade-in-up">
+            {/* Left section: count + label */}
+            <div className="flex items-center gap-2.5 pr-4 border-r border-border">
+              <span className="size-6 rounded-md bg-accent-blue text-white text-[10px] font-extrabold flex items-center justify-center">
+                {selectionCount}
+              </span>
+              <span className="text-[11px] font-semibold text-muted-foreground whitespace-nowrap">
+                asset{selectionCount !== 1 ? "s" : ""} selected
+              </span>
+            </div>
+
+            {/* Right section: icon-only action buttons */}
+            <div className="flex items-center gap-1">
+              {/* Download */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={handleBulkDownload}
+                      className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                    />
+                  }
+                >
+                  <Download className="size-4" />
+                </TooltipTrigger>
+                <TooltipContent>Download</TooltipContent>
+              </Tooltip>
+
+              <div className="h-4 w-px bg-border mx-1" />
+
+              {/* Delete with confirm */}
+              <AlertDialog>
+                <Tooltip>
+                  <AlertDialogTrigger
+                    disabled={isDeleting}
+                    render={
+                      <TooltipTrigger
+                        render={
+                          <button
+                            type="button"
+                            className="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                          />
+                        }
+                      />
+                    }
+                  >
+                    <Trash2 className="size-4" />
+                  </AlertDialogTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Delete {selectionCount} asset
+                      {selectionCount !== 1 ? "s" : ""}?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete the selected files. This action
+                      cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleBulkDelete}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <div className="h-4 w-px bg-border mx-1" />
+
+              {/* Close */}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => setSelectedIds(new Set())}
+                      className="p-2 text-muted-foreground/40 hover:text-foreground transition-colors"
+                    />
+                  }
+                >
+                  <X className="size-4" />
+                </TooltipTrigger>
+                <TooltipContent>Clear selection</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
-
-          <div className="w-px h-6 bg-white/20" />
-
-          {/* Download */}
-          <button
-            type="button"
-            onClick={handleBulkDownload}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white hover:bg-white/10 transition-colors"
-          >
-            <Download className="size-4" />
-            Download
-          </button>
-
-          {/* Delete with confirm */}
-          <AlertDialog>
-            <AlertDialogTrigger
-              disabled={isDeleting}
-              render={
-                <button
-                  type="button"
-                  className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                />
-              }
-            >
-              <Trash2 className="size-4" />
-              Delete
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Delete {selectionCount} asset
-                  {selectionCount !== 1 ? "s" : ""}?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete the selected files. This action
-                  cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleBulkDelete}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {/* Close */}
-          <button
-            type="button"
-            onClick={() => setSelectedIds(new Set())}
-            className="size-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </TooltipProvider>
       )}
     </div>
   );

@@ -1,22 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -27,7 +20,8 @@ import {
 } from "@/components/ui/table";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import { DollarSign, TrendingUp, Crown, Flame, Download, ArrowUp, ArrowDown } from "lucide-react";
+import { Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { PIE_COLORS } from "@/components/cost-chart";
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((mod) => mod.CostChart),
@@ -92,15 +86,17 @@ export function CostsPageClient({
     value: Math.round(data.cost * 100) / 100,
   }));
 
+  const totalModelCost = modelEntries.reduce((s, [, d]) => s + d.cost, 0);
+
   const handlePeriodChange = (value: string) => {
     if (value) router.push(`/costs?period=${value}`);
   };
 
   const exportCSV = () => {
     const header = "Date,Model,Type,Amount\n";
-    const rows = logs.map((l) =>
-      `${l.createdAt},${l.model},${l.type},${l.amount}`
-    ).join("\n");
+    const rows = logs
+      .map((l) => `${l.createdAt},${l.model},${l.type},${l.amount}`)
+      .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -116,232 +112,287 @@ export function CostsPageClient({
   );
   const totalPages = Math.ceil(logs.length / LOGS_PAGE_SIZE);
 
-  const ChangeIndicator = ({ value }: { value: number }) => {
-    if (value === 0) return null;
-    const isUp = value > 0;
-    return (
-      <Badge
-        variant="secondary"
-        className={`text-[10px] gap-0.5 ${isUp ? "text-accent-coral" : "text-accent-green"}`}
-      >
-        {isUp ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
-        {Math.abs(value).toFixed(0)}%
-      </Badge>
-    );
-  };
-
   return (
-    <div className="p-6 lg:p-8 space-y-6 animate-fade-in-up">
+    <div className="p-4 lg:p-6 space-y-4 animate-fade-in-up">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline gap-4">
+          <h1 className="text-xl font-bold tracking-tight">
             Analytics & Insights
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground">
             Track your generation spending and usage
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <ToggleGroup
-            value={[period]}
-            onValueChange={(v) => { if (v.length > 0) handlePeriodChange(v[v.length - 1]); }}
-          >
-            <ToggleGroupItem value="7d" className="text-xs">7D</ToggleGroupItem>
-            <ToggleGroupItem value="30d" className="text-xs">30D</ToggleGroupItem>
-            <ToggleGroupItem value="90d" className="text-xs">90D</ToggleGroupItem>
-          </ToggleGroup>
+          <div className="flex items-center text-[11px] font-semibold tracking-wide">
+            {(["7d", "30d", "90d"] as const).map((p, i) => (
+              <React.Fragment key={p}>
+                {i > 0 && <span className="text-foreground/20">|</span>}
+                <button
+                  onClick={() => handlePeriodChange(p)}
+                  className={cn(
+                    "px-2 transition-colors",
+                    period === p
+                      ? "text-foreground border-b border-accent-coral"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {p.toUpperCase()}
+                </button>
+              </React.Fragment>
+            ))}
+          </div>
 
-          <Button variant="outline" size="sm" onClick={exportCSV}>
-            <Download className="size-4" />
-            Export CSV
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  onClick={exportCSV}
+                  className="p-2 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                />
+              }
+            >
+              <Download className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent>Export CSV</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
-      <Separator />
-
-      {/* Metric cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Spend
-            </CardTitle>
-            <DollarSign className="size-4 text-accent-blue" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+      {/* Stats Strip */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden flex divide-x divide-border py-3">
+        {/* Spend */}
+        <div className="flex-1 px-6 flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Spend
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold leading-tight">
               {formatCost(currentPeriodCost)}
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              <ChangeIndicator value={changePercent} />
-              <span className="text-xs text-muted-foreground">vs prev period</span>
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            {changePercent !== 0 && (
+              <span
+                className={cn(
+                  "text-[10px] font-bold",
+                  changePercent > 0 ? "text-accent-coral" : "text-accent-green"
+                )}
+              >
+                {changePercent > 0 ? "+" : ""}
+                {Math.abs(changePercent).toFixed(0)}%
+              </span>
+            )}
+          </div>
+        </div>
 
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Forge Cycles
-            </CardTitle>
-            <Flame className="size-4 text-accent-coral" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalJobs}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              total generations
-            </p>
-          </CardContent>
-        </Card>
+        {/* Forge Cycles */}
+        <div className="flex-1 px-6 flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Forge Cycles
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold leading-tight">{totalJobs}</span>
+          </div>
+        </div>
 
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Avg Cycle Cost
-            </CardTitle>
-            <TrendingUp className="size-4 text-accent-green" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+        {/* Avg Cost */}
+        <div className="flex-1 px-6 flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Avg Cost
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold leading-tight">
               {formatCost(avgCycleCost)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">per generation</p>
-          </CardContent>
-        </Card>
+            </span>
+          </div>
+        </div>
 
-        <Card className="glass">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Favorite Model
-            </CardTitle>
-            <Crown className="size-4 text-amber-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold truncate">
+        {/* Top Model */}
+        <div className="flex-1 px-6 flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Top Model
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold leading-tight truncate">
               {topModel ? topModel.name : "N/A"}
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              {topModel && (
-                <Badge variant="secondary" className="text-[10px]">
-                  {topModel.pct}% usage
-                </Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            {topModel && (
+              <span className="text-[10px] bg-muted px-1.5 rounded">
+                {topModel.pct}%
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Spending Trajectory */}
-        <Card className="glass lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Spending Trajectory
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Charts — unified panel */}
+      <div className="bg-card border border-border rounded-lg p-5">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-8">
+          {/* Spending chart */}
+          <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                Spending Trajectory
+              </span>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block size-2 rounded-full bg-accent-blue" />
+                  Image
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block size-2 rounded-full bg-accent-coral" />
+                  Video
+                </span>
+              </div>
+            </div>
             <CostChart data={chartData} />
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Model Split */}
-        <Card className="glass">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Model Split
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+          {/* Model distribution */}
+          <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4 block">
+              Model Distribution
+            </span>
             {pieData.length > 0 ? (
-              <ModelPieChart data={pieData} />
+              <div className="flex items-center gap-6 flex-1">
+                <div className="w-36 h-36 flex-shrink-0">
+                  <ModelPieChart data={pieData} />
+                </div>
+                <div className="flex flex-col gap-2.5 flex-1 min-w-0 justify-center">
+                  {modelEntries.map(([name, data], i) => (
+                    <div
+                      key={name}
+                      className="flex items-center justify-between text-[10px]"
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        <span
+                          className="inline-block size-1.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
+                        />
+                        <span className="truncate text-foreground/80">{name}</span>
+                      </span>
+                      <span className="font-mono text-muted-foreground ml-2">
+                        {totalModelCost > 0
+                          ? ((data.cost / totalModelCost) * 100).toFixed(1)
+                          : "0"}
+                        %
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No data yet
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Forge Logs */}
-      <Card className="glass">
-        <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Forge Logs
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="max-h-[400px]">
-            <Table>
-              <TableHeader>
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header bar */}
+        <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Recent Activity
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {logs.length} {logs.length === 1 ? "entry" : "entries"}
+          </span>
+        </div>
+
+        <ScrollArea className="max-h-[400px]">
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground bg-muted/50">
+                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Time
+                </TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Model
+                </TableHead>
+                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Type
+                </TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Cost
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagedLogs.length === 0 ? (
                 <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Model</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    No logs yet
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pagedLogs.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                      No logs yet
+              ) : (
+                pagedLogs.map((log) => (
+                  <TableRow
+                    key={log.id}
+                    className="even:bg-muted/30 hover:bg-muted transition-colors"
+                  >
+                    <TableCell className="text-[11px] font-mono text-muted-foreground">
+                      {formatRelativeDate(log.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-[11px] font-medium">
+                      {log.model}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+                          log.type === "image"
+                            ? "bg-accent-coral/20 text-accent-coral"
+                            : "bg-accent-blue/20 text-accent-blue"
+                        )}
+                      >
+                        {log.type}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right text-[11px] font-mono">
+                      {formatCost(log.amount)}
                     </TableCell>
                   </TableRow>
-                ) : (
-                  pagedLogs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {formatRelativeDate(log.createdAt)}
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">
-                        {log.model}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="text-[10px] capitalize">
-                          {log.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-sm">
-                        {formatCost(log.amount)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </ScrollArea>
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-xs text-muted-foreground">
-                Page {logPage + 1} of {totalPages}
-              </span>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={logPage === 0}
-                  onClick={() => setLogPage((p) => p - 1)}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={logPage >= totalPages - 1}
-                  onClick={() => setLogPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+
+        {totalPages > 1 && (
+          <div className="px-5 py-2 border-t border-border flex items-center justify-between bg-muted/30">
+            <span className="text-[10px] text-muted-foreground">
+              PAGE{" "}
+              <span className="font-mono font-bold text-foreground">
+                {logPage + 1}
+              </span>{" "}
+              / {totalPages}
+            </span>
+            <div className="flex gap-1">
+              <button
+                disabled={logPage === 0}
+                onClick={() => setLogPage((p) => p - 1)}
+                className="p-1.5 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronLeft className="size-3.5" />
+              </button>
+              <button
+                disabled={logPage >= totalPages - 1}
+                onClick={() => setLogPage((p) => p + 1)}
+                className="p-1.5 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

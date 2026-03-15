@@ -107,10 +107,10 @@ export function UGCCloneQueue() {
 
   return (
     <div className="launch-card bg-card border border-border p-6">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
         Clone Queue
       </h3>
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {jobs.map((job) => {
           const config = STATUS_CONFIG[job.status];
           const StatusIcon = config.icon;
@@ -122,19 +122,19 @@ export function UGCCloneQueue() {
               key={job.id}
               href={`/ugc-clone/${job.id}`}
               className={cn(
-                "group flex items-center gap-3 rounded-xl border border-border p-3 transition-all hover:border-accent-green/50 hover:bg-muted/50",
+                "group flex items-center gap-3 rounded-md border border-border p-3 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
                 isActive && "border-accent-blue/30 bg-accent-blue/5"
               )}
             >
               <div
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-full",
+                  "flex size-7 shrink-0 items-center justify-center rounded-md",
                   config.bgClassName
                 )}
               >
                 <StatusIcon
                   className={cn(
-                    "size-4",
+                    "size-3.5",
                     config.className,
                     job.status === "processing" && "animate-spin"
                   )}
@@ -149,7 +149,7 @@ export function UGCCloneQueue() {
                       : job.prompt}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
                   <span>{job.model}</span>
                   <span>·</span>
                   <span>{formatCost(job.estimatedCost)}</span>
@@ -159,7 +159,7 @@ export function UGCCloneQueue() {
               </div>
 
               {job.status === "completed" && job.outputs[0] && (
-                <div className="size-10 shrink-0 rounded-lg overflow-hidden border border-border">
+                <div className="size-9 shrink-0 rounded-md overflow-hidden border border-border">
                   <video
                     src={`/api/files/${job.outputs[0].id}`}
                     className="size-full object-cover"
@@ -168,7 +168,7 @@ export function UGCCloneQueue() {
                 </div>
               )}
 
-              <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
             </Link>
           );
         })}

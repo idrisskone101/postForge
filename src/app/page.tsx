@@ -6,7 +6,6 @@ import { MediaPreview } from "@/components/media-preview";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import {
-  Zap,
   Camera,
   Film,
   Sparkles,
@@ -15,11 +14,11 @@ import {
   Play,
   Download,
   Trash2,
-  Plus,
+  History,
 } from "lucide-react";
 
 export default async function DashboardPage() {
-  const [todaySummary, monthSummary, activeCount, recentJobs] =
+  const [todaySummary, monthSummary, activeCount, recentJobs, activeJobs] =
     await Promise.all([
       getCostSummary({ period: "today" }),
       getCostSummary({ period: "month" }),
@@ -32,21 +31,27 @@ export default async function DashboardPage() {
         orderBy: { createdAt: "desc" },
         take: 4,
       }),
+      prisma.generationJob.findMany({
+        where: { status: { in: ["queued", "processing"] } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
     ]);
 
   const todayJobs =
     todaySummary.breakdown.image.count + todaySummary.breakdown.video.count;
+  const lifetimeCount =
+    monthSummary.breakdown.image.count + monthSummary.breakdown.video.count;
   const monthBudget = 62;
   const budgetPercent = Math.min(
     (monthSummary.totalCost / monthBudget) * 100,
     100
   );
-  // SVG circle math: r=40, circumference = 2*pi*40 = 251.2
-  const circumference = 251.2;
+  // SVG circle math: r=18, circumference = 2*pi*18 = 113.1
+  const circumference = 113.1;
   const dashOffset = circumference - (budgetPercent / 100) * circumference;
 
   const today = new Date();
-  const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
   const monthDay = today.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -54,165 +59,189 @@ export default async function DashboardPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      {/* Ambient Blobs - fixed position */}
-      <div className="pointer-events-none fixed -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full bg-accent-blue/20 mix-blend-multiply blur-[80px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-blue/10" />
-      <div className="pointer-events-none fixed top-[20%] right-[10%] w-[500px] h-[500px] rounded-full bg-accent-coral/20 mix-blend-multiply blur-[80px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-coral/10" style={{ animationDelay: "2s" }} />
-      <div className="pointer-events-none fixed -bottom-[20%] -left-[10%] w-[700px] h-[700px] rounded-full bg-accent-green/15 mix-blend-multiply blur-[100px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-green/8" style={{ animationDelay: "4s" }} />
+      {/* Ambient Blobs */}
+      <div className="pointer-events-none fixed -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full bg-accent-blue/20 mix-blend-multiply blur-[100px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-blue/5" />
+      <div
+        className="pointer-events-none fixed top-[20%] right-[10%] w-[500px] h-[500px] rounded-full bg-accent-coral/20 mix-blend-multiply blur-[100px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-coral/5"
+        style={{ animationDelay: "2s" }}
+      />
+      <div
+        className="pointer-events-none fixed -bottom-[20%] -left-[10%] w-[700px] h-[700px] rounded-full bg-accent-green/15 mix-blend-multiply blur-[100px] animate-blob z-0 dark:mix-blend-screen dark:bg-accent-green/5"
+        style={{ animationDelay: "4s" }}
+      />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-8 py-8 lg:py-12 xl:px-16 animate-fade-in-up">
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex items-center gap-6">
-            {/* Naruto Mascot */}
-            <div className="relative flex-shrink-0 hidden sm:block animate-float">
-              <div className="absolute inset-0 rounded-full bg-accent-coral/25 blur-xl scale-110" />
-              <div className="relative w-24 h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-[3px] border-accent-coral/40 shadow-[0_8px_32px_rgba(255,122,89,0.25)] hover:scale-110 hover:border-accent-coral/70 hover:shadow-[0_12px_40px_rgba(255,122,89,0.4)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                <Image
-                  src="/naruto-mascot.png"
-                  alt="Naruto mascot"
-                  width={112}
-                  height={112}
-                  className="w-full h-full object-cover scale-125"
-                  priority
-                />
-              </div>
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-6 lg:py-10 animate-fade-in-up">
+        {/* Compact Utility Header */}
+        <header className="flex items-center justify-between bg-card/20 border border-border rounded-xl p-2 pr-4 pl-2 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-accent-coral/40">
+              <Image
+                src="/naruto-mascot.png"
+                alt="Naruto mascot"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover scale-125"
+                priority
+              />
             </div>
-
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-sm mb-4 animate-float">
-                <span className="w-2 h-2 rounded-full bg-accent-green" />
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  All Systems Go
-                </span>
-              </div>
-              <h1 className="text-4xl font-extrabold tracking-tight mb-2">
-                Ready to create magic?
-              </h1>
-              <p className="text-muted-foreground text-lg">
-                {dayName}, {monthDay} &bull; Let&apos;s make something awesome today.
-              </p>
-            </div>
+            <span className="text-base font-bold">
+              Ready to create magic?
+            </span>
+            <span className="text-muted-foreground hidden sm:inline">&middot;</span>
+            <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
+              {monthDay}
+            </span>
           </div>
 
           <Link href="/generate">
-            <button className="bg-accent-coral text-white font-bold px-8 py-4 rounded-full flex items-center gap-3 hover:brightness-110 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-105 shadow-[0_8px_24px_rgba(255,122,89,0.3)] cursor-pointer">
-              <Wand2 className="size-[22px]" />
-              Launch New Forge
+            <button className="bg-accent-coral text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 hover:brightness-110 transition-all duration-300 cursor-pointer">
+              <Wand2 className="size-3.5" />
+              New Forge
             </button>
           </Link>
         </header>
 
-        {/* Metrics Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-          {/* Spend Card - spans 2 */}
-          <div className="md:col-span-2 bg-card rounded-[32px] p-8 border border-border shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex items-center justify-between group cursor-default">
-            <div className="flex flex-col justify-between h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-[20px] bg-accent-blue/10 text-accent-blue flex items-center justify-center">
-                  <Zap className="size-6" />
+        {/* Data Metrics Toolbar */}
+        <div className="bg-card rounded-xl p-5 border border-border shadow-sm mb-6">
+          <div className="flex flex-wrap md:flex-nowrap items-center divide-y md:divide-y-0 md:divide-x divide-border">
+            {/* Energy Spent */}
+            <div className="flex items-center gap-3 pr-6 py-3 md:py-0">
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <svg
+                  className="w-full h-full -rotate-90"
+                  viewBox="0 0 44 44"
+                >
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r="18"
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    fill="transparent"
+                    className="text-muted/50"
+                  />
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r="18"
+                    stroke="currentColor"
+                    strokeWidth="5"
+                    fill="transparent"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={dashOffset}
+                    strokeLinecap="round"
+                    className="text-accent-coral"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[9px] font-bold">
+                    {budgetPercent.toFixed(0)}%
+                  </span>
                 </div>
-                <span className="font-bold text-lg">Energy Used</span>
               </div>
               <div>
-                <div className="text-5xl font-extrabold tracking-tight mb-2">
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Energy Spent
+                </div>
+                <div className="text-base font-bold">
                   {formatCost(monthSummary.totalCost)}
                 </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Generated {todayJobs} assets today
-                </p>
               </div>
             </div>
 
-            {/* Circular Progress */}
-            <div className="relative w-32 h-32 flex-shrink-0">
-              <svg
-                className="w-full h-full -rotate-90"
-                viewBox="0 0 100 100"
-              >
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="12"
-                  fill="transparent"
-                  className="text-muted/50"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  stroke="currentColor"
-                  strokeWidth="12"
-                  fill="transparent"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={dashOffset}
-                  strokeLinecap="round"
-                  className="text-accent-coral group-hover:text-accent-coral/80 transition-colors duration-300"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl font-bold">
-                  {budgetPercent.toFixed(0)}%
-                </span>
-                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                  Monthly
-                </span>
+            {/* Images */}
+            <div className="flex items-center gap-3 px-6 py-3 md:py-0">
+              <div className="w-9 h-9 rounded-lg bg-accent-green/10 text-accent-green flex items-center justify-center flex-shrink-0">
+                <Camera className="size-4" />
+              </div>
+              <div>
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Images
+                </div>
+                <div className="text-base font-bold">
+                  {todaySummary.breakdown.image.count}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Images Card */}
-          <div className="bg-card rounded-[32px] p-8 border border-border shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col justify-between group cursor-default">
-            <div className="w-14 h-14 rounded-[24px] bg-accent-green/10 text-accent-green flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-              <Camera className="size-7" />
-            </div>
-            <div>
-              <div className="text-4xl font-extrabold mb-1">
-                {todaySummary.breakdown.image.count}
+            {/* Videos */}
+            <div className="flex items-center gap-3 px-6 py-3 md:py-0">
+              <div className="w-9 h-9 rounded-lg bg-accent-blue/10 text-accent-blue flex items-center justify-center flex-shrink-0">
+                <Film className="size-4" />
               </div>
-              <div className="text-sm font-semibold text-muted-foreground">
-                Images Crafted
+              <div>
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Videos
+                </div>
+                <div className="text-base font-bold flex items-center gap-2">
+                  {todaySummary.breakdown.video.count}
+                  {activeCount > 0 && (
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 bg-accent-blue/10 text-accent-blue rounded-lg text-[10px] font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
+                      {activeCount} Baking
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Videos Card */}
-          <div className="bg-card rounded-[32px] p-8 border border-border shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] flex flex-col justify-between relative group cursor-default">
-            {activeCount > 0 && (
-              <div className="absolute top-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-accent-blue/10 text-accent-blue rounded-full text-xs font-bold">
-                <div className="w-2 h-2 rounded-full bg-accent-blue animate-pulse" />
-                {activeCount} Baking
+            {/* Lifetime */}
+            <div className="flex items-center gap-3 pl-6 py-3 md:py-0">
+              <div className="w-9 h-9 rounded-lg bg-muted/50 text-muted-foreground flex items-center justify-center flex-shrink-0">
+                <History className="size-4" />
               </div>
-            )}
-            <div className="w-14 h-14 rounded-[24px] bg-accent-blue/10 text-accent-blue flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-              <Film className="size-7" />
-            </div>
-            <div>
-              <div className="text-4xl font-extrabold mb-1">
-                {todaySummary.breakdown.video.count}
-              </div>
-              <div className="text-sm font-semibold text-muted-foreground">
-                Videos Baked
+              <div>
+                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Lifetime
+                </div>
+                <div className="text-base font-bold">{lifetimeCount}</div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* In Progress Section */}
+        {activeCount > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                In Progress
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1">
+              {activeJobs.map((job) => (
+                <Link
+                  key={job.id}
+                  href={`/generate/${job.id}`}
+                  className="flex items-center gap-3 bg-card/30 border border-border rounded-xl px-4 py-1.5 shrink-0 hover:bg-card/50 transition-colors"
+                >
+                  <span className="w-2 h-2 rounded-full bg-accent-blue animate-pulse shadow-[0_0_8px_rgba(79,159,217,0.4)]" />
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {job.prompt.length > 25
+                      ? job.prompt.slice(0, 25) + "…"
+                      : job.prompt}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Recent Generations */}
         <section>
           <div className="flex items-center justify-between mb-8 px-2">
-            <h2 className="text-2xl font-bold flex items-center gap-3">
+            <h2 className="text-lg font-bold flex items-center gap-3">
               <span className="w-8 h-8 rounded-xl bg-accent-coral/10 text-accent-coral flex items-center justify-center">
                 <Sparkles className="size-[18px]" />
               </span>
-              Your Latest Magic
+              Latest Assets
             </h2>
             <Link
               href="/gallery"
-              className="text-sm font-bold text-accent-blue hover:text-accent-blue/80 transition-colors flex items-center gap-2 bg-accent-blue/5 px-4 py-2 rounded-full hover:bg-accent-blue/10"
+              className="text-sm font-bold text-accent-blue hover:text-accent-blue/80 transition-colors flex items-center gap-2 bg-accent-blue/5 px-4 py-2 rounded-xl hover:bg-accent-blue/10"
             >
-              Explore Gallery <ArrowRight className="size-4" />
+              View Gallery <ArrowRight className="size-4" />
             </Link>
           </div>
 
@@ -223,36 +252,41 @@ export default async function DashboardPage() {
               return (
                 <div
                   key={job.id}
-                  className="group relative rounded-[32px] overflow-hidden border border-border bg-card aspect-[4/5] cursor-pointer shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2"
+                  className="group relative rounded-2xl overflow-hidden border border-border bg-card aspect-[4/5] cursor-pointer shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5"
                 >
                   {output && (
-                    <Link href={`/generate/${job.id}`}>
+                    <Link
+                      href={`/generate/${job.id}`}
+                      className="absolute inset-0"
+                    >
                       <MediaPreview
                         type={job.type as "image" | "video"}
                         src={`/api/files/${output.id}`}
                         width={output.width ?? undefined}
                         height={output.height ?? undefined}
                         alt={job.prompt}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        className="w-full h-full transition-transform duration-700 group-hover:scale-110"
                       />
                     </Link>
                   )}
 
                   {/* Video badge */}
                   {isVideo && output?.durationSec && (
-                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-accent-blue flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                      <Play className="size-3.5" /> 0:{String(output.durationSec).padStart(2, "0")}
+                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold text-accent-blue flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+                      <Play className="size-3.5" /> 0:
+                      {String(output.durationSec).padStart(2, "0")}
                     </div>
                   )}
 
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 glass-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <div className="absolute inset-0 glass-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
                     <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
                       <p className="text-base font-bold line-clamp-2 mb-2 leading-snug">
                         {job.prompt}
                       </p>
                       <p
-                        className={`text-xs font-bold mb-5 inline-block px-3 py-1 rounded-full ${
+                        className={`text-xs font-bold mb-5 inline-block px-3 py-1 rounded-lg ${
                           isVideo
                             ? "text-accent-blue bg-accent-blue/10"
                             : "text-accent-green bg-accent-green/10"
@@ -268,12 +302,12 @@ export default async function DashboardPage() {
                           <a
                             href={output ? `/api/files/${output.id}` : "#"}
                             download
-                            className="w-10 h-10 rounded-[16px] bg-card hover:text-accent-blue hover:bg-accent-blue/10 shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center transition-all hover:scale-110"
+                            className="w-8 h-8 rounded-xl bg-card hover:text-accent-blue hover:bg-accent-blue/10 shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center transition-all hover:scale-110"
                           >
-                            <Download className="size-[18px]" />
+                            <Download className="size-4" />
                           </a>
-                          <button className="w-10 h-10 rounded-[16px] bg-card hover:text-accent-coral hover:bg-accent-coral/10 shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center transition-all hover:scale-110">
-                            <Trash2 className="size-[18px]" />
+                          <button className="w-8 h-8 rounded-xl bg-card hover:text-accent-coral hover:bg-accent-coral/10 shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center transition-all hover:scale-110">
+                            <Trash2 className="size-4" />
                           </button>
                         </div>
                       </div>
@@ -282,19 +316,6 @@ export default async function DashboardPage() {
                 </div>
               );
             })}
-
-            {/* Plant a Seed / Empty state CTA */}
-            <Link href="/generate">
-              <div className="rounded-[32px] overflow-hidden border-2 border-dashed border-accent-blue/30 bg-accent-blue/5 aspect-[4/5] flex flex-col items-center justify-center p-8 text-center group cursor-pointer hover:border-accent-blue hover:bg-accent-blue/10 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-2">
-                <div className="w-16 h-16 rounded-[24px] bg-card text-accent-blue shadow-[0_8px_24px_rgba(79,159,217,0.15)] flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-90 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-                  <Plus className="size-8" />
-                </div>
-                <p className="text-lg font-bold">Plant a Seed</p>
-                <p className="text-sm text-muted-foreground mt-2 font-medium">
-                  Start a new prompt and watch it grow.
-                </p>
-              </div>
-            </Link>
           </div>
         </section>
       </div>

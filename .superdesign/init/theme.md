@@ -1,3 +1,17 @@
+# Design Tokens & Theme
+
+## Overview
+- **CSS Framework:** Tailwind CSS v4 (CSS-based config, no `tailwind.config.ts`)
+- **Font:** Poppins (Google Fonts) — weights 400, 500, 600, 700, 800
+- **Color system:** OKLCH for semantic tokens, hex for accent colors
+- **Theme toggle:** localStorage key `postforge-theme`, default dark
+- **Glass morphism:** `.glass` CSS class with backdrop-blur
+
+## Full globals.css
+
+**Path:** `src/app/globals.css`
+
+```css
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -198,26 +212,26 @@
 
 /* Launch card */
 .launch-card {
-  border-radius: 8px;
-  transition: all 150ms ease-in-out;
+  border-radius: 32px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .launch-card:hover {
-  transform: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
 }
 
 .dark .launch-card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* Gallery card hover */
 .gallery-card {
-  transition: all 150ms ease-in-out;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gallery-card:hover {
-  transform: none;
+  transform: translateY(-8px) scale(1.02);
 }
 
 /* Custom scrollbar */
@@ -250,10 +264,10 @@
   height: 18px;
   background: var(--accent-blue);
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 50%;
   border: 3px solid white;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  transition: all 150ms ease;
+  transition: all 0.2s ease;
 }
 .editor-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
@@ -266,3 +280,53 @@
 /* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+```
+
+## Design Token Summary
+
+### Accent Colors (same in light/dark)
+| Token | Value | Usage |
+|---|---|---|
+| `--accent-blue` | `#4F9FD9` | Tech Blue - primary actions, links, video badges |
+| `--accent-green` | `#7BA543` | Sage Green - images, UGC clone, success states |
+| `--accent-coral` | `#FF7A59` | Coral - CTA buttons, logo, destructive-adjacent |
+
+### Border Radius
+| Token | Value |
+|---|---|
+| `--radius` (base) | `0.625rem` (10px) |
+| Custom card radius | `32px` (launch-card, gallery-card) |
+| Sidebar pill | `40px` |
+| Nav icon items | `20px` |
+
+### Custom Animations
+| Animation | Duration | Usage |
+|---|---|---|
+| `blob` | 7s infinite | Ambient background blobs |
+| `float` | 4s ease-in-out infinite | Floating badges, mascot |
+| `fade-in-up` | 0.5s ease-out | Page enter animations |
+
+### Easing
+- Primary spring easing: `cubic-bezier(0.34, 1.56, 0.64, 1)` — used for hover transforms, card lifts, button interactions
+
+### Glass Morphism
+- Light: `rgba(255, 255, 255, 0.85)` bg + `rgba(0, 0, 0, 0.08)` border
+- Dark: `rgba(255, 255, 255, 0.05)` bg + `rgba(255, 255, 255, 0.08)` border
+- Blur: 12px (glass), 8px (glass-overlay)
+
+### Tailwind v4 Configuration
+- No `tailwind.config.ts` file — all config is CSS-based in globals.css
+- `@theme inline` block maps CSS custom properties to Tailwind utility classes
+- `@custom-variant dark (&:is(.dark *))` enables class-based dark mode
+- Imports: `tailwindcss`, `tw-animate-css`, `shadcn/tailwind.css`
+
+### Utility: cn()
+**Path:** `src/lib/utils.ts`
+```ts
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```

@@ -88,20 +88,20 @@ export default function UGCCloneJobPage() {
 
   if (isLoading && !job) {
     return (
-      <div className="min-h-screen md:ml-24 p-8 flex flex-col animate-fade-in-up">
+      <div className="min-h-screen md:ml-24 p-6 lg:p-8 flex flex-col animate-fade-in-up">
         <div className="mb-6 flex items-center gap-4">
-          <Skeleton className="size-10 rounded-full" />
-          <Skeleton className="h-7 w-48" />
+          <Skeleton className="size-9 rounded-lg" />
+          <Skeleton className="h-6 w-48" />
         </div>
-        <Skeleton className="flex-1 min-h-[400px] rounded-[32px]" />
+        <Skeleton className="flex-1 min-h-[400px] rounded-lg" />
       </div>
     );
   }
 
   if (error && !job) {
     return (
-      <div className="min-h-screen md:ml-24 p-8 flex items-center justify-center">
-        <div className="flex items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-4">
+      <div className="min-h-screen md:ml-24 p-6 lg:p-8 flex items-center justify-center">
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-6 py-4">
           <AlertCircle className="size-5 text-destructive" />
           <p className="text-sm text-destructive">
             Failed to load job: {error.message}
@@ -125,17 +125,17 @@ export default function UGCCloneJobPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex size-10 items-center justify-center rounded-full bg-card border border-border hover:bg-muted transition-colors"
+          className="flex size-9 items-center justify-center rounded-lg bg-card border border-border hover:bg-muted transition-colors duration-150"
         >
           <ArrowLeft className="size-4" />
         </button>
         <div className="flex items-center gap-3">
-          <Users className="size-5 text-accent-green" />
-          <h1 className="text-xl font-semibold">UGC Clone Result</h1>
-          <span className="rounded-full bg-accent-green/15 px-3 py-0.5 text-xs font-medium text-accent-green">
+          <Users className="size-4 text-accent-coral" />
+          <h1 className="text-lg font-bold">UGC Clone Result</h1>
+          <span className="rounded-md bg-muted px-2.5 py-0.5 text-[10px] font-bold text-muted-foreground font-mono">
             {job.model}
           </span>
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-[10px] text-muted-foreground">
             {job.id.slice(0, 8)}
           </span>
         </div>
@@ -145,7 +145,7 @@ export default function UGCCloneJobPage() {
             <button
               type="button"
               onClick={() => downloadFile(`/api/files/${featured.id}/download`, featured.filename)}
-              className="flex items-center gap-2 rounded-xl bg-accent-green px-5 py-2.5 text-sm font-medium text-white shadow-[0_4px_24px_rgba(123,165,67,0.25)] transition-all hover:shadow-[0_4px_32px_rgba(123,165,67,0.35)] hover:brightness-110"
+              className="flex items-center gap-2 rounded-md bg-accent-coral px-5 py-2 text-sm font-bold text-white transition-all duration-150 hover:bg-[#ff6540] uppercase tracking-wider"
             >
               <Download className="size-4" />
               Download
@@ -155,14 +155,14 @@ export default function UGCCloneJobPage() {
       </div>
 
       {/* Main preview */}
-      <div className="flex flex-col lg:flex-row gap-8 flex-1">
+      <div className="flex flex-col lg:flex-row gap-6 flex-1">
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="relative flex-1 rounded-[32px] bg-card border border-border overflow-hidden flex items-center justify-center min-h-[400px]">
+          <div className="relative flex-1 launch-card bg-card border border-border overflow-hidden flex items-center justify-center min-h-[400px]">
             {/* Processing overlay */}
             {isActive && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm">
                 <div className="relative mb-4">
-                  <div className="size-14 animate-spin rounded-full border-4 border-muted border-t-accent-green" />
+                  <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-accent-coral" />
                 </div>
                 <p className="text-sm font-medium">
                   {job.status === "queued"
@@ -178,8 +178,8 @@ export default function UGCCloneJobPage() {
             {/* Failed overlay */}
             {isFailed && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4">
-                <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-6 py-4 text-center">
-                  <AlertCircle className="mx-auto mb-2 size-6 text-destructive" />
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-6 py-4 text-center">
+                  <AlertCircle className="mx-auto mb-2 size-5 text-destructive" />
                   <p className="text-sm font-medium text-destructive">Clone Failed</p>
                   {job.error && (
                     <p className="mt-1 max-w-sm text-xs text-destructive/80">{job.error}</p>
@@ -189,7 +189,7 @@ export default function UGCCloneJobPage() {
                   type="button"
                   onClick={handleRetry}
                   disabled={isRetrying}
-                  className="flex items-center gap-2 rounded-xl bg-accent-green px-5 py-2.5 text-sm font-medium text-white transition-all hover:brightness-110 disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-md bg-accent-coral px-5 py-2 text-sm font-bold text-white transition-all duration-150 hover:bg-[#ff6540] disabled:opacity-50 uppercase tracking-wider"
                 >
                   {isRetrying ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -210,7 +210,7 @@ export default function UGCCloneJobPage() {
                   width={featured.width ?? undefined}
                   height={featured.height ?? undefined}
                   alt={job.prompt}
-                  className="max-w-full max-h-full rounded-2xl"
+                  className="max-w-full max-h-full rounded-lg"
                 />
               </div>
             )}
@@ -218,27 +218,27 @@ export default function UGCCloneJobPage() {
         </div>
 
         {/* Details panel */}
-        <div className="w-full lg:w-[380px] shrink-0 space-y-6">
-          <div className="rounded-[32px] bg-card border border-border p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="w-full lg:w-[360px] shrink-0 space-y-6">
+          <div className="launch-card bg-card border border-border p-6">
+            <p className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               Details
             </p>
             <div className="space-y-4 text-sm">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Est. Cost</p>
-                  <p className="font-medium">{formatCost(job.estimatedCost)}</p>
+                  <p className="font-medium font-mono">{formatCost(job.estimatedCost)}</p>
                 </div>
                 {job.actualCost !== null && (
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Actual Cost</p>
-                    <p className="font-medium">{formatCost(job.actualCost)}</p>
+                    <p className="font-medium font-mono">{formatCost(job.actualCost)}</p>
                   </div>
                 )}
                 {job.durationMs !== null && (
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Gen Time</p>
-                    <p className="font-medium">{(job.durationMs / 1000).toFixed(1)}s</p>
+                    <p className="font-medium font-mono">{(job.durationMs / 1000).toFixed(1)}s</p>
                   </div>
                 )}
                 <div>
@@ -247,9 +247,9 @@ export default function UGCCloneJobPage() {
                 </div>
               </div>
               <div className="border-t border-border pt-4">
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground font-mono">
                   <span>Created {formatRelativeDate(job.createdAt)}</span>
-                  {job.completedAt && <span>Completed {formatRelativeDate(job.completedAt)}</span>}
+                  {job.completedAt && <span>Done {formatRelativeDate(job.completedAt)}</span>}
                 </div>
               </div>
             </div>
@@ -257,8 +257,8 @@ export default function UGCCloneJobPage() {
 
           {/* Reference Image card */}
           {typeof job.input.referenceImageFileId === "string" && (
-            <div className="rounded-[32px] bg-card border border-border p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="launch-card bg-card border border-border p-6">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Reference Image
               </p>
               <a href={`/api/files/${job.input.referenceImageFileId}`} target="_blank" rel="noopener noreferrer">
@@ -266,7 +266,7 @@ export default function UGCCloneJobPage() {
                 <img
                   src={`/api/files/${job.input.referenceImageFileId}`}
                   alt="Reference image used for this clone"
-                  className="w-full rounded-xl object-cover hover:opacity-90 transition-opacity"
+                  className="w-full rounded-lg object-cover hover:opacity-90 transition-opacity duration-150"
                 />
               </a>
               <p className="mt-2 text-[10px] text-muted-foreground">
@@ -277,20 +277,20 @@ export default function UGCCloneJobPage() {
 
           {/* Prompt card */}
           {job.prompt && (
-            <div className="rounded-[32px] bg-card border border-border p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="launch-card bg-card border border-border p-6">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Prompt
               </p>
-              <div className="rounded-xl bg-muted/50 p-4">
+              <div className="rounded-md bg-muted/50 p-3">
                 <p className="text-sm italic leading-relaxed text-muted-foreground">
                   {job.prompt}
                 </p>
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-lg bg-accent-green/10 px-2.5 py-1 text-xs font-medium text-accent-green">
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="rounded-md bg-accent-coral/10 px-2.5 py-1 text-[10px] font-bold text-accent-coral">
                   UGC Clone
                 </span>
-                <span className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                <span className="rounded-md bg-muted px-2.5 py-1 text-[10px] font-bold text-muted-foreground font-mono">
                   {job.model}
                 </span>
               </div>
@@ -301,7 +301,7 @@ export default function UGCCloneJobPage() {
           <button
             type="button"
             onClick={() => router.push("/ugc-clone")}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent-green/50 px-4 py-3 text-sm font-medium text-accent-green transition-all hover:border-accent-green hover:bg-accent-green/5"
+            className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-accent-coral/40 px-4 py-3 text-sm font-bold text-accent-coral transition-colors duration-150 hover:border-accent-coral hover:bg-accent-coral/5 uppercase tracking-wider"
           >
             <Users className="size-4" />
             New Clone
