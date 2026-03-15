@@ -11,11 +11,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ModelPicker } from "@/components/model-picker";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -27,9 +22,6 @@ import {
   Search,
   Volume2,
   ChevronDown,
-  Zap,
-  Info,
-  Wand2,
   ArrowRight,
 } from "lucide-react";
 
@@ -56,14 +48,11 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [prompt, setPrompt] = useState(searchParams.get("prompt") || "");
   const [aspectRatio, setAspectRatio] = useState("9:16");
   const [numImages, setNumImages] = useState(1);
-  const [duration, setDuration] = useState(5);
   const [negativePrompt, setNegativePrompt] = useState("");
   const [enableWebSearch, setEnableWebSearch] = useState(false);
   const [enableAudio, setEnableAudio] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [guidanceScale, setGuidanceScale] = useState(7.5);
-  const [genSpeed, setGenSpeed] = useState("balanced");
 
   const model = models.find((m) => m.id === selectedModel);
   const isImage = model?.type === "image";
@@ -76,8 +65,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
       setAspectRatio(m.defaults.aspectRatio);
       if (m.type === "image") {
         setNumImages(m.defaults.numImages ?? 1);
-      } else {
-        setDuration(m.defaults.duration ?? 5);
       }
     }
   };
@@ -85,7 +72,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const estimatedCost = selectedModel
     ? calculateEstimatedCost(selectedModel, {
         numImages: isImage ? numImages : undefined,
-        durationSec: isVideo ? duration : undefined,
+        durationSec: isVideo ? model?.defaults.duration : undefined,
         enableAudio: enableAudio && selectedModel === "veo3",
       })
     : 0;
@@ -112,7 +99,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
           prompt,
           model: selectedModel,
           aspectRatio,
-          duration,
+          duration: model.defaults.duration,
           enableAudio: enableAudio && selectedModel === "veo3",
         });
         router.push(`/generate/${result.id}`);
@@ -260,85 +247,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
                   </div>
                 )}
 
-                {/* Video-specific: Duration */}
-                {isVideo && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Duration
-                      </label>
-                      <span className="text-sm font-bold font-mono">{duration}s</span>
-                    </div>
-                    <Slider
-                      value={[duration]}
-                      onValueChange={(val) => setDuration(Array.isArray(val) ? val[0] : val)}
-                      min={model.defaults.duration ?? 2}
-                      max={model.limits.maxDuration ?? 15}
-                      step={1}
-                    />
-                  </div>
-                )}
-
-                {/* Guidance Scale */}
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Guidance Scale
-                      </label>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="size-3.5 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>Visual control only - does not affect API</TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <span className="text-sm font-bold font-mono">{guidanceScale}</span>
-                  </div>
-                  <Slider
-                    value={[guidanceScale]}
-                    onValueChange={(val) => setGuidanceScale(Array.isArray(val) ? val[0] : val)}
-                    min={1}
-                    max={15}
-                    step={0.5}
-                  />
-                  <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase px-1">
-                    <span>Organic</span>
-                    <span>Chaos</span>
-                  </div>
-                </div>
-
-                {/* Generation Speed */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Generation Speed
-                    </label>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="size-3.5 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>Visual control only - does not affect API</TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <div className="flex bg-muted p-1 rounded-md border border-border">
-                    {["turbo", "balanced", "premium"].map((speed) => (
-                      <button
-                        key={speed}
-                        onClick={() => setGenSpeed(speed)}
-                        className={cn(
-                          "flex-1 py-2 text-xs font-bold rounded-sm transition-all duration-150 capitalize",
-                          genSpeed === speed
-                            ? "bg-card shadow-sm"
-                            : "hover:bg-card/50"
-                        )}
-                      >
-                        {speed === "turbo" && <Zap className="size-3 inline mr-1" />}
-                        {speed}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Advanced Settings */}
@@ -412,26 +320,12 @@ export function GenerationForm({ models }: GenerationFormProps) {
           {/* Cost Preview */}
           {selectedModel && (
             <div className="bg-muted rounded-lg p-6 border border-border">
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                    Cost Estimate
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold tracking-tight">
-                      {formatCost(estimatedCost)}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                    Completion
-                  </p>
-                  <p className="font-bold text-accent-blue">
-                    {genSpeed === "turbo" ? "~30s" : genSpeed === "premium" ? "~2-5min" : "~1-2min"}
-                  </p>
-                </div>
-              </div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                Cost Estimate
+              </p>
+              <span className="text-2xl font-bold tracking-tight">
+                {formatCost(estimatedCost)}
+              </span>
             </div>
           )}
         </div>
@@ -450,7 +344,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
                 <span className="text-border">|</span>
                 <span className="font-mono">{aspectRatio}</span>
                 {isImage && <><span className="text-border">|</span><span className="font-mono">{numImages} img</span></>}
-                {isVideo && <><span className="text-border">|</span><span className="font-mono">{duration}s</span></>}
               </>
             )}
           </div>
