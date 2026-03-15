@@ -181,8 +181,8 @@ function buildNaturalLanguagePrompt(json: ScenePromptJSON): string {
   const parts: string[] = [
     heicPrefix,
 
-    // Full identity swap — image_urls are the avatar, reference_images is the scene
-    `The uploaded reference images show the avatar person. Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. Only adopt the POSE, BODY POSITION, BACKGROUND, and CAMERA ANGLE from the scene description and scene reference below — everything about WHO the person IS comes from the avatar images.`,
+    // Full identity swap — first 3 images are avatar, 4th is scene frame
+    `The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images.`,
 
     // Scene & environment (from Gemini analysis)
     json.scene.environment,

@@ -47,10 +47,10 @@ export interface ImageGenerationRequest {
   aspectRatio?: string;
   numImages?: number;
   negativePrompt?: string;
-  referenceImageUrls?: string[];
   imageUrls?: string[];
   editEndpoint?: boolean;
   enableWebSearch?: boolean;
+  thinkingLevel?: "minimal" | "high";
 }
 
 export interface VideoGenerationRequest {

@@ -52,7 +52,7 @@ async function executeImageGeneration(
   const input: Record<string, unknown> = {
     prompt: request.prompt,
     num_images: numImages,
-    enable_safety_checker: false,
+    safety_tolerance: "6",
   };
 
   // Edit endpoint uses aspect_ratio directly; text-to-image uses image_size mapped format
@@ -66,18 +66,18 @@ async function executeImageGeneration(
     input.negative_prompt = request.negativePrompt;
   }
 
-  // image_urls = strong identity binding (character/face)
-  // reference_images = lighter influence (scene/style reference)
-  // Both can be sent simultaneously to separate identity from style.
+  // image_urls: identity + scene references (up to 14 for nano-banana-2 edit)
   if (request.imageUrls && request.imageUrls.length > 0) {
     input.image_urls = request.imageUrls;
-  }
-  if (request.referenceImageUrls && request.referenceImageUrls.length > 0) {
-    input.reference_images = request.referenceImageUrls;
   }
 
   if (request.enableWebSearch) {
     input.enable_web_search = true;
+  }
+
+  // Enable high thinking for complex compositing tasks
+  if (request.thinkingLevel) {
+    input.thinking_level = request.thinkingLevel;
   }
 
   // Use edit endpoint variant if requested

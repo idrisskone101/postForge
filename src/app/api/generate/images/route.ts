@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       aspectRatio: body.aspectRatio,
       numImages: body.numImages,
       negativePrompt: body.negativePrompt,
-      referenceImageUrls: body.referenceImageUrls,
+      imageUrls: body.referenceImageUrls ?? body.imageUrls,
       enableWebSearch: body.enableWebSearch,
     };
 

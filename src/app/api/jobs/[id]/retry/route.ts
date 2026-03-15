@@ -41,7 +41,7 @@ export async function POST(
           aspectRatio: input.aspectRatio as string | undefined,
           numImages: input.numImages as number | undefined,
           negativePrompt: input.negativePrompt as string | undefined,
-          referenceImageUrls: input.referenceImageUrls as string[] | undefined,
+          imageUrls: (input.referenceImageUrls ?? input.imageUrls) as string[] | undefined,
           enableWebSearch: input.enableWebSearch as boolean | undefined,
         };
         await generateImage(imageRequest);

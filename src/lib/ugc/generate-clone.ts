@@ -132,6 +132,11 @@ export async function generateClone(
       video_url: videoUrl,
       character_orientation: "video",
       prompt: finalPrompt,
+      cfg_scale: 0.5,
+      duration,
+      aspect_ratio: "9:16",
+      negative_prompt:
+        "deformed face, extra limbs, extra fingers, bad anatomy, blurry face, distorted features, unnatural pose",
     };
 
     // Only use element binding when there's NO reference image (fallback path)

@@ -39,11 +39,9 @@ export async function generateReferenceImage(
     await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt);
 
   // Upload avatar and TikTok frame.
-  // Avatar goes into image_urls (3x for identity dominance).
-  // TikTok frame goes into reference_images (scene/background/angle context).
-  // This keeps identity and scene in separate channels — the model uses the avatar
-  // for WHO the person is, and the frame for WHERE they are and the camera angle.
-  // FFmpeg then post-processes to match the frame's color/quality characteristics.
+  // Avatar 3x + frame 1x in image_urls — avatar dominates identity at 3:1 ratio
+  // while the frame provides scene/background/angle context.
+  // reference_images is NOT a real nano-banana-2 parameter (was being silently ignored).
   const [avatarUrl, frameUrl] = await Promise.all([
     uploadToFalStorage(avatarFullPath),
     uploadToFalStorage(referenceFramePath),
@@ -55,9 +53,9 @@ export async function generateReferenceImage(
     model: modelId,
     aspectRatio: "9:16",
     numImages: 1,
-    imageUrls: [avatarUrl, avatarUrl, avatarUrl],
-    referenceImageUrls: [frameUrl],
+    imageUrls: [avatarUrl, avatarUrl, avatarUrl, frameUrl],
     editEndpoint: true,
+    thinkingLevel: "high",
   });
 
   // Tag the job as ugc-clone-ref and store the full scene analysis
