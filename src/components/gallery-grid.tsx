@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { MediaPreview } from "@/components/media-preview";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +9,7 @@ import {
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { downloadFile } from "@/lib/utils/download";
 import { cn } from "@/lib/utils";
-import { Download, Images, Play, Trash2 } from "lucide-react";
+import { Download, Images, Play } from "lucide-react";
 
 interface GalleryItem {
   id: string;
@@ -54,24 +53,26 @@ export function GalleryGrid({
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
         {items.map((item, i) => {
           const isSelected = selectedIds.has(item.id);
           return (
             <div
               key={item.id}
-              className="gallery-card group relative animate-fade-in-up"
+              className={cn(
+                "group p-2 rounded-lg transition-all duration-150 border animate-fade-in-up",
+                isSelected
+                  ? "border-accent-coral bg-card"
+                  : "border-transparent hover:border-accent-coral/50 hover:bg-card"
+              )}
               style={{
-                animationDelay: `${Math.min(i * 0.05, 0.5)}s`,
+                animationDelay: `${Math.min(i * 0.04, 0.4)}s`,
                 animationFillMode: "backwards",
               }}
             >
               {/* Card container */}
               <div
-                className={cn(
-                  "relative aspect-[4/5] rounded-[32px] overflow-hidden border border-border bg-card cursor-pointer transition-all duration-300",
-                  isSelected && "ring-2 ring-accent-coral ring-offset-2 ring-offset-background"
-                )}
+                className="relative aspect-square rounded-md overflow-hidden cursor-pointer"
                 onClick={() => setLightbox(item)}
               >
                 {/* Image/Video with hover zoom */}
@@ -80,20 +81,21 @@ export function GalleryGrid({
                     src={item.url}
                     alt={item.prompt || ""}
                     loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <video
                     src={item.url}
                     muted
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    playsInline
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 )}
 
                 {/* Video badge — top-left */}
                 {item.type === "video" && (
-                  <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm text-xs font-medium text-gray-800">
-                    <Play className="size-3 fill-current" />
+                  <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur text-[8px] font-bold text-white">
+                    <Play className="size-2 fill-current" />
                     {item.durationSec != null ? `${item.durationSec}s` : "Video"}
                   </div>
                 )}
@@ -101,12 +103,17 @@ export function GalleryGrid({
                 {/* Checkbox — top-right */}
                 <div
                   className={cn(
-                    "absolute top-3 right-3 z-10 transition-opacity duration-200",
-                    isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                    "absolute top-1.5 right-1.5 z-10 transition-opacity duration-150",
+                    isSelected ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}
                 >
                   <label
-                    className="flex items-center justify-center size-6 rounded-md border-2 border-white/70 bg-black/30 backdrop-blur-sm cursor-pointer transition-colors"
+                    className={cn(
+                      "flex items-center justify-center size-5 rounded border cursor-pointer transition-colors",
+                      isSelected
+                        ? "bg-accent-coral border-accent-coral"
+                        : "border-white/70 bg-black/30 backdrop-blur-sm"
+                    )}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <input
@@ -117,7 +124,7 @@ export function GalleryGrid({
                     />
                     {isSelected && (
                       <svg
-                        className="size-4 text-accent-coral"
+                        className="size-3 text-white"
                         viewBox="0 0 16 16"
                         fill="currentColor"
                       >
@@ -126,63 +133,19 @@ export function GalleryGrid({
                     )}
                   </label>
                 </div>
+              </div>
 
-                {/* Glass overlay — slides up on hover */}
-                <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-10">
-                  <div
-                    className="glass-overlay p-4 space-y-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Prompt */}
-                    {item.prompt && (
-                      <p className="text-xs leading-relaxed line-clamp-2 text-foreground/80">
-                        {item.prompt}
-                      </p>
-                    )}
-
-                    {/* Model + Date */}
-                    <div className="flex items-center justify-between gap-2">
-                      <span
-                        className={cn(
-                          "text-[10px] font-medium px-2 py-0.5 rounded-full",
-                          item.type === "video"
-                            ? "bg-accent-blue/15 text-accent-blue"
-                            : "bg-accent-green/15 text-accent-green"
-                        )}
-                      >
-                        {item.model}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {formatRelativeDate(item.createdAt)}
-                      </span>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-medium bg-accent-coral text-white hover:bg-accent-coral/90 transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          downloadFile(`/api/files/${item.id}/download`);
-                        }}
-                      >
-                        <Download className="size-3" />
-                        Download
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(item.id);
-                        }}
-                        className="flex items-center justify-center size-8 rounded-full text-red-400 hover:bg-red-500/10 transition-colors"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
-                  </div>
+              {/* Metadata below thumbnail — always visible */}
+              <div className="space-y-0.5 px-0.5 mt-2">
+                <div className="flex items-center justify-between text-[10px] uppercase tracking-tight font-semibold">
+                  <span className={item.type === "video" ? "text-accent-blue" : "text-accent-green"}>
+                    {item.model}
+                  </span>
+                  <span className="text-muted-foreground/50">{formatRelativeDate(item.createdAt)}</span>
                 </div>
+                {item.prompt && (
+                  <p className="text-[11px] text-muted-foreground/70 line-clamp-1 leading-tight">{item.prompt}</p>
+                )}
               </div>
             </div>
           );
@@ -196,24 +159,30 @@ export function GalleryGrid({
           if (!open) setLightbox(null);
         }}
       >
-        <DialogContent className="sm:max-w-3xl p-2 rounded-[24px]">
+        <DialogContent className="!w-auto max-w-[90vw] sm:!max-w-[90vw] p-2 rounded-lg">
           <DialogTitle className="sr-only">Media preview</DialogTitle>
           {lightbox && (
-            <div className="flex flex-col gap-2">
-              <MediaPreview
-                type={lightbox.type}
-                src={lightbox.url}
-                width={lightbox.width}
-                height={lightbox.height}
-                className="w-full max-h-[80vh]"
-              />
+            <div className="flex flex-col gap-2 w-fit">
+              {lightbox.type === "image" ? (
+                <img
+                  src={lightbox.url}
+                  alt={lightbox.prompt || ""}
+                  className="max-h-[80vh] max-w-[85vw] rounded-lg object-contain"
+                />
+              ) : (
+                <video
+                  src={lightbox.url}
+                  controls
+                  className="max-h-[80vh] max-w-[85vw] rounded-lg object-contain"
+                />
+              )}
               <div className="flex items-center justify-between px-2 py-1 text-xs text-muted-foreground">
                 <span>{lightbox.model}</span>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => downloadFile(`/api/files/${lightbox.id}/download`)}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-accent-coral text-white hover:bg-accent-coral/90 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-accent-coral text-white hover:bg-accent-coral/90 transition-colors"
                   >
                     <Download className="size-3" />
                     Download

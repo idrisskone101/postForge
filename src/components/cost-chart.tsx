@@ -113,19 +113,19 @@ interface ModelPieChartProps {
   data: Array<{ name: string; value: number }>;
 }
 
-const PIE_COLORS = [ACCENT_BLUE, ACCENT_CORAL, "#7BA543", "#A78BFA", "#F59E0B", "#6366F1"];
+export const PIE_COLORS = [ACCENT_BLUE, ACCENT_CORAL, "#7BA543", "#A78BFA", "#F59E0B", "#6366F1"];
 
 export function ModelPieChart({ data }: ModelPieChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={250}>
+    <ResponsiveContainer width="100%" height="100%">
       <RechartsPieChart>
         <Pie
           data={data}
           cx="50%"
           cy="50%"
-          innerRadius={60}
-          outerRadius={90}
-          paddingAngle={4}
+          innerRadius={40}
+          outerRadius={65}
+          paddingAngle={3}
           dataKey="value"
           nameKey="name"
         >
@@ -142,11 +142,6 @@ export function ModelPieChart({ data }: ModelPieChartProps) {
             color: "var(--popover-foreground)",
             fontSize: "12px",
           }}
-        />
-        <Legend
-          formatter={(value: string) => (
-            <span className="text-xs text-muted-foreground">{value}</span>
-          )}
         />
       </RechartsPieChart>
     </ResponsiveContainer>

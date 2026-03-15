@@ -9,7 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { ModelDefinition } from "@/lib/ai/types";
-import { ImageIcon, Video, Globe, Volume2, Layers, Zap, Palette, Film, Sparkles } from "lucide-react";
+import { ImageIcon, Video, Globe, Volume2, Layers, Zap, Palette, Film, Sparkles, Check, Circle } from "lucide-react";
 
 interface ModelPickerProps {
   selectedModel: string | null;
@@ -60,39 +60,43 @@ function ModelCard({
   return (
     <div
       className={cn(
-        "relative p-4 rounded-3xl border-2 cursor-pointer group transition-all duration-300",
+        "relative p-3 rounded-md border cursor-pointer transition-all duration-150 flex items-center justify-between",
         selected
-          ? "border-accent-blue bg-accent-blue/5"
-          : "border-border hover:border-accent-blue/30 hover:bg-muted/50"
+          ? "border-accent-blue/50 bg-accent-blue/5"
+          : "border-border hover:border-foreground/20 bg-muted/30"
       )}
       onClick={onClick}
     >
-      <div className="flex justify-between items-start mb-3">
-        <div className={cn("w-8 h-8 rounded-lg text-white flex items-center justify-center", iconConfig.color)}>
-          <IconComponent className="size-[18px]" />
+      <div className="flex items-center gap-3">
+        <div className={cn("w-7 h-7 rounded-md text-white flex items-center justify-center shrink-0", iconConfig.color)}>
+          <IconComponent className="size-3.5" />
         </div>
-        {selected && (
-          <span className="text-[10px] font-extrabold uppercase bg-accent-blue text-white px-2 py-0.5 rounded-full">
-            Active
+        <div className="flex items-center gap-3">
+          <p className="font-bold text-sm">{model.name}</p>
+          <span className="text-[10px] text-muted-foreground font-bold font-mono uppercase">
+            {priceLabel}
           </span>
+          {icons.length > 0 && (
+            <div className="flex items-center gap-1 ml-1">
+              {icons.map((item, i) => (
+                <Tooltip key={i}>
+                  <TooltipTrigger className="text-muted-foreground">
+                    {item.icon}
+                  </TooltipTrigger>
+                  <TooltipContent>{item.label}</TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="shrink-0 ml-3">
+        {selected ? (
+          <Check className="size-4 text-accent-blue" />
+        ) : (
+          <Circle className="size-4 text-muted-foreground/30" />
         )}
       </div>
-      <p className="font-bold text-sm">{model.name}</p>
-      <p className="text-[10px] text-muted-foreground font-bold uppercase mt-1">
-        {priceLabel}
-      </p>
-      {icons.length > 0 && (
-        <div className="flex items-center gap-1.5 mt-2">
-          {icons.map((item, i) => (
-            <Tooltip key={i}>
-              <TooltipTrigger className="text-muted-foreground">
-                {item.icon}
-              </TooltipTrigger>
-              <TooltipContent>{item.label}</TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -119,7 +123,7 @@ export function ModelPicker({
       </TabsList>
 
       <TabsContent value="image">
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-2 mt-4">
           {imageModels.map((model) => (
             <ModelCard
               key={model.id}
@@ -132,7 +136,7 @@ export function ModelPicker({
       </TabsContent>
 
       <TabsContent value="video">
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-2 mt-4">
           {videoModels.map((model) => (
             <ModelCard
               key={model.id}

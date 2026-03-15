@@ -30,6 +30,7 @@ import {
   Zap,
   Info,
   Wand2,
+  ArrowRight,
 } from "lucide-react";
 
 interface GenerationFormProps {
@@ -37,19 +38,13 @@ interface GenerationFormProps {
 }
 
 const CREATIVE_SPARKS = [
-  { label: "Cinematic Lighting", color: "blue" as const },
-  { label: "Octane Render", color: "green" as const },
-  { label: "Bouncy Style", color: "coral" as const },
-  { label: "Hyper Realistic", color: "blue" as const },
-  { label: "Neon Glow", color: "green" as const },
-  { label: "Soft Focus", color: "coral" as const },
+  { label: "Cinematic Lighting" },
+  { label: "Octane Render" },
+  { label: "Bouncy Style" },
+  { label: "Hyper Realistic" },
+  { label: "Neon Glow" },
+  { label: "Soft Focus" },
 ];
-
-const SPARK_COLORS = {
-  blue: "bg-accent-blue/5 border-accent-blue/10 text-accent-blue hover:bg-accent-blue/10",
-  green: "bg-accent-green/5 border-accent-green/10 text-accent-green hover:bg-accent-green/10",
-  coral: "bg-accent-coral/5 border-accent-coral/10 text-accent-coral hover:bg-accent-coral/10",
-};
 
 export function GenerationForm({ models }: GenerationFormProps) {
   const router = useRouter();
@@ -151,39 +146,36 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Prompt */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="launch-card bg-card p-8 border border-border">
+        <div className="lg:col-span-7 space-y-6">
+          <div className="launch-card bg-card p-6 border border-border">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-sm font-bold uppercase tracking-widest">
+              <label className="text-[10px] font-bold uppercase tracking-widest">
                 Prompt Vision
               </label>
-              <span className="text-xs font-bold text-muted-foreground">
-                {prompt.length} / 1000 characters
+              <span className="text-xs font-bold text-muted-foreground font-mono">
+                {prompt.length} / 1000
               </span>
             </div>
             <Textarea
-              placeholder="Describe your magic... What do you see? E.g., 'A whimsical forest where the trees are made of giant bioluminescent mushrooms in a bouncy Pixar style...'"
+              placeholder="Describe your vision... E.g., 'A whimsical forest where the trees are made of giant bioluminescent mushrooms in a bouncy Pixar style...'"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value.slice(0, 1000))}
               maxLength={1000}
-              className="min-h-[280px] resize-none bg-muted border-2 border-transparent focus:border-accent-blue/30 focus:bg-card rounded-3xl p-6 text-lg leading-relaxed transition-all duration-300"
+              className="min-h-[280px] resize-none bg-muted/50 border border-border focus:border-accent-blue/20 focus:bg-card rounded-lg p-6 text-lg leading-relaxed transition-all duration-150"
             />
 
-            {/* Creative Sparks */}
-            <div className="mt-8">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                Creative Sparks
+            {/* Style Presets */}
+            <div className="mt-6">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                Style Presets
               </p>
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex flex-wrap gap-2">
                 {CREATIVE_SPARKS.map((spark) => (
                   <button
                     key={spark.label}
-                    className={cn(
-                      "whitespace-nowrap border px-5 py-2.5 rounded-2xl text-sm font-semibold transition-colors",
-                      SPARK_COLORS[spark.color]
-                    )}
+                    className="whitespace-nowrap border border-border bg-muted px-3 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-colors duration-150"
                     onClick={() => appendToPrompt(spark.label)}
                   >
                     {spark.label}
@@ -195,10 +187,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
         </div>
 
         {/* Right Column: Settings */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-6">
           {/* Model Selection */}
-          <div className="launch-card bg-card p-8 border border-border">
-            <h3 className="text-sm font-bold uppercase tracking-widest mb-6">
+          <div className="launch-card bg-card p-6 border border-border">
+            <h3 className="text-[10px] font-bold uppercase tracking-widest mb-4">
               Select Engine
             </h3>
             <ModelPicker
@@ -210,19 +202,19 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
           {/* Parameters */}
           {model && (
-            <div className="launch-card bg-card p-8 border border-border">
-              <h3 className="text-sm font-bold uppercase tracking-widest mb-8">
+            <div className="launch-card bg-card p-6 border border-border">
+              <h3 className="text-[10px] font-bold uppercase tracking-widest mb-6">
                 Parameters
               </h3>
 
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {/* Aspect Ratio */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                       Aspect Ratio
                     </label>
-                    <span className="text-xs font-bold text-accent-blue">
+                    <span className="text-xs font-bold text-accent-blue font-mono">
                       {aspectRatio} {ratioLabels[aspectRatio] ?? ""}
                     </span>
                   </div>
@@ -235,14 +227,14 @@ export function GenerationForm({ models }: GenerationFormProps) {
                           key={ratio}
                           onClick={() => setAspectRatio(ratio)}
                           className={cn(
-                            "flex-1 p-3 rounded-2xl flex flex-col items-center transition-all border",
+                            "flex-1 p-2 rounded-md flex flex-col items-center transition-all duration-150 border",
                             active
                               ? "bg-accent-blue/5 border-accent-blue text-accent-blue"
                               : "bg-muted border-border hover:bg-accent-blue/10 hover:border-accent-blue"
                           )}
                         >
-                          <div className={cn(shape.w, shape.h, "border-2 border-current rounded-sm mb-1")} />
-                          <span className="text-[10px] font-bold">{ratio}</span>
+                          <div className={cn(shape.w, shape.h, "border-2 border-current rounded-[1px] mb-1")} />
+                          <span className="text-[10px] font-bold font-mono">{ratio}</span>
                         </button>
                       );
                     })}
@@ -253,10 +245,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
                 {isImage && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                         Number of Images
                       </label>
-                      <span className="text-sm font-bold">{numImages}</span>
+                      <span className="text-sm font-bold font-mono">{numImages}</span>
                     </div>
                     <Slider
                       value={[numImages]}
@@ -272,10 +264,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
                 {isVideo && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                         Duration
                       </label>
-                      <span className="text-sm font-bold">{duration}s</span>
+                      <span className="text-sm font-bold font-mono">{duration}s</span>
                     </div>
                     <Slider
                       value={[duration]}
@@ -291,7 +283,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                         Guidance Scale
                       </label>
                       <Tooltip>
@@ -301,7 +293,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                         <TooltipContent>Visual control only - does not affect API</TooltipContent>
                       </Tooltip>
                     </div>
-                    <span className="text-sm font-bold">{guidanceScale}</span>
+                    <span className="text-sm font-bold font-mono">{guidanceScale}</span>
                   </div>
                   <Slider
                     value={[guidanceScale]}
@@ -319,7 +311,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                 {/* Generation Speed */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                       Generation Speed
                     </label>
                     <Tooltip>
@@ -329,13 +321,13 @@ export function GenerationForm({ models }: GenerationFormProps) {
                       <TooltipContent>Visual control only - does not affect API</TooltipContent>
                     </Tooltip>
                   </div>
-                  <div className="flex bg-muted p-1.5 rounded-3xl border border-border">
+                  <div className="flex bg-muted p-1 rounded-md border border-border">
                     {["turbo", "balanced", "premium"].map((speed) => (
                       <button
                         key={speed}
                         onClick={() => setGenSpeed(speed)}
                         className={cn(
-                          "flex-1 py-3 text-xs font-bold rounded-[18px] transition-all capitalize",
+                          "flex-1 py-2 text-xs font-bold rounded-sm transition-all duration-150 capitalize",
                           genSpeed === speed
                             ? "bg-card shadow-sm"
                             : "hover:bg-card/50"
@@ -353,31 +345,31 @@ export function GenerationForm({ models }: GenerationFormProps) {
               <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
                 <CollapsibleTrigger
                   render={
-                    <button className="w-full mt-10 pt-6 border-t border-border flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest hover:text-accent-blue transition-colors group" />
+                    <button className="w-full mt-8 pt-6 border-t border-border flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-widest hover:text-accent-blue transition-colors duration-150 group" />
                   }
                 >
                   {advancedOpen ? "Hide" : "Show"} Advanced Settings
-                  <ChevronDown className={cn("size-4 transition-transform group-hover:translate-y-0.5", advancedOpen && "rotate-180")} />
+                  <ChevronDown className={cn("size-4 transition-transform duration-150", advancedOpen && "rotate-180")} />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-6 pt-6">
                   {/* Negative Prompt */}
                   {isImage && (
                     <div>
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
                         Negative Prompt
                       </label>
                       <Textarea
                         placeholder="What to avoid in the generation..."
                         value={negativePrompt}
                         onChange={(e) => setNegativePrompt(e.target.value)}
-                        className="min-h-16 resize-none rounded-2xl"
+                        className="min-h-16 resize-none rounded-md"
                       />
                     </div>
                   )}
 
                   {/* Web Search */}
                   {isImage && model.capabilities.webSearch && (
-                    <div className="flex items-center justify-between rounded-2xl border p-4">
+                    <div className="flex items-center justify-between rounded-md border p-4">
                       <div className="flex items-center gap-3">
                         <Search className="size-4 text-muted-foreground" />
                         <div>
@@ -396,7 +388,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
                   {/* Audio (veo3) */}
                   {isVideo && model.id === "veo3" && (
-                    <div className="flex items-center justify-between rounded-2xl border p-4">
+                    <div className="flex items-center justify-between rounded-md border p-4">
                       <div className="flex items-center gap-3">
                         <Volume2 className="size-4 text-muted-foreground" />
                         <div>
@@ -419,24 +411,23 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
           {/* Cost Preview */}
           {selectedModel && (
-            <div className="bg-accent-blue rounded-[32px] p-8 text-white shadow-[0_20px_40px_rgba(79,159,217,0.3)] relative overflow-hidden">
-              <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-white/10 rounded-full blur-xl" />
-              <div className="relative z-10 flex justify-between items-end">
+            <div className="bg-muted rounded-lg p-6 border border-border">
+              <div className="flex justify-between items-end">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">
-                    Baking Estimate
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                    Cost Estimate
                   </p>
                   <div className="flex items-center gap-2">
-                    <span className="text-4xl font-extrabold tracking-tight">
+                    <span className="text-2xl font-bold tracking-tight">
                       {formatCost(estimatedCost)}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
                     Completion
                   </p>
-                  <p className="font-bold">
+                  <p className="font-bold text-accent-blue">
                     {genSpeed === "turbo" ? "~30s" : genSpeed === "premium" ? "~2-5min" : "~1-2min"}
                   </p>
                 </div>
@@ -447,23 +438,38 @@ export function GenerationForm({ models }: GenerationFormProps) {
       </div>
 
       {/* Fixed Bottom Generation Bar */}
-      <div className="fixed bottom-0 left-0 md:left-24 right-0 h-24 bg-card/90 backdrop-blur-xl border-t border-border px-6 md:px-12 z-50">
-        <div className="max-w-[1200px] mx-auto h-full flex items-center justify-end gap-4">
+      <div className="fixed bottom-0 left-0 md:left-24 right-0 h-20 bg-card/90 backdrop-blur-xl border-t border-border px-6 md:px-12 z-50">
+        <div className="max-w-[1200px] mx-auto h-full flex items-center justify-between gap-4">
+          {/* Desktop config summary */}
+          <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="font-bold uppercase tracking-wider text-[10px]">Current Config</span>
+            {model && (
+              <>
+                <span className="text-border">|</span>
+                <span className="font-mono">{model.name}</span>
+                <span className="text-border">|</span>
+                <span className="font-mono">{aspectRatio}</span>
+                {isImage && <><span className="text-border">|</span><span className="font-mono">{numImages} img</span></>}
+                {isVideo && <><span className="text-border">|</span><span className="font-mono">{duration}s</span></>}
+              </>
+            )}
+          </div>
+          <div className="md:hidden" />
           <Button
             size="lg"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="bg-accent-coral text-white font-extrabold px-12 py-4 rounded-full text-lg shadow-[0_8px_24px_rgba(255,122,89,0.3)] hover:scale-105 hover:bg-[#ff6540] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] h-auto flex items-center gap-3"
+            className="bg-accent-coral text-white font-bold px-8 py-3 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-3 uppercase tracking-wider"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="size-5 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
                 Forging...
               </>
             ) : (
               <>
-                Launch Generation
-                <Wand2 className="size-5" />
+                Execute Generation
+                <ArrowRight className="size-4" />
               </>
             )}
           </Button>

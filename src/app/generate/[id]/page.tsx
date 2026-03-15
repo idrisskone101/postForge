@@ -301,7 +301,8 @@ export default function JobDetailPage() {
                     src={`/api/files/${output.id}`}
                     width={output.width ?? undefined}
                     height={output.height ?? undefined}
-                    className="size-full object-cover"
+                    fill
+                    className="size-full"
                   />
                 </button>
               ))}
