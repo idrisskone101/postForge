@@ -1,0 +1,235 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "Analytics" [ref=e33] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e34]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e38]:
+          - img
+          - generic [ref=e39]: Toggle theme
+    - main [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: ⚡
+            - generic [ref=e46]: Clone Mode Active
+          - heading "UGC Clone" [level=1] [ref=e47]
+          - paragraph [ref=e48]: Paste a TikTok, pick your avatar, and clone the motion.
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e51]:
+              - generic [ref=e53]: 01 / TikTok Source
+              - generic [ref=e55]:
+                - textbox "https://www.tiktok.com/@user/video/..." [ref=e57]
+                - button "Download" [disabled] [ref=e58]:
+                  - img [ref=e59]
+                  - text: Download
+            - generic [ref=e64]: 02 / Choose Avatar
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - generic [ref=e73]: 03 / Settings
+              - generic [ref=e74]:
+                - generic [ref=e75]:
+                  - text: Motion Engine
+                  - generic [ref=e76]:
+                    - button "Kling 3.0 $0.126/s" [ref=e77]:
+                      - generic [ref=e78]: Kling 3.0
+                      - generic [ref=e79]: $0.126/s
+                    - button "Kling 3.0 Pro $0.168/s" [ref=e80]:
+                      - generic [ref=e81]: Kling 3.0 Pro
+                      - generic [ref=e82]: $0.168/s
+                    - button "Kling 2.6 $0.07/s" [ref=e83]:
+                      - generic [ref=e84]: Kling 2.6
+                      - generic [ref=e85]: $0.07/s
+                  - paragraph [ref=e86]: V3 includes facial element binding for better identity preservation.
+                - generic [ref=e87]:
+                  - generic [ref=e88]:
+                    - generic [ref=e89]: Scene Direction
+                    - generic [ref=e90]: 0 / 500
+                  - generic [ref=e91]:
+                    - button "Talking Head" [ref=e92]
+                    - button "Product Demo" [ref=e93]
+                    - button "Dance / Movement" [ref=e94]
+                    - button "Reaction" [ref=e95]
+                    - button "Lifestyle / Vlog" [ref=e96]
+                    - button "Office / B2B" [ref=e97]
+                  - 'textbox "Describe the scene: lighting, framing, environment, style..." [ref=e98]'
+                  - paragraph [ref=e99]: "Context only: lighting, environment, framing. Motion comes from the reference video. V3 auto-binds your avatar's face."
+                - generic [ref=e100]:
+                  - generic [ref=e101]:
+                    - img [ref=e102]
+                    - generic [ref=e106]:
+                      - paragraph [ref=e107]: Keep Original Sound
+                      - paragraph [ref=e108]: Preserve the TikTok's audio track
+                  - switch [checked] [ref=e109]
+                  - checkbox [checked] [ref=e110]
+                - generic [ref=e111]:
+                  - generic [ref=e112]:
+                    - paragraph [ref=e113]: Remove Text Overlays
+                    - paragraph [ref=e114]: Strip hook text & captions before motion control
+                  - switch [ref=e115]
+                  - checkbox [ref=e116]
+            - generic [ref=e117]:
+              - paragraph [ref=e118]: Cost Estimate
+              - generic [ref=e119]:
+                - generic [ref=e120]: $0.71
+                - generic [ref=e121]:
+                  - paragraph [ref=e122]: "Ref image: $0.08"
+                  - paragraph [ref=e123]: "Video: 5s @ $0.126/s"
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: Config
+            - generic [ref=e127]: "|"
+            - generic [ref=e128]: Kling 3.0
+            - generic [ref=e129]: "|"
+            - generic [ref=e130]: Original Audio
+          - generic [ref=e131]:
+            - button "Generate Reference" [disabled]:
+              - text: Generate Reference
+              - img
+        - generic [ref=e133]:
+          - heading "Clone Queue" [level=3] [ref=e134]
+          - generic [ref=e135]:
+            - link "Verification job for UGC comparison layo... kling-3.0-motion · $0.63 · 4 hours ago" [ref=e136] [cursor=pointer]:
+              - /url: /ugc-clone/369553c3-6ebe-4f55-8450-8c38bb27ab8b
+              - img [ref=e138]
+              - generic [ref=e141]:
+                - paragraph [ref=e143]: Verification job for UGC comparison layo...
+                - generic [ref=e144]:
+                  - generic [ref=e145]: kling-3.0-motion
+                  - generic [ref=e146]: ·
+                  - generic [ref=e147]: $0.63
+                  - generic [ref=e148]: ·
+                  - generic [ref=e149]: 4 hours ago
+              - img [ref=e152]
+            - link "Person performing the actions from the r... kling-3.0-motion · $1.57 · 2 days ago" [ref=e156] [cursor=pointer]:
+              - /url: /ugc-clone/dae466ec-46f9-470b-b783-a1667cea71a5
+              - img [ref=e158]
+              - generic [ref=e161]:
+                - paragraph [ref=e163]: Person performing the actions from the r...
+                - generic [ref=e164]:
+                  - generic [ref=e165]: kling-3.0-motion
+                  - generic [ref=e166]: ·
+                  - generic [ref=e167]: $1.57
+                  - generic [ref=e168]: ·
+                  - generic [ref=e169]: 2 days ago
+              - img [ref=e172]
+            - link "Person performing the actions from the r... kling-3.0-pro-motion · $0.50 · 3 days ago" [ref=e176] [cursor=pointer]:
+              - /url: /ugc-clone/00a6030c-6a32-4d19-a887-3d6136705d5a
+              - img [ref=e178]
+              - generic [ref=e182]:
+                - paragraph [ref=e184]: Person performing the actions from the r...
+                - generic [ref=e185]:
+                  - generic [ref=e186]: kling-3.0-pro-motion
+                  - generic [ref=e187]: ·
+                  - generic [ref=e188]: $0.50
+                  - generic [ref=e189]: ·
+                  - generic [ref=e190]: 3 days ago
+              - img [ref=e191]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 3 days ago" [ref=e195] [cursor=pointer]:
+              - /url: /ugc-clone/71ac8c71-e3b1-49b7-88ca-d9c24b377795
+              - img [ref=e197]
+              - generic [ref=e201]:
+                - paragraph [ref=e203]: Person performing the actions from the r...
+                - generic [ref=e204]:
+                  - generic [ref=e205]: kling-3.0-motion
+                  - generic [ref=e206]: ·
+                  - generic [ref=e207]: $0.38
+                  - generic [ref=e208]: ·
+                  - generic [ref=e209]: 3 days ago
+              - img [ref=e210]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 4 days ago" [ref=e214] [cursor=pointer]:
+              - /url: /ugc-clone/d4f1fcde-5f12-46e3-a267-77c9cc911f02
+              - img [ref=e216]
+              - generic [ref=e220]:
+                - paragraph [ref=e222]: Person performing the actions from the r...
+                - generic [ref=e223]:
+                  - generic [ref=e224]: kling-3.0-motion
+                  - generic [ref=e225]: ·
+                  - generic [ref=e226]: $0.38
+                  - generic [ref=e227]: ·
+                  - generic [ref=e228]: 4 days ago
+              - img [ref=e229]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 4 days ago" [ref=e233] [cursor=pointer]:
+              - /url: /ugc-clone/5427e46e-7398-4fc3-851f-099eebc9ae77
+              - img [ref=e235]
+              - generic [ref=e239]:
+                - paragraph [ref=e241]: Person performing the actions from the r...
+                - generic [ref=e242]:
+                  - generic [ref=e243]: kling-3.0-motion
+                  - generic [ref=e244]: ·
+                  - generic [ref=e245]: $0.38
+                  - generic [ref=e246]: ·
+                  - generic [ref=e247]: 4 days ago
+              - img [ref=e248]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 4 days ago" [ref=e252] [cursor=pointer]:
+              - /url: /ugc-clone/6402a86b-b95d-419e-b4be-9f313af82d4d
+              - img [ref=e254]
+              - generic [ref=e257]:
+                - paragraph [ref=e259]: Person performing the actions from the r...
+                - generic [ref=e260]:
+                  - generic [ref=e261]: kling-3.0-motion
+                  - generic [ref=e262]: ·
+                  - generic [ref=e263]: $0.38
+                  - generic [ref=e264]: ·
+                  - generic [ref=e265]: 4 days ago
+              - img [ref=e268]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 4 days ago" [ref=e272] [cursor=pointer]:
+              - /url: /ugc-clone/a0a9530b-dab9-45a1-8cfb-371a4ba64fb0
+              - img [ref=e274]
+              - generic [ref=e277]:
+                - paragraph [ref=e279]: Person performing the actions from the r...
+                - generic [ref=e280]:
+                  - generic [ref=e281]: kling-3.0-motion
+                  - generic [ref=e282]: ·
+                  - generic [ref=e283]: $0.38
+                  - generic [ref=e284]: ·
+                  - generic [ref=e285]: 4 days ago
+              - img [ref=e288]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.50 · 5 days ago" [ref=e292] [cursor=pointer]:
+              - /url: /ugc-clone/c29881c8-0e47-44b6-9481-2c7c0aa722ad
+              - img [ref=e294]
+              - generic [ref=e297]:
+                - paragraph [ref=e299]: Person performing the actions from the r...
+                - generic [ref=e300]:
+                  - generic [ref=e301]: kling-3.0-motion
+                  - generic [ref=e302]: ·
+                  - generic [ref=e303]: $0.50
+                  - generic [ref=e304]: ·
+                  - generic [ref=e305]: 5 days ago
+              - img [ref=e308]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.50 · 5 days ago" [ref=e312] [cursor=pointer]:
+              - /url: /ugc-clone/06e3ff51-214d-40b4-ad1c-0e7d507c5ab7
+              - img [ref=e314]
+              - generic [ref=e318]:
+                - paragraph [ref=e320]: Person performing the actions from the r...
+                - generic [ref=e321]:
+                  - generic [ref=e322]: kling-3.0-motion
+                  - generic [ref=e323]: ·
+                  - generic [ref=e324]: $0.50
+                  - generic [ref=e325]: ·
+                  - generic [ref=e326]: 5 days ago
+              - img [ref=e327]
+  - button "Open Next.js Dev Tools" [ref=e336] [cursor=pointer]:
+    - img [ref=e337]
+  - alert [ref=e340]

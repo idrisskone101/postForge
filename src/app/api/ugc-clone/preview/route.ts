@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { storage } from "@/lib/storage";
-import * as fs from "fs/promises";
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +19,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const fullPath = storage.getFullPath(path);
     const exists = await storage.exists(path);
     if (!exists) {
       return NextResponse.json(
@@ -29,13 +27,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const stat = await fs.stat(fullPath);
-    const buffer = await fs.readFile(fullPath);
+    const buffer = await storage.read(path);
 
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": "video/mp4",
-        "Content-Length": stat.size.toString(),
+        "Content-Length": buffer.length.toString(),
         "Cache-Control": "private, max-age=3600",
         "Accept-Ranges": "bytes",
       },

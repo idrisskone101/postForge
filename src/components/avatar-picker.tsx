@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { getModelsByType } from "@/lib/ai/models";
 import {
-  Plus,
   Trash2,
   Loader2,
   User,
@@ -15,7 +14,7 @@ import {
   ArrowLeft,
   X,
   Check,
-  Image,
+  Image as ImageIcon,
   Info,
 } from "lucide-react";
 
@@ -405,7 +404,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           </div>
         ) : galleryFiles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-            <Image className="size-8 mb-2" />
+            <ImageIcon className="size-8 mb-2" />
             <p className="text-sm">No generated images yet</p>
             <p className="text-xs mt-1">Generate some images first, then pick them here</p>
           </div>
@@ -493,7 +492,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           onClick={openGallery}
           className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
         >
-          <Image className="size-5" />
+          <ImageIcon className="size-5" />
           <span className="text-[10px] font-bold uppercase tracking-wider">Gallery</span>
         </button>
 
@@ -501,10 +500,8 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         {avatars.map((avatar) => {
           const isSelected = selectedId === avatar.id;
           return (
-            <button
+            <div
               key={avatar.id}
-              type="button"
-              onClick={() => onSelect(avatar.id)}
               className={cn(
                 "group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
                 isSelected
@@ -512,11 +509,22 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                   : "border-border hover:border-accent-green/50"
               )}
             >
-              <img
-                src={`/api/avatars/${avatar.id}`}
-                alt={avatar.name}
-                className="size-full object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => onSelect(avatar.id)}
+                className="size-full text-left"
+              >
+                <img
+                  src={`/api/avatars/${avatar.id}`}
+                  alt={avatar.name}
+                  className="size-full object-cover"
+                />
+
+                {/* Name */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                  <p className="text-[10px] font-medium text-white truncate">{avatar.name}</p>
+                </div>
+              </button>
 
               {/* Delete button */}
               <button
@@ -526,12 +534,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
               >
                 <Trash2 className="size-3" />
               </button>
-
-              {/* Name */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                <p className="text-[10px] font-medium text-white truncate">{avatar.name}</p>
-              </div>
-            </button>
+            </div>
           );
         })}
 

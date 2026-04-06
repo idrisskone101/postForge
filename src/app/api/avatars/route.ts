@@ -7,6 +7,18 @@ export async function GET() {
   try {
     const avatars = await prisma.avatar.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        localPath: true,
+        filename: true,
+        mimeType: true,
+        width: true,
+        height: true,
+        fileSizeBytes: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json(avatars);

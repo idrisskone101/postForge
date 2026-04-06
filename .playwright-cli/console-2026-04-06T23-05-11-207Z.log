@@ -1,0 +1,60 @@
+[     145ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[     161ms] [LOG] [HMR] connected @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[     348ms] [LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[     501ms] [LOG] [Fast Refresh] done in 253ms @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[     586ms] [ERROR] In HTML, %s cannot be a descendant of <%s>.
+This will cause a hydration error.%s <button> button 
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url="/ugc-clone" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} segmentPath={[...]} ...>
+        <SegmentViewNode type="page" pagePath="ugc-clone/...">
+          <SegmentTrieNode>
+          <UGCClonePage>
+            <div className="relative m...">
+              <div>
+              <div>
+              <div className="relative z...">
+                <header>
+                <UGCCloneForm>
+                  <div className="grid grid-...">
+                    <div className="lg:col-spa...">
+                      <div>
+                      <div className="launch-car...">
+                        <div>
+                        <AvatarPicker selectedId={null} onSelect={function bound dispatchSetState}>
+                          <div className="space-y-3">
+                            <div>
+                            <input>
+                            <div className="grid grid-...">
+                              <button>
+                              <button>
+                              <button>
+>                             <button
+>                               type="button"
+>                               onClick={function onClick}
+>                               className="group relative aspect-square rounded-2xl overflow-hidden border-2 transitio..."
+>                             >
+                                <img>
+>                               <button
+>                                 type="button"
+>                                 onClick={function onClick}
+>                                 className="absolute top-1.5 right-1.5 size-6 rounded-full bg-black/60 text-white fle..."
+>                               >
+                                ...
+                              ...
+                    ...
+                  ...
+                ...
+        ...
+      ...
+ @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[     768ms] [LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[     774ms] [LOG] [Fast Refresh] done in 106ms @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[    4702ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:3000/api/ugc-clone/sources:0
+[    4710ms] [ERROR] Failed to load saved sources: Error: Failed to list sources
+    at handleResponse (http://127.0.0.1:3000/_next/static/chunks/src_5d62d5dc._.js:24:15) @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[  105208ms] [LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[  105407ms] [LOG] [Fast Refresh] done in 186ms @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[  136455ms] [LOG] [Fast Refresh] rebuilding @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[  136478ms] [LOG] [Fast Refresh] done in 43ms @ http://127.0.0.1:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297

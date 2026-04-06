@@ -1,0 +1,534 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "Analytics" [ref=e33] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e34]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e38]:
+          - img
+          - generic [ref=e39]: Toggle theme
+    - main [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - heading "Gallery" [level=1] [ref=e44]
+            - generic [ref=e46]:
+              - button "All Assets" [ref=e47]
+              - button "Images" [ref=e48]
+              - button "Videos" [ref=e49]
+          - button "Newest" [ref=e50]:
+            - img [ref=e51]
+            - text: Newest
+        - paragraph [ref=e54]: 50 of 50 items
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - generic [ref=e57] [cursor=pointer]:
+              - generic [ref=e59]:
+                - img [ref=e60]
+                - text: 5s
+              - checkbox [ref=e64]
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e67]: kling-3.0-motion
+                - generic [ref=e68]: 4 hours ago
+              - paragraph [ref=e69]: Verification job for UGC comparison layout
+          - generic [ref=e70]:
+            - generic [ref=e71] [cursor=pointer]:
+              - generic [ref=e73]:
+                - img [ref=e74]
+                - text: Video
+              - checkbox [ref=e78]
+            - generic [ref=e79]:
+              - generic [ref=e80]:
+                - generic [ref=e81]: kling-3.0-motion
+                - generic [ref=e82]: 2 days ago
+              - paragraph [ref=e83]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e84]:
+            - generic [ref=e85] [cursor=pointer]:
+              - img [ref=e86]
+              - checkbox [ref=e89]
+            - generic [ref=e90]:
+              - generic [ref=e91]:
+                - generic [ref=e92]: nano-banana-2
+                - generic [ref=e93]: 2 days ago
+              - paragraph [ref=e94]: "IMG_8132.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Head and upper chest framing, arms positioned down to hold phone off-camera. Facing camera, talking mid-sentence, looking directly into the lens. Their expression must be: Neutral or slightly tired, mouth open as if speaking. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Dim modern gym interior with dark ceilings. Horizontal cyan LED light strips on a dark ceiling. Casual, post-workout personal vlog vibe. Facing camera, talking mid-sentence, looking directly into the lens. Ribbed gray athletic sports bra with thin straps. Overhead LED gym lighting and ambient interior light. Cool-toned, flat, diffuse indoor light. Soft shadows under chin and nose. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking up. Standard selfie framing, head and shoulders dominant. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, neutral to slightly cool auto-white balance. Match facial lighting to the overhead cool LED source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e95]:
+            - generic [ref=e96] [cursor=pointer]:
+              - img [ref=e97]
+              - checkbox [ref=e100]
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - generic [ref=e103]: nano-banana-2
+                - generic [ref=e104]: 3 days ago
+              - paragraph [ref=e105]: "IMG_7849.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: The person is angled slightly towards the camera, with their head and upper chest filling the frame. One arm is raised so the hand is resting near the collarbone. They are looking directly into the lens of the front-facing camera at arm's length. The person is facing the front-facing camera directly with a wide-eyed, surprised expression. One hand is positioned near their chest, fingers splayed slightly, touching the lapel of their jacket in a gesture of disbelief or shock. Their expression must be: A surprised and wide-eyed expression, with eyebrows slightly raised and a neutral mouth position, conveying a sense of being startled or incredulous. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A domestic kitchen or studio apartment setting. The space feels real and lived-in, not a set. Behind the subject, a stainless steel kitchen sink is visible, along with a dark countertop. A white toaster, a silver pan on a stovetop, a microwave, and kitchen cabinets are visible in the background. There is some minor everyday clutter like a plate with bread on the counter, adding to the realistic, unstaged feel. Casual, domestic, and personal. It has the vibe of a spontaneous moment captured at home in the middle of a daily routine. The person is facing the front-facing camera directly with a wide-eyed, surprised expression. One hand is positioned near their chest, fingers splayed slightly, touching the lapel of their jacket in a gesture of disbelief or shock. A simple white crew-neck t-shirt worn under a dark brown, textured jacket that looks like faux suede or heavy brushed cotton. The jacket has a visible silver zipper. Ambient indoor lighting, likely coming from overhead kitchen lights and potentially a window out of frame. The light is diffuse and hits the face from the front and slightly above. Flat and soft ambient light. There is no high-contrast or dramatic lighting; it's the kind of even illumination found in a standard residential room. Very soft and subtle shadows, mostly visible under the chin and nose. The lighting is relatively even across the entire face. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, tilted up towards the face, typical of a person holding their phone slightly down while recording a selfie video. A close-up selfie shot, showing the head, neck, and upper chest area. The wide-angle lens of the front camera captures a decent amount of the room background behind the subject. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited colors. The white balance is slightly warm due to the indoor light bulbs. The colors are realistic and not overly saturated or stylized. The lighting on the avatar's face must match the flat, soft, slightly warm ambient kitchen lighting. Ensure the subtle shadows under the chin and nose are consistent with an overhead light source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e106]:
+            - generic [ref=e107] [cursor=pointer]:
+              - img [ref=e108]
+              - checkbox [ref=e111]
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - generic [ref=e114]: nano-banana-2
+                - generic [ref=e115]: 3 days ago
+              - paragraph [ref=e116]: "IMG_1318.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the front-facing camera at eye level. The subject is positioned slightly off-center. One hand is brought up to the chest level, fingers spread naturally near the neckline of their shirt and jacket. The person is looking directly into the front-facing camera with a wide-eyed, surprised expression. One hand is raised, with fingers lightly touching or gesturing toward the collar area of their jacket in a moment of disbelief. Their expression must be: Wide-eyed and surprised, looking directly into the camera with an intense, questioning gaze. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A lived-in residential kitchen. The subject is standing in front of a kitchen island or counter area. A stainless steel sink, a dark kitchen countertop, a white toaster, a small plate with bread or a pastry, a white electric stove, and brown wooden cabinetry. A checkered kitchen towel is partially visible on the stove handle. Casual and domestic. It feels like a spontaneous moment captured in a person's own home. The person is looking directly into the front-facing camera with a wide-eyed, surprised expression. One hand is raised, with fingers lightly touching or gesturing toward the collar area of their jacket in a moment of disbelief. A brown, textured suede-like jacket with a visible silver zipper, layered over a clean white crew-neck t-shirt. Ambient indoor light from overhead ceiling fixtures combined with some soft daylight coming from a side window. Soft, flat, and diffuse. There is no dramatic lighting or professional equipment used. Minimal and soft shadows, notably a faint shadow under the chin and around the base of the neck. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, slightly tilted as if being held by the subject at arm's length. Medium close-up selfie framing, capturing the head, neck, and upper torso from the mid-chest up. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited iPhone look. Natural, slightly warm colors from the indoor lighting. No stylized filters or professional color correction. The lighting on the avatar's face must match the flat, warm ambient kitchen light, with subtle brightness coming from the same direction as the original scene. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e117]:
+            - generic [ref=e118] [cursor=pointer]:
+              - img [ref=e119]
+              - checkbox [ref=e122]
+            - generic [ref=e123]:
+              - generic [ref=e124]:
+                - generic [ref=e125]: nano-banana-2
+                - generic [ref=e126]: 4 days ago
+              - paragraph [ref=e127]: "IMG_6017.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: The person is facing the selfie camera directly at eye level. Their upper body is centered, and their right hand is raised to their chest area with fingers splayed out in a gesture, as if reacting to something being said. The camera is held at arm's length. Facing the front-facing camera, looking directly into the lens. One hand is partially visible at the bottom right of the frame, with fingers pointing upwards towards the neck/collar area in a casual, slightly surprised gesturing motion. Their expression must be: Wide-eyed and surprised with a neutral, slightly closed-mouth expression. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A casual, lived-in domestic kitchen setting. In the background, there is a stainless steel sink, a dark kitchen countertop, a toaster with a slice of bread on a plate next to it, an electric kettle, and brown wooden cabinets. A white stove and a checkered tea towel are also visible in the periphery. Kitchen sink, electric kettle, toaster, small plate with bread, kitchen cabinets, stove, checkered tea towel. Personal, casual, and unstaged. A normal everyday moment in a home kitchen. Facing the front-facing camera, looking directly into the lens. One hand is partially visible at the bottom right of the frame, with fingers pointing upwards towards the neck/collar area in a casual, slightly surprised gesturing motion. A plain white crew-neck t-shirt worn under a dark brown, textured suede-like jacket with a visible zipper track along the edge. Ambient indoor light, likely from overhead ceiling fixtures. Even, non-directional light. Flat and soft ambient light, typical for a standard indoor room without professional equipment. No harsh glares. Very soft and subtle shadows under the chin and nose. Shadows are minimal across the face due to the diffuse ambient light. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. At eye level, looking directly at the subject's face. Typical selfie framing, head and shoulders fill the majority of the frame. Close-up distance, as if held at arm's length. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Neutral and unedited. Auto white balance with a slight indoor warmth. Colors are natural and not artificially boosted. The avatar's face should be lit with the same soft, flat, ambient indoor lighting as the rest of the kitchen scene. Match the subtle warmth of the room's color temperature. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e128]:
+            - generic [ref=e129] [cursor=pointer]:
+              - img [ref=e130]
+              - checkbox [ref=e133]
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - generic [ref=e136]: nano-banana-2
+                - generic [ref=e137]: 4 days ago
+              - paragraph [ref=e138]: "IMG_8923.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: The person is angled slightly towards the camera, with the head and upper chest filling the frame. One hand is visible near the chest, as if mid-gesture while speaking. The body is relaxed in a casual standing position. The person is facing the front-facing camera with a wide-eyed, surprised expression. One hand is held up near the collarbone area with fingers slightly splayed in a casual gesture. Their expression must be: Wide-eyed surprise, neutral mouth, looking directly into the camera lens with a confused or questioning look. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A lived-in kitchen area. Behind the subject, a kitchen counter with a sink is visible. Further back, there are brown kitchen cabinets and common kitchen appliances. A metal sink, a toaster, an electric kettle, a plate with bread on it, and dark brown kitchen cabinetry. A stovetop with a pan is partially visible in the background. Casual, domestic, and unstaged. It feels like a quick video frame captured in a person's home during a normal day. The person is facing the front-facing camera with a wide-eyed, surprised expression. One hand is held up near the collarbone area with fingers slightly splayed in a casual gesture. A brown suede-textured jacket with a collar and a metal zipper, worn open over a plain white crew-neck t-shirt. Ambient indoor light, likely from overhead ceiling fixtures combined with some soft light from a nearby window. Flat and diffuse lighting. There is no professional or directional lighting setup, resulting in an even but unexciting illumination of the face. Very soft shadows are present under the chin and around the eyes. The lighting is relatively uniform with no deep shadows. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking slightly upwards at the subject's face. Close-up selfie framing, showing the head and shoulders. The subject occupies the central portion of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Neutral and realistic color palette. The auto white balance of an iPhone creates a slightly warm tone from the indoor lighting. No stylized filters or professional color correction. The lighting on the person's face should match the flat, ambient indoor lighting of the kitchen environment. Shadows and highlights on the skin and hair must be consistent with the overhead light source. I want my AI avatar to wear different clothes but keep it trendy. My AI avatar should have different clothes from the source video. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e139]:
+            - generic [ref=e140] [cursor=pointer]:
+              - img [ref=e141]
+              - checkbox [ref=e144]
+            - generic [ref=e145]:
+              - generic [ref=e146]:
+                - generic [ref=e147]: nano-banana-2
+                - generic [ref=e148]: 4 days ago
+              - paragraph [ref=e149]: "IMG_6758.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: The person is facing the front-facing camera directly at arm's length. Their upper body and head are centered. One arm is raised so the hand is visible near the chest and shoulder, gesturing as if reacting to something. Facing the front-facing camera with an wide-eyed, surprised expression. One hand is raised and positioned near the shoulder and chest area with fingers slightly spread in a natural, candid gesture. Their expression must be: Surprised and wide-eyed, with a neutral, slightly parted mouth. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A domestic kitchen that feels lived-in and real. The background features typical kitchen elements including a countertop, a sink, and dark wood cabinets. A stainless steel sink is visible behind the person's shoulder. On the counter, there is a white toaster, a black electric kettle, and a plate with food. A white stove with a brown and white checkered dish towel hanging from the handle is also visible. Casual, domestic, and unstaged. It looks like a spontaneous moment captured at home. Facing the front-facing camera with an wide-eyed, surprised expression. One hand is raised and positioned near the shoulder and chest area with fingers slightly spread in a natural, candid gesture. A simple white crew-neck t-shirt worn under a dark brown suede-textured jacket with a visible zipper and a pointed collar. Ambient overhead indoor lighting, providing even illumination across the face. Flat and diffuse light, typical of standard home ceiling fixtures. No professional or directional light sources used. Very soft and subtle shadows under the chin and nose. The lighting is relatively even without high contrast. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, typical of a handheld selfie. Upper chest and head fill the majority of the frame, captured at arm's length. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited colors. iPhone auto white balance creates a slightly warm tone from the indoor lighting environment. Shadows are slightly lifted by Smart HDR. The person's face should be lit with even, soft overhead ambient light, matching the kitchen environment's color temperature and direction. I want my AI avatar to wear different clothes but keep it trendy. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e150]:
+            - generic [ref=e151] [cursor=pointer]:
+              - generic [ref=e153]:
+                - img [ref=e154]
+                - text: Video
+              - checkbox [ref=e158]
+            - generic [ref=e159]:
+              - generic [ref=e160]:
+                - generic [ref=e161]: kling-3.0-motion
+                - generic [ref=e162]: 4 days ago
+              - paragraph [ref=e163]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e164]:
+            - generic [ref=e165] [cursor=pointer]:
+              - img [ref=e166]
+              - checkbox [ref=e169]
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - generic [ref=e172]: nano-banana-2
+                - generic [ref=e173]: 4 days ago
+              - paragraph [ref=e174]: "IMG_9772.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Head tilted slightly, shoulders angled, arm cropped at frame edge suggesting a natural selfie position. Facing the selfie camera, looking upward with a subtle smile. One hand visible near the shoulder, gesturing naturally. Their expression must be: Slight smile, eyes directed upward, pleasant demeanor. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Sparely decorated room with neutral walls and a lived-in feel. Metal bed frame, clothes hanging on a rack in the background. Casual, private indoor setting. Facing the selfie camera, looking upward with a subtle smile. One hand visible near the shoulder, gesturing naturally. One-shoulder black top featuring a white polka-dot pattern. Ambient indoor light from the front and side. Soft, diffuse ambient lighting with no professional gear. Minimal, soft shadows under the chin and nose. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking up at the subject. Close-up selfie framing, head and upper chest filling the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, natural iPhone color balance with warm indoor tones. Align facial lighting with the room's soft, warm ambient source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e175]:
+            - generic [ref=e176] [cursor=pointer]:
+              - generic [ref=e178]:
+                - img [ref=e179]
+                - text: Video
+              - checkbox [ref=e183]
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - generic [ref=e186]: kling-3.0-motion
+                - generic [ref=e187]: 4 days ago
+              - paragraph [ref=e188]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e189]:
+            - generic [ref=e190] [cursor=pointer]:
+              - img [ref=e191]
+              - checkbox [ref=e194]
+            - generic [ref=e195]:
+              - generic [ref=e196]:
+                - generic [ref=e197]: nano-banana-2
+                - generic [ref=e198]: 4 days ago
+              - paragraph [ref=e199]: "IMG_9681.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Looking into the front-facing camera, head slightly tilted, hand resting against the temple. Subject faces the camera, one hand pressed to their forehead in a thoughtful or curious gesture. Their expression must be: Surprised with a slight, subtle smile. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A casual, lived-in kitchen or living area. Wooden cabinets, a refrigerator, and interior architecture visible in the background. Personal and unstaged home setting. Subject faces the camera, one hand pressed to their forehead in a thoughtful or curious gesture. Plain grey long-sleeved crewneck sweatshirt. Soft ambient light from the front. Diffuse and flat, typical of indoor lighting. Minimal shadows under the chin and hand. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye-level selfie perspective. Close-up selfie distance, head and shoulders filling the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, natural iPhone white balance. Align facial lighting with the soft ambient room light. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e200]:
+            - generic [ref=e201] [cursor=pointer]:
+              - generic [ref=e203]:
+                - img [ref=e204]
+                - text: Video
+              - checkbox [ref=e208]
+            - generic [ref=e209]:
+              - generic [ref=e210]:
+                - generic [ref=e211]: kling-3.0-motion
+                - generic [ref=e212]: 5 days ago
+              - paragraph [ref=e213]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e214]:
+            - generic [ref=e215] [cursor=pointer]:
+              - img [ref=e216]
+              - checkbox [ref=e219]
+            - generic [ref=e220]:
+              - generic [ref=e221]:
+                - generic [ref=e222]: nano-banana-2
+                - generic [ref=e223]: 5 days ago
+              - paragraph [ref=e224]: "IMG_5549.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Seated in a vehicle, facing the front lens at arm's length, shoulders slightly angled. Talking directly to the camera, head slightly tilted back, seated with a seatbelt visible across the chest. Their expression must be: Questioning, mid-speech with mouth slightly open. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Interior of a car during daylight hours. Car seatbelt, headrest, sunglasses resting on top of the head. Candid, personal, and spontaneous. Talking directly to the camera, head slightly tilted back, seated with a seatbelt visible across the chest. Pale yellow ribbed knit tank top. Direct afternoon sunlight entering through the vehicle windows. Bright and warm, creating high contrast. Defined shadows under the jawline and on the chest from the seatbelt. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, typical handheld selfie perspective. Medium close-up, head and upper torso filling the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, natural warmth from sunlight, lifted shadows. Align facial lighting with the strong, warm sunlight coming from the front-right. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e225]:
+            - generic [ref=e226] [cursor=pointer]:
+              - img [ref=e227]
+              - checkbox [ref=e230]
+            - generic [ref=e231]:
+              - generic [ref=e232]:
+                - generic [ref=e233]: nano-banana-2
+                - generic [ref=e234]: 5 days ago
+              - paragraph [ref=e235]: "IMG_9093.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Seated in a car, head tilted slightly toward the camera at arm's length. One shoulder is visible with the seatbelt strap running across the torso. Looking directly into the front-facing camera while talking. The person is sitting in a car with a seatbelt visible across their chest. Their expression must be: Mid-speech, slightly curious or questioning neutral expression. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Interior of a car during the day. Casual, everyday setting. Car seat, seatbelt, and the upper interior of a vehicle. No phone visible. Casual, candid, and personal. A typical 'story' style moment. Looking directly into the front-facing camera while talking. The person is sitting in a car with a seatbelt visible across their chest. Yellow textured, knit-style tank top with thin straps. Bright, direct sunlight coming through the car windshield. Hard, warm natural light creating high contrast. Strong shadows on one side of the neck and behind the subject in the car cabin. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. At eye level, centered on the face. Close-up selfie framing; head, shoulders, and upper chest fill the view. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural iPhone color processing; warm tones from direct sunlight. Apply direct sunlight highlights to the reference person's face to match the car environment. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e236]:
+            - generic [ref=e237] [cursor=pointer]:
+              - generic [ref=e239]:
+                - img [ref=e240]
+                - text: Video
+              - checkbox [ref=e244]
+            - generic [ref=e245]:
+              - generic [ref=e246]:
+                - generic [ref=e247]: kling-3.0-motion
+                - generic [ref=e248]: 5 days ago
+              - paragraph [ref=e249]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e250]:
+            - generic [ref=e251] [cursor=pointer]:
+              - img [ref=e252]
+              - checkbox [ref=e255]
+            - generic [ref=e256]:
+              - generic [ref=e257]:
+                - generic [ref=e258]: nano-banana-2
+                - generic [ref=e259]: 5 days ago
+              - paragraph [ref=e260]: "IMG_5153.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Looking into the selfie camera from a close, front-on position. Upper chest and head visible. Facing the front-facing camera directly. Neutral, focused gaze at the lens. Shoulders squared, arms out of frame. Their expression must be: Neutral, calm, looking directly at the camera. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Casual indoor room with beige walls. Lived-in, simple home setting. Modern multi-head arched floor lamp with silver spheres. Glimpse of a lit doorway in back. Casual, personal, unstaged domestic space. Facing the front-facing camera directly. Neutral, focused gaze at the lens. Shoulders squared, arms out of frame. Brown suede-like zip-up jacket over a white crew-neck t-shirt. Ambient indoor light from overhead and a distant room. Soft, flat, and diffuse. Evenly lit without professional equipment. Minimal, soft shadows under the chin and nose. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. At eye level, looking straight into the lens. Standard close-up selfie distance. Head and shoulders fill most of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Raw iPhone output. Slightly warm indoor tones with lifted shadows. Align avatar lighting with the soft, warm ambient room light exactly. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e261]:
+            - generic [ref=e262] [cursor=pointer]:
+              - generic [ref=e264]:
+                - img [ref=e265]
+                - text: Video
+              - checkbox [ref=e269]
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - generic [ref=e272]: kling-3.0-motion
+                - generic [ref=e273]: 5 days ago
+              - paragraph [ref=e274]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e275]:
+            - generic [ref=e276] [cursor=pointer]:
+              - img [ref=e277]
+              - checkbox [ref=e280]
+            - generic [ref=e281]:
+              - generic [ref=e282]:
+                - generic [ref=e283]: nano-banana-2
+                - generic [ref=e284]: 5 days ago
+              - paragraph [ref=e285]: "IMG_6902.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Upper body and head visible, facing forward with one arm bent and hand positioned near the brow line. Facing the front-facing camera, raising one hand to the forehead as if shielding eyes or searching for something in the distance. Their expression must be: A focused, slightly confused expression with the mouth slightly open and eyes looking off-center. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple, minimalist indoor setting with plain, light-colored walls. Minimal detail, focused entirely on the subject. Casual and personal, typical of an impromptu home photo. Facing the front-facing camera, raising one hand to the forehead as if shielding eyes or searching for something in the distance. Casual grey marled-texture long-sleeve top. Soft, ambient indoor light coming from the front. Diffuse and flat, avoiding any harsh or dramatic contrast. Minimal, faint shadows under the chin and nose. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, typical of a handheld selfie. Close-up selfie framing featuring head and shoulders. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited iPhone color balance with slightly lifted shadows. Face lighting should match the ambient light direction and color temperature of the scene exactly. If the light comes from a window to the left, the left side of the face should be slightly brighter. Give my AI avatar different clothing. Keep it girly, pop trendy. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e286]:
+            - generic [ref=e287] [cursor=pointer]:
+              - img [ref=e288]
+              - checkbox [ref=e291]
+            - generic [ref=e292]:
+              - generic [ref=e293]:
+                - generic [ref=e294]: nano-banana-2
+                - generic [ref=e295]: 5 days ago
+              - paragraph [ref=e296]: "IMG_2485.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Upper body facing camera; one hand raised to brow level, arm cropped at frame edge. Facing camera with right hand raised to forehead in a searching or shielding gesture. Their expression must be: Confused or searching expression with a slightly open mouth. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple indoor room with light-colored, soft pink-toned walls. Plain wall and ceiling corner; no cluttered objects visible. Casual, personal, and unstaged. Facing camera with right hand raised to forehead in a searching or shielding gesture. Casual grey long-sleeve shirt or loungewear. Ambient indoor light, likely overhead or from a nearby window. Flat and diffuse lighting across the face. Soft shadows beneath the hand, nose, and chin. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly above eye level, looking down at the face. Close-up selfie distance; head and shoulders fill the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, natural white balance with slightly warm indoor tones. Apply soft, flat ambient lighting to the person's face and hair. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e297]:
+            - generic [ref=e298] [cursor=pointer]:
+              - generic [ref=e300]:
+                - img [ref=e301]
+                - text: Video
+              - checkbox [ref=e305]
+            - generic [ref=e306]:
+              - generic [ref=e307]:
+                - generic [ref=e308]: kling-3.0-motion
+                - generic [ref=e309]: 6 days ago
+              - paragraph [ref=e310]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e311]:
+            - generic [ref=e312] [cursor=pointer]:
+              - img [ref=e313]
+              - checkbox [ref=e316]
+            - generic [ref=e317]:
+              - generic [ref=e318]:
+                - generic [ref=e319]: nano-banana-2
+                - generic [ref=e320]: 6 days ago
+              - paragraph [ref=e321]: "IMG_4002.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the front-facing camera at a slightly low angle. The left arm is raised with the hand touching the face, while the rest of the body is positioned naturally as if sitting or standing still. The head is tilted very slightly towards the hand. The person is looking directly into the front-facing camera while resting their left hand against their cheek. The hand is positioned so the palm is near the jawline and the fingers are touching the temple area. Their expression must be: Neutral and slightly contemplative. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A brightly lit indoor public space, possibly a cafe or a lobby in an urban area. The ceiling is white and features a standard metal HVAC vent and an 'EXIT' sign. Large floor-to-ceiling windows are visible behind the subject. Metal air conditioning vent on the ceiling, a hanging 'EXIT' sign, and large glass windows. Through the windows, a city building and a sign that reads '7-ELEVEN' (mirrored) are visible. Casual, urban, and everyday. It feels like a quick snap taken while waiting in a public building. The person is looking directly into the front-facing camera while resting their left hand against their cheek. The hand is positioned so the palm is near the jawline and the fingers are touching the temple area. A dark charcoal grey or brown oversized hooded sweatshirt. Strong natural ambient daylight coming from the large windows behind and to the side of the subject, combined with soft overhead fluorescent or LED indoor lighting. Diffuse and relatively even ambient light. Because the main light source is behind, there is a soft glow around the edges of the subject, but the front of the face is well-illuminated by reflected room light. Very soft, subtle shadows under the jaw and nose. The lighting is generally flat and lacks high contrast. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking upward toward the face. A common low-angle selfie perspective. A medium close-up selfie shot, framing the head, shoulders, and upper chest. The wide-angle lens captures a significant portion of the ceiling and background. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Neutral and unedited. Colors appear as they would straight out of an iPhone camera, with a natural balance between cool daylight from the window and warm indoor light. The lighting on the person's face must match the ambient indoor light and the backlight coming from the windows. The color temperature should be a mix of neutral daylight and slightly warm indoor light. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e322]:
+            - generic [ref=e323] [cursor=pointer]:
+              - generic [ref=e325]:
+                - img [ref=e326]
+                - text: Video
+              - checkbox [ref=e330]
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - generic [ref=e333]: kling-3.0-motion
+                - generic [ref=e334]: Mar 30
+              - paragraph [ref=e335]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e336]:
+            - generic [ref=e337] [cursor=pointer]:
+              - img [ref=e338]
+              - checkbox [ref=e341]
+            - generic [ref=e342]:
+              - generic [ref=e343]:
+                - generic [ref=e344]: nano-banana-2
+                - generic [ref=e345]: Mar 30
+              - paragraph [ref=e346]: "IMG_7247.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the selfie camera with the head turned 45 degrees. Shoulders are square to the lens. The person is looking away from the camera towards the side, appearing pensive. Their expression must be: Neutral and slightly distracted. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Minimalist bedroom or hallway with white paneled closet doors. White closet doors and a ceiling air vent. Quiet, personal, and unstaged indoor setting. The person is looking away from the camera towards the side, appearing pensive. Grey long-sleeved crew-neck athletic or loungewear top. Diffuse ambient indoor light coming from the front-left. Soft, flat, and even light without professional modifiers. Minimal soft shadows under the chin and facial contours. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, standard arm's-length selfie distance. Head and shoulders close-up, capturing some background context. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited iPhone output; natural colors with lifted shadows. Face lighting should match the ambient light direction and color temperature of the scene exactly. If the light comes from a window to the left, the left side of the face should be slightly brighter. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e347]:
+            - generic [ref=e348] [cursor=pointer]:
+              - generic [ref=e350]:
+                - img [ref=e351]
+                - text: Video
+              - checkbox [ref=e355]
+            - generic [ref=e356]:
+              - generic [ref=e357]:
+                - generic [ref=e358]: kling-3.0-motion
+                - generic [ref=e359]: Mar 30
+              - paragraph [ref=e360]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e361]:
+            - generic [ref=e362] [cursor=pointer]:
+              - img [ref=e363]
+              - checkbox [ref=e366]
+            - generic [ref=e367]:
+              - generic [ref=e368]:
+                - generic [ref=e369]: nano-banana-2
+                - generic [ref=e370]: Mar 30
+              - paragraph [ref=e371]: "IMG_8221.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Dynamic mid-air leap. Arms are thrust straight up above the head. The body is angled away from the camera in a transitional jumping motion. The person is mid-jump in a hallway, leaping upward with arms fully extended toward the ceiling. The head is tilted back, looking up during the high-energy movement. Their expression must be: Intense, open-mouthed expression as if shouting or mid-exertion. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple indoor hallway with white walls and multiple white interior doors. The space is clean and residential. A circular smart thermostat on the wall, a rectangular ceiling vent, and silver door handles. Casual and spontaneous, capturing a sudden moment of high energy in a home setting. The person is mid-jump in a hallway, leaping upward with arms fully extended toward the ceiling. The head is tilted back, looking up during the high-energy movement. A dark red or maroon long-sleeved sweater paired with dark blue denim jeans. Standard overhead indoor ceiling lights. Even, diffuse ambient light that fills the hallway without strong directional focus. Soft shadows cast downward on the floor and behind the doors. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Low angle, looking upward from roughly waist height to capture the height of the jump. Full body shot, though the person is off-center. Wide-angle lens captures the surrounding doorway and walls. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Neutral auto white balance. Slightly warm tones from indoor lighting with lifted shadows. Face lighting should match the ambient light direction and color temperature of the scene exactly. If the light comes from a window to the left, the left side of the face should be slightly brighter. Give my avatar a different outfit. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e372]:
+            - generic [ref=e373] [cursor=pointer]:
+              - img [ref=e374]
+              - checkbox [ref=e377]
+            - generic [ref=e378]:
+              - generic [ref=e379]:
+                - generic [ref=e380]: nano-banana-2
+                - generic [ref=e381]: Mar 30
+              - paragraph [ref=e382]: "IMG_6057.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Mid-leap with arms extended overhead. The body is angled toward an open white door, showing dynamic movement and a slight back-bend. The person is jumping energetically toward a doorway with both arms raised high in a reaching or pleading gesture. Their expression must be: Animated and expressive, captured mid-motion. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple, neutral-toned indoor hallway or room entrance with white doors and minimalist hardware. White door with silver handle, wall-mounted circular thermostat, double light switch, and a ceiling ventilation grate. Casual and spontaneous, reflecting a candid moment captured in a residential space. The person is jumping energetically toward a doorway with both arms raised high in a reaching or pleading gesture. A red long-sleeved crewneck sweater, dark denim jeans, and a distinctive multi-colored crochet fuzzy hat with floral patterns. Even overhead interior lighting combined with ambient light from the adjacent room. Diffused and functional indoor light, lacking professional modification. Soft, indistinct shadows cast on the doors and floor from the overhead source. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, capturing a full-body action shot from a slight distance. Wide shot showing the subject from the knees up, including the surrounding doorway and wall elements. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural iPhone color science with slight warmth from indoor bulbs and lifted shadows. Apply flat, warm indoor lighting to the subject to match the surrounding white walls. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e383]:
+            - generic [ref=e384] [cursor=pointer]:
+              - img [ref=e385]
+              - checkbox [ref=e388]
+            - generic [ref=e389]:
+              - generic [ref=e390]:
+                - generic [ref=e391]: nano-banana-2
+                - generic [ref=e392]: Mar 30
+              - paragraph [ref=e393]: "IMG_1208.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Mid-jump or reaching up, torso leaning back, arms extended fully above the head. Full body visible in a dynamic, frantic motion. Subject is jumping or reaching upward with both hands raised high, palms open in a dramatic, pleading gesture. Looking upward. Their expression must be: Mouth slightly open, looking up with a dramatic or pleading expression. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Neutral indoor hallway or room with beige walls and white doors. Lived-in but clean domestic space. White interior doors, silver lever handles, circular digital thermostat, and double light switch plate on the wall. Casual, high-energy, and spontaneous home environment. Subject is jumping or reaching upward with both hands raised high, palms open in a dramatic, pleading gesture. Looking upward. Red long-sleeved crewneck sweatshirt, dark blue or black jeans, and a tan crochet beanie with green and blue patterns. Warm overhead indoor ceiling light. Diffuse and flat ambient lighting. No professional setup. Soft shadows cast onto the doors and floor behind the subject. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly low angle, looking up from floor/waist level, likely propped up. Full-body shot within a narrow interior space. Subject dominates the left side of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unprocessed iPhone auto-white balance; warm indoor tones with lifted shadows. Match the warm, overhead ambient light of the hallway onto the avatar's features. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e394]:
+            - generic [ref=e395] [cursor=pointer]:
+              - generic [ref=e397]:
+                - img [ref=e398]
+                - text: Video
+              - checkbox [ref=e402]
+            - generic [ref=e403]:
+              - generic [ref=e404]:
+                - generic [ref=e405]: kling-3.0-motion
+                - generic [ref=e406]: Mar 30
+              - paragraph [ref=e407]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e408]:
+            - generic [ref=e409] [cursor=pointer]:
+              - img [ref=e410]
+              - checkbox [ref=e413]
+            - generic [ref=e414]:
+              - generic [ref=e415]:
+                - generic [ref=e416]: nano-banana-2
+                - generic [ref=e417]: Mar 30
+              - paragraph [ref=e418]: "IMG_9515.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: The subject is seated and leaning forward, with their left arm bent and hand supporting their chin. They are facing the front-facing camera at eye level. The person is looking directly into the selfie camera while resting their chin on the back of their hand. Their fingers are slightly curled under the chin, and a ring is visible on their finger. They are leaning slightly forward toward the camera. Their expression must be: Neutral, calm, and slightly pensive. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. An outdoor patio or deck area during late afternoon. Behind the person is a red brick building with windows. A brick wall, windows, a wooden sign with some text (partially visible and mirrored), metal deck railings, and string lights hanging in the upper corner of the frame. Casual, relaxed outdoor setting during the golden hour, giving the scene a warm and personal feel. The person is looking directly into the selfie camera while resting their chin on the back of their hand. Their fingers are slightly curled under the chin, and a ring is visible on their finger. They are leaning slightly forward toward the camera. A simple, light gray or beige ribbed crew-neck t-shirt. Natural late-afternoon sunlight (golden hour) hitting the subject from the side. Warm, directional, and soft. The low-angle sun creates a warm glow on one side of the face. Soft, natural shadows on the side of the face away from the sun and under the jawline. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. At eye level, looking directly at the subject's face. Close-up selfie framing, head and shoulders filling most of the frame. The camera is held at arm's length. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. No artificial color grading. The image reflects the natural warm tones of a sunset as captured by an iPhone's auto white balance. Colors are natural and slightly muted. The subject's face must be lit with warm, directional light coming from the side to match the late-afternoon sun in the scene. give me avatar a different hairstyle and different clothes. Keep the same location but give her a ponytail with long hair as she is in the AI avatar reference image. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e419]:
+            - generic [ref=e420] [cursor=pointer]:
+              - img [ref=e421]
+              - checkbox [ref=e424]
+            - generic [ref=e425]:
+              - generic [ref=e426]:
+                - generic [ref=e427]: nano-banana-2
+                - generic [ref=e428]: Mar 30
+              - paragraph [ref=e429]: "IMG_9727.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Face-forward selfie pose. The person is sitting or standing outdoors, resting their chin on their right hand. The head is slightly tilted. The hand and wrist are prominent in the lower half of the frame. The person is looking directly into the front-facing camera with a calm, steady gaze. They are resting their chin on the back of their hand, with their arm bent and fingers curled slightly near their mouth. Their expression must be: Neutral and contemplative, with a direct and focused look into the camera lens. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. An outdoor urban or industrial setting during late afternoon. Behind the person is a multi-story red brick building with large windows. A large wooden sign on the brick wall features mirrored red lettering (reading 'TRAP' backwards as 'PART'). Black metal railings and patio-style furniture are partially visible in the blurred background. Casual and serene, captured during 'golden hour' when the sun is low in the sky, creating a warm and personal feel. The person is looking directly into the front-facing camera with a calm, steady gaze. They are resting their chin on the back of their hand, with their arm bent and fingers curled slightly near their mouth. A simple, light-colored (beige or light grey) ribbed crew neck t-shirt. Strong, direct natural sunlight from a low angle, typical of sunset or golden hour. Warm, golden, and directional. The light hits one side of the face more directly than the other, creating high-contrast highlights. Soft but distinct shadows are cast under the chin, nose, and on the side of the face away from the sun. The hand casts a gentle shadow on the neck. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, angled upwards towards the subject's face. Close-up selfie framing. The head, neck, and upper shoulders fill most of the frame. The subject's hand is visible in the foreground at the bottom of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unprocessed look with a natural warm cast from the golden hour sun. No artificial filters or color grading applied. Colors are warm and saturated by the natural light. The avatar's face and hair must be lit with the same warm, directional golden hour sunlight seen in the scene, with matching highlights and shadows. give me avatar a different hairstyle and different clothes. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e430]:
+            - generic [ref=e431] [cursor=pointer]:
+              - img [ref=e432]
+              - checkbox [ref=e435]
+            - generic [ref=e436]:
+              - generic [ref=e437]:
+                - generic [ref=e438]: nano-banana-2
+                - generic [ref=e439]: Mar 30
+              - paragraph [ref=e440]: "IMG_3347.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: A close-up selfie pose. The head is tilted slightly. One hand is raised, with the fingers curled and the chin resting on them. The other arm is out of frame, positioned as if holding the phone at arm's length slightly above eye level. The person is looking directly into the front-facing selfie camera with a neutral, slightly serious expression. They are resting their chin on the back of their hand, which is held up to their face. A long braid is visible draped over one shoulder. Their expression must be: Neutral, calm, and contemplative. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. An outdoor urban or commercial area during golden hour. The subject is positioned in front of a classic red brick building with multiple stories and dark-framed windows. A large wooden sign with the word 'TRAP' (mirrored) is visible on the brick wall. Some black string lights are strung across the top of the frame. A metal railing is partially visible in the mid-ground. Casual and relaxed late-afternoon vibe. The warm lighting and everyday urban setting make it feel like an unplanned moment. The person is looking directly into the front-facing selfie camera with a neutral, slightly serious expression. They are resting their chin on the back of their hand, which is held up to their face. A long braid is visible draped over one shoulder. A simple, light-colored (pale beige or light grey) ribbed crew-neck t-shirt. Direct, low-angle natural sunlight from the late afternoon (golden hour). Warm, golden, and directional. The light hits one side of the face more directly, creating a luminous glow. Soft, warm shadows on the side of the face and neck away from the sun. Gentle shadows around the hand and under the chin. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly above eye level, looking down at the subject. Tight selfie framing, capturing the head, neck, and upper shoulders. The subject fills about two-thirds of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited iPhone look. The dominant tones are the warm golds of the sunlight and the deep reds of the brick background. Shadows are slightly lifted and highlights are controlled by auto-processing. The person's face and hair must be lit by the same warm, directional golden hour sunlight seen in the scene. One side of the face should be brighter with warm highlights, while the other side has soft shadows. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e441]:
+            - generic [ref=e442] [cursor=pointer]:
+              - generic [ref=e444]:
+                - img [ref=e445]
+                - text: Video
+              - checkbox [ref=e449]
+            - generic [ref=e450]:
+              - generic [ref=e451]:
+                - generic [ref=e452]: kling-3.0-motion
+                - generic [ref=e453]: Mar 29
+              - paragraph [ref=e454]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e455]:
+            - generic [ref=e456] [cursor=pointer]:
+              - img [ref=e457]
+              - checkbox [ref=e460]
+            - generic [ref=e461]:
+              - generic [ref=e462]:
+                - generic [ref=e463]: nano-banana-2
+                - generic [ref=e464]: Mar 29
+              - paragraph [ref=e465]: "IMG_4588.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the selfie camera at arm's length. The head is tilted slightly to one side. The person is framed from the chest up, filling most of the frame in a typical close-up selfie composition. The person is looking directly into the front-facing camera with a slight head tilt. Their upper body is angled slightly, and one hand is partially visible at the very edge of the frame near their head, as if resting against it or gesturing while holding the phone. Their expression must be: A neutral, slightly pensive or questioning expression, as if about to pose a question to the viewer. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple, unadorned indoor space, likely a bedroom or living area. The setting feels casual and lived-in. A white, textured, nubby pillow or folded blanket is visible at the very bottom of the frame, suggesting the person might be sitting on a bed or couch. Casual, personal, and unstaged. It looks like a quick snapshot taken in a private moment at home. The person is looking directly into the front-facing camera with a slight head tilt. Their upper body is angled slightly, and one hand is partially visible at the very edge of the frame near their head, as if resting against it or gesturing while holding the phone. A dark forest green quilted pullover or sweatshirt with a snap-button placket at the collar. The fabric has a visible diamond-quilted texture. Ambient indoor lighting, likely a combination of soft overhead light and diffuse daylight from a nearby window. Soft and diffuse lighting that evenly illuminates the face without harsh shadows or dramatic highlights. Very gentle shadows under the chin and along the side of the nose, characteristic of flat, multi-directional ambient light. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking up toward the subject's face, a common angle for a handheld selfie. Typical arm's-length selfie framing. The head and upper chest/shoulders occupy the central and lower portions of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. None. The image has the natural, slightly warm color balance of an iPhone's default camera settings. Shadows are slightly lifted, and highlights are controlled by HDR. The face of the person from the reference image should be lit with the same soft, flat, ambient indoor lighting seen in the original scene, ensuring a natural integration. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e466]:
+            - generic [ref=e467] [cursor=pointer]:
+              - img [ref=e468]
+              - checkbox [ref=e471]
+            - generic [ref=e472]:
+              - generic [ref=e473]:
+                - generic [ref=e474]: nano-banana-2
+                - generic [ref=e475]: Mar 29
+              - paragraph [ref=e476]: "IMG_3217.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the front-facing camera at a close distance, filling the frame from the chest up. The body is angled slightly, with the head tilted toward the left shoulder. No phone is visible as it serves as the camera itself. The person is looking directly into the front-facing camera lens with a slightly inquisitive and contemplative expression. Their head is tilted slightly to one side, and they appear to be leaning in toward the camera. One hand is partially visible at the bottom edge of the frame, resting near their chest, while the other arm is bent with the elbow out of frame, suggesting they might be propped up while recording. Their expression must be: A neutral, slightly curious expression with a subtle tilt of the head. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A casual, lived-in indoor space, likely a bedroom or living room. The background is simple and uncluttered, making it feel like a private, personal moment. A white, textured, fluffy faux-fur pillow or cushion is visible in the bottom foreground, partially out of focus. Casual, intimate, and personal. It feels like a quick, spontaneous recording in a private home setting. The person is looking directly into the front-facing camera lens with a slightly inquisitive and contemplative expression. Their head is tilted slightly to one side, and they appear to be leaning in toward the camera. One hand is partially visible at the bottom edge of the frame, resting near their chest, while the other arm is bent with the elbow out of frame, suggesting they might be propped up while recording. A dark forest green quilted quarter-zip pullover. The fabric has a visible diamond-quilted texture and features small silver snap buttons along the collar. Natural ambient daylight coming from a window located in front and slightly to the side of the subject. Soft, diffuse, and flat. There is no evidence of professional studio lighting or ring lights. Very soft, minimal shadows. A gentle shadow is cast under the chin and nose. One side of the face is slightly more illuminated than the other due to the direction of the window light. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking up at the subject, a typical handheld selfie angle. Close-up selfie framing. The subject's head and upper chest fill the majority of the vertical frame. The wide-angle lens captures a bit of the immediate background. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited with no color grading. Natural colors from the iPhone's auto settings, showing slightly muted tones and realistic skin rendering. The lighting on the avatar's face should perfectly match the soft, directional daylight coming from the window in the scene, ensuring consistent highlights and shadows. give my ai avatar different clothes. but some vibe as reference video. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e477]:
+            - generic [ref=e478] [cursor=pointer]:
+              - img [ref=e479]
+              - checkbox [ref=e482]
+            - generic [ref=e483]:
+              - generic [ref=e484]:
+                - generic [ref=e485]: nano-banana-2
+                - generic [ref=e486]: Mar 29
+              - paragraph [ref=e487]: "IMG_3322.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Head tilted slightly to the side, facing the lens at a close-up range. Subject looks into the front-facing camera with a curious, thoughtful expression. Their expression must be: Neutral, slightly pensive. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Simple, neutral interior room with a plain, light-colored wall. Soft, textured cream-colored fabric or pillow in the lower foreground. Casual, personal, and unstaged. Subject looks into the front-facing camera with a curious, thoughtful expression. Dark green quilted pullover with visible metal snap buttons. Natural ambient light coming from the side. Soft, diffused, and non-directional. Minimal; faint shadow under the jaw. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly above eye level. Close-up selfie distance; head and shoulders fill the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited iPhone auto-white balance. Align avatar lighting with the scene's soft ambient source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e488]:
+            - generic [ref=e489] [cursor=pointer]:
+              - generic [ref=e491]:
+                - img [ref=e492]
+                - text: Video
+              - checkbox [ref=e496]
+            - generic [ref=e497]:
+              - generic [ref=e498]:
+                - generic [ref=e499]: kling-3.0-motion
+                - generic [ref=e500]: Mar 28
+              - paragraph [ref=e501]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e502]:
+            - generic [ref=e503] [cursor=pointer]:
+              - img [ref=e504]
+              - checkbox [ref=e507]
+            - generic [ref=e508]:
+              - generic [ref=e509]:
+                - generic [ref=e510]: nano-banana-2
+                - generic [ref=e511]: Mar 28
+              - paragraph [ref=e512]: "IMG_6785.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Sitting behind a steering wheel, looking directly into the selfie camera with a hand gesture near the chin. Seated in a car driver's seat, mouth open in a shocked expression. One hand is raised near the face in a gesturing motion, facing the front camera. Their expression must be: Shocked and surprised with mouth wide open. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Interior of a modern car. Driver's seat area with a visible headrest and seatbelt. Car seat, seatbelt strap, car door frame, and blurry foliage outside. Casual and spontaneous, like a video recorded while parked. Seated in a car driver's seat, mouth open in a shocked expression. One hand is raised near the face in a gesturing motion, facing the front camera. Bright green crewneck sweatshirt with embroidered text on the chest. Natural daylight coming through the side car window. Soft, diffuse outdoor light providing even coverage. Minimal, soft shadows under the jaw and on the side away from the window. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, typical of a handheld selfie or phone propped on a dashboard. Close-up selfie framing showing head, shoulders, and upper torso. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unprocessed iPhone auto-white balance; neutral with natural skin tones. Synchronize face lighting with the cool daylight coming from the car window. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e513]:
+            - generic [ref=e514] [cursor=pointer]:
+              - generic [ref=e516]:
+                - img [ref=e517]
+                - text: Video
+              - checkbox [ref=e521]
+            - generic [ref=e522]:
+              - generic [ref=e523]:
+                - generic [ref=e524]: kling-3.0-motion
+                - generic [ref=e525]: Mar 28
+              - paragraph [ref=e526]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e527]:
+            - generic [ref=e528] [cursor=pointer]:
+              - img [ref=e529]
+              - checkbox [ref=e532]
+            - generic [ref=e533]:
+              - generic [ref=e534]:
+                - generic [ref=e535]: nano-banana-2
+                - generic [ref=e536]: Mar 28
+              - paragraph [ref=e537]: "IMG_9138.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Seated forward-facing in a car seat, torso angled slightly. The right arm is bent with the hand raised in front of the chest/neck area, gesturing towards the lens. The head is tilted slightly forward towards the camera. The person is seated in the driver's seat of a vehicle, looking directly into the front-facing camera with a wide-eyed, shocked expression. Their mouth is hanging open as if in mid-sentence or reacting to surprising news. One hand is raised towards the camera near chin level, fingers slightly curled in a conversational gesture. Their expression must be: Shocked, surprised, mouth agape, wide eyes. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. The interior of a car during the daytime. The subject is in the driver's seat. A grey seatbelt strap runs diagonally across their shoulder and chest. Car seat upholstery, headrest, seatbelt, car window frame, blurry outdoor foliage in the distance. Casual and spontaneous. A 'storytime' or 'reaction' video vibe recorded while parked or as a passenger. The person is seated in the driver's seat of a vehicle, looking directly into the front-facing camera with a wide-eyed, shocked expression. Their mouth is hanging open as if in mid-sentence or reacting to surprising news. One hand is raised towards the camera near chin level, fingers slightly curled in a conversational gesture. A bright, vibrant neon green crewneck sweatshirt with some subtle, tonal embroidered text across the chest. Bright, diffuse natural daylight entering through the car's windows. Flat, even ambient light. Soft and natural without any directional or professional studio light sources. Minimal and soft shadows under the jawline, nose, and within the folds of the clothing. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, directly in front of the subject at a typical arm's-length selfie distance. Medium close-up selfie. The subject's head and upper torso fill most of the frame, with car interior elements visible on the periphery. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. No color grading. Natural iPhone processing with a slight warm lean from the auto white balance. Colors are realistic but not overly saturated. The lighting on the avatar's face must match the soft, diffuse daytime light from the car windows, with gentle highlights on the side facing the window. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e538]:
+            - generic [ref=e539] [cursor=pointer]:
+              - generic [ref=e541]:
+                - img [ref=e542]
+                - text: Video
+              - checkbox [ref=e546]
+            - generic [ref=e547]:
+              - generic [ref=e548]:
+                - generic [ref=e549]: kling-3.0-motion
+                - generic [ref=e550]: Mar 28
+              - paragraph [ref=e551]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e552]:
+            - generic [ref=e553] [cursor=pointer]:
+              - img [ref=e554]
+              - checkbox [ref=e557]
+            - generic [ref=e558]:
+              - generic [ref=e559]:
+                - generic [ref=e560]: nano-banana-2
+                - generic [ref=e561]: Mar 28
+              - paragraph [ref=e562]: "IMG_1711.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Sitting cross-legged or with one knee up against a brick wall. The body is angled slightly away from the camera, looking over one shoulder. One hand is raised to hold a drink near the chin/mouth area. The person is facing the front-facing camera's general direction but not looking directly into the lens. The person is sitting on the ground, leaning against a textured, light-colored brick wall. They are looking off to the side away from the camera with a neutral, slightly pensive expression. One hand is holding a clear plastic cup with a straw and an iced coffee drink near their face, while the other hand rests near their lap. They are wearing white wired earbuds that lead down from their ears. Their expression must be: Neutral, pensive, looking away from the camera lens with a slightly pursed mouth. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. An outdoor or semi-outdoor setting with a light beige or tan painted brick wall as the immediate background. There are some sparse, dried brown vines or leaves visible on the left edge of the wall. A clear plastic takeaway cup with a lid and a straw containing a light brown iced coffee beverage. White wired earbuds. Casual and unstaged. A quiet, personal moment captured during a day out, feeling like a quick snap taken while taking a break. The person is sitting on the ground, leaning against a textured, light-colored brick wall. They are looking off to the side away from the camera with a neutral, slightly pensive expression. One hand is holding a clear plastic cup with a straw and an iced coffee drink near their face, while the other hand rests near their lap. They are wearing white wired earbuds that lead down from their ears. A pale yellow, button-up knit cardigan worn open over a black t-shirt that features small, sparkling rhinestone or stud details. Paired with medium-wash blue denim jeans. Diffuse natural daylight, likely from an overcast sky or a shaded outdoor area, providing even illumination across the scene. Soft and flat ambient light. There is no direct sunlight, resulting in a low-contrast look with no harsh highlights. Very soft and subtle shadows, mostly visible under the chin, around the folds of the clothing, and where the subject meets the wall. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye-level or slightly below, typical of a selfie taken while sitting on the ground. Medium-wide selfie framing, capturing the head, torso, and part of the legs while sitting. The wide-angle lens includes a significant portion of the brick wall background. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural iPhone processing. Warm tones from the beige brick wall and the yellow cardigan are prominent. No artistic color grading or heavy filters applied. The lighting on the person's face and body must match the soft, diffuse, natural daylight of the scene, with even illumination and very subtle shadows. Give my avatar a different outfit than the reference video. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e563]:
+            - generic [ref=e564] [cursor=pointer]:
+              - img [ref=e565]
+              - checkbox [ref=e568]
+            - generic [ref=e569]:
+              - generic [ref=e570]:
+                - generic [ref=e571]: nano-banana-2
+                - generic [ref=e572]: Mar 28
+              - paragraph [ref=e573]: "IMG_4188.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Sitting with knees pulled up, hands cradling a drink near the chest and face. Seated against a wall, holding a clear plastic cup with a straw, gazing thoughtfully off-camera. Their expression must be: Neutral, slightly pensive, with pursed lips. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Casual outdoor setting featuring a light-colored, textured brick wall. A clear plastic cup containing a brown iced beverage and a straw. Quiet, candid, and everyday urban vibe. Seated against a wall, holding a clear plastic cup with a straw, gazing thoughtfully off-camera. Cream-colored button-up knit cardigan over a black top and blue denim jeans. Natural, diffuse daylight coming from the front. Soft and even light without harsh directional beams. Minimal shadows, primarily under the chin and around clothing folds. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly below eye level, looking upward toward the subject. Medium shot, capturing the head, torso, and lap area. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural colors with slightly lifted shadows from mobile HDR processing. Align facial lighting with the soft, frontal daylight of the scene. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e574]:
+            - generic [ref=e575] [cursor=pointer]:
+              - generic [ref=e577]:
+                - img [ref=e578]
+                - text: Video
+              - checkbox [ref=e582]
+            - generic [ref=e583]:
+              - generic [ref=e584]:
+                - generic [ref=e585]: kling-3.0-motion
+                - generic [ref=e586]: Mar 25
+              - paragraph [ref=e587]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e588]:
+            - generic [ref=e589] [cursor=pointer]:
+              - img [ref=e590]
+              - checkbox [ref=e593]
+            - generic [ref=e594]:
+              - generic [ref=e595]:
+                - generic [ref=e596]: nano-banana-2
+                - generic [ref=e597]: Mar 25
+              - paragraph [ref=e598]: "IMG_2950.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Facing the front camera at eye level. One arm is raised so the hand is near the face, while the other is likely positioned holding the phone out of frame. The person faces the selfie camera with a shocked expression. One hand is raised to the mouth, fingers lightly touching the lips in a gesture of disbelief. Their expression must be: Shocked and wide-eyed with the mouth slightly open. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A modern apartment interior. A white ceiling with a contemporary metal pendant light is visible above. The background shows a kitchen area with white cabinets and appliances. Pendant light fixture, kitchen cabinets, microwave, and a dark screen or monitor in the distance. Casual, domestic, and unstaged. The person faces the selfie camera with a shocked expression. One hand is raised to the mouth, fingers lightly touching the lips in a gesture of disbelief. A thin-strapped animal print or patterned camisole top. Overhead indoor ambient lighting from the ceiling fixture. Diffuse and soft, creating an even wash across the scene. Minimal, soft shadows under the chin and nose. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Eye level, typical of a handheld front-facing selfie. Close-up selfie framing, showing the head, shoulders, and upper chest. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Natural, unedited iPhone color profile with slightly warm indoor tones. The subject's face should be lit from above by soft, warm indoor light. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e599]:
+            - generic [ref=e600] [cursor=pointer]:
+              - generic [ref=e602]:
+                - img [ref=e603]
+                - text: Video
+              - checkbox [ref=e607]
+            - generic [ref=e608]:
+              - generic [ref=e609]:
+                - generic [ref=e610]: kling-3.0-motion
+                - generic [ref=e611]: Mar 25
+              - paragraph [ref=e612]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e613]:
+            - generic [ref=e614] [cursor=pointer]:
+              - img [ref=e615]
+              - checkbox [ref=e618]
+            - generic [ref=e619]:
+              - generic [ref=e620]:
+                - generic [ref=e621]: nano-banana-2
+                - generic [ref=e622]: Mar 25
+              - paragraph [ref=e623]: "IMG_2622.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Head tilted and leaning against their palm. One arm is raised to support the head, cropped at the edge of the frame. The body is angled slightly towards the camera. The person is resting their head against their left hand, with their arm positioned along the side of the frame. They are looking slightly upwards and away from the camera lens with a thoughtful expression. Their expression must be: A neutral, slightly bored or contemplative expression, looking away from the camera. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. A simple, cozy bedroom setting. The space feels lived-in and private. A beige or light grey tufted fabric headboard. On the wall above the headboard, a string of warm white fairy lights is draped, creating soft bokeh-like points of light. Casual and intimate, like a quick photo taken while relaxing in bed. The person is resting their head against their left hand, with their arm positioned along the side of the frame. They are looking slightly upwards and away from the camera lens with a thoughtful expression. A simple, oversized plain white crew-neck t-shirt. Ambient indoor light from above and the side, supplemented by the soft glow of warm fairy lights on the wall behind. Soft and diffuse ambient light. Not directional or harsh. It creates an even, slightly flat illumination across the face. Very soft shadows under the jawline and around the eyes. No dramatic contrast. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly high angle, looking down towards the subject's face from a close selfie distance. Close-up selfie framing, showing the head, neck, and upper chest. One hand and arm are visible supporting the head at the edge of the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Unedited, natural color from an iPhone camera. The overall tone is slightly warm due to indoor lighting. Skin tones look natural and unretouched. The lighting on the person's face must perfectly match the soft, warm ambient light of the bedroom scene, including the subtle highlights from the overhead source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e624]:
+            - generic [ref=e625] [cursor=pointer]:
+              - generic [ref=e627]:
+                - img [ref=e628]
+                - text: Video
+              - checkbox [ref=e632]
+            - generic [ref=e633]:
+              - generic [ref=e634]:
+                - generic [ref=e635]: kling-3.0-motion
+                - generic [ref=e636]: Mar 24
+              - paragraph [ref=e637]: Person performing the actions from the reference video, consistent appearance
+          - generic [ref=e638]:
+            - generic [ref=e639] [cursor=pointer]:
+              - img [ref=e640]
+              - checkbox [ref=e643]
+            - generic [ref=e644]:
+              - generic [ref=e645]:
+                - generic [ref=e646]: nano-banana-2
+                - generic [ref=e647]: Mar 24
+              - paragraph [ref=e648]: "IMG_3601.HEIC. The first three reference images are the SAME person (the avatar). Use their ENTIRE appearance: face, facial structure, eye color, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type. This is a full person replacement, not just a face swap. The hair MUST be the avatar's hair. The fourth reference image is the target scene — match its BACKGROUND, CAMERA ANGLE, LIGHTING, and ENVIRONMENT exactly. Only adopt the POSE and BODY POSITION from the scene. Everything about WHO the person IS comes from the first three avatar images. CRITICAL POSE REQUIREMENT: The person MUST be in this EXACT pose: Leaning back, hand cupping the jawline, head slightly tilted. Resting chin on hand while looking into the camera. Their expression must be: Neutral, slightly pensive. This is the starting frame of a motion-controlled video — the pose must match PRECISELY or the motion will be misaligned. Do not default to a neutral/static pose. Indoor room with a prominent light-colored wooden-plank wall. Vertical wooden slats or floorboards visible behind. Quiet, personal, and completely unstaged. Resting chin on hand while looking into the camera. Casual dark-colored top. Soft overhead ambient indoor lighting. Even and diffuse; lacks dramatic contrast. Minimal, soft shadows under the hand and chin. Shot on iPhone front-facing camera, 12MP f/2.2 wide-angle. Slightly low angle, looking up from below chin level. Close-up selfie distance; head and hand fill the frame. Slightly soft focus throughout, flat tonal range from Smart HDR. Ambient room lighting only, no ring light, no studio light. Neutral auto-white balance; natural, unedited colors. Align face lighting with the soft overhead ambient source. No text, no captions, no watermarks, no UI elements."
+          - generic [ref=e649]:
+            - generic [ref=e650] [cursor=pointer]:
+              - generic [ref=e652]:
+                - img [ref=e653]
+                - text: Video
+              - checkbox [ref=e657]
+            - generic [ref=e658]:
+              - generic [ref=e659]:
+                - generic [ref=e660]: kling-3.0-motion
+                - generic [ref=e661]: Mar 23
+              - paragraph [ref=e662]: Person performing the actions from the reference video, consistent appearance
+  - button "Open Next.js Dev Tools" [ref=e668] [cursor=pointer]:
+    - img [ref=e669]
+  - alert [ref=e672]

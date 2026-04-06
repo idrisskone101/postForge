@@ -47,46 +47,41 @@ export async function trimVideo(
   startTime: number,
   endTime: number
 ): Promise<TrimResult> {
-  const inputFull = storage.getFullPath(localPath);
+  const inputFull = await storage.ensureLocalFile(localPath);
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "postforge-trim-"));
+  const filename = `trimmed-${randomUUID()}.mp4`;
+  const outputFull = path.join(tmpDir, filename);
 
-  // Output in same directory
-  const dir = path.dirname(inputFull);
-  const id = randomUUID();
-  const filename = `trimmed-${id}.mp4`;
-  const outputFull = path.join(dir, filename);
+  try {
+    await execFileAsync(FFMPEG, [
+      "-ss", String(startTime),
+      "-i", inputFull,
+      "-t", String(endTime - startTime),
+      "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+      "-c:a", "aac", "-b:a", "128k",
+      "-avoid_negative_ts", "make_zero",
+      "-y",
+      outputFull,
+    ], { timeout: 120_000 });
 
-  // Re-encode for frame-accurate trimming.
-  // Using -ss before -i for fast input seeking, then -t for duration.
-  // Stream copy (-c copy) only cuts at keyframes, which causes the trimmed
-  // video to start at the wrong point — breaking reference frame extraction.
-  await execFileAsync(FFMPEG, [
-    "-ss", String(startTime),
-    "-i", inputFull,
-    "-t", String(endTime - startTime),
-    "-c:v", "libx264", "-preset", "fast", "-crf", "18",
-    "-c:a", "aac", "-b:a", "128k",
-    "-avoid_negative_ts", "make_zero",
-    "-y",
-    outputFull,
-  ], { timeout: 120_000 });
+    const [durationSec, { width, height }] = await Promise.all([
+      probeDuration(outputFull),
+      probeVideoInfo(outputFull),
+    ]);
 
-  // Get actual duration and dimensions from trimmed file
-  const [durationSec, { width, height }] = await Promise.all([
-    probeDuration(outputFull),
-    probeVideoInfo(outputFull),
-  ]);
+    const persistedPath = await storage.saveFromFile("tiktok-sources", filename, outputFull);
 
-  // Build relative localPath matching storage convention
-  const newLocalPath = path.relative(storage.getFullPath(""), outputFull);
-
-  return { localPath: newLocalPath, filename, durationSec, width, height };
+    return { localPath: persistedPath, filename, durationSec, width, height };
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+  }
 }
 
 export async function generateThumbnails(
   localPath: string,
   count: number
 ): Promise<string[]> {
-  const inputFull = storage.getFullPath(localPath);
+  const inputFull = await storage.ensureLocalFile(localPath);
 
   const duration = await probeDuration(inputFull);
   if (duration <= 0 || count <= 0) return [];
@@ -94,14 +89,11 @@ export async function generateThumbnails(
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "postforge-thumbs-"));
 
   try {
-    // Extract frames at evenly-spaced timestamps
     const timestamps: number[] = [];
     for (let i = 0; i < count; i++) {
       timestamps.push((duration * i) / count);
     }
 
-    // Use a single ffmpeg call with select filter for all frames
-    // For simplicity and reliability, extract one frame per call in parallel
     const tasks = timestamps.map(async (ts, i) => {
       const outFile = path.join(tmpDir, `thumb_${i}.jpg`);
       await execFileAsync(FFMPEG, [
@@ -118,17 +110,13 @@ export async function generateThumbnails(
 
     const files = await Promise.all(tasks);
 
-    // Read files and convert to base64 data URIs
-    const thumbnails = await Promise.all(
+    return await Promise.all(
       files.map(async (file) => {
         const buf = await fs.readFile(file);
         return `data:image/jpeg;base64,${buf.toString("base64")}`;
       })
     );
-
-    return thumbnails;
   } finally {
-    // Cleanup temp dir
     await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   }
 }

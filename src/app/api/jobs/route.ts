@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listJobs } from "@/lib/jobs/queue";
+import { ensurePollerRunning } from "@/lib/jobs/poller";
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,6 +33,10 @@ export async function GET(request: NextRequest) {
     const sort = (sortDir === "asc" ? "asc" : "desc") as "asc" | "desc";
 
     const result = await listJobs({ type, status, model, tag, limit, offset, sort });
+
+    if (result.jobs.some((job) => job.status === "processing" && job.type === "video")) {
+      ensurePollerRunning();
+    }
 
     return NextResponse.json({
       jobs: result.jobs,

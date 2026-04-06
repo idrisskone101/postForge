@@ -33,6 +33,13 @@ export async function GET(
       throw err;
     }
 
+    if (data.length === 0) {
+      return NextResponse.json(
+        { error: "File has no stored media data" },
+        { status: 404 }
+      );
+    }
+
     return new Response(new Uint8Array(data), {
       status: 200,
       headers: {

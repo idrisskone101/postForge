@@ -2,6 +2,19 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import type { GenerationJob, GeneratedFile } from "@/generated/prisma/client";
 
+async function filterExistingOutputs(
+  outputs: GeneratedFile[]
+): Promise<GeneratedFile[]> {
+  const checks = await Promise.all(
+    outputs.map(async (file) => ({
+      file,
+      exists: file.localPath ? await storage.exists(file.localPath) : false,
+    }))
+  );
+
+  return checks.filter((entry) => entry.exists).map((entry) => entry.file);
+}
+
 export async function createJob(params: {
   type: string;
   model: string;
@@ -61,10 +74,19 @@ export async function failJob(jobId: string, error: string): Promise<void> {
 export async function getJob(
   jobId: string
 ): Promise<(GenerationJob & { outputs: GeneratedFile[] }) | null> {
-  return prisma.generationJob.findUnique({
+  const job = await prisma.generationJob.findUnique({
     where: { id: jobId },
     include: { outputs: true },
   });
+
+  if (!job) {
+    return null;
+  }
+
+  return {
+    ...job,
+    outputs: await filterExistingOutputs(job.outputs),
+  };
 }
 
 export async function listJobs(
@@ -75,9 +97,9 @@ export async function listJobs(
     tag?: string;
     limit?: number;
     offset?: number;
-    sort?: "asc" | "desc";
+  sort?: "asc" | "desc";
   } = {}
-): Promise<{ jobs: GenerationJob[]; total: number }> {
+): Promise<{ jobs: (GenerationJob & { outputs: GeneratedFile[] })[]; total: number }> {
   const where: Record<string, unknown> = {};
   if (filters.type) where.type = filters.type;
   if (filters.status) where.status = filters.status;
@@ -99,7 +121,15 @@ export async function listJobs(
     prisma.generationJob.count({ where }),
   ]);
 
-  return { jobs, total };
+  return {
+    jobs: await Promise.all(
+      jobs.map(async (job) => ({
+        ...job,
+        outputs: await filterExistingOutputs(job.outputs),
+      }))
+    ),
+    total,
+  };
 }
 
 export async function deleteJob(jobId: string): Promise<void> {

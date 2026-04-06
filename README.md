@@ -16,6 +16,10 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Storage
+
+Generated media defaults to database-backed storage (`STORAGE_DRIVER="database"`), so gallery items, avatars, TikTok source clips, and UGC clone outputs persist with Postgres instead of depending on a local output folder. Legacy files already stored on disk are backfilled into Postgres automatically on server boot.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

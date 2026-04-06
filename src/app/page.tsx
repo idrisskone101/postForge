@@ -3,6 +3,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { getCostSummary } from "@/lib/costs/tracker";
 import { MediaPreview } from "@/components/media-preview";
+import { storage } from "@/lib/storage";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import {
@@ -38,8 +39,6 @@ export default async function DashboardPage() {
       }),
     ]);
 
-  const todayJobs =
-    todaySummary.breakdown.image.count + todaySummary.breakdown.video.count;
   const lifetimeCount =
     monthSummary.breakdown.image.count + monthSummary.breakdown.video.count;
   const monthBudget = 62;
@@ -56,6 +55,16 @@ export default async function DashboardPage() {
     month: "short",
     day: "numeric",
   });
+
+  const validRecentJobs = (
+    await Promise.all(
+      recentJobs.map(async (job) => {
+        const output = job.outputs[0];
+        if (!output) return null;
+        return (await storage.exists(output.localPath)) ? job : null;
+      })
+    )
+  ).filter(Boolean) as typeof recentJobs;
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -246,7 +255,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {recentJobs.map((job) => {
+            {validRecentJobs.map((job) => {
               const output = job.outputs[0];
               const isVideo = job.type === "video";
               return (

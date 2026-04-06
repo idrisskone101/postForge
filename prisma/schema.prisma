@@ -39,13 +39,14 @@ model GeneratedFile {
   job           GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
   type          String   // "image" | "video"
   originalUrl   String
-  localPath     String
+  localPath     String   @default("")
   filename      String
   mimeType      String
   width         Int?
   height        Int?
   durationSec   Float?
   fileSizeBytes Int?
+  data          Bytes?
   createdAt     DateTime @default(now())
 
   @@index([jobId])
@@ -65,15 +66,23 @@ model CostLog {
   @@index([model])
 }
 
+model StoredAsset {
+  key       String   @id
+  data      Bytes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Avatar {
   id            String   @id @default(uuid())
   name          String
-  localPath     String
+  localPath     String   @default("")
   filename      String
   mimeType      String
   width         Int?
   height        Int?
   fileSizeBytes Int?
+  data          Bytes?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -84,13 +93,15 @@ model TikTokSource {
   id            String   @id @default(uuid())
   label         String
   originalUrl   String   @unique
-  localPath     String
+  localPath     String   @default("")
   filename      String
   durationSec   Float
   width         Int
   height        Int
   fileSizeBytes Int?
   thumbnailPath String?
+  data          Bytes?
+  thumbnailData Bytes?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

@@ -1,24 +1,52 @@
 import * as fs from "fs/promises";
 import * as path from "path";
+import { prisma } from "@/lib/db";
+
+function buildRelativePath(type: string, filename: string): string {
+  const today = new Date().toISOString().split("T")[0];
+  return path.posix.join(type, today, filename);
+}
+
+async function fileExists(fullPath: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(fullPath);
+    return stat.isFile() && stat.size > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function unlinkIfExists(fullPath: string): Promise<void> {
+  try {
+    await fs.unlink(fullPath);
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw err;
+    }
+  }
+}
 
 export interface StorageProvider {
   save(type: string, filename: string, data: Buffer): Promise<string>;
+  saveFromFile(type: string, filename: string, sourcePath: string): Promise<string>;
   read(localPath: string): Promise<Buffer>;
   delete(localPath: string): Promise<void>;
   exists(localPath: string): Promise<boolean>;
-  getFullPath(localPath: string): string;
+  ensureLocalFile(localPath: string): Promise<string>;
 }
 
-export class LocalStorageDriver implements StorageProvider {
-  private basePath: string;
+class LocalStorageDriver implements StorageProvider {
+  constructor(
+    private readonly basePath =
+      process.env.STORAGE_LOCAL_PATH || path.resolve("./data/outputs")
+  ) {}
 
-  constructor(basePath?: string) {
-    this.basePath = basePath || process.env.STORAGE_LOCAL_PATH || "./data/outputs";
+  private getFullPath(localPath: string): string {
+    return path.resolve(this.basePath, localPath);
   }
 
   async save(type: string, filename: string, data: Buffer): Promise<string> {
-    const today = new Date().toISOString().split("T")[0]; // e.g., 2026-03-07
-    const relativePath = path.join(type, today, filename);
+    const relativePath = buildRelativePath(type, filename);
     const fullPath = this.getFullPath(relativePath);
 
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
@@ -27,38 +55,147 @@ export class LocalStorageDriver implements StorageProvider {
     return relativePath;
   }
 
+  async saveFromFile(
+    type: string,
+    filename: string,
+    sourcePath: string
+  ): Promise<string> {
+    const relativePath = buildRelativePath(type, filename);
+    const fullPath = this.getFullPath(relativePath);
+
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    await fs.copyFile(sourcePath, fullPath);
+
+    return relativePath;
+  }
+
   async read(localPath: string): Promise<Buffer> {
-    const fullPath = this.getFullPath(localPath);
-    return fs.readFile(fullPath);
+    return fs.readFile(this.getFullPath(localPath));
   }
 
   async delete(localPath: string): Promise<void> {
-    const fullPath = this.getFullPath(localPath);
-    try {
-      await fs.unlink(fullPath);
-    } catch (err: unknown) {
-      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-        throw err;
-      }
-    }
+    await unlinkIfExists(this.getFullPath(localPath));
   }
 
   async exists(localPath: string): Promise<boolean> {
+    return fileExists(this.getFullPath(localPath));
+  }
+
+  async ensureLocalFile(localPath: string): Promise<string> {
     const fullPath = this.getFullPath(localPath);
+    if (!(await fileExists(fullPath))) {
+      const err = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      err.code = "ENOENT";
+      throw err;
+    }
+    return fullPath;
+  }
+}
+
+class DatabaseStorageDriver implements StorageProvider {
+  constructor(
+    private readonly cacheBasePath = path.resolve(".cache/postforge-storage"),
+    private readonly legacyBasePath =
+      process.env.STORAGE_LOCAL_PATH || path.resolve("./data/outputs")
+  ) {}
+
+  private getCachePath(localPath: string): string {
+    return path.resolve(this.cacheBasePath, localPath);
+  }
+
+  private getLegacyPath(localPath: string): string {
+    return path.resolve(this.legacyBasePath, localPath);
+  }
+
+  private async persistAsset(localPath: string, data: Buffer): Promise<void> {
+    await prisma.storedAsset.upsert({
+      where: { key: localPath },
+      update: { data },
+      create: { key: localPath, data },
+    });
+
+    const cachePath = this.getCachePath(localPath);
+    await fs.mkdir(path.dirname(cachePath), { recursive: true });
+    await fs.writeFile(cachePath, data);
+  }
+
+  private async readLegacyAsset(localPath: string): Promise<Buffer> {
+    const legacyPath = this.getLegacyPath(localPath);
+
     try {
-      await fs.access(fullPath);
-      return true;
-    } catch {
-      return false;
+      const data = await fs.readFile(legacyPath);
+      await this.persistAsset(localPath, data);
+      return data;
+    } catch (err: unknown) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "ENOENT" || code === "EISDIR") {
+        const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+        notFound.code = "ENOENT";
+        throw notFound;
+      }
+      throw err;
     }
   }
 
-  getFullPath(localPath: string): string {
-    return path.resolve(this.basePath, localPath);
+  async save(type: string, filename: string, data: Buffer): Promise<string> {
+    const relativePath = buildRelativePath(type, filename);
+    await this.persistAsset(relativePath, data);
+    return relativePath;
   }
 
-  getRelativePath(fullPath: string): string {
-    return path.relative(path.resolve(this.basePath), fullPath);
+  async saveFromFile(
+    type: string,
+    filename: string,
+    sourcePath: string
+  ): Promise<string> {
+    const data = await fs.readFile(sourcePath);
+    return this.save(type, filename, data);
+  }
+
+  async read(localPath: string): Promise<Buffer> {
+    const asset = await prisma.storedAsset.findUnique({
+      where: { key: localPath },
+      select: { data: true },
+    });
+
+    if (asset) {
+      return Buffer.from(asset.data);
+    }
+
+    return this.readLegacyAsset(localPath);
+  }
+
+  async delete(localPath: string): Promise<void> {
+    await Promise.all([
+      prisma.storedAsset.deleteMany({ where: { key: localPath } }),
+      unlinkIfExists(this.getCachePath(localPath)),
+      unlinkIfExists(this.getLegacyPath(localPath)),
+    ]);
+  }
+
+  async exists(localPath: string): Promise<boolean> {
+    const asset = await prisma.storedAsset.findUnique({
+      where: { key: localPath },
+      select: { data: true },
+    });
+
+    if (asset) {
+      return Buffer.from(asset.data).length > 0;
+    }
+
+    return fileExists(this.getLegacyPath(localPath));
+  }
+
+  async ensureLocalFile(localPath: string): Promise<string> {
+    const cachePath = this.getCachePath(localPath);
+    if (await fileExists(cachePath)) {
+      return cachePath;
+    }
+
+    const data = await this.read(localPath);
+    await fs.mkdir(path.dirname(cachePath), { recursive: true });
+    await fs.writeFile(cachePath, data);
+    return cachePath;
   }
 }
 
@@ -80,4 +217,7 @@ export async function downloadFromUrl(
   return { buffer, contentType };
 }
 
-export const storage = new LocalStorageDriver();
+export const storage: StorageProvider =
+  process.env.STORAGE_DRIVER === "local"
+    ? new LocalStorageDriver()
+    : new DatabaseStorageDriver();

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { getAllModels } from "@/lib/ai/models";
+import { storage } from "@/lib/storage";
 import { GalleryPageClient } from "./gallery-page-client";
 
 export const metadata = { title: "Gallery - PostForge" };
@@ -13,7 +14,15 @@ export default async function GalleryPage() {
     },
   });
 
-  const items = files.map((file: { id: string; jobId: string; type: string; filename: string; width: number | null; height: number | null; durationSec: number | null; job: { model: string; prompt: string }; createdAt: Date }) => ({
+  const validFiles = (
+    await Promise.all(
+      files.map(async (file) =>
+        (await storage.exists(file.localPath)) ? file : null
+      )
+    )
+  ).filter(Boolean) as typeof files;
+
+  const items = validFiles.map((file: { id: string; jobId: string; type: string; filename: string; width: number | null; height: number | null; durationSec: number | null; job: { model: string; prompt: string }; createdAt: Date }) => ({
     id: file.id,
     jobId: file.jobId,
     type: file.type as "image" | "video",

@@ -5,6 +5,20 @@ export async function GET() {
   try {
     const sources = await prisma.tikTokSource.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        label: true,
+        originalUrl: true,
+        localPath: true,
+        filename: true,
+        durationSec: true,
+        width: true,
+        height: true,
+        fileSizeBytes: true,
+        thumbnailPath: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return NextResponse.json(sources);

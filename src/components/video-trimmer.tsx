@@ -63,7 +63,6 @@ export function VideoTrimmer({
   // ---------------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
-    setThumbsLoading(true);
 
     apiGet<{ thumbnails: string[] }>(
       `/api/ugc-clone/thumbnails?path=${encodeURIComponent(videoPath)}&count=8`

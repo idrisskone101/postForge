@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { trimVideo } from "@/lib/ugc/trim-video";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
-import { extractThumbnailToDisk } from "@/lib/ugc/thumbnail";
-import * as path from "path";
+import { extractThumbnail } from "@/lib/ugc/thumbnail";
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,9 +58,8 @@ export async function POST(request: NextRequest) {
     // so the trimmed video becomes the saved source
     if (sourceId && typeof sourceId === "string") {
       // Generate a new thumbnail from the trimmed video
-      const trimmedFullPath = storage.getFullPath(result.localPath);
-      const dir = path.dirname(trimmedFullPath);
-      const thumbnailPath = await extractThumbnailToDisk(trimmedFullPath, dir);
+      const trimmedFullPath = await storage.ensureLocalFile(result.localPath);
+      const thumbnailPath = await extractThumbnail(trimmedFullPath);
 
       const updateData: Record<string, unknown> = {
         localPath: result.localPath,

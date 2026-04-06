@@ -15,10 +15,7 @@ import { apiGet, apiPost } from "@/lib/api/client";
 import {
   Loader2,
   Scissors,
-  MessageSquare,
   Check,
-  RotateCcw,
-  ImageIcon,
   ArrowLeft,
   Sparkles,
   PenLine,
@@ -567,6 +564,7 @@ export function UGCCloneForm() {
             {videoInfo && showTrimmer && originalVideoInfo && (
               <div className="mt-4">
                 <VideoTrimmer
+                  key={originalVideoInfo.localPath}
                   videoPath={originalVideoInfo.localPath}
                   durationSec={originalVideoInfo.durationSec}
                   width={originalVideoInfo.width}

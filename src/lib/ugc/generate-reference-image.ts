@@ -28,8 +28,8 @@ export async function generateReferenceImage(
   }
 
   // Resolve full paths
-  const avatarFullPath = storage.getFullPath(avatar.localPath);
-  const videoFullPath = storage.getFullPath(request.tiktokVideoPath);
+  const avatarFullPath = await storage.ensureLocalFile(avatar.localPath);
+  const videoFullPath = await storage.ensureLocalFile(request.tiktokVideoPath);
 
   // Extract first frame from the TikTok video
   const referenceFramePath = await extractReferenceFrame(videoFullPath);

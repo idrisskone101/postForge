@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
@@ -31,16 +31,18 @@ export function MediaPreview({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const markLoaded = useCallback(() => setIsLoading(false), []);
-
-  // Handle cases where load event fires before hydration
-  useEffect(() => {
-    if (type === "image" && imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
+  const setImageRef = useCallback((node: HTMLImageElement | null) => {
+    imgRef.current = node;
+    if (node?.complete && node.naturalWidth > 0) {
       markLoaded();
     }
-    if (type === "video" && videoRef.current && videoRef.current.readyState >= 2) {
+  }, [markLoaded]);
+  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
+    videoRef.current = node;
+    if (node && node.readyState >= 2) {
       markLoaded();
     }
-  }, [type, markLoaded]);
+  }, [markLoaded]);
 
   if (hasError) {
     return (
@@ -78,7 +80,7 @@ export function MediaPreview({
 
       {type === "image" ? (
         <img
-          ref={imgRef}
+          ref={setImageRef}
           src={src}
           alt={alt}
           width={width}
@@ -93,7 +95,7 @@ export function MediaPreview({
         />
       ) : (
         <video
-          ref={videoRef}
+          ref={setVideoRef}
           src={src}
           width={width}
           height={height}

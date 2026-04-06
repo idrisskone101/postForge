@@ -48,7 +48,7 @@ export async function generateClone(
   }
 
   // Resolve full paths
-  const avatarFullPath = storage.getFullPath(avatar.localPath);
+  const avatarFullPath = await storage.ensureLocalFile(avatar.localPath);
 
   // Optional: strip text overlays from the reference video before motion control.
   // This runs Bria Video Eraser on fal.ai and saves a cleaned copy locally.
@@ -65,7 +65,7 @@ export async function generateClone(
 
   // Normalize video for optimal motion control: constant 30fps CFR,
   // trim to first scene (removes app screenshots / product cuts at end).
-  const rawVideoFullPath = storage.getFullPath(videoPath);
+  const rawVideoFullPath = await storage.ensureLocalFile(videoPath);
   console.log("[ugc-clone] Normalizing video for motion control (30fps CFR, scene trim)...");
   const videoFullPath = await normalizeVideoForMotionControl(rawVideoFullPath);
   console.log(`[ugc-clone] Normalized video → ${videoFullPath}`);
@@ -84,7 +84,7 @@ export async function generateClone(
     if (!refFile) {
       throw new Error(`Reference image file not found: ${request.referenceImageFileId}`);
     }
-    const refFullPath = storage.getFullPath(refFile.localPath);
+    const refFullPath = await storage.ensureLocalFile(refFile.localPath);
     [sceneImageUrl, videoUrl] = await Promise.all([
       uploadToFalStorage(refFullPath),
       uploadToFalStorage(videoFullPath),
