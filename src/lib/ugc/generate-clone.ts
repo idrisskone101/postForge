@@ -1,4 +1,6 @@
 import * as fs from "fs/promises";
+import * as path from "path";
+import { randomUUID } from "crypto";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { createJob, failJob } from "@/lib/jobs/queue";
@@ -20,6 +22,7 @@ const DEFAULT_CLONE_PROMPT_V2 =
   "Person in the scene, natural environment lighting, consistent background, seamless scene continuity";
 
 export interface CloneGenerationRequest {
+  tiktokSourceId: string;
   tiktokVideoPath: string;
   avatarId: string;
   prompt?: string;
@@ -28,6 +31,50 @@ export interface CloneGenerationRequest {
   referenceImageFileId?: string;
   durationSec?: number;
   removeTextOverlays?: boolean;
+}
+
+export interface SourceVideoSnapshot {
+  sourceId: string;
+  label: string;
+  originalUrl: string;
+  localPath: string;
+  filename: string;
+  durationSec: number;
+  width: number;
+  height: number;
+}
+
+async function createSourceVideoSnapshot(
+  source: {
+    id: string;
+    label: string;
+    originalUrl: string;
+    filename: string;
+    durationSec: number;
+    width: number;
+    height: number;
+  },
+  localPath: string
+): Promise<SourceVideoSnapshot> {
+  const sourceFullPath = await storage.ensureLocalFile(localPath);
+  const extension = path.extname(source.filename) || path.extname(localPath) || ".mp4";
+  const snapshotFilename = `${randomUUID()}${extension}`;
+  const snapshotLocalPath = await storage.saveFromFile(
+    "ugc-clone-sources",
+    snapshotFilename,
+    sourceFullPath
+  );
+
+  return {
+    sourceId: source.id,
+    label: source.label,
+    originalUrl: source.originalUrl,
+    localPath: snapshotLocalPath,
+    filename: snapshotFilename,
+    durationSec: source.durationSec,
+    width: source.width,
+    height: source.height,
+  };
 }
 
 export async function generateClone(
@@ -46,6 +93,26 @@ export async function generateClone(
   if (!avatar) {
     throw new Error(`Avatar not found: ${request.avatarId}`);
   }
+
+  const source = await prisma.tikTokSource.findUnique({
+    where: { id: request.tiktokSourceId },
+  });
+  if (!source) {
+    throw new Error(`TikTok source not found: ${request.tiktokSourceId}`);
+  }
+
+  const sourceVideo = await createSourceVideoSnapshot(
+    {
+      id: source.id,
+      label: source.label,
+      originalUrl: source.originalUrl,
+      filename: source.filename,
+      durationSec: source.durationSec,
+      width: source.width,
+      height: source.height,
+    },
+    request.tiktokVideoPath
+  );
 
   // Resolve full paths
   const avatarFullPath = await storage.ensureLocalFile(avatar.localPath);
@@ -145,6 +212,7 @@ export async function generateClone(
     prompt: finalPrompt,
     input: {
       ...request,
+      sourceVideo,
       avatarUrl,
       sceneImageUrl,
       videoUrl,

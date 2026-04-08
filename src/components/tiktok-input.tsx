@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 
 export interface TikTokVideoInfo {
-  id?: string;
+  id: string;
+  label: string;
+  originalUrl: string;
   localPath: string;
   filename: string;
   durationSec: number;
@@ -78,6 +80,8 @@ export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInput
 
       onDownloaded({
         id: result.id,
+        label: result.label,
+        originalUrl: result.originalUrl,
         localPath: result.localPath,
         filename: result.filename,
         durationSec: result.durationSec,
@@ -94,6 +98,8 @@ export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInput
   const handleSelectSource = (source: SavedSource) => {
     onDownloaded({
       id: source.id,
+      label: source.label,
+      originalUrl: source.originalUrl,
       localPath: source.localPath,
       filename: source.filename,
       durationSec: source.durationSec,

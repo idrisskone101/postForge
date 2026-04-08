@@ -11,8 +11,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Security: only allow tiktok-sources paths
-    if (!path.startsWith("tiktok-sources/")) {
+    // Security: only allow persisted UGC source video paths
+    if (
+      !path.startsWith("tiktok-sources/") &&
+      !path.startsWith("ugc-clone-sources/")
+    ) {
       return NextResponse.json(
         { error: "Invalid path" },
         { status: 403 }
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     const buffer = await storage.read(path);
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "video/mp4",
         "Content-Length": buffer.length.toString(),

@@ -109,7 +109,7 @@ export function UGCCloneForm() {
   const pricePerSec = getModel(selectedModel)?.pricing.amount ?? 0;
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
 
-  const canSubmit = videoInfo && avatarId && !isSubmitting;
+  const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
 
   // Poll for any "generating" ref images
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -190,9 +190,11 @@ export function UGCCloneForm() {
   };
 
   const handleTrimmed = (info: { localPath: string; filename: string; durationSec: number; width: number; height: number }) => {
+    if (!videoInfo) return;
+
     // Update both videoInfo and originalVideoInfo so the trimmed version
     // becomes the canonical source (the DB record was already updated by the API)
-    const updated = { ...videoInfo, ...info };
+    const updated: TikTokVideoInfo = { ...videoInfo, ...info };
     setVideoInfo(updated);
     setOriginalVideoInfo(updated);
     setShowTrimmer(false);
@@ -248,12 +250,13 @@ export function UGCCloneForm() {
   };
 
   const handleApproveAndGenerate = async () => {
-    if (!videoInfo || !avatarId || !selectedRefFileId) return;
+    if (!videoInfo?.id || !avatarId || !selectedRefFileId) return;
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
+        tiktokSourceId: videoInfo.id,
         tiktokVideoPath: videoInfo.localPath,
         avatarId,
         keepOriginalSound,

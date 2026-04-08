@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
+  ExternalLink,
   Users,
 } from "lucide-react";
 import { downloadFile } from "@/lib/utils/download";
@@ -48,6 +49,56 @@ interface JobDetail {
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
+}
+
+interface SourceVideoInput {
+  sourceId: string;
+  label: string;
+  originalUrl: string;
+  localPath: string;
+  filename: string;
+  durationSec: number;
+  width: number;
+  height: number;
+}
+
+function parseSourceVideo(value: unknown): SourceVideoInput | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const input = value as Record<string, unknown>;
+  if (
+    typeof input.sourceId !== "string" ||
+    typeof input.label !== "string" ||
+    typeof input.originalUrl !== "string" ||
+    typeof input.localPath !== "string" ||
+    typeof input.filename !== "string" ||
+    typeof input.durationSec !== "number" ||
+    typeof input.width !== "number" ||
+    typeof input.height !== "number"
+  ) {
+    return null;
+  }
+
+  return {
+    sourceId: input.sourceId,
+    label: input.label,
+    originalUrl: input.originalUrl,
+    localPath: input.localPath,
+    filename: input.filename,
+    durationSec: input.durationSec,
+    width: input.width,
+    height: input.height,
+  };
+}
+
+function formatDuration(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.round(seconds % 60);
+  return minutes > 0
+    ? `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+    : `${remainingSeconds}s`;
 }
 
 export default function UGCCloneJobPage() {
@@ -117,6 +168,7 @@ export default function UGCCloneJobPage() {
   const isCompleted = job.status === "completed";
   const isFailed = job.status === "failed";
   const featured = job.outputs[0];
+  const sourceVideo = parseSourceVideo(job.input.sourceVideo);
 
   return (
     <div className="min-h-screen md:ml-24 p-6 lg:p-8 flex flex-col animate-fade-in-up">
@@ -254,6 +306,42 @@ export default function UGCCloneJobPage() {
               </div>
             </div>
           </div>
+
+          {sourceVideo && (
+            <div className="launch-card bg-card border border-border p-6">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Source TikTok
+                </p>
+                <a
+                  href={sourceVideo.originalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-accent-blue transition-colors duration-150 hover:text-accent-coral"
+                >
+                  View on TikTok
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+
+              <MediaPreview
+                type="video"
+                src={`/api/ugc-clone/preview?path=${encodeURIComponent(sourceVideo.localPath)}`}
+                width={sourceVideo.width}
+                height={sourceVideo.height}
+                alt={sourceVideo.label}
+                className="w-full rounded-lg bg-black"
+              />
+
+              <div className="mt-3 space-y-2">
+                <p className="text-sm font-medium leading-relaxed">{sourceVideo.label}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] font-mono text-muted-foreground">
+                  <span>{formatDuration(sourceVideo.durationSec)}</span>
+                  <span>{sourceVideo.width}x{sourceVideo.height}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Reference Image card */}
           {typeof job.input.referenceImageFileId === "string" && (
