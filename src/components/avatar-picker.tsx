@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
-import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
-import { getModelsByType } from "@/lib/ai/models";
+import { useEffect, useRef, useState } from "react";
 import {
-  Trash2,
-  Loader2,
-  User,
-  Sparkles,
-  Upload,
-  ArrowLeft,
-  X,
   Check,
   Image as ImageIcon,
   Info,
+  Loader2,
+  Sparkles,
+  Trash2,
+  Upload,
+  User,
+  X,
 } from "lucide-react";
 
-// Auto-prepended to avatar generation prompts for optimal motion control reference images
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiDelete, apiGet, apiPost } from "@/lib/api/client";
+import { getModelsByType } from "@/lib/ai/models";
+import { cn } from "@/lib/utils";
+
 const AVATAR_PROMPT_PREFIX =
   "Professional headshot portrait, front-facing or slight 3/4 angle, studio lighting, clean neutral background, high resolution, photorealistic, sharp focus, ";
 
@@ -33,7 +33,7 @@ interface AvatarPickerProps {
   onSelect: (id: string) => void;
 }
 
-type Mode = "grid" | "generate" | "gallery";
+type AvatarTab = "library" | "upload" | "generate" | "gallery";
 
 interface GalleryFile {
   id: string;
@@ -56,26 +56,37 @@ interface JobResult {
   }[];
 }
 
+const TABS: Array<{ id: AvatarTab; label: string }> = [
+  { id: "library", label: "Library" },
+  { id: "upload", label: "Upload" },
+  { id: "generate", label: "Generate" },
+  { id: "gallery", label: "Gallery" },
+];
+
 export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-  const [mode, setMode] = useState<Mode>("grid");
+  const [activeTab, setActiveTab] = useState<AvatarTab>("library");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Generate state
   const [genPrompt, setGenPrompt] = useState("");
   const [genModel, setGenModel] = useState("nano-banana");
   const [genJobId, setGenJobId] = useState<string | null>(null);
   const [genJob, setGenJob] = useState<JobResult | null>(null);
   const [isSavingGenerated, setIsSavingGenerated] = useState(false);
 
-  // Gallery state
   const [galleryFiles, setGalleryFiles] = useState<GalleryFile[]>([]);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [savingFileId, setSavingFileId] = useState<string | null>(null);
 
   const imageModels = getModelsByType("image");
+  const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId) ?? null;
+  const isGenerating = Boolean(
+    genJobId && (!genJob || genJob.status === "queued" || genJob.status === "processing")
+  );
+  const isCompleted = genJob?.status === "completed" && genJob.outputs.length > 0;
+  const isFailed = genJob?.status === "failed";
 
   const fetchAvatars = async () => {
     try {
@@ -92,70 +103,17 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     fetchAvatars();
   }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  useEffect(() => {
+    if (activeTab !== "gallery") return;
+    if (galleryFiles.length > 0) return;
 
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("name", file.name.replace(/\.[^.]+$/, ""));
+    setIsLoadingGallery(true);
+    apiGet<GalleryFile[]>("/api/files?type=image&limit=50")
+      .then(setGalleryFiles)
+      .catch((err) => console.error("Failed to load gallery:", err))
+      .finally(() => setIsLoadingGallery(false));
+  }, [activeTab, galleryFiles.length]);
 
-      const response = await fetch("/api/avatars", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const avatar = await response.json();
-      setAvatars((prev) => [avatar, ...prev]);
-      onSelect(avatar.id);
-    } catch (err) {
-      console.error("Failed to upload avatar:", err);
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await apiDelete(`/api/avatars/${id}`);
-      setAvatars((prev) => prev.filter((a) => a.id !== id));
-      if (selectedId === id) {
-        onSelect("");
-      }
-    } catch (err) {
-      console.error("Failed to delete avatar:", err);
-    }
-  };
-
-  const handleGenerate = async () => {
-    if (!genPrompt.trim()) return;
-
-    try {
-      // Auto-enhance prompt with quality modifiers for optimal motion control results
-      const enhancedPrompt = AVATAR_PROMPT_PREFIX + genPrompt.trim();
-      const result = await apiPost<{ id: string }>("/api/generate/images", {
-        prompt: enhancedPrompt,
-        model: genModel,
-        aspectRatio: "1:1",
-        numImages: 1,
-      });
-      setGenJobId(result.id);
-    } catch (err) {
-      console.error("Failed to start generation:", err);
-    }
-  };
-
-  // Poll for generation job completion
   useEffect(() => {
     if (!genJobId) {
       setGenJob(null);
@@ -189,6 +147,75 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     };
   }, [genJobId]);
 
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", file.name.replace(/\.[^.]+$/, ""));
+
+      const response = await fetch("/api/avatars", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const avatar = await response.json();
+      setAvatars((prev) => [avatar, ...prev]);
+      onSelect(avatar.id);
+      setActiveTab("library");
+    } catch (err) {
+      console.error("Failed to upload avatar:", err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDelete = async (id: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    try {
+      await apiDelete(`/api/avatars/${id}`);
+      setAvatars((prev) => prev.filter((avatar) => avatar.id !== id));
+      if (selectedId === id) {
+        onSelect("");
+      }
+    } catch (err) {
+      console.error("Failed to delete avatar:", err);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!genPrompt.trim()) return;
+
+    try {
+      const enhancedPrompt = AVATAR_PROMPT_PREFIX + genPrompt.trim();
+      const result = await apiPost<{ id: string }>("/api/generate/images", {
+        prompt: enhancedPrompt,
+        model: genModel,
+        aspectRatio: "1:1",
+        numImages: 1,
+      });
+      setGenJobId(result.id);
+    } catch (err) {
+      console.error("Failed to start generation:", err);
+    }
+  };
+
+  const resetGeneration = () => {
+    setGenJobId(null);
+    setGenJob(null);
+  };
+
   const handleSaveGenerated = async (fileId: string) => {
     setIsSavingGenerated(true);
     try {
@@ -198,27 +225,13 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       });
       setAvatars((prev) => [avatar, ...prev]);
       onSelect(avatar.id);
-      // Reset generate state
-      setMode("grid");
-      setGenJobId(null);
+      setActiveTab("library");
       setGenPrompt("");
+      resetGeneration();
     } catch (err) {
       console.error("Failed to save avatar:", err);
     } finally {
       setIsSavingGenerated(false);
-    }
-  };
-
-  const openGallery = async () => {
-    setMode("gallery");
-    setIsLoadingGallery(true);
-    try {
-      const files = await apiGet<GalleryFile[]>("/api/files?type=image&limit=50");
-      setGalleryFiles(files);
-    } catch (err) {
-      console.error("Failed to load gallery:", err);
-    } finally {
-      setIsLoadingGallery(false);
     }
   };
 
@@ -231,7 +244,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       });
       setAvatars((prev) => [avatar, ...prev]);
       onSelect(avatar.id);
-      setMode("grid");
+      setActiveTab("library");
     } catch (err) {
       console.error("Failed to save gallery image as avatar:", err);
     } finally {
@@ -239,214 +252,12 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     }
   };
 
-  const resetGenerate = () => {
-    setMode("grid");
-    setGenJobId(null);
-    setGenPrompt("");
-  };
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded-2xl bg-muted animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
-  // Generate mode
-  if (mode === "generate") {
-    const isGenerating = genJobId && (!genJob || genJob.status === "queued" || genJob.status === "processing");
-    const isCompleted = genJob?.status === "completed" && genJob.outputs.length > 0;
-    const isFailed = genJob?.status === "failed";
-
-    return (
-      <div className="space-y-4">
-        <button
-          type="button"
-          onClick={resetGenerate}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-4" />
-          Back to avatars
-        </button>
-
-        {!genJobId && (
-          <>
-            <Textarea
-              placeholder="Describe the person: age, gender, hair, skin tone, expression. e.g. 'Woman in her late 20s, dark wavy hair, warm smile, light skin'"
-              value={genPrompt}
-              onChange={(e) => setGenPrompt(e.target.value.slice(0, 500))}
-              maxLength={500}
-              className="min-h-[100px] resize-none bg-muted border-2 border-transparent focus:border-accent-green/30 focus:bg-card rounded-2xl p-4 text-sm transition-all"
-            />
-            <p className="text-[10px] text-muted-foreground">
-              Quality modifiers (studio lighting, clean background, etc.) are added automatically.
-            </p>
-
-            {/* Model selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                Model
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {imageModels.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setGenModel(m.id)}
-                    className={cn(
-                      "rounded-xl border px-3 py-1.5 text-xs font-medium transition-all",
-                      genModel === m.id
-                        ? "border-accent-green bg-accent-green/10 text-accent-green"
-                        : "border-border text-muted-foreground hover:border-accent-green/50"
-                    )}
-                  >
-                    {m.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={!genPrompt.trim()}
-              className="w-full rounded-2xl bg-accent-green px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(123,165,67,0.25)] transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              <Sparkles className="size-4" />
-              Generate Avatar
-            </button>
-          </>
-        )}
-
-        {/* Generating state */}
-        {isGenerating && (
-          <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-accent-green" />
-            <p className="text-sm font-medium">Generating avatar...</p>
-            <p className="text-xs text-muted-foreground">This may take a moment</p>
-          </div>
-        )}
-
-        {/* Failed state */}
-        {isFailed && (
-          <div className="flex flex-col items-center justify-center py-8 gap-3">
-            <p className="text-sm text-destructive">Generation failed{genJob?.error ? `: ${genJob.error}` : ""}</p>
-            <button
-              type="button"
-              onClick={() => setGenJobId(null)}
-              className="text-sm text-accent-green hover:underline"
-            >
-              Try again
-            </button>
-          </div>
-        )}
-
-        {/* Completed — show result and save button */}
-        {isCompleted && genJob && (
-          <div className="space-y-4">
-            <div className="relative aspect-square max-w-[200px] mx-auto rounded-2xl overflow-hidden border-2 border-accent-green">
-              <img
-                src={`/api/files/${genJob.outputs[0].id}`}
-                alt="Generated avatar"
-                className="size-full object-cover"
-              />
-            </div>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setGenJobId(null)}
-                className="flex-1 rounded-2xl border border-border px-4 py-3 text-sm font-medium transition-colors hover:bg-muted flex items-center justify-center gap-2"
-              >
-                <X className="size-4" />
-                Regenerate
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
-                disabled={isSavingGenerated}
-                className="flex-1 rounded-2xl bg-accent-green px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isSavingGenerated ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Check className="size-4" />
-                )}
-                Use as Avatar
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Gallery mode
-  if (mode === "gallery") {
-    return (
-      <div className="space-y-4">
-        <button
-          type="button"
-          onClick={() => setMode("grid")}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-4" />
-          Back to avatars
-        </button>
-
-        {isLoadingGallery ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="aspect-square rounded-2xl bg-muted animate-pulse" />
-            ))}
-          </div>
-        ) : galleryFiles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-            <ImageIcon className="size-8 mb-2" />
-            <p className="text-sm">No generated images yet</p>
-            <p className="text-xs mt-1">Generate some images first, then pick them here</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {galleryFiles.map((file) => (
-              <button
-                key={file.id}
-                type="button"
-                onClick={() => handlePickFromGallery(file.id)}
-                disabled={savingFileId === file.id}
-                className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-border transition-all hover:border-accent-green/50"
-              >
-                <img
-                  src={`/api/files/${file.id}`}
-                  alt={file.filename}
-                  className="size-full object-cover"
-                />
-                {savingFileId === file.id && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <Loader2 className="size-6 text-white animate-spin" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-accent-green/0 group-hover:bg-accent-green/10 transition-colors flex items-center justify-center">
-                  <Check className="size-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Grid mode (default)
   return (
-    <div className="space-y-3">
-      {/* Avatar quality tips */}
-      <div className="flex items-start gap-2 rounded-xl bg-accent-blue/5 border border-accent-blue/20 px-3 py-2.5">
-        <Info className="size-3.5 text-accent-blue shrink-0 mt-0.5" />
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
-          <span className="font-medium text-foreground">For best results:</span> Use a front-facing photo with clean background, even lighting, and no text/watermarks. Single person only.
+    <div className="space-y-4">
+      <div className="flex items-start gap-2 rounded-[22px] border border-accent-blue/20 bg-accent-blue/5 px-3 py-3">
+        <Info className="mt-0.5 size-3.5 shrink-0 text-accent-blue" />
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          <span className="font-medium text-foreground">Best results:</span> Use a clear, front-facing portrait with even lighting and a clean background. Keep it to one person.
         </p>
       </div>
 
@@ -458,94 +269,277 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onChange={handleUpload}
       />
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-        {/* Upload button */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
-        >
-          {isUploading ? (
-            <Loader2 className="size-6 animate-spin" />
-          ) : (
-            <>
-              <Upload className="size-5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
-            </>
-          )}
-        </button>
+      <div className="rounded-[24px] border border-border/70 bg-background/35 p-4">
+        <div className="flex items-center gap-4">
+          <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[20px] border border-border/70 bg-muted">
+            {selectedAvatar ? (
+              <img src={`/api/avatars/${selectedAvatar.id}`} alt={selectedAvatar.name} className="size-full object-cover" />
+            ) : (
+              <User className="size-7 text-muted-foreground" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+              Selected Avatar
+            </p>
+            <h3 className="mt-1.5 truncate text-base font-semibold">
+              {selectedAvatar ? selectedAvatar.name : "No avatar selected yet"}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Keep one face selected while you iterate on references and clones.
+            </p>
+          </div>
+        </div>
+      </div>
 
-        {/* Generate button */}
-        <button
-          type="button"
-          onClick={() => setMode("generate")}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
-        >
-          <Sparkles className="size-5" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Generate</span>
-        </button>
-
-        {/* From Gallery button */}
-        <button
-          type="button"
-          onClick={openGallery}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
-        >
-          <ImageIcon className="size-5" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Gallery</span>
-        </button>
-
-        {/* Avatar cards */}
-        {avatars.map((avatar) => {
-          const isSelected = selectedId === avatar.id;
-          return (
-            <div
-              key={avatar.id}
-              className={cn(
-                "group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
-                isSelected
-                  ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
-                  : "border-border hover:border-accent-green/50"
-              )}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as AvatarTab)} className="gap-4">
+        <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto rounded-[20px] bg-background/40 p-1">
+          {TABS.map((tab) => (
+            <TabsTrigger
+              key={tab.id}
+              value={tab.id}
+              className="min-w-max rounded-[14px] px-3 py-2 text-xs font-semibold"
             >
-              <button
-                type="button"
-                onClick={() => onSelect(avatar.id)}
-                className="size-full text-left"
-              >
-                <img
-                  src={`/api/avatars/${avatar.id}`}
-                  alt={avatar.name}
-                  className="size-full object-cover"
-                />
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-                {/* Name */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                  <p className="text-[10px] font-medium text-white truncate">{avatar.name}</p>
+        <TabsContent value="library" className="space-y-4">
+          {isLoading ? (
+            <div className="grid grid-cols-3 gap-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="aspect-square animate-pulse rounded-[22px] bg-muted" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {avatars.map((avatar) => {
+                const isSelected = selectedId === avatar.id;
+
+                return (
+                  <div
+                    key={avatar.id}
+                    className={cn(
+                      "group relative overflow-hidden rounded-[22px] border-2 transition-all",
+                      isSelected
+                        ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
+                        : "border-border hover:border-accent-green/40"
+                    )}
+                  >
+                    <button type="button" onClick={() => onSelect(avatar.id)} className="block size-full text-left">
+                      <div className="aspect-square overflow-hidden">
+                        <img src={`/api/avatars/${avatar.id}`} alt={avatar.name} className="size-full object-cover" />
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pb-3 pt-10">
+                        <p className="truncate text-xs font-semibold text-white">{avatar.name}</p>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(event) => handleDelete(avatar.id, event)}
+                      className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+
+                    {isSelected ? (
+                      <div className="pointer-events-none absolute left-2 top-2 rounded-full border border-accent-green/30 bg-accent-green/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-accent-green">
+                        In use
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+
+              {avatars.length === 0 ? (
+                <div className="col-span-3 flex flex-col items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-background/20 px-4 py-8 text-center text-muted-foreground">
+                  <User className="mb-3 size-8" />
+                  <p className="text-sm font-medium text-foreground">No avatars yet</p>
+                  <p className="mt-1 text-xs">Upload one, generate one, or import from your gallery.</p>
                 </div>
-              </button>
+              ) : null}
+            </div>
+          )}
+        </TabsContent>
 
-              {/* Delete button */}
+        <TabsContent value="upload">
+          <div className="rounded-[26px] border border-border/70 bg-background/20 p-5">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-[24px] border border-dashed border-border/70 bg-background/30 px-6 py-10 text-center">
+              {isUploading ? <Loader2 className="size-8 animate-spin text-accent-green" /> : <Upload className="size-8 text-accent-green" />}
+              <div>
+                <p className="text-sm font-semibold">Upload a portrait</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  JPG or PNG works well. Once it uploads, it becomes the selected avatar automatically.
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={(e) => handleDelete(avatar.id, e)}
-                className="absolute top-1.5 right-1.5 size-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="rounded-full bg-accent-green px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(123,165,67,0.24)] transition hover:brightness-110 disabled:opacity-60"
               >
-                <Trash2 className="size-3" />
+                {isUploading ? "Uploading..." : "Choose Image"}
               </button>
             </div>
-          );
-        })}
-
-        {/* Empty state */}
-        {avatars.length === 0 && (
-          <div className="col-span-2 flex flex-col items-center justify-center py-6 text-muted-foreground">
-            <User className="size-8 mb-2" />
-            <p className="text-xs">No avatars yet</p>
           </div>
-        )}
-      </div>
+        </TabsContent>
+
+        <TabsContent value="generate">
+          <div className="space-y-4 rounded-[26px] border border-border/70 bg-background/20 p-5">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                  Prompt
+                </label>
+                <span className="text-[10px] font-mono text-muted-foreground">{genPrompt.length}/500</span>
+              </div>
+              <Textarea
+                placeholder="Describe the person: age, expression, hair, skin tone, outfit..."
+                value={genPrompt}
+                onChange={(event) => setGenPrompt(event.target.value.slice(0, 500))}
+                maxLength={500}
+                className="min-h-[110px] resize-none rounded-[22px] border border-border bg-muted/50 p-4 text-sm transition-all focus:border-accent-green/30 focus:bg-card"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Studio-lighting and clean-background modifiers are appended automatically for better motion-control references.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                Model
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {imageModels.map((model) => (
+                  <button
+                    key={model.id}
+                    type="button"
+                    onClick={() => setGenModel(model.id)}
+                    className={cn(
+                      "rounded-full border px-3 py-2 text-xs font-semibold transition-colors",
+                      genModel === model.id
+                        ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {model.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {!genJobId ? (
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={!genPrompt.trim()}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-green px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(123,165,67,0.24)] transition hover:brightness-110 disabled:opacity-50"
+              >
+                <Sparkles className="size-4" />
+                Generate Avatar
+              </button>
+            ) : null}
+
+            {isGenerating ? (
+              <div className="flex flex-col items-center justify-center rounded-[24px] border border-border/70 bg-background/30 px-6 py-10 text-center">
+                <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-accent-green" />
+                <p className="mt-4 text-sm font-semibold">Generating avatar</p>
+                <p className="mt-1 text-xs text-muted-foreground">This stays inline so you can keep your workspace context.</p>
+              </div>
+            ) : null}
+
+            {isFailed ? (
+              <div className="rounded-[24px] border border-destructive/30 bg-destructive/5 px-4 py-4">
+                <p className="text-sm font-semibold text-destructive">Generation failed</p>
+                <p className="mt-1 text-xs text-destructive/80">{genJob?.error ?? "Please try again."}</p>
+                <button
+                  type="button"
+                  onClick={resetGeneration}
+                  className="mt-3 rounded-full border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : null}
+
+            {isCompleted ? (
+              <div className="space-y-4 rounded-[24px] border border-border/70 bg-background/30 p-4">
+                <div className="mx-auto w-full max-w-[220px] overflow-hidden rounded-[22px] border border-accent-green/30">
+                  <img
+                    src={`/api/files/${genJob.outputs[0].id}`}
+                    alt="Generated avatar"
+                    className="aspect-square size-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={resetGeneration}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                  >
+                    <X className="size-4" />
+                    Regenerate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
+                    disabled={isSavingGenerated}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-accent-green px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                  >
+                    {isSavingGenerated ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+                    Use as Avatar
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="gallery">
+          <div className="rounded-[26px] border border-border/70 bg-background/20 p-5">
+            {isLoadingGallery ? (
+              <div className="grid grid-cols-3 gap-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="aspect-square animate-pulse rounded-[22px] bg-muted" />
+                ))}
+              </div>
+            ) : galleryFiles.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-[24px] border border-dashed border-border/70 bg-background/20 px-4 py-10 text-center text-muted-foreground">
+                <ImageIcon className="mb-3 size-8" />
+                <p className="text-sm font-medium text-foreground">No generated images yet</p>
+                <p className="mt-1 text-xs">Generate some images in PostForge and import them here as avatars.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {galleryFiles.map((file) => (
+                  <button
+                    key={file.id}
+                    type="button"
+                    onClick={() => handlePickFromGallery(file.id)}
+                    disabled={savingFileId === file.id}
+                    className="group relative overflow-hidden rounded-[22px] border border-border/70 transition-all hover:border-accent-green/30"
+                  >
+                    <div className="aspect-square">
+                      <img src={`/api/files/${file.id}`} alt={file.filename} className="size-full object-cover" />
+                    </div>
+                    {savingFileId === file.id ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/55">
+                        <Loader2 className="size-6 animate-spin text-white" />
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-accent-green/0 transition-colors group-hover:bg-accent-green/10">
+                        <Check className="size-6 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

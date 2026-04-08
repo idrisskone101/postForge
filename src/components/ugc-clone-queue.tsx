@@ -2,17 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { CheckCircle2, ChevronDown, Clock, ExternalLink, Loader2, XCircle } from "lucide-react";
+
 import { apiGet } from "@/lib/api/client";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
-import {
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ExternalLink,
-} from "lucide-react";
 
 interface CloneJob {
   id: string;
@@ -33,6 +28,11 @@ interface CloneJob {
 interface JobsResponse {
   jobs: CloneJob[];
   total: number;
+}
+
+interface UGCCloneQueueProps {
+  activeJobId?: string | null;
+  onSelectJob?: (jobId: string) => void;
 }
 
 const STATUS_CONFIG = {
@@ -62,19 +62,17 @@ const STATUS_CONFIG = {
   },
 } as const;
 
-export function UGCCloneQueue() {
+export function UGCCloneQueue({ activeJobId, onSelectJob }: UGCCloneQueueProps) {
   const [jobs, setJobs] = useState<CloneJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const hasActiveJobs = jobs.some(
-    (j) => j.status === "queued" || j.status === "processing"
-  );
+  const hasActiveJobs = jobs.some((job) => job.status === "queued" || job.status === "processing");
+  const completedCount = jobs.filter((job) => job.status === "completed").length;
 
   const fetchJobs = useCallback(async () => {
     try {
-      const data = await apiGet<JobsResponse>(
-        "/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc"
-      );
+      const data = await apiGet<JobsResponse>("/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc");
       setJobs((prev) => {
         if (JSON.stringify(prev) === JSON.stringify(data.jobs)) return prev;
         return data.jobs;
@@ -89,90 +87,136 @@ export function UGCCloneQueue() {
   useEffect(() => {
     fetchJobs();
 
-    // Poll while there are active jobs
-    const interval = setInterval(() => {
-      fetchJobs();
-    }, hasActiveJobs ? 5000 : 30000);
-
+    const interval = setInterval(fetchJobs, hasActiveJobs ? 5000 : 30000);
     return () => clearInterval(interval);
   }, [fetchJobs, hasActiveJobs]);
 
-  if (isLoading) {
-    return null;
-  }
+  useEffect(() => {
+    if (hasActiveJobs) {
+      setIsOpen(true);
+    }
+  }, [hasActiveJobs]);
 
-  if (jobs.length === 0) {
+  useEffect(() => {
+    if (!hasActiveJobs && jobs.length > 0) {
+      setIsOpen(false);
+    }
+  }, [hasActiveJobs, jobs.length]);
+
+  if (isLoading || jobs.length === 0) {
     return null;
   }
 
   return (
-    <div className="launch-card bg-card border border-border p-6">
-      <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
-        Clone Queue
-      </h3>
-      <div className="space-y-1.5">
-        {jobs.map((job) => {
-          const config = STATUS_CONFIG[job.status];
-          const StatusIcon = config.icon;
-          const isActive =
-            job.status === "queued" || job.status === "processing";
+    <div className="rounded-[32px] border border-border bg-card/85 p-4 shadow-[0_20px_70px_rgba(0,0,0,0.14)] backdrop-blur-xl">
+      <button
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex w-full items-center justify-between gap-3 rounded-[24px] px-2 py-2 text-left"
+      >
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+            Recent Activity
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{jobs.length} recent clones</span>
+            {hasActiveJobs ? (
+              <span className="rounded-full border border-accent-blue/20 bg-accent-blue/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-accent-blue">
+                Live queue
+              </span>
+            ) : (
+              <span className="rounded-full border border-border/70 bg-background/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                {completedCount} completed
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {activeJobId ? (
+            <span className="rounded-full border border-accent-green/20 bg-accent-green/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-accent-green">
+              Viewing {activeJobId.slice(0, 8)}
+            </span>
+          ) : null}
+          <span className="flex size-9 items-center justify-center rounded-full border border-border bg-background/40">
+            <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", isOpen && "rotate-180")} />
+          </span>
+        </div>
+      </button>
 
-          return (
-            <Link
-              key={job.id}
-              href={`/ugc-clone/${job.id}`}
-              className={cn(
-                "group flex items-center gap-3 rounded-md border border-border p-3 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
-                isActive && "border-accent-blue/30 bg-accent-blue/5"
-              )}
-            >
+      {isOpen ? (
+        <div className="mt-4 space-y-2">
+          {jobs.map((job) => {
+            const config = STATUS_CONFIG[job.status];
+            const StatusIcon = config.icon;
+            const isSelected = activeJobId === job.id;
+
+            return (
               <div
+                key={job.id}
                 className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-md",
-                  config.bgClassName
+                  "group flex items-center gap-3 rounded-[24px] border p-3 transition-all",
+                  isSelected
+                    ? "border-accent-green/30 bg-accent-green/5"
+                    : "border-border/70 bg-background/30 hover:border-foreground/20 hover:bg-background/50",
+                  (job.status === "queued" || job.status === "processing") && "border-accent-blue/20 bg-accent-blue/5"
                 )}
               >
-                <StatusIcon
-                  className={cn(
-                    "size-3.5",
-                    config.className,
-                    job.status === "processing" && "animate-spin"
-                  )}
-                />
+                <button
+                  type="button"
+                  onClick={() => onSelectJob?.(job.id)}
+                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                >
+                  <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-2xl", config.bgClassName)}>
+                    <StatusIcon
+                      className={cn(
+                        "size-4",
+                        config.className,
+                        job.status === "processing" && "animate-spin"
+                      )}
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {job.prompt.length > 52 ? `${job.prompt.slice(0, 52)}...` : job.prompt}
+                      </p>
+                      <span
+                        className={cn(
+                          "hidden rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] sm:inline-flex",
+                          config.bgClassName,
+                          config.className
+                        )}
+                      >
+                        {config.label}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                      <span>{job.model}</span>
+                      <span>{formatCost(job.estimatedCost)}</span>
+                      <span>{formatRelativeDate(job.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  {job.status === "completed" && job.outputs[0] ? (
+                    <div className="hidden size-11 shrink-0 overflow-hidden rounded-2xl border border-border/70 sm:block">
+                      <video src={`/api/files/${job.outputs[0].id}`} className="size-full object-cover" muted />
+                    </div>
+                  ) : null}
+                </button>
+
+                <Link
+                  href={`/ugc-clone/${job.id}`}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-background/40 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label={`Open clone ${job.id} permalink`}
+                >
+                  <ExternalLink className="size-4" />
+                </Link>
               </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium truncate">
-                    {job.prompt.length > 40
-                      ? job.prompt.slice(0, 40) + "..."
-                      : job.prompt}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
-                  <span>{job.model}</span>
-                  <span>·</span>
-                  <span>{formatCost(job.estimatedCost)}</span>
-                  <span>·</span>
-                  <span>{formatRelativeDate(job.createdAt)}</span>
-                </div>
-              </div>
-
-              {job.status === "completed" && job.outputs[0] && (
-                <div className="size-9 shrink-0 rounded-md overflow-hidden border border-border">
-                  <video
-                    src={`/api/files/${job.outputs[0].id}`}
-                    className="size-full object-cover"
-                    muted
-                  />
-                </div>
-              )}
-
-              <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-            </Link>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }
