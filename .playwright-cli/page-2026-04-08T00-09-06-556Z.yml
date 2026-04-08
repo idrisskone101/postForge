@@ -1,0 +1,112 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "Analytics" [ref=e33] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e34]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e38]:
+          - img
+          - generic [ref=e39]: Toggle theme
+    - main [ref=e40]:
+      - generic [ref=e446]:
+        - generic [ref=e447]:
+          - generic [ref=e448]:
+            - generic [ref=e449]: ⚡
+            - generic [ref=e450]: Clone Mode Active
+          - heading "UGC Clone" [level=1] [ref=e451]
+          - paragraph [ref=e452]: Paste a TikTok, pick your avatar, and clone the motion.
+        - generic [ref=e453]:
+          - generic [ref=e454]:
+            - generic [ref=e455]:
+              - generic [ref=e457]: 01 / TikTok Source
+              - generic [ref=e459]:
+                - textbox "https://www.tiktok.com/@user/video/..." [ref=e461]
+                - button "Download" [disabled] [ref=e462]:
+                  - img [ref=e463]
+                  - text: Download
+            - generic [ref=e468]: 02 / Choose Avatar
+          - generic [ref=e474]:
+            - generic [ref=e475]:
+              - generic [ref=e477]: 03 / Settings
+              - generic [ref=e478]:
+                - generic [ref=e479]:
+                  - text: Motion Engine
+                  - generic [ref=e480]:
+                    - button "Kling 3.0 $0.126/s" [ref=e481]:
+                      - generic [ref=e482]: Kling 3.0
+                      - generic [ref=e483]: $0.126/s
+                    - button "Kling 3.0 Pro $0.168/s" [ref=e484]:
+                      - generic [ref=e485]: Kling 3.0 Pro
+                      - generic [ref=e486]: $0.168/s
+                    - button "Kling 2.6 $0.07/s" [ref=e487]:
+                      - generic [ref=e488]: Kling 2.6
+                      - generic [ref=e489]: $0.07/s
+                  - paragraph [ref=e490]: V3 includes facial element binding for better identity preservation.
+                - generic [ref=e491]:
+                  - generic [ref=e492]:
+                    - generic [ref=e493]: Scene Direction
+                    - generic [ref=e494]: 0 / 500
+                  - generic [ref=e495]:
+                    - button "Talking Head" [ref=e496]
+                    - button "Product Demo" [ref=e497]
+                    - button "Dance / Movement" [ref=e498]
+                    - button "Reaction" [ref=e499]
+                    - button "Lifestyle / Vlog" [ref=e500]
+                    - button "Office / B2B" [ref=e501]
+                  - 'textbox "Describe the scene: lighting, framing, environment, style..." [ref=e502]'
+                  - paragraph [ref=e503]: "Context only: lighting, environment, framing. Motion comes from the reference video. V3 auto-binds your avatar's face."
+                - generic [ref=e504]:
+                  - generic [ref=e505]:
+                    - img [ref=e506]
+                    - generic [ref=e510]:
+                      - paragraph [ref=e511]: Keep Original Sound
+                      - paragraph [ref=e512]: Preserve the TikTok's audio track
+                  - switch [checked] [ref=e513]
+                  - checkbox [checked] [ref=e514]
+                - generic [ref=e515]:
+                  - generic [ref=e516]:
+                    - paragraph [ref=e517]: Remove Text Overlays
+                    - paragraph [ref=e518]: Strip hook text & captions before motion control
+                  - switch [ref=e519]
+                  - checkbox [ref=e520]
+            - generic [ref=e521]:
+              - paragraph [ref=e522]: Cost Estimate
+              - generic [ref=e523]:
+                - generic [ref=e524]: $0.71
+                - generic [ref=e525]:
+                  - paragraph [ref=e526]: "Ref image: $0.08"
+                  - paragraph [ref=e527]: "Video: 5s @ $0.126/s"
+        - generic [ref=e528]:
+          - generic [ref=e529]:
+            - generic [ref=e530]: Config
+            - generic [ref=e531]: "|"
+            - generic [ref=e532]: Kling 3.0
+            - generic [ref=e533]: "|"
+            - generic [ref=e534]: Original Audio
+          - generic [ref=e535]:
+            - button "Generate Reference" [disabled]:
+              - text: Generate Reference
+              - img
+  - button "Open Next.js Dev Tools" [ref=e137] [cursor=pointer]:
+    - img [ref=e138]
+  - alert [ref=e141]

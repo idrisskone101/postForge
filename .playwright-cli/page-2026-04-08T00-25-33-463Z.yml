@@ -1,0 +1,435 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "Analytics" [ref=e33] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e34]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e38]:
+          - img
+          - generic [ref=e39]: Toggle theme
+    - main [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: ⚡
+            - generic [ref=e46]: Clone Mode Active
+          - heading "UGC Clone" [level=1] [ref=e47]
+          - paragraph [ref=e48]: Paste a TikTok, pick your avatar, and clone the motion.
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e51]:
+              - generic [ref=e53]: 01 / TikTok Source
+              - generic [ref=e54]:
+                - generic [ref=e55]:
+                  - textbox "https://www.tiktok.com/@user/video/..." [ref=e57]
+                  - button "Download" [disabled] [ref=e58]:
+                    - img [ref=e59]
+                    - text: Download
+                - button "Saved Sources (33)" [ref=e63]:
+                  - generic [ref=e65]:
+                    - text: Saved Sources (33)
+                    - img [ref=e66]
+            - generic [ref=e69]:
+              - generic [ref=e71]: 02 / Choose Avatar
+              - generic [ref=e72]:
+                - generic [ref=e73]:
+                  - img [ref=e74]
+                  - paragraph [ref=e76]: "For best results: Use a front-facing photo with clean background, even lighting, and no text/watermarks. Single person only."
+                - generic [ref=e77]:
+                  - button "Upload" [ref=e78]:
+                    - img [ref=e79]
+                    - generic [ref=e82]: Upload
+                  - button "Generate" [ref=e83]:
+                    - img [ref=e84]
+                    - generic [ref=e87]: Generate
+                  - button "Gallery" [ref=e88]:
+                    - img [ref=e89]
+                    - generic [ref=e93]: Gallery
+                  - generic [ref=e94]:
+                    - button "8d20f30a-2f6f-47db-9114-6196942ee119 8d20f30a-2f6f-47db-9114-6196942ee119" [ref=e95]:
+                      - img "8d20f30a-2f6f-47db-9114-6196942ee119" [ref=e96]
+                      - paragraph [ref=e98]: 8d20f30a-2f6f-47db-9114-6196942ee119
+                    - button [ref=e99]:
+                      - img [ref=e100]
+                  - generic [ref=e103]:
+                    - 'button "{ \"prompt\": \"Portrait photo of a young { \"prompt\": \"Portrait photo of a young" [ref=e104]':
+                      - 'img "{ \"prompt\": \"Portrait photo of a young" [ref=e105]'
+                      - paragraph [ref=e107]: "{ \"prompt\": \"Portrait photo of a young"
+                    - button [ref=e108]:
+                      - img [ref=e109]
+                  - generic [ref=e112]:
+                    - button "Test Avatar Test Avatar" [ref=e113]:
+                      - img "Test Avatar" [ref=e114]
+                      - paragraph [ref=e116]: Test Avatar
+                    - button [ref=e117]:
+                      - img [ref=e118]
+          - generic [ref=e121]:
+            - generic [ref=e391]:
+              - generic [ref=e392]:
+                - generic [ref=e393]:
+                  - text: Saved References
+                  - paragraph [ref=e394]: Reuse a previously generated Nano Banana 2 reference for this avatar.
+                - button "Clear" [ref=e541]
+              - generic [ref=e542]:
+                - img "Selected saved reference" [ref=e544]
+                - generic [ref=e545]:
+                  - paragraph [ref=e546]: Saved reference selected
+                  - paragraph [ref=e547]: "@trackwithpaulina - 7483450033980034350"
+              - generic [ref=e395]:
+                - button "Saved reference image @trackwithpaulina - 7483450033980034350 No extra prompt" [active] [ref=e396]:
+                  - img "Saved reference image" [ref=e397]
+                  - generic [ref=e398]:
+                    - paragraph [ref=e399]: "@trackwithpaulina - 7483450033980034350"
+                    - paragraph [ref=e400]: No extra prompt
+                - button "Saved reference image @trackwithpaulina - 7483450033980034350 No extra prompt" [ref=e401]:
+                  - img "Saved reference image" [ref=e402]
+                  - generic [ref=e403]:
+                    - paragraph [ref=e404]: "@trackwithpaulina - 7483450033980034350"
+                    - paragraph [ref=e405]: No extra prompt
+                - button "Saved reference image @brit.hormones - 7621721608813579527 No extra prompt" [ref=e406]:
+                  - img "Saved reference image" [ref=e407]
+                  - generic [ref=e408]:
+                    - paragraph [ref=e409]: "@brit.hormones - 7621721608813579527"
+                    - paragraph [ref=e410]: No extra prompt
+                - button "Saved reference image @brit.hormones - 7621721608813579527 No extra prompt" [ref=e411]:
+                  - img "Saved reference image" [ref=e412]
+                  - generic [ref=e413]:
+                    - paragraph [ref=e414]: "@brit.hormones - 7621721608813579527"
+                    - paragraph [ref=e415]: No extra prompt
+                - button "Saved reference image @brit.hormones - 7621721608813579527 No extra prompt" [ref=e416]:
+                  - img "Saved reference image" [ref=e417]
+                  - generic [ref=e418]:
+                    - paragraph [ref=e419]: "@brit.hormones - 7621721608813579527"
+                    - paragraph [ref=e420]: No extra prompt
+                - button "I want my AI avatar to wear different clothes but keep it trendy. My AI avatar should have different clothes from the source video. @brit.hormones - 7621721608813579527 I want my AI avatar to wear different clothes but keep it trendy. My AI avatar should have different clothes from the source video." [ref=e421]:
+                  - img "I want my AI avatar to wear different clothes but keep it trendy. My AI avatar should have different clothes from the source video." [ref=e422]
+                  - generic [ref=e423]:
+                    - paragraph [ref=e424]: "@brit.hormones - 7621721608813579527"
+                    - paragraph [ref=e425]: I want my AI avatar to wear different clothes but keep it trendy. My AI avatar should have different clothes from the source video.
+                - button "I want my AI avatar to wear different clothes but keep it trendy @brit.hormones - 7621721608813579527 I want my AI avatar to wear different clothes but keep it trendy" [ref=e426]:
+                  - img "I want my AI avatar to wear different clothes but keep it trendy" [ref=e427]
+                  - generic [ref=e428]:
+                    - paragraph [ref=e429]: "@brit.hormones - 7621721608813579527"
+                    - paragraph [ref=e430]: I want my AI avatar to wear different clothes but keep it trendy
+                - button "Saved reference image @ange.hormones - 7623067236072213780 No extra prompt" [ref=e431]:
+                  - img "Saved reference image" [ref=e432]
+                  - generic [ref=e433]:
+                    - paragraph [ref=e434]: "@ange.hormones - 7623067236072213780"
+                    - paragraph [ref=e435]: No extra prompt
+                - button "Saved reference image @brit.hormones - 7619970212833627412 No extra prompt" [ref=e436]:
+                  - img "Saved reference image" [ref=e437]
+                  - generic [ref=e438]:
+                    - paragraph [ref=e439]: "@brit.hormones - 7619970212833627412"
+                    - paragraph [ref=e440]: No extra prompt
+                - button "Saved reference image @jess.cyclesync - 7623556834334412045 No extra prompt" [ref=e441]:
+                  - img "Saved reference image" [ref=e442]
+                  - generic [ref=e443]:
+                    - paragraph [ref=e444]: "@jess.cyclesync - 7623556834334412045"
+                    - paragraph [ref=e445]: No extra prompt
+                - button "Saved reference image @jess.cyclesync - 7623556834334412045 No extra prompt" [ref=e446]:
+                  - img "Saved reference image" [ref=e447]
+                  - generic [ref=e448]:
+                    - paragraph [ref=e449]: "@jess.cyclesync - 7623556834334412045"
+                    - paragraph [ref=e450]: No extra prompt
+                - button "Saved reference image @brit.hormones - 7619579579333725461 No extra prompt" [ref=e451]:
+                  - img "Saved reference image" [ref=e452]
+                  - generic [ref=e453]:
+                    - paragraph [ref=e454]: "@brit.hormones - 7619579579333725461"
+                    - paragraph [ref=e455]: No extra prompt
+                - button "Give my AI avatar different clothing. Keep it girly, pop trendy @reb.hormones - 7621196335970077965 Give my AI avatar different clothing. Keep it girly, pop trendy" [ref=e456]:
+                  - img "Give my AI avatar different clothing. Keep it girly, pop trendy" [ref=e457]
+                  - generic [ref=e458]:
+                    - paragraph [ref=e459]: "@reb.hormones - 7621196335970077965"
+                    - paragraph [ref=e460]: Give my AI avatar different clothing. Keep it girly, pop trendy
+                - button "Saved reference image @reb.hormones - 7621196335970077965 No extra prompt" [ref=e461]:
+                  - img "Saved reference image" [ref=e462]
+                  - generic [ref=e463]:
+                    - paragraph [ref=e464]: "@reb.hormones - 7621196335970077965"
+                    - paragraph [ref=e465]: No extra prompt
+                - button "Saved reference image @laurenglp1journey - 7559661912728816909 No extra prompt" [ref=e466]:
+                  - img "Saved reference image" [ref=e467]
+                  - generic [ref=e468]:
+                    - paragraph [ref=e469]: "@laurenglp1journey - 7559661912728816909"
+                    - paragraph [ref=e470]: No extra prompt
+                - button "Saved reference image @ali.cyclesync - 7598274375795674399 No extra prompt" [ref=e471]:
+                  - img "Saved reference image" [ref=e472]
+                  - generic [ref=e473]:
+                    - paragraph [ref=e474]: "@ali.cyclesync - 7598274375795674399"
+                    - paragraph [ref=e475]: No extra prompt
+                - button "Give my avatar a different outfit @reb.hormones - 7601994626442005790 Give my avatar a different outfit" [ref=e476]:
+                  - img "Give my avatar a different outfit" [ref=e477]
+                  - generic [ref=e478]:
+                    - paragraph [ref=e479]: "@reb.hormones - 7601994626442005790"
+                    - paragraph [ref=e480]: Give my avatar a different outfit
+                - button "Saved reference image @reb.hormones - 7601994626442005790 No extra prompt" [ref=e481]:
+                  - img "Saved reference image" [ref=e482]
+                  - generic [ref=e483]:
+                    - paragraph [ref=e484]: "@reb.hormones - 7601994626442005790"
+                    - paragraph [ref=e485]: No extra prompt
+                - button "Saved reference image @reb.hormones - 7601994626442005790 No extra prompt" [ref=e486]:
+                  - img "Saved reference image" [ref=e487]
+                  - generic [ref=e488]:
+                    - paragraph [ref=e489]: "@reb.hormones - 7601994626442005790"
+                    - paragraph [ref=e490]: No extra prompt
+                - button "give me avatar a different hairstyle and different clothes. Keep the same location but give her a ponytail with long hair as she is in the AI avatar reference image. @madison.cyclesync - 7617138094545980686 give me avatar a different hairstyle and different clothes. Keep the same location but give her a ponytail with long hair as she is in the AI avatar reference image." [ref=e491]:
+                  - img "give me avatar a different hairstyle and different clothes. Keep the same location but give her a ponytail with long hair as she is in the AI avatar reference image." [ref=e492]
+                  - generic [ref=e493]:
+                    - paragraph [ref=e494]: "@madison.cyclesync - 7617138094545980686"
+                    - paragraph [ref=e495]: give me avatar a different hairstyle and different clothes. Keep the same location but give her a ponytail with long hair as she is in the AI avatar reference image.
+                - button "give me avatar a different hairstyle and different clothes @madison.cyclesync - 7617138094545980686 give me avatar a different hairstyle and different clothes" [ref=e496]:
+                  - img "give me avatar a different hairstyle and different clothes" [ref=e497]
+                  - generic [ref=e498]:
+                    - paragraph [ref=e499]: "@madison.cyclesync - 7617138094545980686"
+                    - paragraph [ref=e500]: give me avatar a different hairstyle and different clothes
+                - button "Saved reference image @madison.cyclesync - 7617138094545980686 No extra prompt" [ref=e501]:
+                  - img "Saved reference image" [ref=e502]
+                  - generic [ref=e503]:
+                    - paragraph [ref=e504]: "@madison.cyclesync - 7617138094545980686"
+                    - paragraph [ref=e505]: No extra prompt
+                - button "Saved reference image @nicole.hormonecare - 7610628273948642590 No extra prompt" [ref=e506]:
+                  - img "Saved reference image" [ref=e507]
+                  - generic [ref=e508]:
+                    - paragraph [ref=e509]: "@nicole.hormonecare - 7610628273948642590"
+                    - paragraph [ref=e510]: No extra prompt
+                - button "give my ai avatar different clothes. but some vibe as reference video @nicole.hormonecare - 7610628273948642590 give my ai avatar different clothes. but some vibe as reference video" [ref=e511]:
+                  - img "give my ai avatar different clothes. but some vibe as reference video" [ref=e512]
+                  - generic [ref=e513]:
+                    - paragraph [ref=e514]: "@nicole.hormonecare - 7610628273948642590"
+                    - paragraph [ref=e515]: give my ai avatar different clothes. but some vibe as reference video
+                - button "Saved reference image @nicole.hormonecare - 7610628273948642590 No extra prompt" [ref=e516]:
+                  - img "Saved reference image" [ref=e517]
+                  - generic [ref=e518]:
+                    - paragraph [ref=e519]: "@nicole.hormonecare - 7610628273948642590"
+                    - paragraph [ref=e520]: No extra prompt
+                - button "Saved reference image @ali.cyclesync - 7621959974175984910 No extra prompt" [ref=e521]:
+                  - img "Saved reference image" [ref=e522]
+                  - generic [ref=e523]:
+                    - paragraph [ref=e524]: "@ali.cyclesync - 7621959974175984910"
+                    - paragraph [ref=e525]: No extra prompt
+                - button "Saved reference image @ali.cyclesync - 7621959974175984910 No extra prompt" [ref=e526]:
+                  - img "Saved reference image" [ref=e527]
+                  - generic [ref=e528]:
+                    - paragraph [ref=e529]: "@ali.cyclesync - 7621959974175984910"
+                    - paragraph [ref=e530]: No extra prompt
+                - button "Give my avatar a different outfit than the reference video @stardust.app - 7616768857562172686 Give my avatar a different outfit than the reference video" [ref=e531]:
+                  - img "Give my avatar a different outfit than the reference video" [ref=e532]
+                  - generic [ref=e533]:
+                    - paragraph [ref=e534]: "@stardust.app - 7616768857562172686"
+                    - paragraph [ref=e535]: Give my avatar a different outfit than the reference video
+                - button "Saved reference image @stardust.app - 7616768857562172686 No extra prompt" [ref=e536]:
+                  - img "Saved reference image" [ref=e537]
+                  - generic [ref=e538]:
+                    - paragraph [ref=e539]: "@stardust.app - 7616768857562172686"
+                    - paragraph [ref=e540]: No extra prompt
+            - generic [ref=e122]:
+              - generic [ref=e124]: 03 / Settings
+              - generic [ref=e125]:
+                - generic [ref=e126]:
+                  - text: Motion Engine
+                  - generic [ref=e127]:
+                    - button "Kling 3.0 $0.126/s" [ref=e128]:
+                      - generic [ref=e129]: Kling 3.0
+                      - generic [ref=e130]: $0.126/s
+                    - button "Kling 3.0 Pro $0.168/s" [ref=e131]:
+                      - generic [ref=e132]: Kling 3.0 Pro
+                      - generic [ref=e133]: $0.168/s
+                    - button "Kling 2.6 $0.07/s" [ref=e134]:
+                      - generic [ref=e135]: Kling 2.6
+                      - generic [ref=e136]: $0.07/s
+                  - paragraph [ref=e137]: V3 includes facial element binding for better identity preservation.
+                - generic [ref=e138]:
+                  - generic [ref=e139]:
+                    - generic [ref=e140]: Scene Direction
+                    - generic [ref=e141]: 0 / 500
+                  - generic [ref=e142]:
+                    - button "Talking Head" [ref=e143]
+                    - button "Product Demo" [ref=e144]
+                    - button "Dance / Movement" [ref=e145]
+                    - button "Reaction" [ref=e146]
+                    - button "Lifestyle / Vlog" [ref=e147]
+                    - button "Office / B2B" [ref=e148]
+                  - 'textbox "Describe the scene: lighting, framing, environment, style..." [ref=e149]'
+                  - paragraph [ref=e150]: "Context only: lighting, environment, framing. Motion comes from the reference video. V3 auto-binds your avatar's face."
+                - generic [ref=e151]:
+                  - generic [ref=e152]:
+                    - img [ref=e153]
+                    - generic [ref=e157]:
+                      - paragraph [ref=e158]: Keep Original Sound
+                      - paragraph [ref=e159]: Preserve the TikTok's audio track
+                  - switch [checked] [ref=e160]
+                  - checkbox [checked] [ref=e161]
+                - generic [ref=e162]:
+                  - generic [ref=e163]:
+                    - paragraph [ref=e164]: Remove Text Overlays
+                    - paragraph [ref=e165]: Strip hook text & captions before motion control
+                  - switch [ref=e166]
+                  - checkbox [ref=e167]
+            - generic [ref=e168]:
+              - paragraph [ref=e169]: Cost Estimate
+              - generic [ref=e170]:
+                - generic [ref=e171]: $0.71
+                - generic [ref=e172]:
+                  - paragraph [ref=e173]: "Ref image: $0.08"
+                  - paragraph [ref=e174]: "Video: 5s @ $0.126/s"
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - generic [ref=e177]: Config
+            - generic [ref=e178]: "|"
+            - generic [ref=e179]: Kling 3.0
+            - generic [ref=e548]: "|"
+            - generic [ref=e549]: Saved Ref
+            - generic [ref=e180]: "|"
+            - generic [ref=e181]: Original Audio
+          - generic [ref=e182]:
+            - button "Generate New Reference" [disabled]:
+              - img
+              - text: Generate New Reference
+            - button "Generate Clone" [disabled]:
+              - text: Generate Clone
+              - img
+        - generic [ref=e194]:
+          - heading "Clone Queue" [level=3] [ref=e195]
+          - generic [ref=e196]:
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.76 · 14 min ago" [ref=e197] [cursor=pointer]:
+              - /url: /ugc-clone/b4bdb8ab-6523-450b-bb9c-82a4bce2a764
+              - img [ref=e199]
+              - generic [ref=e202]:
+                - paragraph [ref=e204]: Person performing the actions from the r...
+                - generic [ref=e205]:
+                  - generic [ref=e206]: kling-3.0-motion
+                  - generic [ref=e207]: ·
+                  - generic [ref=e208]: $0.76
+                  - generic [ref=e209]: ·
+                  - generic [ref=e210]: 14 min ago
+              - img [ref=e213]
+            - link "Verification job for UGC comparison layo... kling-3.0-motion · $0.63 · yesterday" [ref=e217] [cursor=pointer]:
+              - /url: /ugc-clone/369553c3-6ebe-4f55-8450-8c38bb27ab8b
+              - img [ref=e219]
+              - generic [ref=e222]:
+                - paragraph [ref=e224]: Verification job for UGC comparison layo...
+                - generic [ref=e225]:
+                  - generic [ref=e226]: kling-3.0-motion
+                  - generic [ref=e227]: ·
+                  - generic [ref=e228]: $0.63
+                  - generic [ref=e229]: ·
+                  - generic [ref=e230]: yesterday
+              - img [ref=e231]
+            - link "Person performing the actions from the r... kling-3.0-motion · $1.57 · 3 days ago" [ref=e235] [cursor=pointer]:
+              - /url: /ugc-clone/dae466ec-46f9-470b-b783-a1667cea71a5
+              - img [ref=e237]
+              - generic [ref=e240]:
+                - paragraph [ref=e242]: Person performing the actions from the r...
+                - generic [ref=e243]:
+                  - generic [ref=e244]: kling-3.0-motion
+                  - generic [ref=e245]: ·
+                  - generic [ref=e246]: $1.57
+                  - generic [ref=e247]: ·
+                  - generic [ref=e248]: 3 days ago
+              - img [ref=e251]
+            - link "Person performing the actions from the r... kling-3.0-pro-motion · $0.50 · 5 days ago" [ref=e255] [cursor=pointer]:
+              - /url: /ugc-clone/00a6030c-6a32-4d19-a887-3d6136705d5a
+              - img [ref=e257]
+              - generic [ref=e261]:
+                - paragraph [ref=e263]: Person performing the actions from the r...
+                - generic [ref=e264]:
+                  - generic [ref=e265]: kling-3.0-pro-motion
+                  - generic [ref=e266]: ·
+                  - generic [ref=e267]: $0.50
+                  - generic [ref=e268]: ·
+                  - generic [ref=e269]: 5 days ago
+              - img [ref=e270]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 5 days ago" [ref=e274] [cursor=pointer]:
+              - /url: /ugc-clone/71ac8c71-e3b1-49b7-88ca-d9c24b377795
+              - img [ref=e276]
+              - generic [ref=e280]:
+                - paragraph [ref=e282]: Person performing the actions from the r...
+                - generic [ref=e283]:
+                  - generic [ref=e284]: kling-3.0-motion
+                  - generic [ref=e285]: ·
+                  - generic [ref=e286]: $0.38
+                  - generic [ref=e287]: ·
+                  - generic [ref=e288]: 5 days ago
+              - img [ref=e289]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 5 days ago" [ref=e293] [cursor=pointer]:
+              - /url: /ugc-clone/d4f1fcde-5f12-46e3-a267-77c9cc911f02
+              - img [ref=e295]
+              - generic [ref=e299]:
+                - paragraph [ref=e301]: Person performing the actions from the r...
+                - generic [ref=e302]:
+                  - generic [ref=e303]: kling-3.0-motion
+                  - generic [ref=e304]: ·
+                  - generic [ref=e305]: $0.38
+                  - generic [ref=e306]: ·
+                  - generic [ref=e307]: 5 days ago
+              - img [ref=e308]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 5 days ago" [ref=e312] [cursor=pointer]:
+              - /url: /ugc-clone/5427e46e-7398-4fc3-851f-099eebc9ae77
+              - img [ref=e314]
+              - generic [ref=e318]:
+                - paragraph [ref=e320]: Person performing the actions from the r...
+                - generic [ref=e321]:
+                  - generic [ref=e322]: kling-3.0-motion
+                  - generic [ref=e323]: ·
+                  - generic [ref=e324]: $0.38
+                  - generic [ref=e325]: ·
+                  - generic [ref=e326]: 5 days ago
+              - img [ref=e327]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 5 days ago" [ref=e331] [cursor=pointer]:
+              - /url: /ugc-clone/6402a86b-b95d-419e-b4be-9f313af82d4d
+              - img [ref=e333]
+              - generic [ref=e336]:
+                - paragraph [ref=e338]: Person performing the actions from the r...
+                - generic [ref=e339]:
+                  - generic [ref=e340]: kling-3.0-motion
+                  - generic [ref=e341]: ·
+                  - generic [ref=e342]: $0.38
+                  - generic [ref=e343]: ·
+                  - generic [ref=e344]: 5 days ago
+              - img [ref=e347]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.38 · 5 days ago" [ref=e351] [cursor=pointer]:
+              - /url: /ugc-clone/a0a9530b-dab9-45a1-8cfb-371a4ba64fb0
+              - img [ref=e353]
+              - generic [ref=e356]:
+                - paragraph [ref=e358]: Person performing the actions from the r...
+                - generic [ref=e359]:
+                  - generic [ref=e360]: kling-3.0-motion
+                  - generic [ref=e361]: ·
+                  - generic [ref=e362]: $0.38
+                  - generic [ref=e363]: ·
+                  - generic [ref=e364]: 5 days ago
+              - img [ref=e367]
+            - link "Person performing the actions from the r... kling-3.0-motion · $0.50 · 6 days ago" [ref=e371] [cursor=pointer]:
+              - /url: /ugc-clone/c29881c8-0e47-44b6-9481-2c7c0aa722ad
+              - img [ref=e373]
+              - generic [ref=e376]:
+                - paragraph [ref=e378]: Person performing the actions from the r...
+                - generic [ref=e379]:
+                  - generic [ref=e380]: kling-3.0-motion
+                  - generic [ref=e381]: ·
+                  - generic [ref=e382]: $0.50
+                  - generic [ref=e383]: ·
+                  - generic [ref=e384]: 6 days ago
+              - img [ref=e387]
+  - button "Open Next.js Dev Tools" [ref=e188] [cursor=pointer]:
+    - img [ref=e189]
+  - alert [ref=e192]

@@ -108,10 +108,12 @@ class DatabaseStorageDriver implements StorageProvider {
   }
 
   private async persistAsset(localPath: string, data: Buffer): Promise<void> {
+    const bytes = Uint8Array.from(data);
+
     await prisma.storedAsset.upsert({
       where: { key: localPath },
-      update: { data },
-      create: { key: localPath, data },
+      update: { data: bytes },
+      create: { key: localPath, data: bytes },
     });
 
     const cachePath = this.getCachePath(localPath);

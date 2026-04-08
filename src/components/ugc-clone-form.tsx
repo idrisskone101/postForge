@@ -74,6 +74,24 @@ interface RefImageEntry {
   error?: string;
 }
 
+interface SavedReference {
+  id: string;
+  avatarId: string;
+  prompt: string;
+  createdAt: string;
+  filename: string;
+  mimeType: string;
+  width: number | null;
+  height: number | null;
+  fileSizeBytes: number | null;
+  previewUrl: string;
+  source: {
+    id: string;
+    label: string;
+    originalUrl: string;
+  } | null;
+}
+
 export function UGCCloneForm() {
   const router = useRouter();
 
@@ -93,6 +111,10 @@ export function UGCCloneForm() {
 
   // Step 2: Avatar
   const [avatarId, setAvatarId] = useState<string | null>(null);
+  const [savedReferences, setSavedReferences] = useState<SavedReference[]>([]);
+  const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
+  const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
+  const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
 
   // Step 3: Settings
   const [prompt, setPrompt] = useState("");
@@ -115,6 +137,32 @@ export function UGCCloneForm() {
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const refImagesRef = useRef(refImages);
   useEffect(() => { refImagesRef.current = refImages; });
+
+  const fetchSavedReferences = useCallback(async (nextAvatarId: string) => {
+    setIsLoadingSavedReferences(true);
+    setSavedReferencesError(null);
+
+    try {
+      const references = await apiGet<SavedReference[]>(
+        `/api/ugc-clone/references?avatarId=${encodeURIComponent(nextAvatarId)}`
+      );
+      setSavedReferences(references);
+      setSelectedSavedReferenceId((current) =>
+        current && references.some((reference) => reference.id === current)
+          ? current
+          : null
+      );
+    } catch (err) {
+      console.error("Failed to load saved references:", err);
+      setSavedReferences([]);
+      setSelectedSavedReferenceId(null);
+      setSavedReferencesError(
+        err instanceof Error ? err.message : "Failed to load saved references"
+      );
+    } finally {
+      setIsLoadingSavedReferences(false);
+    }
+  }, []);
 
   const pollGeneratingJobs = useCallback(async () => {
     const generating = refImagesRef.current.filter((r) => r.status === "generating");
@@ -149,7 +197,22 @@ export function UGCCloneForm() {
       });
       return changed ? next : prev;
     });
-  }, []);
+
+    if (avatarId) {
+      void fetchSavedReferences(avatarId);
+    }
+  }, [avatarId, fetchSavedReferences]);
+
+  useEffect(() => {
+    if (!avatarId) {
+      setSavedReferences([]);
+      setSavedReferencesError(null);
+      setSelectedSavedReferenceId(null);
+      return;
+    }
+
+    void fetchSavedReferences(avatarId);
+  }, [avatarId, fetchSavedReferences]);
 
   useEffect(() => {
     const hasGenerating = refImages.some((r) => r.status === "generating");
@@ -182,6 +245,9 @@ export function UGCCloneForm() {
   const hasAnyCompleted = refImages.some((r) => r.status === "completed");
   const latestEntry = refImages[refImages.length - 1] ?? null;
   const isGenerating = latestEntry?.status === "generating";
+  const selectedSavedReference = savedReferences.find(
+    (reference) => reference.id === selectedSavedReferenceId
+  ) ?? null;
 
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
@@ -215,6 +281,7 @@ export function UGCCloneForm() {
     try {
       const result = await apiPost<{ id: string }>("/api/ugc-clone/reference-image", {
         tiktokVideoPath: videoInfo.localPath,
+        tiktokSourceId: videoInfo.id,
         avatarId,
         prompt: promptToUse || undefined,
       });
@@ -271,14 +338,51 @@ export function UGCCloneForm() {
     }
   };
 
+  const handleGenerateWithSavedReference = async () => {
+    if (!videoInfo || !avatarId || !selectedSavedReferenceId) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
+        tiktokVideoPath: videoInfo.localPath,
+        avatarId,
+        keepOriginalSound,
+        removeTextOverlays,
+        model: selectedModel,
+        savedReferenceId: selectedSavedReferenceId,
+        durationSec,
+      });
+      setPhase("submitted");
+      router.push(`/ugc-clone/${result.id}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to generate clone.";
+      setSubmitError(msg);
+      setIsSubmitting(false);
+    }
+  };
+
   const handleBackToInput = () => {
     setPhase("input");
     setRefImages([]);
     setSelectedRefIndex(0);
     setSubmitError(null);
+    if (avatarId) {
+      void fetchSavedReferences(avatarId);
+    }
   };
 
-  const modelName = selectedModel === "kling-3.0-motion" ? "Kling 3.0" : "Kling 2.6";
+  const handleSelectSavedReference = (referenceId: string) => {
+    setSelectedSavedReferenceId((current) =>
+      current === referenceId ? null : referenceId
+    );
+  };
+
+  const modelName = selectedModel === "kling-3.0-motion"
+    ? "Kling 3.0"
+    : selectedModel === "kling-3.0-pro-motion"
+      ? "Kling 3.0 Pro"
+      : "Kling 2.6";
 
   // ─── Review Phase ───────────────────────────────────────────────────
   if (phase === "reviewing") {
@@ -590,6 +694,104 @@ export function UGCCloneForm() {
 
         {/* Right Column: Settings */}
         <div className="lg:col-span-5 space-y-6">
+          {avatarId && (
+            <div className="launch-card bg-card p-6 border border-border">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    Saved References
+                  </span>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Reuse a previously generated Nano Banana 2 reference for this avatar.
+                  </p>
+                </div>
+                {selectedSavedReference && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSavedReferenceId(null)}
+                    className="rounded-md border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {selectedSavedReference && (
+                <div className="mb-4 overflow-hidden rounded-lg border border-accent-coral/30 bg-accent-coral/5">
+                  <div className="p-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selectedSavedReference.previewUrl}
+                      alt="Selected saved reference"
+                      className="h-56 w-full rounded-md object-cover"
+                    />
+                  </div>
+                  <div className="border-t border-accent-coral/20 px-4 py-3">
+                    <p className="text-xs font-medium">Saved reference selected</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      {selectedSavedReference.source?.label ?? "Reusable avatar-scene composite"}
+                    </p>
+                    {selectedSavedReference.prompt && (
+                      <p className="mt-2 line-clamp-2 text-[11px] italic text-foreground/75">
+                        {selectedSavedReference.prompt}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {isLoadingSavedReferences ? (
+                <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin" />
+                  Loading saved references...
+                </div>
+              ) : savedReferencesError ? (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                  {savedReferencesError}
+                </div>
+              ) : savedReferences.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+                  No saved references yet for this avatar. Generate one below and it will be reusable next time.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {savedReferences.map((reference) => {
+                    const isSelected = selectedSavedReferenceId === reference.id;
+
+                    return (
+                      <button
+                        key={reference.id}
+                        type="button"
+                        onClick={() => handleSelectSavedReference(reference.id)}
+                        className={cn(
+                          "overflow-hidden rounded-lg border bg-muted/30 text-left transition-all duration-150",
+                          isSelected
+                            ? "border-accent-coral shadow-[0_0_0_1px_rgba(255,123,74,0.2)]"
+                            : "border-border hover:border-foreground/20"
+                        )}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={reference.previewUrl}
+                          alt={reference.prompt || "Saved reference image"}
+                          className="h-36 w-full object-cover"
+                        />
+                        <div className="space-y-1 px-3 py-2">
+                          <p className="truncate text-xs font-medium">
+                            {reference.source?.label ?? "Saved reference"}
+                          </p>
+                          <p className="line-clamp-2 text-[11px] text-muted-foreground">
+                            {reference.prompt || "No extra prompt"}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Step 3: Settings */}
           <div className="launch-card bg-card p-6 border border-border">
             <div className="flex justify-between items-center mb-6">
@@ -750,6 +952,12 @@ export function UGCCloneForm() {
             <ToolbarHeading>Config</ToolbarHeading>
             <ToolbarDivider />
             <ToolbarLabel>{modelName}</ToolbarLabel>
+            {selectedSavedReference && (
+              <>
+                <ToolbarDivider />
+                <ToolbarLabel>Saved Ref</ToolbarLabel>
+              </>
+            )}
             <ToolbarDivider />
             <ToolbarLabel>{keepOriginalSound ? "Original Audio" : "No Audio"}</ToolbarLabel>
             {videoInfo && (
@@ -766,20 +974,41 @@ export function UGCCloneForm() {
             {submitError}
           </div>
         )}
+        {selectedSavedReference && (
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={handleGenerateRefImage}
+            disabled={!canSubmit}
+            className="rounded-md px-6 h-auto py-2.5 text-sm font-bold flex items-center gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-4" />
+                Generate New Reference
+              </>
+            )}
+          </Button>
+        )}
         <Button
           size="lg"
-          onClick={handleGenerateRefImage}
+          onClick={selectedSavedReference ? handleGenerateWithSavedReference : handleGenerateRefImage}
           disabled={!canSubmit}
           className="bg-accent-coral text-white font-bold px-8 py-2.5 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-2 uppercase tracking-wider"
         >
           {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Generating...
+              {selectedSavedReference ? "Submitting..." : "Generating..."}
             </>
           ) : (
             <>
-              Generate Reference
+              {selectedSavedReference ? "Generate Clone" : "Generate Reference"}
               <ArrowRight className="size-4" />
             </>
           )}

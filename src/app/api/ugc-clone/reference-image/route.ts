@@ -19,8 +19,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      body.tiktokSourceId !== undefined &&
+      typeof body.tiktokSourceId !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "tiktokSourceId must be a string" },
+        { status: 400 }
+      );
+    }
+
     const { jobId, estimatedCost, model } = await generateReferenceImage({
       tiktokVideoPath: body.tiktokVideoPath,
+      tiktokSourceId: body.tiktokSourceId,
       avatarId: body.avatarId,
       prompt: body.prompt,
       imageModel: body.imageModel,

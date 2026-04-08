@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "Analytics" [ref=e33] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e34]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e38]:
+          - img
+          - generic [ref=e39]: Toggle theme
+    - main [ref=e40]:
+      - generic [ref=e394]:
+        - generic [ref=e395]:
+          - button [ref=e396]:
+            - img [ref=e397]
+          - generic [ref=e399]:
+            - img [ref=e400]
+            - heading "UGC Clone Result" [level=1] [ref=e405]
+            - generic [ref=e406]: kling-3.0-motion
+            - generic [ref=e407]: 369553c3
+        - generic [ref=e411]:
+          - generic [ref=e412]:
+            - paragraph [ref=e413]: Details
+            - generic [ref=e414]:
+              - generic [ref=e415]:
+                - generic [ref=e416]:
+                  - paragraph [ref=e417]: Est. Cost
+                  - paragraph [ref=e418]: $0.63
+                - generic [ref=e419]:
+                  - paragraph [ref=e420]: Actual Cost
+                  - paragraph [ref=e421]: $0.63
+                - generic [ref=e422]:
+                  - paragraph [ref=e423]: Gen Time
+                  - paragraph [ref=e424]: 12.0s
+                - generic [ref=e425]:
+                  - paragraph [ref=e426]: Status
+                  - paragraph [ref=e427]: completed
+              - generic [ref=e429]:
+                - generic [ref=e430]: Created yesterday
+                - generic [ref=e431]: Done yesterday
+          - generic [ref=e432]:
+            - paragraph [ref=e433]: Prompt
+            - paragraph [ref=e435]: Verification job for UGC comparison layout
+            - generic [ref=e436]:
+              - generic [ref=e437]: UGC Clone
+              - generic [ref=e438]: kling-3.0-motion
+          - button "New Clone" [ref=e439]:
+            - img [ref=e440]
+            - text: New Clone
+  - button "Open Next.js Dev Tools" [ref=e137] [cursor=pointer]:
+    - img [ref=e138]
+  - alert [ref=e141]

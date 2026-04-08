@@ -26,9 +26,12 @@ export interface CloneGenerationRequest {
   keepOriginalSound?: boolean;
   modelId?: string;
   referenceImageFileId?: string;
+  savedReferenceId?: string;
   durationSec?: number;
   removeTextOverlays?: boolean;
 }
+
+export class InvalidCloneRequestError extends Error {}
 
 export async function generateClone(
   request: CloneGenerationRequest
@@ -70,21 +73,48 @@ export async function generateClone(
   const videoFullPath = await normalizeVideoForMotionControl(rawVideoFullPath);
   console.log(`[ugc-clone] Normalized video → ${videoFullPath}`);
 
-  const hasRefImage = !!request.referenceImageFileId;
+  const hasRefImage = !!request.referenceImageFileId || !!request.savedReferenceId;
   let sceneImageUrl: string;
   let avatarUrl: string | null = null;
   let videoUrl: string;
 
   if (hasRefImage) {
-    // Reference image already has the avatar composited into the scene.
-    // We only need the reference image + the TikTok video — no separate avatar upload.
-    const refFile = await prisma.generatedFile.findUnique({
-      where: { id: request.referenceImageFileId },
-    });
-    if (!refFile) {
-      throw new Error(`Reference image file not found: ${request.referenceImageFileId}`);
+    let refLocalPath: string;
+
+    if (request.savedReferenceId) {
+      const savedReference = await prisma.ugcReferenceImage.findUnique({
+        where: { id: request.savedReferenceId },
+      });
+
+      if (!savedReference) {
+        throw new InvalidCloneRequestError(
+          `Saved reference image not found: ${request.savedReferenceId}`
+        );
+      }
+
+      if (savedReference.avatarId !== request.avatarId) {
+        throw new InvalidCloneRequestError(
+          "Saved reference image does not belong to the selected avatar"
+        );
+      }
+
+      refLocalPath = savedReference.localPath;
+    } else {
+      // Reference image already has the avatar composited into the scene.
+      // We only need the reference image + the TikTok video — no separate avatar upload.
+      const refFile = await prisma.generatedFile.findUnique({
+        where: { id: request.referenceImageFileId },
+      });
+      if (!refFile) {
+        throw new InvalidCloneRequestError(
+          `Reference image file not found: ${request.referenceImageFileId}`
+        );
+      }
+
+      refLocalPath = refFile.localPath;
     }
-    const refFullPath = await storage.ensureLocalFile(refFile.localPath);
+
+    const refFullPath = await storage.ensureLocalFile(refLocalPath);
     [sceneImageUrl, videoUrl] = await Promise.all([
       uploadToFalStorage(refFullPath),
       uploadToFalStorage(videoFullPath),
