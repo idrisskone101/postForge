@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     const buffer = await storage.read(path);
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "video/mp4",
         "Content-Length": buffer.length.toString(),

@@ -1,0 +1,1676 @@
+
+> postforge@0.1.0 dev
+> next dev --turbopack
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.2.15:3000
+- Environments: .env
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[storage] Failed to backfill legacy asset images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-1.png: Error: File not found: images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-1.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-2.png: Error: File not found: images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-2.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-3.png: Error: File not found: images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-3.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/2344e774-7f98-44d7-983c-38fad61ff399-0.png: Error: File not found: images/2026-03-12/2344e774-7f98-44d7-983c-38fad61ff399-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/7f59a25c-5afc-4cdf-b78f-31f103584a4e-0.png: Error: File not found: images/2026-03-12/7f59a25c-5afc-4cdf-b78f-31f103584a4e-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-12/6576b90b-d415-4657-b987-8eda2bd7a857-0.mp4: Error: File not found: videos/2026-03-12/6576b90b-d415-4657-b987-8eda2bd7a857-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-12/1fb35a17-fd2f-4dd9-959d-a15c3a046ea6-0.mp4: Error: File not found: videos/2026-03-12/1fb35a17-fd2f-4dd9-959d-a15c3a046ea6-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-13/fe7d46b5-a1ec-4d1f-ab0e-62317d35d429-0.mp4: Error: File not found: videos/2026-03-13/fe7d46b5-a1ec-4d1f-ab0e-62317d35d429-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-13/442f1bd5-564a-4cba-82d2-facc8deba2bb-0.mp4: Error: File not found: videos/2026-03-13/442f1bd5-564a-4cba-82d2-facc8deba2bb-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-13/37b9cfa3-6dc7-4f4c-a38f-84b99cd25f09-0.mp4: Error: File not found: videos/2026-03-13/37b9cfa3-6dc7-4f4c-a38f-84b99cd25f09-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-13/d340c8aa-8035-4c68-8a56-f66296a93d6a-0.png: Error: File not found: images/2026-03-13/d340c8aa-8035-4c68-8a56-f66296a93d6a-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-13/c017b8aa-28b2-4a7b-8a3f-2ac6d86136ab-0.png: Error: File not found: images/2026-03-13/c017b8aa-28b2-4a7b-8a3f-2ac6d86136ab-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/fd2eb18a-1d58-418f-9649-9f4f63d8458b-0.png: Error: File not found: images/2026-03-14/fd2eb18a-1d58-418f-9649-9f4f63d8458b-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/e1274c17-727a-4a47-a92f-1c299916500e-0.png: Error: File not found: images/2026-03-14/e1274c17-727a-4a47-a92f-1c299916500e-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/9a61a76a-2927-4021-ad75-ec91a8d47d07-0.png: Error: File not found: images/2026-03-14/9a61a76a-2927-4021-ad75-ec91a8d47d07-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/d15b6ea2-a1f7-423f-9849-be3a4ced029b-0.png: Error: File not found: images/2026-03-14/d15b6ea2-a1f7-423f-9849-be3a4ced029b-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/f6a682c5-da38-4419-944e-42a582e6d031-0.png: Error: File not found: images/2026-03-14/f6a682c5-da38-4419-944e-42a582e6d031-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/cebc9b59-cd8c-4817-b620-d02489302818-0.png: Error: File not found: images/2026-03-14/cebc9b59-cd8c-4817-b620-d02489302818-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/683ee6b9-19c2-4c00-b079-7bb761576ff8-0.png: Error: File not found: images/2026-03-14/683ee6b9-19c2-4c00-b079-7bb761576ff8-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/b6c6ae93-e679-4742-b02b-1d0ba07b7e19-0.png: Error: File not found: images/2026-03-14/b6c6ae93-e679-4742-b02b-1d0ba07b7e19-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/13ebef24-7fcc-4989-96e0-4fd8d5085b6d-0.mp4: Error: File not found: videos/2026-03-14/13ebef24-7fcc-4989-96e0-4fd8d5085b6d-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/0ba30987-9964-40f3-b331-642d0f41d842-0.png: Error: File not found: images/2026-03-14/0ba30987-9964-40f3-b331-642d0f41d842-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/8fca3f3c-3572-4fb0-be81-347146ea4577-0.png: Error: File not found: images/2026-03-14/8fca3f3c-3572-4fb0-be81-347146ea4577-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/8e4ec2a2-5bb7-4b13-8d5c-b347227f1015-0.png: Error: File not found: images/2026-03-14/8e4ec2a2-5bb7-4b13-8d5c-b347227f1015-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/432b5e91-42b7-43a5-ae62-1c4f5061dddc-0.png: Error: File not found: images/2026-03-14/432b5e91-42b7-43a5-ae62-1c4f5061dddc-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/912b9849-375f-4916-a6ec-8eeae5ec7bcf-0.mp4: Error: File not found: videos/2026-03-14/912b9849-375f-4916-a6ec-8eeae5ec7bcf-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/3c1221e4-d7ee-40b6-ad60-7068a96af7d0-0.png: Error: File not found: images/2026-03-14/3c1221e4-d7ee-40b6-ad60-7068a96af7d0-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/8805b9a4-37f8-4840-868b-aa3b456e19fd-0.mp4: Error: File not found: videos/2026-03-14/8805b9a4-37f8-4840-868b-aa3b456e19fd-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/455ca52d-4c8e-4a16-8ea6-764975bd0b4f-0.png: Error: File not found: images/2026-03-14/455ca52d-4c8e-4a16-8ea6-764975bd0b4f-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/7d8cf67a-d171-4cdd-82ae-2101af13cb5d-0.mp4: Error: File not found: videos/2026-03-14/7d8cf67a-d171-4cdd-82ae-2101af13cb5d-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/ed6d7ad2-f76b-4e95-b19b-8482fa8777e1-0.png: Error: File not found: images/2026-03-14/ed6d7ad2-f76b-4e95-b19b-8482fa8777e1-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/23fbed26-2bf7-4385-99c6-9b54a18790c6-0.png: Error: File not found: images/2026-03-14/23fbed26-2bf7-4385-99c6-9b54a18790c6-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/29fc6b8c-4ade-4902-84c0-0f356b16b1a6-0.png: Error: File not found: images/2026-03-14/29fc6b8c-4ade-4902-84c0-0f356b16b1a6-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/017bc0aa-a207-4a36-b6da-7d6aced20db0-0.mp4: Error: File not found: videos/2026-03-14/017bc0aa-a207-4a36-b6da-7d6aced20db0-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/a9bf33d7-f8a6-424b-8587-79450a57fb7d-0.png: Error: File not found: images/2026-03-14/a9bf33d7-f8a6-424b-8587-79450a57fb7d-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/16d5f1e4-4f0b-47a5-ab98-b7565d7230ba-0.png: Error: File not found: images/2026-03-14/16d5f1e4-4f0b-47a5-ab98-b7565d7230ba-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/49d112bd-602c-41c5-9313-14a979cbf38f-0.png: Error: File not found: images/2026-03-14/49d112bd-602c-41c5-9313-14a979cbf38f-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/c0d9682f-c883-464b-b3b1-2dfd6f76559f-0.mp4: Error: File not found: videos/2026-03-14/c0d9682f-c883-464b-b3b1-2dfd6f76559f-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/91791423-c347-4139-9fd1-62c6d4365fb9-0.png: Error: File not found: images/2026-03-14/91791423-c347-4139-9fd1-62c6d4365fb9-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/0867b913-b4b3-4561-b0f1-3898b7c90a55-0.png: Error: File not found: images/2026-03-14/0867b913-b4b3-4561-b0f1-3898b7c90a55-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/e0d3a0af-b9ff-4a68-a943-9e1ba1bb8d12-0.mp4: Error: File not found: videos/2026-03-14/e0d3a0af-b9ff-4a68-a943-9e1ba1bb8d12-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/e8dc6fcf-3d3d-4a49-98fc-36b7d696665a-0.png: Error: File not found: images/2026-03-14/e8dc6fcf-3d3d-4a49-98fc-36b7d696665a-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/8340d3c2-cfe8-4eb3-92ad-ece7884e3d7d-0.png: Error: File not found: images/2026-03-14/8340d3c2-cfe8-4eb3-92ad-ece7884e3d7d-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/7bed49c8-e40b-476c-8e9a-bcda913e3f5a-0.png: Error: File not found: images/2026-03-14/7bed49c8-e40b-476c-8e9a-bcda913e3f5a-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/ce461e9d-dcd1-465a-898a-7e647f00cf52-0.png: Error: File not found: images/2026-03-15/ce461e9d-dcd1-465a-898a-7e647f00cf52-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/a36cd9f0-28d0-4795-b783-b30f53081d4a-0.mp4: Error: File not found: videos/2026-03-15/a36cd9f0-28d0-4795-b783-b30f53081d4a-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/96e661c0-34ce-40a2-9769-799fb3d8b7e6-0.png: Error: File not found: images/2026-03-15/96e661c0-34ce-40a2-9769-799fb3d8b7e6-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/8222f072-5620-4a17-b991-53eac3b9ffed-0.png: Error: File not found: images/2026-03-15/8222f072-5620-4a17-b991-53eac3b9ffed-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/72171a07-e03f-4720-896c-c6a471f5650f-0.png: Error: File not found: images/2026-03-15/72171a07-e03f-4720-896c-c6a471f5650f-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/99ab3f06-fa75-4e3d-b5e0-284617f8eaee-0.mp4: Error: File not found: videos/2026-03-15/99ab3f06-fa75-4e3d-b5e0-284617f8eaee-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/1fe18cfe-8619-4d98-ba19-702543b0c620-0.png: Error: File not found: images/2026-03-14/1fe18cfe-8619-4d98-ba19-702543b0c620-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/db1acbb1-2ed5-46af-86f0-4e2dc9969eab-0.mp4: Error: File not found: videos/2026-03-14/db1acbb1-2ed5-46af-86f0-4e2dc9969eab-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/fbbb8e47-c871-49c3-87a0-1eb27b6c88b7-0.png: Error: File not found: images/2026-03-14/fbbb8e47-c871-49c3-87a0-1eb27b6c88b7-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/ec4934ad-380f-4813-a1a1-4e5ddbcc1afd-0.mp4: Error: File not found: videos/2026-03-14/ec4934ad-380f-4813-a1a1-4e5ddbcc1afd-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/3e106c37-ffb0-4c69-ab99-d90e31d2fc32-0.png: Error: File not found: images/2026-03-14/3e106c37-ffb0-4c69-ab99-d90e31d2fc32-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/e7826dfa-3cff-4811-a82a-0ac5a1df6d6d-0.png: Error: File not found: images/2026-03-14/e7826dfa-3cff-4811-a82a-0ac5a1df6d6d-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/7d9887ec-34c2-4f50-bd5b-301606dc3ded-0.png: Error: File not found: images/2026-03-14/7d9887ec-34c2-4f50-bd5b-301606dc3ded-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/d907ed10-7ab9-4217-a86f-fd1831f6c71d-0.jpg: Error: File not found: images/2026-03-14/d907ed10-7ab9-4217-a86f-fd1831f6c71d-0.jpg
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/60d7d805-0403-4ed9-a9fc-8ce208a4a951-0.png: Error: File not found: images/2026-03-14/60d7d805-0403-4ed9-a9fc-8ce208a4a951-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/712df9a5-a6bb-4983-86f0-50aef90d8cf0-0.png: Error: File not found: images/2026-03-14/712df9a5-a6bb-4983-86f0-50aef90d8cf0-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/1cdea9ed-90b6-4719-b6e7-aa048d593a21-0.mp4: Error: File not found: videos/2026-03-14/1cdea9ed-90b6-4719-b6e7-aa048d593a21-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/18ba5146-263a-4ec5-913a-660b1ac3cff6-0.png: Error: File not found: images/2026-03-15/18ba5146-263a-4ec5-913a-660b1ac3cff6-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/7b267d4a-4022-43d2-aaf2-0e96b40c600b-0.mp4: Error: File not found: videos/2026-03-15/7b267d4a-4022-43d2-aaf2-0e96b40c600b-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/18223474-ba11-4ce5-8b8b-317ef0cf109b-0.png: Error: File not found: images/2026-03-15/18223474-ba11-4ce5-8b8b-317ef0cf109b-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/f42cddd1-0c49-47bf-953e-21e7b828e8de-0.mp4: Error: File not found: videos/2026-03-15/f42cddd1-0c49-47bf-953e-21e7b828e8de-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/d26dec26-0694-4e26-bbd6-a7f50d392dc7-0.png: Error: File not found: images/2026-03-15/d26dec26-0694-4e26-bbd6-a7f50d392dc7-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/bc5ca13f-798c-4ef5-b573-9e9d41fa2a44-0.mp4: Error: File not found: videos/2026-03-15/bc5ca13f-798c-4ef5-b573-9e9d41fa2a44-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/ea8d6e86-5899-448e-9789-60d891713a7a-0.png: Error: File not found: images/2026-03-15/ea8d6e86-5899-448e-9789-60d891713a7a-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/6ceb6ce7-0ef9-49c5-b185-ad1a7c4d99c1-0.png: Error: File not found: images/2026-03-15/6ceb6ce7-0ef9-49c5-b185-ad1a7c4d99c1-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/c1bb1667-9a4d-4443-a0b9-42addc036496-0.mp4: Error: File not found: videos/2026-03-15/c1bb1667-9a4d-4443-a0b9-42addc036496-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/581e1471-a659-4045-8f86-3869fdee3af2-0.png: Error: File not found: images/2026-03-15/581e1471-a659-4045-8f86-3869fdee3af2-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/a9ae9cd3-5490-4651-aa16-fffe3fbbc938-0.mp4: Error: File not found: videos/2026-03-15/a9ae9cd3-5490-4651-aa16-fffe3fbbc938-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-97a8e1f5-d448-4bf0-bdf4-5db60a46e9e9.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-97a8e1f5-d448-4bf0-bdf4-5db60a46e9e9.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-43851b13-ce2f-48f7-a20a-584228d823f0.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-43851b13-ce2f-48f7-a20a-584228d823f0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-de0de35c-d168-4143-9c64-1e5b2857bde6.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-de0de35c-d168-4143-9c64-1e5b2857bde6.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-73e26325-2d61-465a-9aa3-53cb0974a38e.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-73e26325-2d61-465a-9aa3-53cb0974a38e.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-1f914ee8-d5bf-443c-851a-7863c0ee70b0.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-1f914ee8-d5bf-443c-851a-7863c0ee70b0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-516514b2-cce4-458e-9c51-dbce7a42ad69.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-516514b2-cce4-458e-9c51-dbce7a42ad69.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-9c557844-db07-4f03-b31e-e253329f8665.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-9c557844-db07-4f03-b31e-e253329f8665.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-3f7fc7ef-25e9-45f9-aae3-5b9c31504316.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-3f7fc7ef-25e9-45f9-aae3-5b9c31504316.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-b646ac23-667f-4344-89ab-4740add03548.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-b646ac23-667f-4344-89ab-4740add03548.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/5cc58899-8710-4a4c-9cfb-8865f6b8058f-0.png: Error: File not found: images/2026-03-15/5cc58899-8710-4a4c-9cfb-8865f6b8058f-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-4b080b8e-ab49-4473-9019-e18659b4da52.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-4b080b8e-ab49-4473-9019-e18659b4da52.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/3d15bf1b-5d9e-4534-b174-f643a812ce88-0.mp4: Error: File not found: videos/2026-03-15/3d15bf1b-5d9e-4534-b174-f643a812ce88-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-31693a51-1d48-442a-9d8d-e822b92a0383.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-31693a51-1d48-442a-9d8d-e822b92a0383.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-15/fa4b3b4f-56e9-4965-b6cd-1cbaf8b07999-0.png: Error: File not found: images/2026-03-15/fa4b3b4f-56e9-4965-b6cd-1cbaf8b07999-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-880bd91c-9755-4965-a034-410fdb66fe5b.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-880bd91c-9755-4965-a034-410fdb66fe5b.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-15/1c705886-c230-4300-b682-cb835f85a535-0.mp4: Error: File not found: videos/2026-03-15/1c705886-c230-4300-b682-cb835f85a535-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-d06c7d7f-510a-46ff-94fe-901b1e9c64a7.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-d06c7d7f-510a-46ff-94fe-901b1e9c64a7.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset hook-reaction/2026-03-15/stitch-ffec9135-ce51-40d6-941a-48281b1114f6.mp4: Error: File not found: hook-reaction/2026-03-15/stitch-ffec9135-ce51-40d6-941a-48281b1114f6.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-0.png: Error: File not found: images/2026-03-12/b6bd851a-6bb5-4364-ab24-f073b727cd30-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-12/eb5a080c-dcb2-4ea3-b695-daff588552b1-0.png: Error: File not found: images/2026-03-12/eb5a080c-dcb2-4ea3-b695-daff588552b1-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/eb19a937-ec02-4903-8839-58321f6d815e-0.png: Error: File not found: images/2026-03-14/eb19a937-ec02-4903-8839-58321f6d815e-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset images/2026-03-14/bc107a5a-a055-4315-8cb5-b9359166476e-0.png: Error: File not found: images/2026-03-14/bc107a5a-a055-4315-8cb5-b9359166476e-0.png
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/3c3637a9-6acb-4a09-bd06-6a951dd2b16e-0.mp4: Error: File not found: videos/2026-03-14/3c3637a9-6acb-4a09-bd06-6a951dd2b16e-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/c80956a6-1f5d-4e91-868e-14350910fec3-0.mp4: Error: File not found: videos/2026-03-14/c80956a6-1f5d-4e91-868e-14350910fec3-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/caf5459b-ef05-4615-a6b7-c40e794da847-0.mp4: Error: File not found: videos/2026-03-14/caf5459b-ef05-4615-a6b7-c40e794da847-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset videos/2026-03-14/44f82800-a249-4704-98c7-81083a98a2f9-0.mp4: Error: File not found: videos/2026-03-14/44f82800-a249-4704-98c7-81083a98a2f9-0.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/trimmed-eac46f56-f24e-4700-919b-93f3f9c6b471.mp4: Error: File not found: tiktok-sources/2026-03-15/trimmed-eac46f56-f24e-4700-919b-93f3f9c6b471.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/4d8accea-ee06-4ddc-868d-70d436631ab5.jpg: Error: File not found: tiktok-sources/2026-03-15/4d8accea-ee06-4ddc-868d-70d436631ab5.jpg
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/trimmed-0cd2681b-2ff1-4612-99cb-08630dc06bee.mp4: Error: File not found: tiktok-sources/2026-03-15/trimmed-0cd2681b-2ff1-4612-99cb-08630dc06bee.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/03014d16-9432-40f6-a911-92c5368f4c6e.jpg: Error: File not found: tiktok-sources/2026-03-15/03014d16-9432-40f6-a911-92c5368f4c6e.jpg
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/trimmed-616547c8-37e1-46c4-9e41-fed532d4f240.mp4: Error: File not found: tiktok-sources/2026-03-15/trimmed-616547c8-37e1-46c4-9e41-fed532d4f240.mp4
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+[storage] Failed to backfill legacy asset tiktok-sources/2026-03-15/7f19ab23-c9a7-4b4e-a95d-86c13400346a.jpg: Error: File not found: tiktok-sources/2026-03-15/7f19ab23-c9a7-4b4e-a95d-86c13400346a.jpg
+    at DatabaseStorageDriver.readLegacyAsset (src/lib/storage.ts:134:26)
+    at async runLegacyAssetBackfill (src/lib/storage-backfill.ts:59:7)
+    at async backfillLegacyAssets (src/lib/storage-backfill.ts:18:3)
+    at async (src/lib/runtime-bootstrap.ts:12:7)
+    at async bootstrapServerRuntime (src/lib/runtime-bootstrap.ts:16:3)
+    at async Module.register (src/instrumentation.ts:7:3)
+  132 |       const code = (err as NodeJS.ErrnoException).code;
+  133 |       if (code === "ENOENT" || code === "EISDIR") {
+> 134 |         const notFound = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+      |                          ^
+  135 |         notFound.code = "ENOENT";
+  136 |         throw notFound;
+  137 |       } {
+  code: 'ENOENT'
+}
+✓ Ready in 1380ms

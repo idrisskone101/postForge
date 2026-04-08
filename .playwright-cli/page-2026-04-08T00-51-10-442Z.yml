@@ -1,0 +1,36 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - generic: Dashboard
+          - link "Launch Forge⌘K" [ref=e18] [cursor=pointer]:
+            - /url: /generate
+            - img [ref=e19]
+            - generic: Launch Forge⌘K
+          - link "Gallery" [ref=e22] [cursor=pointer]:
+            - /url: /gallery
+            - img [ref=e23]
+            - generic: Gallery
+          - link "UGC Clone" [ref=e27] [cursor=pointer]:
+            - /url: /ugc-clone
+            - img [ref=e28]
+            - generic: UGC Clone
+          - link "UGC Inspiration" [ref=e33] [cursor=pointer]:
+            - /url: /ugc-inspiration
+            - img [ref=e34]
+            - generic: UGC Inspiration
+          - link "Analytics" [ref=e37] [cursor=pointer]:
+            - /url: /costs
+            - img [ref=e38]
+            - generic: Analytics
+        - button "Toggle theme" [ref=e42]:
+          - img
+          - generic [ref=e43]: Toggle theme
+    - main [ref=e44]
+  - button "Open Next.js Dev Tools" [ref=e65] [cursor=pointer]:
+    - img [ref=e66]
