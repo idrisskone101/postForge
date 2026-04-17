@@ -3,4 +3,15 @@ version = 1
 name = "postForge"
 
 [setup]
-script = ""
+script = '''
+export PATH="/opt/homebrew/bin:/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
+corepack enable || true
+[ -f .env ] || { [ -f ../postForge/.env ] && cp ../postForge/.env .env || cp .env.example .env; }
+
+docker compose up -d postgres
+pnpm install
+pnpm db:generate
+pnpm db:migrate --name init || true
+
+'''

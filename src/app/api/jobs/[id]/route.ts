@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJob, deleteJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
+import { prisma } from "@/lib/db";
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0
+    ? value
+    : null;
+}
 
 export async function GET(
   request: NextRequest,
@@ -36,6 +49,26 @@ export async function GET(
       createdAt: file.createdAt.toISOString(),
     }));
 
+    const input = asRecord(job.input);
+    const requestedTikTokSourceId = asString(input?.tiktokSourceId);
+    const sourceVideoPath = asString(input?.tiktokVideoPath);
+
+    const tikTokSource = requestedTikTokSourceId
+      ? await prisma.tikTokSource.findUnique({
+          where: { id: requestedTikTokSourceId },
+          select: { id: true, label: true, originalUrl: true },
+        })
+      : null;
+
+    const resolvedTikTokSource =
+      tikTokSource ??
+      (sourceVideoPath
+        ? await prisma.tikTokSource.findFirst({
+            where: { localPath: sourceVideoPath },
+            select: { id: true, label: true, originalUrl: true },
+          })
+        : null);
+
     return NextResponse.json({
       id: job.id,
       type: job.type,
@@ -50,6 +83,7 @@ export async function GET(
       error: job.error,
       tags: job.tags,
       outputs,
+      tikTokSource: resolvedTikTokSource,
       createdAt: job.createdAt.toISOString(),
       startedAt: job.startedAt?.toISOString() ?? null,
       completedAt: job.completedAt?.toISOString() ?? null,

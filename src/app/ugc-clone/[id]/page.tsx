@@ -45,6 +45,11 @@ interface JobDetail {
   error: string | null;
   tags: string[];
   outputs: JobOutput[];
+  tikTokSource: {
+    id: string;
+    label: string;
+    originalUrl: string;
+  } | null;
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -307,6 +312,23 @@ export default function UGCCloneJobPage() {
                   {job.model}
                 </span>
               </div>
+            </div>
+          )}
+
+          {job.tikTokSource && (
+            <div className="launch-card bg-card border border-border p-6">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                TikTok Source
+              </p>
+              <p className="text-sm font-medium">{job.tikTokSource.label}</p>
+              <a
+                href={job.tikTokSource.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex text-xs text-accent-blue hover:underline"
+              >
+                Open Original TikTok
+              </a>
             </div>
           )}
 

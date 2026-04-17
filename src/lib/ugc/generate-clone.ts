@@ -21,6 +21,7 @@ const DEFAULT_CLONE_PROMPT_V2 =
 
 export interface CloneGenerationRequest {
   tiktokVideoPath: string;
+  tiktokSourceId?: string;
   avatarId: string;
   prompt?: string;
   keepOriginalSound?: boolean;

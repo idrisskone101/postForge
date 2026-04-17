@@ -123,7 +123,16 @@ export async function persistUgcReferenceImageFromJob(
     sourceVideoPathSnapshot
   );
 
-  const buffer = await storage.read(output.localPath);
+  let buffer: Buffer;
+  try {
+    buffer = await storage.read(output.localPath);
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return null;
+    }
+    throw error;
+  }
+
   if (buffer.length === 0) {
     return null;
   }

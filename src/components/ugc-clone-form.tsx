@@ -342,6 +342,7 @@ export function UGCCloneForm() {
     try {
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
         tiktokVideoPath: videoInfo.localPath,
+        tiktokSourceId: videoInfo.id,
         avatarId,
         keepOriginalSound,
         removeTextOverlays,
@@ -366,6 +367,7 @@ export function UGCCloneForm() {
     try {
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
         tiktokVideoPath: videoInfo.localPath,
+        tiktokSourceId: videoInfo.id,
         avatarId,
         keepOriginalSound,
         removeTextOverlays,
