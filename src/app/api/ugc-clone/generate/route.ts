@@ -5,6 +5,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    if (!body.tiktokSourceId || typeof body.tiktokSourceId !== "string") {
+      return NextResponse.json(
+        { error: "tiktokSourceId is required" },
+        { status: 400 }
+      );
+    }
+
     if (!body.tiktokVideoPath || typeof body.tiktokVideoPath !== "string") {
       return NextResponse.json(
         { error: "tiktokVideoPath is required" },
@@ -15,16 +22,6 @@ export async function POST(request: NextRequest) {
     if (!body.avatarId || typeof body.avatarId !== "string") {
       return NextResponse.json(
         { error: "avatarId is required" },
-        { status: 400 }
-      );
-    }
-
-    if (
-      body.tiktokSourceId !== undefined &&
-      typeof body.tiktokSourceId !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "tiktokSourceId must be a string" },
         { status: 400 }
       );
     }

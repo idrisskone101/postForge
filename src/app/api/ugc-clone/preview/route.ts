@@ -11,8 +11,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Security: only allow tiktok-sources paths
-    if (!path.startsWith("tiktok-sources/")) {
+    // Security: only allow persisted UGC source video paths
+    if (
+      !path.startsWith("tiktok-sources/") &&
+      !path.startsWith("ugc-clone-sources/")
+    ) {
       return NextResponse.json(
         { error: "Invalid path" },
         { status: 403 }
