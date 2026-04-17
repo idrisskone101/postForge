@@ -8,6 +8,14 @@ import { AvatarPicker } from "@/components/avatar-picker";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { calculateEstimatedCost, getModel, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
@@ -21,6 +29,9 @@ import {
   PenLine,
   ArrowRight,
   Volume2,
+  Search,
+  Image as ImageIcon,
+  Clock3,
 } from "lucide-react";
 import {
   FloatingToolbar,
@@ -92,6 +103,14 @@ interface SavedReference {
   } | null;
 }
 
+function formatReferenceDate(date: string) {
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
 export function UGCCloneForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -117,6 +136,8 @@ export function UGCCloneForm() {
   const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
   const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
   const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
+  const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
+  const [referenceSearchQuery, setReferenceSearchQuery] = useState("");
 
   // Step 3: Settings
   const [prompt, setPrompt] = useState("");
@@ -217,11 +238,17 @@ export function UGCCloneForm() {
       setSavedReferences([]);
       setSavedReferencesError(null);
       setSelectedSavedReferenceId(null);
+      setIsReferenceLibraryOpen(false);
+      setReferenceSearchQuery("");
       return;
     }
 
     void fetchSavedReferences(avatarId);
   }, [avatarId, fetchSavedReferences]);
+
+  useEffect(() => {
+    setReferenceSearchQuery("");
+  }, [avatarId]);
 
   useEffect(() => {
     const hasGenerating = refImages.some((r) => r.status === "generating");
@@ -257,6 +284,22 @@ export function UGCCloneForm() {
   const selectedSavedReference = savedReferences.find(
     (reference) => reference.id === selectedSavedReferenceId
   ) ?? null;
+  const normalizedReferenceQuery = referenceSearchQuery.trim().toLowerCase();
+  const filteredSavedReferences = normalizedReferenceQuery
+    ? savedReferences.filter((reference) => {
+      const searchableText = [
+        reference.prompt,
+        reference.source?.label,
+        reference.filename,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedReferenceQuery);
+    })
+    : savedReferences;
+  const recentSavedReferences = savedReferences.slice(0, 4);
 
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
@@ -398,6 +441,11 @@ export function UGCCloneForm() {
     setSelectedSavedReferenceId((current) =>
       current === referenceId ? null : referenceId
     );
+  };
+
+  const handlePickSavedReference = (referenceId: string) => {
+    setSelectedSavedReferenceId(referenceId);
+    setIsReferenceLibraryOpen(false);
   };
 
   const modelName = selectedModel === "kling-3.0-motion"
@@ -727,46 +775,16 @@ export function UGCCloneForm() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-widest">
-                    Saved References
+                    Saved Reference Library
                   </span>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    Reuse a previously generated Nano Banana 2 reference for this avatar.
+                    Keep the form clean. Browse and pick previous references in a dedicated gallery.
                   </p>
                 </div>
-                {selectedSavedReference && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSavedReferenceId(null)}
-                    className="rounded-md border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-
-              {selectedSavedReference && (
-                <div className="mb-4 overflow-hidden rounded-lg border border-accent-coral/30 bg-accent-coral/5">
-                  <div className="p-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={selectedSavedReference.previewUrl}
-                      alt="Selected saved reference"
-                      className="h-56 w-full rounded-md object-cover"
-                    />
-                  </div>
-                  <div className="border-t border-accent-coral/20 px-4 py-3">
-                    <p className="text-xs font-medium">Saved reference selected</p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
-                      {selectedSavedReference.source?.label ?? "Reusable avatar-scene composite"}
-                    </p>
-                    {selectedSavedReference.prompt && (
-                      <p className="mt-2 line-clamp-2 text-[11px] italic text-foreground/75">
-                        {selectedSavedReference.prompt}
-                      </p>
-                    )}
-                  </div>
+                <div className="rounded-md border border-border bg-muted/50 px-2 py-1 text-[10px] font-bold text-muted-foreground">
+                  {savedReferences.length}
                 </div>
-              )}
+              </div>
 
               {isLoadingSavedReferences ? (
                 <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
@@ -782,39 +800,102 @@ export function UGCCloneForm() {
                   No saved references yet for this avatar. Generate one below and it will be reusable next time.
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {savedReferences.map((reference) => {
-                    const isSelected = selectedSavedReferenceId === reference.id;
-
-                    return (
-                      <button
-                        key={reference.id}
-                        type="button"
-                        onClick={() => handleSelectSavedReference(reference.id)}
-                        className={cn(
-                          "overflow-hidden rounded-lg border bg-muted/30 text-left transition-all duration-150",
-                          isSelected
-                            ? "border-accent-coral shadow-[0_0_0_1px_rgba(255,123,74,0.2)]"
-                            : "border-border hover:border-foreground/20"
-                        )}
-                      >
+                <div className="space-y-4">
+                  {selectedSavedReference ? (
+                    <div className="rounded-lg border border-accent-coral/30 bg-accent-coral/5 p-3">
+                      <div className="flex items-start gap-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={reference.previewUrl}
-                          alt={reference.prompt || "Saved reference image"}
-                          className="h-36 w-full object-cover"
+                          src={selectedSavedReference.previewUrl}
+                          alt="Selected saved reference"
+                          className="size-20 shrink-0 rounded-md border border-accent-coral/20 object-cover"
                         />
-                        <div className="space-y-1 px-3 py-2">
-                          <p className="truncate text-xs font-medium">
-                            {reference.source?.label ?? "Saved reference"}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-xs font-semibold">
+                            {selectedSavedReference.source?.label ?? "Saved reference selected"}
                           </p>
-                          <p className="line-clamp-2 text-[11px] text-muted-foreground">
-                            {reference.prompt || "No extra prompt"}
+                          <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+                            {selectedSavedReference.prompt || "Reusable avatar-scene composite"}
+                          </p>
+                          <p className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <Clock3 className="size-3" />
+                            {formatReferenceDate(selectedSavedReference.createdAt)}
                           </p>
                         </div>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsReferenceLibraryOpen(true)}
+                          className="rounded-md border border-border bg-card px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-foreground transition-colors duration-150 hover:border-foreground/20"
+                        >
+                          Browse Library
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSavedReferenceId(null)}
+                          className="rounded-md border border-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-border bg-muted/20 p-4">
+                      <p className="text-xs font-medium">No reference selected</p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        Choose one from the library to skip generating a fresh reference image.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsReferenceLibraryOpen(true)}
+                        className="mt-3 rounded-md border border-border bg-card px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors duration-150 hover:border-foreground/20"
+                      >
+                        Open Library
                       </button>
-                    );
-                  })}
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Recent
+                    </p>
+                    <div className="mt-2 grid grid-cols-4 gap-2">
+                      {recentSavedReferences.map((reference) => {
+                        const isSelected = reference.id === selectedSavedReferenceId;
+
+                        return (
+                          <button
+                            key={reference.id}
+                            type="button"
+                            onClick={() => handleSelectSavedReference(reference.id)}
+                            className={cn(
+                              "overflow-hidden rounded-md border transition-colors duration-150",
+                              isSelected
+                                ? "border-accent-coral"
+                                : "border-border hover:border-foreground/20"
+                            )}
+                            title={reference.source?.label ?? "Saved reference"}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={reference.previewUrl}
+                              alt={reference.prompt || "Saved reference image"}
+                              className="h-16 w-full object-cover"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsReferenceLibraryOpen(true)}
+                    className="w-full rounded-md border border-border bg-muted/30 px-3 py-2 text-xs font-semibold transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/60"
+                  >
+                    Browse all {savedReferences.length} saved references
+                  </button>
                 </div>
               )}
             </div>
@@ -973,6 +1054,159 @@ export function UGCCloneForm() {
           </div>
         </div>
       </div>
+
+      {avatarId && (
+        <Sheet open={isReferenceLibraryOpen} onOpenChange={setIsReferenceLibraryOpen}>
+          <SheetContent
+            side="right"
+            className="p-0 data-[side=right]:w-[min(96vw,1120px)] data-[side=right]:sm:max-w-[min(96vw,1120px)]"
+          >
+            <SheetHeader className="border-b border-border px-5 py-4">
+              <SheetTitle className="text-sm uppercase tracking-wider">Saved Reference Library</SheetTitle>
+              <SheetDescription className="text-xs">
+                Browse previous avatar-scene composites and choose one without cluttering the main settings panel.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="grid h-[calc(100vh-72px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="flex min-h-0 flex-col xl:border-r xl:border-b-0">
+                <div className="space-y-3 border-b border-border p-4">
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={referenceSearchQuery}
+                      onChange={(e) => setReferenceSearchQuery(e.target.value)}
+                      placeholder="Search by source or prompt..."
+                      className="h-9 pl-8 text-sm"
+                    />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {filteredSavedReferences.length} of {savedReferences.length} references
+                  </p>
+                  {filteredSavedReferences.length > 8 && (
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                      Scroll to browse all references
+                    </p>
+                  )}
+                  {selectedSavedReference && (
+                    <div className="rounded-md border border-accent-coral/30 bg-accent-coral/5 px-3 py-2 xl:hidden">
+                      <p className="truncate text-xs font-semibold">
+                        Selected: {selectedSavedReference.source?.label ?? "Saved reference"}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-muted-foreground">
+                        {formatReferenceDate(selectedSavedReference.createdAt)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {filteredSavedReferences.length === 0 ? (
+                  <div className="flex flex-1 items-center justify-center p-6 text-center">
+                    <div>
+                      <p className="text-sm font-medium">No matching references</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Try a different keyword or clear your search.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="library-scrollbar flex-1 overflow-y-auto overscroll-contain p-4">
+                    <div className="grid grid-cols-2 gap-3 pb-8 xl:grid-cols-3">
+                      {filteredSavedReferences.map((reference) => {
+                        const isSelected = reference.id === selectedSavedReferenceId;
+
+                        return (
+                          <button
+                            key={reference.id}
+                            type="button"
+                            onClick={() => handlePickSavedReference(reference.id)}
+                            className={cn(
+                              "overflow-hidden rounded-lg border bg-muted/20 text-left transition-colors duration-150",
+                              isSelected
+                                ? "border-accent-coral shadow-[0_0_0_1px_rgba(255,123,74,0.2)]"
+                                : "border-border hover:border-foreground/20"
+                            )}
+                          >
+                            <div className="relative">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={reference.previewUrl}
+                                alt={reference.prompt || "Saved reference image"}
+                                className="h-36 w-full object-cover"
+                              />
+                              {isSelected && (
+                                <span className="absolute right-2 top-2 rounded-full bg-accent-coral px-1.5 py-0.5 text-[10px] font-bold text-white">
+                                  <Check className="size-3" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="space-y-1 px-3 py-2">
+                              <p className="truncate text-xs font-semibold">
+                                {reference.source?.label ?? "Saved reference"}
+                              </p>
+                              <p className="line-clamp-2 text-[11px] text-muted-foreground">
+                                {reference.prompt || "Reusable avatar-scene composite"}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {formatReferenceDate(reference.createdAt)}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden min-h-0 flex-col bg-muted/20 xl:flex">
+                <div className="border-b border-border p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Current Selection
+                  </p>
+                </div>
+                {selectedSavedReference ? (
+                  <div className="space-y-3 p-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selectedSavedReference.previewUrl}
+                      alt="Currently selected saved reference"
+                      className="h-56 w-full rounded-lg border border-border object-cover"
+                    />
+                    <p className="text-xs font-semibold">
+                      {selectedSavedReference.source?.label ?? "Saved reference selected"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {selectedSavedReference.prompt || "Reusable avatar-scene composite"}
+                    </p>
+                    <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <Clock3 className="size-3" />
+                      {formatReferenceDate(selectedSavedReference.createdAt)}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSavedReferenceId(null)}
+                      className="mt-2 w-full rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold transition-colors duration-150 hover:border-foreground/20"
+                    >
+                      Clear Selection
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-1 items-center justify-center p-4 text-center">
+                    <div>
+                      <ImageIcon className="mx-auto size-5 text-muted-foreground" />
+                      <p className="mt-2 text-xs font-medium">No saved reference selected</p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        Pick one from the gallery to reuse it for clone generation.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
 
       <FloatingToolbar
         summary={
