@@ -453,6 +453,7 @@ export function UGCCloneForm() {
     : selectedModel === "kling-3.0-pro-motion"
       ? "Kling 3.0 Pro"
       : "Kling 2.6";
+  const referenceCost = selectedSavedReference ? 0 : imageCost;
 
   // ─── Review Phase ───────────────────────────────────────────────────
   if (phase === "reviewing") {
@@ -1041,10 +1042,12 @@ export function UGCCloneForm() {
             </p>
             <div className="flex justify-between items-end">
               <span className="text-2xl font-bold tracking-tight">
-                {formatCost(imageCost + videoCost + textErasureCost)}
+                {formatCost(referenceCost + videoCost + textErasureCost)}
               </span>
               <div className="text-right text-[10px] space-y-0.5 text-muted-foreground font-mono">
-                <p>Ref image: {formatCost(imageCost)}</p>
+                <p>
+                  Ref image: {selectedSavedReference ? `${formatCost(0)} (saved)` : formatCost(imageCost)}
+                </p>
                 <p>Video: {durationSec}s @ ${pricePerSec}/s</p>
                 {removeTextOverlays && (
                   <p>Text removal: {formatCost(textErasureCost)}</p>

@@ -165,8 +165,6 @@ export async function persistUgcReferenceImageFromJob(
 
     return { reference, created: true };
   } catch (error) {
-    await storage.delete(localPath).catch(() => {});
-
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
@@ -179,6 +177,7 @@ export async function persistUgcReferenceImageFromJob(
       }
     }
 
+    await storage.delete(localPath).catch(() => {});
     throw error;
   }
 }
