@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
 import { AvatarPicker } from "@/components/avatar-picker";
@@ -94,6 +94,8 @@ interface SavedReference {
 
 export function UGCCloneForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sourceIdParam = searchParams.get("sourceId");
 
   // Phase
   const [phase, setPhase] = useState<Phase>("input");
@@ -124,6 +126,7 @@ export function UGCCloneForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [pendingSourceId, setPendingSourceId] = useState<string | null>(sourceIdParam);
 
   const durationSec = videoInfo?.durationSec ?? 5;
   const videoCost = calculateEstimatedCost(selectedModel, { durationSec });
@@ -163,6 +166,12 @@ export function UGCCloneForm() {
       setIsLoadingSavedReferences(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (sourceIdParam) {
+      setPendingSourceId(sourceIdParam);
+    }
+  }, [sourceIdParam]);
 
   const pollGeneratingJobs = useCallback(async () => {
     const generating = refImagesRef.current.filter((r) => r.status === "generating");
@@ -253,6 +262,17 @@ export function UGCCloneForm() {
     setVideoInfo(info);
     setOriginalVideoInfo(info);
     setShowTrimmer(false);
+  };
+
+  const handlePreselectedSourceResolved = () => {
+    if (!pendingSourceId) return;
+
+    setPendingSourceId(null);
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("sourceId");
+    const nextQuery = nextParams.toString();
+
+    router.replace(nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone");
   };
 
   const handleTrimmed = (info: { localPath: string; filename: string; durationSec: number; width: number; height: number }) => {
@@ -645,7 +665,13 @@ export function UGCCloneForm() {
                 01 / TikTok Source
               </span>
             </div>
-            <TikTokInput onDownloaded={handleVideoDownloaded} videoInfo={videoInfo} refreshKey={sourcesRefreshKey} />
+            <TikTokInput
+              onDownloaded={handleVideoDownloaded}
+              videoInfo={videoInfo}
+              refreshKey={sourcesRefreshKey}
+              preselectedSourceId={pendingSourceId}
+              onPreselectedSourceResolved={handlePreselectedSourceResolved}
+            />
 
             {/* Trim button — show after download, when trimmer is not open */}
             {videoInfo && !showTrimmer && (

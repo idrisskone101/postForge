@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import {
@@ -41,9 +41,17 @@ interface TikTokInputProps {
   onDownloaded: (info: TikTokVideoInfo | null) => void;
   videoInfo: TikTokVideoInfo | null;
   refreshKey?: number;
+  preselectedSourceId?: string | null;
+  onPreselectedSourceResolved?: () => void;
 }
 
-export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInputProps) {
+export function TikTokInput({
+  onDownloaded,
+  videoInfo,
+  refreshKey,
+  preselectedSourceId,
+  onPreselectedSourceResolved,
+}: TikTokInputProps) {
   const [url, setUrl] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +59,7 @@ export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInput
   const [isLoadingSources, setIsLoadingSources] = useState(true);
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const autoSelectedIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     apiGet<SavedSource[]>("/api/ugc-clone/sources")
@@ -58,6 +67,37 @@ export function TikTokInput({ onDownloaded, videoInfo, refreshKey }: TikTokInput
       .catch((err) => console.error("Failed to load saved sources:", err))
       .finally(() => setIsLoadingSources(false));
   }, [refreshKey]);
+
+  useEffect(() => {
+    if (!preselectedSourceId || isLoadingSources) return;
+    if (autoSelectedIdRef.current === preselectedSourceId) return;
+
+    const source = savedSources.find((item) => item.id === preselectedSourceId);
+    if (!source) return;
+
+    autoSelectedIdRef.current = preselectedSourceId;
+    onDownloaded({
+      id: source.id,
+      localPath: source.localPath,
+      filename: source.filename,
+      durationSec: source.durationSec,
+      width: source.width,
+      height: source.height,
+    });
+    onPreselectedSourceResolved?.();
+  }, [
+    isLoadingSources,
+    onDownloaded,
+    onPreselectedSourceResolved,
+    preselectedSourceId,
+    savedSources,
+  ]);
+
+  useEffect(() => {
+    if (!preselectedSourceId) {
+      autoSelectedIdRef.current = null;
+    }
+  }, [preselectedSourceId]);
 
   const handleDownload = async () => {
     if (!url.trim()) return;
