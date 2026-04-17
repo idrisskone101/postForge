@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+.cache/
 
 # debug
 npm-debug.log*
@@ -53,4 +54,9 @@ next-env.d.ts
 /src/generated/prisma
 
 # Playwright MCP
+.playwright-cli/
 .playwright-mcp/
+playwright-report/
+test-results/
+blob-report/
+playwright/.auth/

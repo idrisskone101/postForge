@@ -59,6 +59,9 @@ async function runLegacyAssetBackfill(): Promise<void> {
       await storage.read(localPath);
       migratedCount += 1;
     } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        continue;
+      }
       console.warn(`[storage] Failed to backfill legacy asset ${localPath}:`, err);
     }
   }

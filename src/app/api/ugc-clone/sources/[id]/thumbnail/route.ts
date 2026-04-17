@@ -6,6 +6,11 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const transparentPixel = Buffer.from(
+    "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+    "base64"
+  );
+
   try {
     const { id } = await params;
 
@@ -15,12 +20,7 @@ export async function GET(
     }
 
     if (!source.thumbnailPath) {
-      // Return a 1x1 transparent pixel as placeholder
-      const pixel = Buffer.from(
-        "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-        "base64"
-      );
-      return new NextResponse(pixel, {
+      return new NextResponse(transparentPixel, {
         headers: {
           "Content-Type": "image/gif",
           "Cache-Control": "public, max-age=3600",
@@ -28,7 +28,21 @@ export async function GET(
       });
     }
 
-    const data = await storage.read(source.thumbnailPath);
+    let data: Buffer;
+    try {
+      data = await storage.read(source.thumbnailPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        return new NextResponse(transparentPixel, {
+          headers: {
+            "Content-Type": "image/gif",
+            "Cache-Control": "public, max-age=3600",
+          },
+        });
+      }
+      throw error;
+    }
+
     return new NextResponse(new Uint8Array(data), {
       headers: {
         "Content-Type": "image/jpeg",

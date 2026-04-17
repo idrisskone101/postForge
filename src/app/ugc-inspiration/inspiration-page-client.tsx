@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiDelete, apiPost } from "@/lib/api/client";
 import type {
@@ -28,6 +28,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Compass,
+  Copy,
   ExternalLink,
   Heart,
   Loader2,
@@ -69,6 +70,10 @@ function formatPublishedDate(value: string | null): string {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function getInspirationThumbnailSrc(videoId: string, updatedAt: string): string {
+  return `/api/ugc-inspiration/videos/${videoId}/thumbnail?v=${encodeURIComponent(updatedAt)}`;
 }
 
 function getSyncTone(status: TrackedInspirationAccount["syncStatus"]) {
@@ -129,8 +134,9 @@ export function InspirationPageClient({
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
   const [usingVideoId, setUsingVideoId] = useState<string | null>(null);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
-  const backgroundRefreshStarted = useRef(false);
+  const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
 
   const selectedAccount = useMemo(
     () =>
@@ -184,85 +190,16 @@ export function InspirationPageClient({
   }, [selectedVideoId, selectedVideo]);
 
   useEffect(() => {
-    if (backgroundRefreshStarted.current) return;
-    backgroundRefreshStarted.current = true;
+    if (!copiedVideoId) return;
 
-    const staleIds = initialAccounts
-      .filter((account) => account.isStale)
-      .map((account) => account.id);
-
-    if (staleIds.length === 0) return;
-
-    let cancelled = false;
-    let cursor = 0;
-
-    const refreshAccount = async (accountId: string, silent: boolean) => {
-      const attemptAt = new Date().toISOString();
-      setRefreshingIds((prev) =>
-        prev.includes(accountId) ? prev : [...prev, accountId]
+    const timer = window.setTimeout(() => {
+      setCopiedVideoId((current) =>
+        current === copiedVideoId ? null : current
       );
-      setAccounts((prev) =>
-        prev.map((account) =>
-          account.id === accountId
-            ? {
-                ...account,
-                syncStatus: "syncing",
-                lastSyncAttemptAt: attemptAt,
-                lastSyncError: silent ? account.lastSyncError : null,
-              }
-            : account
-        )
-      );
+    }, 1800);
 
-      try {
-        const refreshed = await apiPost<TrackedInspirationAccount>(
-          `/api/ugc-inspiration/accounts/${accountId}/refresh`,
-          {}
-        );
-        if (!cancelled) {
-          setAccounts((prev) => mergeAccountIntoState(prev, refreshed));
-        }
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Failed to refresh creator.";
-        if (!cancelled) {
-          setAccounts((prev) =>
-            prev.map((account) =>
-              account.id === accountId
-                ? {
-                    ...account,
-                    syncStatus: "error",
-                    lastSyncAttemptAt: attemptAt,
-                    lastSyncError: message,
-                  }
-                : account
-            )
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setRefreshingIds((prev) => prev.filter((id) => id !== accountId));
-        }
-      }
-    };
-
-    const worker = async () => {
-      while (!cancelled) {
-        const nextId = staleIds[cursor];
-        cursor += 1;
-        if (!nextId) break;
-        await refreshAccount(nextId, true);
-      }
-    };
-
-    void Promise.all(
-      Array.from({ length: Math.min(2, staleIds.length) }, () => worker())
-    );
-
-    return () => {
-      cancelled = true;
-    };
-  }, [initialAccounts]);
+    return () => window.clearTimeout(timer);
+  }, [copiedVideoId]);
 
   async function handleTrackAccount() {
     if (!handleInput.trim()) return;
@@ -380,6 +317,41 @@ export function InspirationPageClient({
     }
   }
 
+  async function handleCopySourceUrl(video: InspirationVideoCard) {
+    setPageError(null);
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(video.originalUrl);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = video.originalUrl;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopiedVideoId(video.id);
+    } catch (error) {
+      console.error("Failed to copy TikTok URL:", error);
+      setPageError("Failed to copy TikTok URL.");
+    }
+  }
+
+  function markThumbnailError(videoId: string) {
+    setThumbnailErrorIds((prev) =>
+      prev.includes(videoId) ? prev : [...prev, videoId]
+    );
+  }
+
+  function clearThumbnailError(videoId: string) {
+    setThumbnailErrorIds((prev) => prev.filter((id) => id !== videoId));
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
@@ -476,6 +448,12 @@ export function InspirationPageClient({
                                 ? `Updated ${formatRelativeDate(account.lastSyncedAt)}`
                                 : "Not synced yet"}
                             </p>
+
+                            {account.isStale && !isRefreshing && account.syncStatus !== "error" && (
+                              <p className="mt-2 text-[11px] text-muted-foreground">
+                                Manual refresh required to pull the latest TikToks.
+                              </p>
+                            )}
 
                             {account.lastSyncError && (
                               <p className="mt-2 flex items-start gap-1.5 text-[11px] text-destructive">
@@ -655,69 +633,75 @@ export function InspirationPageClient({
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                {feedVideos.map((video) => (
-                  <button
-                    key={video.id}
-                    type="button"
-                    onClick={() => setSelectedVideoId(video.id)}
-                    className="group relative overflow-hidden rounded-[28px] border border-border bg-card text-left transition-all duration-300 hover:-translate-y-1.5 hover:border-accent-blue/20 hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]"
-                  >
-                    <div className="aspect-[9/16] bg-muted">
-                      {video.thumbnailUrl ? (
-                        <>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={video.thumbnailUrl}
-                            alt={video.caption || `${video.creatorHandle} TikTok`}
-                            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                            loading="lazy"
-                          />
-                        </>
-                      ) : (
-                        <div className="flex size-full items-center justify-center text-muted-foreground">
-                          <Play className="size-8" />
-                        </div>
-                      )}
-                    </div>
+                {feedVideos.map((video) => {
+                  const thumbnailFailed = thumbnailErrorIds.includes(video.id);
 
-                    <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                      <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-                        {formatDuration(video.durationSec)}
-                      </span>
-                      <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white">
-                        {formatRelativeDate(video.publishedAt ?? video.createdAt)}
-                      </span>
-                    </div>
+                  return (
+                    <button
+                      key={video.id}
+                      type="button"
+                      onClick={() => setSelectedVideoId(video.id)}
+                      className="group relative overflow-hidden rounded-[28px] border border-border bg-card text-left transition-all duration-300 hover:-translate-y-1.5 hover:border-accent-blue/20 hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]"
+                    >
+                      <div className="aspect-[9/16] bg-muted">
+                        {!thumbnailFailed ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                              alt={video.caption || `${video.creatorHandle} TikTok`}
+                              className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                              loading="lazy"
+                              onError={() => markThumbnailError(video.id)}
+                              onLoad={() => clearThumbnailError(video.id)}
+                            />
+                          </>
+                        ) : (
+                          <div className="flex size-full items-center justify-center text-muted-foreground">
+                            <Play className="size-8" />
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-4 pt-12 text-white">
-                      <p className="truncate text-sm font-semibold">
-                        {video.creatorHandle}
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-xs text-white/75">
-                        {video.caption || "No caption provided."}
-                      </p>
+                      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
+                        <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                          {formatDuration(video.durationSec)}
+                        </span>
+                        <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white">
+                          {formatRelativeDate(video.publishedAt ?? video.createdAt)}
+                        </span>
+                      </div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-white/80">
-                        <div className="flex items-center gap-1.5">
-                          <Play className="size-3" />
-                          <span>{formatMetric(video.viewCount)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Heart className="size-3" />
-                          <span>{formatMetric(video.likeCount)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <MessageCircle className="size-3" />
-                          <span>{formatMetric(video.commentCount)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Repeat2 className="size-3" />
-                          <span>{formatMetric(video.shareCount)}</span>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-4 pt-12 text-white">
+                        <p className="truncate text-sm font-semibold">
+                          {video.creatorHandle}
+                        </p>
+                        <p className="mt-1 line-clamp-2 text-xs text-white/75">
+                          {video.caption || "No caption provided."}
+                        </p>
+
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-white/80">
+                          <div className="flex items-center gap-1.5">
+                            <Play className="size-3" />
+                            <span>{formatMetric(video.viewCount)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Heart className="size-3" />
+                            <span>{formatMetric(video.likeCount)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <MessageCircle className="size-3" />
+                            <span>{formatMetric(video.commentCount)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Repeat2 className="size-3" />
+                            <span>{formatMetric(video.shareCount)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -757,13 +741,18 @@ export function InspirationPageClient({
 
                 {embedState === "failed" && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black px-6 text-center text-white">
-                    {selectedVideo.thumbnailUrl ? (
+                    {!thumbnailErrorIds.includes(selectedVideo.id) ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={selectedVideo.thumbnailUrl}
+                          src={getInspirationThumbnailSrc(
+                            selectedVideo.id,
+                            selectedVideo.updatedAt
+                          )}
                           alt={selectedVideo.caption || `${selectedVideo.creatorHandle} TikTok`}
                           className="max-h-[440px] rounded-[28px] object-cover shadow-2xl"
+                          onError={() => markThumbnailError(selectedVideo.id)}
+                          onLoad={() => clearThumbnailError(selectedVideo.id)}
                         />
                       </>
                     ) : (
@@ -891,6 +880,26 @@ export function InspirationPageClient({
                         <>
                           Use in UGC Clone
                           <Sparkles className="size-4" />
+                        </>
+                      )}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      onClick={() => void handleCopySourceUrl(selectedVideo)}
+                      className="h-11 rounded-2xl"
+                    >
+                      {copiedVideoId === selectedVideo.id ? (
+                        <>
+                          URL Copied
+                          <CheckCircle2 className="size-4" />
+                        </>
+                      ) : (
+                        <>
+                          Copy TikTok URL
+                          <Copy className="size-4" />
                         </>
                       )}
                     </Button>

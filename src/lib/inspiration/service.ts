@@ -322,17 +322,12 @@ export async function createTrackedInspirationAccount(
       handleNormalized,
       handleDisplay: `@${handleNormalized}`,
       profileUrl: buildTikTokProfileUrl(handleNormalized),
-      syncStatus: "syncing",
-      lastSyncAttemptAt: new Date(),
+      syncStatus: "idle",
     },
+    include: inspirationAccountInclude,
   });
 
-  try {
-    return await syncTrackedInspirationAccount(account.id);
-  } catch (error) {
-    await prisma.inspirationAccount.delete({ where: { id: account.id } }).catch(() => {});
-    throw error;
-  }
+  return serializeAccount(account);
 }
 
 export async function syncTrackedInspirationAccount(
