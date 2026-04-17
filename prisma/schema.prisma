@@ -7,6 +7,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SocialPlatform {
+  tiktok
+}
+
+enum InspirationSyncStatus {
+  idle
+  syncing
+  ready
+  error
+}
+
 model GenerationJob {
   id            String   @id @default(uuid())
   type          String   // "image" | "video"
@@ -85,6 +96,7 @@ model Avatar {
   data          Bytes?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  ugcReferenceImages UgcReferenceImage[]
 
   @@index([createdAt])
 }
@@ -104,6 +116,81 @@ model TikTokSource {
   thumbnailData Bytes?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  ugcReferenceImages UgcReferenceImage[]
 
   @@index([createdAt])
+}
+
+model UgcReferenceImage {
+  id                  String       @id @default(uuid())
+  avatarId            String
+  avatar              Avatar       @relation(fields: [avatarId], references: [id], onDelete: Cascade)
+  tikTokSourceId      String?
+  tikTokSource        TikTokSource? @relation(fields: [tikTokSourceId], references: [id], onDelete: SetNull)
+  originJobId         String?
+  originGeneratedFileId String?    @unique
+  sourceVideoPathSnapshot String
+  prompt              String
+  sceneAnalysis       Json?
+  localPath           String       @default("")
+  filename            String
+  mimeType            String
+  width               Int?
+  height              Int?
+  fileSizeBytes       Int?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@index([avatarId, createdAt])
+  @@index([tikTokSourceId])
+  @@index([createdAt])
+}
+
+model InspirationAccount {
+  id                String                @id @default(uuid())
+  platform          SocialPlatform        @default(tiktok)
+  handleNormalized  String
+  handleDisplay     String
+  displayName       String?
+  avatarUrl         String?
+  profileUrl        String?
+  syncStatus        InspirationSyncStatus @default(idle)
+  lastSyncAttemptAt DateTime?
+  lastSyncedAt      DateTime?
+  lastSyncError     String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  videos InspirationVideo[]
+
+  @@unique([platform, handleNormalized])
+  @@index([lastSyncedAt])
+  @@index([updatedAt])
+}
+
+model InspirationVideo {
+  id             String            @id @default(uuid())
+  accountId      String
+  account        InspirationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  platform       SocialPlatform    @default(tiktok)
+  externalVideoId String
+  originalUrl    String
+  embedUrl       String?
+  thumbnailUrl   String?
+  caption        String?
+  durationSec    Float?
+  publishedAt    DateTime?
+  viewCount      Int?
+  likeCount      Int?
+  commentCount   Int?
+  shareCount     Int?
+  lastSeenAt     DateTime          @default(now())
+  sourcePayload  Json
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@unique([platform, externalVideoId])
+  @@index([accountId, publishedAt])
+  @@index([publishedAt])
+  @@index([lastSeenAt])
 }

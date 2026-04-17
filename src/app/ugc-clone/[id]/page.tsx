@@ -46,6 +46,11 @@ interface JobDetail {
   error: string | null;
   tags: string[];
   outputs: JobOutput[];
+  tikTokSource: {
+    id: string;
+    label: string;
+    originalUrl: string;
+  } | null;
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -169,6 +174,19 @@ export default function UGCCloneJobPage() {
   const isFailed = job.status === "failed";
   const featured = job.outputs[0];
   const sourceVideo = parseSourceVideo(job.input.sourceVideo);
+  const referenceImageFileId =
+    typeof job.input.referenceImageFileId === "string"
+      ? job.input.referenceImageFileId
+      : null;
+  const savedReferenceId =
+    typeof job.input.savedReferenceId === "string"
+      ? job.input.savedReferenceId
+      : null;
+  const referencePreviewUrl = savedReferenceId
+    ? `/api/ugc-clone/references/${savedReferenceId}`
+    : referenceImageFileId
+      ? `/api/files/${referenceImageFileId}`
+      : null;
 
   return (
     <div className="min-h-screen md:ml-24 p-6 lg:p-8 flex flex-col animate-fade-in-up">
@@ -344,15 +362,15 @@ export default function UGCCloneJobPage() {
           )}
 
           {/* Reference Image card */}
-          {typeof job.input.referenceImageFileId === "string" && (
+          {referencePreviewUrl && (
             <div className="launch-card bg-card border border-border p-6">
               <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Reference Image
               </p>
-              <a href={`/api/files/${job.input.referenceImageFileId}`} target="_blank" rel="noopener noreferrer">
+              <a href={referencePreviewUrl} target="_blank" rel="noopener noreferrer">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`/api/files/${job.input.referenceImageFileId}`}
+                  src={referencePreviewUrl}
                   alt="Reference image used for this clone"
                   className="w-full rounded-lg object-cover hover:opacity-90 transition-opacity duration-150"
                 />
@@ -382,6 +400,23 @@ export default function UGCCloneJobPage() {
                   {job.model}
                 </span>
               </div>
+            </div>
+          )}
+
+          {job.tikTokSource && (
+            <div className="launch-card bg-card border border-border p-6">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                TikTok Source
+              </p>
+              <p className="text-sm font-medium">{job.tikTokSource.label}</p>
+              <a
+                href={job.tikTokSource.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex text-xs text-accent-blue hover:underline"
+              >
+                Open Original TikTok
+              </a>
             </div>
           )}
 

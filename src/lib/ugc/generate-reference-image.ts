@@ -8,6 +8,7 @@ import { analyzeSceneAndBuildPrompt } from "@/lib/ai/analyze-scene";
 
 export interface ReferenceImageRequest {
   tiktokVideoPath: string;
+  tiktokSourceId?: string;
   avatarId: string;
   prompt?: string;
   imageModel?: string;
@@ -51,7 +52,7 @@ export async function generateReferenceImage(
     uploadToFalStorage(referenceFramePath),
   ]);
 
-  const jobId = await generateImage({
+  const generationRequest = {
     prompt: promptString,
     negativePrompt,
     model: modelId,
@@ -59,23 +60,31 @@ export async function generateReferenceImage(
     numImages: 1,
     imageUrls: [avatarUrl, avatarUrl, avatarUrl, frameUrl],
     editEndpoint: true,
-    thinkingLevel: "high",
-  });
+    thinkingLevel: "high" as const,
+  };
 
-  // Tag the job as ugc-clone-ref and store the full scene analysis
-  await prisma.generationJob.update({
-    where: { id: jobId },
-    data: {
-      tags: ["ugc-clone-ref"],
-      input: {
+  const jobId = await generateImage(
+    generationRequest,
+    undefined,
+    {
+      jobTags: ["ugc-clone-ref"],
+      jobInput: {
+        model: modelId,
+        aspectRatio: "9:16",
+        numImages: 1,
+        negativePrompt,
+        imageUrls: [avatarUrl, avatarUrl, avatarUrl, frameUrl],
+        editEndpoint: true,
+        thinkingLevel: "high",
         tiktokVideoPath: request.tiktokVideoPath,
+        tiktokSourceId: request.tiktokSourceId,
         avatarId: request.avatarId,
         avatarUrl,
         prompt: request.prompt,
-        sceneAnalysis: JSON.parse(JSON.stringify(promptJson)),
+        sceneAnalysis: JSON.parse(JSON.stringify(promptJson)) as Record<string, unknown>,
       },
-    },
-  });
+    }
+  );
 
   return {
     jobId,

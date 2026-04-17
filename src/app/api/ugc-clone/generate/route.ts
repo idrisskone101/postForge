@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateClone } from "@/lib/ugc/generate-clone";
+import { generateClone, InvalidCloneRequestError } from "@/lib/ugc/generate-clone";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,14 +26,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      body.referenceImageFileId !== undefined &&
+      typeof body.referenceImageFileId !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "referenceImageFileId must be a string" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      body.savedReferenceId !== undefined &&
+      typeof body.savedReferenceId !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "savedReferenceId must be a string" },
+        { status: 400 }
+      );
+    }
+
     const { jobId, estimatedCost, modelId } = await generateClone({
-      tiktokSourceId: body.tiktokSourceId,
       tiktokVideoPath: body.tiktokVideoPath,
+      tiktokSourceId: body.tiktokSourceId,
       avatarId: body.avatarId,
       prompt: body.prompt,
       keepOriginalSound: body.keepOriginalSound,
       modelId: body.model,
       referenceImageFileId: body.referenceImageFileId,
+      savedReferenceId: body.savedReferenceId,
       durationSec: typeof body.durationSec === "number" ? body.durationSec : undefined,
       removeTextOverlays: body.removeTextOverlays === true,
     });
@@ -49,6 +70,13 @@ export async function POST(request: NextRequest) {
       { status: 202 }
     );
   } catch (error) {
+    if (error instanceof InvalidCloneRequestError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      );
+    }
+
     console.error("UGC clone generation error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to submit clone generation" },

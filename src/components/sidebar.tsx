@@ -11,6 +11,7 @@ import {
   Menu,
   Rocket,
   Users,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,13 @@ const NAV_ITEMS = [
     icon: Users,
     hoverColor: "hover:bg-accent-green/10 hover:text-accent-green",
     activeColor: "bg-accent-green/10 text-accent-green",
+  },
+  {
+    label: "UGC Inspiration",
+    href: "/ugc-inspiration",
+    icon: Compass,
+    hoverColor: "hover:bg-accent-blue/10 hover:text-accent-blue",
+    activeColor: "bg-accent-blue/10 text-accent-blue",
   },
   {
     label: "Analytics",
