@@ -21,6 +21,7 @@ export async function createJob(params: {
   prompt: string;
   input: Record<string, unknown>;
   estimatedCost?: number;
+  tags?: string[];
 }): Promise<GenerationJob> {
   return prisma.generationJob.create({
     data: {
@@ -30,6 +31,7 @@ export async function createJob(params: {
       input: JSON.parse(JSON.stringify(params.input)),
       estimatedCost: params.estimatedCost,
       status: "queued",
+      tags: params.tags ?? [],
     },
   });
 }

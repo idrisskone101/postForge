@@ -235,6 +235,40 @@
   background: var(--foreground);
 }
 
+/* Reference library scrollbar */
+.library-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 122, 89, 0.75) rgba(255, 255, 255, 0.06);
+}
+
+.library-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.library-scrollbar::-webkit-scrollbar-track {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.library-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 156, 127, 0.95) 0%, rgba(255, 122, 89, 0.92) 100%);
+  border: 2px solid rgba(8, 10, 15, 0.92);
+  min-height: 44px;
+}
+
+.library-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255, 173, 150, 0.98) 0%, rgba(255, 138, 105, 0.96) 100%);
+}
+
+.library-scrollbar::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgba(255, 187, 166, 1) 0%, rgba(255, 150, 118, 1) 100%);
+}
+
 /* Editor slider */
 .editor-slider {
   -webkit-appearance: none;

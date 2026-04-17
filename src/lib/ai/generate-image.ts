@@ -4,10 +4,15 @@ import { subscribeToGeneration } from "./fal-client";
 import { createJob, startJob, completeJob, failJob, addGeneratedFile } from "@/lib/jobs/queue";
 import { logCost } from "@/lib/costs/tracker";
 import { storage, downloadFromUrl } from "@/lib/storage";
+import { persistUgcReferenceImageFromJob } from "@/lib/ugc/reference-library";
 
 export async function generateImage(
   request: ImageGenerationRequest,
   postProcess?: (buffer: Buffer) => Promise<Buffer>,
+  options?: {
+    jobInput?: Record<string, unknown>;
+    jobTags?: string[];
+  },
 ): Promise<string> {
   const model = getModel(request.model);
   if (!model) {
@@ -24,8 +29,9 @@ export async function generateImage(
     type: "image",
     model: request.model,
     prompt: request.prompt,
-    input: request as unknown as Record<string, unknown>,
+    input: options?.jobInput ?? (request as unknown as Record<string, unknown>),
     estimatedCost,
+    tags: options?.jobTags,
   });
 
   // Fire-and-forget: do not await
@@ -129,6 +135,15 @@ async function executeImageGeneration(
   });
 
   await completeJob(jobId, { imageCount: images.length }, durationMs);
+
+  try {
+    await persistUgcReferenceImageFromJob(jobId);
+  } catch (error) {
+    console.error(
+      `[ugc-reference-library] Failed to persist saved reference for job ${jobId}:`,
+      error
+    );
+  }
 
   await logCost(jobId, request.model, "image", actualCost, {
     numImages: images.length,

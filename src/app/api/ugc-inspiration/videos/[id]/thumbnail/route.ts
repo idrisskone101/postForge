@@ -81,7 +81,7 @@ function collectPayloadThumbnailCandidates(payload: unknown): string[] {
 }
 
 interface ImageFetchResult {
-  bytes: Uint8Array;
+  bytes: ArrayBuffer;
   contentType: string;
 }
 
@@ -106,10 +106,7 @@ async function fetchImageBytes(url: string): Promise<ImageFetchResult | null> {
     const arrayBuffer = await response.arrayBuffer();
     if (!arrayBuffer.byteLength) return null;
 
-    return {
-      bytes: new Uint8Array(arrayBuffer),
-      contentType,
-    };
+    return { bytes: arrayBuffer, contentType };
   } catch {
     return null;
   }

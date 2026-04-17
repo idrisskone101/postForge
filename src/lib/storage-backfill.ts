@@ -19,12 +19,13 @@ export async function backfillLegacyAssets(): Promise<void> {
 }
 
 async function runLegacyAssetBackfill(): Promise<void> {
-  const [generatedFiles, avatars, sources] = await Promise.all([
+  const [generatedFiles, avatars, sources, ugcReferences] = await Promise.all([
     prisma.generatedFile.findMany({ select: { localPath: true } }),
     prisma.avatar.findMany({ select: { localPath: true } }),
     prisma.tikTokSource.findMany({
       select: { localPath: true, thumbnailPath: true },
     }),
+    prisma.ugcReferenceImage.findMany({ select: { localPath: true } }),
   ]);
 
   const allPaths = [
@@ -35,6 +36,7 @@ async function runLegacyAssetBackfill(): Promise<void> {
         ? [source.localPath, source.thumbnailPath]
         : [source.localPath]
     ),
+    ...ugcReferences.map((reference) => reference.localPath),
   ];
 
   const uniquePaths = [...new Set(allPaths.filter(Boolean))];

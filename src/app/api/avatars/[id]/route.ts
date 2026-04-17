@@ -42,12 +42,22 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const avatar = await prisma.avatar.findUnique({ where: { id } });
+    const [avatar, references] = await Promise.all([
+      prisma.avatar.findUnique({ where: { id } }),
+      prisma.ugcReferenceImage.findMany({
+        where: { avatarId: id },
+        select: { localPath: true },
+      }),
+    ]);
+
     if (!avatar) {
       return NextResponse.json({ error: "Avatar not found" }, { status: 404 });
     }
 
-    await storage.delete(avatar.localPath);
+    await Promise.all([
+      storage.delete(avatar.localPath),
+      ...references.map((reference) => storage.delete(reference.localPath)),
+    ]);
     await prisma.avatar.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
