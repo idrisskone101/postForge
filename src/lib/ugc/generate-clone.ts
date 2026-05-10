@@ -10,6 +10,7 @@ import { storage } from "@/lib/storage";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { eraseTextFromVideo } from "@/lib/ugc/erase-text";
 import { normalizeVideoForMotionControl } from "@/lib/ugc/normalize-video";
+import { buildIdentityElementForAvatar } from "@/lib/ugc/avatar-identity-pack";
 
 // Default prompts for motion control.
 // When a reference image is provided, it already contains the avatar in the scene,
@@ -20,6 +21,8 @@ const DEFAULT_CLONE_PROMPT_V3 =
   "@Element1 in the scene, natural environment lighting, consistent background, seamless scene continuity";
 const DEFAULT_CLONE_PROMPT_V2 =
   "Person in the scene, natural environment lighting, consistent background, seamless scene continuity";
+const MOTION_CAMERA_LOCK_PROMPT =
+  "Start from the supplied reference image exactly as frame 0. Preserve the original TikTok front-facing camera geometry one-to-one: same camera height, distance, crop, framing, lens perspective, phone tilt/roll, background scale, and visible hand/arm count. Do not widen the shot, move or re-angle the camera, switch to a rear-camera or tripod perspective, or invent extra visible hands.";
 
 export interface CloneGenerationRequest {
   tiktokSourceId: string;
@@ -118,8 +121,6 @@ export async function generateClone(
   );
 
   // Resolve full paths
-  const avatarFullPath = await storage.ensureLocalFile(avatar.localPath);
-
   // Optional: strip text overlays from the reference video before motion control.
   // This runs Bria Video Eraser on fal.ai and saves a cleaned copy locally.
   let videoPath = request.tiktokVideoPath;
@@ -142,8 +143,18 @@ export async function generateClone(
 
   const hasRefImage = !!request.referenceImageFileId || !!request.savedReferenceId;
   let sceneImageUrl: string;
-  let avatarUrl: string | null = null;
   let videoUrl: string;
+  let identityPackId: string | null = null;
+  let identityElementImageUrls: string[] = [];
+  let identityElement: { frontal_image_url: string; reference_image_urls: string[] } | null = null;
+  const isV3 = modelId.startsWith("kling-3.0");
+
+  if (isV3) {
+    const identityElementResult = await buildIdentityElementForAvatar(request.avatarId);
+    identityPackId = identityElementResult.identityPackId;
+    identityElementImageUrls = identityElementResult.identityElementImageUrls;
+    identityElement = identityElementResult.element;
+  }
 
   if (hasRefImage) {
     let refLocalPath: string;
@@ -189,13 +200,10 @@ export async function generateClone(
   } else {
     // No reference image — fall back to extracting a frame + sending avatar separately
     const referenceFramePath = await extractReferenceFrame(videoFullPath);
-    let avatarUrlResult: string;
-    [avatarUrlResult, sceneImageUrl, videoUrl] = await Promise.all([
-      uploadToFalStorage(avatarFullPath),
+    [sceneImageUrl, videoUrl] = await Promise.all([
       uploadToFalStorage(referenceFramePath),
       uploadToFalStorage(videoFullPath),
     ]);
-    avatarUrl = avatarUrlResult;
 
     // Clean up temp reference frame
     fs.unlink(referenceFramePath).catch((err) => {
@@ -216,23 +224,25 @@ export async function generateClone(
   const estimatedCost = calculateEstimatedCost(modelId, { durationSec: duration }) + textErasureCost;
 
   // Resolve the final prompt.
-  // When a reference image is provided, keep it minimal — the image already
-  // contains the avatar in the scene, so extra scene/identity description is noise.
-  // Only use @Element1 and elements array when there's NO reference image (fallback path).
-  const isV3 = modelId.startsWith("kling-3.0");
+  // Keep scene direction minimal because image_url + video_url carry most of
+  // the motion-control signal, but always pin the camera geometry so Kling
+  // starts from the same frame-0 perspective as the reference video.
   const userPrompt = request.prompt?.trim();
   let finalPrompt: string;
 
-  if (hasRefImage) {
-    // Minimal prompt — reference image handles identity + scene
-    finalPrompt = userPrompt || DEFAULT_CLONE_PROMPT_WITH_REF;
-  } else if (userPrompt) {
-    // No reference image — V3 uses @Element1 for facial binding
-    finalPrompt = isV3 && !userPrompt.includes("@Element1")
-      ? `@Element1 ${userPrompt}`
-      : isV3 ? userPrompt : userPrompt.replace(/@Element1\s*/g, "");
+  if (userPrompt) {
+    const promptWithCameraLock = `${userPrompt} ${MOTION_CAMERA_LOCK_PROMPT}`;
+    finalPrompt = isV3 && !promptWithCameraLock.includes("@Element1")
+      ? `@Element1 ${promptWithCameraLock}`
+      : isV3 ? promptWithCameraLock : promptWithCameraLock.replace(/@Element1\s*/g, "");
+  } else if (hasRefImage) {
+    finalPrompt = isV3
+      ? `@Element1 ${DEFAULT_CLONE_PROMPT_WITH_REF}. ${MOTION_CAMERA_LOCK_PROMPT}`
+      : `${DEFAULT_CLONE_PROMPT_WITH_REF}. ${MOTION_CAMERA_LOCK_PROMPT}`;
   } else {
-    finalPrompt = isV3 ? DEFAULT_CLONE_PROMPT_V3 : DEFAULT_CLONE_PROMPT_V2;
+    finalPrompt = isV3
+      ? `${DEFAULT_CLONE_PROMPT_V3}. ${MOTION_CAMERA_LOCK_PROMPT}`
+      : `${DEFAULT_CLONE_PROMPT_V2}. ${MOTION_CAMERA_LOCK_PROMPT}`;
   }
 
   // Create job
@@ -243,9 +253,11 @@ export async function generateClone(
     input: {
       ...request,
       sourceVideo,
-      avatarUrl,
       sceneImageUrl,
       videoUrl,
+      identityPackId,
+      identityElementImageUrls,
+      usedKlingElementBinding: isV3 && !!identityElement,
     } as unknown as Record<string, unknown>,
     estimatedCost,
   });
@@ -269,11 +281,8 @@ export async function generateClone(
       prompt: finalPrompt,
     };
 
-    // Only use element binding when there's NO reference image (fallback path)
-    if (!hasRefImage && isV3 && avatarUrl) {
-      falInput.elements = [
-        { frontal_image_url: avatarUrl, reference_image_urls: [avatarUrl] },
-      ];
+    if (isV3 && identityElement) {
+      falInput.elements = [identityElement];
     }
 
     if (request.keepOriginalSound !== undefined) {

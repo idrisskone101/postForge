@@ -42,10 +42,14 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const [avatar, references] = await Promise.all([
+    const [avatar, references, identityImages] = await Promise.all([
       prisma.avatar.findUnique({ where: { id } }),
       prisma.ugcReferenceImage.findMany({
         where: { avatarId: id },
+        select: { localPath: true },
+      }),
+      prisma.avatarIdentityImage.findMany({
+        where: { pack: { avatarId: id } },
         select: { localPath: true },
       }),
     ]);
@@ -57,6 +61,7 @@ export async function DELETE(
     await Promise.all([
       storage.delete(avatar.localPath),
       ...references.map((reference) => storage.delete(reference.localPath)),
+      ...identityImages.map((image) => storage.delete(image.localPath)),
     ]);
     await prisma.avatar.delete({ where: { id } });
 

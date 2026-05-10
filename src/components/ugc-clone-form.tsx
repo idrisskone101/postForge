@@ -32,6 +32,8 @@ import {
   Search,
   Image as ImageIcon,
   Clock3,
+  RefreshCcw,
+  ShieldCheck,
 } from "lucide-react";
 import {
   FloatingToolbar,
@@ -103,6 +105,21 @@ interface SavedReference {
   } | null;
 }
 
+interface AvatarIdentityPack {
+  id: string;
+  avatarId: string;
+  status: "queued" | "processing" | "completed" | "failed";
+  imageModel: string;
+  error: string | null;
+  createdAt: string;
+  updatedAt: string;
+  images: {
+    id: string;
+    role: string;
+    previewUrl: string;
+  }[];
+}
+
 function formatReferenceDate(date: string) {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -132,6 +149,9 @@ export function UGCCloneForm() {
 
   // Step 2: Avatar
   const [avatarId, setAvatarId] = useState<string | null>(null);
+  const [identityPack, setIdentityPack] = useState<AvatarIdentityPack | null>(null);
+  const [isStartingIdentityPack, setIsStartingIdentityPack] = useState(false);
+  const [identityPackError, setIdentityPackError] = useState<string | null>(null);
   const [savedReferences, setSavedReferences] = useState<SavedReference[]>([]);
   const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
   const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
@@ -188,6 +208,42 @@ export function UGCCloneForm() {
     }
   }, []);
 
+  const fetchIdentityPack = useCallback(async (nextAvatarId: string) => {
+    try {
+      const pack = await apiGet<AvatarIdentityPack | null>(
+        `/api/avatars/${encodeURIComponent(nextAvatarId)}/identity-pack`
+      );
+      setIdentityPack(pack);
+      setIdentityPackError(null);
+      return pack;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load identity pack";
+      setIdentityPack(null);
+      setIdentityPackError(message);
+      return null;
+    }
+  }, []);
+
+  const startIdentityPack = useCallback(async (nextAvatarId: string, force = false) => {
+    setIsStartingIdentityPack(true);
+    setIdentityPackError(null);
+
+    try {
+      const pack = await apiPost<AvatarIdentityPack>(
+        `/api/avatars/${encodeURIComponent(nextAvatarId)}/identity-pack`,
+        { force }
+      );
+      setIdentityPack(pack);
+      return pack;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to start identity pack";
+      setIdentityPackError(message);
+      return null;
+    } finally {
+      setIsStartingIdentityPack(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (sourceIdParam) {
       setPendingSourceId(sourceIdParam);
@@ -235,6 +291,9 @@ export function UGCCloneForm() {
 
   useEffect(() => {
     if (!avatarId) {
+      setIdentityPack(null);
+      setIdentityPackError(null);
+      setIsStartingIdentityPack(false);
       setSavedReferences([]);
       setSavedReferencesError(null);
       setSelectedSavedReferenceId(null);
@@ -244,7 +303,25 @@ export function UGCCloneForm() {
     }
 
     void fetchSavedReferences(avatarId);
-  }, [avatarId, fetchSavedReferences]);
+    void (async () => {
+      const pack = await fetchIdentityPack(avatarId);
+      if (!pack) {
+        await startIdentityPack(avatarId);
+      }
+    })();
+  }, [avatarId, fetchIdentityPack, fetchSavedReferences, startIdentityPack]);
+
+  useEffect(() => {
+    if (!avatarId || !identityPack || !["queued", "processing"].includes(identityPack.status)) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      void fetchIdentityPack(avatarId);
+    }, 4000);
+
+    return () => clearTimeout(timeoutId);
+  }, [avatarId, fetchIdentityPack, identityPack]);
 
   useEffect(() => {
     setReferenceSearchQuery("");
@@ -388,7 +465,6 @@ export function UGCCloneForm() {
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
         tiktokSourceId: videoInfo.id,
         tiktokVideoPath: videoInfo.localPath,
-        tiktokSourceId: videoInfo.id,
         avatarId,
         keepOriginalSound,
         removeTextOverlays,
@@ -769,6 +845,59 @@ export function UGCCloneForm() {
               </span>
             </div>
             <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
+            {avatarId && (
+              <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold">Identity Pack</p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                        {identityPack?.status === "completed"
+                          ? `${identityPack.images.length} facial references ready for Kling V3 binding.`
+                          : identityPack?.status === "failed"
+                            ? "Pack generation failed. Clone generation can still use the original avatar as fallback."
+                            : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
+                              ? "Generating multi-angle facial references in the background."
+                              : "Original avatar fallback is available while a pack is prepared."}
+                      </p>
+                      {(identityPackError || identityPack?.error) && (
+                        <p className="mt-1 line-clamp-2 text-[11px] text-destructive">
+                          {identityPackError || identityPack?.error}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {identityPack?.status === "completed" ? (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-accent-green/30 bg-accent-green/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent-green">
+                        <Check className="size-3" />
+                        Ready
+                      </span>
+                    ) : identityPack?.status === "failed" ? (
+                      <button
+                        type="button"
+                        onClick={() => void startIdentityPack(avatarId, true)}
+                        disabled={isStartingIdentityPack}
+                        className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors duration-150 hover:border-foreground/20 disabled:opacity-50"
+                      >
+                        {isStartingIdentityPack ? (
+                          <Loader2 className="size-3 animate-spin" />
+                        ) : (
+                          <RefreshCcw className="size-3" />
+                        )}
+                        Retry
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <Loader2 className="size-3 animate-spin" />
+                        Working
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

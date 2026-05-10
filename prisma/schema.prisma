@@ -97,8 +97,43 @@ model Avatar {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   ugcReferenceImages UgcReferenceImage[]
+  identityPacks AvatarIdentityPack[]
 
   @@index([createdAt])
+}
+
+model AvatarIdentityPack {
+  id         String   @id @default(uuid())
+  avatarId   String
+  avatar     Avatar   @relation(fields: [avatarId], references: [id], onDelete: Cascade)
+  status     String   @default("queued") // queued | processing | completed | failed
+  imageModel String   @default("nano-banana-2")
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  images AvatarIdentityImage[]
+
+  @@index([avatarId, createdAt])
+  @@index([status])
+}
+
+model AvatarIdentityImage {
+  id            String   @id @default(uuid())
+  packId        String
+  pack          AvatarIdentityPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+  role          String
+  localPath     String   @default("")
+  filename      String
+  mimeType      String
+  width         Int?
+  height        Int?
+  fileSizeBytes Int?
+  originalUrl   String?
+  createdAt     DateTime @default(now())
+
+  @@unique([packId, role])
+  @@index([packId])
 }
 
 model TikTokSource {

@@ -5,6 +5,7 @@ import { generateImage } from "@/lib/ai/generate-image";
 import { calculateEstimatedCost } from "@/lib/ai/models";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { analyzeSceneAndBuildPrompt } from "@/lib/ai/analyze-scene";
+import { resolveIdentityReferenceUrlsForAvatar } from "@/lib/ugc/avatar-identity-pack";
 
 export interface ReferenceImageRequest {
   tiktokVideoPath: string;
@@ -28,8 +29,6 @@ export async function generateReferenceImage(
     throw new Error(`Avatar not found: ${request.avatarId}`);
   }
 
-  // Resolve full paths
-  const avatarFullPath = await storage.ensureLocalFile(avatar.localPath);
   const videoFullPath = await storage.ensureLocalFile(request.tiktokVideoPath);
 
   // Extract first frame from the TikTok video
@@ -43,12 +42,11 @@ export async function generateReferenceImage(
   const { promptJson, promptString, negativePrompt } =
     await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt, { poseEmphasis: true });
 
-  // Upload avatar and TikTok frame.
-  // Avatar 3x + frame 1x in image_urls — avatar dominates identity at 3:1 ratio
-  // while the frame provides scene/background/angle context.
-  // reference_images is NOT a real nano-banana-2 parameter (was being silently ignored).
-  const [avatarUrl, frameUrl] = await Promise.all([
-    uploadToFalStorage(avatarFullPath),
+  // Upload identity references and TikTok frame.
+  // Completed identity packs provide multiple face angles; if the pack is not
+  // ready yet we preserve the old behavior by repeating the avatar fallback.
+  const [identityReferences, frameUrl] = await Promise.all([
+    resolveIdentityReferenceUrlsForAvatar(request.avatarId),
     uploadToFalStorage(referenceFramePath),
   ]);
 
@@ -58,7 +56,7 @@ export async function generateReferenceImage(
     model: modelId,
     aspectRatio: "9:16",
     numImages: 1,
-    imageUrls: [avatarUrl, avatarUrl, avatarUrl, frameUrl],
+    imageUrls: [...identityReferences.identityReferenceUrls, frameUrl],
     editEndpoint: true,
     thinkingLevel: "high" as const,
   };
@@ -73,13 +71,15 @@ export async function generateReferenceImage(
         aspectRatio: "9:16",
         numImages: 1,
         negativePrompt,
-        imageUrls: [avatarUrl, avatarUrl, avatarUrl, frameUrl],
+        imageUrls: [...identityReferences.identityReferenceUrls, frameUrl],
         editEndpoint: true,
         thinkingLevel: "high",
         tiktokVideoPath: request.tiktokVideoPath,
         tiktokSourceId: request.tiktokSourceId,
         avatarId: request.avatarId,
-        avatarUrl,
+        identityPackId: identityReferences.identityPackId,
+        identityReferenceRoles: identityReferences.identityReferenceRoles,
+        usedAvatarFallback: identityReferences.usedAvatarFallback,
         prompt: request.prompt,
         sceneAnalysis: JSON.parse(JSON.stringify(promptJson)) as Record<string, unknown>,
       },

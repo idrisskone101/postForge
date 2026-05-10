@@ -80,6 +80,8 @@ export function TikTokInput({
     autoSelectedIdRef.current = preselectedSourceId;
     onDownloaded({
       id: source.id,
+      label: source.label,
+      originalUrl: source.originalUrl,
       localPath: source.localPath,
       filename: source.filename,
       durationSec: source.durationSec,
@@ -272,41 +274,66 @@ export function TikTokInput({
               {savedSources.map((source) => {
                 const isSelected = videoInfo?.id === source.id;
                 return (
-                  <button
+                  <div
                     key={source.id}
-                    type="button"
-                    onClick={() => handleSelectSource(source)}
                     className={cn(
-                      "group relative rounded-2xl overflow-hidden border-2 transition-all text-left",
+                      "group relative rounded-2xl overflow-hidden border-2 transition-all",
                       isSelected
                         ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
                         : "border-border hover:border-accent-green/50"
                     )}
                   >
-                    {/* Thumbnail */}
-                    <div className="aspect-[9/16] bg-muted flex items-center justify-center">
-                      {source.thumbnailPath ? (
-                        <img
-                          src={`/api/ugc-clone/sources/${source.id}/thumbnail`}
-                          alt={source.label}
-                          className="size-full object-cover"
-                        />
-                      ) : (
-                        <Video className="size-8 text-muted-foreground" />
-                      )}
-                    </div>
+                    <button
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => handleSelectSource(source)}
+                      className="block w-full text-left focus:outline-none focus:ring-2 focus:ring-accent-green/40 focus:ring-offset-2 focus:ring-offset-background"
+                    >
+                      {/* Thumbnail */}
+                      <div className="aspect-[9/16] bg-muted flex items-center justify-center">
+                        {source.thumbnailPath ? (
+                          <img
+                            src={`/api/ugc-clone/sources/${source.id}/thumbnail`}
+                            alt={source.label}
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <Video className="size-8 text-muted-foreground" />
+                        )}
+                      </div>
 
-                    {/* Duration badge */}
-                    <div className="absolute top-1.5 right-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                      {formatDuration(source.durationSec)}
-                    </div>
+                      {/* Duration badge */}
+                      <div className="absolute top-1.5 right-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                        {formatDuration(source.durationSec)}
+                      </div>
+
+                      {/* Label + metadata */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
+                        <p className="text-[10px] font-medium text-white truncate">
+                          {source.label}
+                        </p>
+                        {source.fileSizeBytes && (
+                          <p className="text-[9px] text-white/60">
+                            {formatSize(source.fileSizeBytes)}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-accent-green/10 flex items-center justify-center">
+                          <CheckCircle2 className="size-8 text-accent-green drop-shadow-lg" />
+                        </div>
+                      )}
+                    </button>
 
                     {/* Delete button */}
                     <button
                       type="button"
                       onClick={(e) => handleDeleteSource(source.id, e)}
                       disabled={deletingId === source.id}
-                      className="absolute top-1.5 left-1.5 size-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                      className="absolute top-1.5 left-1.5 z-10 size-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/80"
+                      aria-label={`Delete ${source.label}`}
                     >
                       {deletingId === source.id ? (
                         <Loader2 className="size-3 animate-spin" />
@@ -314,26 +341,7 @@ export function TikTokInput({
                         <Trash2 className="size-3" />
                       )}
                     </button>
-
-                    {/* Label + metadata */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
-                      <p className="text-[10px] font-medium text-white truncate">
-                        {source.label}
-                      </p>
-                      {source.fileSizeBytes && (
-                        <p className="text-[9px] text-white/60">
-                          {formatSize(source.fileSizeBytes)}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Selected indicator */}
-                    {isSelected && (
-                      <div className="absolute inset-0 bg-accent-green/10 flex items-center justify-center">
-                        <CheckCircle2 className="size-8 text-accent-green drop-shadow-lg" />
-                      </div>
-                    )}
-                  </button>
+                  </div>
                 );
               })}
             </div>
