@@ -27,6 +27,12 @@ model GenerationJob {
   input         Json     // full request parameters
   output        Json?    // generation result
   falRequestId  String?  // fal.ai request ID for async polling
+  queueStage    String?  // queued | preparing | submitted | downloading | completed | failed
+  lockOwner     String?
+  lockExpiresAt DateTime?
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime?
+  lastPolledAt  DateTime?
   estimatedCost Float?
   actualCost    Float?
   durationMs    Int?
@@ -42,6 +48,9 @@ model GenerationJob {
   @@index([type])
   @@index([model])
   @@index([createdAt])
+  @@index([status, queueStage])
+  @@index([lockExpiresAt])
+  @@index([nextAttemptAt])
 }
 
 model GeneratedFile {

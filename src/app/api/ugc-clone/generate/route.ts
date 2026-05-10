@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateClone, InvalidCloneRequestError } from "@/lib/ugc/generate-clone";
+import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest) {
       durationSec: typeof body.durationSec === "number" ? body.durationSec : undefined,
       removeTextOverlays: body.removeTextOverlays === true,
     });
+    ensureCloneWorkerRunning();
 
     return NextResponse.json(
       {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJob, deleteJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
+import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
 import { prisma } from "@/lib/db";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -34,6 +35,13 @@ export async function GET(
     // (handles server restarts that kill the in-memory poller)
     if (job.status === "processing" && job.falRequestId) {
       ensurePollerRunning();
+    }
+    if (
+      job.type === "video" &&
+      job.tags.includes("ugc-clone") &&
+      (job.status === "queued" || job.status === "processing")
+    ) {
+      ensureCloneWorkerRunning();
     }
 
     const outputs = job.outputs.map((file: { id: string; type: string; filename: string; mimeType: string; width: number | null; height: number | null; durationSec: number | null; fileSizeBytes: number | null; createdAt: Date }) => ({

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listJobs } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
+import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,6 +37,16 @@ export async function GET(request: NextRequest) {
 
     if (result.jobs.some((job) => job.status === "processing" && job.type === "video")) {
       ensurePollerRunning();
+    }
+    if (
+      result.jobs.some(
+        (job) =>
+          job.type === "video" &&
+          job.tags.includes("ugc-clone") &&
+          (job.status === "queued" || job.status === "processing")
+      )
+    ) {
+      ensureCloneWorkerRunning();
     }
 
     return NextResponse.json({

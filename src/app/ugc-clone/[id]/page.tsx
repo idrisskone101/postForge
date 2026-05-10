@@ -211,6 +211,21 @@ export default function UGCCloneJobPage() {
         </div>
 
         <div className="ml-auto flex items-center gap-3">
+          {isCompleted && (
+            <button
+              type="button"
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-bold transition-colors duration-150 hover:bg-muted disabled:opacity-50 uppercase tracking-wider"
+            >
+              {isRetrying ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <RefreshCw className="size-4" />
+              )}
+              {isRetrying ? "Regenerating..." : "Regenerate"}
+            </button>
+          )}
           {isCompleted && featured && (
             <button
               type="button"

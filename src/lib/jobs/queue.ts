@@ -219,6 +219,9 @@ export async function getPendingVideoJobs(): Promise<GenerationJob[]> {
       status: "processing",
       type: "video",
       falRequestId: { not: null },
+      NOT: {
+        tags: { has: "ugc-clone" },
+      },
     },
   });
 }

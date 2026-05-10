@@ -102,7 +102,34 @@ const DEFAULT_NEGATIVE_PROMPT = [
   "film look",
 ].join(", ");
 
-function buildPromptJson(userPrompt?: string): ScenePromptJSON {
+const AVATAR_WARDROBE_INSTRUCTION =
+  "Dress the avatar in a visibly different outfit from the TikTok subject. Choose a trendy, cute, age-appropriate Gen Z casual outfit a stylish 20-year-old woman would realistically wear. Keep the outfit current, flattering, fresh, and everyday-cute without copying the source subject's clothing silhouette, colors, logos, distinctive patterns, jewelry, or accessories.";
+
+const WARDROBE_VARIATIONS = [
+  "A fitted pastel baby tee with relaxed light-wash jeans, using soft fresh colors like butter yellow, baby blue, or blush pink.",
+  "A cropped cardigan over a simple tank with flattering high-rise denim, using a cute color pairing like sage green with white, powder blue with cream, or cherry red with denim.",
+  "A ribbed crop top or contour lounge top with loose cargos or wide-leg jeans, using a different color palette from the source such as heather gray with pink, cocoa with ivory, or teal with washed denim.",
+  "A clean oversized sweatshirt or zip hoodie styled with bike shorts or casual jeans, using a playful Gen Z color like lavender, matcha green, sky blue, or soft coral.",
+  "A fitted long-sleeve top or off-shoulder knit with straight-leg jeans, using attractive fresh colors like rose, slate blue, espresso brown, or crisp white with a contrasting accent.",
+  "A cute casual tank or baby tee layered with an open lightweight shirt, using a bright but natural palette like tomato red, cobalt, mint, or sunny yellow balanced with denim.",
+];
+
+function pickWardrobeInstruction(): string {
+  const variant =
+    WARDROBE_VARIATIONS[Math.floor(Math.random() * WARDROBE_VARIATIONS.length)];
+
+  return [
+    AVATAR_WARDROBE_INSTRUCTION,
+    `Specific outfit direction for this image: ${variant}`,
+    "Use colors that are clearly different from the TikTok source outfit and avoid defaulting to the same black, white, beige, or gray palette unless it is part of a contrasting styled look.",
+    "Add tasteful variety across regenerations while keeping the clothing believable for an everyday TikTok selfie.",
+  ].join(" ");
+}
+
+function buildPromptJson(
+  userPrompt?: string,
+  wardrobeInstruction = AVATAR_WARDROBE_INSTRUCTION
+): ScenePromptJSON {
   return {
     subject: {
       description:
@@ -137,10 +164,11 @@ function buildPromptJson(userPrompt?: string): ScenePromptJSON {
       highlights: "Match the target TikTok frame naturally.",
     },
     clothing: {
-      outfit:
-        "Fresh casual outfit for the avatar that fits the pose and scene without copying distinctive source-creator styling.",
-      style: "Casual UGC styling.",
-      accessories: "Minimal avatar-appropriate accessories only.",
+      outfit: wardrobeInstruction,
+      style:
+        "Fresh, trendy, cute Gen Z casual styling that looks attractive and natural in a TikTok UGC selfie, not editorial fashion.",
+      accessories:
+        "Minimal avatar-appropriate accessories only; avoid copying any source-subject jewelry, glasses, hats, bags, or standout accessories.",
     },
     tiktok_aesthetic: {
       vibe: "Casual UGC creator in a real everyday environment.",
@@ -187,11 +215,13 @@ export async function analyzeSceneAndBuildPrompt(
   promptString: string;
   negativePrompt: string;
 }> {
-  const promptJson = buildPromptJson(userPrompt);
+  const wardrobeInstruction = pickWardrobeInstruction();
+  const promptJson = buildPromptJson(userPrompt, wardrobeInstruction);
   const promptString = buildNaturalLanguagePrompt(
     promptJson,
     options?.poseEmphasis,
-    userPrompt
+    userPrompt,
+    wardrobeInstruction
   );
 
   return {
@@ -204,7 +234,8 @@ export async function analyzeSceneAndBuildPrompt(
 function buildNaturalLanguagePrompt(
   json: ScenePromptJSON,
   poseEmphasis?: boolean,
-  userPrompt?: string
+  userPrompt?: string,
+  wardrobeInstruction = AVATAR_WARDROBE_INSTRUCTION
 ): string {
   const imgNum = Math.floor(Math.random() * 9000) + 1000;
   const poseInstruction = poseEmphasis
@@ -227,7 +258,8 @@ function buildNaturalLanguagePrompt(
     "Prefer a motion-control-friendly medium close-up when the source is very tight: face, neck, shoulders, and upper chest visible when possible, without turning it into a professional portrait.",
     "Let the target TikTok frame determine the natural camera angle and crop. Avoid rigidly copying extreme close-up geometry if it hurts the body/shoulder structure needed for motion control.",
     "Use natural ambient lighting and everyday phone-camera texture. No ring light, studio lighting, professional portrait lighting, fashion/editorial styling, or beauty retouching.",
-    "Use a fresh casual outfit for the avatar that fits the scene and pose without copying distinctive clothing or accessories from the TikTok subject.",
+    wardrobeInstruction,
+    "The avatar outfit must be clearly different from the TikTok source outfit even if the pose, framing, room, and lighting are similar.",
     "Do not add glasses, sunglasses, headphones, earbuds, headsets, hats, caps, beanies, face masks, or wearable tech unless the user explicitly asks for them.",
     "Do not add extra hands, extra limbs, or a visible phone.",
     json.compositing.lighting_match,
