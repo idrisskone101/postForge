@@ -47,9 +47,9 @@ Generate images by calling fal.ai model APIs. Supports multiple models with a un
 
 | Model ID | Display Name | fal.ai Endpoint | Price | Notes |
 |----------|-------------|-----------------|-------|-------|
-| `nano-banana-2` | Nano Banana 2 | `fal-ai/nano-banana-2` | $0.08/image | Default. Fast, good quality. Based on Gemini 3.1 Flash Image. |
-| `nano-banana-pro` | Nano Banana Pro | `fal-ai/nano-banana-pro` | $0.15/image | Higher quality. Based on Gemini 3 Pro Image. Better for complex scenes. |
-| `nano-banana` | Nano Banana (Lite) | `fal-ai/nano-banana` | $0.039/image | Budget option. Gemini 2.5 Flash. |
+| `nano-banana-2` | Nano Banana 2 | `fal-ai/nano-banana-2` | $0.08/image | Default. Fast, good quality. Runs through fal.ai. |
+| `nano-banana-pro` | Nano Banana Pro | `fal-ai/nano-banana-pro` | $0.15/image | Higher quality. Runs through fal.ai. Better for complex scenes. |
+| `nano-banana` | Nano Banana (Lite) | `fal-ai/nano-banana` | $0.039/image | Budget option. Runs through fal.ai. |
 
 Additional models can be added later by adding entries to the model registry (no code changes needed for basic text-to-image models).
 

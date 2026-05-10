@@ -5,8 +5,8 @@ import * as os from "os";
 import { execFileAsync, FFMPEG } from "./ffmpeg";
 
 /**
- * Extracts the very first frame (frame 0) from a video to use as a scene
- * reference for Gemini analysis. Saves as a high-quality JPEG.
+ * Extracts the very first frame (frame 0) from a video to use as the target
+ * scene reference for fal image editing. Saves as a high-quality JPEG.
  *
  * Returns the absolute path to the extracted frame.
  */

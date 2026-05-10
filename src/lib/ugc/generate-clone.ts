@@ -22,7 +22,7 @@ const DEFAULT_CLONE_PROMPT_V3 =
 const DEFAULT_CLONE_PROMPT_V2 =
   "Person in the scene, natural environment lighting, consistent background, seamless scene continuity";
 const MOTION_CAMERA_LOCK_PROMPT =
-  "Start from the supplied reference image exactly as frame 0. Preserve the original TikTok front-facing camera geometry one-to-one: same camera height, distance, crop, framing, lens perspective, phone tilt/roll, background scale, and visible hand/arm count. Do not widen the shot, move or re-angle the camera, switch to a rear-camera or tripod perspective, or invent extra visible hands.";
+  "Start from the supplied reference image and use the motion video for body movement and timing. Keep a natural front-facing phone-camera feel, but do not rigidly force the original TikTok crop, camera height, tilt, or distance if it makes the shoulders/body structure unstable. Avoid visible phones, tripod-like professional angles, and extra hands.";
 
 export interface CloneGenerationRequest {
   tiktokSourceId: string;
@@ -225,8 +225,9 @@ export async function generateClone(
 
   // Resolve the final prompt.
   // Keep scene direction minimal because image_url + video_url carry most of
-  // the motion-control signal, but always pin the camera geometry so Kling
-  // starts from the same frame-0 perspective as the reference video.
+  // the motion-control signal. Nudge toward phone-camera realism without
+  // over-locking camera geometry, since tight selfie crops can destabilize
+  // shoulder/body motion transfer.
   const userPrompt = request.prompt?.trim();
   let finalPrompt: string;
 

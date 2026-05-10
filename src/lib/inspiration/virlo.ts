@@ -2,6 +2,7 @@ const VIRLO_API_BASE = "https://api.virlo.ai/v1";
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOOKUP_TIMEOUT_MS = 60_000;
 const POLL_INTERVAL_MS = 2_000;
+const DEFAULT_CREATOR_VIDEO_BACKFILL_LIMIT = 100;
 
 interface VirloEnvelope<T> {
   data: T;
@@ -132,9 +133,18 @@ export function deriveTikTokEmbedUrl(videoId: string | null): string | null {
   return `https://www.tiktok.com/embed/v3/${videoId}`;
 }
 
+function getCreatorVideoBackfillLimit(): number {
+  const configured = Number(process.env.VIRLO_CREATOR_VIDEO_BACKFILL_LIMIT);
+  if (Number.isInteger(configured) && configured > 0) {
+    return configured;
+  }
+
+  return DEFAULT_CREATOR_VIDEO_BACKFILL_LIMIT;
+}
+
 export async function lookupTikTokCreator(
   handle: string,
-  maxVideos = 30
+  maxVideos = getCreatorVideoBackfillLimit()
 ): Promise<VirloCreatorLookupResult> {
   const normalized = normalizeTikTokHandle(handle);
   const params = new URLSearchParams({

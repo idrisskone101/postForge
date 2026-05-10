@@ -27,7 +27,6 @@
   "dependencies": {
     "@base-ui/react": "^1.2.0",
     "@fal-ai/client": "^1.9.4",
-    "@google/genai": "^1.45.0",
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "class-variance-authority": "^0.7.1",

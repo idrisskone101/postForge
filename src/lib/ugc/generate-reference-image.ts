@@ -34,11 +34,9 @@ export async function generateReferenceImage(
   // Extract first frame from the TikTok video
   const referenceFramePath = await extractReferenceFrame(videoFullPath);
 
-  // Analyze the frame with Gemini to build a detailed scene prompt.
-  // We pass poseEmphasis=true so the prompt explicitly describes the exact
-  // starting pose — this ensures the reference image matches frame 0 of the
-  // video, preventing the motion control model from needing to interpolate
-  // from a mismatched pose at the start.
+  // Build a lean fal-only edit prompt. The extracted frame is still supplied
+  // to Nano Banana as the target visual reference, so no separate vision model
+  // is needed for scene analysis.
   const { promptJson, promptString, negativePrompt } =
     await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt, { poseEmphasis: true });
 
