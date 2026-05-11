@@ -9,13 +9,13 @@ interface FloatingToolbarProps {
 
 export function FloatingToolbar({ summary, children }: FloatingToolbarProps) {
   return (
-    <div className="fixed bottom-6 left-1/2 md:left-[calc(50%+48px)] -translate-x-1/2 z-50 flex items-center gap-4 bg-card border border-border rounded-2xl px-6 py-3 shadow-2xl backdrop-blur-xl animate-fade-in-up whitespace-nowrap">
+    <div className="sticky bottom-4 z-30 mt-6 ml-auto flex w-full flex-col items-stretch gap-3 rounded-xl border border-border bg-card/95 px-4 py-3 shadow-2xl backdrop-blur-xl animate-fade-in-up sm:w-auto sm:max-w-fit sm:flex-row sm:items-center sm:gap-4 sm:px-5">
       {summary && (
         <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground pr-4 border-r border-border shrink-0">
           {summary}
         </div>
       )}
-      <div className="flex items-center gap-3 shrink-0">{children}</div>
+      <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">{children}</div>
     </div>
   );
 }
