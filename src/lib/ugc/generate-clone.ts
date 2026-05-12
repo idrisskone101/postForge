@@ -5,7 +5,7 @@ import { getModel, calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC } from "@/li
 import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { createJob, failJob } from "@/lib/jobs/queue";
 import { prisma } from "@/lib/db";
-import { storage } from "@/lib/storage";
+import { isStoragePathUnder, storage } from "@/lib/storage";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { eraseTextFromVideo } from "@/lib/ugc/erase-text";
 import { normalizeVideoForMotionControl } from "@/lib/ugc/normalize-video";
@@ -28,9 +28,10 @@ const DEFAULT_CLONE_PROMPT_V3 =
 const DEFAULT_CLONE_PROMPT_V2 =
   "Person in the scene, natural environment lighting, consistent background, seamless scene continuity";
 const MOTION_CAMERA_LOCK_PROMPT =
-  "Start from the supplied reference image and use the motion video for body movement and timing. Keep a natural front-facing phone-camera feel, but do not rigidly force the original TikTok crop, camera height, tilt, or distance if it makes the shoulders/body structure unstable. Avoid visible phones, tripod-like professional angles, and extra hands.";
+  "Use the motion video as the authority for the opening pose, body position, scale, crop, camera height, camera distance, perspective, and timing. Use the supplied reference image for the avatar identity, clothing, lighting, and scene appearance, but do not let it reposition the person or change the starting camera geometry. If the reference image and motion video disagree about the starting pose or framing, follow the motion video's first frame. Keep a natural front-facing phone-camera feel. Avoid visible phones, tripod-like professional angles, and extra hands.";
 const UGC_CLONE_TAG = "ugc-clone";
 const PROCESS_LOCK_MS = 30 * 60 * 1000;
+const SOURCE_VIDEO_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
 
 export interface CloneGenerationRequest {
   tiktokSourceId: string;
@@ -176,6 +177,26 @@ function sourceToSnapshot(source: TikTokSource, localPath: string): SourceVideoS
   };
 }
 
+function isTrustedSourceVideoPath(
+  source: TikTokSource,
+  localPath: string,
+  sourceVideoSnapshot?: SourceVideoSnapshot
+): boolean {
+  if (!isStoragePathUnder(localPath, SOURCE_VIDEO_PATH_PREFIXES)) {
+    return false;
+  }
+
+  if (localPath === source.localPath) {
+    return true;
+  }
+
+  return (
+    !!sourceVideoSnapshot &&
+    sourceVideoSnapshot.sourceId === source.id &&
+    sourceVideoSnapshot.localPath === localPath
+  );
+}
+
 function buildFinalClonePrompt(params: {
   prompt?: string;
   hasRefImage: boolean;
@@ -286,6 +307,15 @@ export async function enqueueCloneJob(
     throw new Error(`TikTok source not found: ${request.tiktokSourceId}`);
   }
 
+  if (
+    source &&
+    !isTrustedSourceVideoPath(source, request.tiktokVideoPath, sourceVideoSnapshot)
+  ) {
+    throw new InvalidCloneRequestError(
+      "TikTok video path does not match the selected source"
+    );
+  }
+
   if (request.savedReferenceId) {
     const savedReference = await prisma.ugcReferenceImage.findUnique({
       where: { id: request.savedReferenceId },
@@ -390,6 +420,11 @@ export async function processCloneJob(jobId: string): Promise<void> {
       where: { id: request.tiktokSourceId },
     });
     if (source) {
+      if (!isTrustedSourceVideoPath(source, request.tiktokVideoPath, request.sourceVideoSnapshot)) {
+        throw new InvalidCloneRequestError(
+          "TikTok video path does not match the selected source"
+        );
+      }
       sourceVideo = await createSourceVideoSnapshot(source, request.tiktokVideoPath);
     } else if (request.sourceVideoSnapshot) {
       sourceVideo = await createSourceVideoSnapshot(

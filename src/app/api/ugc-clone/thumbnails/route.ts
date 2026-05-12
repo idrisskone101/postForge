@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateThumbnails } from "@/lib/ugc/trim-video";
+import { isStoragePathUnder } from "@/lib/storage";
+
+const SOURCE_VIDEO_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,8 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Prevent path traversal
-    if (localPath.includes("..")) {
+    if (!isStoragePathUnder(localPath, SOURCE_VIDEO_PATH_PREFIXES)) {
       return NextResponse.json(
         { error: "Invalid path" },
         { status: 400 }

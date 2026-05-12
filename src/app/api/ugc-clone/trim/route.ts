@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trimVideo } from "@/lib/ugc/trim-video";
 import { prisma } from "@/lib/db";
-import { storage } from "@/lib/storage";
+import { isStoragePathUnder, storage } from "@/lib/storage";
 import { extractThumbnail } from "@/lib/ugc/thumbnail";
+
+const SOURCE_VIDEO_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,8 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prevent path traversal
-    if (localPath.includes("..")) {
+    if (!isStoragePathUnder(localPath, SOURCE_VIDEO_PATH_PREFIXES)) {
       return NextResponse.json(
         { error: "Invalid path" },
         { status: 400 }

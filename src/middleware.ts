@@ -1,5 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const AUTH_CHALLENGE = 'Basic realm="postForge"';
+
+function readBasicPassword(authHeader: string): string | null {
+  const encoded = authHeader.slice("Basic ".length).trim();
+  if (!encoded) return null;
+
+  try {
+    const decoded = atob(encoded);
+    const separatorIndex = decoded.indexOf(":");
+    return separatorIndex >= 0
+      ? decoded.slice(separatorIndex + 1)
+      : decoded;
+  } catch {
+    return null;
+  }
+}
+
+function readAuthToken(authHeader: string | null): string | null {
+  if (!authHeader) return null;
+
+  if (authHeader.startsWith("Bearer ")) {
+    return authHeader.slice("Bearer ".length).trim();
+  }
+
+  if (authHeader.startsWith("Basic ")) {
+    return readBasicPassword(authHeader);
+  }
+
+  return authHeader.trim();
+}
+
+function unauthorized() {
+  return NextResponse.json(
+    { error: "Missing or invalid Authorization header" },
+    {
+      status: 401,
+      headers: {
+        "WWW-Authenticate": AUTH_CHALLENGE,
+      },
+    }
+  );
+}
+
 export function middleware(request: NextRequest) {
   const apiKey = process.env.POSTFORGE_API_KEY;
 
@@ -8,52 +51,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow same-origin browser requests (app UI calling its own API)
-  const referer = request.headers.get("referer");
-  const origin = request.headers.get("origin");
-  const requestUrl = new URL(request.url);
-
-  if (referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (refererUrl.origin === requestUrl.origin) {
-        return NextResponse.next();
-      }
-    } catch {
-      // Invalid referer URL, fall through to auth check
-    }
-  }
-
-  if (origin) {
-    if (origin === requestUrl.origin) {
-      return NextResponse.next();
-    }
-  }
-
-  // Check Authorization header
-  const authHeader = request.headers.get("authorization");
-
-  if (!authHeader) {
-    return NextResponse.json(
-      { error: "Missing Authorization header" },
-      { status: 401 }
-    );
-  }
-
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : authHeader;
-
+  const token = readAuthToken(request.headers.get("authorization"));
   if (token !== apiKey) {
-    return NextResponse.json(
-      { error: "Invalid API key" },
-      { status: 401 }
-    );
+    return unauthorized();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: [
+    "/api/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)",
+  ],
 };

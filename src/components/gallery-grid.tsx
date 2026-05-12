@@ -9,7 +9,7 @@ import {
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { downloadFile } from "@/lib/utils/download";
 import { cn } from "@/lib/utils";
-import { Download, Images, Play } from "lucide-react";
+import { Download, ExternalLink, Images, Play } from "lucide-react";
 
 interface GalleryItem {
   id: string;
@@ -21,6 +21,7 @@ interface GalleryItem {
   durationSec?: number;
   model: string;
   prompt?: string;
+  tiktokSourceUrl?: string;
   createdAt: string | Date;
 }
 
@@ -146,6 +147,19 @@ export function GalleryGrid({
                 {item.prompt && (
                   <p className="text-[11px] text-muted-foreground/70 line-clamp-1 leading-tight">{item.prompt}</p>
                 )}
+                {item.tiktokSourceUrl && (
+                  <a
+                    href={item.tiktokSourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={item.tiktokSourceUrl}
+                    onClick={(event) => event.stopPropagation()}
+                    className="flex min-w-0 items-center gap-1 text-[10px] font-medium leading-tight text-accent-coral hover:text-accent-coral/80"
+                  >
+                    <ExternalLink className="size-2.5 shrink-0" />
+                    <span className="truncate">{item.tiktokSourceUrl}</span>
+                  </a>
+                )}
               </div>
             </div>
           );
@@ -177,7 +191,21 @@ export function GalleryGrid({
                 />
               )}
               <div className="flex items-center justify-between px-2 py-1 text-xs text-muted-foreground">
-                <span>{lightbox.model}</span>
+                <div className="min-w-0">
+                  <span>{lightbox.model}</span>
+                  {lightbox.tiktokSourceUrl && (
+                    <a
+                      href={lightbox.tiktokSourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={lightbox.tiktokSourceUrl}
+                      className="mt-1 flex min-w-0 items-center gap-1 text-accent-coral hover:text-accent-coral/80"
+                    >
+                      <ExternalLink className="size-3 shrink-0" />
+                      <span className="truncate">{lightbox.tiktokSourceUrl}</span>
+                    </a>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"

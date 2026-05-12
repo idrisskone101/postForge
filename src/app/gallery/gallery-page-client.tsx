@@ -34,6 +34,7 @@ export interface GalleryItem {
   durationSec?: number;
   model: string;
   prompt?: string;
+  tiktokSourceUrl?: string;
   createdAt: string;
 }
 

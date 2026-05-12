@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { storage } from "@/lib/storage";
+import { isStoragePathUnder, storage } from "@/lib/storage";
+
+const PREVIEW_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,11 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Security: only allow persisted UGC source video paths
-    if (
-      !path.startsWith("tiktok-sources/") &&
-      !path.startsWith("ugc-clone-sources/")
-    ) {
+    if (!isStoragePathUnder(path, PREVIEW_PATH_PREFIXES)) {
       return NextResponse.json(
         { error: "Invalid path" },
         { status: 403 }
