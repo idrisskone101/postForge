@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GalleryGrid } from "@/components/gallery-grid";
 import {
   AlertDialog,
@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Images, Download, Trash2, X, ArrowUpDown } from "lucide-react";
+import { Images, Download, Trash2, X, ArrowUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
 
@@ -39,8 +39,13 @@ export interface GalleryItem {
 }
 
 interface GalleryPageClientProps {
+  initialPage: GalleryPage;
+}
+
+interface GalleryPage {
   items: GalleryItem[];
-  models: Array<{ id: string; name: string }>;
+  nextCursor: string | null;
+  hasMore: boolean;
 }
 
 const filterOptions = [
@@ -49,23 +54,77 @@ const filterOptions = [
   { value: "video", label: "Videos" },
 ] as const;
 
-export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
+export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
   const [typeFilter, setTypeFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [items, setItems] = useState(initialPage.items);
+  const [nextCursor, setNextCursor] = useState(initialPage.nextCursor);
+  const [hasMore, setHasMore] = useState(initialPage.hasMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const didMountRef = useRef(false);
+
+  const loadPage = useCallback(
+    async (cursor?: string | null) => {
+      const params = new URLSearchParams({
+        type: typeFilter,
+        sort: sortOrder,
+      });
+      if (cursor) params.set("cursor", cursor);
+
+      const response = await fetch(`/api/gallery?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Failed to load gallery.");
+      }
+      return (await response.json()) as GalleryPage;
+    },
+    [sortOrder, typeFilter]
+  );
+
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
+    let isCurrent = true;
+    setIsReloading(true);
+    setLoadError(null);
+    setSelectedIds(new Set());
+
+    loadPage()
+      .then((page) => {
+        if (!isCurrent) return;
+        setItems(page.items);
+        setNextCursor(page.nextCursor);
+        setHasMore(page.hasMore);
+      })
+      .catch((error) => {
+        if (!isCurrent) return;
+        setLoadError(
+          error instanceof Error ? error.message : "Failed to load gallery."
+        );
+      })
+      .finally(() => {
+        if (isCurrent) setIsReloading(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [loadPage]);
 
   const filtered = useMemo(() => {
     let result = items.filter((item) => !deletedIds.has(item.id));
     if (typeFilter !== "all") {
       result = result.filter((item) => item.type === typeFilter);
     }
-    if (sortOrder === "oldest") {
-      result = [...result].reverse();
-    }
     return result;
-  }, [items, typeFilter, sortOrder, deletedIds]);
+  }, [items, typeFilter, deletedIds]);
 
   const toggleSelection = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -109,8 +168,32 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
     });
   };
 
+  const handleLoadMore = async () => {
+    if (!hasMore || isLoadingMore) return;
+    setIsLoadingMore(true);
+    setLoadError(null);
+    try {
+      const page = await loadPage(nextCursor);
+      setItems((prev) => {
+        const existing = new Set(prev.map((item) => item.id));
+        return [
+          ...prev,
+          ...page.items.filter((item) => !existing.has(item.id)),
+        ];
+      });
+      setNextCursor(page.nextCursor);
+      setHasMore(page.hasMore);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "Failed to load gallery."
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
   const selectionCount = selectedIds.size;
-  const totalCount = items.length - deletedIds.size;
+  const totalCount = filtered.length;
 
   return (
     <div className="p-6 lg:p-8 space-y-6 animate-fade-in-up">
@@ -153,7 +236,12 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
       </div>
 
       {/* Gallery content */}
-      {totalCount === 0 ? (
+      {isReloading ? (
+        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
+          <Loader2 className="size-8 mb-4 animate-spin opacity-70" />
+          <p className="text-sm font-medium">Loading gallery</p>
+        </div>
+      ) : totalCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
           <Images className="size-12 mb-4 opacity-40" />
           <p className="text-lg font-medium">No media yet</p>
@@ -164,15 +252,33 @@ export function GalleryPageClient({ items, models }: GalleryPageClientProps) {
         </div>
       ) : (
         <>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            {filtered.length} of {totalCount} items
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {filtered.length} item{filtered.length !== 1 ? "s" : ""} loaded
+            </p>
+            {loadError && (
+              <p className="text-xs font-medium text-red-400">{loadError}</p>
+            )}
+          </div>
           <GalleryGrid
             items={filtered}
             selectedIds={selectedIds}
             onToggleSelect={toggleSelection}
             onDelete={handleSingleDelete}
           />
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-2 text-xs font-semibold text-foreground/80 transition-all hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoadingMore && <Loader2 className="size-3.5 animate-spin" />}
+                {isLoadingMore ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          )}
         </>
       )}
 
