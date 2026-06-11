@@ -4,14 +4,24 @@ name = "postForge"
 
 [setup]
 script = '''
-export PATH="/opt/homebrew/bin:/opt/homebrew/opt/postgresql@16/bin:$PATH"
-
-corepack enable || true
-[ -f .env ] || { [ -f ../postForge/.env ] && cp ../postForge/.env .env || cp .env.example .env; }
-
-docker compose up -d postgres
-pnpm install
-pnpm db:generate
-pnpm db:migrate --name init || true
-
+if [ -f scripts/codex-setup.sh ]; then
+  bash scripts/codex-setup.sh
+else
+  POSTFORGE_REPO_ROOT="$PWD" POSTFORGE_ENV_SOURCE_DIR="/Users/idrisskone/Developer/postForge" bash /Users/idrisskone/Developer/postForge/scripts/codex-setup.sh
+fi
 '''
+
+[[actions]]
+name = "Start dev server"
+icon = "tool"
+command = "pnpm dev"
+
+[[actions]]
+name = "Check"
+icon = "tool"
+command = 'if [ -f scripts/codex-check.sh ]; then bash scripts/codex-check.sh; else pnpm lint && pnpm build; fi'
+
+[[actions]]
+name = "Migration status"
+icon = "tool"
+command = "pnpm exec prisma migrate status"

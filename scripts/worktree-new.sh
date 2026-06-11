@@ -26,20 +26,13 @@ elif [ -f "${REPO_ROOT}/.env.example" ]; then
   echo "==> Copied .env.example -> .env (fill in your keys!)"
 fi
 
-# Install dependencies
-echo "==> Installing dependencies..."
-export PATH="/opt/homebrew/bin:$PATH"
-corepack enable 2>/dev/null || true
-pnpm install
+if [ -f "${REPO_ROOT}/.env.local" ]; then
+  cp "${REPO_ROOT}/.env.local" .env.local
+  echo "==> Copied .env.local"
+fi
 
-# Generate Prisma client
-echo "==> Generating Prisma client..."
-export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
-pnpm db:generate
-
-# Run migrations (safe — only applies pending ones)
-echo "==> Applying database migrations..."
-pnpm db:migrate --name init 2>/dev/null || true
+echo "==> Running Codex setup..."
+POSTFORGE_ENV_SOURCE_DIR="$REPO_ROOT" bash scripts/codex-setup.sh
 
 echo ""
 echo "Done! Worktree ready at: ${WORKTREE_DIR}"
