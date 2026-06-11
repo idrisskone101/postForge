@@ -18,9 +18,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Sheet,
@@ -47,16 +44,12 @@ import {
   Clock3,
   RefreshCcw,
   ShieldCheck,
-  Circle,
   ChevronDown,
-  SlidersHorizontal,
+  Video,
+  Users,
+  Play,
+  Settings2,
 } from "lucide-react";
-import {
-  FloatingToolbar,
-  ToolbarHeading,
-  ToolbarDivider,
-  ToolbarLabel,
-} from "@/components/floating-toolbar";
 
 const PROMPT_PRESETS = [
   {
@@ -144,83 +137,32 @@ function formatReferenceDate(date: string) {
   }).format(new Date(date));
 }
 
-function SimpleStatus({
-  label,
-  complete,
-  detail,
-}: {
-  label: string;
-  complete: boolean;
-  detail: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-md border border-border bg-muted/20 px-3 py-2">
-      <span
-        className={cn(
-          "flex size-5 shrink-0 items-center justify-center rounded-full border",
-          complete
-            ? "border-accent-green/40 bg-accent-green/10 text-accent-green"
-            : "border-border text-muted-foreground"
-        )}
-      >
-        {complete ? <Check className="size-3" /> : <Circle className="size-2.5" />}
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs font-medium">{label}</p>
-        <p className="truncate text-[11px] text-muted-foreground">{detail}</p>
-      </div>
-    </div>
-  );
-}
-
-function AccordionSection({
+function SectionTitle({
+  icon,
   title,
-  description,
-  badge,
-  defaultOpen = false,
-  children,
+  detail,
+  action,
 }: {
+  icon: ReactNode;
   title: string;
-  description?: string;
-  badge?: ReactNode;
-  defaultOpen?: boolean;
-  children: ReactNode;
+  detail?: string;
+  action?: ReactNode;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  useEffect(() => {
-    setOpen(defaultOpen);
-  }, [defaultOpen]);
-
   return (
-    <Collapsible open={open} onOpenChange={(nextOpen) => setOpen(nextOpen)}>
-      <div className="border-t border-border first:border-t-0">
-        <CollapsibleTrigger
-          render={
-            <button
-              type="button"
-              className="group flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/30"
-            />
-          }
-        >
-          <span className="min-w-0">
-            <span className="flex items-center gap-2 text-sm font-semibold">
-              {title}
-              {badge}
-            </span>
-            {description && (
-              <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                {description}
-              </span>
-            )}
-          </span>
-          <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-data-open:rotate-180" />
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="px-5 pb-5">{children}</div>
-        </CollapsibleContent>
+    <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="flex min-w-0 items-start gap-2.5">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-muted/35">
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold">{title}</h2>
+          {detail && (
+            <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{detail}</p>
+          )}
+        </div>
       </div>
-    </Collapsible>
+      {action}
+    </div>
   );
 }
 
@@ -255,6 +197,7 @@ export function UGCCloneForm() {
   const [isReferenceLibraryOpen, setIsReferenceLibraryOpen] = useState(false);
   const [referenceSearchQuery, setReferenceSearchQuery] = useState("");
   const [avatarToolsOpen, setAvatarToolsOpen] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   // Step 3: Settings
   const [prompt, setPrompt] = useState("");
@@ -423,6 +366,7 @@ export function UGCCloneForm() {
   useEffect(() => {
     setReferenceSearchQuery("");
     setAvatarToolsOpen(false);
+    setAdvancedOpen(false);
   }, [avatarId]);
 
   useEffect(() => {
@@ -638,29 +582,70 @@ export function UGCCloneForm() {
   if (phase === "reviewing") {
     return (
       <>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Image Preview + History */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* Header */}
+        <Card className="border-border bg-card py-0 shadow-sm">
+          <div className="flex flex-col gap-4 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="icon"
                 onClick={handleBackToInput}
-                className="flex size-9 items-center justify-center rounded-lg bg-card border border-border hover:bg-muted transition-colors duration-150"
+                className="size-8"
               >
                 <ArrowLeft className="size-4" />
-              </button>
-              <div>
-                <h2 className="text-lg font-bold">Review Reference Image</h2>
-                <p className="text-xs text-muted-foreground">
-                  Your avatar composited into the TikTok&apos;s environment
+              </Button>
+              <div className="min-w-0">
+                <h1 className="text-lg font-semibold tracking-tight">Review reference</h1>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Check the source and generated still before creating the clone.
                 </p>
               </div>
             </div>
+            <Badge variant="outline" className="w-fit bg-muted/40">
+              {modelName}
+            </Badge>
+          </div>
 
-            {/* Main Preview */}
-            <div className="launch-card bg-card border border-border overflow-hidden">
-              <div className="relative min-h-[500px] flex items-center justify-center">
+          <CardContent className="space-y-5 p-5">
+            <div className="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
+            {videoInfo && (
+              <div className="rounded-lg border border-border bg-muted/20 p-3">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Source
+                </p>
+                <div className="relative overflow-hidden rounded-lg border border-border bg-black">
+                  <video
+                    src={`/api/ugc-clone/preview?path=${encodeURIComponent(videoInfo.localPath)}`}
+                    className="aspect-[9/16] w-full object-cover"
+                    muted
+                    playsInline
+                    controls
+                  />
+                  <span className="pointer-events-none absolute left-2 top-2 flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                    <Play className="size-3" />
+                    Source
+                  </span>
+                </div>
+                <div className="mt-3 min-w-0 text-xs text-muted-foreground">
+                  <p className="truncate font-medium text-foreground">
+                    {videoInfo.label || "Selected TikTok source"}
+                  </p>
+                  <p className="mt-1 font-mono text-[10px]">
+                    {durationSec}s · {videoInfo.width}x{videoInfo.height}
+                  </p>
+                </div>
+              </div>
+            )}
+
+              <div className="overflow-hidden rounded-lg border border-border bg-muted/20">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                  <p className="text-sm font-semibold">Generated reference</p>
+                  <span className="text-xs text-muted-foreground">
+                    {refImages.filter((r) => r.status === "completed").length} variant
+                    {refImages.filter((r) => r.status === "completed").length === 1 ? "" : "s"}
+                  </span>
+                </div>
+                <div className="relative flex min-h-[420px] items-center justify-center">
                 {selectedRef?.status === "generating" && (
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative">
@@ -695,13 +680,13 @@ export function UGCCloneForm() {
                   </div>
                 )}
               </div>
+              </div>
             </div>
 
-            {/* Thumbnail History — show when there are 2+ images */}
             {refImages.length > 1 && (
-              <div className="space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                  Generated Variants ({refImages.length})
+              <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Variants
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {refImages.map((entry, i) => (
@@ -740,26 +725,19 @@ export function UGCCloneForm() {
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Right Column: Prompt Editor + Cost + Actions */}
-          <div className="lg:col-span-5 space-y-6">
-            {/* Prompt Editor */}
-            <div className="launch-card bg-card p-6 border border-border">
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-lg border border-border p-4">
+              <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <PenLine className="size-3.5 text-muted-foreground" />
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                     Reference Image Prompt
                   </p>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
+                <span className="font-mono text-[10px] text-muted-foreground">
                   {refPrompt.length}/500
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
-                Edit the prompt and regenerate to refine the reference image.
-              </p>
               <Textarea
                 placeholder="e.g. The person is wearing a casual blue hoodie, sitting at a coffee shop table, warm afternoon light..."
                 value={refPrompt}
@@ -767,12 +745,19 @@ export function UGCCloneForm() {
                 maxLength={500}
                 className="min-h-[120px] resize-none bg-muted/50 border border-border focus:border-accent-coral/20 focus:bg-card rounded-lg p-4 text-sm transition-all duration-150"
               />
-              <div className="mt-3 flex justify-end">
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-xs text-muted-foreground">
+                  Total estimate:{" "}
+                  <span className="font-mono text-foreground">
+                    {formatCost((totalRefCost || imageCost) + videoCost + textErasureCost)}
+                  </span>
+                </div>
                 <Button
                   size="sm"
+                  variant="outline"
                   onClick={handleRegenerateRefImage}
                   disabled={isSubmitting || isGenerating}
-                  className="bg-muted text-foreground hover:bg-accent-coral/10 hover:text-accent-coral rounded-md px-4 text-xs font-bold h-8 flex items-center gap-2 border border-border transition-colors duration-150"
+                  className="gap-2"
                 >
                   {isSubmitting || isGenerating ? (
                     <>
@@ -789,41 +774,9 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            {/* Cost Breakdown */}
-            <div className="bg-muted rounded-lg p-6 border border-border">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
-                Cost Breakdown
-              </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Reference images ({refImages.filter((r) => r.status === "completed").length})
-                  </span>
-                  <span className="font-medium font-mono">{formatCost(totalRefCost || imageCost)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Video generation</span>
-                  <span className="font-medium font-mono">{formatCost(videoCost)}</span>
-                </div>
-                {removeTextOverlays && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Text overlay removal</span>
-                    <span className="font-medium font-mono">{formatCost(textErasureCost)}</span>
-                  </div>
-                )}
-                <div className="border-t border-border pt-2 flex justify-between">
-                  <span className="font-bold">Total</span>
-                  <span className="text-xl font-bold tracking-tight">
-                    {formatCost((totalRefCost || imageCost) + videoCost + textErasureCost)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Selected image prompt label */}
             {selectedRef && selectedRef.prompt && (
-              <div className="rounded-lg bg-muted/50 border border-border p-4">
-                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+              <div className="rounded-lg border border-border bg-muted/50 p-4">
+                <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">
                   Prompt used for #{selectedRefIndex + 1}
                 </p>
                 <p className="text-xs text-foreground/80 italic leading-relaxed line-clamp-3">
@@ -831,53 +784,38 @@ export function UGCCloneForm() {
                 </p>
               </div>
             )}
-          </div>
-        </div>
 
-        <FloatingToolbar
-          summary={
-            <>
-              <ToolbarHeading>Review</ToolbarHeading>
-              <ToolbarDivider />
-              <ToolbarLabel>{refImages.filter(r => r.status === "completed").length} variants</ToolbarLabel>
-              <ToolbarDivider />
-              <ToolbarLabel>{modelName}</ToolbarLabel>
-            </>
-          }
-        >
-          {submitError && (
-            <div className="rounded-lg bg-destructive/10 border border-destructive/30 px-3 py-2 text-xs text-destructive">
-              {submitError}
-            </div>
-          )}
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={handleBackToInput}
-            className="rounded-md px-6 h-auto py-2.5 text-sm font-bold flex items-center gap-2"
-          >
-            <ArrowLeft className="size-4" />
-            Back
-          </Button>
-          <Button
-            size="lg"
-            onClick={handleApproveAndGenerate}
-            disabled={!hasAnyCompleted || !selectedRefFileId || isSubmitting}
-            className="bg-accent-coral text-white font-bold px-8 py-2.5 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-2 uppercase tracking-wider"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                Approve & Generate
-                <Check className="size-4" />
-              </>
+            {submitError && (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                {submitError}
+              </div>
             )}
-          </Button>
-        </FloatingToolbar>
+
+            <div className="flex flex-col-reverse gap-2 border-t border-border pt-5 sm:flex-row sm:justify-end">
+              <Button variant="outline" onClick={handleBackToInput} className="gap-2">
+                <ArrowLeft className="size-4" />
+                Back
+              </Button>
+              <Button
+                onClick={handleApproveAndGenerate}
+                disabled={!hasAnyCompleted || !selectedRefFileId || isSubmitting}
+                className="gap-2 bg-accent-coral font-semibold text-white hover:bg-[#ff6540]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    Approve & Generate
+                    <Check className="size-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </>
     );
   }
@@ -885,71 +823,77 @@ export function UGCCloneForm() {
   // ─── Input Phase ────────────────────────────────────────────────────
   return (
     <>
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="space-y-5">
-          <Card className="border-border bg-card py-0 shadow-sm">
-            <CardHeader className="border-b border-border px-5 py-4">
-              <CardTitle className="flex items-center justify-between gap-3">
-                <span>1. Source</span>
+      <Card data-ugc-builder className="border-border bg-card py-0 shadow-sm">
+        <div className="border-b border-border px-4 py-3.5 sm:px-5">
+          <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">UGC Clone</h1>
+          <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">
+            Choose one TikTok source, choose one avatar, then generate.
+          </p>
+        </div>
+
+        <CardContent className="p-0">
+          <section className="border-b border-border px-4 py-3.5 sm:px-5">
+            <SectionTitle
+              icon={<Video className="size-4 text-accent-blue" />}
+              title="Source"
+              detail="Paste a TikTok URL or pick a saved source."
+              action={
                 <Badge
                   variant="outline"
                   className={cn(
                     sourceReady && "border-accent-green/30 bg-accent-green/10 text-accent-green"
                   )}
                 >
-                  {sourceReady ? "Loaded" : "Required"}
+                  {sourceReady ? "Ready" : "Required"}
                 </Badge>
-              </CardTitle>
-              <CardDescription>
-                Paste a TikTok or reuse a saved source. Trim only when the hook or ending needs cleanup.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-5">
-              <TikTokInput
-                onDownloaded={handleVideoDownloaded}
-                videoInfo={videoInfo}
-                refreshKey={sourcesRefreshKey}
-                preselectedSourceId={pendingSourceId}
-                onPreselectedSourceResolved={handlePreselectedSourceResolved}
-              />
+              }
+            />
+            <TikTokInput
+              onDownloaded={handleVideoDownloaded}
+              videoInfo={videoInfo}
+              refreshKey={sourcesRefreshKey}
+              preselectedSourceId={pendingSourceId}
+              onPreselectedSourceResolved={handlePreselectedSourceResolved}
+            />
 
-              {videoInfo && !showTrimmer && (
-                <button
-                  type="button"
-                  onClick={() => setShowTrimmer(true)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
-                >
-                  <Scissors className="size-3.5" />
-                  Trim source
-                  {originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath && (
-                    <span className="ml-1 rounded-md bg-accent-coral/10 px-2 py-0.5 text-[10px] font-bold text-accent-coral">
-                      trimmed
-                    </span>
-                  )}
-                </button>
-              )}
+            {videoInfo && !showTrimmer && (
+              <button
+                type="button"
+                onClick={() => setShowTrimmer(true)}
+                className="mt-4 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
+              >
+                <Scissors className="size-3.5" />
+                Trim source
+                {originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath && (
+                  <span className="ml-1 rounded-md bg-accent-coral/10 px-2 py-0.5 text-[10px] font-bold text-accent-coral">
+                    trimmed
+                  </span>
+                )}
+              </button>
+            )}
 
-              {videoInfo && showTrimmer && originalVideoInfo && (
-                <div className="mt-4">
-                  <VideoTrimmer
-                    key={originalVideoInfo.localPath}
-                    videoPath={originalVideoInfo.localPath}
-                    durationSec={originalVideoInfo.durationSec}
-                    width={originalVideoInfo.width}
-                    height={originalVideoInfo.height}
-                    sourceId={videoInfo.id}
-                    onTrimmed={handleTrimmed}
-                    onCancel={handleCancelTrim}
-                  />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            {videoInfo && showTrimmer && originalVideoInfo && (
+              <div className="mt-4">
+                <VideoTrimmer
+                  key={originalVideoInfo.localPath}
+                  videoPath={originalVideoInfo.localPath}
+                  durationSec={originalVideoInfo.durationSec}
+                  width={originalVideoInfo.width}
+                  height={originalVideoInfo.height}
+                  sourceId={videoInfo.id}
+                  onTrimmed={handleTrimmed}
+                  onCancel={handleCancelTrim}
+                />
+              </div>
+            )}
+          </section>
 
-          <Card className="border-border bg-card py-0 shadow-sm">
-            <CardHeader className="border-b border-border px-5 py-4">
-              <CardTitle className="flex items-center justify-between gap-3">
-                <span>2. Avatar</span>
+          <section className="border-b border-border px-4 py-3.5 sm:px-5">
+            <SectionTitle
+              icon={<Users className="size-4 text-accent-green" />}
+              title="Avatar"
+              detail="Pick the person for the clone."
+              action={
                 <Badge
                   variant="outline"
                   className={cn(
@@ -958,21 +902,18 @@ export function UGCCloneForm() {
                 >
                   {avatarReady ? "Selected" : "Required"}
                 </Badge>
-              </CardTitle>
-              <CardDescription>
-                Select, upload, or generate the person who will appear in the cloned video.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-5">
-              {!avatarId ? (
-                <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
-              ) : (
+              }
+            />
+            {!avatarId ? (
+              <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
+            ) : (
+              <>
                 <div className="rounded-lg border border-border bg-muted/25 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-2">
-                      <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                      <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent-green" />
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold">Avatar selected</p>
+                        <p className="text-sm font-semibold">Avatar selected</p>
                         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
                           {identityPack?.status === "completed"
                             ? `${identityPack.images.length} facial references ready.`
@@ -1017,13 +958,8 @@ export function UGCCloneForm() {
                     )}
                   </div>
                 </div>
-              )}
 
-              {avatarId && (
-                <Collapsible
-                  open={avatarToolsOpen}
-                  onOpenChange={(nextOpen) => setAvatarToolsOpen(nextOpen)}
-                >
+                <Collapsible open={avatarToolsOpen} onOpenChange={setAvatarToolsOpen}>
                   <div className="mt-3 rounded-lg border border-border">
                     <CollapsibleTrigger
                       render={
@@ -1043,308 +979,263 @@ export function UGCCloneForm() {
                     </CollapsibleContent>
                   </div>
                 </Collapsible>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </>
+            )}
+          </section>
 
-        <div className="space-y-5">
-          <Card className="border-border bg-card py-0 shadow-sm lg:sticky lg:top-6">
-            <CardHeader className="border-b border-border px-5 py-4">
-              <CardTitle className="flex items-center gap-2">
-                <SlidersHorizontal className="size-4 text-muted-foreground" />
-                Review & settings
-              </CardTitle>
-              <CardDescription>
-                Confirm the minimum setup, then expand only the tools you need.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-3 p-5">
-              <SimpleStatus
-                label="Source"
-                complete={sourceReady}
-                detail={sourceReady ? `${durationSec}s loaded` : "Required"}
-              />
-              <SimpleStatus
-                label="Avatar"
-                complete={avatarReady}
-                detail={avatarReady ? "Selected" : "Required"}
-              />
-              <SimpleStatus
-                label="Reference"
-                complete={!!selectedSavedReference || avatarReady}
-                detail={selectedSavedReference ? "Using saved reference" : "New reference will be generated"}
-              />
-            </CardContent>
-
-            <AccordionSection
-              key={`reference-${avatarReady}`}
-              title="Reference"
-              description={avatarReady ? "Reuse a saved reference or generate a fresh one." : "Choose an avatar to unlock saved references."}
-              badge={
-                <Badge variant="outline" className="bg-muted/50">
-                  {selectedSavedReference ? "Saved" : avatarReady ? savedReferences.length : "Locked"}
-                </Badge>
-              }
-              defaultOpen={avatarReady}
-            >
-              {!avatarId ? (
-                <p className="text-xs text-muted-foreground">
-                  Saved avatar-scene composites appear here after an avatar is selected.
-                </p>
-              ) : isLoadingSavedReferences ? (
-                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                  <Loader2 className="size-3.5 animate-spin" />
-                  Loading saved references...
-                </div>
-              ) : savedReferencesError ? (
-                <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-                  {savedReferencesError}
-                </div>
-              ) : savedReferences.length === 0 ? (
-                <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-                  No saved references yet. Generate one below and it will be reusable next time.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {selectedSavedReference ? (
-                    <div className="flex items-start gap-3 rounded-md border border-accent-coral/30 bg-accent-coral/5 p-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={selectedSavedReference.previewUrl}
-                        alt="Selected saved reference"
-                        className="size-14 shrink-0 rounded-md border border-accent-coral/20 object-cover"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-semibold">
-                          {selectedSavedReference.source?.label ?? "Saved reference selected"}
-                        </p>
-                        <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
-                          {selectedSavedReference.prompt || "Reusable avatar-scene composite"}
+          <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+            <div className="border-b border-border">
+              <CollapsibleTrigger
+                render={
+                  <button
+                    type="button"
+                    className="group flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30 sm:px-5"
+                  />
+                }
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <Settings2 className="size-4 shrink-0 text-muted-foreground" />
+                  <span>
+                    <span className="block text-sm font-semibold">Advanced</span>
+                    <span className="block text-xs text-muted-foreground">
+                      References, model, prompt, audio, and cleanup.
+                    </span>
+                  </span>
+                </span>
+                <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-data-open:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-4 px-4 pb-4 sm:px-5">
+                  <div className="rounded-lg border border-border p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold">Saved reference</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Reuse an existing avatar-scene composite when available.
                         </p>
                       </div>
+                      <Badge variant="outline" className="bg-muted/50">
+                        {selectedSavedReference ? "Selected" : avatarReady ? savedReferences.length : "Locked"}
+                      </Badge>
                     </div>
-                  ) : (
-                    <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
-                      No saved reference selected. A new reference image will be generated for review.
-                    </p>
-                  )}
+                    {!avatarId ? (
+                      <p className="text-xs text-muted-foreground">
+                        Select an avatar to browse saved references.
+                      </p>
+                    ) : isLoadingSavedReferences ? (
+                      <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                        <Loader2 className="size-3.5 animate-spin" />
+                        Loading saved references...
+                      </div>
+                    ) : savedReferencesError ? (
+                      <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                        {savedReferencesError}
+                      </div>
+                    ) : savedReferences.length === 0 ? (
+                      <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
+                        No saved references yet. Generate one and it will be reusable next time.
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedSavedReference ? (
+                          <div className="flex items-start gap-3 rounded-md border border-accent-coral/30 bg-accent-coral/5 p-3">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={selectedSavedReference.previewUrl}
+                              alt="Selected saved reference"
+                              className="size-14 shrink-0 rounded-md border border-accent-coral/20 object-cover"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-xs font-semibold">
+                                {selectedSavedReference.source?.label ?? "Saved reference selected"}
+                              </p>
+                              <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+                                {selectedSavedReference.prompt || "Reusable avatar-scene composite"}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="rounded-md border border-dashed border-border px-3 py-3 text-xs text-muted-foreground">
+                            No saved reference selected. A new reference image will be generated.
+                          </p>
+                        )}
 
-                  <div className="grid grid-cols-4 gap-2">
-                    {recentSavedReferences.map((reference) => {
-                      const isSelected = reference.id === selectedSavedReferenceId;
+                        <div className="grid grid-cols-4 gap-2">
+                          {recentSavedReferences.map((reference) => {
+                            const isSelected = reference.id === selectedSavedReferenceId;
 
-                      return (
-                        <button
-                          key={reference.id}
-                          type="button"
-                          onClick={() => handleSelectSavedReference(reference.id)}
-                          className={cn(
-                            "overflow-hidden rounded-md border transition-colors duration-150",
-                            isSelected
-                              ? "border-accent-coral"
-                              : "border-border hover:border-foreground/20"
+                            return (
+                              <button
+                                key={reference.id}
+                                type="button"
+                                onClick={() => handleSelectSavedReference(reference.id)}
+                                className={cn(
+                                  "overflow-hidden rounded-md border transition-colors duration-150",
+                                  isSelected
+                                    ? "border-accent-coral"
+                                    : "border-border hover:border-foreground/20"
+                                )}
+                                title={reference.source?.label ?? "Saved reference"}
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={reference.previewUrl}
+                                  alt={reference.prompt || "Saved reference image"}
+                                  className="h-14 w-full object-cover"
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsReferenceLibraryOpen(true)}
+                            className="flex-1"
+                          >
+                            Browse library
+                          </Button>
+                          {selectedSavedReference && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedSavedReferenceId(null)}
+                            >
+                              Clear
+                            </Button>
                           )}
-                          title={reference.source?.label ?? "Saved reference"}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={reference.previewUrl}
-                            alt={reference.prompt || "Saved reference image"}
-                            className="h-14 w-full object-cover"
-                          />
-                        </button>
-                      );
-                    })}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsReferenceLibraryOpen(true)}
-                      className="flex-1"
-                    >
-                      Browse library
-                    </Button>
-                    {selectedSavedReference && (
-                      <Button
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {([
+                      { id: "kling-3.0-motion" as const, label: "Kling 3.0", price: "$0.126/s" },
+                      { id: "kling-3.0-pro-motion" as const, label: "Kling 3.0 Pro", price: "$0.168/s" },
+                      { id: "kling-2.6-motion" as const, label: "Kling 2.6", price: "$0.07/s" },
+                    ]).map((opt) => (
+                      <button
+                        key={opt.id}
                         type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedSavedReferenceId(null)}
+                        onClick={() => setSelectedModel(opt.id)}
+                        className={cn(
+                          "rounded-md border px-3 py-2 text-left transition-colors duration-150",
+                          selectedModel === opt.id
+                            ? "border-accent-coral bg-accent-coral/5"
+                            : "border-border hover:border-foreground/20"
+                        )}
                       >
-                        Clear
-                      </Button>
-                    )}
+                        <span className="block text-sm font-medium">{opt.label}</span>
+                        <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
+                          {opt.price}
+                        </span>
+                      </button>
+                    ))}
                   </div>
-                </div>
-              )}
-            </AccordionSection>
 
-            <AccordionSection
-              title="Motion engine"
-              description={`${modelName} selected`}
-              defaultOpen
-            >
-              <div className="grid gap-2">
-                {([
-                  { id: "kling-3.0-motion" as const, label: "Kling 3.0", price: "$0.126/s", note: "Best default identity preservation." },
-                  { id: "kling-3.0-pro-motion" as const, label: "Kling 3.0 Pro", price: "$0.168/s", note: "Higher quality and motion fidelity." },
-                  { id: "kling-2.6-motion" as const, label: "Kling 2.6", price: "$0.07/s", note: "Cheaper, no element binding." },
-                ]).map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setSelectedModel(opt.id)}
-                    className={cn(
-                      "rounded-md border px-3 py-2 text-left transition-colors duration-150",
-                      selectedModel === opt.id
-                        ? "border-accent-coral bg-accent-coral/5"
-                        : "border-border hover:border-foreground/20"
-                    )}
-                  >
-                    <span className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium">{opt.label}</span>
-                      <span className="font-mono text-[10px] text-muted-foreground">{opt.price}</span>
-                    </span>
-                    <span className="mt-0.5 block text-[11px] text-muted-foreground">{opt.note}</span>
-                  </button>
-                ))}
-              </div>
-            </AccordionSection>
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {PROMPT_PRESETS.map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => setPrompt(preset.prompt)}
+                          className={cn(
+                            "whitespace-nowrap rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors duration-150",
+                            prompt === preset.prompt
+                              ? "border-accent-coral bg-accent-coral/5 text-accent-coral"
+                              : "border-border bg-muted/30 text-muted-foreground hover:border-foreground/20 hover:text-foreground"
+                          )}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                    <Textarea
+                      placeholder="Optional: lighting, framing, environment, style..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value.slice(0, 500))}
+                      maxLength={500}
+                      className="min-h-[88px] resize-none rounded-md border border-border bg-muted/40 p-3 text-sm"
+                    />
+                  </div>
 
-            <AccordionSection
-              title="Scene direction"
-              description={prompt ? "Custom scene guidance added" : "Optional context for lighting, environment, and framing"}
-            >
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-1.5">
-                  {PROMPT_PRESETS.map((preset) => (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      onClick={() => setPrompt(preset.prompt)}
-                      className={cn(
-                        "whitespace-nowrap rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors duration-150",
-                        prompt === preset.prompt
-                          ? "border-accent-coral bg-accent-coral/5 text-accent-coral"
-                          : "border-border bg-muted/30 text-muted-foreground hover:border-foreground/20 hover:text-foreground"
-                      )}
-                    >
-                      {preset.label}
-                    </button>
-                  ))}
-                </div>
-                <Textarea
-                  placeholder="Optional: lighting, framing, environment, style..."
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value.slice(0, 500))}
-                  maxLength={500}
-                  className="min-h-[88px] resize-none rounded-md border border-border bg-muted/40 p-3 text-sm"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Motion comes from the source video. This only guides the generated scene/reference.
-                </p>
-              </div>
-            </AccordionSection>
-
-            <AccordionSection
-              title="Audio & cleanup"
-              description={keepOriginalSound ? "Original audio kept" : "Audio removed"}
-              badge={removeTextOverlays ? <Badge variant="outline">Text cleanup on</Badge> : undefined}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-                  <div className="flex items-center gap-3">
-                    <Volume2 className="size-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Keep original sound</p>
-                      <p className="text-xs text-muted-foreground">Preserve the TikTok audio track.</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
+                      <div className="flex items-center gap-3">
+                        <Volume2 className="size-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-sm font-medium">Keep original sound</p>
+                          <p className="text-xs text-muted-foreground">Preserve the TikTok audio track.</p>
+                        </div>
+                      </div>
+                      <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
+                      <div>
+                        <p className="text-sm font-medium">Remove text overlays</p>
+                        <p className="text-xs text-muted-foreground">
+                          Strip hook text before motion control
+                          {removeTextOverlays && (
+                            <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
+                          )}
+                        </p>
+                      </div>
+                      <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
                     </div>
                   </div>
-                  <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-                  <div>
-                    <p className="text-sm font-medium">Remove text overlays</p>
-                    <p className="text-xs text-muted-foreground">
-                      Strip hook text before motion control
-                      {removeTextOverlays && (
-                        <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
-                      )}
-                    </p>
-                  </div>
-                  <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
-                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+
+          <div className="p-4 sm:p-5">
+            {submitError && (
+              <div className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                {submitError}
               </div>
-            </AccordionSection>
+            )}
 
-            <CardContent className="border-t border-border p-5">
-              <div className="mb-4 flex items-end justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Estimated cost
-                  </p>
-                  <p className="mt-1 text-2xl font-bold tracking-tight">
-                    {formatCost(referenceCost + videoCost + textErasureCost)}
-                  </p>
-                </div>
-                <div className="text-right font-mono text-[10px] text-muted-foreground">
-                  <p>Ref: {selectedSavedReference ? `${formatCost(0)} saved` : formatCost(imageCost)}</p>
-                  <p>Video: {durationSec}s @ ${pricePerSec}/s</p>
-                  {removeTextOverlays && <p>Cleanup: {formatCost(textErasureCost)}</p>}
-                </div>
-              </div>
+            <div className="mb-3 flex flex-col gap-1.5 rounded-lg border border-border bg-muted/25 px-3 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-muted-foreground">
+                {selectedSavedReference ? "Using saved reference" : "New reference image"}
+              </span>
+              <span className="font-mono font-semibold">
+                {formatCost(referenceCost + videoCost + textErasureCost)}
+              </span>
+            </div>
 
-              {submitError && (
-                <div className="mb-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                  {submitError}
-                </div>
+            <Button
+              size="lg"
+              onClick={selectedSavedReference ? handleGenerateWithSavedReference : handleGenerateRefImage}
+              disabled={!canSubmit}
+              className="h-10 w-full gap-2 rounded-md bg-accent-coral font-bold text-white hover:bg-[#ff6540]"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  {selectedSavedReference ? "Submitting..." : "Generating..."}
+                </>
+              ) : (
+                <>
+                  {selectedSavedReference ? "Generate clone" : "Generate reference"}
+                  <ArrowRight className="size-4" />
+                </>
               )}
-
-              {selectedSavedReference && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleGenerateRefImage}
-                  disabled={!canSubmit}
-                  className="mb-2 w-full gap-2"
-                >
-                  {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-                  Generate new reference instead
-                </Button>
-              )}
-
-              <Button
-                size="lg"
-                onClick={selectedSavedReference ? handleGenerateWithSavedReference : handleGenerateRefImage}
-                disabled={!canSubmit}
-                className="h-11 w-full gap-2 rounded-md bg-accent-coral font-bold text-white hover:bg-[#ff6540]"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    {selectedSavedReference ? "Submitting..." : "Generating..."}
-                  </>
-                ) : (
-                  <>
-                    {selectedSavedReference ? "Generate clone" : "Generate reference"}
-                    <ArrowRight className="size-4" />
-                  </>
-                )}
-              </Button>
-              {!canSubmit && (
-                <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                  Add a source and avatar to continue.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            </Button>
+            {!canSubmit && (
+              <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                Add a source and avatar to continue.
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {avatarId && (
         <Sheet open={isReferenceLibraryOpen} onOpenChange={setIsReferenceLibraryOpen}>

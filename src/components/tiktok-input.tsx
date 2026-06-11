@@ -180,8 +180,8 @@ export function TikTokInput({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-3">
+    <div className="space-y-3">
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex-1 relative">
           <input
             type="url"
@@ -189,7 +189,7 @@ export function TikTokInput({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={isDownloading}
-            className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm placeholder:text-muted-foreground focus:border-accent-green/50 focus:bg-card focus:outline-none transition-all"
+            className="h-10 w-full rounded-lg border border-border bg-muted/50 px-3 text-sm placeholder:text-muted-foreground transition-all focus:border-accent-green/50 focus:bg-card focus:outline-none focus:ring-3 focus:ring-accent-green/10"
           />
         </div>
         <button
@@ -197,7 +197,7 @@ export function TikTokInput({
           onClick={handleDownload}
           disabled={!url.trim() || isDownloading}
           className={cn(
-            "rounded-2xl px-5 py-3 text-sm font-semibold transition-all flex items-center gap-2",
+            "flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all",
             isDownloading
               ? "bg-muted text-muted-foreground"
               : "bg-accent-green text-white shadow-[0_4px_16px_rgba(123,165,67,0.25)] hover:shadow-[0_4px_24px_rgba(123,165,67,0.35)] hover:brightness-110"
@@ -219,19 +219,19 @@ export function TikTokInput({
 
       {/* Error */}
       {error && (
-        <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
           <AlertCircle className="size-4 text-destructive shrink-0" />
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-xs text-destructive">{error}</p>
         </div>
       )}
 
       {/* Success preview */}
       {videoInfo && (
-        <div className="rounded-2xl border border-accent-green/30 bg-accent-green/5 p-4">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-5 text-accent-green shrink-0" />
+        <div className="rounded-lg border border-accent-green/30 bg-accent-green/5 px-3 py-2.5">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="size-4 text-accent-green shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Video downloaded</p>
+              <p className="truncate text-sm font-medium">{videoInfo.label || "Video loaded"}</p>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Clock className="size-3" />
@@ -253,10 +253,10 @@ export function TikTokInput({
           <button
             type="button"
             onClick={() => setShowSavedSources(!showSavedSources)}
-            className="w-full flex items-center gap-3 py-2 group"
+            className="group flex w-full items-center gap-3 rounded-lg border border-border bg-muted/25 px-3 py-2 transition-colors hover:bg-muted/45"
           >
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+            <Video className="size-3.5 text-muted-foreground" />
+            <span className="flex flex-1 items-center gap-1.5 text-left text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
               Saved Sources ({savedSources.length})
               <ChevronDown
                 className={cn(
@@ -265,19 +265,18 @@ export function TikTokInput({
                 )}
               />
             </span>
-            <div className="flex-1 h-px bg-border" />
           </button>
 
           {/* Source grid */}
           {showSavedSources && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-3">
+            <div className="mt-2 grid max-h-[240px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-5">
               {savedSources.map((source) => {
                 const isSelected = videoInfo?.id === source.id;
                 return (
                   <div
                     key={source.id}
                     className={cn(
-                      "group relative rounded-2xl overflow-hidden border-2 transition-all",
+                      "group relative overflow-hidden rounded-lg border-2 transition-all",
                       isSelected
                         ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
                         : "border-border hover:border-accent-green/50"
@@ -298,7 +297,7 @@ export function TikTokInput({
                             className="size-full object-cover"
                           />
                         ) : (
-                          <Video className="size-8 text-muted-foreground" />
+                          <Video className="size-6 text-muted-foreground" />
                         )}
                       </div>
 
@@ -322,7 +321,7 @@ export function TikTokInput({
                       {/* Selected indicator */}
                       {isSelected && (
                         <div className="absolute inset-0 bg-accent-green/10 flex items-center justify-center">
-                          <CheckCircle2 className="size-8 text-accent-green drop-shadow-lg" />
+                          <CheckCircle2 className="size-6 text-accent-green drop-shadow-lg" />
                         </div>
                       )}
                     </button>

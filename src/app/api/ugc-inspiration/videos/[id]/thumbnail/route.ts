@@ -85,6 +85,12 @@ interface ImageFetchResult {
   contentType: string;
 }
 
+function isBrowserPreviewImage(contentType: string): boolean {
+  return /^(image\/(avif|bmp|gif|jpeg|jpg|png|svg\+xml|webp))$/i.test(
+    contentType
+  );
+}
+
 async function fetchImageBytes(url: string): Promise<ImageFetchResult | null> {
   try {
     const response = await fetch(url, {
@@ -101,7 +107,7 @@ async function fetchImageBytes(url: string): Promise<ImageFetchResult | null> {
 
     const contentType =
       response.headers.get("content-type")?.split(";")[0]?.trim() ?? "";
-    if (!contentType.startsWith("image/")) return null;
+    if (!isBrowserPreviewImage(contentType)) return null;
 
     const arrayBuffer = await response.arrayBuffer();
     if (!arrayBuffer.byteLength) return null;

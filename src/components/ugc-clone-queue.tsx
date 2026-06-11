@@ -12,6 +12,7 @@ import {
   XCircle,
   Clock,
   ExternalLink,
+  History,
 } from "lucide-react";
 
 interface CloneJob {
@@ -97,20 +98,46 @@ export function UGCCloneQueue() {
     return () => clearInterval(interval);
   }, [fetchJobs, hasActiveJobs]);
 
-  if (isLoading) {
-    return null;
-  }
-
-  if (jobs.length === 0) {
+  if (!isLoading && jobs.length === 0) {
     return null;
   }
 
   return (
-    <div className="launch-card bg-card border border-border p-6">
-      <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
-        Clone Queue
-      </h3>
-      <div className="space-y-1.5">
+    <section className="rounded-lg border border-border bg-card shadow-sm">
+      <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
+            <History className="size-4 text-muted-foreground" />
+          </span>
+          <div>
+            <h2 className="text-sm font-semibold">Recent clone activity</h2>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              {hasActiveJobs ? "Active jobs update automatically." : "Latest generated, queued, and failed clones."}
+            </p>
+          </div>
+        </div>
+        {jobs.length > 0 && (
+          <span className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
+            {jobs.length} recent
+          </span>
+        )}
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2 p-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-12 animate-pulse rounded-lg bg-muted/60" />
+          ))}
+        </div>
+      ) : jobs.length === 0 ? (
+        <div className="px-5 py-8 text-center">
+          <p className="text-sm font-medium">No clone jobs yet</p>
+          <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-muted-foreground">
+            Completed and in-progress clones will appear here after the first reference is approved.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2 p-4">
         {jobs.map((job) => {
           const config = STATUS_CONFIG[job.status];
           const StatusIcon = config.icon;
@@ -122,13 +149,13 @@ export function UGCCloneQueue() {
               key={job.id}
               href={`/ugc-clone/${job.id}`}
               className={cn(
-                "group flex items-center gap-3 rounded-md border border-border p-3 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
+                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
                 isActive && "border-accent-blue/30 bg-accent-blue/5"
               )}
             >
               <div
                 className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-md",
+                  "flex size-8 shrink-0 items-center justify-center rounded-md",
                   config.bgClassName
                 )}
               >
@@ -142,18 +169,21 @@ export function UGCCloneQueue() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <p className="text-sm font-medium truncate">
                     {job.prompt.length > 40
                       ? job.prompt.slice(0, 40) + "..."
                       : job.prompt}
                   </p>
+                  <span className={cn("shrink-0 text-[10px] font-bold uppercase tracking-wider", config.className)}>
+                    {config.label}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-muted-foreground font-mono">
                   <span>{job.model}</span>
-                  <span>·</span>
+                  <span className="text-border">|</span>
                   <span>{formatCost(job.estimatedCost)}</span>
-                  <span>·</span>
+                  <span className="text-border">|</span>
                   <span>{formatRelativeDate(job.createdAt)}</span>
                 </div>
               </div>
@@ -172,7 +202,8 @@ export function UGCCloneQueue() {
             </Link>
           );
         })}
-      </div>
-    </div>
+        </div>
+      )}
+    </section>
   );
 }

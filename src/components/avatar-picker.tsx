@@ -247,9 +247,9 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded-2xl bg-muted animate-pulse" />
+          <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
         ))}
       </div>
     );
@@ -397,7 +397,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         </button>
 
         {isLoadingGallery ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-2xl bg-muted animate-pulse" />
             ))}
@@ -409,7 +409,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
             <p className="text-xs mt-1">Generate some images first, then pick them here</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {galleryFiles.map((file) => (
               <button
                 key={file.id}
@@ -441,12 +441,12 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   // Grid mode (default)
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {/* Avatar quality tips */}
-      <div className="flex items-start gap-2 rounded-xl bg-accent-blue/5 border border-accent-blue/20 px-3 py-2.5">
-        <Info className="size-3.5 text-accent-blue shrink-0 mt-0.5" />
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
-          <span className="font-medium text-foreground">For best results:</span> Use a front-facing photo with clean background, even lighting, and no text/watermarks. Single person only.
+      <div className="flex items-center gap-2 rounded-lg bg-accent-blue/5 border border-accent-blue/20 px-2.5 py-1.5">
+        <Info className="size-3.5 text-accent-blue shrink-0" />
+        <p className="truncate text-[10px] text-muted-foreground">
+          <span className="font-medium text-foreground">Best:</span> front-facing, clean background, one person.
         </p>
       </div>
 
@@ -458,20 +458,20 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onChange={handleUpload}
       />
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="grid max-h-[244px] grid-cols-4 gap-2 overflow-y-auto pr-1 sm:max-h-[180px] sm:grid-cols-6 lg:grid-cols-7">
         {/* Upload button */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
+          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
         >
           {isUploading ? (
-            <Loader2 className="size-6 animate-spin" />
+            <Loader2 className="size-4 animate-spin" />
           ) : (
             <>
-              <Upload className="size-5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
+              <Upload className="size-4" />
+              <span className="text-[9px] font-bold uppercase tracking-wide">Upload</span>
             </>
           )}
         </button>
@@ -480,20 +480,20 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         <button
           type="button"
           onClick={() => setMode("generate")}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
+          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
         >
-          <Sparkles className="size-5" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Generate</span>
+          <Sparkles className="size-4" />
+          <span className="text-[9px] font-bold uppercase tracking-wide">Generate</span>
         </button>
 
         {/* From Gallery button */}
         <button
           type="button"
           onClick={openGallery}
-          className="aspect-square rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
+          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
         >
-          <ImageIcon className="size-5" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Gallery</span>
+          <ImageIcon className="size-4" />
+          <span className="text-[9px] font-bold uppercase tracking-wide">Gallery</span>
         </button>
 
         {/* Avatar cards */}
@@ -503,7 +503,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
             <div
               key={avatar.id}
               className={cn(
-                "group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
+                "group relative aspect-square overflow-hidden rounded-lg border transition-all",
                 isSelected
                   ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
                   : "border-border hover:border-accent-green/50"
@@ -521,8 +521,8 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                 />
 
                 {/* Name */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                  <p className="text-[10px] font-medium text-white truncate">{avatar.name}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/65 to-transparent p-1.5">
+                  <p className="truncate text-[9px] font-medium text-white">{avatar.name}</p>
                 </div>
               </button>
 
@@ -530,9 +530,9 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
               <button
                 type="button"
                 onClick={(e) => handleDelete(avatar.id, e)}
-                className="absolute top-1.5 right-1.5 size-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                className="absolute top-1 right-1 size-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive focus:opacity-100"
               >
-                <Trash2 className="size-3" />
+                <Trash2 className="size-2.5" />
               </button>
             </div>
           );
@@ -540,8 +540,8 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
         {/* Empty state */}
         {avatars.length === 0 && (
-          <div className="col-span-2 flex flex-col items-center justify-center py-6 text-muted-foreground">
-            <User className="size-8 mb-2" />
+          <div className="col-span-4 flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-4 text-muted-foreground">
+            <User className="mb-1.5 size-6" />
             <p className="text-xs">No avatars yet</p>
           </div>
         )}
