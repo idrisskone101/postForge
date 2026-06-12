@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:home-cockpit": "tsx tests/home-cockpit.test.tsx",
+    "test:home-loading": "tsx tests/home-loading.test.tsx",
     "test:media-preview-frame": "tsx tests/media-preview-frame.test.tsx",
     "test:workspace-shell": "tsx tests/workspace-navigation.test.ts",
     "codex:setup": "bash scripts/codex-setup.sh",

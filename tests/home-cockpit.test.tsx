@@ -1,0 +1,63 @@
+import assert from "node:assert/strict";
+import { renderToStaticMarkup } from "react-dom/server";
+import { HomeCockpit } from "../src/app/home-cockpit";
+
+const now = new Date("2026-06-12T15:00:00Z");
+
+const markup = renderToStaticMarkup(
+  <HomeCockpit
+    todaySummary={{
+      period: "today",
+      totalCost: 1.28,
+      breakdown: {
+        image: { count: 2, cost: 0.18 },
+        video: { count: 1, cost: 1.1 },
+      },
+      byModel: {},
+    }}
+    monthSummary={{
+      period: "month",
+      totalCost: 18.42,
+      breakdown: {
+        image: { count: 14, cost: 2.12 },
+        video: { count: 8, cost: 16.3 },
+      },
+      byModel: {},
+    }}
+    activeJobs={[
+      {
+        id: "job-processing",
+        prompt: "Clone the creator hook with a new first frame",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "processing",
+        createdAt: now,
+      },
+    ]}
+    recentJobs={[
+      {
+        id: "job-completed",
+        prompt: "Cycle syncing creator reaction clip",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "completed",
+        createdAt: now,
+        output: {
+          id: "output-1",
+          width: 1080,
+          height: 1920,
+          durationSec: 12,
+        },
+      },
+    ]}
+  />
+);
+
+assert.match(markup, /Daily Production Loop/);
+assert.match(markup, /Continue latest Clone/);
+assert.match(markup, /Review new Outputs/);
+assert.match(markup, /Inspect active jobs/);
+assert.match(markup, /Return to Inspiration/);
+assert.match(markup, /Compact Spend/);
+assert.match(markup, /job-processing/);
+assert.match(markup, /job-completed/);
