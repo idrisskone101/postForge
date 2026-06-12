@@ -22,6 +22,7 @@ interface MediaPreviewFrameProps extends MediaPreviewProps {
   variant?: MediaPreviewVariant;
   actions?: ReactNode;
   showMetadata?: boolean;
+  frameAspectRatio?: string;
   mediaClassName?: string;
 }
 
@@ -80,6 +81,7 @@ export function MediaPreviewFrame({
   variant = "work",
   actions,
   showMetadata = false,
+  frameAspectRatio,
   mediaClassName,
 }: MediaPreviewFrameProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -103,7 +105,7 @@ export function MediaPreviewFrame({
 
   const aspectRatio = getAspectRatio(width, height);
   const metadata = getMetadata(width, height);
-  const shouldUseAspectRatio = variant !== "detail" && aspectRatio;
+  const shouldUseAspectRatio = variant !== "detail" && (frameAspectRatio || aspectRatio);
   const mediaClass = cn(
     "rounded-lg transition-opacity",
     isLoading ? "opacity-0" : "opacity-100",
@@ -115,7 +117,7 @@ export function MediaPreviewFrame({
     <figure
       data-media-preview-frame={variant}
       className={cn("relative overflow-hidden rounded-lg", frameClasses[variant], className)}
-      style={shouldUseAspectRatio ? { aspectRatio } : undefined}
+      style={shouldUseAspectRatio ? { aspectRatio: frameAspectRatio || aspectRatio } : undefined}
     >
       <div
         className={cn(

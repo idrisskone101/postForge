@@ -7,6 +7,7 @@ import { VideoTrimmer } from "@/components/video-trimmer";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
+import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC, getModelsByType } from "@/lib/ai/models";
 import { apiGet, apiPost } from "@/lib/api/client";
 import {
   Loader2,
@@ -24,6 +25,7 @@ import {
   ArrowLeft,
   Sparkles,
   PenLine,
+  Volume2,
   Clock3,
   Video,
   Users,
@@ -36,6 +38,33 @@ import {
 const FALLBACK_REFERENCE_THUMBNAILS = [
   "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=200",
   "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=200",
+] as const;
+
+const PROMPT_PRESETS = [
+  {
+    label: "Talking Head",
+    prompt: "Medium close-up, soft natural lighting, neutral background, casual indoor setting",
+  },
+  {
+    label: "Product Demo",
+    prompt: "Well-lit environment, clean background, warm lighting, medium shot framing",
+  },
+  {
+    label: "Dance / Movement",
+    prompt: "Full body visible, vibrant atmosphere, dynamic lighting, open space",
+  },
+  {
+    label: "Reaction",
+    prompt: "Close-up framing, casual setting, natural ambient lighting",
+  },
+  {
+    label: "Lifestyle / Vlog",
+    prompt: "Cozy everyday setting, warm natural lighting, medium close-up, authentic candid feel",
+  },
+  {
+    label: "Office / B2B",
+    prompt: "Modern office or clean backdrop, medium shot, crisp even lighting, professional environment",
+  },
 ] as const;
 
 type Phase = "input" | "reviewing" | "submitted";
@@ -301,19 +330,19 @@ export function UGCCloneForm() {
   // Step 2: Avatar
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [identityPack, setIdentityPack] = useState<AvatarIdentityPack | null>(null);
-  const [, setIsStartingIdentityPack] = useState(false);
-  const [, setIdentityPackError] = useState<string | null>(null);
+  const [isStartingIdentityPack, setIsStartingIdentityPack] = useState(false);
+  const [identityPackError, setIdentityPackError] = useState<string | null>(null);
   const [savedReferences, setSavedReferences] = useState<SavedReference[]>([]);
-  const [, setIsLoadingSavedReferences] = useState(false);
-  const [, setSavedReferencesError] = useState<string | null>(null);
+  const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
+  const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
   const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
-  const [avatarToolsOpen, setAvatarToolsOpen] = useState(false);
 
   // Step 3: Settings
-  const [prompt] = useState("");
-  const [keepOriginalSound] = useState(true);
-  const [removeTextOverlays] = useState(false);
-  const [selectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
+  const [prompt, setPrompt] = useState("");
+  const [keepOriginalSound, setKeepOriginalSound] = useState(true);
+  const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
+  const [selectedReferenceImageModel, setSelectedReferenceImageModel] = useState("nano-banana-2");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -321,8 +350,10 @@ export function UGCCloneForm() {
 
   const durationSec = videoInfo?.durationSec ?? 5;
   const videoCost = calculateEstimatedCost(selectedModel, { durationSec });
-  const imageCost = calculateEstimatedCost("nano-banana-2", { numImages: 1 });
+  const imageCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: 1 });
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
+  const cloneVideoModels = getModelsByType("video").filter((model) => model.capabilities.motionControl);
+  const referenceImageModels = getModelsByType("image");
 
   const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
 
@@ -471,10 +502,6 @@ export function UGCCloneForm() {
   }, [avatarId, fetchIdentityPack, identityPack]);
 
   useEffect(() => {
-    setAvatarToolsOpen(false);
-  }, [avatarId]);
-
-  useEffect(() => {
     const hasGenerating = refImages.some((r) => r.status === "generating");
     if (!hasGenerating) {
       if (pollingRef.current) {
@@ -559,6 +586,7 @@ export function UGCCloneForm() {
         tiktokSourceId: videoInfo.id,
         avatarId,
         prompt: promptToUse || undefined,
+        imageModel: selectedReferenceImageModel,
       });
 
       const newEntry: RefImageEntry = {
@@ -660,6 +688,10 @@ export function UGCCloneForm() {
     : selectedModel === "kling-3.0-pro-motion"
       ? "Kling 3.0 Pro"
       : "Kling 2.6";
+  const referenceModelName =
+    referenceImageModels.find((model) => model.id === selectedReferenceImageModel)?.name ??
+    selectedReferenceImageModel;
+  const referenceCost = selectedSavedReference ? 0 : imageCost;
   const sourceReady = !!videoInfo?.id;
   const avatarReady = !!avatarId;
   const trimReady = !!videoInfo;
@@ -960,7 +992,7 @@ export function UGCCloneForm() {
           <div className="flex items-center gap-2 rounded-lg border border-accent-green/30 bg-accent-green/20 px-3 py-1.5">
             <div className="size-2 rounded-full bg-accent-green" />
             <span className="text-xs font-bold uppercase tracking-wider text-accent-green">
-              Ready to Generate
+              {canGenerateClone ? "Ready to Generate" : nextAction.label}
             </span>
           </div>
         </div>
@@ -995,39 +1027,44 @@ export function UGCCloneForm() {
               </button>
             </div>
 
-            {sourceReady && videoInfo && sourcePreviewSrc ? (
-              showTrimmer && originalVideoInfo ? (
-                <VideoTrimmer
-                  key={originalVideoInfo.localPath}
-                  videoPath={originalVideoInfo.localPath}
-                  durationSec={originalVideoInfo.durationSec}
-                  width={originalVideoInfo.width}
-                  height={originalVideoInfo.height}
-                  sourceId={videoInfo.id}
-                  onTrimmed={handleTrimmed}
-                  onCancel={handleCancelTrim}
-                />
-              ) : (
-                <MediaPreviewFrame
-                  type="video"
-                  src={sourcePreviewSrc}
-                  width={videoInfo.width}
-                  height={videoInfo.height}
-                  alt={videoInfo.label || "Selected source preview"}
-                  variant="work"
-                  showMetadata
-                  actions={
-                    <button
-                      type="button"
-                      onClick={() => setShowTrimmer(true)}
-                      className="text-[10px] font-bold uppercase tracking-wider text-accent-blue"
-                    >
-                      Re-trim
-                    </button>
-                  }
-                />
-              )
-            ) : (
+            <div className="space-y-4">
+              {sourceReady && videoInfo && sourcePreviewSrc && (
+                showTrimmer && originalVideoInfo ? (
+                  <VideoTrimmer
+                    key={originalVideoInfo.localPath}
+                    videoPath={originalVideoInfo.localPath}
+                    durationSec={originalVideoInfo.durationSec}
+                    width={originalVideoInfo.width}
+                    height={originalVideoInfo.height}
+                    sourceId={videoInfo.id}
+                    onTrimmed={handleTrimmed}
+                    onCancel={handleCancelTrim}
+                  />
+                ) : (
+                  <MediaPreviewFrame
+                    type="video"
+                    src={sourcePreviewSrc}
+                    width={videoInfo.width}
+                    height={videoInfo.height}
+                    alt={videoInfo.label || "Selected source preview"}
+                    variant="work"
+                    frameAspectRatio="1 / 1"
+                    className="mx-auto w-full max-w-[360px] border border-white/10"
+                    mediaClassName="aspect-[9/16] h-full w-auto"
+                    showMetadata
+                    actions={
+                      <button
+                        type="button"
+                        onClick={() => setShowTrimmer(true)}
+                        className="text-[10px] font-bold uppercase tracking-wider text-accent-blue"
+                      >
+                        Re-trim
+                      </button>
+                    }
+                  />
+                )
+              )}
+
               <div className="rounded-xl border border-dashed border-white/10 bg-black p-4">
                 <TikTokInput
                   onDownloaded={handleVideoDownloaded}
@@ -1037,7 +1074,7 @@ export function UGCCloneForm() {
                   onPreselectedSourceResolved={handlePreselectedSourceResolved}
                 />
               </div>
-            )}
+            </div>
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6">
@@ -1053,61 +1090,37 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <button
-                type="button"
-                onClick={() => setAvatarToolsOpen(true)}
-                className={cn(
-                  "group flex flex-col items-center gap-3 rounded-xl border p-4 transition-all",
-                  "border-accent-green bg-accent-green/10 ring-1 ring-accent-green/40"
-                )}
-              >
-                <div
-                  className="size-16 overflow-hidden rounded-full border-2 border-accent-green"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Tech" alt="" />
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    {avatarReady ? "Avatar selected" : "Choose an avatar"}
+                  </p>
+                  <p className="mt-1 text-xs text-white/40">
+                    {avatarReady
+                      ? identityPack?.status === "completed"
+                        ? `${identityPack.images.length} identity references ready.`
+                        : identityPack?.status === "failed"
+                          ? "Identity pack failed; the original avatar is still usable."
+                          : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
+                            ? "Preparing identity references in the background."
+                            : "Original avatar fallback is available."
+                      : "Use your saved avatars, upload one, or generate a new identity."}
+                  </p>
+                  {(identityPackError || identityPack?.error) && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {identityPackError || identityPack?.error}
+                    </p>
+                  )}
                 </div>
-                <div className="text-center">
-                  <div className="text-xs font-bold text-white">
-                    Tech Explorer
-                  </div>
-                  <div className="text-[10px] font-semibold uppercase text-accent-green">
+                {avatarReady && (
+                  <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
                     Active
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setAvatarToolsOpen(true)}
-                className="group flex flex-col items-center gap-3 rounded-xl border border-white/5 bg-white/5 p-4 transition-all hover:border-white/20"
-              >
-                <div className="size-16 overflow-hidden rounded-full opacity-50 grayscale transition-all group-hover:opacity-100 group-hover:grayscale-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Minimalist" alt="" />
-                </div>
-                <div className="text-center">
-                  <div className="text-xs font-bold text-white/60">Minimalist</div>
-                  <div className="text-[10px] uppercase text-white/30">Select</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setAvatarToolsOpen((value) => !value)}
-                className="flex min-h-[132px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-transparent p-4 transition-all hover:border-white/30"
-              >
-                <Plus className="size-5 text-white/40" />
-                <span className="text-[10px] font-bold uppercase text-white/40">New Identity</span>
-              </button>
-            </div>
-
-            {avatarToolsOpen && (
-              <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
-                <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
+                  </Badge>
+                )}
               </div>
-            )}
+              <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
+            </div>
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6">
@@ -1177,6 +1190,18 @@ export function UGCCloneForm() {
                   </p>
                 </button>
 
+                {isLoadingSavedReferences && (
+                  <div className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/40">
+                    Loading saved references...
+                  </div>
+                )}
+
+                {savedReferencesError && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                    {savedReferencesError}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-3 gap-2">
                   {visibleReferenceThumbnails.length > 0
                     ? visibleReferenceThumbnails.map((reference) => (
@@ -1184,7 +1209,7 @@ export function UGCCloneForm() {
                         key={reference.id}
                         type="button"
                         onClick={() => handleSelectSavedReference(reference.id)}
-                        className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-black transition-colors hover:border-accent-coral"
+                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black transition-colors hover:border-accent-coral"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -1192,6 +1217,11 @@ export function UGCCloneForm() {
                           alt=""
                           className="size-full object-cover"
                         />
+                        {reference.id === selectedSavedReferenceId && (
+                          <span className="absolute inset-0 grid place-items-center bg-accent-coral/15 text-accent-coral">
+                            <Check className="size-4" />
+                          </span>
+                        )}
                       </button>
                     ))
                     : FALLBACK_REFERENCE_THUMBNAILS.map((src) => (
@@ -1206,10 +1236,33 @@ export function UGCCloneForm() {
                   <button
                     type="button"
                     className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
+                    title={savedReferences.length > 0 ? "Saved references are shown first" : "No saved references yet"}
                   >
                     <Plus className="size-4 text-white/20" />
                   </button>
                 </div>
+
+                {savedReferences.length > visibleReferenceThumbnails.length && (
+                  <div className="grid max-h-36 grid-cols-3 gap-2 overflow-y-auto pr-1">
+                    {savedReferences.slice(2).map((reference) => (
+                      <button
+                        key={reference.id}
+                        type="button"
+                        onClick={() => handleSelectSavedReference(reference.id)}
+                        className={cn(
+                          "relative overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                          reference.id === selectedSavedReferenceId
+                            ? "border-accent-coral"
+                            : "border-white/10"
+                        )}
+                        title={reference.source?.label ?? "Saved reference"}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={reference.previewUrl} alt="" className="aspect-square w-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -1220,47 +1273,112 @@ export function UGCCloneForm() {
             <h2 className="mb-4 px-1 text-xs font-bold uppercase tracking-widest text-white/40">
               Generation Settings
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Variation Count
+                  Video Model
                 </label>
-                <div className="flex gap-2">
-                  {["x1", "x4", "x8"].map((label) => (
+                <div className="grid gap-2">
+                  {cloneVideoModels.map((model) => (
                     <button
-                      key={label}
+                      key={model.id}
                       type="button"
+                      onClick={() => setSelectedModel(model.id as typeof selectedModel)}
                       className={cn(
-                        "h-9 flex-1 rounded-lg border text-xs font-bold transition-colors hover:bg-white/10",
-                        label === "x4"
+                        "rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
+                        selectedModel === model.id
                           ? "border-accent-blue bg-accent-blue/10 text-accent-blue"
-                          : "border-white/10 bg-white/5"
+                          : "border-white/10 bg-white/5 text-white/70"
                       )}
                     >
-                      {label}
+                      <span className="block text-xs font-bold">{model.name}</span>
+                      <span className="mt-0.5 block font-mono text-[10px] opacity-70">
+                        {formatCost(calculateEstimatedCost(model.id, { durationSec }))} est.
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
+
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Style Strength
+                  Reference Image Model
                 </label>
-                <input
-                  type="range"
-                  className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-white/10 accent-accent-green"
-                  defaultValue={70}
+                <div className="grid gap-2">
+                  {referenceImageModels.map((model) => (
+                    <button
+                      key={model.id}
+                      type="button"
+                      onClick={() => setSelectedReferenceImageModel(model.id)}
+                      className={cn(
+                        "rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
+                        selectedReferenceImageModel === model.id
+                          ? "border-accent-green bg-accent-green/10 text-accent-green"
+                          : "border-white/10 bg-white/5 text-white/70"
+                      )}
+                    >
+                      <span className="block text-xs font-bold">{model.name}</span>
+                      <span className="mt-0.5 block font-mono text-[10px] opacity-70">
+                        {formatCost(calculateEstimatedCost(model.id, { numImages: 1 }))} / image
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
+                  Scene Direction
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {PROMPT_PRESETS.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setPrompt(preset.prompt)}
+                      className={cn(
+                        "whitespace-nowrap rounded-md border px-2 py-1 text-[10px] font-semibold transition-colors",
+                        prompt === preset.prompt
+                          ? "border-accent-coral bg-accent-coral/10 text-accent-coral"
+                          : "border-white/10 bg-white/5 text-white/45 hover:text-white"
+                      )}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+                <Textarea
+                  placeholder="Optional: lighting, framing, environment, style..."
+                  value={prompt}
+                  onChange={(event) => setPrompt(event.target.value.slice(0, 500))}
+                  maxLength={500}
+                  className="min-h-[92px] resize-none rounded-lg border-white/10 bg-white/5 text-sm text-white placeholder:text-white/25"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Output Resolution
-                </label>
-                <select className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-accent-blue">
-                  <option>1080x1920 (9:16)</option>
-                  <option>1920x1080 (16:9)</option>
-                  <option>1080x1080 (1:1)</option>
-                </select>
+
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                  <div className="flex items-center gap-3">
+                    <Volume2 className="size-4 text-white/40" />
+                    <div>
+                      <p className="text-xs font-semibold text-white/80">Keep original sound</p>
+                      <p className="text-[10px] text-white/35">Preserve the TikTok audio track.</p>
+                    </div>
+                  </div>
+                  <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                  <div>
+                    <p className="text-xs font-semibold text-white/80">Remove text overlays</p>
+                    <p className="text-[10px] text-white/35">
+                      Strip hook text before motion control
+                      {removeTextOverlays && (
+                        <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
+                      )}
+                    </p>
+                  </div>
+                  <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
+                </div>
               </div>
             </div>
           </section>
@@ -1272,16 +1390,19 @@ export function UGCCloneForm() {
             <div>
               <h3 className="text-lg font-bold">Execute Synthesis</h3>
               <p className="text-sm text-white/80">
-                Estimated cost: $1.20 (4x variants)
+                Estimated cost: {formatCost(referenceCost + videoCost + textErasureCost)}
+              </p>
+              <p className="mt-1 text-[10px] text-white/60">
+                {modelName} video • {referenceModelName} reference
               </p>
             </div>
             <button
               type="button"
               onClick={selectedSavedReference ? handleGenerateWithSavedReference : handleGenerateRefImage}
-              disabled={isSubmitting}
-              className="w-full rounded-xl bg-black py-4 text-sm font-bold uppercase tracking-widest text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed"
+              disabled={!canSubmit || isSubmitting}
+              className="w-full rounded-xl bg-black py-4 text-sm font-bold uppercase tracking-widest text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Starting..." : "Start Generation"}
+              {isSubmitting ? "Starting..." : nextAction.label}
             </button>
             <div className="flex items-center gap-1 text-[10px] font-medium opacity-60">
               <Clock3 className="size-3" />
