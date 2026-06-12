@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { apiDelete, apiPost } from "@/lib/api/client";
 import type {
@@ -139,6 +140,10 @@ function getInspirationThumbnailSrc(videoId: string, updatedAt: string): string 
   return `/api/ugc-inspiration/videos/${videoId}/thumbnail?v=${encodeURIComponent(updatedAt)}`;
 }
 
+function getInspirationAvatarSrc(accountId: string, updatedAt: string): string {
+  return `/api/ugc-inspiration/accounts/${accountId}/avatar?v=${encodeURIComponent(updatedAt)}`;
+}
+
 function getCreatorSyncMeta(
   account: TrackedInspirationAccount,
   isRefreshing: boolean
@@ -200,6 +205,37 @@ function mergeAccountIntoState(
   return sortAccounts(merged);
 }
 
+function CreatorSyncAvatar({
+  account,
+}: {
+  account: TrackedInspirationAccount;
+}) {
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const avatarSrc =
+    account.avatarUrl && !avatarFailed
+      ? getInspirationAvatarSrc(account.id, account.updatedAt)
+      : null;
+  const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
+
+  return (
+    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-zinc-800 text-[10px] font-medium text-muted-foreground">
+      {avatarSrc ? (
+        <Image
+          src={avatarSrc}
+          alt=""
+          width={32}
+          height={32}
+          unoptimized
+          className="size-full object-cover"
+          onError={() => setAvatarFailed(true)}
+        />
+      ) : (
+        fallback
+      )}
+    </span>
+  );
+}
+
 export function InspirationPageClient({
   initialAccounts,
 }: InspirationPageClientProps) {
@@ -215,6 +251,7 @@ export function InspirationPageClient({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
+  const [creatorSyncManageOpen, setCreatorSyncManageOpen] = useState(false);
 
   const selectedAccount = useMemo(
     () =>
@@ -482,8 +519,17 @@ export function InspirationPageClient({
               </h3>
               <button
                 type="button"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-                aria-label={`${trackedCreatorCount} synced creators`}
+                onClick={() => setCreatorSyncManageOpen((open) => !open)}
+                aria-pressed={creatorSyncManageOpen}
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground",
+                  creatorSyncManageOpen && "bg-white/5 text-foreground"
+                )}
+                aria-label={
+                  creatorSyncManageOpen
+                    ? "Hide creator sync actions"
+                    : "Show creator sync actions"
+                }
               >
                 <Settings2 className="size-4" />
               </button>
@@ -509,15 +555,7 @@ export function InspirationPageClient({
                       onClick={() => setActiveFilter(account.id)}
                       className="flex min-w-0 flex-1 items-center gap-3 text-left"
                     >
-                      <Avatar size="sm">
-                        <AvatarImage
-                          src={account.avatarUrl ?? undefined}
-                          alt={account.handleDisplay}
-                        />
-                        <AvatarFallback>
-                          {account.handleDisplay.slice(1, 3).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <CreatorSyncAvatar account={account} />
 
                       <div className="min-w-0">
                         <p className="truncate text-xs font-semibold">
@@ -534,7 +572,14 @@ export function InspirationPageClient({
                       </div>
                     </button>
 
-                    <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                    <div
+                      className={cn(
+                        "flex shrink-0 items-center gap-1",
+                        creatorSyncManageOpen
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                      )}
+                    >
                       <button
                         type="button"
                         onClick={() => void handleRefreshAccount(account.id)}

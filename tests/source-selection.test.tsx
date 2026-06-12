@@ -13,7 +13,7 @@ const accounts: TrackedInspirationAccount[] = [
     handleNormalized: "creator",
     handleDisplay: "@creator",
     displayName: "Creator",
-    avatarUrl: null,
+    avatarUrl: "https://cdn.example.com/creator-avatar.jpg",
     profileUrl: "https://www.tiktok.com/@creator",
     syncStatus: "ready",
     lastSyncAttemptAt: "2026-06-12T12:00:00Z",
@@ -72,6 +72,9 @@ assert.match(markup, /Use in Clone/);
 assert.match(markup, /Creator Sync/);
 assert.match(markup, /Synced/);
 assert.match(markup, /size-7 items-center/);
+assert.match(markup, /Show creator sync actions/);
+assert.match(markup, /size-full object-cover/);
+assert.match(markup, /\/api\/ugc-inspiration\/accounts\/account-1\/avatar/);
 assert.match(markup, /New Sources/);
 assert.match(markup, /Preview Details/);
 assert.match(markup, /max-h-\[480px\]/);
@@ -82,3 +85,4 @@ assert.match(markup, /<aside class="hidden w-64 shrink-0/);
 assert.match(markup, /<section class="min-w-0 flex-1 overflow-y-auto/);
 assert.doesNotMatch(markup, /launch-card glass/);
 assert.doesNotMatch(markup, /Manual refresh required/);
+assert.doesNotMatch(markup, /transition-opacity/);
