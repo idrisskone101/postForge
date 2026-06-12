@@ -13,6 +13,7 @@ import {
   Users,
   Compass,
   DollarSign,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -73,11 +74,29 @@ export function Sidebar() {
             className={cn(
               "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors",
               active
-                ? "bg-accent-coral/12 text-accent-coral"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? options?.mobile
+                  ? "bg-accent-coral/12 text-accent-coral"
+                  : "bg-white/5 text-white ring-1 ring-accent-green/40"
+                : options?.mobile
+                  ? "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-white/70 hover:bg-white/5 hover:text-white"
             )}
           >
-            <Icon className="size-4 shrink-0" />
+            {options?.mobile ? (
+              <Icon className="size-4 shrink-0" />
+            ) : (
+              <span
+                className={cn(
+                  "size-4 shrink-0 rounded-sm",
+                  item.label === "Home" && "bg-accent-blue",
+                  item.label === "Inspiration" && "bg-accent-blue",
+                  item.label === "Clone" && "bg-accent-green",
+                  item.label === "Gallery" && "bg-accent-coral",
+                  item.label === "Spend" && "bg-white/40",
+                  item.label === "Generate" && "bg-white/20"
+                )}
+              />
+            )}
             <span className="min-w-0 flex-1 truncate">{item.label}</span>
           </Link>
         );
@@ -131,32 +150,56 @@ export function Sidebar() {
       </div>
 
       {/* Desktop: labelled workspace sidebar */}
-      <aside className="fixed bottom-0 left-0 top-0 z-40 hidden w-72 border-r border-border bg-card/80 backdrop-blur-xl md:flex">
+      <aside className="fixed bottom-0 left-0 top-0 z-40 hidden w-[248px] border-r border-white/10 bg-[oklch(0.18_0_0)] md:flex">
         <div className="flex w-full flex-col px-4 py-5">
-          <Link href="/" className="mb-8 flex items-center gap-3 px-2">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-accent-coral text-white shadow-[0_8px_20px_rgba(255,122,89,0.2)]">
-              <Rocket className="size-6" />
+          <Link href="/" className="mb-6 flex items-center gap-3 px-2">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-accent-coral text-sm font-bold text-white">
+              P
             </div>
             <div>
               <p className="text-sm font-semibold leading-tight">PostForge</p>
-              <p className="text-xs text-muted-foreground">UGC workspace</p>
+              <p className="text-[11px] leading-tight text-white/50">UGC workspace</p>
             </div>
           </Link>
 
-          <nav className="flex flex-1 flex-col gap-4">
-            {renderNavGroup(workspaceNavigationGroups.primary)}
-            <div className="mt-2 border-t border-border pt-2">
+          <nav className="flex flex-1 flex-col gap-1">
+            {renderNavGroup([workspaceNavigationGroups.primary[0]])}
+            {renderNavGroup(workspaceNavigationGroups.primary.slice(1), {
+              heading: "Daily Production Loop",
+            })}
+            <div>
               {renderNavGroup(workspaceNavigationGroups.tools, {
                 heading: "Tools",
               })}
             </div>
           </nav>
 
-          <div className="mt-auto flex items-center justify-between border-t border-border px-2 pt-4">
-            <span className="text-xs font-medium text-muted-foreground">
-              Theme
-            </span>
-            <ThemeToggle />
+          <div className="mt-auto">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="text-[11px] font-semibold text-white/60">Daily Usage</div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="text-lg font-semibold">$4.82</span>
+                <span className="text-[11px] text-white/45">spend</span>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-3 px-2">
+              <div className="size-8 overflow-hidden rounded-full bg-white/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                  alt=""
+                  className="size-full"
+                />
+              </div>
+              <div className="text-xs font-medium text-white/70">Felix Studio</div>
+              <button
+                type="button"
+                className="ml-auto text-white/40 transition-colors hover:text-white"
+                aria-label="Settings"
+              >
+                <Settings className="size-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>

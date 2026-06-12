@@ -33,23 +33,21 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
+  const isClone = activeItem.label === "Clone";
 
   return (
-    <main className="min-h-screen overflow-auto md:ml-72">
-      <div className="border-b border-border bg-background/90 backdrop-blur-xl">
+    <main className="flex min-h-screen flex-col overflow-hidden md:ml-[248px]">
+      <div className="h-[76px] shrink-0 border-b border-white/10 bg-[oklch(0.145_0_0)]">
         <div
           id="workspace-header-grid"
-          className="mx-auto grid max-w-[1280px] gap-4 px-5 py-4 pl-16 sm:px-6 sm:pl-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:pl-8"
+          className="grid h-full gap-4 px-5 py-4 pl-16 sm:px-6 sm:pl-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:pl-8"
         >
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase text-muted-foreground">
-              Workspace
-            </p>
-            <h1 className="mt-1 text-2xl font-semibold">
-              {activeItem.label}
+            <h1 className="text-xl font-semibold leading-tight tracking-tight">
+              {isClone ? "Clone Workspace" : activeItem.label}
             </h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              {activeItem.description}
+            <p className="mt-1 max-w-2xl text-sm text-white/50">
+              {isClone ? "Production #1024 • Guided Synthesis" : activeItem.description}
             </p>
           </div>
 
