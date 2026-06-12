@@ -706,12 +706,12 @@ export function InspirationPageClient({
                         </div>
                       </button>
 
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-2 border-t border-border bg-card/95 p-3">
+                      <div className="grid grid-cols-2 gap-2 border-t border-border bg-card/95 p-3">
                         <Button
                           type="button"
                           onClick={() => void handleUseInClone(video)}
                           disabled={usingVideoId === video.id}
-                          className="h-9 rounded-2xl bg-accent-green text-sm font-semibold text-white shadow-[0_12px_28px_rgba(123,165,67,0.22)] hover:brightness-110"
+                          className="col-span-2 h-auto min-h-9 w-full min-w-0 rounded-2xl bg-accent-green px-2 py-2 text-center text-xs font-semibold leading-tight text-white shadow-[0_12px_28px_rgba(123,165,67,0.22)] hover:brightness-110 sm:text-sm"
                         >
                           {usingVideoId === video.id ? (
                             <>
@@ -736,7 +736,7 @@ export function InspirationPageClient({
                               ? `Copied source URL for ${video.creatorHandle}`
                               : `Copy source URL for ${video.creatorHandle}`
                           }
-                          className="rounded-2xl"
+                          className="w-full rounded-2xl"
                         >
                           {copiedVideoId === video.id ? (
                             <CheckCircle2 className="size-4" />
@@ -752,7 +752,7 @@ export function InspirationPageClient({
                           aria-label={`Open original source from ${video.creatorHandle}`}
                           className={cn(
                             buttonVariants({ variant: "outline", size: "icon-lg" }),
-                            "rounded-2xl"
+                            "w-full rounded-2xl"
                           )}
                         >
                           <ExternalLink className="size-4" />

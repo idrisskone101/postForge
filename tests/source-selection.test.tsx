@@ -55,6 +55,7 @@ assert.match(markup, /Source Selection/);
 assert.match(markup, /Compare creator posts/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
+assert.match(markup, /col-span-2 h-auto min-h-9 w-full min-w-0/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-contain/);
 
