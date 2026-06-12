@@ -17,7 +17,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +34,7 @@ import {
   Play,
   RefreshCw,
   Repeat2,
+  Settings2,
   Sparkles,
   Trash2,
   TriangleAlert,
@@ -139,17 +139,33 @@ function getInspirationThumbnailSrc(videoId: string, updatedAt: string): string 
   return `/api/ugc-inspiration/videos/${videoId}/thumbnail?v=${encodeURIComponent(updatedAt)}`;
 }
 
-function getSyncTone(status: TrackedInspirationAccount["syncStatus"]) {
-  switch (status) {
-    case "ready":
-      return "border-accent-green/30 bg-accent-green/10 text-accent-green";
-    case "syncing":
-      return "border-accent-blue/30 bg-accent-blue/10 text-accent-blue";
-    case "error":
-      return "border-destructive/30 bg-destructive/10 text-destructive";
-    default:
-      return "border-border bg-muted/60 text-muted-foreground";
+function getCreatorSyncMeta(
+  account: TrackedInspirationAccount,
+  isRefreshing: boolean
+) {
+  if (isRefreshing) {
+    return {
+      label: "Syncing now",
+      className: "text-accent-blue",
+    };
   }
+
+  if (account.syncStatus === "error") {
+    return {
+      label: "Sync failed",
+      className: "text-destructive",
+    };
+  }
+
+  return {
+    label: account.lastSyncedAt
+      ? `Synced ${formatRelativeDate(account.lastSyncedAt)}`
+      : "Not synced yet",
+    className:
+      account.syncStatus === "ready" && !account.isStale
+        ? "text-accent-green"
+        : "text-muted-foreground",
+  };
 }
 
 function sortAccounts(accounts: TrackedInspirationAccount[]) {
@@ -464,118 +480,96 @@ export function InspirationPageClient({
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Creator Sync
               </h3>
-              <Badge variant="outline" className="text-[10px]">
-                {trackedCreatorCount}
-              </Badge>
+              <button
+                type="button"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+                aria-label={`${trackedCreatorCount} synced creators`}
+              >
+                <Settings2 className="size-4" />
+              </button>
             </div>
 
             <div className="space-y-4">
-                {accounts.map((account) => {
-                  const isActive = activeFilter === account.id;
-                  const isRefreshing = refreshingIds.includes(account.id);
-                  const isDeleting = deletingIds.includes(account.id);
+              {accounts.map((account) => {
+                const isActive = activeFilter === account.id;
+                const isRefreshing = refreshingIds.includes(account.id);
+                const isDeleting = deletingIds.includes(account.id);
+                const syncMeta = getCreatorSyncMeta(account, isRefreshing);
 
-                  return (
-                    <div
-                      key={account.id}
-                      className={cn(
-                        "rounded-xl border p-3 transition-colors",
-                        isActive
-                          ? "border-accent-blue/40 bg-accent-blue/10"
-                          : "border-transparent bg-transparent hover:border-border hover:bg-white/5"
-                      )}
+                return (
+                  <div
+                    key={account.id}
+                    className={cn(
+                      "group flex items-center gap-3 rounded-lg py-0.5 transition-colors",
+                      isActive && "text-accent-blue"
+                    )}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setActiveFilter(account.id)}
+                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
                     >
+                      <Avatar size="sm">
+                        <AvatarImage
+                          src={account.avatarUrl ?? undefined}
+                          alt={account.handleDisplay}
+                        />
+                        <AvatarFallback>
+                          {account.handleDisplay.slice(1, 3).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold">
+                          {account.handleDisplay}
+                        </p>
+                        <p
+                          className={cn(
+                            "mt-0.5 truncate text-[10px] font-medium",
+                            syncMeta.className
+                          )}
+                        >
+                          {syncMeta.label}
+                        </p>
+                      </div>
+                    </button>
+
+                    <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                       <button
                         type="button"
-                        onClick={() => setActiveFilter(account.id)}
-                        className="w-full text-left"
+                        onClick={() => void handleRefreshAccount(account.id)}
+                        disabled={isRefreshing || isDeleting}
+                        className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label={`Refresh ${account.handleDisplay}`}
                       >
-                        <div className="flex items-start gap-3">
-                          <Avatar size="sm">
-                            <AvatarImage src={account.avatarUrl ?? undefined} alt={account.handleDisplay} />
-                            <AvatarFallback>
-                              {account.handleDisplay.slice(1, 3).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold">
-                                  {account.displayName || account.handleDisplay}
-                                </p>
-                                <p className="truncate text-xs text-muted-foreground">
-                                  {account.handleDisplay}
-                                </p>
-                              </div>
-                              <Badge
-                                variant="outline"
-                                className={cn("h-5 shrink-0 text-[10px] capitalize", getSyncTone(account.syncStatus))}
-                              >
-                                {isRefreshing ? "syncing" : account.syncStatus}
-                              </Badge>
-                            </div>
-
-                            <p className="mt-1 text-[10px] text-muted-foreground">
-                              {account.lastSyncedAt
-                                ? `Synced ${formatRelativeDate(account.lastSyncedAt)}`
-                                : "Not synced yet"}
-                            </p>
-
-                            {account.isStale && !isRefreshing && account.syncStatus !== "error" && (
-                              <p className="mt-2 text-[10px] leading-4 text-muted-foreground">
-                                Manual refresh required.
-                              </p>
-                            )}
-
-                            {account.lastSyncError && (
-                              <p className="mt-2 flex items-start gap-1.5 text-[11px] text-destructive">
-                                <TriangleAlert className="mt-0.5 size-3 shrink-0" />
-                                <span className="line-clamp-2">{account.lastSyncError}</span>
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                        {isRefreshing ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <RefreshCw className="size-3.5" />
+                        )}
                       </button>
-
-                      <div className="mt-3 flex items-center justify-between gap-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                          {account.videos.length} cached
-                        </p>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => void handleRefreshAccount(account.id)}
-                            disabled={isRefreshing || isDeleting}
-                            className="flex size-8 items-center justify-center rounded-lg border border-border bg-white/5 text-muted-foreground transition-colors hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-50"
-                            aria-label={`Refresh ${account.handleDisplay}`}
-                          >
-                            {isRefreshing ? (
-                              <Loader2 className="size-3.5 animate-spin" />
-                            ) : (
-                              <RefreshCw className="size-3.5" />
-                            )}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void handleDeleteAccount(account)}
-                            disabled={isDeleting}
-                            className="flex size-8 items-center justify-center rounded-lg border border-border bg-white/5 text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
-                            aria-label={`Remove ${account.handleDisplay}`}
-                          >
-                            {isDeleting ? (
-                              <Loader2 className="size-3.5 animate-spin" />
-                            ) : (
-                              <Trash2 className="size-3.5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void handleDeleteAccount(account)}
+                        disabled={isDeleting}
+                        className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label={`Remove ${account.handleDisplay}`}
+                      >
+                        {isDeleting ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="size-3.5" />
+                        )}
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {account.lastSyncError && (
+                      <span className="sr-only">{account.lastSyncError}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </section>
         </aside>
 
