@@ -117,8 +117,8 @@ export function CostsPageClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-4">
-          <h1 className="text-xl font-bold tracking-tight">
-            Analytics & Insights
+          <h1 className="text-xl font-bold">
+            Spend
           </h1>
           <p className="text-xs text-muted-foreground">
             Track your generation spending and usage

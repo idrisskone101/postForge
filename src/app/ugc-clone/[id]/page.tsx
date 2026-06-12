@@ -201,7 +201,7 @@ export default function UGCCloneJobPage() {
         </button>
         <div className="flex items-center gap-3">
           <Users className="size-4 text-accent-coral" />
-          <h1 className="text-lg font-bold">UGC Clone Result</h1>
+          <h1 className="text-lg font-bold">Clone Result</h1>
           <span className="rounded-md bg-muted px-2.5 py-0.5 text-[10px] font-bold text-muted-foreground font-mono">
             {job.model}
           </span>
@@ -409,7 +409,7 @@ export default function UGCCloneJobPage() {
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="rounded-md bg-accent-coral/10 px-2.5 py-1 text-[10px] font-bold text-accent-coral">
-                  UGC Clone
+                  Clone
                 </span>
                 <span className="rounded-md bg-muted px-2.5 py-1 text-[10px] font-bold text-muted-foreground font-mono">
                   {job.model}

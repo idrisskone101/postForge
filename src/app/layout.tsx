@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
+import { WorkspaceShell } from "@/components/workspace-shell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const poppins = Poppins({
@@ -41,7 +42,7 @@ export default function RootLayout({
         <TooltipProvider>
           <div className="min-h-screen">
             <Sidebar />
-            <main className="flex-1 ml-0 md:ml-24 overflow-auto">{children}</main>
+            <WorkspaceShell>{children}</WorkspaceShell>
           </div>
         </TooltipProvider>
       </body>

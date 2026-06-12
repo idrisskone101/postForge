@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:workspace-shell": "tsx tests/workspace-navigation.test.ts",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",
     "db:migrate": "prisma migrate dev",

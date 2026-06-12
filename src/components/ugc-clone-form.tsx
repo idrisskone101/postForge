@@ -825,7 +825,7 @@ export function UGCCloneForm() {
     <>
       <Card data-ugc-builder className="border-border bg-card py-0 shadow-sm">
         <div className="border-b border-border px-4 py-3.5 sm:px-5">
-          <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">UGC Clone</h1>
+          <h1 className="text-xl font-extrabold sm:text-2xl">Clone</h1>
           <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">
             Choose one TikTok source, choose one avatar, then generate.
           </p>

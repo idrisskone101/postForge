@@ -269,7 +269,7 @@ export function InspirationPageClient({
   }
 
   async function handleDeleteAccount(account: TrackedInspirationAccount) {
-    if (!window.confirm(`Remove ${account.handleDisplay} from UGC Inspiration?`)) {
+    if (!window.confirm(`Remove ${account.handleDisplay} from Inspiration?`)) {
       return;
     }
 
@@ -310,7 +310,7 @@ export function InspirationPageClient({
       setPageError(
         error instanceof Error
           ? error.message
-          : "Failed to send video to UGC Clone."
+          : "Failed to send video to Clone."
       );
     } finally {
       setUsingVideoId(null);
@@ -520,11 +520,11 @@ export function InspirationPageClient({
               <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div className="max-w-2xl">
                   <h1 className="text-3xl font-extrabold tracking-tight">
-                    UGC Inspiration
+                    Inspiration
                   </h1>
                   <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                     Track TikTok creators, browse reaction formats, and send the
-                    strongest post straight into UGC Clone.
+                    strongest post straight into Clone.
                   </p>
                 </div>
 
@@ -766,7 +766,7 @@ export function InspirationPageClient({
                       </p>
                       <p className="mt-2 max-w-md text-sm text-white/70">
                         The embed could not load for this post. You can still
-                        open it on TikTok or send it directly into UGC Clone.
+                        open it on TikTok or send it directly into Clone.
                       </p>
                     </div>
                   </div>
@@ -874,11 +874,11 @@ export function InspirationPageClient({
                       {usingVideoId === selectedVideo.id ? (
                         <>
                           <Loader2 className="size-4 animate-spin" />
-                          Sending to UGC Clone...
+                          Sending to Clone...
                         </>
                       ) : (
                         <>
-                          Use in UGC Clone
+                          Use in Clone
                           <Sparkles className="size-4" />
                         </>
                       )}
