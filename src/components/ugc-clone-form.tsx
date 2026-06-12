@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
 import { AvatarPicker } from "@/components/avatar-picker";
+import { MediaPreviewFrame } from "@/components/media-preview";
+import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -28,7 +30,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { calculateEstimatedCost, getModel, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
+import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
 import { apiGet, apiPost } from "@/lib/api/client";
 import {
   Loader2,
@@ -47,7 +49,6 @@ import {
   ChevronDown,
   Video,
   Users,
-  Play,
   Settings2,
 } from "lucide-react";
 
@@ -166,6 +167,196 @@ function SectionTitle({
   );
 }
 
+type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
+
+interface ClonePrimaryActionState {
+  sourceReady: boolean;
+  identityReady: boolean;
+  referenceReady: boolean;
+  canGenerate: boolean;
+  usesSavedReference: boolean;
+}
+
+export interface ClonePrimaryAction {
+  label: string;
+  detail: string;
+}
+
+interface CloneProductionStatePanelProps {
+  sourceReady: boolean;
+  trimReady: boolean;
+  identityReady: boolean;
+  referenceReady: boolean;
+  canGenerate: boolean;
+  nextAction: ClonePrimaryAction;
+  sourceDetail?: string;
+  trimDetail?: string;
+  identityDetail?: string;
+  referenceDetail?: string;
+  readinessDetail?: string;
+}
+
+export function getClonePrimaryAction({
+  sourceReady,
+  identityReady,
+  referenceReady,
+  canGenerate,
+  usesSavedReference,
+}: ClonePrimaryActionState): ClonePrimaryAction {
+  if (!sourceReady) {
+    return {
+      label: "Add source to continue",
+      detail: "Paste a TikTok URL or choose a source from Inspiration.",
+    };
+  }
+
+  if (!identityReady) {
+    return {
+      label: "Select identity",
+      detail: "Choose the avatar that should appear in the clone.",
+    };
+  }
+
+  if (canGenerate || referenceReady) {
+    return {
+      label: "Generate clone",
+      detail: usesSavedReference
+        ? "Use the selected saved reference to start video generation."
+        : "Approve the completed reference and start video generation.",
+    };
+  }
+
+  return {
+    label: "Generate reference",
+    detail: "Create or select the visual reference before final generation.",
+  };
+}
+
+function getStepStatus(isReady: boolean, readyStatus: CloneProductionStepStatus = "ready") {
+  return isReady ? readyStatus : "required";
+}
+
+function ProductionStateRow({
+  label,
+  status,
+  detail,
+}: {
+  label: string;
+  status: CloneProductionStepStatus;
+  detail: string;
+}) {
+  const statusClassName = {
+    ready: "border-accent-green/30 bg-accent-green/10 text-accent-green",
+    required: "border-accent-coral/30 bg-accent-coral/10 text-accent-coral",
+    working: "border-accent-blue/30 bg-accent-blue/10 text-accent-blue",
+    optional: "border-border bg-muted/45 text-muted-foreground",
+  }[status];
+
+  const statusLabel = {
+    ready: "Ready",
+    required: "Required",
+    working: "Working",
+    optional: "Optional",
+  }[status];
+
+  return (
+    <li className="rounded-lg border border-border bg-background/40 px-3 py-2.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold">{label}</p>
+          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{detail}</p>
+        </div>
+        <span
+          className={cn(
+            "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+            statusClassName
+          )}
+        >
+          {statusLabel}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+export function CloneProductionStatePanel({
+  sourceReady,
+  trimReady,
+  identityReady,
+  referenceReady,
+  canGenerate,
+  nextAction,
+  sourceDetail = sourceReady ? "Source selected and available for preview." : "No TikTok source selected yet.",
+  trimDetail = trimReady ? "Trim/preparation state is set." : "Choose a source before trimming.",
+  identityDetail = identityReady ? "Identity selected for this clone." : "Select an avatar identity.",
+  referenceDetail = referenceReady ? "Reference is ready for generation." : "Generate or choose a reference.",
+  readinessDetail = canGenerate ? "All required production state is ready." : "Complete the required state to generate.",
+}: CloneProductionStatePanelProps) {
+  return (
+    <aside
+      data-clone-production-state="true"
+      className="h-fit rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Production State
+          </p>
+          <h2 className="mt-1 text-lg font-semibold">Clone readiness</h2>
+        </div>
+        <Badge
+          variant="outline"
+          className={cn(
+            canGenerate
+              ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
+              : "bg-muted/45 text-muted-foreground"
+          )}
+        >
+          {canGenerate ? "Ready" : "In progress"}
+        </Badge>
+      </div>
+
+      <ol className="mt-4 space-y-2">
+        <ProductionStateRow
+          label="Source"
+          status={getStepStatus(sourceReady)}
+          detail={sourceDetail}
+        />
+        <ProductionStateRow
+          label="Trim"
+          status={sourceReady ? (trimReady ? "ready" : "optional") : "required"}
+          detail={trimDetail}
+        />
+        <ProductionStateRow
+          label="Identity"
+          status={getStepStatus(identityReady)}
+          detail={identityDetail}
+        />
+        <ProductionStateRow
+          label="Reference"
+          status={getStepStatus(referenceReady)}
+          detail={referenceDetail}
+        />
+        <ProductionStateRow
+          label="Generate readiness"
+          status={canGenerate ? "ready" : "working"}
+          detail={readinessDetail}
+        />
+      </ol>
+
+      <div className="mt-4 rounded-lg border border-border bg-muted/25 p-3">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          Next action
+        </p>
+        <p className="mt-1 text-sm font-semibold">{nextAction.label}</p>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          {nextAction.detail}
+        </p>
+      </div>
+    </aside>
+  );
+}
+
 export function UGCCloneForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -212,7 +403,6 @@ export function UGCCloneForm() {
   const durationSec = videoInfo?.durationSec ?? 5;
   const videoCost = calculateEstimatedCost(selectedModel, { durationSec });
   const imageCost = calculateEstimatedCost("nano-banana-2", { numImages: 1 });
-  const pricePerSec = getModel(selectedModel)?.pricing.amount ?? 0;
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
 
   const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
@@ -577,11 +767,60 @@ export function UGCCloneForm() {
   const referenceCost = selectedSavedReference ? 0 : imageCost;
   const sourceReady = !!videoInfo?.id;
   const avatarReady = !!avatarId;
+  const trimReady = !!videoInfo;
+  const referenceReady = !!selectedSavedReference || !!selectedRefFileId;
+  const canGenerateClone = !!videoInfo?.id && !!avatarId && referenceReady && !isSubmitting;
+  const nextAction = getClonePrimaryAction({
+    sourceReady,
+    identityReady: avatarReady,
+    referenceReady,
+    canGenerate: canGenerateClone,
+    usesSavedReference: !!selectedSavedReference,
+  });
+  const sourcePreviewSrc = videoInfo
+    ? `/api/ugc-clone/preview?path=${encodeURIComponent(videoInfo.localPath)}`
+    : null;
+  const sourceDetail = videoInfo
+    ? videoInfo.label || "Selected TikTok source"
+    : "Paste a TikTok URL or use a source from Inspiration.";
+  const trimDetail = videoInfo
+    ? originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath
+      ? `${Math.round(durationSec)}s trimmed portrait source is ready.`
+      : "Full source is ready; trim remains editable."
+    : "Choose a source before setting trim.";
+  const identityDetail = avatarReady
+    ? identityPack?.status === "completed"
+      ? `${identityPack.images.length} identity references ready.`
+      : "Avatar selected; identity references can continue preparing."
+    : "Select an avatar identity for this production.";
+  const referenceDetail = selectedSavedReference
+    ? "Saved reference selected."
+    : selectedRefFileId
+      ? "Generated reference approved."
+      : "Generate a new reference or choose a saved one.";
+  const readinessDetail = canGenerateClone
+    ? "Source, identity, and reference are ready."
+    : "Complete Source, Identity, and Reference before generating.";
+  const productionStatePanel = (
+    <CloneProductionStatePanel
+      sourceReady={sourceReady}
+      trimReady={trimReady}
+      identityReady={avatarReady}
+      referenceReady={referenceReady}
+      canGenerate={canGenerateClone}
+      nextAction={nextAction}
+      sourceDetail={sourceDetail}
+      trimDetail={trimDetail}
+      identityDetail={identityDetail}
+      referenceDetail={referenceDetail}
+      readinessDetail={readinessDetail}
+    />
+  );
 
   // ─── Review Phase ───────────────────────────────────────────────────
   if (phase === "reviewing") {
     return (
-      <>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="border-border bg-card py-0 shadow-sm">
           <div className="flex flex-col gap-4 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
@@ -608,24 +847,20 @@ export function UGCCloneForm() {
 
           <CardContent className="space-y-5 p-5">
             <div className="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
-            {videoInfo && (
+            {videoInfo && sourcePreviewSrc && (
               <div className="rounded-lg border border-border bg-muted/20 p-3">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   Source
                 </p>
-                <div className="relative overflow-hidden rounded-lg border border-border bg-black">
-                  <video
-                    src={`/api/ugc-clone/preview?path=${encodeURIComponent(videoInfo.localPath)}`}
-                    className="aspect-[9/16] w-full object-cover"
-                    muted
-                    playsInline
-                    controls
-                  />
-                  <span className="pointer-events-none absolute left-2 top-2 flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                    <Play className="size-3" />
-                    Source
-                  </span>
-                </div>
+                <MediaPreviewFrame
+                  type="video"
+                  src={sourcePreviewSrc}
+                  width={videoInfo.width}
+                  height={videoInfo.height}
+                  alt={videoInfo.label || "Selected source preview"}
+                  variant="work"
+                  showMetadata
+                />
                 <div className="mt-3 min-w-0 text-xs text-muted-foreground">
                   <p className="truncate font-medium text-foreground">
                     {videoInfo.label || "Selected TikTok source"}
@@ -816,77 +1051,108 @@ export function UGCCloneForm() {
             </div>
           </CardContent>
         </Card>
-      </>
+
+        {productionStatePanel}
+      </div>
     );
   }
 
   // ─── Input Phase ────────────────────────────────────────────────────
   return (
     <>
-      <Card data-ugc-builder className="border-border bg-card py-0 shadow-sm">
-        <div className="border-b border-border px-4 py-3.5 sm:px-5">
-          <h1 className="text-xl font-extrabold sm:text-2xl">Clone</h1>
-          <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">
-            Choose one TikTok source, choose one avatar, then generate.
-          </p>
+      <WorkspaceHeaderAccessory>
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-2">
+          <Badge
+            variant="outline"
+            className={cn(
+              canGenerateClone
+                ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
+                : "bg-muted/45 text-muted-foreground"
+            )}
+          >
+            Production State
+          </Badge>
+          <span className="text-xs font-medium text-muted-foreground">
+            {nextAction.label}
+          </span>
         </div>
+      </WorkspaceHeaderAccessory>
 
-        <CardContent className="p-0">
-          <section className="border-b border-border px-4 py-3.5 sm:px-5">
-            <SectionTitle
-              icon={<Video className="size-4 text-accent-blue" />}
-              title="Source"
-              detail="Paste a TikTok URL or pick a saved source."
-              action={
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    sourceReady && "border-accent-green/30 bg-accent-green/10 text-accent-green"
-                  )}
-                >
-                  {sourceReady ? "Ready" : "Required"}
-                </Badge>
-              }
-            />
-            <TikTokInput
-              onDownloaded={handleVideoDownloaded}
-              videoInfo={videoInfo}
-              refreshKey={sourcesRefreshKey}
-              preselectedSourceId={pendingSourceId}
-              onPreselectedSourceResolved={handlePreselectedSourceResolved}
-            />
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <Card data-ugc-builder className="border-border bg-card py-0 shadow-sm">
+          <div className="border-b border-border px-4 py-3.5 sm:px-5">
+            <h1 className="text-xl font-extrabold sm:text-2xl">Clone</h1>
+            <p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">
+              Keep Source, Trim, Identity, Reference, and readiness visible while you prepare the clone.
+            </p>
+          </div>
 
-            {videoInfo && !showTrimmer && (
-              <button
-                type="button"
-                onClick={() => setShowTrimmer(true)}
-                className="mt-4 inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors duration-150 hover:border-foreground/20 hover:text-foreground"
-              >
-                <Scissors className="size-3.5" />
-                Trim source
-                {originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath && (
-                  <span className="ml-1 rounded-md bg-accent-coral/10 px-2 py-0.5 text-[10px] font-bold text-accent-coral">
-                    trimmed
-                  </span>
-                )}
-              </button>
-            )}
+          <CardContent className="p-0">
+            <section className="border-b border-border px-4 py-3.5 sm:px-5">
+              <SectionTitle
+                icon={<Video className="size-4 text-accent-blue" />}
+                title="Source"
+                detail="Paste a TikTok URL or pick a saved source."
+                action={
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      sourceReady && "border-accent-green/30 bg-accent-green/10 text-accent-green"
+                    )}
+                  >
+                    {sourceReady ? "Ready" : "Required"}
+                  </Badge>
+                }
+              />
+              <TikTokInput
+                onDownloaded={handleVideoDownloaded}
+                videoInfo={videoInfo}
+                refreshKey={sourcesRefreshKey}
+                preselectedSourceId={pendingSourceId}
+                onPreselectedSourceResolved={handlePreselectedSourceResolved}
+              />
 
-            {videoInfo && showTrimmer && originalVideoInfo && (
-              <div className="mt-4">
-                <VideoTrimmer
-                  key={originalVideoInfo.localPath}
-                  videoPath={originalVideoInfo.localPath}
-                  durationSec={originalVideoInfo.durationSec}
-                  width={originalVideoInfo.width}
-                  height={originalVideoInfo.height}
-                  sourceId={videoInfo.id}
-                  onTrimmed={handleTrimmed}
-                  onCancel={handleCancelTrim}
-                />
-              </div>
-            )}
-          </section>
+              {videoInfo && !showTrimmer && sourcePreviewSrc && (
+                <div className="mt-4">
+                  <MediaPreviewFrame
+                    type="video"
+                    src={sourcePreviewSrc}
+                    width={videoInfo.width}
+                    height={videoInfo.height}
+                    alt={videoInfo.label || "Selected source preview"}
+                    variant="work"
+                    showMetadata
+                    actions={
+                      <button
+                        type="button"
+                        onClick={() => setShowTrimmer(true)}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-300 transition-colors hover:text-white"
+                      >
+                        <Scissors className="size-3" />
+                        {originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath
+                          ? "Re-trim"
+                          : "Trim"}
+                      </button>
+                    }
+                  />
+                </div>
+              )}
+
+              {videoInfo && showTrimmer && originalVideoInfo && (
+                <div className="mt-4">
+                  <VideoTrimmer
+                    key={originalVideoInfo.localPath}
+                    videoPath={originalVideoInfo.localPath}
+                    durationSec={originalVideoInfo.durationSec}
+                    width={originalVideoInfo.width}
+                    height={originalVideoInfo.height}
+                    sourceId={videoInfo.id}
+                    onTrimmed={handleTrimmed}
+                    onCancel={handleCancelTrim}
+                  />
+                </div>
+              )}
+            </section>
 
           <section className="border-b border-border px-4 py-3.5 sm:px-5">
             <SectionTitle
@@ -1223,7 +1489,7 @@ export function UGCCloneForm() {
                 </>
               ) : (
                 <>
-                  {selectedSavedReference ? "Generate clone" : "Generate reference"}
+                  {nextAction.label}
                   <ArrowRight className="size-4" />
                 </>
               )}
@@ -1236,6 +1502,9 @@ export function UGCCloneForm() {
           </div>
         </CardContent>
       </Card>
+
+      {productionStatePanel}
+      </div>
 
       {avatarId && (
         <Sheet open={isReferenceLibraryOpen} onOpenChange={setIsReferenceLibraryOpen}>
