@@ -15,10 +15,10 @@ function RowSkeleton() {
 
 export default function HomeLoading() {
   return (
-    <div className="mx-auto flex max-w-[1180px] flex-col gap-5 px-5 py-6 sm:px-6 lg:px-8">
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-5 py-6 sm:px-6 lg:px-8">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase text-muted-foreground">
                 Home

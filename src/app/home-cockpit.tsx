@@ -39,6 +39,32 @@ function getJobHref(job: HomeJob) {
   return job.type === "video" ? `/ugc-clone/${job.id}` : `/generate/${job.id}`;
 }
 
+function cleanPrompt(prompt: string) {
+  return prompt.replace(/^@\S+\s+/, "").replace(/\s+/g, " ").trim();
+}
+
+function truncateAtWord(value: string, maxLength: number) {
+  if (value.length <= maxLength) return value;
+
+  const trimmed = value.slice(0, maxLength).trimEnd();
+  const lastSpace = trimmed.lastIndexOf(" ");
+  const text = lastSpace > maxLength * 0.65 ? trimmed.slice(0, lastSpace) : trimmed;
+
+  return `${text}...`;
+}
+
+function getJobTitle(job: HomeJob) {
+  const isActive = job.status === "queued" || job.status === "processing";
+  if (isActive) return job.type === "video" ? "Clone in progress" : "Generation in progress";
+  if (job.status === "completed") return job.type === "video" ? "Clone output ready" : "Generated asset ready";
+  return job.type === "video" ? "Clone job" : "Generation job";
+}
+
+function getJobPreview(job: HomeJob, maxLength = 96) {
+  const prompt = cleanPrompt(job.prompt);
+  return prompt ? truncateAtWord(prompt, maxLength) : "Open this production job.";
+}
+
 function JobStatusPill({ status }: { status: string }) {
   const isActive = status === "queued" || status === "processing";
 
@@ -90,7 +116,10 @@ function JobRow({ job }: { job: HomeJob }) {
             {job.id.slice(0, 8)}
           </span>
         </div>
-        <p className="line-clamp-1 text-sm font-medium">{job.prompt}</p>
+        <p className="text-sm font-medium">{getJobTitle(job)}</p>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          {getJobPreview(job, 82)}
+        </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {job.model} · {formatRelativeDate(job.createdAt)}
         </p>
@@ -137,10 +166,10 @@ export function HomeCockpit({
     monthSummary.breakdown.image.count + monthSummary.breakdown.video.count;
 
   return (
-    <div className="mx-auto flex max-w-[1180px] flex-col gap-5 px-5 py-6 sm:px-6 lg:px-8">
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-5 py-6 sm:px-6 lg:px-8">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase text-muted-foreground">
                 Home
@@ -171,8 +200,11 @@ export function HomeCockpit({
                 <p className="text-[11px] font-semibold uppercase text-muted-foreground">
                   Next up
                 </p>
-                <p className="mt-1 line-clamp-2 text-base font-semibold">
-                  {latestClone.prompt}
+                <p className="mt-1 text-base font-semibold">
+                  {getJobTitle(latestClone)}
+                </p>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  {getJobPreview(latestClone, 118)}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {latestClone.model} · {formatRelativeDate(latestClone.createdAt)}
