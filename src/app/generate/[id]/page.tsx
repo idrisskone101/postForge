@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
-import { MediaPreview } from "@/components/media-preview";
+import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Download,
-  Play,
   ZoomIn,
   Maximize,
   Crop,
@@ -238,45 +237,36 @@ export default function JobDetailPage() {
 
             {/* Completed preview */}
             {isCompleted && featured && (
-              <div className="group relative w-full h-full flex items-center justify-center p-6">
-                <MediaPreview
+              <div className="w-full p-6">
+                <MediaPreviewFrame
                   type={job.type}
                   src={`/api/files/${featured.id}`}
                   width={featured.width ?? undefined}
                   height={featured.height ?? undefined}
                   alt={job.prompt}
-                  className="max-w-full max-h-full rounded-2xl"
+                  variant="detail"
+                  showMetadata
+                  className="w-full rounded-2xl"
+                  actions={
+                    <>
+                      {[
+                        { icon: ZoomIn, label: "Zoom" },
+                        { icon: Maximize, label: "Fullscreen" },
+                        { icon: Crop, label: "Crop" },
+                        { icon: Repeat, label: "Repeat" },
+                      ].map(({ icon: Icon, label }) => (
+                        <button
+                          key={label}
+                          type="button"
+                          title={label}
+                          className="flex size-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+                        >
+                          <Icon className="size-4" />
+                        </button>
+                      ))}
+                    </>
+                  }
                 />
-
-                {/* Hover play overlay for videos */}
-                {job.type === "video" && (
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="flex size-16 items-center justify-center rounded-full bg-white/90 shadow-lg">
-                      <Play className="size-6 text-foreground ml-1" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Floating toolbar */}
-            {isCompleted && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-2xl bg-card/90 border border-border backdrop-blur-md px-2 py-1.5 shadow-lg">
-                {[
-                  { icon: ZoomIn, label: "Zoom" },
-                  { icon: Maximize, label: "Fullscreen" },
-                  { icon: Crop, label: "Crop" },
-                  { icon: Repeat, label: "Repeat" },
-                ].map(({ icon: Icon, label }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    title={label}
-                    className="flex size-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <Icon className="size-4" />
-                  </button>
-                ))}
               </div>
             )}
           </div>
