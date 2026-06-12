@@ -8,5 +8,6 @@ cd "$REPO_ROOT"
 
 corepack enable 2>/dev/null || true
 
+pnpm test:workspace-shell
 pnpm lint
 pnpm build

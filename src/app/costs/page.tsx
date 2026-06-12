@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 import { getCostSummary } from "@/lib/costs/tracker";
 import { CostsPageClient } from "./costs-page-client";
 
-export const metadata = { title: "Analytics - PostForge" };
+export const metadata = { title: "Spend - PostForge" };
 
 interface CostsPageProps {
   searchParams: Promise<{ period?: string }>;
