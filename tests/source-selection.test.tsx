@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { InspirationPageClient } from "../src/app/ugc-inspiration/inspiration-page-client";
+import {
+  InspirationHeaderControls,
+  InspirationPageClient,
+} from "../src/app/ugc-inspiration/inspiration-page-client";
 import type { TrackedInspirationAccount } from "../src/lib/inspiration/types";
 
 const accounts: TrackedInspirationAccount[] = [
@@ -50,9 +53,20 @@ const accounts: TrackedInspirationAccount[] = [
 const markup = renderToStaticMarkup(
   <InspirationPageClient initialAccounts={accounts} />
 );
+const headerMarkup = renderToStaticMarkup(
+  <InspirationHeaderControls
+    handleInput=""
+    isAddingAccount={false}
+    onHandleInputChange={() => {}}
+    onTrackAccount={() => {}}
+  />
+);
 
-assert.match(markup, /Source Selection/);
-assert.match(markup, /Compare creator posts/);
+assert.match(headerMarkup, /Source Selection/);
+assert.match(headerMarkup, /Compare creator posts/);
+assert.match(headerMarkup, /Track Creator/);
+assert.match(headerMarkup, /lg:max-w-\[780px\]/);
+assert.doesNotMatch(markup, /Source Selection/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
 assert.match(markup, /Creator Sync/);

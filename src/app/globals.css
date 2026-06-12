@@ -4,6 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body[data-workspace-header-accessory="true"] #workspace-header-default-action {
+  display: none !important;
+}
+
+@media (min-width: 1024px) {
+  body[data-workspace-header-accessory="true"] #workspace-header-grid {
+    grid-template-columns: minmax(220px, 360px) minmax(0, 1fr) !important;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -11,6 +11,7 @@ import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import {
   Avatar,
   AvatarFallback,
@@ -42,6 +43,70 @@ import {
 
 interface InspirationPageClientProps {
   initialAccounts: TrackedInspirationAccount[];
+}
+
+interface InspirationHeaderControlsProps {
+  handleInput: string;
+  isAddingAccount: boolean;
+  onHandleInputChange: (value: string) => void;
+  onTrackAccount: () => void;
+}
+
+export function InspirationHeaderControls({
+  handleInput,
+  isAddingAccount,
+  onHandleInputChange,
+  onTrackAccount,
+}: InspirationHeaderControlsProps) {
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-2 rounded-xl border border-border bg-card p-2 sm:p-3 lg:max-w-[780px] lg:flex-row lg:items-center lg:gap-3">
+      <div className="hidden min-w-0 flex-1 lg:block">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          Source Selection
+        </p>
+        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground lg:line-clamp-1">
+          Compare creator posts, inspect portrait previews, and send the
+          strongest source straight into Clone.
+        </p>
+      </div>
+
+      <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_2.25rem] gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:w-[25rem]">
+        <Input
+          value={handleInput}
+          onChange={(event) => onHandleInputChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              onTrackAccount();
+            }
+          }}
+          placeholder="@creator or TikTok profile URL"
+          disabled={isAddingAccount}
+          className="h-9 min-w-0 rounded-lg border-border bg-background/60 px-3 text-xs"
+        />
+        <Button
+          type="button"
+          onClick={onTrackAccount}
+          disabled={isAddingAccount || !handleInput.trim()}
+          className="h-9 min-w-0 shrink-0 rounded-lg bg-accent-coral px-0 text-xs font-semibold text-white hover:brightness-110 sm:px-3"
+        >
+          {isAddingAccount ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              <span className="hidden sm:inline">Tracking...</span>
+              <span className="sr-only sm:hidden">Tracking creator</span>
+            </>
+          ) : (
+            <>
+              <Users className="size-4" />
+              <span className="hidden sm:inline">Track Creator</span>
+              <span className="sr-only sm:hidden">Track Creator</span>
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 function formatMetric(value: number | null): string {
@@ -360,6 +425,15 @@ export function InspirationPageClient({
 
   return (
     <>
+      <WorkspaceHeaderAccessory>
+        <InspirationHeaderControls
+          handleInput={handleInput}
+          isAddingAccount={isAddingAccount}
+          onHandleInputChange={setHandleInput}
+          onTrackAccount={() => void handleTrackAccount()}
+        />
+      </WorkspaceHeaderAccessory>
+
       <div className="flex min-h-[calc(100vh-76px)] overflow-hidden">
         <aside className="hidden w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-border bg-black/10 p-6 xl:flex">
           <section>
@@ -507,52 +581,6 @@ export function InspirationPageClient({
 
         <section className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8">
           <div className="mx-auto flex max-w-7xl flex-col gap-6">
-            <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Source Selection
-                </p>
-                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                  Compare creator posts, inspect portrait previews, and send the
-                  strongest source straight into Clone.
-                </p>
-              </div>
-
-              <div className="flex w-full flex-col gap-3 sm:flex-row lg:max-w-xl">
-                <Input
-                  value={handleInput}
-                  onChange={(event) => setHandleInput(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void handleTrackAccount();
-                    }
-                  }}
-                  placeholder="@creator or TikTok profile URL"
-                  disabled={isAddingAccount}
-                  className="h-10 rounded-lg border-border bg-background/60 px-4 text-sm"
-                />
-                <Button
-                  type="button"
-                  onClick={() => void handleTrackAccount()}
-                  disabled={isAddingAccount || !handleInput.trim()}
-                  className="h-10 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white hover:brightness-110"
-                >
-                  {isAddingAccount ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Tracking...
-                    </>
-                  ) : (
-                    <>
-                      <Users className="size-4" />
-                      Track Creator
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-
             {pageError && (
               <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />
