@@ -24,7 +24,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  ArrowUpRight,
   CheckCircle2,
   Compass,
   Copy,
@@ -166,6 +165,15 @@ export function InspirationPageClient({
     (sum, account) => sum + account.videos.length,
     0
   );
+  const topAccount = useMemo(
+    () =>
+      [...accounts].sort((a, b) => b.videos.length - a.videos.length)[0] ??
+      null,
+    [accounts]
+  );
+  const sourceScopeLabel = selectedAccount
+    ? selectedAccount.handleDisplay
+    : "Recent Discoveries";
 
   useEffect(() => {
     if (!selectedVideoId) {
@@ -352,49 +360,42 @@ export function InspirationPageClient({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
-        <aside className="order-2 lg:order-1 lg:col-span-4 xl:col-span-3">
-          <div className="launch-card glass border border-border/80 p-5 lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b border-border pb-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Tracked Creators
-                </p>
-                <h2 className="mt-1 text-lg font-bold tracking-tight">
-                  {trackedCreatorCount} tracked
-                </h2>
-              </div>
-              <Badge variant="outline" className="text-[10px]">
-                {trackedVideoCount} videos
-              </Badge>
-            </div>
-
-            <div className="mt-4 flex flex-col gap-3">
+      <div className="flex min-h-[calc(100vh-76px)] overflow-hidden">
+        <aside className="hidden w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-border bg-black/10 p-6 xl:flex">
+          <section>
+            <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Sources
+            </h3>
+            <div className="space-y-1">
               <button
                 type="button"
                 onClick={() => setActiveFilter("all")}
                 className={cn(
-                  "rounded-[24px] border px-4 py-3 text-left transition-all duration-300",
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
                   activeFilter === "all"
-                    ? "border-accent-blue/40 bg-accent-blue/10"
-                    : "border-border bg-card/60 hover:border-accent-blue/20 hover:bg-muted/50"
+                    ? "border border-white/10 bg-white/5 text-accent-blue"
+                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-2xl bg-accent-blue/15 text-accent-blue">
-                    <Compass className="size-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold">All creators</p>
-                    <p className="text-xs text-muted-foreground">
-                      Combined discovery board
-                    </p>
-                  </div>
-                  <ArrowUpRight className="size-4 text-muted-foreground" />
-                </div>
+                <span>Recent Discoveries</span>
+                <span className="rounded bg-accent-blue/20 px-1.5 text-[10px]">
+                  {trackedVideoCount}
+                </span>
               </button>
+            </div>
+          </section>
 
-              <div className="space-y-3 lg:max-h-[calc(100vh-18rem)] lg:overflow-y-auto lg:pr-1">
+          <section>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Creator Sync
+              </h3>
+              <Badge variant="outline" className="text-[10px]">
+                {trackedCreatorCount}
+              </Badge>
+            </div>
+
+            <div className="space-y-4">
                 {accounts.map((account) => {
                   const isActive = activeFilter === account.id;
                   const isRefreshing = refreshingIds.includes(account.id);
@@ -404,10 +405,10 @@ export function InspirationPageClient({
                     <div
                       key={account.id}
                       className={cn(
-                        "rounded-[28px] border p-4 transition-all duration-300",
+                        "rounded-xl border p-3 transition-colors",
                         isActive
-                          ? "border-accent-green/40 bg-accent-green/10 shadow-[0_16px_40px_rgba(123,165,67,0.14)]"
-                          : "border-border bg-card/70 hover:border-accent-green/25 hover:bg-card"
+                          ? "border-accent-blue/40 bg-accent-blue/10"
+                          : "border-transparent bg-transparent hover:border-border hover:bg-white/5"
                       )}
                     >
                       <button
@@ -416,7 +417,7 @@ export function InspirationPageClient({
                         className="w-full text-left"
                       >
                         <div className="flex items-start gap-3">
-                          <Avatar size="lg">
+                          <Avatar size="sm">
                             <AvatarImage src={account.avatarUrl ?? undefined} alt={account.handleDisplay} />
                             <AvatarFallback>
                               {account.handleDisplay.slice(1, 3).toUpperCase()}
@@ -435,21 +436,21 @@ export function InspirationPageClient({
                               </div>
                               <Badge
                                 variant="outline"
-                                className={cn("shrink-0 capitalize", getSyncTone(account.syncStatus))}
+                                className={cn("h-5 shrink-0 text-[10px] capitalize", getSyncTone(account.syncStatus))}
                               >
                                 {isRefreshing ? "syncing" : account.syncStatus}
                               </Badge>
                             </div>
 
-                            <p className="mt-2 text-xs text-muted-foreground">
+                            <p className="mt-1 text-[10px] text-muted-foreground">
                               {account.lastSyncedAt
-                                ? `Updated ${formatRelativeDate(account.lastSyncedAt)}`
+                                ? `Synced ${formatRelativeDate(account.lastSyncedAt)}`
                                 : "Not synced yet"}
                             </p>
 
                             {account.isStale && !isRefreshing && account.syncStatus !== "error" && (
-                              <p className="mt-2 text-[11px] text-muted-foreground">
-                                Manual refresh required to pull the latest TikToks.
+                              <p className="mt-2 text-[10px] leading-4 text-muted-foreground">
+                                Manual refresh required.
                               </p>
                             )}
 
@@ -463,9 +464,9 @@ export function InspirationPageClient({
                         </div>
                       </button>
 
-                      <div className="mt-4 flex items-center justify-between gap-2">
+                      <div className="mt-3 flex items-center justify-between gap-2">
                         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                          {account.videos.length} cached videos
+                          {account.videos.length} cached
                         </p>
 
                         <div className="flex items-center gap-2">
@@ -473,7 +474,7 @@ export function InspirationPageClient({
                             type="button"
                             onClick={() => void handleRefreshAccount(account.id)}
                             disabled={isRefreshing || isDeleting}
-                            className="flex size-8 items-center justify-center rounded-2xl border border-border bg-card/70 text-muted-foreground transition-all hover:border-accent-blue/30 hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex size-8 items-center justify-center rounded-lg border border-border bg-white/5 text-muted-foreground transition-colors hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={`Refresh ${account.handleDisplay}`}
                           >
                             {isRefreshing ? (
@@ -486,7 +487,7 @@ export function InspirationPageClient({
                             type="button"
                             onClick={() => void handleDeleteAccount(account)}
                             disabled={isDeleting}
-                            className="flex size-8 items-center justify-center rounded-2xl border border-border bg-card/70 text-muted-foreground transition-all hover:border-destructive/30 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex size-8 items-center justify-center rounded-lg border border-border bg-white/5 text-muted-foreground transition-colors hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={`Remove ${account.handleDisplay}`}
                           >
                             {isDeleting ? (
@@ -501,95 +502,101 @@ export function InspirationPageClient({
                   );
                 })}
               </div>
-            </div>
-          </div>
+          </section>
         </aside>
 
-        <section className="order-1 lg:order-2 lg:col-span-8 xl:col-span-9">
-          <div className="launch-card glass border border-border/80 p-6">
-            <header className="border-b border-border pb-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-sm ring-1 ring-border mb-4">
-                <span className="text-accent-coral text-sm">&#9889;</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        <section className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8">
+          <div className="mx-auto flex max-w-7xl flex-col gap-6">
+            <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   Source Selection
-                </span>
+                </p>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                  Compare creator posts, inspect portrait previews, and send the
+                  strongest source straight into Clone.
+                </p>
               </div>
 
-              <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-                <div className="max-w-2xl">
-                  <h1 className="text-3xl font-extrabold tracking-tight">
-                    Source Selection
-                  </h1>
-                  <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                    Compare creator posts, inspect portrait previews, and send
-                    the strongest source straight into Clone.
-                  </p>
-                </div>
-
-                <div className="flex w-full max-w-xl flex-col gap-3 sm:flex-row">
-                  <Input
-                    value={handleInput}
-                    onChange={(event) => setHandleInput(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        event.preventDefault();
-                        void handleTrackAccount();
-                      }
-                    }}
-                    placeholder="@creator or TikTok profile URL"
-                    disabled={isAddingAccount}
-                    className="h-12 rounded-2xl border-border/80 bg-card/70 px-4 text-sm"
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => void handleTrackAccount()}
-                    disabled={isAddingAccount || !handleInput.trim()}
-                    className="h-12 rounded-2xl bg-accent-coral px-6 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(255,122,89,0.24)] hover:brightness-110"
-                  >
-                    {isAddingAccount ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        Tracking...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="size-4" />
-                        Track Account
-                      </>
-                    )}
-                  </Button>
-                </div>
+              <div className="flex w-full flex-col gap-3 sm:flex-row lg:max-w-xl">
+                <Input
+                  value={handleInput}
+                  onChange={(event) => setHandleInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void handleTrackAccount();
+                    }
+                  }}
+                  placeholder="@creator or TikTok profile URL"
+                  disabled={isAddingAccount}
+                  className="h-10 rounded-lg border-border bg-background/60 px-4 text-sm"
+                />
+                <Button
+                  type="button"
+                  onClick={() => void handleTrackAccount()}
+                  disabled={isAddingAccount || !handleInput.trim()}
+                  className="h-10 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white hover:brightness-110"
+                >
+                  {isAddingAccount ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Tracking...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="size-4" />
+                      Track Creator
+                    </>
+                  )}
+                </Button>
               </div>
-            </header>
+            </div>
 
             {pageError && (
-              <div className="mt-5 flex items-start gap-3 rounded-[24px] border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              <div className="flex items-start gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />
                 <span>{pageError}</span>
               </div>
             )}
 
-            <div className="mt-6 flex items-center justify-between gap-4 border-b border-border pb-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {selectedAccount ? selectedAccount.handleDisplay : "All creators"}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-border bg-card p-5">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  New Sources
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {feedVideos.length} videos ready to browse
+                <p className="text-2xl font-bold">{feedVideos.length}</p>
+                <p className="mt-2 text-xs text-accent-green">
+                  {sourceScopeLabel}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-xs text-muted-foreground">
-                <Users className="size-3.5" />
-                <span>{trackedCreatorCount} tracked</span>
-                <span className="opacity-40">/</span>
-                <span>{trackedVideoCount} cached</span>
+              <div className="rounded-2xl border border-border bg-card p-5">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Tracked Creators
+                </p>
+                <p className="text-2xl font-bold">{trackedCreatorCount}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {trackedVideoCount} cached videos
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-card p-5">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Top Creator
+                </p>
+                <p className="truncate text-2xl font-bold">
+                  {topAccount?.handleDisplay ?? "None"}
+                </p>
+                <p className="mt-2 text-xs text-accent-blue">
+                  {topAccount ? `${topAccount.videos.length} Sources active` : "Track a creator to start"}
+                </p>
               </div>
             </div>
 
             {accounts.length === 0 ? (
-              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-[32px] border border-dashed border-border bg-card/40 px-6 py-16 text-center">
-                <div className="mb-5 flex size-16 items-center justify-center rounded-[24px] bg-accent-blue/12 text-accent-blue">
+              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-16 text-center">
+                <div className="mb-5 flex size-16 items-center justify-center rounded-xl bg-accent-blue/12 text-accent-blue">
                   <Compass className="size-7" />
                 </div>
                 <h2 className="text-xl font-bold tracking-tight">
@@ -602,8 +609,8 @@ export function InspirationPageClient({
                 </p>
               </div>
             ) : feedVideos.length === 0 ? (
-              <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[32px] border border-dashed border-border bg-card/40 px-6 py-14 text-center">
-                <div className="mb-4 flex size-14 items-center justify-center rounded-[22px] bg-accent-green/12 text-accent-green">
+              <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-14 text-center">
+                <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-accent-green/12 text-accent-green">
                   <CheckCircle2 className="size-6" />
                 </div>
                 <h2 className="text-lg font-bold tracking-tight">
@@ -630,24 +637,24 @@ export function InspirationPageClient({
                 )}
               </div>
             ) : (
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {feedVideos.map((video) => {
                   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
 
                   return (
                     <article
                       key={video.id}
-                      className="group overflow-hidden rounded-[28px] border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:border-accent-blue/20 hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]"
+                      className="group flex flex-col gap-3"
                     >
                       <button
                         type="button"
                         aria-label={`Preview source from ${video.creatorHandle}`}
                         onClick={() => setSelectedVideoId(video.id)}
-                        className="relative block w-full text-left"
+                        className="relative block w-full overflow-hidden rounded-xl border border-border bg-black text-left transition-colors hover:border-accent-blue/40"
                       >
                         <div
                           data-source-preview-frame="portrait"
-                          className="aspect-[9/16] bg-zinc-950"
+                          className="aspect-[9/16] max-h-[480px] bg-zinc-950"
                         >
                           {!thumbnailFailed ? (
                             <>
@@ -669,26 +676,26 @@ export function InspirationPageClient({
                         </div>
 
                         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                          <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-                            {formatDuration(video.durationSec)}
+                          <span className="rounded-md border border-white/10 bg-black/80 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-md">
+                            9:16
                           </span>
-                          <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white">
+                          <span className="rounded-md bg-black/70 px-2 py-1 text-[10px] font-bold text-white">
                             {formatRelativeDate(video.publishedAt ?? video.createdAt)}
                           </span>
                         </div>
 
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-4 pt-12 text-white">
-                          <p className="truncate text-sm font-semibold">
+                          <p className="truncate text-[11px] font-semibold">
                             {video.creatorHandle}
                           </p>
-                          <p className="mt-1 line-clamp-2 text-xs text-white/75">
+                          <p className="mt-1 line-clamp-2 text-[10px] text-white/55">
                             {video.caption || "No caption provided."}
                           </p>
 
                           <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-white/80">
                             <div className="flex items-center gap-1.5">
                               <Play className="size-3" />
-                              <span>{formatMetric(video.viewCount)}</span>
+                              <span>{formatDuration(video.durationSec)}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                               <Heart className="size-3" />
@@ -706,12 +713,12 @@ export function InspirationPageClient({
                         </div>
                       </button>
 
-                      <div className="grid grid-cols-2 gap-2 border-t border-border bg-card/95 p-3">
+                      <div className="flex flex-col gap-2">
                         <Button
                           type="button"
                           onClick={() => void handleUseInClone(video)}
                           disabled={usingVideoId === video.id}
-                          className="col-span-2 h-auto min-h-9 w-full min-w-0 rounded-2xl bg-accent-green px-2 py-2 text-center text-xs font-semibold leading-tight text-white shadow-[0_12px_28px_rgba(123,165,67,0.22)] hover:brightness-110 sm:text-sm"
+                          className="h-11 w-full rounded-xl bg-accent-green text-sm font-bold text-white hover:brightness-110"
                         >
                           {usingVideoId === video.id ? (
                             <>
@@ -726,37 +733,48 @@ export function InspirationPageClient({
                           )}
                         </Button>
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon-lg"
-                          onClick={() => void handleCopySourceUrl(video)}
-                          aria-label={
-                            copiedVideoId === video.id
-                              ? `Copied source URL for ${video.creatorHandle}`
-                              : `Copy source URL for ${video.creatorHandle}`
-                          }
-                          className="w-full rounded-2xl"
-                        >
-                          {copiedVideoId === video.id ? (
-                            <CheckCircle2 className="size-4" />
-                          ) : (
-                            <Copy className="size-4" />
-                          )}
-                        </Button>
+                        <div className="grid grid-cols-[minmax(0,1fr)_2.25rem_2.25rem] gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setSelectedVideoId(video.id)}
+                            className="h-9 min-w-0 rounded-lg bg-white/5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground"
+                          >
+                            Preview Details
+                          </Button>
 
-                        <a
-                          href={video.originalUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Open original source from ${video.creatorHandle}`}
-                          className={cn(
-                            buttonVariants({ variant: "outline", size: "icon-lg" }),
-                            "w-full rounded-2xl"
-                          )}
-                        >
-                          <ExternalLink className="size-4" />
-                        </a>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-lg"
+                            onClick={() => void handleCopySourceUrl(video)}
+                            aria-label={
+                              copiedVideoId === video.id
+                                ? `Copied source URL for ${video.creatorHandle}`
+                                : `Copy source URL for ${video.creatorHandle}`
+                            }
+                            className="size-9 rounded-lg bg-white/5 text-muted-foreground hover:text-foreground"
+                          >
+                            {copiedVideoId === video.id ? (
+                              <CheckCircle2 className="size-4" />
+                            ) : (
+                              <Copy className="size-4" />
+                            )}
+                          </Button>
+
+                          <a
+                            href={video.originalUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Open original source from ${video.creatorHandle}`}
+                            className={cn(
+                              buttonVariants({ variant: "outline", size: "icon-lg" }),
+                              "size-9 rounded-lg bg-white/5 text-muted-foreground hover:text-foreground"
+                            )}
+                          >
+                            <ExternalLink className="size-4" />
+                          </a>
+                        </div>
                       </div>
                     </article>
                   );

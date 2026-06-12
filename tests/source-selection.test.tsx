@@ -55,9 +55,13 @@ assert.match(markup, /Source Selection/);
 assert.match(markup, /Compare creator posts/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
-assert.match(markup, /col-span-2 h-auto min-h-9 w-full min-w-0/);
+assert.match(markup, /Creator Sync/);
+assert.match(markup, /New Sources/);
+assert.match(markup, /Preview Details/);
+assert.match(markup, /max-h-\[480px\]/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-contain/);
 
-assert.match(markup, /<aside class="order-2 lg:order-1/);
-assert.match(markup, /<section class="order-1 lg:order-2/);
+assert.match(markup, /<aside class="hidden w-64 shrink-0/);
+assert.match(markup, /<section class="min-w-0 flex-1 overflow-y-auto/);
+assert.doesNotMatch(markup, /launch-card glass/);
