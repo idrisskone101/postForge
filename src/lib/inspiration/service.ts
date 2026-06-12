@@ -137,6 +137,41 @@ function findFirstUrlLikeString(value: unknown): string | null {
   return null;
 }
 
+function findAvatarUrlLikeString(value: unknown, keyHint = ""): string | null {
+  const normalizedKey = keyHint.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const keyLooksLikeAvatar =
+    normalizedKey.includes("avatar") ||
+    normalizedKey.includes("profilepic") ||
+    normalizedKey.includes("profileimage") ||
+    normalizedKey.includes("headshot");
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return keyLooksLikeAvatar && /^https?:\/\//i.test(trimmed)
+      ? trimmed
+      : null;
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const match = findAvatarUrlLikeString(item, keyHint);
+      if (match) return match;
+    }
+    return null;
+  }
+
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    const match = findAvatarUrlLikeString(nested, key);
+    if (match) return match;
+  }
+
+  return null;
+}
+
 function toJsonValue(value: unknown): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(value ?? null)) as Prisma.InputJsonValue;
 }
@@ -154,7 +189,32 @@ function getDisplayName(result: VirloCreatorLookupResult): string | null {
 
 function getAvatarUrl(result: VirloCreatorLookupResult): string | null {
   const profile = isRecord(result.profile) ? result.profile : null;
-  return firstString(result.avatar_url, profile?.avatar_url, profile?.avatarUrl);
+  return (
+    firstString(
+      result.avatar_url,
+      result.avatarUrl,
+      result.avatar,
+      result.avatar_thumb,
+      result.avatarThumb,
+      result.avatar_medium,
+      result.avatarMedium,
+      result.avatar_larger,
+      result.avatarLarger,
+      profile?.avatar_url,
+      profile?.avatarUrl,
+      profile?.avatar,
+      profile?.avatar_thumb,
+      profile?.avatarThumb,
+      profile?.avatar_medium,
+      profile?.avatarMedium,
+      profile?.avatar_larger,
+      profile?.avatarLarger,
+      profile?.profile_pic_url,
+      profile?.profilePicUrl,
+      profile?.profile_image_url,
+      profile?.profileImageUrl
+    ) ?? findAvatarUrlLikeString(result)
+  );
 }
 
 function getProfileUrl(result: VirloCreatorLookupResult, handle: string): string {
@@ -232,9 +292,21 @@ function isAccountStale(lastSyncedAt: Date | null): boolean {
   return Date.now() - lastSyncedAt.getTime() > INSPIRATION_STALE_MS;
 }
 
+function getAccountAvatarUrl(account: InspirationAccountRecord): string | null {
+  if (account.avatarUrl) return account.avatarUrl;
+
+  for (const video of account.videos) {
+    const avatarUrl = findAvatarUrlLikeString(video.sourcePayload);
+    if (avatarUrl) return avatarUrl;
+  }
+
+  return null;
+}
+
 function serializeVideo(
   account: InspirationAccountRecord,
-  video: InspirationAccountRecord["videos"][number]
+  video: InspirationAccountRecord["videos"][number],
+  accountAvatarUrl: string | null
 ): InspirationVideoCard {
   return {
     id: video.id,
@@ -256,19 +328,21 @@ function serializeVideo(
     updatedAt: video.updatedAt.toISOString(),
     creatorHandle: account.handleDisplay,
     creatorDisplayName: account.displayName,
-    creatorAvatarUrl: account.avatarUrl,
+    creatorAvatarUrl: accountAvatarUrl,
     creatorProfileUrl: account.profileUrl,
   };
 }
 
 function serializeAccount(account: InspirationAccountRecord): TrackedInspirationAccount {
+  const accountAvatarUrl = getAccountAvatarUrl(account);
+
   return {
     id: account.id,
     platform: "tiktok",
     handleNormalized: account.handleNormalized,
     handleDisplay: account.handleDisplay,
     displayName: account.displayName,
-    avatarUrl: account.avatarUrl,
+    avatarUrl: accountAvatarUrl,
     profileUrl: account.profileUrl,
     syncStatus: account.syncStatus,
     lastSyncAttemptAt: account.lastSyncAttemptAt?.toISOString() ?? null,
@@ -277,7 +351,9 @@ function serializeAccount(account: InspirationAccountRecord): TrackedInspiration
     createdAt: account.createdAt.toISOString(),
     updatedAt: account.updatedAt.toISOString(),
     isStale: isAccountStale(account.lastSyncedAt),
-    videos: account.videos.map((video) => serializeVideo(account, video)),
+    videos: account.videos.map((video) =>
+      serializeVideo(account, video, accountAvatarUrl)
+    ),
   };
 }
 
