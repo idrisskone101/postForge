@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { apiDelete, apiPost } from "@/lib/api/client";
 import type {
   InspirationVideoCard,
@@ -124,7 +123,6 @@ function mergeAccountIntoState(
 export function InspirationPageClient({
   initialAccounts,
 }: InspirationPageClientProps) {
-  const router = useRouter();
   const [accounts, setAccounts] = useState(() => sortAccounts(initialAccounts));
   const [activeFilter, setActiveFilter] = useState<"all" | string>("all");
   const [handleInput, setHandleInput] = useState("");
@@ -305,7 +303,7 @@ export function InspirationPageClient({
         `/api/ugc-inspiration/videos/${video.id}/use`,
         {}
       );
-      router.push(result.redirectTo);
+      window.location.assign(result.redirectTo);
     } catch (error) {
       setPageError(
         error instanceof Error
@@ -355,7 +353,7 @@ export function InspirationPageClient({
   return (
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
-        <aside className="lg:col-span-4 xl:col-span-3">
+        <aside className="order-2 lg:order-1 lg:col-span-4 xl:col-span-3">
           <div className="launch-card glass border border-border/80 p-5 lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-hidden">
             <div className="flex items-center justify-between gap-3 border-b border-border pb-4">
               <div>
@@ -507,24 +505,24 @@ export function InspirationPageClient({
           </div>
         </aside>
 
-        <section className="lg:col-span-8 xl:col-span-9">
+        <section className="order-1 lg:order-2 lg:col-span-8 xl:col-span-9">
           <div className="launch-card glass border border-border/80 p-6">
             <header className="border-b border-border pb-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-sm ring-1 ring-border mb-4">
                 <span className="text-accent-coral text-sm">&#9889;</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Inspiration Feed
+                  Source Selection
                 </span>
               </div>
 
               <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div className="max-w-2xl">
                   <h1 className="text-3xl font-extrabold tracking-tight">
-                    Inspiration
+                    Source Selection
                   </h1>
                   <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                    Track TikTok creators, browse reaction formats, and send the
-                    strongest post straight into Clone.
+                    Compare creator posts, inspect portrait previews, and send
+                    the strongest source straight into Clone.
                   </p>
                 </div>
 
@@ -637,69 +635,130 @@ export function InspirationPageClient({
                   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
 
                   return (
-                    <button
+                    <article
                       key={video.id}
-                      type="button"
-                      onClick={() => setSelectedVideoId(video.id)}
-                      className="group relative overflow-hidden rounded-[28px] border border-border bg-card text-left transition-all duration-300 hover:-translate-y-1.5 hover:border-accent-blue/20 hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]"
+                      className="group overflow-hidden rounded-[28px] border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:border-accent-blue/20 hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]"
                     >
-                      <div className="aspect-[9/16] bg-muted">
-                        {!thumbnailFailed ? (
-                          <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
-                              alt={video.caption || `${video.creatorHandle} TikTok`}
-                              className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                              loading="lazy"
-                              onError={() => markThumbnailError(video.id)}
-                              onLoad={() => clearThumbnailError(video.id)}
-                            />
-                          </>
-                        ) : (
-                          <div className="flex size-full items-center justify-center text-muted-foreground">
-                            <Play className="size-8" />
-                          </div>
-                        )}
-                      </div>
+                      <button
+                        type="button"
+                        aria-label={`Preview source from ${video.creatorHandle}`}
+                        onClick={() => setSelectedVideoId(video.id)}
+                        className="relative block w-full text-left"
+                      >
+                        <div
+                          data-source-preview-frame="portrait"
+                          className="aspect-[9/16] bg-zinc-950"
+                        >
+                          {!thumbnailFailed ? (
+                            <>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                                alt={video.caption || `${video.creatorHandle} TikTok`}
+                                className="size-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                                loading="lazy"
+                                onError={() => markThumbnailError(video.id)}
+                                onLoad={() => clearThumbnailError(video.id)}
+                              />
+                            </>
+                          ) : (
+                            <div className="flex size-full items-center justify-center text-muted-foreground">
+                              <Play className="size-8" />
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                        <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-                          {formatDuration(video.durationSec)}
-                        </span>
-                        <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white">
-                          {formatRelativeDate(video.publishedAt ?? video.createdAt)}
-                        </span>
-                      </div>
+                        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
+                          <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                            {formatDuration(video.durationSec)}
+                          </span>
+                          <span className="rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold text-white">
+                            {formatRelativeDate(video.publishedAt ?? video.createdAt)}
+                          </span>
+                        </div>
 
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-4 pt-12 text-white">
-                        <p className="truncate text-sm font-semibold">
-                          {video.creatorHandle}
-                        </p>
-                        <p className="mt-1 line-clamp-2 text-xs text-white/75">
-                          {video.caption || "No caption provided."}
-                        </p>
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-4 pt-12 text-white">
+                          <p className="truncate text-sm font-semibold">
+                            {video.creatorHandle}
+                          </p>
+                          <p className="mt-1 line-clamp-2 text-xs text-white/75">
+                            {video.caption || "No caption provided."}
+                          </p>
 
-                        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-white/80">
-                          <div className="flex items-center gap-1.5">
-                            <Play className="size-3" />
-                            <span>{formatMetric(video.viewCount)}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <Heart className="size-3" />
-                            <span>{formatMetric(video.likeCount)}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <MessageCircle className="size-3" />
-                            <span>{formatMetric(video.commentCount)}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <Repeat2 className="size-3" />
-                            <span>{formatMetric(video.shareCount)}</span>
+                          <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-white/80">
+                            <div className="flex items-center gap-1.5">
+                              <Play className="size-3" />
+                              <span>{formatMetric(video.viewCount)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Heart className="size-3" />
+                              <span>{formatMetric(video.likeCount)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <MessageCircle className="size-3" />
+                              <span>{formatMetric(video.commentCount)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Repeat2 className="size-3" />
+                              <span>{formatMetric(video.shareCount)}</span>
+                            </div>
                           </div>
                         </div>
+                      </button>
+
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-2 border-t border-border bg-card/95 p-3">
+                        <Button
+                          type="button"
+                          onClick={() => void handleUseInClone(video)}
+                          disabled={usingVideoId === video.id}
+                          className="h-9 rounded-2xl bg-accent-green text-sm font-semibold text-white shadow-[0_12px_28px_rgba(123,165,67,0.22)] hover:brightness-110"
+                        >
+                          {usingVideoId === video.id ? (
+                            <>
+                              <Loader2 className="size-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              Use in Clone
+                              <Sparkles className="size-4" />
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon-lg"
+                          onClick={() => void handleCopySourceUrl(video)}
+                          aria-label={
+                            copiedVideoId === video.id
+                              ? `Copied source URL for ${video.creatorHandle}`
+                              : `Copy source URL for ${video.creatorHandle}`
+                          }
+                          className="rounded-2xl"
+                        >
+                          {copiedVideoId === video.id ? (
+                            <CheckCircle2 className="size-4" />
+                          ) : (
+                            <Copy className="size-4" />
+                          )}
+                        </Button>
+
+                        <a
+                          href={video.originalUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`Open original source from ${video.creatorHandle}`}
+                          className={cn(
+                            buttonVariants({ variant: "outline", size: "icon-lg" }),
+                            "rounded-2xl"
+                          )}
+                        >
+                          <ExternalLink className="size-4" />
+                        </a>
                       </div>
-                    </button>
+                    </article>
                   );
                 })}
               </div>
@@ -750,7 +809,7 @@ export function InspirationPageClient({
                             selectedVideo.updatedAt
                           )}
                           alt={selectedVideo.caption || `${selectedVideo.creatorHandle} TikTok`}
-                          className="max-h-[440px] rounded-[28px] object-cover shadow-2xl"
+                          className="max-h-[440px] rounded-[28px] object-contain shadow-2xl"
                           onError={() => markThumbnailError(selectedVideo.id)}
                           onLoad={() => clearThumbnailError(selectedVideo.id)}
                         />
