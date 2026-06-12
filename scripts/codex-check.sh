@@ -9,5 +9,6 @@ cd "$REPO_ROOT"
 corepack enable 2>/dev/null || true
 
 pnpm test:workspace-shell
+pnpm test:media-preview-frame
 pnpm lint
 pnpm build

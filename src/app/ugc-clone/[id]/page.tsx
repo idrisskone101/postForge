@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
-import { MediaPreview } from "@/components/media-preview";
+import { MediaPreviewFrame } from "@/components/media-preview";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
@@ -288,14 +288,26 @@ export default function UGCCloneJobPage() {
 
             {/* Completed preview */}
             {isCompleted && featured && (
-              <div className="w-full h-full flex items-center justify-center p-6">
-                <MediaPreview
+              <div className="w-full p-6">
+                <MediaPreviewFrame
                   type="video"
                   src={`/api/files/${featured.id}`}
                   width={featured.width ?? undefined}
                   height={featured.height ?? undefined}
                   alt={job.prompt}
-                  className="max-w-full max-h-full rounded-lg"
+                  variant="detail"
+                  showMetadata
+                  className="w-full rounded-lg"
+                  actions={
+                    <button
+                      type="button"
+                      onClick={() => downloadFile(`/api/files/${featured.id}/download`, featured.filename)}
+                      className="flex items-center gap-2 rounded-md bg-accent-coral px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#ff6540]"
+                    >
+                      <Download className="size-3.5" />
+                      Download
+                    </button>
+                  }
                 />
               </div>
             )}
@@ -357,12 +369,14 @@ export default function UGCCloneJobPage() {
                 </a>
               </div>
 
-              <MediaPreview
+              <MediaPreviewFrame
                 type="video"
                 src={`/api/ugc-clone/preview?path=${encodeURIComponent(sourceVideo.localPath)}`}
                 width={sourceVideo.width}
                 height={sourceVideo.height}
                 alt={sourceVideo.label}
+                variant="work"
+                showMetadata
                 className="w-full rounded-lg bg-black"
               />
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
+
+type MediaPreviewVariant = "card" | "work" | "detail";
 
 interface MediaPreviewProps {
   type: "image" | "video";
@@ -16,7 +18,58 @@ interface MediaPreviewProps {
   fill?: boolean;
 }
 
-export function MediaPreview({
+interface MediaPreviewFrameProps extends MediaPreviewProps {
+  variant?: MediaPreviewVariant;
+  actions?: ReactNode;
+  showMetadata?: boolean;
+  mediaClassName?: string;
+}
+
+function getAspectRatio(width?: number, height?: number) {
+  if (!width || !height) {
+    return undefined;
+  }
+
+  return `${width}/${height}`;
+}
+
+function getReducedRatio(width?: number, height?: number) {
+  if (!width || !height) {
+    return undefined;
+  }
+
+  let a = Math.abs(width);
+  let b = Math.abs(height);
+
+  while (b > 0) {
+    const next = a % b;
+    a = b;
+    b = next;
+  }
+
+  return `${width / a}:${height / a}`;
+}
+
+function getMetadata(width?: number, height?: number) {
+  const ratio = getReducedRatio(width, height);
+  const resolution = width && height ? `${width} x ${height}` : undefined;
+
+  return [ratio, resolution].filter(Boolean);
+}
+
+const frameClasses: Record<MediaPreviewVariant, string> = {
+  card: "bg-zinc-950",
+  work: "bg-zinc-950",
+  detail: "bg-zinc-950",
+};
+
+const mediaWellClasses: Record<MediaPreviewVariant, string> = {
+  card: "min-h-0",
+  work: "min-h-[280px]",
+  detail: "h-[min(720px,calc(100dvh-20rem))] min-h-[320px]",
+};
+
+export function MediaPreviewFrame({
   type,
   src,
   width,
@@ -24,7 +77,11 @@ export function MediaPreview({
   alt = "",
   className,
   fill = false,
-}: MediaPreviewProps) {
+  variant = "work",
+  actions,
+  showMetadata = false,
+  mediaClassName,
+}: MediaPreviewFrameProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -44,70 +101,111 @@ export function MediaPreview({
     }
   }, [markLoaded]);
 
-  if (hasError) {
-    return (
-      <div
-        className={cn(
-          "flex items-center justify-center rounded-lg bg-zinc-900 text-zinc-600",
-          className
-        )}
-        style={{ aspectRatio: width && height ? `${width}/${height}` : "1/1" }}
-      >
-        <div className="flex flex-col items-center gap-2">
-          <ImageOff className="size-8" />
-          <span className="text-xs">Failed to load</span>
-        </div>
-      </div>
-    );
-  }
-
+  const aspectRatio = getAspectRatio(width, height);
+  const metadata = getMetadata(width, height);
+  const shouldUseAspectRatio = variant !== "detail" && aspectRatio;
   const mediaClass = cn(
     "rounded-lg transition-opacity",
     isLoading ? "opacity-0" : "opacity-100",
-    fill ? "w-full h-full object-cover" : "max-w-full max-h-full object-contain"
+    fill ? "size-full object-cover" : "max-h-full max-w-full object-contain",
+    mediaClassName
   );
 
   return (
-    <div
-      className={cn("relative overflow-hidden rounded-lg", className)}
-      style={!fill && width && height ? { aspectRatio: `${width}/${height}` } : undefined}
+    <figure
+      data-media-preview-frame={variant}
+      className={cn("relative overflow-hidden rounded-lg", frameClasses[variant], className)}
+      style={shouldUseAspectRatio ? { aspectRatio } : undefined}
     >
-      {isLoading && (
-        <Skeleton
-          className="absolute inset-0 rounded-lg"
-        />
-      )}
+      <div
+        className={cn(
+          "relative flex size-full items-center justify-center overflow-hidden rounded-lg",
+          mediaWellClasses[variant]
+        )}
+      >
+        {isLoading && <Skeleton className="absolute inset-0 rounded-lg" />}
 
-      {type === "image" ? (
-        <img
-          ref={setImageRef}
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          loading="lazy"
-          onLoad={markLoaded}
-          onError={() => {
-            setIsLoading(false);
-            setHasError(true);
-          }}
-          className={mediaClass}
-        />
-      ) : (
-        <video
-          ref={setVideoRef}
-          src={src}
-          width={width}
-          height={height}
-          controls
-          onLoadedData={markLoaded}
-          onError={() => {
-            setIsLoading(false);
-            setHasError(true);
-          }}
-          className={mediaClass}
-        />
+        {hasError ? (
+          <div className="flex flex-col items-center gap-2 text-zinc-600">
+            <ImageOff className="size-8" />
+            <span className="text-xs">Failed to load</span>
+          </div>
+        ) : type === "image" ? (
+          <img
+            ref={setImageRef}
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            loading="lazy"
+            onLoad={markLoaded}
+            onError={() => {
+              setIsLoading(false);
+              setHasError(true);
+            }}
+            className={mediaClass}
+          />
+        ) : (
+          <video
+            ref={setVideoRef}
+            src={src}
+            width={width}
+            height={height}
+            controls
+            onLoadedData={markLoaded}
+            onError={() => {
+              setIsLoading(false);
+              setHasError(true);
+            }}
+            className={mediaClass}
+          />
+        )}
+      </div>
+
+      {(showMetadata || actions) && (
+        <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-zinc-950 px-3 py-2 text-[10px] font-medium text-zinc-400">
+          {showMetadata && metadata.length > 0 ? (
+            <div className="flex flex-wrap gap-2" aria-label="Media metadata">
+              {metadata.map((item) => (
+                <span key={item} className="rounded-md bg-white/5 px-2 py-1 font-mono">
+                  {item}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span />
+          )}
+
+          {actions && (
+            <div data-media-preview-actions="true" className="flex items-center gap-2">
+              {actions}
+            </div>
+          )}
+        </figcaption>
       )}
-    </div>
+    </figure>
+  );
+}
+
+export function MediaPreview({
+  type,
+  src,
+  width,
+  height,
+  alt = "",
+  className,
+  fill = false,
+}: MediaPreviewProps) {
+  return (
+    <MediaPreviewFrame
+      type={type}
+      src={src}
+      width={width}
+      height={height}
+      alt={alt}
+      className={className}
+      fill={fill}
+      variant={fill ? "card" : "work"}
+    />
   );
 }
