@@ -681,8 +681,6 @@ export function UGCCloneForm() {
   const selectedSavedReference = savedReferences.find(
     (reference) => reference.id === selectedSavedReferenceId
   ) ?? null;
-  const recentSavedReferences = savedReferences.slice(0, 4);
-  const visibleReferenceThumbnails = recentSavedReferences.slice(0, 2);
   const avatarReferencePreviews = avatarId
     ? [
       {
@@ -1517,11 +1515,14 @@ export function UGCCloneForm() {
                 )}
 
                 <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                  {visibleReferenceThumbnails.length > 0 ? "Saved references" : "Avatar references"}
+                  {savedReferences.length > 0 ? "Saved references" : "Avatar references"}
                 </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {visibleReferenceThumbnails.length > 0
-                    ? visibleReferenceThumbnails.map((reference) => (
+                <div
+                  data-reference-thumbnail-grid="true"
+                  className="grid max-h-[260px] grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 overflow-y-auto pr-1"
+                >
+                  {savedReferences.length > 0
+                    ? savedReferences.map((reference) => (
                       <button
                         key={reference.id}
                         type="button"
@@ -1572,31 +1573,11 @@ export function UGCCloneForm() {
                   </button>
                 </div>
 
-                {savedReferences.length > visibleReferenceThumbnails.length ? (
-                  <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1">
-                    {savedReferences.slice(2).map((reference) => (
-                      <button
-                        key={reference.id}
-                        type="button"
-                        onClick={() => handleSelectSavedReference(reference.id)}
-                        className={cn(
-                          "relative overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
-                          reference.id === selectedSavedReferenceId
-                            ? "border-accent-coral"
-                            : "border-white/10"
-                        )}
-                        title={reference.source?.label ?? "Saved reference"}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={reference.previewUrl} alt="" className="aspect-[9/16] w-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                ) : visibleAvatarReferenceThumbnails.length === 0 ? (
+                {savedReferences.length === 0 && visibleAvatarReferenceThumbnails.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/30">
                     Select an identity to show avatar references.
                   </div>
-                ) : avatarReferencePreviews.length > visibleAvatarReferenceThumbnails.length ? (
+                ) : savedReferences.length === 0 && avatarReferencePreviews.length > visibleAvatarReferenceThumbnails.length ? (
                   <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1">
                     {avatarReferencePreviews.slice(2).map((reference) => (
                       <div
