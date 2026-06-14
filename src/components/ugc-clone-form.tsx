@@ -6,7 +6,6 @@ import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -1187,17 +1186,6 @@ export function UGCCloneForm() {
   // ─── Input Phase ────────────────────────────────────────────────────
   return (
     <>
-      <WorkspaceHeaderAccessory>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-accent-green/30 bg-accent-green/20 px-3 py-1.5">
-            <div className="size-2 rounded-full bg-accent-green" />
-            <span className="text-xs font-bold uppercase tracking-wider text-accent-green">
-              {canGenerateClone ? "Ready" : nextAction.label}
-            </span>
-          </div>
-        </div>
-      </WorkspaceHeaderAccessory>
-
       <div
         data-clone-production-state="true"
         className="space-y-8 pb-[32rem] sm:pb-[24rem] lg:pb-[15rem]"
