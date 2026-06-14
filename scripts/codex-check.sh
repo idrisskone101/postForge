@@ -13,6 +13,7 @@ pnpm test:media-preview-frame
 pnpm test:avatar-picker
 pnpm test:video-trimmer
 pnpm test:clone-production-state
+pnpm test:clone-output-review-detail
 pnpm test:output-review-status
 pnpm test:source-selection
 pnpm test:home-cockpit
