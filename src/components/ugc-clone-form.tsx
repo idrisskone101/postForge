@@ -12,12 +12,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Card,
   CardContent,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC, getModelsByType } from "@/lib/ai/models";
+import type { ModelDefinition } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
 import {
   Loader2,
@@ -44,6 +53,86 @@ const IDENTITY_ROLE_LABELS: Record<string, string> = {
 
 function formatIdentityRole(role: string) {
   return IDENTITY_ROLE_LABELS[role] ?? role;
+}
+
+function CloneModelSelect({
+  label,
+  description,
+  accentClassName,
+  models,
+  selectedValue,
+  onValueChange,
+  getCost,
+}: {
+  label: string;
+  description: string;
+  accentClassName: string;
+  models: ModelDefinition[];
+  selectedValue: string;
+  onValueChange: (value: string) => void;
+  getCost: (modelId: string) => string;
+}) {
+  const selectedModel = models.find((model) => model.id === selectedValue) ?? models[0];
+
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className={cn("text-[10px] font-bold uppercase tracking-wider", accentClassName)}>
+        {label}
+      </legend>
+      <Select
+        value={selectedValue}
+        onValueChange={(value) => {
+          if (value) onValueChange(value);
+        }}
+      >
+        <SelectTrigger
+          aria-label={label}
+          className="h-auto! min-h-14 w-full border-white/10 bg-white/5 px-3 py-2 text-white hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+        >
+          <SelectValue>
+            {() => (
+              <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-bold">
+                    {selectedModel?.name ?? "Select model"}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[10px] text-white/40">
+                    {description}
+                  </span>
+                </span>
+                {selectedModel ? (
+                  <span className="shrink-0 font-mono text-[10px] text-white/55">
+                    {getCost(selectedModel.id)}
+                  </span>
+                ) : null}
+              </span>
+            )}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent alignItemWithTrigger={false} className="min-w-[260px]">
+          <SelectGroup>
+            {models.map((model) => (
+              <SelectItem key={model.id} value={model.id}>
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-bold">
+                      {model.name}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                      {description}
+                    </span>
+                  </span>
+                  <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                    {getCost(model.id)}
+                  </span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </fieldset>
+  );
 }
 
 type Phase = "input" | "reviewing" | "submitted";
@@ -1483,68 +1572,30 @@ export function UGCCloneForm() {
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <fieldset className="space-y-2">
-                    <legend className="text-[10px] font-bold uppercase tracking-wider text-accent-blue">
-                      Final video
-                    </legend>
-                    <div className="grid gap-2">
-                      {cloneVideoModels.map((model) => (
-                        <button
-                          key={model.id}
-                          type="button"
-                          onClick={() => setSelectedModel(model.id as typeof selectedModel)}
-                          className={cn(
-                            "flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
-                            selectedModel === model.id
-                              ? "border-accent-blue bg-accent-blue/10 text-accent-blue"
-                              : "border-white/10 bg-white/5 text-white/70"
-                          )}
-                        >
-                          <span className="min-w-0">
-                            <span className="block truncate text-xs font-bold">{model.name}</span>
-                            <span className="mt-0.5 block text-[10px] opacity-60">
-                              Motion-control clone video
-                            </span>
-                          </span>
-                          <span className="shrink-0 font-mono text-[10px] opacity-75">
-                            {formatCost(calculateEstimatedCost(model.id, { durationSec }))}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
+                <div className="flex flex-col gap-3">
+                  <CloneModelSelect
+                    label="Final video"
+                    description="Motion-control clone video"
+                    accentClassName="text-accent-blue"
+                    models={cloneVideoModels}
+                    selectedValue={selectedModel}
+                    onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
+                    getCost={(modelId) =>
+                      formatCost(calculateEstimatedCost(modelId, { durationSec }))
+                    }
+                  />
 
-                  <fieldset className="space-y-2">
-                    <legend className="text-[10px] font-bold uppercase tracking-wider text-accent-green">
-                      Reference image
-                    </legend>
-                    <div className="grid gap-2">
-                      {referenceImageModels.map((model) => (
-                        <button
-                          key={model.id}
-                          type="button"
-                          onClick={() => setSelectedReferenceImageModel(model.id)}
-                          className={cn(
-                            "flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
-                            selectedReferenceImageModel === model.id
-                              ? "border-accent-green bg-accent-green/10 text-accent-green"
-                              : "border-white/10 bg-white/5 text-white/70"
-                          )}
-                        >
-                          <span className="min-w-0">
-                            <span className="block truncate text-xs font-bold">{model.name}</span>
-                            <span className="mt-0.5 block text-[10px] opacity-60">
-                              Identity/reference still
-                            </span>
-                          </span>
-                          <span className="shrink-0 font-mono text-[10px] opacity-75">
-                            {formatCost(calculateEstimatedCost(model.id, { numImages: 1 }))}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
+                  <CloneModelSelect
+                    label="Reference image"
+                    description="Identity/reference still"
+                    accentClassName="text-accent-green"
+                    models={referenceImageModels}
+                    selectedValue={selectedReferenceImageModel}
+                    onValueChange={setSelectedReferenceImageModel}
+                    getCost={(modelId) =>
+                      formatCost(calculateEstimatedCost(modelId, { numImages: 1 }))
+                    }
+                  />
                 </div>
               </div>
 
