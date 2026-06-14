@@ -12,7 +12,7 @@ export default function GeneratePage() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card border border-border mb-4">
             <span className="text-accent-coral text-sm">&#10024;</span>
             <span className="text-[10px] font-semibold text-muted-foreground uppercase">
-              Forge Mode Active
+              Generate Tool
             </span>
           </div>
           <h1 className="text-3xl font-bold mb-2">
