@@ -126,12 +126,12 @@ function CloneModelSelect({
       >
         <SelectTrigger
           aria-label={label}
-          className="h-auto! min-h-14 w-full border-white/10 bg-white/5 px-3 py-2 text-white hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+          className="h-auto! min-h-14 w-full min-w-0 border-white/10 bg-white/5 px-3 py-2 text-white hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10 [&>span]:min-w-0 [&>span]:flex-1"
         >
           <SelectValue>
             {() => (
-              <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
-                <span className="min-w-0">
+              <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
+                <span className="min-w-0 flex-1 overflow-hidden text-left">
                   <span className="block truncate text-xs font-bold">
                     {selectedModel?.name ?? "Select model"}
                   </span>
@@ -152,8 +152,8 @@ function CloneModelSelect({
           <SelectGroup>
             {models.map((model) => (
               <SelectItem key={model.id} value={model.id}>
-                <span className="flex min-w-0 flex-1 items-center justify-between gap-3">
-                  <span className="min-w-0">
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
+                  <span className="min-w-0 flex-1 overflow-hidden">
                     <span className="block truncate text-xs font-bold">
                       {model.name}
                     </span>
@@ -1615,10 +1615,10 @@ export function UGCCloneForm() {
       <section
         data-clone-primary-action-bar="true"
         data-clone-generation-settings-bar="true"
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[oklch(0.145_0_0)]/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-72 sm:px-6 lg:px-8"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:left-72 sm:px-5 lg:px-8"
       >
-        <div className="mx-auto max-w-[1280px] rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)]/95 p-3 sm:p-4">
-          <div className="grid gap-3 xl:grid-cols-[minmax(190px,230px)_minmax(0,1fr)_minmax(210px,260px)] xl:items-end">
+        <div className="pointer-events-auto mx-auto max-w-[1180px] rounded-2xl border border-white/12 bg-[oklch(0.18_0_0)]/92 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-4">
+          <div className="grid gap-3 lg:grid-cols-[minmax(170px,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(170px,220px)_minmax(0,1fr)_minmax(190px,230px)] xl:items-end">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
                 Generation settings
@@ -1637,7 +1637,7 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(180px,220px)_minmax(180px,220px)]">
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(135px,160px)_minmax(135px,160px)]">
               <CloneModelSelect
                 label="Final video"
                 description="Motion-control clone video"
@@ -1695,29 +1695,33 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={
-                selectedSavedReference
-                  ? handleGenerateWithSavedReference
-                  : selectedRefFileId
-                    ? handleApproveAndGenerate
-                    : handleGenerateRefImage
-              }
-              disabled={
-                selectedSavedReference || selectedRefFileId
-                  ? !canGenerateClone
-                  : !canSubmit || isSubmitting || isGenerating
-              }
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
-            >
-              <Zap className="size-4" />
-              {isSubmitting
-                ? "Starting..."
-                : isGenerating
-                  ? "Generating reference..."
-                  : nextAction.label}
-            </button>
+            <div className="lg:col-span-2 xl:col-span-1">
+              <button
+                type="button"
+                onClick={
+                  selectedSavedReference
+                    ? handleGenerateWithSavedReference
+                    : selectedRefFileId
+                      ? handleApproveAndGenerate
+                      : handleGenerateRefImage
+                }
+                disabled={
+                  selectedSavedReference || selectedRefFileId
+                    ? !canGenerateClone
+                    : !canSubmit || isSubmitting || isGenerating
+                }
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
+              >
+                <Zap className="size-4" />
+                <span className="truncate">
+                  {isSubmitting
+                    ? "Starting..."
+                    : isGenerating
+                      ? "Generating reference..."
+                      : nextAction.label}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 hidden items-start gap-2 border-t border-white/10 pt-3 text-[11px] leading-4 text-white/40 lg:flex">
