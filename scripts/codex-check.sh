@@ -9,6 +9,7 @@ cd "$REPO_ROOT"
 corepack enable 2>/dev/null || true
 
 pnpm test:workspace-shell
+pnpm test:workspace-state
 pnpm test:media-preview-frame
 pnpm test:generate-tool
 pnpm test:generate-output-actions
@@ -24,5 +25,6 @@ pnpm test:home-active-jobs
 pnpm test:home-review-jobs
 pnpm test:home-cockpit
 pnpm test:home-loading
+pnpm test:generate-empty-state
 pnpm lint
 pnpm build

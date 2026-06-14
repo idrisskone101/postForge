@@ -6,6 +6,7 @@ import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { MediaPreviewFrame } from "@/components/media-preview";
+import { WorkspaceState } from "@/components/workspace-state";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -192,6 +193,18 @@ function ReferencePortraitFrame({
     >
       {children}
     </div>
+  );
+}
+
+export function CloneSourceEmptyState() {
+  return (
+    <WorkspaceState
+      tone="empty"
+      icon={Video}
+      title="Add source"
+      description="Your selected clip appears here."
+      className="min-h-0 border-0 bg-transparent px-0 py-0"
+    />
   );
 }
 
@@ -463,15 +476,25 @@ export function CloneProductionStatePanel({
         />
       </ol>
 
-      <div className="mt-4 rounded-lg border border-border bg-muted/25 p-3">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          Next action
-        </p>
-        <p className="mt-1 text-sm font-semibold">{nextAction.label}</p>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          {nextAction.detail}
-        </p>
-      </div>
+      {!sourceReady ? (
+        <WorkspaceState
+          tone="empty"
+          icon={Video}
+          title={nextAction.label}
+          description={nextAction.detail}
+          className="mt-4 min-h-40 border-0 bg-muted/25 px-3 py-5"
+        />
+      ) : (
+        <div className="mt-4 rounded-lg border border-border bg-muted/25 p-3">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Next action
+          </p>
+          <p className="mt-1 text-sm font-semibold">{nextAction.label}</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            {nextAction.detail}
+          </p>
+        </div>
+      )}
     </aside>
   );
 }
@@ -1382,13 +1405,7 @@ export function UGCCloneForm() {
                   </>
                 ) : (
                   <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
-                    <Video className="size-6 text-white/20" />
-                    <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
-                      Add source
-                    </span>
-                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
-                      Your selected clip appears here.
-                    </span>
+                    <CloneSourceEmptyState />
                   </ReferencePortraitFrame>
                 )}
               </div>

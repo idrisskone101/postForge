@@ -39,6 +39,27 @@ const markup = renderToStaticMarkup(
     />
   </TooltipProvider>
 );
+const emptyMarkup = renderToStaticMarkup(
+  <TooltipProvider>
+    <SpendPageContent
+      totalCost={0}
+      currentPeriodCost={0}
+      changePercent={0}
+      avgCycleCost={0}
+      totalJobs={0}
+      topModel={null}
+      chartData={[]}
+      byModel={{}}
+      breakdown={{
+        image: { count: 0, cost: 0 },
+        video: { count: 0, cost: 0 },
+      }}
+      logs={[]}
+      period="30d"
+      onPeriodChange={() => {}}
+    />
+  </TooltipProvider>
+);
 
 assert.match(markup, /Spend/);
 assert.match(markup, /Cost tracking, budget signals, and model usage/);
@@ -54,3 +75,9 @@ assert.match(markup, /kling-3\.0-motion/);
 assert.match(markup, /flux-pro/);
 assert.doesNotMatch(markup, /Analytics/);
 assert.doesNotMatch(markup, /Recent Activity/);
+
+assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /No model spend yet/);
+assert.match(emptyMarkup, /No cost log entries yet/);
+assert.match(emptyMarkup, /Start Clone/);
+assert.match(emptyMarkup, /Open Generate/);

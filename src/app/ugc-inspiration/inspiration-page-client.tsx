@@ -12,6 +12,7 @@ import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WorkspaceState } from "@/components/workspace-state";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import {
   Avatar,
@@ -631,19 +632,24 @@ export function InspirationPageClient({
             </div>
 
             {accounts.length === 0 ? (
-              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-16 text-center">
-                <div className="mb-5 flex size-16 items-center justify-center rounded-xl bg-accent-blue/12 text-accent-blue">
-                  <Compass className="size-7" />
-                </div>
-                <h2 className="text-xl font-bold tracking-tight">
-                  Start your discovery board
-                </h2>
-                <p className="mt-3 max-w-md text-sm text-muted-foreground">
-                  Add a few creators you already trust. PostForge will keep a
-                  cached feed of their recent TikToks here, ready for preview
-                  and one-click cloning.
-                </p>
-              </div>
+              <WorkspaceState
+                tone="empty"
+                icon={Compass}
+                title="Start your discovery board"
+                description="Add a few creators you already trust. PostForge will keep a cached feed of their recent TikToks here, ready for preview and one-click cloning."
+                action={{
+                  label: "Track Creator",
+                  onClick: () => {
+                    document
+                      .querySelector<HTMLInputElement>(
+                        'input[placeholder="@creator or TikTok profile URL"]'
+                      )
+                      ?.focus();
+                  },
+                }}
+                secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
+                className="min-h-[420px]"
+              />
             ) : feedVideos.length === 0 ? (
               <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-14 text-center">
                 <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-accent-green/12 text-accent-green">

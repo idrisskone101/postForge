@@ -76,6 +76,30 @@ const markup = renderToStaticMarkup(
     ]}
   />
 );
+const emptyMarkup = renderToStaticMarkup(
+  <HomeCockpit
+    todaySummary={{
+      period: "today",
+      totalCost: 0,
+      breakdown: {
+        image: { count: 0, cost: 0 },
+        video: { count: 0, cost: 0 },
+      },
+      byModel: {},
+    }}
+    monthSummary={{
+      period: "month",
+      totalCost: 0,
+      breakdown: {
+        image: { count: 0, cost: 0 },
+        video: { count: 0, cost: 0 },
+      },
+      byModel: {},
+    }}
+    activeJobs={[]}
+    recentJobs={[]}
+  />
+);
 
 assert.match(markup, /Daily Production Loop/);
 assert.match(markup, /Continue latest Clone/);
@@ -88,3 +112,8 @@ assert.match(markup, /job-completed/);
 assert.match(markup, /Open Gallery/);
 assert.match(markup, /data-home-pending-review-scroll="true"/);
 assert.match(markup, /job-completed-4/);
+
+assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /Start today&#x27;s Daily Production Loop/);
+assert.match(emptyMarkup, /Return to Inspiration/);
+assert.match(emptyMarkup, /Start Clone/);

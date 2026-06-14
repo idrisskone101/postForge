@@ -12,6 +12,7 @@ import type { CostSummary } from "@/lib/costs/tracker";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
+import { WorkspaceState } from "@/components/workspace-state";
 
 export type HomeJob = {
   id: string;
@@ -131,21 +132,15 @@ function JobRow({ job }: { job: HomeJob }) {
 
 function EmptyPanel() {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card/60 p-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold">Start today&apos;s Daily Production Loop</p>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Pull a source from Inspiration or start a Clone when there is no
-            active work to resume.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <QuickLink href="/ugc-inspiration" icon={Compass} label="Return to Inspiration" />
-          <QuickLink href="/ugc-clone" icon={Users} label="Start Clone" />
-        </div>
-      </div>
-    </div>
+    <WorkspaceState
+      tone="empty"
+      icon={Compass}
+      title="Start today's Daily Production Loop"
+      description="Pull a source from Inspiration or start a Clone when there is no active work to resume."
+      action={{ href: "/ugc-inspiration", label: "Return to Inspiration" }}
+      secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
+      className="min-h-48"
+    />
   );
 }
 

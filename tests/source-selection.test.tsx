@@ -61,6 +61,9 @@ const headerMarkup = renderToStaticMarkup(
     onTrackAccount={() => {}}
   />
 );
+const emptyMarkup = renderToStaticMarkup(
+  <InspirationPageClient initialAccounts={[]} />
+);
 
 assert.match(headerMarkup, /Source Selection/);
 assert.match(headerMarkup, /Compare creator posts/);
@@ -94,6 +97,10 @@ assert.match(markup, /mt-3 min-h-0 flex-1 space-y-1 overflow-y-auto/);
 assert.match(markup, /max-h-\[480px\]/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-contain/);
+
+assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /Start your discovery board/);
+assert.match(emptyMarkup, /Track Creator/);
 
 assert.match(markup, /<aside class="sticky top-0 hidden h-screen w-80 shrink-0/);
 assert.match(markup, /<section class="min-w-0 flex-1 overflow-y-auto/);
