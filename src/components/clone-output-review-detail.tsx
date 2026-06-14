@@ -157,11 +157,14 @@ export function CloneOutputReviewDetail({
   const isFailed = job.status === "failed";
   const featured = job.outputs[0];
   const sourceVideo = parseSourceVideo(job.input.sourceVideo);
+  const avatarId = getStringInput(job.input, "avatarId");
+  const avatarPreviewUrl = avatarId
+    ? `/api/avatars/${encodeURIComponent(avatarId)}`
+    : null;
   const identityName =
     getStringInput(job.input, "avatarName") ??
     getStringInput(job.input, "identityName") ??
-    getStringInput(job.input, "avatarId") ??
-    "Saved identity";
+    "AI avatar profile";
   const referenceImageFileId = getStringInput(job.input, "referenceImageFileId");
   const savedReferenceId = getStringInput(job.input, "savedReferenceId");
   const referencePreviewUrl = savedReferenceId
@@ -431,9 +434,18 @@ export function CloneOutputReviewDetail({
 
           <DetailSection title="Identity Used">
             <div className="flex items-center gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-white/[0.05]">
-                <Users className="size-5 text-muted-foreground" />
-              </div>
+              {avatarPreviewUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarPreviewUrl}
+                  alt={`${identityName} avatar`}
+                  className="size-12 shrink-0 rounded-full border border-border bg-white/[0.05] object-cover"
+                />
+              ) : (
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-white/[0.05]">
+                  <Users className="size-5 text-muted-foreground" />
+                </div>
+              )}
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{identityName}</p>
                 <p className="mt-1 text-[11px] uppercase tracking-tight text-muted-foreground">

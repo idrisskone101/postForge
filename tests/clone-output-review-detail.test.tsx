@@ -23,6 +23,7 @@ const completedJob = {
       height: 1920,
     },
     savedReferenceId: "reference-1",
+    avatarId: "avatar-456",
     avatarName: "Maya Studio",
   },
   output: null,
@@ -88,6 +89,7 @@ assert.match(markup, /\/api\/ugc-clone\/preview\?path=%2Ftmp%2Fsource\.mp4/);
 assert.doesNotMatch(markup, /<a[^>]+href="\/api\/ugc-clone\/preview/);
 assert.match(markup, /Identity Used/);
 assert.match(markup, /Maya Studio/);
+assert.match(markup, /src="\/api\/avatars\/avatar-456"/);
 assert.match(markup, /Production State/);
 assert.match(markup, /wan-2\.2-video/);
 assert.match(markup, /\$0\.31/);
@@ -114,3 +116,33 @@ const portraitSourceFallbackMarkup = renderToStaticMarkup(
 
 assert.match(portraitSourceFallbackMarkup, /9:16/);
 assert.match(portraitSourceFallbackMarkup, /1080 x 1920/);
+
+const uuidOnlyAvatarId = "8e18566f-49cf-4607-ace1-15b6161d00cc";
+const avatarFallbackMarkup = renderToStaticMarkup(
+  <CloneOutputReviewDetail
+    job={{
+      ...completedJob,
+      input: {
+        ...completedJob.input,
+        avatarId: uuidOnlyAvatarId,
+        avatarName: undefined,
+        identityName: undefined,
+      },
+    }}
+    isRetrying={false}
+    onBack={() => {}}
+    onRetry={() => {}}
+    onDownload={() => {}}
+    onNewClone={() => {}}
+  />
+);
+
+assert.match(avatarFallbackMarkup, /AI avatar profile/);
+assert.match(
+  avatarFallbackMarkup,
+  /src="\/api\/avatars\/8e18566f-49cf-4607-ace1-15b6161d00cc"/
+);
+assert.doesNotMatch(
+  avatarFallbackMarkup,
+  />8e18566f-49cf-4607-ace1-15b6161d00cc</
+);
