@@ -1127,35 +1127,30 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    {avatarReady ? "Avatar selected" : "Choose an avatar"}
-                  </p>
-                  <p className="mt-1 text-xs text-white/40">
-                    {avatarReady
-                      ? identityPack?.status === "completed"
-                        ? `${identityPack.images.length} identity references ready.`
-                        : identityPack?.status === "failed"
-                          ? "Identity pack failed; the original avatar is still usable."
-                          : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
-                            ? "Preparing identity references in the background."
-                            : "Original avatar fallback is available."
-                      : "Use your saved avatars, upload one, or generate a new identity."}
-                  </p>
-                  {(identityPackError || identityPack?.error) && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {identityPackError || identityPack?.error}
-                    </p>
-                  )}
-                </div>
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="max-w-xl text-xs leading-5 text-white/40">
+                  {avatarReady
+                    ? identityPack?.status === "completed"
+                      ? `${identityPack.images.length} identity references ready.`
+                      : identityPack?.status === "failed"
+                        ? "Identity pack failed; the original avatar is still usable."
+                        : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
+                          ? "Preparing identity references in the background."
+                          : "Original avatar fallback is available."
+                    : "Select a saved identity, upload one, or create a new identity for this clone."}
+                </p>
                 {avatarReady && (
                   <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
                     Active
                   </Badge>
                 )}
               </div>
+              {(identityPackError || identityPack?.error) && (
+                <p className="text-xs text-destructive">
+                  {identityPackError || identityPack?.error}
+                </p>
+              )}
               <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
             </div>
           </section>

@@ -440,16 +440,18 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   }
 
   // Grid mode (default)
-  return (
-    <div className="space-y-2.5">
-      {/* Avatar quality tips */}
-      <div className="flex items-center gap-2 rounded-lg bg-accent-blue/5 border border-accent-blue/20 px-2.5 py-1.5">
-        <Info className="size-3.5 text-accent-blue shrink-0" />
-        <p className="truncate text-[10px] text-muted-foreground">
-          <span className="font-medium text-foreground">Best:</span> front-facing, clean background, one person.
-        </p>
-      </div>
+  const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId);
+  const primaryAvatars = (
+    selectedAvatar
+      ? [selectedAvatar, ...avatars.filter((avatar) => avatar.id !== selectedAvatar.id)]
+      : avatars
+  ).slice(0, 2);
+  const secondaryAvatars = avatars.filter(
+    (avatar) => !primaryAvatars.some((primaryAvatar) => primaryAvatar.id === avatar.id)
+  );
 
+  return (
+    <div className="space-y-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -458,94 +460,144 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onChange={handleUpload}
       />
 
-      <div className="grid max-h-[244px] grid-cols-4 gap-2 overflow-y-auto pr-1 sm:max-h-[180px] sm:grid-cols-6 lg:grid-cols-7">
-        {/* Upload button */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
-        >
-          {isUploading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <>
-              <Upload className="size-4" />
-              <span className="text-[9px] font-bold uppercase tracking-wide">Upload</span>
-            </>
-          )}
-        </button>
+      <div className="flex items-center gap-2 rounded-lg border border-accent-blue/20 bg-accent-blue/5 px-3 py-2">
+        <Info className="size-3.5 shrink-0 text-accent-blue" />
+        <p className="truncate text-[10px] text-white/45">
+          <span className="font-medium text-white/75">Best:</span> front-facing, clean background, one person.
+        </p>
+      </div>
 
-        {/* Generate button */}
-        <button
-          type="button"
-          onClick={() => setMode("generate")}
-          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
-        >
-          <Sparkles className="size-4" />
-          <span className="text-[9px] font-bold uppercase tracking-wide">Generate</span>
-        </button>
-
-        {/* From Gallery button */}
-        <button
-          type="button"
-          onClick={openGallery}
-          className="aspect-square rounded-lg border border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
-        >
-          <ImageIcon className="size-4" />
-          <span className="text-[9px] font-bold uppercase tracking-wide">Gallery</span>
-        </button>
-
-        {/* Avatar cards */}
-        {avatars.map((avatar) => {
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {primaryAvatars.map((avatar) => {
           const isSelected = selectedId === avatar.id;
           return (
             <div
               key={avatar.id}
               className={cn(
-                "group relative aspect-square overflow-hidden rounded-lg border transition-all",
+                "group relative overflow-hidden rounded-xl border bg-white/[0.03] p-2.5 transition-all",
                 isSelected
-                  ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
-                  : "border-border hover:border-accent-green/50"
+                  ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16)]"
+                  : "border-white/10 hover:border-accent-green/45 hover:bg-white/[0.05]"
               )}
             >
               <button
                 type="button"
                 onClick={() => onSelect(avatar.id)}
-                className="size-full text-left"
+                className="block w-full text-left"
               >
-                <img
-                  src={`/api/avatars/${avatar.id}`}
-                  alt={avatar.name}
-                  className="size-full object-cover"
-                />
+                <div className="aspect-[4/3] overflow-hidden rounded-lg bg-black">
+                  <img
+                    src={`/api/avatars/${avatar.id}`}
+                    alt={avatar.name}
+                    className="size-full object-cover"
+                  />
+                </div>
 
-                {/* Name */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/65 to-transparent p-1.5">
-                  <p className="truncate text-[9px] font-medium text-white">{avatar.name}</p>
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <p className="min-w-0 truncate text-xs font-semibold text-white/85">{avatar.name}</p>
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
+                      isSelected
+                        ? "bg-accent-green/15 text-accent-green"
+                        : "bg-white/5 text-white/35"
+                    )}
+                  >
+                    {isSelected ? "Active" : "Select"}
+                  </span>
                 </div>
               </button>
 
-              {/* Delete button */}
               <button
                 type="button"
                 onClick={(e) => handleDelete(avatar.id, e)}
-                className="absolute top-1 right-1 size-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive focus:opacity-100"
+                className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity hover:bg-destructive focus:opacity-100 group-hover:opacity-100"
+                aria-label={`Delete ${avatar.name}`}
               >
-                <Trash2 className="size-2.5" />
+                <Trash2 className="size-3.5" />
               </button>
             </div>
           );
         })}
 
-        {/* Empty state */}
-        {avatars.length === 0 && (
-          <div className="col-span-4 flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-4 text-muted-foreground">
-            <User className="mb-1.5 size-6" />
-            <p className="text-xs">No avatars yet</p>
+        {primaryAvatars.length === 0 && (
+          <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-6 text-white/40">
+            <User className="mb-2 size-7" />
+            <p className="text-xs font-semibold">No saved identities yet</p>
           </div>
         )}
+
+        <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-3">
+          <div className="flex flex-1 flex-col items-center justify-center text-center">
+            <Sparkles className="size-6 text-white/25" />
+            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-white/45">
+              New Identity
+            </p>
+            <p className="mt-1 text-[10px] leading-4 text-white/25">
+              Upload, generate, or import from gallery.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              data-avatar-action="upload"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
+            >
+              {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+              <span className="text-[8px] font-bold uppercase tracking-wide">Upload</span>
+            </button>
+
+            <button
+              type="button"
+              data-avatar-action="generate"
+              onClick={() => setMode("generate")}
+              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-blue hover:text-accent-blue"
+            >
+              <Sparkles className="size-4" />
+              <span className="text-[8px] font-bold uppercase tracking-wide">Generate</span>
+            </button>
+
+            <button
+              type="button"
+              data-avatar-action="gallery"
+              onClick={openGallery}
+              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-coral hover:text-accent-coral"
+            >
+              <ImageIcon className="size-4" />
+              <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {secondaryAvatars.length > 0 && (
+        <div className="grid max-h-24 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-6">
+          {secondaryAvatars.map((avatar) => (
+            <button
+              key={avatar.id}
+              type="button"
+              onClick={() => onSelect(avatar.id)}
+              className={cn(
+                "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-green/50",
+                selectedId === avatar.id ? "border-accent-green" : "border-white/10"
+              )}
+              title={avatar.name}
+            >
+              <img
+                src={`/api/avatars/${avatar.id}`}
+                alt={avatar.name}
+                className="size-full object-cover"
+              />
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-left text-[9px] font-medium text-white">
+                <span className="block truncate">{avatar.name}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
