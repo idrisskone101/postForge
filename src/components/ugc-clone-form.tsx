@@ -1475,20 +1475,36 @@ export function UGCCloneForm() {
                 <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
                   Scene Direction
                 </label>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="grid gap-2">
                   {PROMPT_PRESETS.map((preset) => (
                     <button
                       key={preset.label}
                       type="button"
+                      aria-pressed={prompt === preset.prompt}
                       onClick={() => setPrompt(preset.prompt)}
                       className={cn(
-                        "whitespace-nowrap rounded-md border px-2 py-1 text-[10px] font-semibold transition-colors",
+                        "flex min-h-12 items-start gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
                         prompt === preset.prompt
                           ? "border-accent-coral bg-accent-coral/10 text-accent-coral"
-                          : "border-white/10 bg-white/5 text-white/45 hover:text-white"
+                          : "border-white/10 bg-white/5 text-white/70"
                       )}
                     >
-                      {preset.label}
+                      <span
+                        className={cn(
+                          "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border",
+                          prompt === preset.prompt
+                            ? "border-accent-coral bg-accent-coral text-black"
+                            : "border-white/15 text-transparent"
+                        )}
+                      >
+                        <Check className="size-2.5" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-xs font-bold">{preset.label}</span>
+                        <span className="mt-0.5 block text-[10px] leading-4 opacity-60">
+                          {preset.prompt}
+                        </span>
+                      </span>
                     </button>
                   ))}
                 </div>
