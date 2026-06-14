@@ -35,7 +35,6 @@ import {
   Sparkles,
   PenLine,
   Volume2,
-  Clock3,
   Video,
   Users,
   Layers,
@@ -112,10 +111,12 @@ function CloneModelSelect({
   getCost: (modelId: string) => string;
 }) {
   const selectedModel = models.find((model) => model.id === selectedValue) ?? models[0];
+  const compactLabel = label === "Final video" ? "Video" : label === "Reference image" ? "Reference" : label;
+  const selectedModelLabel = selectedModel?.name.replace(" Motion Control", "");
 
   return (
-    <fieldset className={cn("flex min-w-0 flex-col gap-2", className)}>
-      <legend className={cn("text-[10px] font-bold uppercase tracking-wider", accentClassName)}>
+    <fieldset className={cn("min-w-0", className)}>
+      <legend className="sr-only">
         {label}
       </legend>
       <Select
@@ -126,17 +127,17 @@ function CloneModelSelect({
       >
         <SelectTrigger
           aria-label={label}
-          className="h-auto! min-h-14 w-full min-w-0 border-white/10 bg-white/5 px-3 py-2 text-white hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10 [&>span]:min-w-0 [&>span]:flex-1"
+          className="h-10! min-h-10 w-full min-w-0 border-white/10 bg-white/5 px-3 py-2 text-white hover:bg-white/10 dark:bg-white/5 dark:hover:bg-white/10 [&>span]:min-w-0 [&>span]:flex-1"
         >
           <SelectValue>
             {() => (
               <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
                 <span className="min-w-0 flex-1 overflow-hidden text-left">
-                  <span className="block truncate text-xs font-bold">
-                    {selectedModel?.name ?? "Select model"}
+                  <span className={cn("block text-[9px] font-bold uppercase tracking-wider", accentClassName)}>
+                    {compactLabel}
                   </span>
-                  <span className="mt-0.5 block truncate text-[10px] text-white/40">
-                    {description}
+                  <span className="block truncate text-[11px] font-semibold leading-4">
+                    {selectedModelLabel ?? "Select model"}
                   </span>
                 </span>
                 {selectedModel ? (
@@ -888,9 +889,8 @@ export function UGCCloneForm() {
   const readinessDetail = canGenerateClone
     ? "Source, identity, and reference are ready."
     : "Complete Source, Identity, and Reference before generating.";
-  const primaryActionTimeDetail = referenceReady
-    ? "Video generation usually takes 4-6 minutes."
-    : "Reference generation runs before video generation.";
+  const compactActionLabel =
+    nextAction.label === "Add source to continue" ? "Add source" : nextAction.label;
   const productionStatePanel = (
     <CloneProductionStatePanel
       sourceReady={sourceReady}
@@ -1617,27 +1617,26 @@ export function UGCCloneForm() {
         data-clone-generation-settings-bar="true"
         className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:left-72 sm:px-5 lg:px-8"
       >
-        <div className="pointer-events-auto mx-auto max-w-[1180px] rounded-2xl border border-white/12 bg-[oklch(0.18_0_0)]/92 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-4">
-          <div className="grid gap-3 lg:grid-cols-[minmax(170px,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(170px,220px)_minmax(0,1fr)_minmax(190px,230px)] xl:items-end">
-            <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                Generation settings
-              </p>
-              <h3 className="mt-1 truncate text-sm font-bold text-white">
-                {nextAction.label}
-              </h3>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/50">
-                <span className="font-mono">
+        <div className="pointer-events-auto mx-auto max-w-[1120px] rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/94 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-3">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <div className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 lg:w-[210px] lg:shrink-0">
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-bold text-white">
+                  {compactActionLabel}
+                </h3>
+                <p className="mt-0.5 truncate font-mono text-[11px] text-white/50">
                   {formatCost(referenceCost + videoCost + textErasureCost)} est.
-                </span>
-                <span className="hidden items-center gap-1 2xl:inline-flex">
-                  <Clock3 className="size-3" />
-                  {primaryActionTimeDetail}
-                </span>
+                </p>
               </div>
+              <span
+                className="flex size-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45"
+                title={`${cloneTip.title}: ${cloneTip.body}`}
+              >
+                <Info className="size-3.5" />
+              </span>
             </div>
 
-            <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(135px,160px)_minmax(135px,160px)]">
+            <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 md:grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(112px,128px)_minmax(112px,128px)]">
               <CloneModelSelect
                 label="Final video"
                 description="Motion-control clone video"
@@ -1664,38 +1663,28 @@ export function UGCCloneForm() {
                 }
               />
 
-              <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3">
                 <div className="flex min-w-0 items-center gap-2">
                   <Volume2 className="size-4 shrink-0 text-white/40" />
-                  <div className="min-w-0">
-                    <p className="truncate text-[11px] font-semibold text-white/80">
-                      Keep sound
-                    </p>
-                    <p className="truncate text-[10px] text-white/35">
-                      Original audio
-                    </p>
-                  </div>
+                  <p className="truncate text-[11px] font-semibold text-white/80">
+                    Sound
+                  </p>
                 </div>
                 <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
               </div>
 
-              <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold text-white/80">
-                    Remove text
-                  </p>
-                  <p className="truncate text-[10px] text-white/35">
-                    Captions/overlays
-                    {removeTextOverlays && (
-                      <span className="text-accent-green"> +{formatCost(textErasureCost)}</span>
-                    )}
-                  </p>
-                </div>
+              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3">
+                <p className="truncate text-[11px] font-semibold text-white/80">
+                  Text
+                  {removeTextOverlays && (
+                    <span className="ml-1 font-mono text-[10px] text-accent-green">+{formatCost(textErasureCost)}</span>
+                  )}
+                </p>
                 <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
               </div>
             </div>
 
-            <div className="lg:col-span-2 xl:col-span-1">
+            <div className="lg:w-[190px] lg:shrink-0">
               <button
                 type="button"
                 onClick={
@@ -1710,27 +1699,18 @@ export function UGCCloneForm() {
                     ? !canGenerateClone
                     : !canSubmit || isSubmitting || isGenerating
                 }
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-4 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
               >
-                <Zap className="size-4" />
+                <Zap className="size-3.5" />
                 <span className="truncate">
                   {isSubmitting
                     ? "Starting..."
                     : isGenerating
                       ? "Generating reference..."
-                      : nextAction.label}
+                      : compactActionLabel}
                 </span>
               </button>
             </div>
-          </div>
-
-          <div className="mt-3 hidden items-start gap-2 border-t border-white/10 pt-3 text-[11px] leading-4 text-white/40 lg:flex">
-            <Info className="mt-0.5 size-3.5 shrink-0 text-white/30" />
-            <p className="min-w-0 truncate">
-              <span className="font-bold uppercase tracking-wider text-white/55">Tip:</span>{" "}
-              <span className="font-semibold text-white/60">{cloneTip.title}</span>
-              <span className="text-white/35"> - {cloneTip.body}</span>
-            </p>
           </div>
         </div>
       </section>
