@@ -1,4 +1,10 @@
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
+export function resolveApiUrl(path: string): string {
+  if (typeof window !== "undefined") {
+    return path;
+  }
+
+  return `${process.env.NEXT_PUBLIC_BASE_URL || ""}${path}`;
+}
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -15,7 +21,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(resolveApiUrl(path), {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -23,7 +29,7 @@ export async function apiGet<T>(path: string): Promise<T> {
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(resolveApiUrl(path), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -32,7 +38,7 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function apiDelete(path: string): Promise<void> {
-  const response = await fetch(`${BASE_URL}${path}`, {
+  const response = await fetch(resolveApiUrl(path), {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   });

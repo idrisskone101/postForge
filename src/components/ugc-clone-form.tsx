@@ -325,6 +325,7 @@ export function UGCCloneForm() {
   const [videoInfo, setVideoInfo] = useState<TikTokVideoInfo | null>(null);
   const [originalVideoInfo, setOriginalVideoInfo] = useState<TikTokVideoInfo | null>(null);
   const [showTrimmer, setShowTrimmer] = useState(false);
+  const [sourceToolsOpen, setSourceToolsOpen] = useState(false);
   const [sourcesRefreshKey, setSourcesRefreshKey] = useState(0);
 
   // Step 2: Avatar
@@ -542,6 +543,7 @@ export function UGCCloneForm() {
     setVideoInfo(info);
     setOriginalVideoInfo(info);
     setShowTrimmer(false);
+    setSourceToolsOpen(!info);
   };
 
   const handlePreselectedSourceResolved = () => {
@@ -693,6 +695,7 @@ export function UGCCloneForm() {
     selectedReferenceImageModel;
   const referenceCost = selectedSavedReference ? 0 : imageCost;
   const sourceReady = !!videoInfo?.id;
+  const shouldShowSourceTools = !sourceReady || sourceToolsOpen;
   const avatarReady = !!avatarId;
   const trimReady = !!videoInfo;
   const referenceReady = !!selectedSavedReference || !!selectedRefFileId;
@@ -1003,7 +1006,10 @@ export function UGCCloneForm() {
         className="grid grid-cols-1 gap-8 lg:grid-cols-12"
       >
         <div className="space-y-8 lg:col-span-8">
-          <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6">
+          <section
+            data-clone-source-section="true"
+            className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6"
+          >
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-accent-blue/10 text-accent-blue">
@@ -1020,10 +1026,22 @@ export function UGCCloneForm() {
               </div>
               <button
                 type="button"
-                onClick={() => sourceReady && setShowTrimmer((value) => !value)}
+                onClick={() => {
+                  if (sourceReady) {
+                    setShowTrimmer(false);
+                    setSourceToolsOpen((value) => !value);
+                    return;
+                  }
+
+                  setSourceToolsOpen(true);
+                }}
                 className="text-xs font-semibold text-accent-blue transition-colors hover:text-accent-blue/80"
               >
-                {sourceReady ? (showTrimmer ? "Close Trim" : "Re-trim") : "Replace Source"}
+                {sourceReady
+                  ? sourceToolsOpen
+                    ? "Close Source Picker"
+                    : "Replace Source"
+                  : "Choose Source"}
               </button>
             </div>
 
@@ -1065,15 +1083,17 @@ export function UGCCloneForm() {
                 )
               )}
 
-              <div className="rounded-xl border border-dashed border-white/10 bg-black p-4">
-                <TikTokInput
-                  onDownloaded={handleVideoDownloaded}
-                  videoInfo={videoInfo}
-                  refreshKey={sourcesRefreshKey}
-                  preselectedSourceId={pendingSourceId}
-                  onPreselectedSourceResolved={handlePreselectedSourceResolved}
-                />
-              </div>
+              {shouldShowSourceTools && (
+                <div className="rounded-xl border border-dashed border-white/10 bg-black p-4">
+                  <TikTokInput
+                    onDownloaded={handleVideoDownloaded}
+                    videoInfo={videoInfo}
+                    refreshKey={sourcesRefreshKey}
+                    preselectedSourceId={sourceReady ? null : pendingSourceId}
+                    onPreselectedSourceResolved={handlePreselectedSourceResolved}
+                  />
+                </div>
+              )}
             </div>
           </section>
 

@@ -59,15 +59,51 @@ export function TikTokInput({
   const [error, setError] = useState<string | null>(null);
   const [savedSources, setSavedSources] = useState<SavedSource[]>([]);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
+  const [sourcesError, setSourcesError] = useState<string | null>(null);
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
+  const hasAutoOpenedSavedSourcesRef = useRef(false);
+  const videoInfoRef = useRef<TikTokVideoInfo | null>(videoInfo);
 
   useEffect(() => {
+    videoInfoRef.current = videoInfo;
+  }, [videoInfo]);
+
+  useEffect(() => {
+    let isActive = true;
+    setIsLoadingSources(true);
+    setSourcesError(null);
+
     apiGet<SavedSource[]>("/api/ugc-clone/sources")
-      .then(setSavedSources)
-      .catch((err) => console.error("Failed to load saved sources:", err))
-      .finally(() => setIsLoadingSources(false));
+      .then((sources) => {
+        if (!isActive) return;
+        setSavedSources(sources);
+        if (
+          sources.length > 0 &&
+          !videoInfoRef.current &&
+          !hasAutoOpenedSavedSourcesRef.current
+        ) {
+          setShowSavedSources(true);
+          hasAutoOpenedSavedSourcesRef.current = true;
+        }
+      })
+      .catch((err) => {
+        if (!isActive) return;
+        console.error("Failed to load saved sources:", err);
+        setSourcesError(
+          err instanceof Error ? err.message : "Failed to load saved sources"
+        );
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoadingSources(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [refreshKey]);
 
   useEffect(() => {
@@ -243,6 +279,20 @@ export function TikTokInput({
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {isLoadingSources && (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
+          <Loader2 className="size-3.5 animate-spin" />
+          Loading saved sources...
+        </div>
+      )}
+
+      {sourcesError && (
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
+          <AlertCircle className="size-4 shrink-0 text-destructive" />
+          <p className="text-xs text-destructive">{sourcesError}</p>
         </div>
       )}
 
