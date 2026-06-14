@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
@@ -171,6 +171,26 @@ function CloneModelSelect({
         </SelectContent>
       </Select>
     </fieldset>
+  );
+}
+
+function ReferencePortraitFrame({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      data-reference-portrait-frame="true"
+      className={cn(
+        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
+        className
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -1305,16 +1325,18 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-white/10 bg-black p-3">
+            <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(220px,320px)_minmax(0,1fr)]">
+              <div className="self-start rounded-xl border border-white/10 bg-black p-3">
                 {selectedSavedReference ? (
                   <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={selectedSavedReference.previewUrl}
-                      alt="Selected reference"
-                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
-                    />
+                    <ReferencePortraitFrame>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={selectedSavedReference.previewUrl}
+                        alt="Selected reference"
+                        className="size-full object-contain"
+                      />
+                    </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between">
                       <span className="text-[11px] font-medium">Aesthetic Reference</span>
                       <button
@@ -1327,7 +1349,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : selectedRef?.status === "generating" ? (
-                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
                     <Loader2 className="size-7 animate-spin text-accent-coral" />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-white/50">
                       Generating Reference
@@ -1335,9 +1357,9 @@ export function UGCCloneForm() {
                     <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/25">
                       Compositing the selected identity into the source scene.
                     </span>
-                  </div>
+                  </ReferencePortraitFrame>
                 ) : selectedRef?.status === "failed" ? (
-                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-destructive/10 p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-destructive/10 p-4 text-center">
                     <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
                       Reference Failed
                     </span>
@@ -1346,15 +1368,17 @@ export function UGCCloneForm() {
                         {selectedRef.error}
                       </span>
                     )}
-                  </div>
+                  </ReferencePortraitFrame>
                 ) : selectedRef?.status === "completed" && selectedRef.fileId ? (
                   <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/api/files/${selectedRef.fileId}`}
-                      alt="Generated reference"
-                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
-                    />
+                    <ReferencePortraitFrame>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`/api/files/${selectedRef.fileId}`}
+                        alt="Generated reference"
+                        className="size-full object-contain"
+                      />
+                    </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <span className="block text-[11px] font-medium">Generated Reference</span>
@@ -1369,12 +1393,14 @@ export function UGCCloneForm() {
                   </>
                 ) : primaryAvatarReference ? (
                   <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={primaryAvatarReference.previewUrl}
-                      alt={primaryAvatarReference.label}
-                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
-                    />
+                    <ReferencePortraitFrame>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={primaryAvatarReference.previewUrl}
+                        alt={primaryAvatarReference.label}
+                        className="size-full object-contain"
+                      />
+                    </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <span className="block text-[11px] font-medium">Avatar Reference</span>
@@ -1390,7 +1416,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : (
-                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
                     <Users className="size-6 text-white/20" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
                       Select Identity
@@ -1398,16 +1424,16 @@ export function UGCCloneForm() {
                     <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
                       Avatar references appear here after choosing an identity.
                     </span>
-                  </div>
+                  </ReferencePortraitFrame>
                 )}
               </div>
 
-              <div className="flex flex-col gap-4">
+              <div className="flex min-w-0 flex-col gap-4 self-start">
                 <button
                   type="button"
                   onClick={handleGenerateRefImage}
                   disabled={!canSubmit || isSubmitting || isGenerating}
-                  className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex aspect-[9/16] w-full max-w-[220px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60 md:mx-0"
                 >
                   {isSubmitting || isGenerating ? (
                     <Loader2 className="size-6 animate-spin text-white/30" />
