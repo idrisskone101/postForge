@@ -39,7 +39,6 @@ import {
   Users,
   Layers,
   Zap,
-  Info,
   Plus,
 } from "lucide-react";
 
@@ -851,7 +850,6 @@ export function UGCCloneForm() {
     : selectedModel === "kling-3.0-pro-motion"
       ? "Kling 3.0 Pro"
       : "Kling 2.6";
-  const referenceCost = selectedSavedReference ? 0 : imageCost;
   const sourceReady = !!videoInfo?.id;
   const shouldShowSourceTools = !sourceReady || sourceToolsOpen;
   const avatarReady = !!avatarId;
@@ -1656,26 +1654,11 @@ export function UGCCloneForm() {
         data-clone-generation-settings-bar="true"
         className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:left-72 sm:px-5 lg:px-8"
       >
-        <div className="pointer-events-auto mx-auto max-w-[1120px] rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/94 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-3">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-            <div className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 lg:w-[210px] lg:shrink-0">
-              <div className="min-w-0">
-                <h3 className="truncate text-sm font-bold text-white">
-                  {compactActionLabel}
-                </h3>
-                <p className="mt-0.5 truncate font-mono text-[11px] text-white/50">
-                  {formatCost(referenceCost + videoCost + textErasureCost)} est.
-                </p>
-              </div>
-              <span
-                className="flex size-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/45"
-                title={`${cloneTip.title}: ${cloneTip.body}`}
-              >
-                <Info className="size-3.5" />
-              </span>
-            </div>
-
-            <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 md:grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(112px,128px)_minmax(112px,128px)]">
+        <div
+          className="pointer-events-auto mx-auto max-w-[1120px] rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/94 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-3"
+          title={`${cloneTip.title}: ${cloneTip.body}`}
+        >
+          <div className="grid gap-2 md:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] md:items-center">
               <CloneModelSelect
                 label="Final video"
                 description="Motion-control clone video"
@@ -1721,9 +1704,7 @@ export function UGCCloneForm() {
                 </p>
                 <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
               </div>
-            </div>
 
-            <div className="lg:w-[190px] lg:shrink-0">
               <button
                 type="button"
                 onClick={
@@ -1749,7 +1730,6 @@ export function UGCCloneForm() {
                       : compactActionLabel}
                 </span>
               </button>
-            </div>
           </div>
         </div>
       </section>
