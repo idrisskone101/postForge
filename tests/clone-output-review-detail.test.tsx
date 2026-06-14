@@ -76,9 +76,14 @@ assert.match(markup, /Clone Output/);
 assert.match(markup, /Review and approve your generated media asset/);
 assert.match(markup, /data-media-preview-frame="detail"/);
 assert.match(markup, /object-contain/);
-assert.match(markup, /Needs Review/);
-assert.match(markup, /Approved Output/);
-assert.match(markup, /Rejected Output/);
+assert.match(markup, /Approve Output/);
+assert.match(markup, /Reject Output/);
+assert.match(markup, /Ready for handoff/);
+assert.match(markup, /Not usable/);
+assert.equal(
+  (markup.match(/Output review status:/g) ?? []).length,
+  0
+);
 assert.match(markup, /Download/);
 assert.match(markup, /Retry/);
 assert.match(markup, /Handoff/);

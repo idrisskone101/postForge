@@ -15,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import { OutputReviewStatusControl } from "@/components/output-review-status-control";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
@@ -295,21 +294,14 @@ export function CloneOutputReviewDetail({
                   showMetadata
                   className="w-full rounded-lg"
                   actions={
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => onDownload(featured)}
-                        className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
-                      >
-                        <Download className="size-3.5" />
-                        Download
-                      </button>
-                      <OutputReviewStatusControl
-                        outputId={featured.id}
-                        reviewStatus={featured.reviewStatus}
-                        compact
-                      />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onDownload(featured)}
+                      className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
+                    >
+                      <Download className="size-3.5" />
+                      Download
+                    </button>
                   }
                 />
               ) : (
@@ -329,10 +321,6 @@ export function CloneOutputReviewDetail({
                     {[featuredSize, job.model].filter(Boolean).join(" | ")}
                   </p>
                 </div>
-                <OutputReviewStatusControl
-                  outputId={featured.id}
-                  reviewStatus={featured.reviewStatus}
-                />
               </div>
             )}
           </div>
