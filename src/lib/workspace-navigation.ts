@@ -29,7 +29,7 @@ export const workspaceNavigationGroups = {
       label: "Clone",
       href: "/ugc-clone",
       match: ["/ugc-clone"],
-      description: "Choose source, identity, reference, then generate.",
+      description: "Build a clone from a source clip, identity, and reference image.",
       primaryAction: { label: "Browse Inspiration", href: "/ugc-inspiration" },
     },
     {

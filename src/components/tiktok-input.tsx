@@ -59,15 +59,37 @@ export function TikTokInput({
   const [error, setError] = useState<string | null>(null);
   const [savedSources, setSavedSources] = useState<SavedSource[]>([]);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
+  const [sourcesError, setSourcesError] = useState<string | null>(null);
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
 
   useEffect(() => {
+    let isActive = true;
+    setIsLoadingSources(true);
+    setSourcesError(null);
+
     apiGet<SavedSource[]>("/api/ugc-clone/sources")
-      .then(setSavedSources)
-      .catch((err) => console.error("Failed to load saved sources:", err))
-      .finally(() => setIsLoadingSources(false));
+      .then((sources) => {
+        if (!isActive) return;
+        setSavedSources(sources);
+      })
+      .catch((err) => {
+        if (!isActive) return;
+        console.error("Failed to load saved sources:", err);
+        setSourcesError(
+          err instanceof Error ? err.message : "Failed to load saved sources"
+        );
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsLoadingSources(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [refreshKey]);
 
   useEffect(() => {
@@ -131,7 +153,7 @@ export function TikTokInput({
         height: result.height,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Download failed");
+      setError(err instanceof Error ? err.message : "Import failed");
     } finally {
       setIsDownloading(false);
     }
@@ -206,12 +228,12 @@ export function TikTokInput({
           {isDownloading ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Downloading...
+              Importing...
             </>
           ) : (
             <>
               <Download className="size-4" />
-              Download
+              Import
             </>
           )}
         </button>
@@ -231,7 +253,7 @@ export function TikTokInput({
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="size-4 text-accent-green shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium">{videoInfo.label || "Video loaded"}</p>
+              <p className="truncate text-sm font-medium">{videoInfo.label || "Source ready"}</p>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Clock className="size-3" />
@@ -246,7 +268,21 @@ export function TikTokInput({
         </div>
       )}
 
-      {/* Saved Sources Section */}
+      {isLoadingSources && (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
+          <Loader2 className="size-3.5 animate-spin" />
+          Loading saved sources...
+        </div>
+      )}
+
+      {sourcesError && (
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
+          <AlertCircle className="size-4 shrink-0 text-destructive" />
+          <p className="text-xs text-destructive">{sourcesError}</p>
+        </div>
+      )}
+
+      {/* Saved sources */}
       {!isLoadingSources && savedSources.length > 0 && (
         <div>
           {/* Divider toggle */}
@@ -257,7 +293,7 @@ export function TikTokInput({
           >
             <Video className="size-3.5 text-muted-foreground" />
             <span className="flex flex-1 items-center gap-1.5 text-left text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-              Saved Sources ({savedSources.length})
+              Saved sources ({savedSources.length})
               <ChevronDown
                 className={cn(
                   "size-3 transition-transform",
@@ -269,7 +305,10 @@ export function TikTokInput({
 
           {/* Source grid */}
           {showSavedSources && (
-            <div className="mt-2 grid max-h-[240px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-5">
+            <div
+              data-saved-source-grid="true"
+              className="mt-2 grid max-h-[360px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 overflow-y-auto pr-1"
+            >
               {savedSources.map((source) => {
                 const isSelected = videoInfo?.id === source.id;
                 return (
