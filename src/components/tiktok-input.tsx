@@ -63,12 +63,6 @@ export function TikTokInput({
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
-  const hasAutoOpenedSavedSourcesRef = useRef(false);
-  const videoInfoRef = useRef<TikTokVideoInfo | null>(videoInfo);
-
-  useEffect(() => {
-    videoInfoRef.current = videoInfo;
-  }, [videoInfo]);
 
   useEffect(() => {
     let isActive = true;
@@ -79,14 +73,6 @@ export function TikTokInput({
       .then((sources) => {
         if (!isActive) return;
         setSavedSources(sources);
-        if (
-          sources.length > 0 &&
-          !videoInfoRef.current &&
-          !hasAutoOpenedSavedSourcesRef.current
-        ) {
-          setShowSavedSources(true);
-          hasAutoOpenedSavedSourcesRef.current = true;
-        }
       })
       .catch((err) => {
         if (!isActive) return;
