@@ -319,7 +319,10 @@ export function TikTokInput({
 
           {/* Source grid */}
           {showSavedSources && (
-            <div className="mt-2 grid max-h-[240px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-5">
+            <div
+              data-saved-source-grid="true"
+              className="mt-2 grid max-h-[360px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 overflow-y-auto pr-1"
+            >
               {savedSources.map((source) => {
                 const isSelected = videoInfo?.id === source.id;
                 return (
