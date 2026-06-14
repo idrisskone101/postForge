@@ -1413,7 +1413,10 @@ export function UGCCloneForm() {
           </section>
         </div>
 
-        <div className="flex flex-col gap-6 lg:col-span-4">
+        <div
+          data-clone-generation-rail="true"
+          className="flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-4 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:pr-1"
+        >
           <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-5">
             <h2 className="px-1 text-xs font-bold uppercase tracking-widest text-white/40">
               Generation Settings
