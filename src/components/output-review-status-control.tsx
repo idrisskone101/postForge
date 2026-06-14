@@ -97,7 +97,7 @@ export function OutputReviewStatusControl({
       <div
         className={cn(
           "flex shrink-0 items-center gap-1",
-          compact && "rounded-lg"
+          compact && "gap-1.5 rounded-lg"
         )}
       >
         {OUTPUT_REVIEW_STATUSES.map((status) => {
@@ -118,16 +118,16 @@ export function OutputReviewStatusControl({
                 void updateStatus(status.value);
               }}
               className={cn(
-                "inline-flex size-7 items-center justify-center rounded-lg border text-muted-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                "inline-flex size-7 cursor-pointer items-center justify-center rounded-lg border text-muted-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                 statusClasses[status.value],
                 isActive && activeStatusClasses[status.value],
-                compact && "size-6 rounded-md"
+                compact && "size-8 rounded-lg"
               )}
             >
               {isPending ? (
-                <Loader2 className="size-3 animate-spin" />
+                <Loader2 className={cn("size-3 animate-spin", compact && "size-3.5")} />
               ) : (
-                <Icon className="size-3" />
+                <Icon className={cn("size-3", compact && "size-3.5")} />
               )}
             </button>
           );

@@ -65,9 +65,9 @@ const frameClasses: Record<MediaPreviewVariant, string> = {
 };
 
 const mediaWellClasses: Record<MediaPreviewVariant, string> = {
-  card: "min-h-0",
+  card: "h-full min-h-0",
   work: "min-h-[280px]",
-  detail: "h-[min(720px,calc(100dvh-20rem))] min-h-[320px]",
+  detail: "h-[min(640px,calc(100dvh-14rem))] min-h-[280px] max-h-[calc(100dvh-12rem)]",
 };
 
 export function MediaPreviewFrame({
@@ -121,7 +121,7 @@ export function MediaPreviewFrame({
     >
       <div
         className={cn(
-          "relative flex size-full items-center justify-center overflow-hidden rounded-lg",
+          "relative flex w-full items-center justify-center overflow-hidden rounded-lg",
           mediaWellClasses[variant]
         )}
       >
@@ -153,7 +153,9 @@ export function MediaPreviewFrame({
             src={src}
             width={width}
             height={height}
-            controls
+            controls={variant !== "card"}
+            muted={variant === "card" ? true : undefined}
+            playsInline
             onLoadedData={markLoaded}
             onError={() => {
               setIsLoading(false);

@@ -15,6 +15,7 @@ pnpm test:video-trimmer
 pnpm test:clone-production-state
 pnpm test:clone-output-review-detail
 pnpm test:output-review-status
+pnpm test:gallery-output-review
 pnpm test:source-selection
 pnpm test:home-cockpit
 pnpm test:home-loading
