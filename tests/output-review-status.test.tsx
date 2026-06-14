@@ -92,3 +92,4 @@ const compactReviewControlMarkup = renderToStaticMarkup(
 assert.doesNotMatch(compactReviewControlMarkup, />Approved</);
 assert.match(compactReviewControlMarkup, /Output review status: Approved Output/);
 assert.match(compactReviewControlMarkup, /Mark as Approved Output/);
+assert.match(compactReviewControlMarkup, /size-8 rounded-lg/);

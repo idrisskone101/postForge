@@ -23,6 +23,8 @@ import {
 import { Images, Download, Trash2, X, ArrowUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
+import { OUTPUT_REVIEW_STATUSES } from "@/lib/output-review-status";
+import type { OutputReviewStatus } from "@/lib/output-review-status";
 
 export interface GalleryItem {
   id: string;
@@ -51,13 +53,21 @@ interface GalleryPage {
 }
 
 const filterOptions = [
-  { value: "all", label: "All Assets" },
+  { value: "all", label: "All media" },
   { value: "image", label: "Images" },
   { value: "video", label: "Videos" },
 ] as const;
 
+const reviewFilters = [
+  ...OUTPUT_REVIEW_STATUSES,
+  { value: "all", label: "All", tone: "neutral" },
+] as const;
+
+type ReviewFilter = OutputReviewStatus | "all";
+
 export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("needs_review");
+  const [typeFilter, setTypeFilter] = useState("video");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [items, setItems] = useState(initialPage.items);
   const [nextCursor, setNextCursor] = useState(initialPage.nextCursor);
@@ -122,11 +132,31 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
 
   const filtered = useMemo(() => {
     let result = items.filter((item) => !deletedIds.has(item.id));
+    if (reviewFilter !== "all") {
+      result = result.filter((item) => item.reviewStatus.value === reviewFilter);
+    }
     if (typeFilter !== "all") {
       result = result.filter((item) => item.type === typeFilter);
     }
     return result;
-  }, [items, typeFilter, deletedIds]);
+  }, [items, reviewFilter, typeFilter, deletedIds]);
+
+  const reviewCounts = useMemo(() => {
+    const activeItems = items.filter((item) => !deletedIds.has(item.id));
+
+    return {
+      needs_review: activeItems.filter(
+        (item) => item.reviewStatus.value === "needs_review"
+      ).length,
+      approved_output: activeItems.filter(
+        (item) => item.reviewStatus.value === "approved_output"
+      ).length,
+      rejected_output: activeItems.filter(
+        (item) => item.reviewStatus.value === "rejected_output"
+      ).length,
+      all: activeItems.length,
+    } satisfies Record<ReviewFilter, number>;
+  }, [items, deletedIds]);
 
   const toggleSelection = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -181,6 +211,15 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
     );
   };
 
+  const handleHandoff = async (item: { id: string }) => {
+    const url =
+      typeof window === "undefined"
+        ? `/api/files/${item.id}`
+        : new URL(`/api/files/${item.id}`, window.location.origin).toString();
+
+    await navigator.clipboard?.writeText(url).catch(() => {});
+  };
+
   const handleLoadMore = async () => {
     if (!hasMore || isLoadingMore) return;
     setIsLoadingMore(true);
@@ -207,45 +246,92 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
 
   const selectionCount = selectedIds.size;
   const totalCount = filtered.length;
+  const activeReviewLabel =
+    reviewFilters.find((filter) => filter.value === reviewFilter)?.label ?? "All";
+  const reviewSummary =
+    reviewFilter === "needs_review"
+      ? `${totalCount} Output${totalCount === 1 ? "" : "s"} needs review`
+      : `${totalCount} Output${totalCount === 1 ? "" : "s"} in ${activeReviewLabel}`;
 
   return (
     <div className="p-6 lg:p-8 space-y-6 animate-fade-in-up">
-      {/* Header — inline with filters */}
-      <div className="flex items-center justify-between border-b border-border pb-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold tracking-tight">Gallery</h1>
-          <div className="h-4 w-px bg-border" />
-          {/* Filter controls */}
-          <div className="flex items-center gap-1.5">
+      <div className="flex flex-col gap-5 border-b border-border pb-5 xl:flex-row xl:items-end xl:justify-between">
+        <div className="space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-accent-coral">
+            Gallery
+          </p>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Output Review</h1>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              Review, approve, reject, download, and hand off Outputs from the
+              UGC production loop.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:items-end">
+          <div
+            className="grid gap-2 rounded-xl border border-border bg-muted/30 p-1 sm:inline-flex sm:w-auto sm:items-center"
+            aria-label="Output review status filters"
+          >
+            {reviewFilters.map((filter) => (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => setReviewFilter(filter.value)}
+                className={cn(
+                  "flex min-h-10 items-center justify-between gap-3 rounded-lg px-3 text-left text-xs font-semibold whitespace-nowrap transition-colors",
+                  reviewFilter === filter.value
+                    ? "bg-accent-coral text-white"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <span>{filter.label}</span>
+                <span
+                  className={cn(
+                    "rounded-md px-1.5 py-0.5 text-[10px]",
+                    reviewFilter === filter.value
+                      ? "bg-white/15 text-white"
+                      : "bg-background/60 text-muted-foreground"
+                  )}
+                >
+                  {reviewCounts[filter.value]}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Media type
+            </span>
             {filterOptions.map((opt) => (
               <button
                 key={opt.value}
                 type="button"
                 onClick={() => setTypeFilter(opt.value)}
                 className={cn(
-                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
+                  "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors",
                   typeFilter === opt.value
-                    ? "bg-accent-coral text-white"
+                    ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {opt.label}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() =>
+                setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"))
+              }
+              className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground/80 transition-colors hover:bg-muted"
+            >
+              <ArrowUpDown className="size-3" />
+              {sortOrder === "newest" ? "Newest" : "Oldest"}
+            </button>
           </div>
         </div>
-
-        {/* Sort button */}
-        <button
-          type="button"
-          onClick={() =>
-            setSortOrder((prev) => (prev === "newest" ? "oldest" : "newest"))
-          }
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted/50 border border-border text-foreground/80 hover:bg-muted transition-all duration-150"
-        >
-          <ArrowUpDown className="size-3" />
-          {sortOrder === "newest" ? "Newest" : "Oldest"}
-        </button>
       </div>
 
       {/* Gallery content */}
@@ -257,17 +343,17 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
       ) : totalCount === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
           <Images className="size-12 mb-4 opacity-40" />
-          <p className="text-lg font-medium">No media yet</p>
+          <p className="text-lg font-medium">No Outputs ready for review</p>
           <p className="text-sm mt-2">
-            Generated images and videos will appear here once you start
-            creating.
+            Generate a clone or asset, then return here to approve and hand it
+            off.
           </p>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between gap-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {filtered.length} item{filtered.length !== 1 ? "s" : ""} loaded
+              {reviewSummary}
             </p>
             {loadError && (
               <p className="text-xs font-medium text-red-400">{loadError}</p>
@@ -279,6 +365,7 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
             onToggleSelect={toggleSelection}
             onDelete={handleSingleDelete}
             onReviewStatusChange={handleReviewStatusChange}
+            onHandoff={handleHandoff}
           />
           {hasMore && (
             <div className="flex justify-center pt-2">

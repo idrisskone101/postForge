@@ -17,7 +17,8 @@ const detailMarkup = renderToStaticMarkup(
 
 assert.match(detailMarkup, /data-media-preview-frame="detail"/);
 assert.match(detailMarkup, /object-contain/);
-assert.match(detailMarkup, /h-\[min\(720px,calc\(100dvh-20rem\)\)\]/);
+assert.match(detailMarkup, /h-\[min\(640px,calc\(100dvh-14rem\)\)\]/);
+assert.match(detailMarkup, /max-h-\[calc\(100dvh-12rem\)\]/);
 assert.match(detailMarkup, /9:16/);
 assert.match(detailMarkup, /1080 x 1920/);
 assert.match(detailMarkup, /data-media-preview-actions="true"/);
