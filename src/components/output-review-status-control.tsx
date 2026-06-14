@@ -28,12 +28,6 @@ const activeStatusClasses = {
   rejected_output: "bg-red-500/15 text-red-400",
 } satisfies Record<OutputReviewStatus, string>;
 
-const compactLabels = {
-  needs_review: "Needs",
-  approved_output: "Approved",
-  rejected_output: "Rejected",
-} satisfies Record<OutputReviewStatus, string>;
-
 export function OutputReviewStatusControl({
   outputId,
   reviewStatus,
@@ -80,35 +74,32 @@ export function OutputReviewStatusControl({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-2 rounded-xl border border-border/60 bg-muted/30 p-1",
-        compact ? "w-full" : "min-w-0"
+        "flex items-center rounded-xl border border-border/60 bg-muted/30 p-1",
+        compact ? "w-fit gap-1" : "min-w-0 justify-between gap-2"
       )}
-      aria-label="Output review status"
+      aria-label={`Output review status: ${current.label}`}
     >
+      {!compact && (
+        <div className="flex min-w-0 items-center gap-2 px-2">
+          <CurrentIcon
+            className={cn(
+              "size-3.5 shrink-0",
+              current.value === "approved_output" && "text-accent-green",
+              current.value === "rejected_output" && "text-red-400",
+              current.value === "needs_review" && "text-muted-foreground"
+            )}
+          />
+          <span className="truncate text-[11px] font-semibold text-foreground">
+            {current.label}
+          </span>
+        </div>
+      )}
       <div
         className={cn(
-          "flex min-w-0 items-center gap-2 px-2",
-          compact && "gap-1.5 px-1.5"
+          "flex shrink-0 items-center gap-1",
+          compact && "rounded-lg"
         )}
       >
-        <CurrentIcon
-          className={cn(
-            "size-3.5 shrink-0",
-            current.value === "approved_output" && "text-accent-green",
-            current.value === "rejected_output" && "text-red-400",
-            current.value === "needs_review" && "text-muted-foreground"
-          )}
-        />
-        <span
-          className={cn(
-            "truncate text-[11px] font-semibold text-foreground",
-            compact && "text-[10px]"
-          )}
-        >
-          {compact ? compactLabels[current.value] : current.label}
-        </span>
-      </div>
-      <div className="flex shrink-0 items-center gap-1">
         {OUTPUT_REVIEW_STATUSES.map((status) => {
           const Icon = statusIcons[status.value];
           const isActive = current.value === status.value;

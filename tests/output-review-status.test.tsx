@@ -76,3 +76,19 @@ assert.match(reviewControlMarkup, /Mark as Needs Review/);
 assert.match(reviewControlMarkup, /Mark as Approved Output/);
 assert.match(reviewControlMarkup, /Mark as Rejected Output/);
 assert.match(reviewControlMarkup, /aria-pressed="true"/);
+
+const compactReviewControlMarkup = renderToStaticMarkup(
+  <OutputReviewStatusControl
+    outputId="file-1"
+    compact
+    reviewStatus={{
+      value: "approved_output",
+      label: "Approved Output",
+      tone: "approved",
+    }}
+  />
+);
+
+assert.doesNotMatch(compactReviewControlMarkup, />Approved</);
+assert.match(compactReviewControlMarkup, /Output review status: Approved Output/);
+assert.match(compactReviewControlMarkup, /Mark as Approved Output/);
