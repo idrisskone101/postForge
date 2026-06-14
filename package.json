@@ -15,6 +15,8 @@
     "test:clone-production-state": "tsx tests/clone-production-state.test.tsx",
     "test:clone-output-review-detail": "tsx tests/clone-output-review-detail.test.tsx",
     "test:media-preview-frame": "tsx tests/media-preview-frame.test.tsx",
+    "test:generate-tool": "tsx tests/generate-tool.test.tsx",
+    "test:generate-output-actions": "tsx tests/generate-output-actions.test.tsx",
     "test:gallery-output-review": "tsx tests/gallery-output-review.test.tsx",
     "test:source-selection": "tsx tests/source-selection.test.tsx",
     "test:output-review-status": "tsx tests/output-review-status.test.tsx",
