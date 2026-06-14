@@ -10,6 +10,7 @@ corepack enable 2>/dev/null || true
 
 pnpm test:workspace-shell
 pnpm test:media-preview-frame
+pnpm test:video-trimmer
 pnpm test:clone-production-state
 pnpm test:source-selection
 pnpm test:home-cockpit
