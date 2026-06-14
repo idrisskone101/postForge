@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { apiGet, apiPost } from "@/lib/api/client";
+import { apiPost } from "@/lib/api/client";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Loader2, Scissors, Film, GripVertical } from "lucide-react";
@@ -24,6 +24,9 @@ interface VideoTrimmerProps {
 
 const TRIM_TIME_PRECISION = 100;
 const MIN_TRIM_DURATION_SEC = 0.1;
+const FILMSTRIP_PLACEHOLDER_COUNT = 4;
+const FILMSTRIP_THUMBNAIL_COUNT = 4;
+const FILMSTRIP_FETCH_DELAY_MS = 700;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -118,9 +121,8 @@ export function VideoTrimmer({
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(durationSec);
 
-  // Thumbnails fetched as base64
+  // Thumbnails are decorative; the trim controls must be usable before they load.
   const [thumbnails, setThumbnails] = useState<string[]>([]);
-  const [thumbsLoading, setThumbsLoading] = useState(true);
 
   // Active drag handle
   const [dragging, setDragging] = useState<"start" | "end" | null>(null);
@@ -130,26 +132,32 @@ export function VideoTrimmer({
   const [trimError, setTrimError] = useState<string | null>(null);
 
   // ---------------------------------------------------------------------------
-  // Fetch filmstrip thumbnails on mount
+  // Fetch filmstrip thumbnails after first paint so opening the trimmer is instant.
   // ---------------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
+    const abortController = new AbortController();
 
-    apiGet<{ thumbnails: string[] }>(
-      `/api/ugc-clone/thumbnails?path=${encodeURIComponent(videoPath)}&count=8`
-    )
-      .then((data) => {
-        if (!cancelled) setThumbnails(data.thumbnails);
-      })
-      .catch(() => {
-        // thumbnails are decorative; silently degrade
-      })
-      .finally(() => {
-        if (!cancelled) setThumbsLoading(false);
-      });
+    const timeout = window.setTimeout(() => {
+      fetch(
+        `/api/ugc-clone/thumbnails?path=${encodeURIComponent(videoPath)}&count=${FILMSTRIP_THUMBNAIL_COUNT}`,
+        { signal: abortController.signal }
+      )
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: { thumbnails?: string[] } | null) => {
+          if (!cancelled && data?.thumbnails) {
+            setThumbnails(data.thumbnails);
+          }
+        })
+        .catch(() => {
+          // Filmstrip thumbnails are decorative; keep the instant placeholder.
+        });
+    }, FILMSTRIP_FETCH_DELAY_MS);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timeout);
+      abortController.abort();
     };
   }, [videoPath]);
 
@@ -329,20 +337,21 @@ export function VideoTrimmer({
         >
           {/* Filmstrip thumbnails */}
           <div className="absolute inset-0 flex">
-            {thumbsLoading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 bg-muted animate-pulse border-r border-border last:border-r-0"
-                  />
-                ))
-              : thumbnails.map((thumb, i) => (
+            {thumbnails.length > 0
+              ? thumbnails.map((thumb, i) => (
                   <img
                     key={i}
                     src={thumb}
                     alt=""
                     draggable={false}
                     className="flex-1 h-full object-cover border-r border-border/30 last:border-r-0"
+                  />
+                ))
+              : Array.from({ length: FILMSTRIP_PLACEHOLDER_COUNT }).map((_, i) => (
+                  <div
+                    key={i}
+                    data-filmstrip-placeholder="true"
+                    className="flex-1 border-r border-border/40 bg-[linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))] last:border-r-0"
                   />
                 ))}
           </div>

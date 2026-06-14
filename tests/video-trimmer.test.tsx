@@ -60,3 +60,5 @@ assert.match(markup, /Start/);
 assert.match(markup, /End/);
 assert.match(markup, /Removed from start/);
 assert.match(markup, /Removed from end/);
+assert.match(markup, /data-filmstrip-placeholder="true"/);
+assert.doesNotMatch(markup, /animate-pulse/);
