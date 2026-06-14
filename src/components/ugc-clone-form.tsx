@@ -325,15 +325,15 @@ export function getClonePrimaryAction({
 }: ClonePrimaryActionState): ClonePrimaryAction {
   if (!sourceReady) {
     return {
-      label: "Add source to continue",
-      detail: "Paste a TikTok URL or choose a source from Inspiration.",
+      label: "Add source",
+      detail: "Paste a TikTok URL or choose a saved source.",
     };
   }
 
   if (!identityReady) {
     return {
-      label: "Select identity",
-      detail: "Choose the avatar that should appear in the clone.",
+      label: "Choose identity",
+      detail: "Select the avatar for this clone.",
     };
   }
 
@@ -341,14 +341,14 @@ export function getClonePrimaryAction({
     return {
       label: "Generate clone",
       detail: usesSavedReference
-        ? "Use the selected saved reference to start video generation."
-        : "Approve the completed reference and start video generation.",
+        ? "Use the selected reference to start video generation."
+        : "Use the generated reference to start video generation.",
     };
   }
 
   return {
     label: "Generate reference",
-    detail: "Create or select the visual reference before final generation.",
+    detail: "Create or choose the reference image first.",
   };
 }
 
@@ -908,27 +908,26 @@ export function UGCCloneForm() {
     : null;
   const sourceDetail = videoInfo
     ? videoInfo.label || "Selected TikTok source"
-    : "Paste a TikTok URL or use a source from Inspiration.";
+    : "Paste a TikTok URL or choose a saved source.";
   const trimDetail = videoInfo
     ? originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath
-      ? `${Math.round(durationSec)}s trimmed portrait source is ready.`
-      : "Full source is ready; trim remains editable."
-    : "Choose a source before setting trim.";
+      ? `${Math.round(durationSec)}s source clip selected.`
+      : "Full source selected; trim can still be edited."
+    : "Choose a source before trimming.";
   const identityDetail = avatarReady
     ? identityPack?.status === "completed"
       ? `${identityPack.images.length} identity references ready.`
-      : "Avatar selected; identity references can continue preparing."
-    : "Select an avatar identity for this production.";
+      : "Identity selected; extra references are still preparing."
+    : "Choose the identity for this clone.";
   const referenceDetail = selectedSavedReference
     ? "Saved reference selected."
     : selectedRefFileId
       ? "Generated reference approved."
-      : "Generate a new reference or choose a saved one.";
+      : "Generate or choose a reference image.";
   const readinessDetail = canGenerateClone
     ? "Source, identity, and reference are ready."
-    : "Complete Source, Identity, and Reference before generating.";
-  const compactActionLabel =
-    nextAction.label === "Add source to continue" ? "Add source" : nextAction.label;
+    : "Add the missing source, identity, or reference.";
+  const compactActionLabel = nextAction.label;
   const productionStatePanel = (
     <CloneProductionStatePanel
       sourceReady={sourceReady}
@@ -1193,7 +1192,7 @@ export function UGCCloneForm() {
           <div className="flex items-center gap-2 rounded-lg border border-accent-green/30 bg-accent-green/20 px-3 py-1.5">
             <div className="size-2 rounded-full bg-accent-green" />
             <span className="text-xs font-bold uppercase tracking-wider text-accent-green">
-              {canGenerateClone ? "Ready to Generate" : nextAction.label}
+              {canGenerateClone ? "Ready" : nextAction.label}
             </span>
           </div>
         </div>
@@ -1218,7 +1217,7 @@ export function UGCCloneForm() {
                     01. Source &amp; Trim
                   </h2>
                   <p className="text-xs text-white/40">
-                    Standardized Media Preview • Tech Showcase
+                    Choose the clip and trim the part to clone.
                   </p>
                 </div>
               </div>
@@ -1237,7 +1236,7 @@ export function UGCCloneForm() {
                     }}
                     className="text-xs font-semibold text-white/50 transition-colors hover:text-white/80"
                   >
-                    {showTrimmer ? "Close Trim" : "Trim Source"}
+                    {showTrimmer ? "Close trim" : "Trim source"}
                   </button>
                 )}
                 <button
@@ -1255,9 +1254,9 @@ export function UGCCloneForm() {
                 >
                   {sourceReady
                     ? sourceToolsOpen
-                      ? "Close Source Picker"
-                      : "Replace Source"
-                    : "Choose Source"}
+                      ? "Close picker"
+                      : "Replace source"
+                    : "Choose source"}
                 </button>
               </div>
             </div>
@@ -1311,9 +1310,9 @@ export function UGCCloneForm() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">
-                  02. Identity Mapping
+                  02. Identity
                 </h2>
-                <p className="text-xs text-white/40">Applying visual DNA to the clone</p>
+                <p className="text-xs text-white/40">Choose who appears in the clone.</p>
               </div>
             </div>
 
@@ -1324,11 +1323,11 @@ export function UGCCloneForm() {
                     ? identityPack?.status === "completed"
                       ? `${identityPack.images.length} identity references ready.`
                       : identityPack?.status === "failed"
-                        ? "Identity pack failed; the original avatar is still usable."
+                        ? "Reference prep failed; the original avatar is still usable."
                         : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
-                          ? "Preparing identity references in the background."
-                          : "Original avatar fallback is available."
-                    : "Select a saved identity, upload one, or create a new identity for this clone."}
+                          ? "Preparing identity references."
+                          : "Original avatar is available."
+                    : "Choose a saved identity, upload one, or create a new one."}
                 </p>
                 {avatarReady && (
                   <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
@@ -1355,9 +1354,9 @@ export function UGCCloneForm() {
               </div>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">
-                  03. Reference Review
+                  03. Reference
                 </h2>
-                <p className="text-xs text-white/40">Visual direction anchor</p>
+                <p className="text-xs text-white/40">Set the look before generating video.</p>
               </div>
             </div>
 
@@ -1382,7 +1381,7 @@ export function UGCCloneForm() {
                       />
                     </ReferencePortraitFrame>
                     <div className="mt-3 min-w-0">
-                      <span className="block text-[11px] font-medium">Selected Source</span>
+                      <span className="block text-[11px] font-medium">Selected source</span>
                       <span className="mt-0.5 block truncate text-[10px] text-white/35">
                         {durationSec.toFixed(1)}s • {videoInfo.width}x{videoInfo.height}
                       </span>
@@ -1392,10 +1391,10 @@ export function UGCCloneForm() {
                   <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
                     <Video className="size-6 text-white/20" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
-                      Choose Source
+                      Add source
                     </span>
                     <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
-                      The selected source clip will appear here for comparison.
+                      Your selected clip appears here.
                     </span>
                   </ReferencePortraitFrame>
                 )}
@@ -1413,7 +1412,7 @@ export function UGCCloneForm() {
                       />
                     </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between">
-                      <span className="text-[11px] font-medium">Aesthetic Reference</span>
+                      <span className="text-[11px] font-medium">Saved reference</span>
                       <button
                         type="button"
                         onClick={() => setSelectedSavedReferenceId(null)}
@@ -1427,16 +1426,16 @@ export function UGCCloneForm() {
                   <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
                     <Loader2 className="size-7 animate-spin text-accent-coral" />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-white/50">
-                      Generating Reference
+                      Generating reference
                     </span>
                     <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/25">
-                      Compositing the selected identity into the source scene.
+                      Creating a still from the selected source and identity.
                     </span>
                   </ReferencePortraitFrame>
                 ) : selectedRef?.status === "failed" ? (
                   <ReferencePortraitFrame className="flex-col items-center justify-center bg-destructive/10 p-4 text-center">
                     <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
-                      Reference Failed
+                      Reference failed
                     </span>
                     {selectedRef.error && (
                       <span className="mt-2 max-w-[220px] text-[10px] leading-4 text-destructive/80">
@@ -1456,7 +1455,7 @@ export function UGCCloneForm() {
                     </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <span className="block text-[11px] font-medium">Generated Reference</span>
+                        <span className="block text-[11px] font-medium">Generated reference</span>
                         <span className="mt-0.5 block truncate text-[10px] text-white/35">
                           Variant #{selectedRefIndex + 1}
                         </span>
@@ -1478,7 +1477,7 @@ export function UGCCloneForm() {
                     </ReferencePortraitFrame>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <span className="block text-[11px] font-medium">Avatar Reference</span>
+                        <span className="block text-[11px] font-medium">Identity preview</span>
                         <span className="mt-0.5 block truncate text-[10px] text-white/35">
                           {primaryAvatarReference.label} • {primaryAvatarReference.detail}
                         </span>
@@ -1494,10 +1493,10 @@ export function UGCCloneForm() {
                   <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
                     <Users className="size-6 text-white/20" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
-                      Select Identity
+                      Choose identity
                     </span>
                     <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
-                      Avatar references appear here after choosing an identity.
+                      Identity preview appears here.
                     </span>
                   </ReferencePortraitFrame>
                 )}
@@ -1510,7 +1509,7 @@ export function UGCCloneForm() {
                 >
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                      Generate
+                      References
                     </span>
                     <span className="font-mono text-[10px] text-white/30">
                       {formatCost(referenceBatchCost)}
@@ -1551,15 +1550,15 @@ export function UGCCloneForm() {
                   )}
                   <span className="text-xs font-semibold uppercase tracking-widest text-white/40">
                     {isGenerating
-                      ? `Generating ${referenceBatchSize} ${referenceBatchSize === 1 ? "Variant" : "Variants"}`
+                      ? `Generating ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`
                       : selectedRefFileId
-                        ? `Generate ${referenceBatchSize} More ${referenceBatchSize === 1 ? "Variant" : "Variants"}`
-                        : `Generate ${referenceBatchSize} ${referenceBatchSize === 1 ? "Variant" : "Variants"}`}
+                        ? `Generate ${referenceBatchSize} more`
+                        : `Generate ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
                   </span>
                   <p className="max-w-[140px] text-[10px] text-white/20">
                     {referenceBatchSize === 1
-                      ? "Create one reference still from the selected source and identity"
-                      : `Create ${referenceBatchSize} reference stills from the selected source and identity`}
+                      ? "Create one reference image from the selected source and identity."
+                      : `Create ${referenceBatchSize} reference images from the selected source and identity.`}
                   </p>
                 </button>
 
@@ -1572,7 +1571,7 @@ export function UGCCloneForm() {
                 {refImages.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                      Generated variants
+                      Generated references
                     </p>
                     <div className="grid grid-cols-3 gap-2">
                       {refImages.map((entry, index) => (
@@ -1682,12 +1681,12 @@ export function UGCCloneForm() {
                   >
                     <span className="min-w-0">
                       <span className="block text-[10px] font-bold uppercase tracking-widest text-white/35">
-                        Avatar references
+                        Identity references
                       </span>
                       <span className="mt-0.5 block truncate text-[10px] text-white/25">
                         {avatarReferencePreviews.length > 0
-                          ? `${avatarReferencePreviews.length} identity reference${avatarReferencePreviews.length === 1 ? "" : "s"} available`
-                          : "Select an identity to inspect avatar references"}
+                          ? `${avatarReferencePreviews.length} available to inspect`
+                          : "Choose an identity to view references"}
                       </span>
                     </span>
                     <span className="shrink-0 rounded-full border border-white/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/40">
@@ -1723,7 +1722,7 @@ export function UGCCloneForm() {
                   {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
                     <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs text-accent-green">
                       <Loader2 className="size-3.5 animate-spin" />
-                      Preparing more avatar references...
+                      Preparing identity references...
                     </div>
                   ) : null}
                 </div>
@@ -1746,7 +1745,7 @@ export function UGCCloneForm() {
           <div className="grid gap-2 md:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] md:items-center">
               <CloneModelSelect
                 label="Final video"
-                description="Motion-control clone video"
+                description="Video model"
                 accentClassName="text-accent-blue"
                 className="min-w-0"
                 models={cloneVideoModels}
@@ -1759,7 +1758,7 @@ export function UGCCloneForm() {
 
               <CloneModelSelect
                 label="Reference image"
-                description="Identity/reference still"
+                description="Image model"
                 accentClassName="text-accent-green"
                 className="min-w-0"
                 models={referenceImageModels}

@@ -153,7 +153,7 @@ export function TikTokInput({
         height: result.height,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Download failed");
+      setError(err instanceof Error ? err.message : "Import failed");
     } finally {
       setIsDownloading(false);
     }
@@ -228,12 +228,12 @@ export function TikTokInput({
           {isDownloading ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Downloading...
+              Importing...
             </>
           ) : (
             <>
               <Download className="size-4" />
-              Download
+              Import
             </>
           )}
         </button>
@@ -253,7 +253,7 @@ export function TikTokInput({
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="size-4 text-accent-green shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium">{videoInfo.label || "Video loaded"}</p>
+              <p className="truncate text-sm font-medium">{videoInfo.label || "Source ready"}</p>
               <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Clock className="size-3" />
@@ -282,7 +282,7 @@ export function TikTokInput({
         </div>
       )}
 
-      {/* Saved Sources Section */}
+      {/* Saved sources */}
       {!isLoadingSources && savedSources.length > 0 && (
         <div>
           {/* Divider toggle */}
@@ -293,7 +293,7 @@ export function TikTokInput({
           >
             <Video className="size-3.5 text-muted-foreground" />
             <span className="flex flex-1 items-center gap-1.5 text-left text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-              Saved Sources ({savedSources.length})
+              Saved sources ({savedSources.length})
               <ChevronDown
                 className={cn(
                   "size-3 transition-transform",

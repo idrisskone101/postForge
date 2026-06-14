@@ -29,7 +29,7 @@ assert.match(emptyState, /Trim/);
 assert.match(emptyState, /Identity/);
 assert.match(emptyState, /Reference/);
 assert.match(emptyState, /Generate readiness/);
-assert.match(emptyState, /Add source to continue/);
+assert.match(emptyState, /Add source/);
 
 assert.equal(
   getClonePrimaryAction({
@@ -39,7 +39,7 @@ assert.equal(
     canGenerate: false,
     usesSavedReference: false,
   }).label,
-  "Select identity"
+  "Choose identity"
 );
 
 assert.equal(
