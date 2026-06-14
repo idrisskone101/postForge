@@ -18,6 +18,7 @@
     "test:gallery-output-review": "tsx tests/gallery-output-review.test.tsx",
     "test:source-selection": "tsx tests/source-selection.test.tsx",
     "test:output-review-status": "tsx tests/output-review-status.test.tsx",
+    "test:spend-page": "tsx tests/spend-page.test.tsx",
     "test:workspace-shell": "tsx tests/workspace-navigation.test.ts",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",

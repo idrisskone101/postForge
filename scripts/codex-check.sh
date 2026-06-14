@@ -17,6 +17,7 @@ pnpm test:clone-output-review-detail
 pnpm test:output-review-status
 pnpm test:gallery-output-review
 pnpm test:source-selection
+pnpm test:spend-page
 pnpm test:home-cockpit
 pnpm test:home-loading
 pnpm lint
