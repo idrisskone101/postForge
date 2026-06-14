@@ -731,6 +731,14 @@ export function UGCCloneForm() {
   const readinessDetail = canGenerateClone
     ? "Source, identity, and reference are ready."
     : "Complete Source, Identity, and Reference before generating.";
+  const primaryActionDetail = referenceReady
+    ? `${modelName} will generate the final clone video.`
+    : sourceReady && avatarReady
+      ? `${referenceModelName} will create the reference image first.`
+      : "Complete Source, Identity, and Reference before video generation.";
+  const primaryActionTimeDetail = referenceReady
+    ? "Video generation usually takes 4-6 minutes."
+    : "Reference generation runs before video generation.";
   const productionStatePanel = (
     <CloneProductionStatePanel
       sourceReady={sourceReady}
@@ -1525,12 +1533,12 @@ export function UGCCloneForm() {
               <Zap className="size-8" />
             </div>
             <div>
-              <h3 className="text-lg font-bold">Execute Synthesis</h3>
+              <h3 className="text-lg font-bold">{nextAction.label}</h3>
               <p className="text-sm text-white/80">
-                Estimated cost: {formatCost(referenceCost + videoCost + textErasureCost)}
+                Estimated total: {formatCost(referenceCost + videoCost + textErasureCost)}
               </p>
               <p className="mt-1 text-[10px] text-white/60">
-                {modelName} video • {referenceModelName} reference
+                {primaryActionDetail}
               </p>
             </div>
             <button
@@ -1557,7 +1565,7 @@ export function UGCCloneForm() {
             </button>
             <div className="flex items-center gap-1 text-[10px] font-medium opacity-60">
               <Clock3 className="size-3" />
-              Est. time: 4-6 minutes
+              {primaryActionTimeDetail}
             </div>
           </section>
 
