@@ -444,13 +444,10 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   // Grid mode (default)
   const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId);
-  const primaryAvatars = (
+  const orderedAvatars = (
     selectedAvatar
       ? [selectedAvatar, ...avatars.filter((avatar) => avatar.id !== selectedAvatar.id)]
       : avatars
-  ).slice(0, 2);
-  const secondaryAvatars = avatars.filter(
-    (avatar) => !primaryAvatars.some((primaryAvatar) => primaryAvatar.id === avatar.id)
   );
 
   return (
@@ -463,10 +460,11 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onChange={handleUpload}
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {primaryAvatars.map((avatar, index) => {
+      <div className="grid max-h-[360px] grid-cols-2 gap-3 overflow-y-auto pr-1 lg:grid-cols-4">
+        {orderedAvatars.map((avatar, index) => {
           const isSelected = selectedId === avatar.id;
-          const avatarLabel = getAvatarOptionLabel(index);
+          const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
+          const avatarLabel = getAvatarOptionLabel(sourceIndex >= 0 ? sourceIndex : index);
           return (
             <div
               key={avatar.id}
@@ -519,15 +517,15 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           );
         })}
 
-        {primaryAvatars.length === 0 && (
+        {orderedAvatars.length === 0 && (
           <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-6 text-white/40">
             <User className="mb-2 size-7" />
             <p className="text-xs font-semibold">No saved identities yet</p>
           </div>
         )}
 
-        <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-3">
-          <div className="flex flex-1 flex-col items-center justify-center text-center">
+        <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-2.5">
+          <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-black/20 text-center">
             <Sparkles className="size-6 text-white/25" />
             <p className="mt-3 text-xs font-bold uppercase tracking-widest text-white/45">
               New Identity
@@ -571,36 +569,6 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           </div>
         </div>
       </div>
-
-      {secondaryAvatars.length > 0 && (
-        <div className="grid max-h-24 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-6">
-          {secondaryAvatars.map((avatar, index) => {
-            const avatarLabel = getAvatarOptionLabel(primaryAvatars.length + index);
-            return (
-              <button
-                key={avatar.id}
-                type="button"
-                onClick={() => onSelect(avatar.id)}
-                className={cn(
-                  "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-green/50",
-                  selectedId === avatar.id ? "border-accent-green" : "border-white/10"
-                )}
-                title={avatarLabel}
-                aria-label={`Select ${avatarLabel}`}
-              >
-                <img
-                  src={`/api/avatars/${avatar.id}`}
-                  alt={avatarLabel}
-                  className="size-full object-cover"
-                />
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-left text-[9px] font-medium text-white">
-                  <span className="block truncate">{avatarLabel}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
