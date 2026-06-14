@@ -37,6 +37,29 @@ interface GenerationFormProps {
   models: ModelDefinition[];
 }
 
+interface GenerateFormViewProps {
+  models: ModelDefinition[];
+  selectedModel: string | null;
+  prompt: string;
+  aspectRatio: string;
+  numImages: number;
+  negativePrompt: string;
+  enableWebSearch: boolean;
+  enableAudio: boolean;
+  isSubmitting: boolean;
+  advancedOpen: boolean;
+  onModelSelect: (modelId: string) => void;
+  onPromptChange: (prompt: string) => void;
+  onAspectRatioChange: (ratio: string) => void;
+  onNumImagesChange: (numImages: number) => void;
+  onNegativePromptChange: (prompt: string) => void;
+  onEnableWebSearchChange: (enabled: boolean) => void;
+  onEnableAudioChange: (enabled: boolean) => void;
+  onAdvancedOpenChange: (open: boolean) => void;
+  onSubmit: () => void;
+  onAppendToPrompt: (text: string) => void;
+}
+
 const CREATIVE_SPARKS = [
   { label: "Cinematic Lighting" },
   { label: "Octane Render" },
@@ -80,10 +103,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
     return <GenerateEmptyState />;
   }
 
-  const model = models.find((m) => m.id === selectedModel);
-  const isImage = model?.type === "image";
-  const isVideo = model?.type === "video";
-
   const handleModelSelect = (modelId: string) => {
     setSelectedModel(modelId);
     const m = models.find((mod) => mod.id === modelId);
@@ -95,14 +114,8 @@ export function GenerationForm({ models }: GenerationFormProps) {
     }
   };
 
-  const estimatedCost = selectedModel
-    ? calculateEstimatedCost(selectedModel, {
-        numImages: isImage ? numImages : undefined,
-        durationSec: isVideo ? model?.defaults.duration : undefined,
-        enableAudio: enableAudio && selectedModel === "veo3",
-      })
-    : 0;
-
+  const model = models.find((m) => m.id === selectedModel);
+  const isImage = model?.type === "image";
   const canSubmit = selectedModel && prompt.trim().length > 0 && !isSubmitting;
 
   const handleSubmit = async () => {
@@ -139,6 +152,68 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setPrompt((prev) => (prev ? `${prev}, ${text}` : text));
   };
 
+  return (
+    <GenerateFormView
+      models={models}
+      selectedModel={selectedModel}
+      prompt={prompt}
+      aspectRatio={aspectRatio}
+      numImages={numImages}
+      negativePrompt={negativePrompt}
+      enableWebSearch={enableWebSearch}
+      enableAudio={enableAudio}
+      isSubmitting={isSubmitting}
+      advancedOpen={advancedOpen}
+      onModelSelect={handleModelSelect}
+      onPromptChange={setPrompt}
+      onAspectRatioChange={setAspectRatio}
+      onNumImagesChange={setNumImages}
+      onNegativePromptChange={setNegativePrompt}
+      onEnableWebSearchChange={setEnableWebSearch}
+      onEnableAudioChange={setEnableAudio}
+      onAdvancedOpenChange={setAdvancedOpen}
+      onSubmit={handleSubmit}
+      onAppendToPrompt={appendToPrompt}
+    />
+  );
+}
+
+export function GenerateFormView({
+  models,
+  selectedModel,
+  prompt,
+  aspectRatio,
+  numImages,
+  negativePrompt,
+  enableWebSearch,
+  enableAudio,
+  isSubmitting,
+  advancedOpen,
+  onModelSelect,
+  onPromptChange,
+  onAspectRatioChange,
+  onNumImagesChange,
+  onNegativePromptChange,
+  onEnableWebSearchChange,
+  onEnableAudioChange,
+  onAdvancedOpenChange,
+  onSubmit,
+  onAppendToPrompt,
+}: GenerateFormViewProps) {
+  const model = models.find((m) => m.id === selectedModel);
+  const isImage = model?.type === "image";
+  const isVideo = model?.type === "video";
+
+  const estimatedCost = selectedModel
+    ? calculateEstimatedCost(selectedModel, {
+        numImages: isImage ? numImages : undefined,
+        durationSec: isVideo ? model?.defaults.duration : undefined,
+        enableAudio: enableAudio && selectedModel === "veo3",
+      })
+    : 0;
+
+  const canSubmit = selectedModel && prompt.trim().length > 0 && !isSubmitting;
+
   const COMMON_RATIOS = ["9:16", "16:9", "1:1"];
   const availableRatios = model?.limits.aspectRatios ?? COMMON_RATIOS;
   const displayRatios = COMMON_RATIOS.filter((r) =>
@@ -165,16 +240,16 @@ export function GenerationForm({ models }: GenerationFormProps) {
           <div className="launch-card bg-card p-6 border border-border">
             <div className="flex justify-between items-center mb-4">
               <label className="text-[10px] font-bold uppercase tracking-widest">
-                Prompt Vision
+                Creative Prompt
               </label>
               <span className="text-xs font-bold text-muted-foreground font-mono">
                 {prompt.length} / 1000
               </span>
             </div>
             <Textarea
-              placeholder="Describe your vision... E.g., 'A whimsical forest where the trees are made of giant bioluminescent mushrooms in a bouncy Pixar style...'"
+              placeholder="Describe the image or video scene in detail..."
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value.slice(0, 1000))}
+              onChange={(e) => onPromptChange(e.target.value.slice(0, 1000))}
               maxLength={1000}
               className="min-h-[280px] resize-none bg-muted/50 border border-border focus:border-accent-blue/20 focus:bg-card rounded-lg p-6 text-lg leading-relaxed transition-all duration-150"
             />
@@ -189,7 +264,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                   <button
                     key={spark.label}
                     className="whitespace-nowrap border border-border bg-muted px-3 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-colors duration-150"
-                    onClick={() => appendToPrompt(spark.label)}
+                    onClick={() => onAppendToPrompt(spark.label)}
                   >
                     {spark.label}
                   </button>
@@ -204,11 +279,11 @@ export function GenerationForm({ models }: GenerationFormProps) {
           {/* Model Selection */}
           <div className="launch-card bg-card p-6 border border-border">
             <h3 className="text-[10px] font-bold uppercase tracking-widest mb-4">
-              Select Engine
+              Model Selection
             </h3>
             <ModelPicker
               selectedModel={selectedModel}
-              onModelSelect={handleModelSelect}
+              onModelSelect={onModelSelect}
               models={models}
             />
           </div>
@@ -238,7 +313,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                       return (
                         <button
                           key={ratio}
-                          onClick={() => setAspectRatio(ratio)}
+                          onClick={() => onAspectRatioChange(ratio)}
                           className={cn(
                             "flex-1 p-2 rounded-md flex flex-col items-center transition-all duration-150 border",
                             active
@@ -265,7 +340,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                     </div>
                     <Slider
                       value={[numImages]}
-                      onValueChange={(val) => setNumImages(Array.isArray(val) ? val[0] : val)}
+                      onValueChange={(val) => onNumImagesChange(Array.isArray(val) ? val[0] : val)}
                       min={1}
                       max={model.limits.maxImages ?? 4}
                       step={1}
@@ -276,7 +351,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
               </div>
 
               {/* Advanced Settings */}
-              <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+              <Collapsible open={advancedOpen} onOpenChange={onAdvancedOpenChange}>
                 <CollapsibleTrigger
                   render={
                     <button className="w-full mt-8 pt-6 border-t border-border flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-widest hover:text-accent-blue transition-colors duration-150 group" />
@@ -295,7 +370,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                       <Textarea
                         placeholder="What to avoid in the generation..."
                         value={negativePrompt}
-                        onChange={(e) => setNegativePrompt(e.target.value)}
+                        onChange={(e) => onNegativePromptChange(e.target.value)}
                         className="min-h-16 resize-none rounded-md"
                       />
                     </div>
@@ -315,7 +390,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                       </div>
                       <Switch
                         checked={enableWebSearch}
-                        onCheckedChange={setEnableWebSearch}
+                        onCheckedChange={onEnableWebSearchChange}
                       />
                     </div>
                   )}
@@ -334,7 +409,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
                       </div>
                       <Switch
                         checked={enableAudio}
-                        onCheckedChange={setEnableAudio}
+                        onCheckedChange={onEnableAudioChange}
                       />
                     </div>
                   )}
@@ -375,18 +450,18 @@ export function GenerationForm({ models }: GenerationFormProps) {
       >
         <Button
           size="lg"
-          onClick={handleSubmit}
+          onClick={onSubmit}
           disabled={!canSubmit}
           className="bg-accent-coral text-white font-bold px-8 py-3 rounded-md text-sm hover:bg-[#ff6540] transition-all duration-150 h-auto flex items-center gap-3 uppercase tracking-wider"
         >
           {isSubmitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Forging...
+              Generating...
             </>
           ) : (
             <>
-              Execute Generation
+              Generate Now
               <ArrowRight className="size-4" />
             </>
           )}

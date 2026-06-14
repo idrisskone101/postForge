@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
+import { GenerateOutputActions } from "@/components/generate-output-actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
@@ -101,10 +102,19 @@ export default function JobDetailPage() {
     }
   };
 
+  const handleSaveToGallery = () => {
+    router.push("/gallery");
+  };
+
+  const handleUseInClone = () => {
+    const output = job?.outputs[featuredIdx] ?? job?.outputs[0];
+    router.push(output ? `/ugc-clone?referenceFileId=${output.id}` : "/ugc-clone");
+  };
+
   // Loading skeleton
   if (isLoading && !job) {
     return (
-      <div className="min-h-screen md:ml-24 p-8 flex flex-col animate-fade-in-up">
+      <div className="min-h-screen p-8 flex flex-col animate-fade-in-up">
         <div className="mb-6 flex items-center gap-4">
           <Skeleton className="size-10 rounded-full" />
           <Skeleton className="h-7 w-48" />
@@ -121,7 +131,7 @@ export default function JobDetailPage() {
   // Error loading
   if (error && !job) {
     return (
-      <div className="min-h-screen md:ml-24 p-8 flex items-center justify-center">
+      <div className="min-h-screen p-8 flex items-center justify-center">
         <div className="flex items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-4">
           <AlertCircle className="size-5 text-destructive" />
           <p className="text-sm text-destructive">
@@ -141,7 +151,7 @@ export default function JobDetailPage() {
   const featured = job.outputs[featuredIdx] ?? job.outputs[0];
 
   return (
-    <div className="min-h-screen md:ml-24 p-6 lg:p-8 flex flex-col animate-fade-in-up">
+    <div className="min-h-screen p-6 lg:p-8 flex flex-col animate-fade-in-up">
       {/* Header */}
       <div className="mb-6 flex items-center gap-4">
         <button
@@ -201,7 +211,7 @@ export default function JobDetailPage() {
                 <p className="text-sm font-medium">
                   {job.status === "queued"
                     ? "Waiting in queue..."
-                    : "Forging your content..."}
+                    : "Generating your content..."}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   This may take a moment
@@ -527,6 +537,24 @@ export default function JobDetailPage() {
               )}
             </div>
           </div>
+
+          {isCompleted && featured && (
+            <div className="rounded-[32px] bg-card border border-border p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Output Actions
+              </p>
+              <GenerateOutputActions
+                canDownload
+                isRetrying={isRetrying}
+                onDownload={() =>
+                  downloadFile(`/api/files/${featured.id}/download`, featured.filename)
+                }
+                onRetry={handleRetry}
+                onSaveToGallery={handleSaveToGallery}
+                onUseInClone={handleUseInClone}
+              />
+            </div>
+          )}
 
           {/* Discard button */}
           <button
