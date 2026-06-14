@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  CloneSourceEmptyState,
   CloneProductionStatePanel,
   createReferenceImageBatchEntries,
   getClonePrimaryAction,
@@ -30,6 +31,12 @@ assert.match(emptyState, /Identity/);
 assert.match(emptyState, /Reference/);
 assert.match(emptyState, /Generate readiness/);
 assert.match(emptyState, /Add source/);
+assert.match(emptyState, /data-workspace-state="empty"/);
+
+const sourcePlaceholder = renderToStaticMarkup(<CloneSourceEmptyState />);
+assert.match(sourcePlaceholder, /data-workspace-state="empty"/);
+assert.match(sourcePlaceholder, /Add source/);
+assert.match(sourcePlaceholder, /Your selected clip appears here/);
 
 assert.equal(
   getClonePrimaryAction({

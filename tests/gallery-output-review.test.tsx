@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GalleryPageClient } from "../src/app/gallery/gallery-page-client";
+import {
+  GalleryLoadErrorState,
+  GalleryPageClient,
+} from "../src/app/gallery/gallery-page-client";
 
 const initialPage = {
   nextCursor: null,
@@ -48,6 +51,21 @@ const initialPage = {
 const markup = renderToStaticMarkup(
   <GalleryPageClient initialPage={initialPage} />
 );
+const emptyMarkup = renderToStaticMarkup(
+  <GalleryPageClient
+    initialPage={{
+      nextCursor: null,
+      hasMore: false,
+      items: [],
+    }}
+  />
+);
+const errorMarkup = renderToStaticMarkup(
+  <GalleryLoadErrorState
+    message="Failed to load gallery."
+    onRetry={() => {}}
+  />
+);
 
 assert.match(markup, /Output Review/);
 assert.match(markup, /Review, approve, reject, download, and hand off Outputs/);
@@ -75,3 +93,13 @@ assert.match(markup, /Handoff/);
 assert.doesNotMatch(markup, /clone-output\.mp4/);
 assert.doesNotMatch(markup, /Match the source energy/);
 assert.doesNotMatch(markup, /Approved creator still/);
+
+assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /No Outputs ready for review/);
+assert.match(emptyMarkup, /Start Clone/);
+assert.match(emptyMarkup, /Open Generate/);
+
+assert.match(errorMarkup, /data-workspace-state="error"/);
+assert.match(errorMarkup, /Gallery failed to load/);
+assert.match(errorMarkup, /Failed to load gallery/);
+assert.match(errorMarkup, /Retry Gallery/);

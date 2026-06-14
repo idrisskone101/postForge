@@ -23,6 +23,7 @@ import {
   Volume2,
   ChevronDown,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import {
   FloatingToolbar,
@@ -30,6 +31,7 @@ import {
   ToolbarDivider,
   ToolbarLabel,
 } from "@/components/floating-toolbar";
+import { WorkspaceState } from "@/components/workspace-state";
 
 interface GenerationFormProps {
   models: ModelDefinition[];
@@ -43,6 +45,20 @@ const CREATIVE_SPARKS = [
   { label: "Neon Glow" },
   { label: "Soft Focus" },
 ];
+
+export function GenerateEmptyState() {
+  return (
+    <WorkspaceState
+      tone="empty"
+      icon={Sparkles}
+      title="No generation models available"
+      description="Model configuration could not be loaded. Use Clone or return Home while the Generate engines are unavailable."
+      action={{ href: "/ugc-clone", label: "Open Clone" }}
+      secondaryAction={{ href: "/", label: "Return Home" }}
+      className="min-h-96"
+    />
+  );
+}
 
 export function GenerationForm({ models }: GenerationFormProps) {
   const router = useRouter();
@@ -59,6 +75,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [enableAudio, setEnableAudio] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+
+  if (models.length === 0) {
+    return <GenerateEmptyState />;
+  }
 
   const model = models.find((m) => m.id === selectedModel);
   const isImage = model?.type === "image";

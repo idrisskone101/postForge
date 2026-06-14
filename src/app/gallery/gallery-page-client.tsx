@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GalleryGrid } from "@/components/gallery-grid";
+import { WorkspaceState, WorkspaceStateSkeleton } from "@/components/workspace-state";
 import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 import {
   AlertDialog,
@@ -20,7 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Images, Download, Trash2, X, ArrowUpDown, Loader2 } from "lucide-react";
+import { Images, Download, Trash2, X, ArrowUpDown, Loader2, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
 import { OUTPUT_REVIEW_STATUSES } from "@/lib/output-review-status";
@@ -64,6 +65,25 @@ const reviewFilters = [
 ] as const;
 
 type ReviewFilter = OutputReviewStatus | "all";
+
+export function GalleryLoadErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <WorkspaceState
+      tone="error"
+      icon={TriangleAlert}
+      title="Gallery failed to load"
+      description={message}
+      action={{ label: "Retry Gallery", onClick: onRetry }}
+      className="min-h-48"
+    />
+  );
+}
 
 export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("needs_review");
@@ -244,6 +264,23 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
     }
   };
 
+  const handleRetryLoad = async () => {
+    setIsReloading(true);
+    setLoadError(null);
+    try {
+      const page = await loadPage();
+      setItems(page.items);
+      setNextCursor(page.nextCursor);
+      setHasMore(page.hasMore);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "Failed to load gallery."
+      );
+    } finally {
+      setIsReloading(false);
+    }
+  };
+
   const selectionCount = selectedIds.size;
   const totalCount = filtered.length;
   const activeReviewLabel =
@@ -336,29 +373,35 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
 
       {/* Gallery content */}
       {isReloading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
-          <Loader2 className="size-8 mb-4 animate-spin opacity-70" />
-          <p className="text-sm font-medium">Loading gallery</p>
-        </div>
+        <WorkspaceStateSkeleton
+          title="Loading Gallery"
+          lines={4}
+          actions={2}
+          preserveHeightClassName="min-h-80"
+        />
       ) : totalCount === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
-          <Images className="size-12 mb-4 opacity-40" />
-          <p className="text-lg font-medium">No Outputs ready for review</p>
-          <p className="text-sm mt-2">
-            Generate a clone or asset, then return here to approve and hand it
-            off.
-          </p>
-        </div>
+        <WorkspaceState
+          tone="empty"
+          icon={Images}
+          title="No Outputs ready for review"
+          description="Generate a clone or asset, then return here to approve and hand it off."
+          action={{ href: "/ugc-clone", label: "Start Clone" }}
+          secondaryAction={{ href: "/generate", label: "Open Generate" }}
+          className="min-h-80"
+        />
       ) : (
         <>
           <div className="flex items-center justify-between gap-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               {reviewSummary}
             </p>
-            {loadError && (
-              <p className="text-xs font-medium text-red-400">{loadError}</p>
-            )}
           </div>
+          {loadError && (
+            <GalleryLoadErrorState
+              message={loadError}
+              onRetry={() => void handleRetryLoad()}
+            />
+          )}
           <GalleryGrid
             items={filtered}
             selectedIds={selectedIds}

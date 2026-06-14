@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/table";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import { Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Download, ChevronLeft, ChevronRight, DollarSign } from "lucide-react";
 import { PIE_COLORS } from "@/components/cost-chart";
+import { WorkspaceState } from "@/components/workspace-state";
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((mod) => mod.CostChart),
@@ -306,7 +307,15 @@ export function SpendPageContent({
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No model spend yet</p>
+              <WorkspaceState
+                tone="empty"
+                icon={DollarSign}
+                title="No model spend yet"
+                description="Start a Clone or Generate an asset to see model-level cost signals here."
+                action={{ href: "/ugc-clone", label: "Start Clone" }}
+                secondaryAction={{ href: "/generate", label: "Open Generate" }}
+                className="min-h-48 border-0 bg-transparent px-0 py-6"
+              />
             )}
           </div>
         </div>
@@ -366,9 +375,14 @@ export function SpendPageContent({
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No data yet
-              </p>
+              <WorkspaceState
+                tone="empty"
+                icon={DollarSign}
+                title="No data yet"
+                description="Model distribution appears after the first tracked production cost."
+                action={{ href: "/ugc-clone", label: "Start Clone" }}
+                className="min-h-48 border-0 bg-transparent px-0 py-6"
+              />
             )}
           </div>
         </div>
@@ -407,9 +421,17 @@ export function SpendPageContent({
                 <TableRow>
                   <TableCell
                     colSpan={4}
-                    className="text-center text-muted-foreground py-8"
+                    className="py-2"
                   >
-                    No logs yet
+                    <WorkspaceState
+                      tone="empty"
+                      icon={DollarSign}
+                      title="No cost log entries yet"
+                      description="Create production work to populate Spend with cost entries."
+                      action={{ href: "/ugc-clone", label: "Start Clone" }}
+                      secondaryAction={{ href: "/generate", label: "Open Generate" }}
+                      className="min-h-56 border-0 bg-transparent"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
