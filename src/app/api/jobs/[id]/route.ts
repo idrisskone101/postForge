@@ -3,6 +3,7 @@ import { getJob, deleteJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
 import { prisma } from "@/lib/db";
+import { serializeOutputReviewStatus } from "@/lib/output-review-status";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === "object" && value !== null
@@ -44,7 +45,7 @@ export async function GET(
       ensureCloneWorkerRunning();
     }
 
-    const outputs = job.outputs.map((file: { id: string; type: string; filename: string; mimeType: string; width: number | null; height: number | null; durationSec: number | null; fileSizeBytes: number | null; createdAt: Date }) => ({
+    const outputs = job.outputs.map((file: { id: string; type: string; filename: string; mimeType: string; width: number | null; height: number | null; durationSec: number | null; fileSizeBytes: number | null; reviewStatus: string | null; createdAt: Date }) => ({
       id: file.id,
       url: `/api/files/${file.id}`,
       type: file.type,
@@ -54,6 +55,7 @@ export async function GET(
       height: file.height,
       durationSec: file.durationSec,
       fileSizeBytes: file.fileSizeBytes,
+      reviewStatus: serializeOutputReviewStatus(file.reviewStatus),
       createdAt: file.createdAt.toISOString(),
     }));
 

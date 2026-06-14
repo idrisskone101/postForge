@@ -66,11 +66,13 @@ model GeneratedFile {
   height        Int?
   durationSec   Float?
   fileSizeBytes Int?
+  reviewStatus  String   @default("needs_review")
   data          Bytes?
   createdAt     DateTime @default(now())
 
   @@index([jobId])
   @@index([type])
+  @@index([reviewStatus])
 }
 
 model CostLog {
