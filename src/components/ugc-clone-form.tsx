@@ -96,6 +96,7 @@ function CloneModelSelect({
   label,
   description,
   accentClassName,
+  className,
   models,
   selectedValue,
   onValueChange,
@@ -104,6 +105,7 @@ function CloneModelSelect({
   label: string;
   description: string;
   accentClassName: string;
+  className?: string;
   models: ModelDefinition[];
   selectedValue: string;
   onValueChange: (value: string) => void;
@@ -112,7 +114,7 @@ function CloneModelSelect({
   const selectedModel = models.find((model) => model.id === selectedValue) ?? models[0];
 
   return (
-    <fieldset className="flex flex-col gap-2">
+    <fieldset className={cn("flex min-w-0 flex-col gap-2", className)}>
       <legend className={cn("text-[10px] font-bold uppercase tracking-wider", accentClassName)}>
         {label}
       </legend>
@@ -830,9 +832,6 @@ export function UGCCloneForm() {
     : selectedModel === "kling-3.0-pro-motion"
       ? "Kling 3.0 Pro"
       : "Kling 2.6";
-  const referenceModelName =
-    referenceImageModels.find((model) => model.id === selectedReferenceImageModel)?.name ??
-    selectedReferenceImageModel;
   const referenceCost = selectedSavedReference ? 0 : imageCost;
   const sourceReady = !!videoInfo?.id;
   const shouldShowSourceTools = !sourceReady || sourceToolsOpen;
@@ -871,11 +870,6 @@ export function UGCCloneForm() {
   const readinessDetail = canGenerateClone
     ? "Source, identity, and reference are ready."
     : "Complete Source, Identity, and Reference before generating.";
-  const primaryActionDetail = referenceReady
-    ? `${modelName} will generate the final clone video.`
-    : sourceReady && avatarReady
-      ? `${referenceModelName} will create the reference image first.`
-      : "Complete Source, Identity, and Reference before video generation.";
   const primaryActionTimeDetail = referenceReady
     ? "Video generation usually takes 4-6 minutes."
     : "Reference generation runs before video generation.";
@@ -1151,9 +1145,9 @@ export function UGCCloneForm() {
 
       <div
         data-clone-production-state="true"
-        className="grid grid-cols-1 gap-8 pb-56 sm:pb-36 lg:grid-cols-12"
+        className="space-y-8 pb-[32rem] sm:pb-[24rem] lg:pb-[15rem]"
       >
-        <div className="space-y-8 lg:col-span-8">
+        <div className="space-y-8">
           <section
             data-clone-source-section="true"
             className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6"
@@ -1609,163 +1603,124 @@ export function UGCCloneForm() {
           </section>
         </div>
 
-        <div
-          data-clone-generation-rail="true"
-          className="flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-4 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:pr-1"
-        >
-          <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-5">
-            <h2 className="px-1 text-xs font-bold uppercase tracking-widest text-white/40">
-              Generation Settings
-            </h2>
-            <div className="mt-4 space-y-5">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
-                    Models
-                  </h3>
-                  <p className="mt-1 text-[10px] leading-4 text-white/35">
-                    Pick the final video model and the reference-image model.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <CloneModelSelect
-                    label="Final video"
-                    description="Motion-control clone video"
-                    accentClassName="text-accent-blue"
-                    models={cloneVideoModels}
-                    selectedValue={selectedModel}
-                    onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
-                    getCost={(modelId) =>
-                      formatCost(calculateEstimatedCost(modelId, { durationSec }))
-                    }
-                  />
-
-                  <CloneModelSelect
-                    label="Reference image"
-                    description="Identity/reference still"
-                    accentClassName="text-accent-green"
-                    models={referenceImageModels}
-                    selectedValue={selectedReferenceImageModel}
-                    onValueChange={setSelectedReferenceImageModel}
-                    getCost={(modelId) =>
-                      formatCost(calculateEstimatedCost(modelId, { numImages: 1 }))
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3 border-t border-white/10 pt-5">
-                <div>
-                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
-                    Audio &amp; cleanup
-                  </h3>
-                  <p className="mt-1 text-[10px] leading-4 text-white/35">
-                    Choose what to preserve or remove from the source clip.
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
-                    <div className="flex items-center gap-3">
-                      <Volume2 className="size-4 text-white/40" />
-                      <div>
-                        <p className="text-xs font-semibold text-white/80">Keep original sound</p>
-                        <p className="text-[10px] text-white/35">Preserve the TikTok audio track.</p>
-                      </div>
-                    </div>
-                    <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
-                  </div>
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
-                    <div>
-                      <p className="text-xs font-semibold text-white/80">Remove text overlays</p>
-                      <p className="text-[10px] text-white/35">
-                        Strip hook text before motion control
-                        {removeTextOverlays && (
-                          <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
-                        )}
-                      </p>
-                    </div>
-                    <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-white/5 bg-white/5 p-5">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-black/40">
-                <Info className="size-4 text-white/40" />
-              </div>
-              <div className="flex-1">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-white/60">
-                  Pro Tip
-                </div>
-                <p className="mt-0.5 text-xs font-semibold text-white/70">
-                  {cloneTip.title}
-                </p>
-                <p className="text-[11px] leading-relaxed text-white/40">
-                  {cloneTip.body}
-                </p>
-              </div>
-            </div>
-          </section>
-        </div>
       </div>
 
       <section
         data-clone-primary-action-bar="true"
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[oklch(0.145_0_0)]/95 px-4 py-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-72 sm:px-6 lg:px-8"
+        data-clone-generation-settings-bar="true"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[oklch(0.145_0_0)]/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-72 sm:px-6 lg:px-8"
       >
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)]/95 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-green/15 text-accent-green sm:size-11">
-              <Zap className="size-5" />
-            </div>
+        <div className="mx-auto max-w-[1280px] rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)]/95 p-3 sm:p-4">
+          <div className="grid gap-3 xl:grid-cols-[minmax(190px,230px)_minmax(0,1fr)_minmax(210px,260px)] xl:items-end">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                Next action
+                Generation settings
               </p>
-              <h3 className="mt-1 truncate text-sm font-bold text-white sm:text-base">
+              <h3 className="mt-1 truncate text-sm font-bold text-white">
                 {nextAction.label}
               </h3>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/55">
-                <span>
-                  Estimated total: {formatCost(referenceCost + videoCost + textErasureCost)}
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/50">
+                <span className="font-mono">
+                  {formatCost(referenceCost + videoCost + textErasureCost)} est.
                 </span>
-                <span className="inline-flex items-center gap-1">
+                <span className="hidden items-center gap-1 2xl:inline-flex">
                   <Clock3 className="size-3" />
                   {primaryActionTimeDetail}
                 </span>
               </div>
-              <p className="mt-1 hidden text-[11px] leading-4 text-white/35 sm:line-clamp-2">
-                {primaryActionDetail}
-              </p>
             </div>
+
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(180px,220px)_minmax(180px,220px)]">
+              <CloneModelSelect
+                label="Final video"
+                description="Motion-control clone video"
+                accentClassName="text-accent-blue"
+                className="min-w-0"
+                models={cloneVideoModels}
+                selectedValue={selectedModel}
+                onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
+                getCost={(modelId) =>
+                  formatCost(calculateEstimatedCost(modelId, { durationSec }))
+                }
+              />
+
+              <CloneModelSelect
+                label="Reference image"
+                description="Identity/reference still"
+                accentClassName="text-accent-green"
+                className="min-w-0"
+                models={referenceImageModels}
+                selectedValue={selectedReferenceImageModel}
+                onValueChange={setSelectedReferenceImageModel}
+                getCost={(modelId) =>
+                  formatCost(calculateEstimatedCost(modelId, { numImages: 1 }))
+                }
+              />
+
+              <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Volume2 className="size-4 shrink-0 text-white/40" />
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-semibold text-white/80">
+                      Keep sound
+                    </p>
+                    <p className="truncate text-[10px] text-white/35">
+                      Original audio
+                    </p>
+                  </div>
+                </div>
+                <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
+              </div>
+
+              <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                <div className="min-w-0">
+                  <p className="truncate text-[11px] font-semibold text-white/80">
+                    Remove text
+                  </p>
+                  <p className="truncate text-[10px] text-white/35">
+                    Captions/overlays
+                    {removeTextOverlays && (
+                      <span className="text-accent-green"> +{formatCost(textErasureCost)}</span>
+                    )}
+                  </p>
+                </div>
+                <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                selectedSavedReference
+                  ? handleGenerateWithSavedReference
+                  : selectedRefFileId
+                    ? handleApproveAndGenerate
+                    : handleGenerateRefImage
+              }
+              disabled={
+                selectedSavedReference || selectedRefFileId
+                  ? !canGenerateClone
+                  : !canSubmit || isSubmitting || isGenerating
+              }
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
+            >
+              <Zap className="size-4" />
+              {isSubmitting
+                ? "Starting..."
+                : isGenerating
+                  ? "Generating reference..."
+                  : nextAction.label}
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={
-              selectedSavedReference
-                ? handleGenerateWithSavedReference
-                : selectedRefFileId
-                  ? handleApproveAndGenerate
-                  : handleGenerateRefImage
-            }
-            disabled={
-              selectedSavedReference || selectedRefFileId
-                ? !canGenerateClone
-                : !canSubmit || isSubmitting || isGenerating
-            }
-            className="h-12 w-full shrink-0 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35 sm:w-auto sm:min-w-[260px]"
-          >
-            {isSubmitting
-              ? "Starting..."
-              : isGenerating
-                ? "Generating reference..."
-                : nextAction.label}
-          </button>
+          <div className="mt-3 hidden items-start gap-2 border-t border-white/10 pt-3 text-[11px] leading-4 text-white/40 lg:flex">
+            <Info className="mt-0.5 size-3.5 shrink-0 text-white/30" />
+            <p className="min-w-0 truncate">
+              <span className="font-bold uppercase tracking-wider text-white/55">Tip:</span>{" "}
+              <span className="font-semibold text-white/60">{cloneTip.title}</span>
+              <span className="text-white/35"> - {cloneTip.body}</span>
+            </p>
+          </div>
         </div>
       </section>
     </>
