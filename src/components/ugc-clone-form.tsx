@@ -1323,7 +1323,46 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(220px,320px)_minmax(0,1fr)]">
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(180px,240px)_minmax(180px,240px)_minmax(0,1fr)]">
+              <div
+                data-reference-source-preview="true"
+                className="self-start rounded-xl border border-white/10 bg-black p-3"
+              >
+                {sourceReady && videoInfo && sourcePreviewSrc ? (
+                  <>
+                    <ReferencePortraitFrame>
+                      <MediaPreviewFrame
+                        type="video"
+                        src={sourcePreviewSrc}
+                        width={videoInfo.width}
+                        height={videoInfo.height}
+                        alt={videoInfo.label || "Selected source preview"}
+                        variant="card"
+                        frameAspectRatio="9/16"
+                        className="size-full"
+                        mediaClassName="rounded-none"
+                      />
+                    </ReferencePortraitFrame>
+                    <div className="mt-3 min-w-0">
+                      <span className="block text-[11px] font-medium">Selected Source</span>
+                      <span className="mt-0.5 block truncate text-[10px] text-white/35">
+                        {durationSec.toFixed(1)}s • {videoInfo.width}x{videoInfo.height}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
+                    <Video className="size-6 text-white/20" />
+                    <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
+                      Choose Source
+                    </span>
+                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
+                      The selected source clip will appear here for comparison.
+                    </span>
+                  </ReferencePortraitFrame>
+                )}
+              </div>
+
               <div className="self-start rounded-xl border border-white/10 bg-black p-3">
                 {selectedSavedReference ? (
                   <>
