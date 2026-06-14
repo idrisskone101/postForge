@@ -35,33 +35,6 @@ import {
   Plus,
 } from "lucide-react";
 
-const PROMPT_PRESETS = [
-  {
-    label: "Talking Head",
-    prompt: "Medium close-up, soft natural lighting, neutral background, casual indoor setting",
-  },
-  {
-    label: "Product Demo",
-    prompt: "Well-lit environment, clean background, warm lighting, medium shot framing",
-  },
-  {
-    label: "Dance / Movement",
-    prompt: "Full body visible, vibrant atmosphere, dynamic lighting, open space",
-  },
-  {
-    label: "Reaction",
-    prompt: "Close-up framing, casual setting, natural ambient lighting",
-  },
-  {
-    label: "Lifestyle / Vlog",
-    prompt: "Cozy everyday setting, warm natural lighting, medium close-up, authentic candid feel",
-  },
-  {
-    label: "Office / B2B",
-    prompt: "Modern office or clean backdrop, medium shot, crisp even lighting, professional environment",
-  },
-] as const;
-
 const IDENTITY_ROLE_LABELS: Record<string, string> = {
   front: "Front",
   threeQuarterLeft: "3/4 Left",
@@ -345,7 +318,6 @@ export function UGCCloneForm() {
   const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
 
   // Step 3: Settings
-  const [prompt, setPrompt] = useState("");
   const [keepOriginalSound, setKeepOriginalSound] = useState(true);
   const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
   const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
@@ -635,8 +607,7 @@ export function UGCCloneForm() {
   };
 
   const handleGenerateRefImage = () => {
-    setRefPrompt(prompt); // initialize ref prompt from scene direction
-    submitRefImageGeneration(prompt);
+    submitRefImageGeneration("");
   };
 
   const handleRegenerateRefImage = () => {
@@ -1312,7 +1283,7 @@ export function UGCCloneForm() {
                         : "Generate Variant"}
                   </span>
                   <p className="max-w-[140px] text-[10px] text-white/20">
-                    Create a new reference still from prompt
+                    Create a new reference still from the selected source and identity
                   </p>
                 </button>
 
@@ -1575,57 +1546,6 @@ export function UGCCloneForm() {
                     </div>
                   </fieldset>
                 </div>
-              </div>
-
-              <div className="space-y-3 border-t border-white/10 pt-5">
-                <div>
-                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
-                    Scene Direction
-                  </h3>
-                  <p className="mt-1 text-[10px] leading-4 text-white/35">
-                    Describe the framing and environment for the reference image.
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  {PROMPT_PRESETS.map((preset) => (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      aria-pressed={prompt === preset.prompt}
-                      onClick={() => setPrompt(preset.prompt)}
-                      className={cn(
-                        "flex min-h-12 items-start gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
-                        prompt === preset.prompt
-                          ? "border-accent-coral bg-accent-coral/10 text-accent-coral"
-                          : "border-white/10 bg-white/5 text-white/70"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border",
-                          prompt === preset.prompt
-                            ? "border-accent-coral bg-accent-coral text-black"
-                            : "border-white/15 text-transparent"
-                        )}
-                      >
-                        <Check className="size-2.5" />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-xs font-bold">{preset.label}</span>
-                        <span className="mt-0.5 block text-[10px] leading-4 opacity-60">
-                          {preset.prompt}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <Textarea
-                  placeholder="Optional: lighting, framing, environment, style..."
-                  value={prompt}
-                  onChange={(event) => setPrompt(event.target.value.slice(0, 500))}
-                  maxLength={500}
-                  className="min-h-[92px] resize-none rounded-lg border-white/10 bg-white/5 text-sm text-white placeholder:text-white/25"
-                />
               </div>
 
               <div className="space-y-3 border-t border-white/10 pt-5">
