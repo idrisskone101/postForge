@@ -601,7 +601,7 @@ export function UGCCloneForm() {
 
       setRefImages((prev) => [...prev, newEntry]);
       setSelectedRefIndex(refImages.length); // select the new one (will be at end)
-      setPhase("reviewing");
+      setSelectedSavedReferenceId(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to generate reference image.";
       setSubmitError(msg);
@@ -1024,25 +1024,44 @@ export function UGCCloneForm() {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (sourceReady) {
-                    setShowTrimmer(false);
-                    setSourceToolsOpen((value) => !value);
-                    return;
-                  }
+              <div className="flex items-center gap-3">
+                {sourceReady && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (showTrimmer) {
+                        handleCancelTrim();
+                        return;
+                      }
 
-                  setSourceToolsOpen(true);
-                }}
-                className="text-xs font-semibold text-accent-blue transition-colors hover:text-accent-blue/80"
-              >
-                {sourceReady
-                  ? sourceToolsOpen
-                    ? "Close Source Picker"
-                    : "Replace Source"
-                  : "Choose Source"}
-              </button>
+                      setSourceToolsOpen(false);
+                      setShowTrimmer(true);
+                    }}
+                    className="text-xs font-semibold text-white/50 transition-colors hover:text-white/80"
+                  >
+                    {showTrimmer ? "Close Trim" : "Trim Source"}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (sourceReady) {
+                      setShowTrimmer(false);
+                      setSourceToolsOpen((value) => !value);
+                      return;
+                    }
+
+                    setSourceToolsOpen(true);
+                  }}
+                  className="text-xs font-semibold text-accent-blue transition-colors hover:text-accent-blue/80"
+                >
+                  {sourceReady
+                    ? sourceToolsOpen
+                      ? "Close Source Picker"
+                      : "Replace Source"
+                    : "Choose Source"}
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -1069,16 +1088,6 @@ export function UGCCloneForm() {
                     frameAspectRatio="1 / 1"
                     className="mx-auto w-full max-w-[360px] border border-white/10"
                     mediaClassName="aspect-[9/16] h-full w-auto"
-                    showMetadata
-                    actions={
-                      <button
-                        type="button"
-                        onClick={() => setShowTrimmer(true)}
-                        className="text-[10px] font-bold uppercase tracking-wider text-accent-blue"
-                      >
-                        Re-trim
-                      </button>
-                    }
                   />
                 )
               )}
@@ -1143,7 +1152,10 @@ export function UGCCloneForm() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6">
+          <section
+            data-clone-reference-section="true"
+            className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6"
+          >
             <div className="mb-6 flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-accent-coral/10 text-accent-coral">
                 <Layers className="size-5" />
@@ -1177,6 +1189,47 @@ export function UGCCloneForm() {
                       </button>
                     </div>
                   </>
+                ) : selectedRef?.status === "generating" ? (
+                  <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
+                    <Loader2 className="size-7 animate-spin text-accent-coral" />
+                    <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-white/50">
+                      Generating Reference
+                    </span>
+                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/25">
+                      Compositing the selected identity into the source scene.
+                    </span>
+                  </div>
+                ) : selectedRef?.status === "failed" ? (
+                  <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-destructive/10 p-4 text-center">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
+                      Reference Failed
+                    </span>
+                    {selectedRef.error && (
+                      <span className="mt-2 max-w-[220px] text-[10px] leading-4 text-destructive/80">
+                        {selectedRef.error}
+                      </span>
+                    )}
+                  </div>
+                ) : selectedRef?.status === "completed" && selectedRef.fileId ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/files/${selectedRef.fileId}`}
+                      alt="Generated reference"
+                      className="aspect-square w-full rounded-lg object-contain"
+                    />
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="block text-[11px] font-medium">Generated Reference</span>
+                        <span className="mt-0.5 block truncate text-[10px] text-white/35">
+                          Variant #{selectedRefIndex + 1}
+                        </span>
+                      </div>
+                      <Badge variant="outline" className="border-accent-coral/30 bg-accent-coral/10 text-accent-coral">
+                        Ready
+                      </Badge>
+                    </div>
+                  </>
                 ) : (
                   <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
                     <Sparkles className="size-6 text-white/20" />
@@ -1194,21 +1247,77 @@ export function UGCCloneForm() {
                 <button
                   type="button"
                   onClick={handleGenerateRefImage}
-                  disabled={!canSubmit || isSubmitting}
+                  disabled={!canSubmit || isSubmitting || isGenerating}
                   className="flex min-h-[168px] flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSubmitting ? (
+                  {isSubmitting || isGenerating ? (
                     <Loader2 className="size-6 animate-spin text-white/30" />
                   ) : (
                     <Sparkles className="size-6 text-white/20" />
                   )}
                   <span className="text-xs font-semibold uppercase tracking-widest text-white/40">
-                    Generate Variant
+                    {isGenerating
+                      ? "Generating Variant"
+                      : selectedRefFileId
+                        ? "Generate New Variant"
+                        : "Generate Variant"}
                   </span>
                   <p className="max-w-[140px] text-[10px] text-white/20">
                     Create a new reference still from prompt
                   </p>
                 </button>
+
+                {submitError && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                    {submitError}
+                  </div>
+                )}
+
+                {refImages.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                      Generated variants
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {refImages.map((entry, index) => (
+                        <button
+                          key={entry.jobId}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSavedReferenceId(null);
+                            setSelectedRefIndex(index);
+                          }}
+                          className={cn(
+                            "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                            !selectedSavedReference && selectedRefIndex === index
+                              ? "border-accent-coral"
+                              : "border-white/10"
+                          )}
+                        >
+                          {entry.status === "completed" && entry.fileId ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={`/api/files/${entry.fileId}`}
+                              alt={`Generated reference variant ${index + 1}`}
+                              className="size-full object-cover"
+                            />
+                          ) : entry.status === "generating" ? (
+                            <span className="grid size-full place-items-center bg-white/[0.03] text-accent-coral">
+                              <Loader2 className="size-4 animate-spin" />
+                            </span>
+                          ) : (
+                            <span className="grid size-full place-items-center bg-destructive/10 text-[9px] font-semibold uppercase text-destructive">
+                              Failed
+                            </span>
+                          )}
+                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                            #{index + 1}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {isLoadingSavedReferences && (
                   <div className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/40">
@@ -1222,6 +1331,9 @@ export function UGCCloneForm() {
                   </div>
                 )}
 
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                  Saved references
+                </p>
                 <div className="grid grid-cols-3 gap-2">
                   {visibleReferenceThumbnails.length > 0
                     ? visibleReferenceThumbnails.map((reference) => (
@@ -1229,7 +1341,12 @@ export function UGCCloneForm() {
                         key={reference.id}
                         type="button"
                         onClick={() => handleSelectSavedReference(reference.id)}
-                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black transition-colors hover:border-accent-coral"
+                        className={cn(
+                          "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                          reference.id === selectedSavedReferenceId
+                            ? "border-accent-coral"
+                            : "border-white/10"
+                        )}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -1418,11 +1535,25 @@ export function UGCCloneForm() {
             </div>
             <button
               type="button"
-              onClick={selectedSavedReference ? handleGenerateWithSavedReference : handleGenerateRefImage}
-              disabled={!canSubmit || isSubmitting}
+              onClick={
+                selectedSavedReference
+                  ? handleGenerateWithSavedReference
+                  : selectedRefFileId
+                    ? handleApproveAndGenerate
+                    : handleGenerateRefImage
+              }
+              disabled={
+                selectedSavedReference || selectedRefFileId
+                  ? !canGenerateClone
+                  : !canSubmit || isSubmitting || isGenerating
+              }
               className="w-full rounded-xl bg-black py-4 text-sm font-bold uppercase tracking-widest text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Starting..." : nextAction.label}
+              {isSubmitting
+                ? "Starting..."
+                : isGenerating
+                  ? "Generating reference..."
+                  : nextAction.label}
             </button>
             <div className="flex items-center gap-1 text-[10px] font-medium opacity-60">
               <Clock3 className="size-3" />
