@@ -85,6 +85,8 @@ const UGC_CLONE_TIPS = [
 ] as const;
 
 const UGC_CLONE_TIP_INDEX_KEY = "postforge:ugc-clone:tip-index";
+const REFERENCE_BATCH_OPTIONS = [1, 2, 3] as const;
+type ReferenceBatchSize = (typeof REFERENCE_BATCH_OPTIONS)[number];
 
 function formatIdentityRole(role: string) {
   return IDENTITY_ROLE_LABELS[role] ?? role;
@@ -203,13 +205,53 @@ interface RefJobStatus {
   outputs: { id: string }[];
 }
 
-interface RefImageEntry {
+export interface RefImageEntry {
   jobId: string;
   fileId: string | null;
   prompt: string;
   cost: number;
   status: "generating" | "completed" | "failed";
   error?: string;
+}
+
+type ReferenceImagePost = <T>(path: string, body: unknown) => Promise<T>;
+
+export async function createReferenceImageBatchEntries({
+  batchSize,
+  videoInfo,
+  avatarId,
+  prompt,
+  imageModel,
+  unitCost,
+  post = apiPost,
+}: {
+  batchSize: ReferenceBatchSize;
+  videoInfo: Pick<TikTokVideoInfo, "id" | "localPath">;
+  avatarId: string;
+  prompt: string;
+  imageModel: string;
+  unitCost: number;
+  post?: ReferenceImagePost;
+}): Promise<RefImageEntry[]> {
+  const batchResults = await Promise.all(
+    Array.from({ length: batchSize }, () =>
+      post<{ id: string; estimatedCost?: number }>("/api/ugc-clone/reference-image", {
+        tiktokVideoPath: videoInfo.localPath,
+        tiktokSourceId: videoInfo.id,
+        avatarId,
+        prompt: prompt || undefined,
+        imageModel,
+      })
+    )
+  );
+
+  return batchResults.map((result) => ({
+    jobId: result.id,
+    fileId: null,
+    prompt,
+    cost: result.estimatedCost ?? unitCost,
+    status: "generating" as const,
+  }));
 }
 
 interface SavedReference {
@@ -470,6 +512,7 @@ export function UGCCloneForm() {
   const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
   const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
   const [selectedReferenceImageModel, setSelectedReferenceImageModel] = useState("nano-banana-2");
+  const [referenceBatchSize, setReferenceBatchSize] = useState<(typeof REFERENCE_BATCH_OPTIONS)[number]>(1);
   const [cloneTip, setCloneTip] = useState<(typeof UGC_CLONE_TIPS)[number]>(UGC_CLONE_TIPS[0]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -478,7 +521,8 @@ export function UGCCloneForm() {
 
   const durationSec = videoInfo?.durationSec ?? 5;
   const videoCost = calculateEstimatedCost(selectedModel, { durationSec });
-  const imageCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: 1 });
+  const referenceImageUnitCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: 1 });
+  const referenceBatchCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: referenceBatchSize });
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
   const cloneVideoModels = getModelsByType("video").filter((model) => model.capabilities.motionControl);
   const referenceImageModels = getModelsByType("image");
@@ -744,27 +788,21 @@ export function UGCCloneForm() {
     setSubmitError(null);
 
     try {
-      const result = await apiPost<{ id: string }>("/api/ugc-clone/reference-image", {
-        tiktokVideoPath: videoInfo.localPath,
-        tiktokSourceId: videoInfo.id,
+      const startIndex = refImagesRef.current.length;
+      const newEntries = await createReferenceImageBatchEntries({
+        batchSize: referenceBatchSize,
+        videoInfo,
         avatarId,
-        prompt: promptToUse || undefined,
+        prompt: promptToUse,
         imageModel: selectedReferenceImageModel,
+        unitCost: referenceImageUnitCost,
       });
 
-      const newEntry: RefImageEntry = {
-        jobId: result.id,
-        fileId: null,
-        prompt: promptToUse,
-        cost: imageCost,
-        status: "generating",
-      };
-
-      setRefImages((prev) => [...prev, newEntry]);
-      setSelectedRefIndex(refImages.length); // select the new one (will be at end)
+      setRefImages((prev) => [...prev, ...newEntries]);
+      setSelectedRefIndex(startIndex);
       setSelectedSavedReferenceId(null);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to generate reference image.";
+      const msg = err instanceof Error ? err.message : "Failed to generate reference images.";
       setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
@@ -1072,7 +1110,7 @@ export function UGCCloneForm() {
                 <div className="text-xs text-muted-foreground">
                   Total estimate:{" "}
                   <span className="font-mono text-foreground">
-                    {formatCost((totalRefCost || imageCost) + videoCost + textErasureCost)}
+                    {formatCost((totalRefCost || referenceBatchCost) + videoCost + textErasureCost)}
                   </span>
                 </div>
                 <Button
@@ -1464,6 +1502,40 @@ export function UGCCloneForm() {
               </div>
 
               <div className="flex min-w-0 flex-col gap-4 self-start">
+                <div
+                  data-reference-batch-size={referenceBatchSize}
+                  className="w-full max-w-[220px] rounded-xl border border-white/10 bg-white/[0.02] p-2.5"
+                >
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                      Generate
+                    </span>
+                    <span className="font-mono text-[10px] text-white/30">
+                      {formatCost(referenceBatchCost)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1">
+                    {REFERENCE_BATCH_OPTIONS.map((count) => (
+                      <button
+                        key={count}
+                        type="button"
+                        data-reference-count-option={count}
+                        onClick={() => setReferenceBatchSize(count)}
+                        disabled={isSubmitting || isGenerating}
+                        className={cn(
+                          "h-8 rounded-lg border text-[11px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                          referenceBatchSize === count
+                            ? "border-accent-green bg-accent-green/20 text-accent-green"
+                            : "border-white/10 bg-white/[0.03] text-white/45 hover:bg-white/[0.06] hover:text-white/70"
+                        )}
+                        aria-pressed={referenceBatchSize === count}
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <button
                   type="button"
                   onClick={handleGenerateRefImage}
@@ -1477,13 +1549,15 @@ export function UGCCloneForm() {
                   )}
                   <span className="text-xs font-semibold uppercase tracking-widest text-white/40">
                     {isGenerating
-                      ? "Generating Variant"
+                      ? `Generating ${referenceBatchSize} ${referenceBatchSize === 1 ? "Variant" : "Variants"}`
                       : selectedRefFileId
-                        ? "Generate New Variant"
-                        : "Generate Variant"}
+                        ? `Generate ${referenceBatchSize} More ${referenceBatchSize === 1 ? "Variant" : "Variants"}`
+                        : `Generate ${referenceBatchSize} ${referenceBatchSize === 1 ? "Variant" : "Variants"}`}
                   </span>
                   <p className="max-w-[140px] text-[10px] text-white/20">
-                    Create a new reference still from the selected source and identity
+                    {referenceBatchSize === 1
+                      ? "Create one reference still from the selected source and identity"
+                      : `Create ${referenceBatchSize} reference stills from the selected source and identity`}
                   </p>
                 </button>
 
@@ -1681,7 +1755,7 @@ export function UGCCloneForm() {
                 selectedValue={selectedReferenceImageModel}
                 onValueChange={setSelectedReferenceImageModel}
                 getCost={(modelId) =>
-                  formatCost(calculateEstimatedCost(modelId, { numImages: 1 }))
+                  formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
                 }
               />
 
