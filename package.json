@@ -13,6 +13,7 @@
     "test:avatar-picker": "tsx tests/avatar-picker.test.tsx",
     "test:video-trimmer": "tsx tests/video-trimmer.test.tsx",
     "test:clone-production-state": "tsx tests/clone-production-state.test.tsx",
+    "test:clone-output-review-detail": "tsx tests/clone-output-review-detail.test.tsx",
     "test:media-preview-frame": "tsx tests/media-preview-frame.test.tsx",
     "test:source-selection": "tsx tests/source-selection.test.tsx",
     "test:output-review-status": "tsx tests/output-review-status.test.tsx",
