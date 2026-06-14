@@ -506,6 +506,7 @@ export function UGCCloneForm() {
   const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
   const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
   const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
+  const [showAvatarReferences, setShowAvatarReferences] = useState(false);
 
   // Step 3: Settings
   const [keepOriginalSound, setKeepOriginalSound] = useState(true);
@@ -660,6 +661,8 @@ export function UGCCloneForm() {
   }, [avatarId, fetchSavedReferences]);
 
   useEffect(() => {
+    setShowAvatarReferences(false);
+
     if (!avatarId) {
       setIdentityPack(null);
       setIdentityPackError(null);
@@ -742,7 +745,6 @@ export function UGCCloneForm() {
     ]
     : [];
   const primaryAvatarReference = avatarReferencePreviews[0] ?? null;
-  const visibleAvatarReferenceThumbnails = avatarReferencePreviews.slice(0, 2);
 
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
@@ -1625,15 +1627,16 @@ export function UGCCloneForm() {
                   </div>
                 )}
 
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                  {savedReferences.length > 0 ? "Saved references" : "Avatar references"}
-                </p>
-                <div
-                  data-reference-thumbnail-grid="true"
-                  className="grid max-h-[260px] grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 overflow-y-auto pr-1"
-                >
-                  {savedReferences.length > 0
-                    ? savedReferences.map((reference) => (
+                {savedReferences.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                      Saved references
+                    </p>
+                    <div
+                      data-reference-thumbnail-grid="true"
+                      className="grid max-h-[260px] grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 overflow-y-auto pr-1"
+                    >
+                      {savedReferences.map((reference) => (
                       <button
                         key={reference.id}
                         type="button"
@@ -1657,65 +1660,73 @@ export function UGCCloneForm() {
                           </span>
                         )}
                       </button>
-                    ))
-                    : visibleAvatarReferenceThumbnails.map((reference) => (
-                      <div
-                        key={reference.id}
-                        className="relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-black"
-                        title={`${reference.label} • ${reference.detail}`}
+                      ))}
+                      <button
+                        type="button"
+                        className="flex aspect-[9/16] items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
+                        title="Generate a scene reference from the selected avatar"
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={reference.previewUrl}
-                          alt={reference.label}
-                          className="size-full object-cover"
-                        />
-                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
-                          <span className="block truncate">{reference.label}</span>
-                        </span>
-                      </div>
-                    ))}
+                        <Plus className="size-4 text-white/20" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2">
                   <button
                     type="button"
-                    className="flex aspect-[9/16] items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
-                    title={savedReferences.length > 0 ? "Saved references are shown first" : "Generate a scene reference from the selected avatar"}
+                    onClick={() => setShowAvatarReferences((current) => !current)}
+                    disabled={avatarReferencePreviews.length === 0}
+                    aria-expanded={showAvatarReferences}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-left transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <Plus className="size-4 text-white/20" />
+                    <span className="min-w-0">
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-white/35">
+                        Avatar references
+                      </span>
+                      <span className="mt-0.5 block truncate text-[10px] text-white/25">
+                        {avatarReferencePreviews.length > 0
+                          ? `${avatarReferencePreviews.length} identity reference${avatarReferencePreviews.length === 1 ? "" : "s"} available`
+                          : "Select an identity to inspect avatar references"}
+                      </span>
+                    </span>
+                    <span className="shrink-0 rounded-full border border-white/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      {showAvatarReferences ? "Hide" : "Show"}
+                    </span>
                   </button>
-                </div>
 
-                {savedReferences.length === 0 && visibleAvatarReferenceThumbnails.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/30">
-                    Select an identity to show avatar references.
-                  </div>
-                ) : savedReferences.length === 0 && avatarReferencePreviews.length > visibleAvatarReferenceThumbnails.length ? (
-                  <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1">
-                    {avatarReferencePreviews.slice(2).map((reference) => (
-                      <div
-                        key={reference.id}
-                        className="relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-black"
-                        title={`${reference.label} • ${reference.detail}`}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={reference.previewUrl}
-                          alt={reference.label}
-                          className="size-full object-cover"
-                        />
-                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
-                          <span className="block truncate">{reference.label}</span>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
+                  {showAvatarReferences && avatarReferencePreviews.length > 0 && (
+                    <div
+                      data-avatar-reference-inspector="true"
+                      className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1"
+                    >
+                      {avatarReferencePreviews.map((reference) => (
+                        <div
+                          key={reference.id}
+                          className="relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-black"
+                          title={`${reference.label} • ${reference.detail}`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={reference.previewUrl}
+                            alt={reference.label}
+                            className="size-full object-cover"
+                          />
+                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
+                            <span className="block truncate">{reference.label}</span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
                     <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs text-accent-green">
                       <Loader2 className="size-3.5 animate-spin" />
                       Preparing more avatar references...
                     </div>
-                  ) : null
-                )}
+                  ) : null}
+                </div>
               </div>
             </div>
           </section>
