@@ -51,6 +51,43 @@ const IDENTITY_ROLE_LABELS: Record<string, string> = {
   expressionNeutralOrSmile: "Expression",
 };
 
+const UGC_CLONE_TIPS = [
+  {
+    title: "Start with the cleanest hook",
+    body: "Pick a source where the first 1-2 seconds clearly show the face, motion, and spoken setup you want to preserve.",
+  },
+  {
+    title: "Trim before you generate",
+    body: "Cut dead air, jump cuts, and outro moments so motion control focuses on the useful part of the clip.",
+  },
+  {
+    title: "Use a front-facing identity",
+    body: "Choose an avatar with a clear face, even lighting, and minimal accessories for stronger identity transfer.",
+  },
+  {
+    title: "Anchor the visual style",
+    body: "Add a 9:16 reference that matches the lighting and framing you want in the final clone.",
+  },
+  {
+    title: "Keep audio only when it helps",
+    body: "Preserve original sound for timing and delivery; turn it off when the source audio is noisy or off-brand.",
+  },
+  {
+    title: "Remove overlays early",
+    body: "Strip heavy captions or stickers before generation when they cover faces, hands, or product motion.",
+  },
+  {
+    title: "Use Pro for hard motion",
+    body: "Move up to the Pro video model when the source has fast gestures, dance movement, or frequent face turns.",
+  },
+  {
+    title: "Review reference before video",
+    body: "A strong reference still reduces wasted video runs because identity, lighting, and framing are checked first.",
+  },
+] as const;
+
+const UGC_CLONE_TIP_INDEX_KEY = "postforge:ugc-clone:tip-index";
+
 function formatIdentityRole(role: string) {
   return IDENTITY_ROLE_LABELS[role] ?? role;
 }
@@ -411,6 +448,7 @@ export function UGCCloneForm() {
   const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
   const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
   const [selectedReferenceImageModel, setSelectedReferenceImageModel] = useState("nano-banana-2");
+  const [cloneTip, setCloneTip] = useState<(typeof UGC_CLONE_TIPS)[number]>(UGC_CLONE_TIPS[0]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -429,6 +467,24 @@ export function UGCCloneForm() {
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const refImagesRef = useRef(refImages);
   useEffect(() => { refImagesRef.current = refImages; });
+
+  useEffect(() => {
+    try {
+      const storedIndex = window.localStorage.getItem(UGC_CLONE_TIP_INDEX_KEY);
+      const parsedIndex = storedIndex ? Number.parseInt(storedIndex, 10) : 0;
+      const safeIndex = Number.isFinite(parsedIndex)
+        ? Math.abs(parsedIndex) % UGC_CLONE_TIPS.length
+        : 0;
+
+      setCloneTip(UGC_CLONE_TIPS[safeIndex]);
+      window.localStorage.setItem(
+        UGC_CLONE_TIP_INDEX_KEY,
+        String((safeIndex + 1) % UGC_CLONE_TIPS.length)
+      );
+    } catch {
+      setCloneTip(UGC_CLONE_TIPS[Math.floor(Math.random() * UGC_CLONE_TIPS.length)]);
+    }
+  }, []);
 
   const fetchSavedReferences = useCallback(async (nextAvatarId: string) => {
     setIsLoadingSavedReferences(true);
@@ -1645,8 +1701,11 @@ export function UGCCloneForm() {
                 <div className="text-[11px] font-bold uppercase tracking-wider text-white/60">
                   Pro Tip
                 </div>
+                <p className="mt-0.5 text-xs font-semibold text-white/70">
+                  {cloneTip.title}
+                </p>
                 <p className="text-[11px] leading-relaxed text-white/40">
-                  Combine &apos;Identity Mapping&apos; with &apos;References&apos; for 40% higher accuracy in narrative tone.
+                  {cloneTip.body}
                 </p>
               </div>
             </div>
