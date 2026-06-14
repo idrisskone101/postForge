@@ -1006,7 +1006,7 @@ export function UGCCloneForm() {
 
       <div
         data-clone-production-state="true"
-        className="grid grid-cols-1 gap-8 lg:grid-cols-12"
+        className="grid grid-cols-1 gap-8 pb-56 sm:pb-36 lg:grid-cols-12"
       >
         <div className="space-y-8 lg:col-span-8">
           <section
@@ -1585,47 +1585,6 @@ export function UGCCloneForm() {
             </div>
           </section>
 
-          <section className="flex flex-col items-center gap-4 rounded-2xl bg-accent-green p-6 text-center text-white">
-            <div className="flex size-14 items-center justify-center rounded-full bg-white/20">
-              <Zap className="size-8" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">{nextAction.label}</h3>
-              <p className="text-sm text-white/80">
-                Estimated total: {formatCost(referenceCost + videoCost + textErasureCost)}
-              </p>
-              <p className="mt-1 text-[10px] text-white/60">
-                {primaryActionDetail}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={
-                selectedSavedReference
-                  ? handleGenerateWithSavedReference
-                  : selectedRefFileId
-                    ? handleApproveAndGenerate
-                    : handleGenerateRefImage
-              }
-              disabled={
-                selectedSavedReference || selectedRefFileId
-                  ? !canGenerateClone
-                  : !canSubmit || isSubmitting || isGenerating
-              }
-              className="w-full rounded-xl bg-black py-4 text-sm font-bold uppercase tracking-widest text-white transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting
-                ? "Starting..."
-                : isGenerating
-                  ? "Generating reference..."
-                  : nextAction.label}
-            </button>
-            <div className="flex items-center gap-1 text-[10px] font-medium opacity-60">
-              <Clock3 className="size-3" />
-              {primaryActionTimeDetail}
-            </div>
-          </section>
-
           <section className="rounded-2xl border border-white/5 bg-white/5 p-5">
             <div className="flex items-center gap-3">
               <div className="flex size-8 items-center justify-center rounded-lg bg-black/40">
@@ -1643,6 +1602,62 @@ export function UGCCloneForm() {
           </section>
         </div>
       </div>
+
+      <section
+        data-clone-primary-action-bar="true"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[oklch(0.145_0_0)]/95 px-4 py-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-72 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)]/95 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-green/15 text-accent-green sm:size-11">
+              <Zap className="size-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                Next action
+              </p>
+              <h3 className="mt-1 truncate text-sm font-bold text-white sm:text-base">
+                {nextAction.label}
+              </h3>
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/55">
+                <span>
+                  Estimated total: {formatCost(referenceCost + videoCost + textErasureCost)}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="size-3" />
+                  {primaryActionTimeDetail}
+                </span>
+              </div>
+              <p className="mt-1 hidden text-[11px] leading-4 text-white/35 sm:line-clamp-2">
+                {primaryActionDetail}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={
+              selectedSavedReference
+                ? handleGenerateWithSavedReference
+                : selectedRefFileId
+                  ? handleApproveAndGenerate
+                  : handleGenerateRefImage
+            }
+            disabled={
+              selectedSavedReference || selectedRefFileId
+                ? !canGenerateClone
+                : !canSubmit || isSubmitting || isGenerating
+            }
+            className="h-12 w-full shrink-0 rounded-xl bg-accent-green px-5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35 sm:w-auto sm:min-w-[260px]"
+          >
+            {isSubmitting
+              ? "Starting..."
+              : isGenerating
+                ? "Generating reference..."
+                : nextAction.label}
+          </button>
+        </div>
+      </section>
     </>
   );
 
