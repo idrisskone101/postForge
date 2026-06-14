@@ -15,6 +15,7 @@
     "test:clone-production-state": "tsx tests/clone-production-state.test.tsx",
     "test:media-preview-frame": "tsx tests/media-preview-frame.test.tsx",
     "test:source-selection": "tsx tests/source-selection.test.tsx",
+    "test:output-review-status": "tsx tests/output-review-status.test.tsx",
     "test:workspace-shell": "tsx tests/workspace-navigation.test.ts",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",

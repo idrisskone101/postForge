@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GalleryGrid } from "@/components/gallery-grid";
+import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,7 @@ export interface GalleryItem {
   model: string;
   prompt?: string;
   tiktokSourceUrl?: string;
+  reviewStatus: SerializedOutputReviewStatus;
   createdAt: string;
 }
 
@@ -168,6 +170,17 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
     });
   };
 
+  const handleReviewStatusChange = (
+    id: string,
+    reviewStatus: SerializedOutputReviewStatus
+  ) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, reviewStatus } : item
+      )
+    );
+  };
+
   const handleLoadMore = async () => {
     if (!hasMore || isLoadingMore) return;
     setIsLoadingMore(true);
@@ -265,6 +278,7 @@ export function GalleryPageClient({ initialPage }: GalleryPageClientProps) {
             selectedIds={selectedIds}
             onToggleSelect={toggleSelection}
             onDelete={handleSingleDelete}
+            onReviewStatusChange={handleReviewStatusChange}
           />
           {hasMore && (
             <div className="flex justify-center pt-2">

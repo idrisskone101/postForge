@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
+import { serializeOutputReviewStatus } from "@/lib/output-review-status";
 import type { Prisma } from "@/generated/prisma/client";
 
 export const GALLERY_PAGE_SIZE = 48;
@@ -19,6 +20,7 @@ export interface GalleryItem {
   model: string;
   prompt: string;
   tiktokSourceUrl?: string;
+  reviewStatus: ReturnType<typeof serializeOutputReviewStatus>;
   createdAt: string;
 }
 
@@ -37,6 +39,7 @@ type GalleryFileRecord = {
   width: number | null;
   height: number | null;
   durationSec: number | null;
+  reviewStatus: string | null;
   createdAt: Date;
   job: {
     model: string;
@@ -143,6 +146,7 @@ async function serializeGalleryItems(
         source?.originalUrl ??
         (source?.id ? sourceUrls.byId.get(source.id) : undefined) ??
         (source?.localPath ? sourceUrls.byPath.get(source.localPath) : undefined),
+      reviewStatus: serializeOutputReviewStatus(file.reviewStatus),
       createdAt: file.createdAt.toISOString(),
     };
   });

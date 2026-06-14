@@ -9,6 +9,8 @@ import {
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { downloadFile } from "@/lib/utils/download";
 import { cn } from "@/lib/utils";
+import { OutputReviewStatusControl } from "@/components/output-review-status-control";
+import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 import { Download, ExternalLink, Images, Play } from "lucide-react";
 
 interface GalleryItem {
@@ -22,6 +24,7 @@ interface GalleryItem {
   model: string;
   prompt?: string;
   tiktokSourceUrl?: string;
+  reviewStatus: SerializedOutputReviewStatus;
   createdAt: string | Date;
 }
 
@@ -30,6 +33,10 @@ interface GalleryGridProps {
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   onDelete: (id: string) => void;
+  onReviewStatusChange?: (
+    id: string,
+    reviewStatus: SerializedOutputReviewStatus
+  ) => void;
 }
 
 export function GalleryGrid({
@@ -37,6 +44,7 @@ export function GalleryGrid({
   selectedIds,
   onToggleSelect,
   onDelete,
+  onReviewStatusChange,
 }: GalleryGridProps) {
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
 
@@ -160,6 +168,14 @@ export function GalleryGrid({
                     <span className="truncate">{item.tiktokSourceUrl}</span>
                   </a>
                 )}
+                <OutputReviewStatusControl
+                  outputId={item.id}
+                  reviewStatus={item.reviewStatus}
+                  compact
+                  onStatusChange={(reviewStatus) =>
+                    onReviewStatusChange?.(item.id, reviewStatus)
+                  }
+                />
               </div>
             </div>
           );
@@ -207,6 +223,14 @@ export function GalleryGrid({
                   )}
                 </div>
                 <div className="flex items-center gap-3">
+                  <OutputReviewStatusControl
+                    outputId={lightbox.id}
+                    reviewStatus={lightbox.reviewStatus}
+                    onStatusChange={(reviewStatus) => {
+                      onReviewStatusChange?.(lightbox.id, reviewStatus);
+                      setLightbox({ ...lightbox, reviewStatus });
+                    }}
+                  />
                   <button
                     type="button"
                     onClick={() => downloadFile(`/api/files/${lightbox.id}/download`)}

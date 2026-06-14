@@ -5,9 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { MediaPreviewFrame } from "@/components/media-preview";
+import { OutputReviewStatusControl } from "@/components/output-review-status-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 import {
   ArrowLeft,
   Download,
@@ -29,6 +31,7 @@ interface JobOutput {
   height: number | null;
   durationSec: number | null;
   fileSizeBytes: number | null;
+  reviewStatus: SerializedOutputReviewStatus;
   createdAt: string;
 }
 
@@ -342,6 +345,15 @@ export default function UGCCloneJobPage() {
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Status</p>
                   <p className="font-medium capitalize">{job.status}</p>
                 </div>
+                {featured && (
+                  <div className="col-span-2">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Review Status</p>
+                    <OutputReviewStatusControl
+                      outputId={featured.id}
+                      reviewStatus={featured.reviewStatus}
+                    />
+                  </div>
+                )}
               </div>
               <div className="border-t border-border pt-4">
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-muted-foreground font-mono">
