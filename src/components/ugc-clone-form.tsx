@@ -35,11 +35,6 @@ import {
   Plus,
 } from "lucide-react";
 
-const FALLBACK_REFERENCE_THUMBNAILS = [
-  "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=200",
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=200",
-] as const;
-
 const PROMPT_PRESETS = [
   {
     label: "Talking Head",
@@ -66,6 +61,17 @@ const PROMPT_PRESETS = [
     prompt: "Modern office or clean backdrop, medium shot, crisp even lighting, professional environment",
   },
 ] as const;
+
+const IDENTITY_ROLE_LABELS: Record<string, string> = {
+  front: "Front",
+  threeQuarterLeft: "3/4 Left",
+  threeQuarterRight: "3/4 Right",
+  expressionNeutralOrSmile: "Expression",
+};
+
+function formatIdentityRole(role: string) {
+  return IDENTITY_ROLE_LABELS[role] ?? role;
+}
 
 type Phase = "input" | "reviewing" | "submitted";
 
@@ -538,6 +544,24 @@ export function UGCCloneForm() {
   ) ?? null;
   const recentSavedReferences = savedReferences.slice(0, 4);
   const visibleReferenceThumbnails = recentSavedReferences.slice(0, 2);
+  const avatarReferencePreviews = avatarId
+    ? [
+      {
+        id: `avatar-${avatarId}`,
+        label: "Original avatar",
+        detail: "Saved avatar",
+        previewUrl: `/api/avatars/${encodeURIComponent(avatarId)}`,
+      },
+      ...(identityPack?.images ?? []).map((image) => ({
+        id: image.id,
+        label: formatIdentityRole(image.role),
+        detail: "Identity reference",
+        previewUrl: image.previewUrl,
+      })),
+    ]
+    : [];
+  const primaryAvatarReference = avatarReferencePreviews[0] ?? null;
+  const visibleAvatarReferenceThumbnails = avatarReferencePreviews.slice(0, 2);
 
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
@@ -1233,14 +1257,36 @@ export function UGCCloneForm() {
                       </Badge>
                     </div>
                   </>
+                ) : primaryAvatarReference ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={primaryAvatarReference.previewUrl}
+                      alt={primaryAvatarReference.label}
+                      className="aspect-square w-full rounded-lg object-cover"
+                    />
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="block text-[11px] font-medium">Avatar Reference</span>
+                        <span className="mt-0.5 block truncate text-[10px] text-white/35">
+                          {primaryAvatarReference.label} • {primaryAvatarReference.detail}
+                        </span>
+                      </div>
+                      {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
+                        <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
+                          Preparing
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </>
                 ) : (
                   <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
-                    <Sparkles className="size-6 text-white/20" />
+                    <Users className="size-6 text-white/20" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
-                      Aesthetic Reference
+                      Select Identity
                     </span>
-                    <span className="mt-1 text-[10px] text-white/20">
-                      Studio lighting composite (1:1)
+                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-white/20">
+                      Avatar references appear here after choosing an identity.
                     </span>
                   </div>
                 )}
@@ -1335,7 +1381,7 @@ export function UGCCloneForm() {
                 )}
 
                 <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                  Saved references
+                  {visibleReferenceThumbnails.length > 0 ? "Saved references" : "Avatar references"}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   {visibleReferenceThumbnails.length > 0
@@ -1364,25 +1410,33 @@ export function UGCCloneForm() {
                         )}
                       </button>
                     ))
-                    : FALLBACK_REFERENCE_THUMBNAILS.map((src) => (
+                    : visibleAvatarReferenceThumbnails.map((reference) => (
                       <div
-                        key={src}
-                        className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-black transition-colors hover:border-accent-coral"
+                        key={reference.id}
+                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black"
+                        title={`${reference.label} • ${reference.detail}`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={src} alt="" className="size-full object-cover" />
+                        <img
+                          src={reference.previewUrl}
+                          alt={reference.label}
+                          className="size-full object-cover"
+                        />
+                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
+                          <span className="block truncate">{reference.label}</span>
+                        </span>
                       </div>
                     ))}
                   <button
                     type="button"
                     className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
-                    title={savedReferences.length > 0 ? "Saved references are shown first" : "No saved references yet"}
+                    title={savedReferences.length > 0 ? "Saved references are shown first" : "Generate a scene reference from the selected avatar"}
                   >
                     <Plus className="size-4 text-white/20" />
                   </button>
                 </div>
 
-                {savedReferences.length > visibleReferenceThumbnails.length && (
+                {savedReferences.length > visibleReferenceThumbnails.length ? (
                   <div className="grid max-h-36 grid-cols-3 gap-2 overflow-y-auto pr-1">
                     {savedReferences.slice(2).map((reference) => (
                       <button
@@ -1402,6 +1456,37 @@ export function UGCCloneForm() {
                       </button>
                     ))}
                   </div>
+                ) : visibleAvatarReferenceThumbnails.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/30">
+                    Select an identity to show avatar references.
+                  </div>
+                ) : avatarReferencePreviews.length > visibleAvatarReferenceThumbnails.length ? (
+                  <div className="grid max-h-36 grid-cols-3 gap-2 overflow-y-auto pr-1">
+                    {avatarReferencePreviews.slice(2).map((reference) => (
+                      <div
+                        key={reference.id}
+                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black"
+                        title={`${reference.label} • ${reference.detail}`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={reference.previewUrl}
+                          alt={reference.label}
+                          className="size-full object-cover"
+                        />
+                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
+                          <span className="block truncate">{reference.label}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
+                    <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs text-accent-green">
+                      <Loader2 className="size-3.5 animate-spin" />
+                      Preparing more avatar references...
+                    </div>
+                  ) : null
                 )}
               </div>
             </div>
