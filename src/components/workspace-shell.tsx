@@ -33,9 +33,14 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
+  const allowsPageSticky = pathname?.startsWith("/ugc-inspiration");
 
   return (
-    <main className="min-h-screen overflow-auto md:ml-72">
+    <main
+      className={`min-h-screen md:ml-72 ${
+        allowsPageSticky ? "overflow-visible" : "overflow-auto"
+      }`}
+    >
       <div className="border-b border-border bg-background/90 backdrop-blur-xl">
         <div
           id="workspace-header-grid"

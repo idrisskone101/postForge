@@ -255,12 +255,10 @@ class DatabaseStorageDriver implements StorageProvider {
     const safeLocalPath = normalizeStoragePath(localPath);
     const asset = await prisma.storedAsset.findUnique({
       where: { key: safeLocalPath },
-      select: { data: true },
+      select: { key: true },
     });
 
-    if (asset) {
-      return Buffer.from(asset.data).length > 0;
-    }
+    if (asset) return true;
 
     return fileExists(this.getLegacyPath(safeLocalPath));
   }

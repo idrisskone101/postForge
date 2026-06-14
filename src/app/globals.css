@@ -230,19 +230,48 @@ body[data-workspace-header-accessory="true"] #workspace-header-default-action {
   transform: none;
 }
 
-/* Custom scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 34%, transparent) transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
   background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground);
-  border-radius: 3px;
+
+*::-webkit-scrollbar-thumb {
+  min-height: 42px;
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      color-mix(in oklch, var(--muted-foreground) 42%, transparent),
+      color-mix(in oklch, var(--muted-foreground) 34%, transparent)
+    )
+    padding-box;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+
+*::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(
+      color-mix(in oklch, var(--accent-coral) 72%, var(--muted-foreground)),
+      color-mix(in oklch, var(--accent-coral) 46%, var(--muted-foreground))
+    )
+    padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
 }
 
 /* Reference library scrollbar */

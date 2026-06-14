@@ -49,6 +49,30 @@ const markup = renderToStaticMarkup(
           durationSec: 12,
         },
       },
+      {
+        id: "job-completed-2",
+        prompt: "Second creator reaction clip",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "completed",
+        createdAt: now,
+      },
+      {
+        id: "job-completed-3",
+        prompt: "Third creator reaction clip",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "completed",
+        createdAt: now,
+      },
+      {
+        id: "job-completed-4",
+        prompt: "Fourth creator reaction clip",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "completed",
+        createdAt: now,
+      },
     ]}
   />
 );
@@ -61,3 +85,6 @@ assert.match(markup, /Return to Inspiration/);
 assert.match(markup, /Compact Spend/);
 assert.match(markup, /job-processing/);
 assert.match(markup, /job-completed/);
+assert.match(markup, /Open Gallery/);
+assert.match(markup, /data-home-pending-review-scroll="true"/);
+assert.match(markup, /job-completed-4/);

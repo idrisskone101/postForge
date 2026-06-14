@@ -18,6 +18,8 @@ pnpm test:output-review-status
 pnpm test:gallery-output-review
 pnpm test:source-selection
 pnpm test:spend-page
+pnpm test:home-active-jobs
+pnpm test:home-review-jobs
 pnpm test:home-cockpit
 pnpm test:home-loading
 pnpm lint

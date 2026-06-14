@@ -153,9 +153,11 @@ export function MediaPreviewFrame({
             src={src}
             width={width}
             height={height}
+            preload={variant === "card" ? "metadata" : "auto"}
             controls={variant !== "card"}
             muted={variant === "card" ? true : undefined}
             playsInline
+            onLoadedMetadata={variant === "card" ? markLoaded : undefined}
             onLoadedData={markLoaded}
             onError={() => {
               setIsLoading(false);

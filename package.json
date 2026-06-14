@@ -20,6 +20,8 @@
     "test:output-review-status": "tsx tests/output-review-status.test.tsx",
     "test:spend-page": "tsx tests/spend-page.test.tsx",
     "test:workspace-shell": "tsx tests/workspace-navigation.test.ts",
+    "test:home-active-jobs": "tsx tests/home-active-jobs.test.ts",
+    "test:home-review-jobs": "tsx tests/home-review-jobs.test.tsx",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",
     "db:migrate": "prisma migrate dev",

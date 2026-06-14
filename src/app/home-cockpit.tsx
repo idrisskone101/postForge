@@ -159,7 +159,7 @@ export function HomeCockpit({
   const latestOutput = recentJobs[0] ?? null;
   const activeJob = activeJobs[0] ?? null;
   const visibleActiveJobs = activeJobs.slice(0, 3);
-  const visibleRecentJobs = recentJobs.slice(0, 3);
+  const visibleRecentJobs = recentJobs;
   const todayCount =
     todaySummary.breakdown.image.count + todaySummary.breakdown.video.count;
   const monthCount =
@@ -322,7 +322,13 @@ export function HomeCockpit({
                   Recent Outputs ready for Gallery review and handoff.
                 </p>
               </div>
-              <GalleryHorizontalEnd className="size-4 text-muted-foreground" />
+              <Link
+                href="/gallery"
+                className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-border bg-background/40 px-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-accent-coral/40 hover:text-foreground"
+              >
+                <GalleryHorizontalEnd className="size-3.5" />
+                Open Gallery
+              </Link>
             </div>
 
             {visibleRecentJobs.length === 0 ? (
@@ -331,7 +337,12 @@ export function HomeCockpit({
                 will appear here first.
               </p>
             ) : (
-              visibleRecentJobs.map((job) => <JobRow key={job.id} job={job} />)
+              <div
+                data-home-pending-review-scroll="true"
+                className="max-h-[360px] overflow-y-auto overscroll-contain pr-2"
+              >
+                {visibleRecentJobs.map((job) => <JobRow key={job.id} job={job} />)}
+              </div>
             )}
           </div>
         </section>

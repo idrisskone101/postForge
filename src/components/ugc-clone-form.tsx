@@ -1263,17 +1263,22 @@ export function UGCCloneForm() {
                     onCancel={handleCancelTrim}
                   />
                 ) : (
-                  <MediaPreviewFrame
-                    type="video"
-                    src={sourcePreviewSrc}
-                    width={videoInfo.width}
-                    height={videoInfo.height}
-                    alt={videoInfo.label || "Selected source preview"}
-                    variant="work"
-                    frameAspectRatio="1 / 1"
-                    className="mx-auto w-full max-w-[360px] border border-white/10"
-                    mediaClassName="aspect-[9/16] h-full w-auto"
-                  />
+                  <div
+                    data-clone-source-selected-preview="true"
+                    className="mx-auto w-full max-w-[320px]"
+                  >
+                    <MediaPreviewFrame
+                      type="video"
+                      src={sourcePreviewSrc}
+                      width={videoInfo.width}
+                      height={videoInfo.height}
+                      alt={videoInfo.label || "Selected source preview"}
+                      variant="card"
+                      frameAspectRatio="9/16"
+                      className="w-full border border-white/10"
+                      mediaClassName="rounded-none"
+                    />
+                  </div>
                 )
               )}
 

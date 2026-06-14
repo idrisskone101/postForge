@@ -38,3 +38,19 @@ const landscapeMarkup = renderToStaticMarkup(
 assert.match(landscapeMarkup, /data-media-preview-frame="work"/);
 assert.match(landscapeMarkup, /16:9/);
 assert.match(landscapeMarkup, /1920 x 1080/);
+
+const cardVideoMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="video"
+    src="/portrait.mp4"
+    width={1080}
+    height={1920}
+    alt="Portrait source"
+    variant="card"
+    frameAspectRatio="9/16"
+  />
+);
+
+assert.match(cardVideoMarkup, /preload="metadata"/);
+assert.match(cardVideoMarkup, /aspect-ratio:9\/16/);
+assert.doesNotMatch(cardVideoMarkup, /controls=""/);

@@ -35,7 +35,6 @@ import {
   Play,
   RefreshCw,
   Repeat2,
-  Settings2,
   Sparkles,
   Trash2,
   TriangleAlert,
@@ -251,7 +250,6 @@ export function InspirationPageClient({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
-  const [creatorSyncManageOpen, setCreatorSyncManageOpen] = useState(false);
 
   const selectedAccount = useMemo(
     () =>
@@ -278,20 +276,13 @@ export function InspirationPageClient({
     [accounts, selectedVideoId]
   );
 
-  const trackedCreatorCount = accounts.length;
   const trackedVideoCount = accounts.reduce(
     (sum, account) => sum + account.videos.length,
     0
   );
-  const topAccount = useMemo(
-    () =>
-      [...accounts].sort((a, b) => b.videos.length - a.videos.length)[0] ??
-      null,
-    [accounts]
-  );
-  const sourceScopeLabel = selectedAccount
+  const activeSourceLabel = selectedAccount
     ? selectedAccount.handleDisplay
-    : "Recent Discoveries";
+    : "Creator Feed";
 
   useEffect(() => {
     if (!selectedVideoId) {
@@ -487,104 +478,103 @@ export function InspirationPageClient({
         />
       </WorkspaceHeaderAccessory>
 
-      <div className="flex min-h-[calc(100vh-76px)] overflow-hidden">
-        <aside className="hidden w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-border bg-black/10 p-6 xl:flex">
-          <section>
-            <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Sources
-            </h3>
-            <div className="space-y-1">
+      <div className="flex min-h-[calc(100vh-76px)] items-start overflow-visible">
+        <aside className="sticky top-0 hidden h-screen w-80 shrink-0 flex-col overflow-hidden border-r border-border bg-black/10 p-6 xl:flex">
+          <section className="flex min-h-0 flex-1 flex-col">
+            <div className="mb-4">
+              <div className="min-w-0">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Creators
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {accounts.length} tracked · {trackedVideoCount} sources
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <button
                 type="button"
                 onClick={() => setActiveFilter("all")}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                  "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-colors",
                   activeFilter === "all"
                     ? "border border-white/10 bg-white/5 text-accent-blue"
                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
                 )}
               >
-                <span>Recent Discoveries</span>
-                <span className="rounded bg-accent-blue/20 px-1.5 text-[10px]">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent-blue/12 text-accent-blue">
+                  <Compass className="size-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block">Creator Feed</span>
+                  <span className="mt-0.5 block text-[10px] font-medium text-muted-foreground">
+                    All tracked creator videos
+                  </span>
+                </span>
+                <span className="rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-bold text-accent-blue">
                   {trackedVideoCount}
                 </span>
               </button>
             </div>
-          </section>
 
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                Creator Sync
-              </h3>
-              <button
-                type="button"
-                onClick={() => setCreatorSyncManageOpen((open) => !open)}
-                aria-pressed={creatorSyncManageOpen}
-                className={cn(
-                  "flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground",
-                  creatorSyncManageOpen && "bg-white/5 text-foreground"
-                )}
-                aria-label={
-                  creatorSyncManageOpen
-                    ? "Hide creator sync actions"
-                    : "Show creator sync actions"
-                }
-              >
-                <Settings2 className="size-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
+            <div
+              data-creator-list="true"
+              className="mt-3 min-h-0 flex-1 space-y-1 overflow-y-auto pr-1"
+            >
               {accounts.map((account) => {
                 const isActive = activeFilter === account.id;
                 const isRefreshing = refreshingIds.includes(account.id);
                 const isDeleting = deletingIds.includes(account.id);
                 const syncMeta = getCreatorSyncMeta(account, isRefreshing);
+                const hasSyncIssue =
+                  account.syncStatus === "error" || isRefreshing;
 
                 return (
                   <div
                     key={account.id}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg py-0.5 transition-colors",
-                      isActive && "text-accent-blue"
+                      "group rounded-xl border px-2 py-2 transition-colors",
+                      isActive
+                        ? "border border-white/10 bg-white/5 text-accent-blue"
+                        : "border-white/5 bg-white/[0.02] text-muted-foreground hover:bg-white/5 hover:text-foreground"
                     )}
                   >
                     <button
                       type="button"
                       onClick={() => setActiveFilter(account.id)}
-                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                      className="flex w-full min-w-0 items-center gap-2 text-left"
+                      title={`${account.handleDisplay} · ${syncMeta.label}`}
                     >
                       <CreatorSyncAvatar account={account} />
 
-                      <div className="min-w-0">
-                        <p className="truncate text-xs font-semibold">
+                      <div className="min-w-0 flex-1">
+                        <p className="line-clamp-2 break-all text-xs font-semibold leading-4">
                           {account.handleDisplay}
                         </p>
-                        <p
-                          className={cn(
-                            "mt-0.5 truncate text-[10px] font-medium",
-                            syncMeta.className
-                          )}
-                        >
-                          {syncMeta.label}
-                        </p>
+                        {hasSyncIssue && (
+                          <p
+                            className={cn(
+                              "mt-0.5 truncate text-[10px] font-medium",
+                              syncMeta.className
+                            )}
+                          >
+                            {syncMeta.label}
+                          </p>
+                        )}
                       </div>
+
+                      <span className="shrink-0 rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                        {account.videos.length}
+                      </span>
                     </button>
 
-                    <div
-                      className={cn(
-                        "flex shrink-0 items-center gap-1",
-                        creatorSyncManageOpen
-                          ? "opacity-100"
-                          : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-                      )}
-                    >
+                    <div className="mt-2 grid grid-cols-[minmax(0,1fr)_1.75rem] items-center gap-2 pl-10">
                       <button
                         type="button"
                         onClick={() => void handleRefreshAccount(account.id)}
                         disabled={isRefreshing || isDeleting}
-                        className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-7 min-w-0 items-center justify-center gap-1.5 rounded-lg bg-accent-blue/12 px-2.5 text-[10px] font-bold text-accent-blue transition-colors hover:bg-accent-blue/20 disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label={`Refresh ${account.handleDisplay}`}
                       >
                         {isRefreshing ? (
@@ -592,12 +582,13 @@ export function InspirationPageClient({
                         ) : (
                           <RefreshCw className="size-3.5" />
                         )}
+                        <span>Refresh</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => void handleDeleteAccount(account)}
                         disabled={isDeleting}
-                        className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex size-7 items-center justify-center rounded-lg text-destructive/65 transition-colors hover:bg-destructive/12 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label={`Remove ${account.handleDisplay}`}
                       >
                         {isDeleting ? (
@@ -605,6 +596,7 @@ export function InspirationPageClient({
                         ) : (
                           <Trash2 className="size-3.5" />
                         )}
+                        <span className="sr-only">Remove</span>
                       </button>
                     </div>
 
@@ -627,37 +619,14 @@ export function InspirationPageClient({
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  New Sources
+            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {activeSourceLabel}
                 </p>
-                <p className="text-2xl font-bold">{feedVideos.length}</p>
-                <p className="mt-2 text-xs text-accent-green">
-                  {sourceScopeLabel}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Tracked Creators
-                </p>
-                <p className="text-2xl font-bold">{trackedCreatorCount}</p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {trackedVideoCount} cached videos
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Top Creator
-                </p>
-                <p className="truncate text-2xl font-bold">
-                  {topAccount?.handleDisplay ?? "None"}
-                </p>
-                <p className="mt-2 text-xs text-accent-blue">
-                  {topAccount ? `${topAccount.videos.length} Sources active` : "Track a creator to start"}
-                </p>
+                <h2 className="mt-1 text-xl font-bold tracking-tight">
+                  {feedVideos.length} sources
+                </h2>
               </div>
             </div>
 
