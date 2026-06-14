@@ -15,7 +15,6 @@ import {
   X,
   Check,
   Image as ImageIcon,
-  Info,
 } from "lucide-react";
 
 // Auto-prepended to avatar generation prompts for optimal motion control reference images
@@ -463,13 +462,6 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         className="hidden"
         onChange={handleUpload}
       />
-
-      <div className="flex items-center gap-2 rounded-lg border border-accent-blue/20 bg-accent-blue/5 px-3 py-2">
-        <Info className="size-3.5 shrink-0 text-accent-blue" />
-        <p className="truncate text-[10px] text-white/45">
-          <span className="font-medium text-white/75">Best:</span> front-facing, clean background, one person.
-        </p>
-      </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {primaryAvatars.map((avatar, index) => {
