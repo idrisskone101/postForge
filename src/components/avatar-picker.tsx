@@ -43,6 +43,10 @@ interface GalleryFile {
   createdAt: string;
 }
 
+export function getAvatarOptionLabel(index: number): string {
+  return `Identity ${index + 1}`;
+}
+
 interface JobResult {
   id: string;
   status: "queued" | "processing" | "completed" | "failed";
@@ -468,8 +472,9 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {primaryAvatars.map((avatar) => {
+        {primaryAvatars.map((avatar, index) => {
           const isSelected = selectedId === avatar.id;
+          const avatarLabel = getAvatarOptionLabel(index);
           return (
             <div
               key={avatar.id}
@@ -488,13 +493,15 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                 <div className="aspect-[4/3] overflow-hidden rounded-lg bg-black">
                   <img
                     src={`/api/avatars/${avatar.id}`}
-                    alt={avatar.name}
+                    alt={avatarLabel}
                     className="size-full object-cover"
                   />
                 </div>
 
                 <div className="mt-3 flex items-center justify-between gap-2">
-                  <p className="min-w-0 truncate text-xs font-semibold text-white/85">{avatar.name}</p>
+                  <p className="min-w-0 truncate text-xs font-semibold text-white/85">
+                    {avatarLabel}
+                  </p>
                   <span
                     className={cn(
                       "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
@@ -512,7 +519,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                 type="button"
                 onClick={(e) => handleDelete(avatar.id, e)}
                 className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity hover:bg-destructive focus:opacity-100 group-hover:opacity-100"
-                aria-label={`Delete ${avatar.name}`}
+                aria-label={`Delete ${avatarLabel}`}
               >
                 <Trash2 className="size-3.5" />
               </button>
@@ -575,27 +582,31 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
       {secondaryAvatars.length > 0 && (
         <div className="grid max-h-24 grid-cols-4 gap-2 overflow-y-auto pr-1 sm:grid-cols-6">
-          {secondaryAvatars.map((avatar) => (
-            <button
-              key={avatar.id}
-              type="button"
-              onClick={() => onSelect(avatar.id)}
-              className={cn(
-                "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-green/50",
-                selectedId === avatar.id ? "border-accent-green" : "border-white/10"
-              )}
-              title={avatar.name}
-            >
-              <img
-                src={`/api/avatars/${avatar.id}`}
-                alt={avatar.name}
-                className="size-full object-cover"
-              />
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-left text-[9px] font-medium text-white">
-                <span className="block truncate">{avatar.name}</span>
-              </span>
-            </button>
-          ))}
+          {secondaryAvatars.map((avatar, index) => {
+            const avatarLabel = getAvatarOptionLabel(primaryAvatars.length + index);
+            return (
+              <button
+                key={avatar.id}
+                type="button"
+                onClick={() => onSelect(avatar.id)}
+                className={cn(
+                  "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-green/50",
+                  selectedId === avatar.id ? "border-accent-green" : "border-white/10"
+                )}
+                title={avatarLabel}
+                aria-label={`Select ${avatarLabel}`}
+              >
+                <img
+                  src={`/api/avatars/${avatar.id}`}
+                  alt={avatarLabel}
+                  className="size-full object-cover"
+                />
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-left text-[9px] font-medium text-white">
+                  <span className="block truncate">{avatarLabel}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
