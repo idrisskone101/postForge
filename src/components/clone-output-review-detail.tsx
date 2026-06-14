@@ -8,6 +8,7 @@ import {
   Download,
   ExternalLink,
   Loader2,
+  PlayCircle,
   RefreshCw,
   Send,
   Users,
@@ -171,6 +172,9 @@ export function CloneOutputReviewDetail({
   const sourceTitle =
     sourceVideo?.label ?? job.tikTokSource?.label ?? "Source clip unavailable";
   const sourceUrl = sourceVideo?.originalUrl ?? job.tikTokSource?.originalUrl;
+  const sourcePreviewUrl = sourceVideo
+    ? `/api/ugc-clone/preview?path=${encodeURIComponent(sourceVideo.localPath)}`
+    : null;
   const featuredSize = featured
     ? [featured.width && featured.height ? `${featured.width}x${featured.height}` : null, formatBytes(featured.fileSizeBytes)]
         .filter(Boolean)
@@ -377,10 +381,7 @@ export function CloneOutputReviewDetail({
 
         <aside className="space-y-5">
           <DetailSection title="Source Selection">
-            <div className="flex items-start gap-4">
-              <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-black text-xs text-muted-foreground">
-                9:16
-              </div>
+            <div className="space-y-4">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{sourceTitle}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -388,18 +389,43 @@ export function CloneOutputReviewDetail({
                     ? `${sourceVideo.width}x${sourceVideo.height} | ${formatDuration(sourceVideo.durationSec)}`
                     : "Original source context"}
                 </p>
-                {sourceUrl && (
-                  <a
-                    href={sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-accent-blue hover:underline"
-                  >
-                    View original
-                    <ExternalLink className="size-3" />
-                  </a>
-                )}
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+                  {sourceUrl && (
+                    <a
+                      href={sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent-blue hover:underline"
+                    >
+                      View original
+                      <ExternalLink className="size-3" />
+                    </a>
+                  )}
+                </div>
               </div>
+              {sourcePreviewUrl && sourceVideo && (
+                <details className="rounded-xl border border-border bg-black/40 p-2">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-2 py-1 text-[11px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <PlayCircle className="size-3.5 text-accent-green" />
+                      View source video
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {formatDuration(sourceVideo.durationSec)}
+                    </span>
+                  </summary>
+                  <div className="mt-2 overflow-hidden rounded-lg bg-black">
+                    <video
+                      src={sourcePreviewUrl}
+                      width={sourceVideo.width}
+                      height={sourceVideo.height}
+                      controls
+                      preload="metadata"
+                      className="max-h-80 w-full object-contain"
+                    />
+                  </div>
+                </details>
+              )}
             </div>
           </DetailSection>
 
