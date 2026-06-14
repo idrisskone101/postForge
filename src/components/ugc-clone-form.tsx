@@ -1203,7 +1203,7 @@ export function UGCCloneForm() {
                     <img
                       src={selectedSavedReference.previewUrl}
                       alt="Selected reference"
-                      className="aspect-square w-full rounded-lg object-contain"
+                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
                     />
                     <div className="mt-3 flex items-center justify-between">
                       <span className="text-[11px] font-medium">Aesthetic Reference</span>
@@ -1217,7 +1217,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : selectedRef?.status === "generating" ? (
-                  <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
+                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
                     <Loader2 className="size-7 animate-spin text-accent-coral" />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-white/50">
                       Generating Reference
@@ -1227,7 +1227,7 @@ export function UGCCloneForm() {
                     </span>
                   </div>
                 ) : selectedRef?.status === "failed" ? (
-                  <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-destructive/10 p-4 text-center">
+                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-destructive/10 p-4 text-center">
                     <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
                       Reference Failed
                     </span>
@@ -1243,7 +1243,7 @@ export function UGCCloneForm() {
                     <img
                       src={`/api/files/${selectedRef.fileId}`}
                       alt="Generated reference"
-                      className="aspect-square w-full rounded-lg object-contain"
+                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
                     />
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -1263,7 +1263,7 @@ export function UGCCloneForm() {
                     <img
                       src={primaryAvatarReference.previewUrl}
                       alt={primaryAvatarReference.label}
-                      className="aspect-square w-full rounded-lg object-cover"
+                      className="mx-auto aspect-[9/16] w-full max-w-[240px] rounded-lg object-cover"
                     />
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -1280,7 +1280,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex aspect-square flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
+                  <div className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center rounded-lg bg-zinc-950 text-center">
                     <Users className="size-6 text-white/20" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-white/40">
                       Select Identity
@@ -1297,7 +1297,7 @@ export function UGCCloneForm() {
                   type="button"
                   onClick={handleGenerateRefImage}
                   disabled={!canSubmit || isSubmitting || isGenerating}
-                  className="flex min-h-[168px] flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mx-auto flex aspect-[9/16] w-full max-w-[240px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting || isGenerating ? (
                     <Loader2 className="size-6 animate-spin text-white/30" />
@@ -1337,7 +1337,7 @@ export function UGCCloneForm() {
                             setSelectedRefIndex(index);
                           }}
                           className={cn(
-                            "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                            "relative aspect-[9/16] overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
                             !selectedSavedReference && selectedRefIndex === index
                               ? "border-accent-coral"
                               : "border-white/10"
@@ -1391,7 +1391,7 @@ export function UGCCloneForm() {
                         type="button"
                         onClick={() => handleSelectSavedReference(reference.id)}
                         className={cn(
-                          "relative aspect-square overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                          "relative aspect-[9/16] overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
                           reference.id === selectedSavedReferenceId
                             ? "border-accent-coral"
                             : "border-white/10"
@@ -1413,7 +1413,7 @@ export function UGCCloneForm() {
                     : visibleAvatarReferenceThumbnails.map((reference) => (
                       <div
                         key={reference.id}
-                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black"
+                        className="relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-black"
                         title={`${reference.label} • ${reference.detail}`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1429,7 +1429,7 @@ export function UGCCloneForm() {
                     ))}
                   <button
                     type="button"
-                    className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
+                    className="flex aspect-[9/16] items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
                     title={savedReferences.length > 0 ? "Saved references are shown first" : "Generate a scene reference from the selected avatar"}
                   >
                     <Plus className="size-4 text-white/20" />
@@ -1437,7 +1437,7 @@ export function UGCCloneForm() {
                 </div>
 
                 {savedReferences.length > visibleReferenceThumbnails.length ? (
-                  <div className="grid max-h-36 grid-cols-3 gap-2 overflow-y-auto pr-1">
+                  <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1">
                     {savedReferences.slice(2).map((reference) => (
                       <button
                         key={reference.id}
@@ -1452,7 +1452,7 @@ export function UGCCloneForm() {
                         title={reference.source?.label ?? "Saved reference"}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={reference.previewUrl} alt="" className="aspect-square w-full object-cover" />
+                        <img src={reference.previewUrl} alt="" className="aspect-[9/16] w-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -1461,11 +1461,11 @@ export function UGCCloneForm() {
                     Select an identity to show avatar references.
                   </div>
                 ) : avatarReferencePreviews.length > visibleAvatarReferenceThumbnails.length ? (
-                  <div className="grid max-h-36 grid-cols-3 gap-2 overflow-y-auto pr-1">
+                  <div className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1">
                     {avatarReferencePreviews.slice(2).map((reference) => (
                       <div
                         key={reference.id}
-                        className="relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-black"
+                        className="relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-black"
                         title={`${reference.label} • ${reference.detail}`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
