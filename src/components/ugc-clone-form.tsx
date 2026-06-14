@@ -1415,66 +1415,94 @@ export function UGCCloneForm() {
 
         <div className="flex flex-col gap-6 lg:col-span-4">
           <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-5">
-            <h2 className="mb-4 px-1 text-xs font-bold uppercase tracking-widest text-white/40">
+            <h2 className="px-1 text-xs font-bold uppercase tracking-widest text-white/40">
               Generation Settings
             </h2>
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Video Model
-                </label>
-                <div className="grid gap-2">
-                  {cloneVideoModels.map((model) => (
-                    <button
-                      key={model.id}
-                      type="button"
-                      onClick={() => setSelectedModel(model.id as typeof selectedModel)}
-                      className={cn(
-                        "rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
-                        selectedModel === model.id
-                          ? "border-accent-blue bg-accent-blue/10 text-accent-blue"
-                          : "border-white/10 bg-white/5 text-white/70"
-                      )}
-                    >
-                      <span className="block text-xs font-bold">{model.name}</span>
-                      <span className="mt-0.5 block font-mono text-[10px] opacity-70">
-                        {formatCost(calculateEstimatedCost(model.id, { durationSec }))} est.
-                      </span>
-                    </button>
-                  ))}
+            <div className="mt-4 space-y-5">
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
+                    Models
+                  </h3>
+                  <p className="mt-1 text-[10px] leading-4 text-white/35">
+                    Pick the final video model and the reference-image model.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <fieldset className="space-y-2">
+                    <legend className="text-[10px] font-bold uppercase tracking-wider text-accent-blue">
+                      Final video
+                    </legend>
+                    <div className="grid gap-2">
+                      {cloneVideoModels.map((model) => (
+                        <button
+                          key={model.id}
+                          type="button"
+                          onClick={() => setSelectedModel(model.id as typeof selectedModel)}
+                          className={cn(
+                            "flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
+                            selectedModel === model.id
+                              ? "border-accent-blue bg-accent-blue/10 text-accent-blue"
+                              : "border-white/10 bg-white/5 text-white/70"
+                          )}
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate text-xs font-bold">{model.name}</span>
+                            <span className="mt-0.5 block text-[10px] opacity-60">
+                              Motion-control clone video
+                            </span>
+                          </span>
+                          <span className="shrink-0 font-mono text-[10px] opacity-75">
+                            {formatCost(calculateEstimatedCost(model.id, { durationSec }))}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <fieldset className="space-y-2">
+                    <legend className="text-[10px] font-bold uppercase tracking-wider text-accent-green">
+                      Reference image
+                    </legend>
+                    <div className="grid gap-2">
+                      {referenceImageModels.map((model) => (
+                        <button
+                          key={model.id}
+                          type="button"
+                          onClick={() => setSelectedReferenceImageModel(model.id)}
+                          className={cn(
+                            "flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
+                            selectedReferenceImageModel === model.id
+                              ? "border-accent-green bg-accent-green/10 text-accent-green"
+                              : "border-white/10 bg-white/5 text-white/70"
+                          )}
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate text-xs font-bold">{model.name}</span>
+                            <span className="mt-0.5 block text-[10px] opacity-60">
+                              Identity/reference still
+                            </span>
+                          </span>
+                          <span className="shrink-0 font-mono text-[10px] opacity-75">
+                            {formatCost(calculateEstimatedCost(model.id, { numImages: 1 }))}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Reference Image Model
-                </label>
-                <div className="grid gap-2">
-                  {referenceImageModels.map((model) => (
-                    <button
-                      key={model.id}
-                      type="button"
-                      onClick={() => setSelectedReferenceImageModel(model.id)}
-                      className={cn(
-                        "rounded-lg border px-3 py-2 text-left transition-colors hover:bg-white/10",
-                        selectedReferenceImageModel === model.id
-                          ? "border-accent-green bg-accent-green/10 text-accent-green"
-                          : "border-white/10 bg-white/5 text-white/70"
-                      )}
-                    >
-                      <span className="block text-xs font-bold">{model.name}</span>
-                      <span className="mt-0.5 block font-mono text-[10px] opacity-70">
-                        {formatCost(calculateEstimatedCost(model.id, { numImages: 1 }))} / image
-                      </span>
-                    </button>
-                  ))}
+              <div className="space-y-3 border-t border-white/10 pt-5">
+                <div>
+                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
+                    Scene Direction
+                  </h3>
+                  <p className="mt-1 text-[10px] leading-4 text-white/35">
+                    Describe the framing and environment for the reference image.
+                  </p>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-tighter text-white/60">
-                  Scene Direction
-                </label>
                 <div className="grid gap-2">
                   {PROMPT_PRESETS.map((preset) => (
                     <button
@@ -1517,28 +1545,38 @@ export function UGCCloneForm() {
                 />
               </div>
 
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
-                  <div className="flex items-center gap-3">
-                    <Volume2 className="size-4 text-white/40" />
-                    <div>
-                      <p className="text-xs font-semibold text-white/80">Keep original sound</p>
-                      <p className="text-[10px] text-white/35">Preserve the TikTok audio track.</p>
-                    </div>
-                  </div>
-                  <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
+              <div className="space-y-3 border-t border-white/10 pt-5">
+                <div>
+                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-white/60">
+                    Audio &amp; cleanup
+                  </h3>
+                  <p className="mt-1 text-[10px] leading-4 text-white/35">
+                    Choose what to preserve or remove from the source clip.
+                  </p>
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
-                  <div>
-                    <p className="text-xs font-semibold text-white/80">Remove text overlays</p>
-                    <p className="text-[10px] text-white/35">
-                      Strip hook text before motion control
-                      {removeTextOverlays && (
-                        <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
-                      )}
-                    </p>
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                    <div className="flex items-center gap-3">
+                      <Volume2 className="size-4 text-white/40" />
+                      <div>
+                        <p className="text-xs font-semibold text-white/80">Keep original sound</p>
+                        <p className="text-[10px] text-white/35">Preserve the TikTok audio track.</p>
+                      </div>
+                    </div>
+                    <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
                   </div>
-                  <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                    <div>
+                      <p className="text-xs font-semibold text-white/80">Remove text overlays</p>
+                      <p className="text-[10px] text-white/35">
+                        Strip hook text before motion control
+                        {removeTextOverlays && (
+                          <span className="text-accent-green"> (+{formatCost(textErasureCost)})</span>
+                        )}
+                      </p>
+                    </div>
+                    <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
+                  </div>
                 </div>
               </div>
             </div>
