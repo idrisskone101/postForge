@@ -60,8 +60,30 @@ interface CostsPageClientProps {
 }
 
 const LOGS_PAGE_SIZE = 10;
+const PERIOD_OPTIONS = ["7d", "30d", "90d"] as const;
+
+interface SpendPageContentProps extends CostsPageClientProps {
+  onPeriodChange: (period: string) => void;
+}
 
 export function CostsPageClient({
+  period,
+  ...props
+}: CostsPageClientProps) {
+  const router = useRouter();
+
+  return (
+    <SpendPageContent
+      {...props}
+      period={period}
+      onPeriodChange={(value) => {
+        if (value) router.push(`/costs?period=${value}`);
+      }}
+    />
+  );
+}
+
+export function SpendPageContent({
   totalCost,
   currentPeriodCost,
   changePercent,
@@ -73,8 +95,8 @@ export function CostsPageClient({
   breakdown,
   logs,
   period,
-}: CostsPageClientProps) {
-  const router = useRouter();
+  onPeriodChange,
+}: SpendPageContentProps) {
   const [logPage, setLogPage] = useState(0);
 
   const modelEntries = Object.entries(byModel).sort(
@@ -88,10 +110,6 @@ export function CostsPageClient({
 
   const totalModelCost = modelEntries.reduce((s, [, d]) => s + d.cost, 0);
 
-  const handlePeriodChange = (value: string) => {
-    if (value) router.push(`/costs?period=${value}`);
-  };
-
   const exportCSV = () => {
     const header = "Date,Model,Type,Amount\n";
     const rows = logs
@@ -101,7 +119,7 @@ export function CostsPageClient({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `postforge-analytics-${period}.csv`;
+    a.download = `postforge-spend-${period}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -111,37 +129,37 @@ export function CostsPageClient({
     (logPage + 1) * LOGS_PAGE_SIZE
   );
   const totalPages = Math.ceil(logs.length / LOGS_PAGE_SIZE);
+  const formatTotal = breakdown.image.cost + breakdown.video.cost;
+  const imagePct = formatTotal > 0 ? (breakdown.image.cost / formatTotal) * 100 : 0;
+  const videoPct = formatTotal > 0 ? (breakdown.video.cost / formatTotal) * 100 : 0;
 
   return (
-    <div className="p-4 lg:p-6 space-y-4 animate-fade-in-up">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-baseline gap-4">
-          <h1 className="text-xl font-bold">
-            Spend
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Track your generation spending and usage
+    <div className="mx-auto max-w-[1280px] space-y-6 p-5 sm:p-6 lg:p-8 animate-fade-in-up">
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-card/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Spend controls
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Cost tracking, budget signals, and model usage.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center text-[11px] font-semibold tracking-wide">
-            {(["7d", "30d", "90d"] as const).map((p, i) => (
-              <React.Fragment key={p}>
-                {i > 0 && <span className="text-foreground/20">|</span>}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center rounded-lg border border-border bg-background/60 p-1 text-[11px] font-semibold tracking-wide">
+            {PERIOD_OPTIONS.map((p) => (
                 <button
-                  onClick={() => handlePeriodChange(p)}
+                  key={p}
+                  onClick={() => onPeriodChange(p)}
                   className={cn(
-                    "px-2 transition-colors",
+                    "rounded-md px-3 py-1.5 transition-colors",
                     period === p
-                      ? "text-foreground border-b border-accent-coral"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
                 >
                   {p.toUpperCase()}
                 </button>
-              </React.Fragment>
             ))}
           </div>
 
@@ -150,26 +168,25 @@ export function CostsPageClient({
               render={
                 <button
                   onClick={exportCSV}
-                  className="p-2 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background/60 px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 />
               }
             >
               <Download className="size-4" />
+              <span>Export CSV</span>
             </TooltipTrigger>
             <TooltipContent>Export CSV</TooltipContent>
           </Tooltip>
         </div>
       </div>
 
-      {/* Stats Strip */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden flex divide-x divide-border py-3">
-        {/* Spend */}
-        <div className="flex-1 px-6 flex flex-col gap-0.5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="rounded-lg border border-border bg-card p-5">
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Spend
+            Period Spend
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold leading-tight">
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold leading-tight">
               {formatCost(currentPeriodCost)}
             </span>
             {changePercent !== 0 && (
@@ -184,37 +201,37 @@ export function CostsPageClient({
               </span>
             )}
           </div>
+          <p className="mt-2 text-[10px] text-muted-foreground">
+            {formatCost(totalCost)} all-time spend
+          </p>
         </div>
 
-        {/* Forge Cycles */}
-        <div className="flex-1 px-6 flex flex-col gap-0.5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             Forge Cycles
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold leading-tight">{totalJobs}</span>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold leading-tight">{totalJobs}</span>
           </div>
         </div>
 
-        {/* Avg Cost */}
-        <div className="flex-1 px-6 flex flex-col gap-0.5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             Avg Cost
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold leading-tight">
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold leading-tight">
               {formatCost(avgCycleCost)}
             </span>
           </div>
         </div>
 
-        {/* Top Model */}
-        <div className="flex-1 px-6 flex flex-col gap-0.5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             Top Model
           </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold leading-tight truncate">
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="truncate text-2xl font-bold leading-tight">
               {topModel ? topModel.name : "N/A"}
             </span>
             {topModel && (
@@ -226,14 +243,81 @@ export function CostsPageClient({
         </div>
       </div>
 
-      {/* Charts — unified panel */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="rounded-lg border border-border bg-card p-5">
+          <span className="mb-4 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Spend by Format
+          </span>
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-medium">
+                <span className="text-muted-foreground">Video generations</span>
+                <span>{formatCost(breakdown.video.cost)}</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-accent-coral"
+                  style={{ width: `${videoPct}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                {breakdown.video.count} video {breakdown.video.count === 1 ? "job" : "jobs"}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-medium">
+                <span className="text-muted-foreground">Image generations</span>
+                <span>{formatCost(breakdown.image.cost)}</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-accent-blue"
+                  style={{ width: `${imagePct}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                {breakdown.image.count} image {breakdown.image.count === 1 ? "job" : "jobs"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-5">
+          <span className="mb-4 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Spend by Model
+          </span>
+          <div className="space-y-3">
+            {modelEntries.length > 0 ? (
+              modelEntries.map(([name, data], i) => (
+                <div
+                  key={name}
+                  className="flex items-center justify-between gap-4 rounded-lg border border-border bg-background/40 p-3"
+                >
+                  <span className="flex min-w-0 items-center gap-2 text-xs font-medium">
+                    <span
+                      className="inline-block size-2 rounded-full shrink-0"
+                      style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
+                    />
+                    <span className="truncate">{name}</span>
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold">
+                    {formatCost(data.cost)}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No model spend yet</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="bg-card border border-border rounded-lg p-5">
         <div className="flex flex-col lg:flex-row lg:items-stretch gap-8">
-          {/* Spending chart */}
           <div className="flex-1 min-w-0 flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                Spending Trajectory
+                Spend Over Time
               </span>
               <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                 <span className="flex items-center gap-1">
@@ -249,7 +333,6 @@ export function CostsPageClient({
             <CostChart data={chartData} />
           </div>
 
-          {/* Model distribution */}
           <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col">
             <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4 block">
               Model Distribution
@@ -291,12 +374,10 @@ export function CostsPageClient({
         </div>
       </div>
 
-      {/* Forge Logs */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
-        {/* Header bar */}
         <div className="px-5 py-3 border-b border-border flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            Recent Activity
+            Cost Log
           </span>
           <span className="text-[10px] text-muted-foreground">
             {logs.length} {logs.length === 1 ? "entry" : "entries"}
