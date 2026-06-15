@@ -104,6 +104,8 @@ model Avatar {
   width         Int?
   height        Int?
   fileSizeBytes Int?
+  origin        String   @default("uploaded")
+  provenance    Json?
   data          Bytes?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -111,6 +113,7 @@ model Avatar {
   identityPacks AvatarIdentityPack[]
 
   @@index([createdAt])
+  @@index([origin])
 }
 
 model AvatarIdentityPack {
