@@ -15,6 +15,7 @@ import {
   X,
   Check,
   Image as ImageIcon,
+  FileJson,
 } from "lucide-react";
 
 // Auto-prepended to avatar generation prompts for optimal motion control reference images
@@ -32,7 +33,7 @@ interface AvatarPickerProps {
   onSelect: (id: string) => void;
 }
 
-type Mode = "grid" | "generate" | "gallery";
+type Mode = "grid" | "generate" | "gallery" | "import";
 
 interface GalleryFile {
   id: string;
@@ -42,8 +43,259 @@ interface GalleryFile {
   createdAt: string;
 }
 
+export interface AvatarSeedReferenceImage {
+  name: string;
+  size: number;
+  type: string;
+}
+
 export function getAvatarOptionLabel(index: number): string {
   return `Identity ${index + 1}`;
+}
+
+export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCount: number) {
+  let jsonError: string | null = null;
+  let seedError: string | null = null;
+
+  try {
+    JSON.parse(rawJson);
+  } catch {
+    jsonError = "Avatar Profile must be valid JSON.";
+  }
+
+  if (seedReferenceImageCount < 1) {
+    seedError = "Add at least 1 Seed Reference Image.";
+  } else if (seedReferenceImageCount > 5) {
+    seedError = "Use no more than 5 Seed Reference Images.";
+  }
+
+  return {
+    canGenerateCandidates: !jsonError && !seedError,
+    jsonError,
+    seedError,
+  };
+}
+
+interface AvatarCreationCardProps {
+  isUploading: boolean;
+  onUpload: () => void;
+  onGenerate: () => void;
+  onGallery: () => void;
+  onImport: () => void;
+}
+
+export function AvatarCreationCard({
+  isUploading,
+  onUpload,
+  onGenerate,
+  onGallery,
+  onImport,
+}: AvatarCreationCardProps) {
+  return (
+    <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-2.5">
+      <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-black/20 text-center">
+        <Sparkles className="size-6 text-white/25" />
+        <p className="mt-3 text-xs font-bold uppercase tracking-widest text-white/45">
+          New Avatar
+        </p>
+        <p className="mt-1 text-[10px] leading-4 text-white/25">
+          Upload, generate, import, or choose from gallery.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        <button
+          type="button"
+          data-avatar-action="upload"
+          onClick={onUpload}
+          disabled={isUploading}
+          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
+        >
+          {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          <span className="text-[8px] font-bold uppercase tracking-wide">Upload</span>
+        </button>
+
+        <button
+          type="button"
+          data-avatar-action="generate"
+          onClick={onGenerate}
+          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-blue hover:text-accent-blue"
+        >
+          <Sparkles className="size-4" />
+          <span className="text-[8px] font-bold uppercase tracking-wide">Generate</span>
+        </button>
+
+        <button
+          type="button"
+          data-avatar-action="import"
+          onClick={onImport}
+          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green"
+        >
+          <FileJson className="size-4" />
+          <span className="text-[8px] font-bold uppercase tracking-wide">Import</span>
+        </button>
+
+        <button
+          type="button"
+          data-avatar-action="gallery"
+          onClick={onGallery}
+          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-coral hover:text-accent-coral"
+        >
+          <ImageIcon className="size-4" />
+          <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface AvatarImportPanelProps {
+  rawJson: string;
+  seedReferenceImages: AvatarSeedReferenceImage[];
+  isGeneratingCandidates: boolean;
+  generationError: string | null;
+  onBack: () => void;
+  onRawJsonChange: (value: string) => void;
+  onJsonFileChange: (files: FileList | null) => void;
+  onSeedReferenceImagesChange: (files: FileList | null) => void;
+  onRemoveSeedReferenceImage: (index: number) => void;
+  onGenerateCandidates: () => void;
+}
+
+export function AvatarImportPanel({
+  rawJson,
+  seedReferenceImages,
+  isGeneratingCandidates,
+  generationError,
+  onBack,
+  onRawJsonChange,
+  onJsonFileChange,
+  onSeedReferenceImagesChange,
+  onRemoveSeedReferenceImage,
+  onGenerateCandidates,
+}: AvatarImportPanelProps) {
+  const readiness = getAvatarImportReadiness(rawJson, seedReferenceImages.length);
+
+  return (
+    <div className="space-y-4">
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="size-4" />
+        Back to avatars
+      </button>
+
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent-green/10 text-accent-green">
+            <FileJson className="size-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-white">Import Avatar</h3>
+            <p className="mt-1 text-xs leading-5 text-white/45">
+              Add raw Avatar Profile JSON and 1 to 5 Seed Reference Images.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+            Avatar Profile JSON
+          </label>
+          <label className="cursor-pointer rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green">
+            Upload JSON
+            <input
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(event) => onJsonFileChange(event.target.files)}
+            />
+          </label>
+        </div>
+        <Textarea
+          value={rawJson}
+          onChange={(event) => onRawJsonChange(event.target.value)}
+          placeholder={`{
+  "name": "Imported Avatar"
+}`}
+          className="min-h-[160px] resize-y rounded-xl border-white/10 bg-black/20 font-mono text-xs text-white/75 placeholder:text-white/25"
+        />
+        {readiness.jsonError && (
+          <p className="text-xs font-medium text-destructive">{readiness.jsonError}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+            Seed Reference Images
+          </label>
+          <label className="cursor-pointer rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green">
+            Upload Images
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(event) => onSeedReferenceImagesChange(event.target.files)}
+            />
+          </label>
+        </div>
+
+        {seedReferenceImages.length > 0 ? (
+          <div className="space-y-2">
+            {seedReferenceImages.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-semibold text-white/75">{file.name}</p>
+                  <p className="text-[10px] text-white/35">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemoveSeedReferenceImage(index)}
+                  aria-label={`Remove ${file.name}`}
+                  className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/35 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-6 text-center text-xs text-white/35">
+            Upload 1 to 5 Seed Reference Images.
+          </div>
+        )}
+
+        {readiness.seedError && (
+          <p className="text-xs font-medium text-destructive">{readiness.seedError}</p>
+        )}
+      </div>
+
+      {generationError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+          {generationError}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={onGenerateCandidates}
+        disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isGeneratingCandidates ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+        Generate candidates
+      </button>
+    </div>
+  );
 }
 
 interface JobResult {
@@ -77,6 +329,12 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const [galleryFiles, setGalleryFiles] = useState<GalleryFile[]>([]);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [savingFileId, setSavingFileId] = useState<string | null>(null);
+
+  // Import state
+  const [importRawJson, setImportRawJson] = useState("");
+  const [seedReferenceImages, setSeedReferenceImages] = useState<File[]>([]);
+  const [isGeneratingImportCandidates, setIsGeneratingImportCandidates] = useState(false);
+  const [importGenerationError, setImportGenerationError] = useState<string | null>(null);
 
   const imageModels = getModelsByType("image");
 
@@ -246,6 +504,44 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     setMode("grid");
     setGenJobId(null);
     setGenPrompt("");
+  };
+
+  const handleImportJsonFile = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+
+    setImportGenerationError(null);
+    try {
+      setImportRawJson(await file.text());
+    } catch {
+      setImportGenerationError("Avatar Profile JSON file could not be read.");
+    }
+  };
+
+  const handleSeedReferenceImages = (files: FileList | null) => {
+    if (!files) return;
+    setImportGenerationError(null);
+    setSeedReferenceImages((current) => [...current, ...Array.from(files)]);
+  };
+
+  const handleRemoveSeedReferenceImage = (index: number) => {
+    setImportGenerationError(null);
+    setSeedReferenceImages((current) => current.filter((_, currentIndex) => currentIndex !== index));
+  };
+
+  const handleGenerateImportCandidates = async () => {
+    const readiness = getAvatarImportReadiness(importRawJson, seedReferenceImages.length);
+    if (!readiness.canGenerateCandidates) return;
+
+    setIsGeneratingImportCandidates(true);
+    setImportGenerationError(null);
+    try {
+      await Promise.reject(new Error("Import Avatar candidate generation is not wired in this slice."));
+    } catch {
+      setImportGenerationError("Candidate generation failed. Your inputs are still available for retry.");
+    } finally {
+      setIsGeneratingImportCandidates(false);
+    }
   };
 
   if (isLoading) {
@@ -442,6 +738,26 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     );
   }
 
+  if (mode === "import") {
+    return (
+      <AvatarImportPanel
+        rawJson={importRawJson}
+        seedReferenceImages={seedReferenceImages}
+        isGeneratingCandidates={isGeneratingImportCandidates}
+        generationError={importGenerationError}
+        onBack={() => setMode("grid")}
+        onRawJsonChange={(value) => {
+          setImportGenerationError(null);
+          setImportRawJson(value);
+        }}
+        onJsonFileChange={handleImportJsonFile}
+        onSeedReferenceImagesChange={handleSeedReferenceImages}
+        onRemoveSeedReferenceImage={handleRemoveSeedReferenceImage}
+        onGenerateCandidates={handleGenerateImportCandidates}
+      />
+    );
+  }
+
   // Grid mode (default)
   const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId);
   const orderedAvatars = (
@@ -524,50 +840,13 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           </div>
         )}
 
-        <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-2.5">
-          <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-black/20 text-center">
-            <Sparkles className="size-6 text-white/25" />
-            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-white/45">
-              New Identity
-            </p>
-            <p className="mt-1 text-[10px] leading-4 text-white/25">
-              Upload, generate, or import from gallery.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              data-avatar-action="upload"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
-            >
-              {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-              <span className="text-[8px] font-bold uppercase tracking-wide">Upload</span>
-            </button>
-
-            <button
-              type="button"
-              data-avatar-action="generate"
-              onClick={() => setMode("generate")}
-              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-blue hover:text-accent-blue"
-            >
-              <Sparkles className="size-4" />
-              <span className="text-[8px] font-bold uppercase tracking-wide">Generate</span>
-            </button>
-
-            <button
-              type="button"
-              data-avatar-action="gallery"
-              onClick={openGallery}
-              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-coral hover:text-accent-coral"
-            >
-              <ImageIcon className="size-4" />
-              <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
-            </button>
-          </div>
-        </div>
+        <AvatarCreationCard
+          isUploading={isUploading}
+          onUpload={() => fileInputRef.current?.click()}
+          onGenerate={() => setMode("generate")}
+          onGallery={openGallery}
+          onImport={() => setMode("import")}
+        />
       </div>
     </div>
   );
