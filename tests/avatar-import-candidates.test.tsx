@@ -4,6 +4,7 @@ import {
   appendAvatarCandidateSet,
   AvatarImportPanel,
   buildAvatarCandidateGenerationRequest,
+  getDefaultAvatarImportName,
   resetAvatarImportDraft,
 } from "../src/components/avatar-picker";
 
@@ -29,6 +30,10 @@ assert.match(request.prompt, /stable core identity/i);
 assert.match(request.prompt, /simple varied backgrounds/i);
 assert.match(request.prompt, /no bedroom/i);
 assert.match(request.prompt, /no lifestyle/i);
+
+assert.equal(getDefaultAvatarImportName('{"name":"Imported Creator"}'), "Imported Creator");
+assert.equal(getDefaultAvatarImportName('{"displayName":"Display Creator"}'), "Display Creator");
+assert.equal(getDefaultAvatarImportName("{bad json"), "Imported Avatar");
 
 assert.deepEqual(
   appendAvatarCandidateSet(
@@ -74,6 +79,7 @@ assert.deepEqual(
 const candidateReviewMarkup = renderToStaticMarkup(
   <AvatarImportPanel
     rawJson='{"name":"Imported Creator"}'
+    avatarName="Edited Creator"
     seedReferenceImages={[{ name: "front.jpg", size: 1000, type: "image/jpeg" }]}
     candidateSets={[
       {
@@ -88,6 +94,7 @@ const candidateReviewMarkup = renderToStaticMarkup(
     isGeneratingCandidates={false}
     generationError={null}
     onBack={() => {}}
+    onAvatarNameChange={() => {}}
     onRawJsonChange={() => {}}
     onJsonFileChange={() => {}}
     onSeedReferenceImagesChange={() => {}}
@@ -98,6 +105,8 @@ const candidateReviewMarkup = renderToStaticMarkup(
 );
 
 assert.match(candidateReviewMarkup, /Avatar Candidates/);
+assert.match(candidateReviewMarkup, /Avatar name/);
+assert.match(candidateReviewMarkup, /value="Edited Creator"/);
 assert.match(candidateReviewMarkup, /Candidate 1/);
 assert.match(candidateReviewMarkup, /Candidate 2/);
 assert.match(candidateReviewMarkup, /Candidate 3/);

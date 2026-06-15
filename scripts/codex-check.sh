@@ -15,6 +15,7 @@ pnpm test:generate-tool
 pnpm test:generate-output-actions
 pnpm test:avatar-picker
 pnpm test:avatar-import-candidates
+pnpm test:avatar-import-acceptance
 pnpm test:avatar-provenance
 pnpm test:video-trimmer
 pnpm test:clone-production-state
