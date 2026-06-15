@@ -4,6 +4,7 @@ import {
   AvatarOptionCard,
   AvatarCreationCard,
   AvatarImportPanel,
+  buildAvatarGenerationPrompt,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
 } from "../src/components/avatar-picker";
@@ -28,6 +29,23 @@ assert.match(creationMarkup, /data-avatar-action="upload"/);
 assert.match(creationMarkup, /data-avatar-action="generate"/);
 assert.match(creationMarkup, /data-avatar-action="gallery"/);
 assert.match(creationMarkup, /data-avatar-action="import"/);
+
+const generatedAvatarPrompt = buildAvatarGenerationPrompt(
+  "white cami close-up selfie with soft smile"
+);
+
+assert.match(generatedAvatarPrompt, /Pinterest-style pretty girl/i);
+assert.match(generatedAvatarPrompt, /soft baddie/i);
+assert.match(generatedAvatarPrompt, /iPhone influencer selfie/i);
+assert.match(generatedAvatarPrompt, /natural iPhone/i);
+assert.match(generatedAvatarPrompt, /slight grain/i);
+assert.match(generatedAvatarPrompt, /realistic skin texture/i);
+assert.match(generatedAvatarPrompt, /not overly polished/i);
+assert.match(generatedAvatarPrompt, /not glossy AI/i);
+assert.match(generatedAvatarPrompt, /approachable/i);
+assert.match(generatedAvatarPrompt, /white cami close-up selfie with soft smile/i);
+assert.doesNotMatch(generatedAvatarPrompt, /studio lighting/i);
+assert.doesNotMatch(generatedAvatarPrompt, /Professional headshot/i);
 
 assert.deepEqual(getAvatarImportReadiness("{\"anything\":true}", 1), {
   canGenerateCandidates: true,

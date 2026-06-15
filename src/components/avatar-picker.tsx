@@ -18,9 +18,17 @@ import {
   FileJson,
 } from "lucide-react";
 
-// Auto-prepended to avatar generation prompts for optimal motion control reference images
-const AVATAR_PROMPT_PREFIX =
-  "Professional headshot portrait, front-facing or slight 3/4 angle, studio lighting, clean neutral background, high resolution, photorealistic, sharp focus, ";
+const AVATAR_GENERATION_STYLE_PROMPT = [
+  "Create a photorealistic avatar with a Pinterest-style pretty girl, soft baddie, girly pop UGC creator aesthetic.",
+  "Use an iPhone influencer selfie feel with natural iPhone available light, slight grain, realistic skin texture, soft baby hairs, subtle flyaways, and imperfect real-photo sharpness.",
+  "The person should feel attractive, warm, feminine, approachable, and aspirational, not intimidating.",
+  "Favor warm medium tan glowing skin, brunette hair, full natural brows, almond brown eyes, glossy nude pink-brown lips, soft blush, clean-girl soft glam, gold hoop earrings, and feminine fitted basics such as a white cami, ribbed tank, baby tee, or simple white dress when relevant.",
+  "Keep the look Pinterest attractive it-girl and relatable UGC creator, not overly polished, not glossy AI, not a studio headshot, not cold high-fashion editorial retouching.",
+].join(" ");
+
+export function buildAvatarGenerationPrompt(userPrompt: string): string {
+  return `${AVATAR_GENERATION_STYLE_PROMPT} User direction: ${userPrompt.trim()}`;
+}
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -701,8 +709,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     if (!genPrompt.trim()) return;
 
     try {
-      // Auto-enhance prompt with quality modifiers for optimal motion control results
-      const enhancedPrompt = AVATAR_PROMPT_PREFIX + genPrompt.trim();
+      const enhancedPrompt = buildAvatarGenerationPrompt(genPrompt);
       const result = await apiPost<{ id: string }>("/api/generate/images", {
         prompt: enhancedPrompt,
         model: genModel,
