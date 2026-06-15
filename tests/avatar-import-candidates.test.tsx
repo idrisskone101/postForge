@@ -25,9 +25,14 @@ assert.deepEqual(request.referenceImageUrls, [
   "data:image/jpeg;base64,side",
   "data:image/jpeg;base64,smile",
 ]);
-assert.match(request.prompt, /clean portrait source images/i);
+assert.match(request.prompt, /clean single-image portrait candidates/i);
 assert.match(request.prompt, /stable core identity/i);
 assert.match(request.prompt, /simple varied backgrounds/i);
+assert.match(request.prompt, /exactly one standalone 9:16 portrait/i);
+assert.match(request.prompt, /single person/i);
+assert.match(request.prompt, /no collage/i);
+assert.match(request.prompt, /no contact sheet/i);
+assert.match(request.prompt, /no multi-panel/i);
 assert.match(request.prompt, /no bedroom/i);
 assert.match(request.prompt, /no lifestyle/i);
 
