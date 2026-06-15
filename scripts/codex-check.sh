@@ -14,6 +14,7 @@ pnpm test:media-preview-frame
 pnpm test:generate-tool
 pnpm test:generate-output-actions
 pnpm test:avatar-picker
+pnpm test:avatar-provenance
 pnpm test:video-trimmer
 pnpm test:clone-production-state
 pnpm test:clone-output-review-detail

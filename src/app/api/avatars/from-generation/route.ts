@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { randomUUID } from "crypto";
+import {
+  buildAvatarCreateData,
+  serializeAvatarApiRecord,
+} from "@/lib/avatar-provenance";
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
     const localPath = await storage.save("avatars", filename, data);
 
     const avatar = await prisma.avatar.create({
-      data: {
+      data: buildAvatarCreateData({
         name,
         localPath,
         filename,
@@ -50,10 +54,11 @@ export async function POST(request: NextRequest) {
         width: file.width,
         height: file.height,
         fileSizeBytes: file.fileSizeBytes,
-      },
+        origin: "generated",
+      }),
     });
 
-    return NextResponse.json(avatar, { status: 201 });
+    return NextResponse.json(serializeAvatarApiRecord(avatar), { status: 201 });
   } catch (error) {
     console.error("Failed to create avatar from generation:", error);
     return NextResponse.json(
