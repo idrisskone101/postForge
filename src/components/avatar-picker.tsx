@@ -193,9 +193,10 @@ export function buildAvatarCandidateGenerationRequest({
     prompt: [
       "Generate clean single-image portrait candidates for Avatar Candidate review.",
       "Each output image must be exactly one standalone 9:16 portrait photo of a single person.",
-      "Preserve the same stable core identity from the Avatar Profile and Seed Reference Images.",
-      "Vary only presentation lightly with simple varied backgrounds.",
-      "Use a natural iPhone front-camera UGC look with casual available light, slight grain, realistic texture, subtle skin detail, and imperfect real-photo sharpness.",
+      "Prioritize matching the Seed Reference Images: facial structure, skin tone, hair color, brow shape, eye shape, lip shape, expression range, and overall reference-image attractiveness should stay close.",
+      "Preserve the same stable core identity from the Avatar Profile and Seed Reference Images; do not invent a different face.",
+      "Vary presentation with simple varied backgrounds and a varied wardrobe of cool and hip outfit choices such as fitted tanks, baby tees, ribbed camis, oversized button-ups, denim, athleisure, or casual Pinterest-style basics.",
+      "Use a natural iPhone front-camera UGC look with casual available light, slight grain, phone compression, lower-fidelity selfie texture, subtle skin detail, and imperfect real-photo sharpness.",
       "The result should feel like a believable phone photo, not overly polished, not glossy AI, not a studio headshot, not editorial retouching.",
       "Use all provided Seed Reference Images as the identity reference set for every candidate.",
       "Do not combine seed images into the output.",
