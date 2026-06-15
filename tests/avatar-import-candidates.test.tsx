@@ -31,6 +31,36 @@ assert.match(request.prompt, /simple varied backgrounds/i);
 assert.match(request.prompt, /no bedroom/i);
 assert.match(request.prompt, /no lifestyle/i);
 
+const avatarConcept = {
+  avatar_concept: {
+    goal: "Create a photorealistic fictional female UGC influencer avatar inspired by the reference aesthetic.",
+    overall_vibe: "iPhone influencer baddie, girly pop, clean girl, confident, polished, relatable, modern social media creator",
+  },
+  output_settings: {
+    aspect_ratio: "9:16",
+    orientation: "vertical portrait",
+  },
+};
+
+const conceptRequest = buildAvatarCandidateGenerationRequest({
+  rawJson: JSON.stringify(avatarConcept),
+  seedReferenceImageUrls: [
+    "data:image/jpeg;base64,seed-one",
+    "data:image/jpeg;base64,seed-two",
+    "data:image/jpeg;base64,seed-three",
+  ],
+});
+
+assert.equal(conceptRequest.numImages, 3);
+assert.equal(conceptRequest.aspectRatio, "9:16");
+assert.deepEqual(conceptRequest.referenceImageUrls, [
+  "data:image/jpeg;base64,seed-one",
+  "data:image/jpeg;base64,seed-two",
+  "data:image/jpeg;base64,seed-three",
+]);
+assert.match(conceptRequest.prompt, /girly pop/);
+assert.match(conceptRequest.prompt, /vertical portrait/);
+
 assert.equal(getDefaultAvatarImportName('{"name":"Imported Creator"}'), "Imported Creator");
 assert.equal(getDefaultAvatarImportName('{"displayName":"Display Creator"}'), "Display Creator");
 assert.equal(getDefaultAvatarImportName("{bad json"), "Imported Avatar");
@@ -113,6 +143,40 @@ assert.match(candidateReviewMarkup, /Candidate 3/);
 assert.match(candidateReviewMarkup, /Regenerate Candidates/);
 assert.match(candidateReviewMarkup, /Use Candidate/);
 assert.doesNotMatch(candidateReviewMarkup, /data-avatar-option=/);
+
+const activeRegenerationMarkup = renderToStaticMarkup(
+  <AvatarImportPanel
+    rawJson='{"name":"Imported Creator"}'
+    avatarName="Edited Creator"
+    seedReferenceImages={[{ name: "front.jpg", size: 1000, type: "image/jpeg" }]}
+    candidateSets={[
+      {
+        jobId: "candidate-job",
+        candidates: [
+          { fileId: "candidate-1" },
+          { fileId: "candidate-2" },
+          { fileId: "candidate-3" },
+        ],
+      },
+    ]}
+    isGeneratingCandidates
+    generationError={null}
+    onBack={() => {}}
+    onAvatarNameChange={() => {}}
+    onRawJsonChange={() => {}}
+    onJsonFileChange={() => {}}
+    onSeedReferenceImagesChange={() => {}}
+    onRemoveSeedReferenceImage={() => {}}
+    onGenerateCandidates={() => {}}
+    onAcceptCandidate={() => {}}
+  />
+);
+
+assert.match(activeRegenerationMarkup, /Generating another candidate set/);
+assert.match(activeRegenerationMarkup, /Candidate 1/);
+assert.match(activeRegenerationMarkup, /Candidate 2/);
+assert.match(activeRegenerationMarkup, /Candidate 3/);
+assert.match(activeRegenerationMarkup, /Use Candidate/);
 
 assert.deepEqual(
   resetAvatarImportDraft(),

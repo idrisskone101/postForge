@@ -538,6 +538,13 @@ export function AvatarImportPanel({
             </button>
           </div>
 
+          {isGeneratingCandidates && (
+            <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs font-medium text-accent-green">
+              <Loader2 className="size-3.5 animate-spin" />
+              Generating another candidate set. Previous candidates stay available for review.
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2">
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
               <div
