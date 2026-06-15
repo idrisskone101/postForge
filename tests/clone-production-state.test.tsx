@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   CloneSourceEmptyState,
+  CloneIdentityStatusPanel,
   CloneProductionStatePanel,
   createReferenceImageBatchEntries,
   getClonePrimaryAction,
@@ -59,6 +60,51 @@ assert.equal(
   }).label,
   "Generate clone"
 );
+
+const failedIdentityStatus = renderToStaticMarkup(
+  <CloneIdentityStatusPanel
+    avatarReady
+    identityPack={{
+      id: "pack-failed",
+      avatarId: "avatar-imported",
+      status: "failed",
+      imageModel: "nano-banana-2",
+      error: "Identity generation failed",
+      createdAt: "2026-06-14T12:00:00.000Z",
+      updatedAt: "2026-06-14T12:00:00.000Z",
+      images: [],
+    }}
+    isStartingIdentityPack={false}
+    identityPackError={null}
+    onRetry={() => {}}
+  />
+);
+
+assert.match(failedIdentityStatus, /Reference prep failed/);
+assert.match(failedIdentityStatus, /original avatar is still usable/i);
+assert.match(failedIdentityStatus, /Retry identity prep/);
+
+const preparingIdentityStatus = renderToStaticMarkup(
+  <CloneIdentityStatusPanel
+    avatarReady
+    identityPack={{
+      id: "pack-processing",
+      avatarId: "avatar-imported",
+      status: "processing",
+      imageModel: "nano-banana-2",
+      error: null,
+      createdAt: "2026-06-14T12:00:00.000Z",
+      updatedAt: "2026-06-14T12:00:00.000Z",
+      images: [],
+    }}
+    isStartingIdentityPack={false}
+    identityPackError={null}
+    onRetry={() => {}}
+  />
+);
+
+assert.match(preparingIdentityStatus, /Preparing identity references/);
+assert.match(preparingIdentityStatus, /original avatar remains usable/i);
 
 void (async () => {
   const referenceRequests: { path: string; body: unknown }[] = [];

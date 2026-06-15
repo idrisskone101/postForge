@@ -40,6 +40,13 @@ type AvatarApiRecord = {
   fileSizeBytes: number | null;
   origin?: string | null;
   provenance?: unknown;
+  identityPacks?: {
+    id: string;
+    status: string;
+    error: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -92,6 +99,8 @@ export function summarizeAvatarProvenance(provenance: unknown) {
 }
 
 export function serializeAvatarApiRecord(record: AvatarApiRecord) {
+  const latestIdentityPack = getLatestIdentityPack(record.identityPacks ?? []);
+
   return {
     id: record.id,
     name: record.name,
@@ -103,9 +112,24 @@ export function serializeAvatarApiRecord(record: AvatarApiRecord) {
     fileSizeBytes: record.fileSizeBytes,
     origin: normalizeAvatarOrigin(record.origin),
     provenanceSummary: summarizeAvatarProvenance(record.provenance),
+    identityPack: latestIdentityPack
+      ? {
+        id: latestIdentityPack.id,
+        status: latestIdentityPack.status,
+        error: latestIdentityPack.error,
+      }
+      : null,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };
+}
+
+function getLatestIdentityPack(
+  identityPacks: NonNullable<AvatarApiRecord["identityPacks"]>
+) {
+  return [...identityPacks].sort(
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+  )[0] ?? null;
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
