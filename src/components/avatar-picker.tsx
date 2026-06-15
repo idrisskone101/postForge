@@ -18,9 +18,17 @@ import {
   FileJson,
 } from "lucide-react";
 
-// Auto-prepended to avatar generation prompts for optimal motion control reference images
-const AVATAR_PROMPT_PREFIX =
-  "Professional headshot portrait, front-facing or slight 3/4 angle, studio lighting, clean neutral background, high resolution, photorealistic, sharp focus, ";
+const AVATAR_GENERATION_STYLE_PROMPT = [
+  "Create a photorealistic avatar with a Pinterest-style pretty girl, soft baddie, girly pop UGC creator aesthetic.",
+  "Use an iPhone influencer selfie feel with natural iPhone available light, slight grain, realistic skin texture, soft baby hairs, subtle flyaways, and imperfect real-photo sharpness.",
+  "The person should feel attractive, warm, feminine, approachable, and aspirational, not intimidating.",
+  "Favor warm medium tan glowing skin, brunette hair, full natural brows, almond brown eyes, glossy nude pink-brown lips, soft blush, clean-girl soft glam, gold hoop earrings, and feminine fitted basics such as a white cami, ribbed tank, baby tee, or simple white dress when relevant.",
+  "Keep the look Pinterest attractive it-girl and relatable UGC creator, not overly polished, not glossy AI, not a studio headshot, not cold high-fashion editorial retouching.",
+].join(" ");
+
+export function buildAvatarGenerationPrompt(userPrompt: string): string {
+  return `${AVATAR_GENERATION_STYLE_PROMPT} User direction: ${userPrompt.trim()}`;
+}
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -183,10 +191,19 @@ export function buildAvatarCandidateGenerationRequest({
     numImages: 3,
     referenceImageUrls: seedReferenceImageUrls,
     prompt: [
-      "Generate clean portrait source images for Avatar Candidate review.",
-      "Preserve the same stable core identity from the Avatar Profile and Seed Reference Images.",
-      "Vary only presentation lightly with simple varied backgrounds.",
+      "Generate clean single-image portrait candidates for Avatar Candidate review.",
+      "Each output image must be exactly one standalone 9:16 portrait photo of a single person.",
+      "Prioritize matching the Seed Reference Images: facial structure, skin tone, hair color, brow shape, eye shape, lip shape, expression range, and overall reference-image attractiveness should stay close.",
+      "Preserve the same stable core identity and distinctive traits from the Seed Reference Images so this is not a generic default avatar or another existing brunette creator face; do not invent a different face.",
+      "Add soft sex appeal through confident eye contact, relaxed flirty expression, feminine posture, flattering crop, glossy lips, and warm approachable energy while keeping it not explicit and not oversexualized.",
+      "Vary presentation with simple varied backgrounds and a varied wardrobe of cool and hip outfit choices that are mildly revealing but tasteful: crop tops, off-shoulder tops, fitted tanks, ribbed camis, halter-style tops, baby tees, oversized button-ups worn open over a top, denim, athleisure, or casual Pinterest-style basics in different colors; not just basic shirts and avoid repeating the same white-cami look every time.",
+      "Use a natural iPhone front-camera UGC look with casual available light, slight grain, phone compression, lower-fidelity selfie texture, visible pores, subtle skin detail, and imperfect real-photo sharpness.",
+      "Preserve a RAW iPhone aesthetic: candid selfie framing, eye-level or handheld low-angle phone perspective, subject caught mid-sentence with lips slightly parted and eyes toward the camera, minimal processing, realistic skin tones, true-to-life detail, and no beauty-filter smoothness.",
+      "Use natural window light, warm sunlight, or gentle indoor ambient light with soft highlights and gentle shadows; keep shallow depth of field while preserving realistic background context such as a bedroom, kitchen, car, cafe, library, airplane cabin, street, or tree-lined path.",
+      "The result should feel attractive but real: not flawless, not plastic-smooth, not overly polished, not glossy AI, not a studio headshot, not editorial retouching.",
       "Use all provided Seed Reference Images as the identity reference set for every candidate.",
+      "Do not combine seed images into the output.",
+      "No collage, no contact sheet, no multi-panel layout, no grid, no split-screen, no before-and-after comparison.",
       "No bedroom scenes, no lifestyle scenes, no busy environment, no full-body editorial setup.",
       `Avatar Profile JSON: ${JSON.stringify(profile)}`,
     ].join(" "),
@@ -538,6 +555,13 @@ export function AvatarImportPanel({
             </button>
           </div>
 
+          {isGeneratingCandidates && (
+            <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs font-medium text-accent-green">
+              <Loader2 className="size-3.5 animate-spin" />
+              Generating another candidate set. Previous candidates stay available for review.
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2">
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
               <div
@@ -689,8 +713,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     if (!genPrompt.trim()) return;
 
     try {
-      // Auto-enhance prompt with quality modifiers for optimal motion control results
-      const enhancedPrompt = AVATAR_PROMPT_PREFIX + genPrompt.trim();
+      const enhancedPrompt = buildAvatarGenerationPrompt(genPrompt);
       const result = await apiPost<{ id: string }>("/api/generate/images", {
         prompt: enhancedPrompt,
         model: genModel,

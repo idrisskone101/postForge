@@ -17,6 +17,7 @@ pnpm test:avatar-picker
 pnpm test:avatar-import-candidates
 pnpm test:avatar-import-acceptance
 pnpm test:avatar-provenance
+pnpm test:reference-image-prompt
 pnpm test:video-trimmer
 pnpm test:clone-production-state
 pnpm test:clone-output-review-detail

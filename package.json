@@ -16,6 +16,7 @@
     "test:avatar-import-candidates": "tsx tests/avatar-import-candidates.test.tsx",
     "test:avatar-import-acceptance": "tsx tests/avatar-import-acceptance.test.ts",
     "test:avatar-provenance": "tsx tests/avatar-provenance.test.ts",
+    "test:reference-image-prompt": "tsx tests/reference-image-prompt.test.ts",
     "test:video-trimmer": "tsx tests/video-trimmer.test.tsx",
     "test:clone-production-state": "tsx tests/clone-production-state.test.tsx",
     "test:clone-output-review-detail": "tsx tests/clone-output-review-detail.test.tsx",
