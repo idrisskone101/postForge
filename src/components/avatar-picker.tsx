@@ -91,6 +91,21 @@ export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCoun
   };
 }
 
+export function getDefaultAvatarImportName(rawJson: string): string {
+  try {
+    const profile = JSON.parse(rawJson) as { name?: unknown; displayName?: unknown };
+    const name = typeof profile.name === "string" ? profile.name.trim() : "";
+    if (name) return name.slice(0, 40);
+
+    const displayName = typeof profile.displayName === "string" ? profile.displayName.trim() : "";
+    if (displayName) return displayName.slice(0, 40);
+  } catch {
+    return "Imported Avatar";
+  }
+
+  return "Imported Avatar";
+}
+
 export interface AvatarCandidateGenerationRequest {
   prompt: string;
   model: "nano-banana-2";
@@ -231,11 +246,13 @@ export function AvatarCreationCard({
 
 interface AvatarImportPanelProps {
   rawJson: string;
+  avatarName?: string;
   seedReferenceImages: AvatarSeedReferenceImage[];
   candidateSets?: AvatarCandidateSet[];
   isGeneratingCandidates: boolean;
   generationError: string | null;
   onBack: () => void;
+  onAvatarNameChange?: (value: string) => void;
   onRawJsonChange: (value: string) => void;
   onJsonFileChange: (files: FileList | null) => void;
   onSeedReferenceImagesChange: (files: FileList | null) => void;
@@ -246,11 +263,13 @@ interface AvatarImportPanelProps {
 
 export function AvatarImportPanel({
   rawJson,
+  avatarName,
   seedReferenceImages,
   candidateSets = [],
   isGeneratingCandidates,
   generationError,
   onBack,
+  onAvatarNameChange,
   onRawJsonChange,
   onJsonFileChange,
   onSeedReferenceImagesChange,
@@ -259,6 +278,7 @@ export function AvatarImportPanel({
   onAcceptCandidate,
 }: AvatarImportPanelProps) {
   const readiness = getAvatarImportReadiness(rawJson, seedReferenceImages.length);
+  const resolvedAvatarName = avatarName ?? getDefaultAvatarImportName(rawJson);
   const candidateCount = candidateSets.reduce(
     (total, set) => total + set.candidates.length,
     0
@@ -287,6 +307,20 @@ export function AvatarImportPanel({
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+          Avatar name
+        </label>
+        <input
+          type="text"
+          value={resolvedAvatarName}
+          onChange={(event) => onAvatarNameChange?.(event.target.value)}
+          maxLength={40}
+          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm font-semibold text-white/80 outline-none transition-colors placeholder:text-white/25 focus:border-accent-green/45"
+          placeholder="Imported Avatar"
+        />
       </div>
 
       <div className="space-y-2">
@@ -470,6 +504,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   // Import state
   const [importRawJson, setImportRawJson] = useState("");
+  const [importAvatarName, setImportAvatarName] = useState("Imported Avatar");
   const [seedReferenceImages, setSeedReferenceImages] = useState<File[]>([]);
   const [avatarCandidateSets, setAvatarCandidateSets] = useState<AvatarCandidateSet[]>([]);
   const [importCandidateJobId, setImportCandidateJobId] = useState<string | null>(null);
@@ -652,7 +687,9 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
     setImportGenerationError(null);
     try {
-      setImportRawJson(await file.text());
+      const rawJson = await file.text();
+      setImportRawJson(rawJson);
+      setImportAvatarName(getDefaultAvatarImportName(rawJson));
     } catch {
       setImportGenerationError("Avatar Profile JSON file could not be read.");
     }
@@ -740,6 +777,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const abandonImport = () => {
     const cleared = resetAvatarImportDraft();
     setImportRawJson(cleared.rawJson);
+    setImportAvatarName("Imported Avatar");
     setSeedReferenceImages([]);
     setAvatarCandidateSets(cleared.candidateSets);
     setImportGenerationError(cleared.generationError);
@@ -751,16 +789,21 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const handleAcceptImportCandidate = async (fileId: string) => {
     setIsSavingGenerated(true);
     try {
-      const profile = JSON.parse(importRawJson) as { name?: unknown };
-      const name = typeof profile.name === "string" && profile.name.trim()
-        ? profile.name.trim().slice(0, 40)
-        : "Imported Avatar";
-      const avatar = await apiPost<Avatar>("/api/avatars/from-generation", {
+      const result = await apiPost<{ avatar: Avatar }>("/api/avatars/import-candidate", {
         fileId,
-        name,
+        name: importAvatarName,
+        rawAvatarProfileJson: importRawJson,
+        seedReferenceImages: seedReferenceImages.map((file) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        })),
+        candidateFileIds: avatarCandidateSets.flatMap((set) =>
+          set.candidates.map((candidate) => candidate.fileId)
+        ),
       });
-      setAvatars((prev) => [avatar, ...prev]);
-      onSelect(avatar.id);
+      setAvatars((prev) => [result.avatar, ...prev]);
+      onSelect(result.avatar.id);
       abandonImport();
     } catch (err) {
       console.error("Failed to accept imported avatar candidate:", err);
@@ -968,14 +1011,20 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     return (
       <AvatarImportPanel
         rawJson={importRawJson}
+        avatarName={importAvatarName}
         seedReferenceImages={seedReferenceImages}
         candidateSets={avatarCandidateSets}
         isGeneratingCandidates={isGeneratingImportCandidates}
         generationError={importGenerationError}
         onBack={abandonImport}
+        onAvatarNameChange={(value) => {
+          setImportGenerationError(null);
+          setImportAvatarName(value.slice(0, 40));
+        }}
         onRawJsonChange={(value) => {
           setImportGenerationError(null);
           setImportRawJson(value);
+          setImportAvatarName(getDefaultAvatarImportName(value));
         }}
         onJsonFileChange={handleImportJsonFile}
         onSeedReferenceImagesChange={handleSeedReferenceImages}

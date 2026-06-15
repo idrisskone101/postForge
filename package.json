@@ -14,6 +14,7 @@
     "test:generate-empty-state": "tsx tests/generate-empty-state.test.tsx",
     "test:avatar-picker": "tsx tests/avatar-picker.test.tsx",
     "test:avatar-import-candidates": "tsx tests/avatar-import-candidates.test.tsx",
+    "test:avatar-import-acceptance": "tsx tests/avatar-import-acceptance.test.ts",
     "test:avatar-provenance": "tsx tests/avatar-provenance.test.ts",
     "test:video-trimmer": "tsx tests/video-trimmer.test.tsx",
     "test:clone-production-state": "tsx tests/clone-production-state.test.tsx",
