@@ -107,17 +107,17 @@ const DEFAULT_NEGATIVE_PROMPT = [
 ].join(", ");
 
 const AVATAR_WARDROBE_INSTRUCTION =
-  "Dress the avatar in a visibly different outfit from the TikTok subject. Choose a trendy, cute, age-appropriate Gen Z casual outfit a stylish 20-year-old woman would realistically wear. Keep the outfit current, flattering, fresh, and everyday-cute without copying the source subject's clothing silhouette, colors, logos, distinctive patterns, jewelry, or accessories.";
+  "Dress the avatar in a visibly different outfit from the TikTok subject. Choose a trendy, attractive but approachable, age-appropriate Gen Z outfit a stylish 20-year-old woman would realistically wear today. Keep the person attractive but not intimidating. Prefer mildly revealing but tasteful tops that show a bit of neckline, collarbone, shoulders, or natural cleavage when the target pose allows it. Keep the outfit current, flattering, fresh, and everyday-cute without copying the source subject's clothing silhouette, colors, logos, distinctive patterns, jewelry, or accessories. Use more variety, not just basic shirts: crop tops, off-shoulder tops, halter tanks, asymmetrical one-shoulder tops, lace-trim camis, corset-inspired soft tops, fitted ribbed tanks, cute going-out tops, matching athleisure sets, denim, wide-leg pants, boxer-style shorts, or drawstring pants in different colors. Avoid defaulting to flannels, plain button-down shirts, generic T-shirts, hoodies, beige basics, or the same white tank unless the source scene specifically requires it.";
 const IPHONE_SELFIE_TEXTURE_INSTRUCTION =
-  "Make the image feel like an ordinary iPhone front-camera selfie frame, not an AI portrait: slightly soft selfie focus, mild phone compression, modest dynamic range, natural pores, tiny skin imperfections, uneven ambient light, and normal camera-roll color. Avoid glossy skin, perfect hair, beauty-filter smoothness, tack-sharp details, HDR contrast, studio cleanliness, or influencer photo polish.";
+  "Make the image feel like an ordinary iPhone front-camera selfie frame, not an AI portrait: slightly soft selfie focus, mild phone compression, modest dynamic range, visible skin texture, natural pores, tiny skin imperfections, uneven ambient light, and normal camera-roll color. Avoid glossy skin, perfect hair, beauty-filter smoothness, tack-sharp details, HDR contrast, studio cleanliness, or influencer photo polish.";
 
 const WARDROBE_VARIATIONS = [
-  "A fitted pastel baby tee with relaxed light-wash jeans, using soft fresh colors like butter yellow, baby blue, or blush pink.",
-  "A cropped cardigan over a simple tank with flattering high-rise denim, using a cute color pairing like sage green with white, powder blue with cream, or cherry red with denim.",
-  "A ribbed crop top or contour lounge top with loose cargos or wide-leg jeans, using a different color palette from the source such as heather gray with pink, cocoa with ivory, or teal with washed denim.",
-  "A clean oversized sweatshirt or zip hoodie styled with bike shorts or casual jeans, using a playful Gen Z color like lavender, matcha green, sky blue, or soft coral.",
-  "A fitted long-sleeve top or off-shoulder knit with straight-leg jeans, using attractive fresh colors like rose, slate blue, espresso brown, or crisp white with a contrasting accent.",
-  "A cute casual tank or baby tee layered with an open lightweight shirt, using a bright but natural palette like tomato red, cobalt, mint, or sunny yellow balanced with denim.",
+  "A fitted ribbed crop top with high-rise or wide-leg denim, using a different color palette from the source such as cocoa, teal, cherry red, butter yellow, or soft pink.",
+  "A clean off-shoulder top or one-shoulder fitted knit with straight-leg jeans, showing collarbone and a little neckline while staying tasteful and approachable.",
+  "A halter tank or square-neck going-out top with relaxed denim or drawstring pants, using colors like sage, cobalt, espresso, rose, or sky blue instead of default white or beige.",
+  "A lace-trim cami or corset-inspired soft top with loose cargos or boxer-style shorts, flattering the figure without looking explicit or editorial.",
+  "A cute matching athleisure set with a built-in-bra tank or cropped top and wide-leg pants, styled like a real casual creator selfie rather than workout stock photography.",
+  "A fitted baby tee or cropped cardigan worn open over a small tank, paired with denim, using a fresh color pairing like powder blue with cream, cherry red with denim, or lavender with gray.",
 ];
 
 function pickWardrobeInstruction(): string {
@@ -173,7 +173,7 @@ function buildPromptJson(
     clothing: {
       outfit: wardrobeInstruction,
       style:
-        "Fresh, trendy, cute Gen Z casual styling that looks attractive and natural in a TikTok UGC selfie, not editorial fashion.",
+        "Fresh, trendy Gen Z casual styling that looks attractive but approachable, mildly revealing but tasteful, and natural in a TikTok UGC selfie, not intimidating and not editorial fashion.",
       accessories:
         "Minimal avatar-appropriate accessories only; avoid copying any source-subject jewelry, glasses, hats, bags, or standout accessories.",
     },
