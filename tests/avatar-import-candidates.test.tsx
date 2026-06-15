@@ -28,6 +28,11 @@ assert.deepEqual(request.referenceImageUrls, [
 assert.match(request.prompt, /clean single-image portrait candidates/i);
 assert.match(request.prompt, /stable core identity/i);
 assert.match(request.prompt, /simple varied backgrounds/i);
+assert.match(request.prompt, /natural iPhone/i);
+assert.match(request.prompt, /slight grain/i);
+assert.match(request.prompt, /realistic texture/i);
+assert.match(request.prompt, /not overly polished/i);
+assert.match(request.prompt, /not glossy AI/i);
 assert.match(request.prompt, /exactly one standalone 9:16 portrait/i);
 assert.match(request.prompt, /single person/i);
 assert.match(request.prompt, /no collage/i);
