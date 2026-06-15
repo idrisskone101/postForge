@@ -68,6 +68,22 @@ assert.deepEqual(
     fileSizeBytes: 2048,
     origin: "imported",
     provenance: importedAvatar.provenance,
+    identityPacks: [
+      {
+        id: "older-pack",
+        status: "failed",
+        error: "Older failure",
+        createdAt: new Date("2026-06-14T12:01:00.000Z"),
+        updatedAt: new Date("2026-06-14T12:02:00.000Z"),
+      },
+      {
+        id: "latest-pack",
+        status: "queued",
+        error: null,
+        createdAt: new Date("2026-06-14T12:03:00.000Z"),
+        updatedAt: new Date("2026-06-14T12:04:00.000Z"),
+      },
+    ],
     createdAt: new Date("2026-06-14T12:00:00.000Z"),
     updatedAt: new Date("2026-06-14T12:05:00.000Z"),
   }),
@@ -85,6 +101,11 @@ assert.deepEqual(
       hasAvatarProfile: true,
       seedReferenceImageCount: 2,
     },
+    identityPack: {
+      id: "latest-pack",
+      status: "queued",
+      error: null,
+    },
     createdAt: new Date("2026-06-14T12:00:00.000Z"),
     updatedAt: new Date("2026-06-14T12:05:00.000Z"),
   }
@@ -100,6 +121,7 @@ assert.deepEqual(
     width: 1024,
     height: 1024,
     fileSizeBytes: null,
+    identityPacks: [],
     createdAt: new Date("2026-06-14T12:00:00.000Z"),
     updatedAt: new Date("2026-06-14T12:00:00.000Z"),
   }),
@@ -117,6 +139,7 @@ assert.deepEqual(
       hasAvatarProfile: false,
       seedReferenceImageCount: 0,
     },
+    identityPack: null,
     createdAt: new Date("2026-06-14T12:00:00.000Z"),
     updatedAt: new Date("2026-06-14T12:00:00.000Z"),
   }

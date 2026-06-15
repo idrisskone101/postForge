@@ -41,6 +41,12 @@ interface Avatar {
   id: string;
   name: string;
   createdAt: string;
+  origin?: "uploaded" | "imported" | "generated" | "gallery";
+  identityPack?: {
+    id: string;
+    status: "queued" | "processing" | "completed" | "failed";
+    error: string | null;
+  } | null;
 }
 
 interface AvatarPickerProps {
@@ -66,6 +72,22 @@ export interface AvatarSeedReferenceImage {
 
 export function getAvatarOptionLabel(index: number): string {
   return `Identity ${index + 1}`;
+}
+
+export function getAvatarOriginLabel(origin: Avatar["origin"]): string | null {
+  if (origin === "imported") return "Imported";
+  if (origin === "generated") return "Generated";
+  if (origin === "gallery") return "Gallery";
+  return null;
+}
+
+export function getAvatarIdentityPackStatusLabel(identityPack: Avatar["identityPack"]): string {
+  if (!identityPack) return "Identity preparing";
+
+  if (identityPack.status === "completed") return "Identity ready";
+  if (identityPack.status === "failed") return "Identity failed - retry available";
+
+  return "Identity preparing";
 }
 
 export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCount: number) {
@@ -240,6 +262,96 @@ export function AvatarCreationCard({
           <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
         </button>
       </div>
+    </div>
+  );
+}
+
+interface AvatarOptionCardProps {
+  avatar: Avatar;
+  label: string;
+  isSelected: boolean;
+  onSelect: () => void;
+  onDelete: (event: React.MouseEvent) => void;
+}
+
+export function AvatarOptionCard({
+  avatar,
+  label,
+  isSelected,
+  onSelect,
+  onDelete,
+}: AvatarOptionCardProps) {
+  const originLabel = getAvatarOriginLabel(avatar.origin);
+  const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack);
+
+  return (
+    <div
+      className={cn(
+        "group relative overflow-hidden rounded-xl border bg-white/[0.03] p-2.5 transition-all",
+        isSelected
+          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16)]"
+          : "border-white/10 hover:border-accent-green/45 hover:bg-white/[0.05]"
+      )}
+    >
+      <button
+        type="button"
+        onClick={onSelect}
+        className="block w-full text-left"
+      >
+        <div className="aspect-[4/3] overflow-hidden rounded-lg bg-black">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/api/avatars/${avatar.id}`}
+            alt={label}
+            className="size-full object-cover"
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <p className="min-w-0 truncate text-xs font-semibold text-white/85">
+            {label}
+          </p>
+          <span
+            className={cn(
+              "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
+              isSelected
+                ? "bg-accent-green/15 text-accent-green"
+                : "bg-white/5 text-white/35"
+            )}
+          >
+            {isSelected ? "Active" : "Select"}
+          </span>
+        </div>
+
+        <div className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5">
+          {originLabel && (
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/45">
+              {originLabel}
+            </span>
+          )}
+          <span
+            className={cn(
+              "rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+              avatar.identityPack?.status === "completed"
+                ? "border-accent-green/25 bg-accent-green/10 text-accent-green"
+                : avatar.identityPack?.status === "failed"
+                  ? "border-destructive/30 bg-destructive/10 text-destructive"
+                  : "border-accent-blue/25 bg-accent-blue/10 text-accent-blue"
+            )}
+          >
+            {identityStatusLabel}
+          </span>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        onClick={onDelete}
+        className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity hover:bg-destructive focus:opacity-100 group-hover:opacity-100"
+        aria-label={`Delete ${label}`}
+      >
+        <Trash2 className="size-3.5" />
+      </button>
     </div>
   );
 }
@@ -1059,54 +1171,14 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
           const avatarLabel = getAvatarOptionLabel(sourceIndex >= 0 ? sourceIndex : index);
           return (
-            <div
+            <AvatarOptionCard
               key={avatar.id}
-              className={cn(
-                "group relative overflow-hidden rounded-xl border bg-white/[0.03] p-2.5 transition-all",
-                isSelected
-                  ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16)]"
-                  : "border-white/10 hover:border-accent-green/45 hover:bg-white/[0.05]"
-              )}
-            >
-              <button
-                type="button"
-                onClick={() => onSelect(avatar.id)}
-                className="block w-full text-left"
-              >
-                <div className="aspect-[4/3] overflow-hidden rounded-lg bg-black">
-                  <img
-                    src={`/api/avatars/${avatar.id}`}
-                    alt={avatarLabel}
-                    className="size-full object-cover"
-                  />
-                </div>
-
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <p className="min-w-0 truncate text-xs font-semibold text-white/85">
-                    {avatarLabel}
-                  </p>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
-                      isSelected
-                        ? "bg-accent-green/15 text-accent-green"
-                        : "bg-white/5 text-white/35"
-                    )}
-                  >
-                    {isSelected ? "Active" : "Select"}
-                  </span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => handleDelete(avatar.id, e)}
-                className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity hover:bg-destructive focus:opacity-100 group-hover:opacity-100"
-                aria-label={`Delete ${avatarLabel}`}
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </div>
+              avatar={avatar}
+              label={avatarLabel}
+              isSelected={isSelected}
+              onSelect={() => onSelect(avatar.id)}
+              onDelete={(event) => handleDelete(avatar.id, event)}
+            />
           );
         })}
 

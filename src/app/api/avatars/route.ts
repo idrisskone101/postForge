@@ -22,6 +22,17 @@ export async function GET() {
         fileSizeBytes: true,
         origin: true,
         provenance: true,
+        identityPacks: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: {
+            id: true,
+            status: true,
+            error: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
         createdAt: true,
         updatedAt: true,
       },

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  AvatarOptionCard,
   AvatarCreationCard,
   AvatarImportPanel,
   getAvatarImportReadiness,
@@ -95,3 +96,61 @@ assert.doesNotMatch(
   readyImportMarkup.match(/<button[^>]*>.*Generate candidates/s)?.[0] ?? "",
   /disabled=""/
 );
+
+const importedPreparingMarkup = renderToStaticMarkup(
+  <AvatarOptionCard
+    avatar={{
+      id: "avatar-imported",
+      name: "Imported Creator",
+      createdAt: "2026-06-14T12:00:00.000Z",
+      origin: "imported",
+      identityPack: { id: "pack-queued", status: "queued", error: null },
+    }}
+    label="Identity 1"
+    isSelected={false}
+    onSelect={() => {}}
+    onDelete={() => {}}
+  />
+);
+
+assert.match(importedPreparingMarkup, /Imported/);
+assert.match(importedPreparingMarkup, /Identity preparing/);
+
+const importedReadyMarkup = renderToStaticMarkup(
+  <AvatarOptionCard
+    avatar={{
+      id: "avatar-ready",
+      name: "Ready Creator",
+      createdAt: "2026-06-14T12:00:00.000Z",
+      origin: "imported",
+      identityPack: { id: "pack-ready", status: "completed", error: null },
+    }}
+    label="Identity 2"
+    isSelected={false}
+    onSelect={() => {}}
+    onDelete={() => {}}
+  />
+);
+
+assert.match(importedReadyMarkup, /Imported/);
+assert.match(importedReadyMarkup, /Identity ready/);
+
+const importedFailedMarkup = renderToStaticMarkup(
+  <AvatarOptionCard
+    avatar={{
+      id: "avatar-failed",
+      name: "Failed Creator",
+      createdAt: "2026-06-14T12:00:00.000Z",
+      origin: "imported",
+      identityPack: { id: "pack-failed", status: "failed", error: "Generation failed" },
+    }}
+    label="Identity 3"
+    isSelected={false}
+    onSelect={() => {}}
+    onDelete={() => {}}
+  />
+);
+
+assert.match(importedFailedMarkup, /Imported/);
+assert.match(importedFailedMarkup, /Identity failed - retry available/);
+assert.match(importedFailedMarkup, /Identity 3/);

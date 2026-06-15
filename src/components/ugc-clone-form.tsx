@@ -299,6 +299,14 @@ interface AvatarIdentityPack {
   }[];
 }
 
+interface CloneIdentityStatusPanelProps {
+  avatarReady: boolean;
+  identityPack: AvatarIdentityPack | null;
+  isStartingIdentityPack: boolean;
+  identityPackError: string | null;
+  onRetry: () => void;
+}
+
 type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
 
 interface ClonePrimaryActionState {
@@ -496,6 +504,57 @@ export function CloneProductionStatePanel({
         </div>
       )}
     </aside>
+  );
+}
+
+export function CloneIdentityStatusPanel({
+  avatarReady,
+  identityPack,
+  isStartingIdentityPack,
+  identityPackError,
+  onRetry,
+}: CloneIdentityStatusPanelProps) {
+  const detail = avatarReady
+    ? identityPack?.status === "completed"
+      ? `${identityPack.images.length} identity references ready.`
+      : identityPack?.status === "failed"
+        ? "Reference prep failed; the original avatar is still usable."
+        : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
+          ? "Preparing identity references; original avatar remains usable."
+          : "Original avatar is available."
+    : "Choose a saved identity, upload one, or create a new one.";
+  const error = identityPackError || identityPack?.error;
+
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="max-w-xl">
+        <p className="text-xs leading-5 text-white/40">
+          {detail}
+        </p>
+        {error && (
+          <p className="mt-2 text-xs text-destructive">
+            {error}
+          </p>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        {identityPack?.status === "failed" && (
+          <button
+            type="button"
+            onClick={onRetry}
+            disabled={isStartingIdentityPack}
+            className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-destructive transition-colors hover:bg-destructive/15 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isStartingIdentityPack ? "Retrying..." : "Retry identity prep"}
+          </button>
+        )}
+        {avatarReady && (
+          <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
+            Active
+          </Badge>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1333,29 +1392,17 @@ export function UGCCloneForm() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="max-w-xl text-xs leading-5 text-white/40">
-                  {avatarReady
-                    ? identityPack?.status === "completed"
-                      ? `${identityPack.images.length} identity references ready.`
-                      : identityPack?.status === "failed"
-                        ? "Reference prep failed; the original avatar is still usable."
-                        : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
-                          ? "Preparing identity references."
-                          : "Original avatar is available."
-                    : "Choose a saved identity, upload one, or create a new one."}
-                </p>
-                {avatarReady && (
-                  <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
-                    Active
-                  </Badge>
-                )}
-              </div>
-              {(identityPackError || identityPack?.error) && (
-                <p className="text-xs text-destructive">
-                  {identityPackError || identityPack?.error}
-                </p>
-              )}
+              <CloneIdentityStatusPanel
+                avatarReady={avatarReady}
+                identityPack={identityPack}
+                isStartingIdentityPack={isStartingIdentityPack}
+                identityPackError={identityPackError}
+                onRetry={() => {
+                  if (avatarId) {
+                    void startIdentityPack(avatarId, true);
+                  }
+                }}
+              />
               <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
             </div>
           </section>
