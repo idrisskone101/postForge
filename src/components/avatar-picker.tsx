@@ -22,6 +22,21 @@ import {
 const AVATAR_PROMPT_PREFIX =
   "Professional headshot portrait, front-facing or slight 3/4 angle, studio lighting, clean neutral background, high resolution, photorealistic, sharp focus, ";
 
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Seed Reference Image could not be read."));
+      }
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("Seed Reference Image could not be read."));
+    reader.readAsDataURL(file);
+  });
+}
+
 interface Avatar {
   id: string;
   name: string;
@@ -73,6 +88,71 @@ export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCoun
     canGenerateCandidates: !jsonError && !seedError,
     jsonError,
     seedError,
+  };
+}
+
+export interface AvatarCandidateGenerationRequest {
+  prompt: string;
+  model: "nano-banana-2";
+  aspectRatio: "9:16";
+  numImages: 3;
+  referenceImageUrls: string[];
+}
+
+export interface AvatarCandidateArtifact {
+  fileId: string;
+}
+
+export interface AvatarCandidateSet {
+  jobId: string;
+  candidates: AvatarCandidateArtifact[];
+}
+
+export interface AvatarImportDraft {
+  rawJson: string;
+  seedReferenceImages: AvatarSeedReferenceImage[];
+  candidateSets: AvatarCandidateSet[];
+  generationError: string | null;
+}
+
+export function appendAvatarCandidateSet(
+  currentSets: AvatarCandidateSet[],
+  nextSet: AvatarCandidateSet
+): AvatarCandidateSet[] {
+  return [...currentSets, nextSet];
+}
+
+export function resetAvatarImportDraft(): AvatarImportDraft {
+  return {
+    rawJson: "",
+    seedReferenceImages: [],
+    candidateSets: [],
+    generationError: null,
+  };
+}
+
+export function buildAvatarCandidateGenerationRequest({
+  rawJson,
+  seedReferenceImageUrls,
+}: {
+  rawJson: string;
+  seedReferenceImageUrls: string[];
+}): AvatarCandidateGenerationRequest {
+  const profile = JSON.parse(rawJson);
+
+  return {
+    model: "nano-banana-2",
+    aspectRatio: "9:16",
+    numImages: 3,
+    referenceImageUrls: seedReferenceImageUrls,
+    prompt: [
+      "Generate clean portrait source images for Avatar Candidate review.",
+      "Preserve the same stable core identity from the Avatar Profile and Seed Reference Images.",
+      "Vary only presentation lightly with simple varied backgrounds.",
+      "Use all provided Seed Reference Images as the identity reference set for every candidate.",
+      "No bedroom scenes, no lifestyle scenes, no busy environment, no full-body editorial setup.",
+      `Avatar Profile JSON: ${JSON.stringify(profile)}`,
+    ].join(" "),
   };
 }
 
@@ -152,6 +232,7 @@ export function AvatarCreationCard({
 interface AvatarImportPanelProps {
   rawJson: string;
   seedReferenceImages: AvatarSeedReferenceImage[];
+  candidateSets?: AvatarCandidateSet[];
   isGeneratingCandidates: boolean;
   generationError: string | null;
   onBack: () => void;
@@ -160,11 +241,13 @@ interface AvatarImportPanelProps {
   onSeedReferenceImagesChange: (files: FileList | null) => void;
   onRemoveSeedReferenceImage: (index: number) => void;
   onGenerateCandidates: () => void;
+  onAcceptCandidate?: (fileId: string) => void;
 }
 
 export function AvatarImportPanel({
   rawJson,
   seedReferenceImages,
+  candidateSets = [],
   isGeneratingCandidates,
   generationError,
   onBack,
@@ -173,8 +256,13 @@ export function AvatarImportPanel({
   onSeedReferenceImagesChange,
   onRemoveSeedReferenceImage,
   onGenerateCandidates,
+  onAcceptCandidate,
 }: AvatarImportPanelProps) {
   const readiness = getAvatarImportReadiness(rawJson, seedReferenceImages.length);
+  const candidateCount = candidateSets.reduce(
+    (total, set) => total + set.candidates.length,
+    0
+  );
 
   return (
     <div className="space-y-4">
@@ -285,6 +373,56 @@ export function AvatarImportPanel({
         </div>
       )}
 
+      {candidateCount > 0 && (
+        <div className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold text-white">Avatar Candidates</h4>
+              <p className="mt-1 text-xs text-white/40">
+                Review generated candidates before saving one as an Avatar.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onGenerateCandidates}
+              disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
+              className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Regenerate Candidates
+            </button>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
+              <div
+                key={candidate.fileId}
+                className="overflow-hidden rounded-lg border border-white/10 bg-black/20"
+              >
+                <div className="aspect-[3/4] bg-black">
+                  <img
+                    src={`/api/files/${candidate.fileId}`}
+                    alt={`Candidate ${index + 1}`}
+                    className="size-full object-cover"
+                  />
+                </div>
+                <div className="space-y-2 p-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
+                    Candidate {index + 1}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => onAcceptCandidate?.(candidate.fileId)}
+                    className="w-full rounded-md bg-accent-green px-2 py-1.5 text-[10px] font-semibold text-white transition-all hover:brightness-110"
+                  >
+                    Use Candidate
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={onGenerateCandidates}
@@ -333,6 +471,8 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   // Import state
   const [importRawJson, setImportRawJson] = useState("");
   const [seedReferenceImages, setSeedReferenceImages] = useState<File[]>([]);
+  const [avatarCandidateSets, setAvatarCandidateSets] = useState<AvatarCandidateSet[]>([]);
+  const [importCandidateJobId, setImportCandidateJobId] = useState<string | null>(null);
   const [isGeneratingImportCandidates, setIsGeneratingImportCandidates] = useState(false);
   const [importGenerationError, setImportGenerationError] = useState<string | null>(null);
 
@@ -536,11 +676,97 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     setIsGeneratingImportCandidates(true);
     setImportGenerationError(null);
     try {
-      await Promise.reject(new Error("Import Avatar candidate generation is not wired in this slice."));
+      const seedReferenceImageUrls = await Promise.all(
+        seedReferenceImages.map(readFileAsDataUrl)
+      );
+      const result = await apiPost<{ id: string }>("/api/generate/images", buildAvatarCandidateGenerationRequest({
+        rawJson: importRawJson,
+        seedReferenceImageUrls,
+      }));
+      setImportCandidateJobId(result.id);
     } catch {
       setImportGenerationError("Candidate generation failed. Your inputs are still available for retry.");
-    } finally {
       setIsGeneratingImportCandidates(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!importCandidateJobId) return;
+
+    let active = true;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const poll = async () => {
+      try {
+        const result = await apiGet<JobResult>(`/api/jobs/${importCandidateJobId}`);
+        if (!active) return;
+
+        if (result.status === "completed") {
+          setAvatarCandidateSets((current) => appendAvatarCandidateSet(current, {
+            jobId: result.id,
+            candidates: result.outputs
+              .filter((output) => output.type === "image")
+              .map((output) => ({ fileId: output.id })),
+          }));
+          setImportCandidateJobId(null);
+          setIsGeneratingImportCandidates(false);
+          return;
+        }
+
+        if (result.status === "failed") {
+          setImportGenerationError(
+            result.error || "Candidate generation failed. Your inputs are still available for retry."
+          );
+          setImportCandidateJobId(null);
+          setIsGeneratingImportCandidates(false);
+          return;
+        }
+
+        timeoutId = setTimeout(poll, 3000);
+      } catch {
+        if (!active) return;
+        timeoutId = setTimeout(poll, 5000);
+      }
+    };
+
+    poll();
+
+    return () => {
+      active = false;
+      clearTimeout(timeoutId);
+    };
+  }, [importCandidateJobId]);
+
+  const abandonImport = () => {
+    const cleared = resetAvatarImportDraft();
+    setImportRawJson(cleared.rawJson);
+    setSeedReferenceImages([]);
+    setAvatarCandidateSets(cleared.candidateSets);
+    setImportGenerationError(cleared.generationError);
+    setImportCandidateJobId(null);
+    setIsGeneratingImportCandidates(false);
+    setMode("grid");
+  };
+
+  const handleAcceptImportCandidate = async (fileId: string) => {
+    setIsSavingGenerated(true);
+    try {
+      const profile = JSON.parse(importRawJson) as { name?: unknown };
+      const name = typeof profile.name === "string" && profile.name.trim()
+        ? profile.name.trim().slice(0, 40)
+        : "Imported Avatar";
+      const avatar = await apiPost<Avatar>("/api/avatars/from-generation", {
+        fileId,
+        name,
+      });
+      setAvatars((prev) => [avatar, ...prev]);
+      onSelect(avatar.id);
+      abandonImport();
+    } catch (err) {
+      console.error("Failed to accept imported avatar candidate:", err);
+      setImportGenerationError("Candidate could not be saved as an Avatar.");
+    } finally {
+      setIsSavingGenerated(false);
     }
   };
 
@@ -743,9 +969,10 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       <AvatarImportPanel
         rawJson={importRawJson}
         seedReferenceImages={seedReferenceImages}
+        candidateSets={avatarCandidateSets}
         isGeneratingCandidates={isGeneratingImportCandidates}
         generationError={importGenerationError}
-        onBack={() => setMode("grid")}
+        onBack={abandonImport}
         onRawJsonChange={(value) => {
           setImportGenerationError(null);
           setImportRawJson(value);
@@ -754,6 +981,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onSeedReferenceImagesChange={handleSeedReferenceImages}
         onRemoveSeedReferenceImage={handleRemoveSeedReferenceImage}
         onGenerateCandidates={handleGenerateImportCandidates}
+        onAcceptCandidate={handleAcceptImportCandidate}
       />
     );
   }
