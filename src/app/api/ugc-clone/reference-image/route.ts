@@ -29,12 +29,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      body.hairstyleRole !== undefined &&
+      body.hairstyleRole !== null &&
+      typeof body.hairstyleRole !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "hairstyleRole must be a string" },
+        { status: 400 }
+      );
+    }
+
     const { jobId, estimatedCost, model } = await generateReferenceImage({
       tiktokVideoPath: body.tiktokVideoPath,
       tiktokSourceId: body.tiktokSourceId,
       avatarId: body.avatarId,
       prompt: body.prompt,
       imageModel: body.imageModel,
+      hairstyleRole: body.hairstyleRole ?? null,
     });
 
     return NextResponse.json(

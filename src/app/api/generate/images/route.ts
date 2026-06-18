@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateImage } from "@/lib/ai/generate-image";
+import { generateAvatarImage } from "@/lib/ugc/generate-avatar-image";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import type { ImageGenerationRequest } from "@/lib/ai/types";
 
@@ -12,6 +13,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "prompt is required and must be a string" },
         { status: 400 }
+      );
+    }
+
+    // Avatar-driven generation: render an image from an AI avatar using its
+    // identity references (same identity-locking approach as the Clone tab).
+    if (body.avatarId !== undefined && body.avatarId !== null) {
+      if (typeof body.avatarId !== "string") {
+        return NextResponse.json(
+          { error: "avatarId must be a string" },
+          { status: 400 }
+        );
+      }
+
+      if (
+        body.hairstyleRole !== undefined &&
+        body.hairstyleRole !== null &&
+        typeof body.hairstyleRole !== "string"
+      ) {
+        return NextResponse.json(
+          { error: "hairstyleRole must be a string" },
+          { status: 400 }
+        );
+      }
+
+      const { jobId, estimatedCost, model } = await generateAvatarImage({
+        avatarId: body.avatarId,
+        prompt: body.prompt,
+        imageModel: body.model,
+        aspectRatio: body.aspectRatio,
+        numImages: body.numImages,
+        negativePrompt: body.negativePrompt,
+        hairstyleRole: body.hairstyleRole ?? null,
+      });
+
+      return NextResponse.json(
+        {
+          id: jobId,
+          status: "queued",
+          model,
+          estimatedCost,
+          createdAt: new Date().toISOString(),
+        },
+        { status: 202 }
       );
     }
 

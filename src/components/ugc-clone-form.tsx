@@ -47,6 +47,10 @@ const IDENTITY_ROLE_LABELS: Record<string, string> = {
   threeQuarterLeft: "3/4 Left",
   threeQuarterRight: "3/4 Right",
   expressionNeutralOrSmile: "Expression",
+  hairDown: "Hair down",
+  halfUpHalfDown: "Half ponytail",
+  ponytail: "Ponytail",
+  bunUpdo: "Bun / updo",
 };
 
 const UGC_CLONE_TIPS = [
@@ -235,6 +239,7 @@ export async function createReferenceImageBatchEntries({
   prompt,
   imageModel,
   unitCost,
+  hairstyleRole = null,
   post = apiPost,
 }: {
   batchSize: ReferenceBatchSize;
@@ -243,6 +248,7 @@ export async function createReferenceImageBatchEntries({
   prompt: string;
   imageModel: string;
   unitCost: number;
+  hairstyleRole?: string | null;
   post?: ReferenceImagePost;
 }): Promise<RefImageEntry[]> {
   const batchResults = await Promise.all(
@@ -253,6 +259,7 @@ export async function createReferenceImageBatchEntries({
         avatarId,
         prompt: prompt || undefined,
         imageModel,
+        ...(hairstyleRole ? { hairstyleRole } : {}),
       })
     )
   );
@@ -292,9 +299,12 @@ interface AvatarIdentityPack {
   error: string | null;
   createdAt: string;
   updatedAt: string;
+  backfillingHairstyles?: boolean;
+  missingHairstyleRoles?: string[];
   images: {
     id: string;
     role: string;
+    kind?: "core" | "hairstyle";
     previewUrl: string;
   }[];
 }
@@ -303,6 +313,8 @@ interface CloneIdentityStatusPanelProps {
   avatarReady: boolean;
   identityPack: AvatarIdentityPack | null;
   isStartingIdentityPack: boolean;
+  isGeneratingHairstyles?: boolean;
+  onGenerateHairstyles?: () => void;
   identityPackError: string | null;
   onRetry: () => void;
 }
@@ -511,12 +523,24 @@ export function CloneIdentityStatusPanel({
   avatarReady,
   identityPack,
   isStartingIdentityPack,
+  isGeneratingHairstyles = false,
+  onGenerateHairstyles,
   identityPackError,
   onRetry,
 }: CloneIdentityStatusPanelProps) {
+  const isBackfillingHairstyles =
+    isGeneratingHairstyles || identityPack?.backfillingHairstyles === true;
+  const missingHairstyleCount = identityPack?.missingHairstyleRoles?.length ?? 0;
+  const canGenerateHairstyles =
+    identityPack?.status === "completed" &&
+    missingHairstyleCount > 0 &&
+    !isBackfillingHairstyles;
+
   const detail = avatarReady
     ? identityPack?.status === "completed"
-      ? `${identityPack.images.length} identity references ready.`
+      ? isBackfillingHairstyles
+        ? "Generating extra hairstyle options; existing references stay usable."
+        : `${identityPack.images.length} identity references ready.`
       : identityPack?.status === "failed"
         ? "Reference prep failed; the original avatar is still usable."
         : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
@@ -538,6 +562,16 @@ export function CloneIdentityStatusPanel({
         )}
       </div>
       <div className="flex shrink-0 items-center gap-2">
+        {(canGenerateHairstyles || isBackfillingHairstyles) && (
+          <button
+            type="button"
+            onClick={onGenerateHairstyles}
+            disabled={!canGenerateHairstyles}
+            className="rounded-lg border border-accent-green/30 bg-accent-green/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-accent-green transition-colors hover:bg-accent-green/15 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isBackfillingHairstyles ? "Generating hairstyles..." : "Generate hairstyles"}
+          </button>
+        )}
         {identityPack?.status === "failed" && (
           <button
             type="button"
@@ -582,6 +616,8 @@ export function UGCCloneForm() {
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [identityPack, setIdentityPack] = useState<AvatarIdentityPack | null>(null);
   const [isStartingIdentityPack, setIsStartingIdentityPack] = useState(false);
+  const [isGeneratingHairstyles, setIsGeneratingHairstyles] = useState(false);
+  const [selectedHairstyleRole, setSelectedHairstyleRole] = useState<string | null>(null);
   const [identityPackError, setIdentityPackError] = useState<string | null>(null);
   const [savedReferences, setSavedReferences] = useState<SavedReference[]>([]);
   const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
@@ -696,6 +732,26 @@ export function UGCCloneForm() {
     }
   }, []);
 
+  const generateHairstyleVariants = useCallback(async (nextAvatarId: string) => {
+    setIsGeneratingHairstyles(true);
+    setIdentityPackError(null);
+
+    try {
+      const pack = await apiPost<AvatarIdentityPack>(
+        `/api/avatars/${encodeURIComponent(nextAvatarId)}/identity-pack`,
+        { hairstyles: true }
+      );
+      setIdentityPack(pack);
+      return pack;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to generate hairstyles";
+      setIdentityPackError(message);
+      return null;
+    } finally {
+      setIsGeneratingHairstyles(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (sourceIdParam) {
       setPendingSourceId(sourceIdParam);
@@ -743,6 +799,7 @@ export function UGCCloneForm() {
 
   useEffect(() => {
     setShowAvatarReferences(false);
+    setSelectedHairstyleRole(null);
 
     if (!avatarId) {
       setIdentityPack(null);
@@ -764,7 +821,10 @@ export function UGCCloneForm() {
   }, [avatarId, fetchIdentityPack, fetchSavedReferences, startIdentityPack]);
 
   useEffect(() => {
-    if (!avatarId || !identityPack || !["queued", "processing"].includes(identityPack.status)) {
+    const isPreparing =
+      !!identityPack && ["queued", "processing"].includes(identityPack.status);
+    const isBackfillingHairstyles = identityPack?.backfillingHairstyles === true;
+    if (!avatarId || (!isPreparing && !isBackfillingHairstyles)) {
       return;
     }
 
@@ -798,6 +858,9 @@ export function UGCCloneForm() {
   }, [refImages, pollGeneratingJobs]);
 
   // Derived state
+  const hairstyleOptions = (identityPack?.images ?? []).filter(
+    (image) => image.kind === "hairstyle"
+  );
   const selectedRef = refImages[selectedRefIndex] ?? null;
   const selectedRefFileId = selectedRef?.status === "completed" ? selectedRef.fileId : null;
   const totalRefCost = refImages
@@ -879,6 +942,7 @@ export function UGCCloneForm() {
         prompt: promptToUse,
         imageModel: selectedReferenceImageModel,
         unitCost: referenceImageUnitCost,
+        hairstyleRole: selectedHairstyleRole,
       });
 
       setRefImages((prev) => [...prev, ...newEntries]);
@@ -1396,6 +1460,12 @@ export function UGCCloneForm() {
                 avatarReady={avatarReady}
                 identityPack={identityPack}
                 isStartingIdentityPack={isStartingIdentityPack}
+                isGeneratingHairstyles={isGeneratingHairstyles}
+                onGenerateHairstyles={() => {
+                  if (avatarId) {
+                    void generateHairstyleVariants(avatarId);
+                  }
+                }}
                 identityPackError={identityPackError}
                 onRetry={() => {
                   if (avatarId) {
@@ -1560,6 +1630,48 @@ export function UGCCloneForm() {
               </div>
 
               <div className="flex min-w-0 flex-col gap-4 self-start">
+                {hairstyleOptions.length > 0 && (
+                  <div className="w-full max-w-[220px] rounded-xl border border-white/10 bg-white/[0.02] p-2.5">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+                        Hairstyle
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedHairstyleRole(null)}
+                        disabled={isSubmitting || isGenerating}
+                        className={cn(
+                          "rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                          selectedHairstyleRole === null
+                            ? "border-accent-green bg-accent-green/20 text-accent-green"
+                            : "border-white/10 bg-white/[0.03] text-white/45 hover:bg-white/[0.06] hover:text-white/70"
+                        )}
+                        aria-pressed={selectedHairstyleRole === null}
+                      >
+                        Original
+                      </button>
+                      {hairstyleOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => setSelectedHairstyleRole(option.role)}
+                          disabled={isSubmitting || isGenerating}
+                          className={cn(
+                            "rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                            selectedHairstyleRole === option.role
+                              ? "border-accent-green bg-accent-green/20 text-accent-green"
+                              : "border-white/10 bg-white/[0.03] text-white/45 hover:bg-white/[0.06] hover:text-white/70"
+                          )}
+                          aria-pressed={selectedHairstyleRole === option.role}
+                        >
+                          {formatIdentityRole(option.role)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div
                   data-reference-batch-size={referenceBatchSize}
                   className="w-full max-w-[220px] rounded-xl border border-white/10 bg-white/[0.02] p-2.5"

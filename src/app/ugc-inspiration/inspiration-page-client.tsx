@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { apiDelete, apiPost } from "@/lib/api/client";
 import type {
   InspirationVideoCard,
+  SetInspirationRejectionResult,
   TrackedInspirationAccount,
   UseInspirationResult,
 } from "@/lib/inspiration/types";
@@ -26,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Ban,
   CheckCircle2,
   Compass,
   Copy,
@@ -39,8 +41,38 @@ import {
   Sparkles,
   Trash2,
   TriangleAlert,
+  Undo2,
   Users,
 } from "lucide-react";
+
+type SourceFeedFilter = "all" | "unused" | "used" | "rejected";
+
+const SOURCE_FEED_FILTERS: Array<{
+  value: SourceFeedFilter;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "all",
+    label: "All",
+    description: "Everything tracked",
+  },
+  {
+    value: "unused",
+    label: "Not used",
+    description: "Fresh source options",
+  },
+  {
+    value: "used",
+    label: "Used",
+    description: "Already sent to Clone",
+  },
+  {
+    value: "rejected",
+    label: "Rejected",
+    description: "Won't use",
+  },
+];
 
 interface InspirationPageClientProps {
   initialAccounts: TrackedInspirationAccount[];
@@ -191,6 +223,25 @@ function sortVideos(videos: InspirationVideoCard[]) {
   });
 }
 
+export function filterVideosBySourceUsage(
+  videos: InspirationVideoCard[],
+  filter: SourceFeedFilter
+) {
+  if (filter === "all") return videos;
+  if (filter === "rejected") {
+    return videos.filter(
+      (video) => video.sourceDecision.status === "rejected"
+    );
+  }
+
+  return videos.filter((video) =>
+    video.sourceDecision.status === "approved" &&
+    (filter === "used"
+      ? video.sourceUsage.status === "used"
+      : video.sourceUsage.status === "unused")
+  );
+}
+
 function mergeAccountIntoState(
   accounts: TrackedInspirationAccount[],
   nextAccount: TrackedInspirationAccount
@@ -241,12 +292,15 @@ export function InspirationPageClient({
 }: InspirationPageClientProps) {
   const [accounts, setAccounts] = useState(() => sortAccounts(initialAccounts));
   const [activeFilter, setActiveFilter] = useState<"all" | string>("all");
+  const [sourceFeedFilter, setSourceFeedFilter] =
+    useState<SourceFeedFilter>("all");
   const [handleInput, setHandleInput] = useState("");
   const [pageError, setPageError] = useState<string | null>(null);
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [refreshingIds, setRefreshingIds] = useState<string[]>([]);
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
   const [usingVideoId, setUsingVideoId] = useState<string | null>(null);
+  const [updatingRejectionIds, setUpdatingRejectionIds] = useState<string[]>([]);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
@@ -260,7 +314,7 @@ export function InspirationPageClient({
     [accounts, activeFilter]
   );
 
-  const feedVideos = useMemo(() => {
+  const sourceVideos = useMemo(() => {
     const sourceAccounts =
       activeFilter === "all"
         ? accounts
@@ -268,6 +322,28 @@ export function InspirationPageClient({
 
     return sortVideos(sourceAccounts.flatMap((account) => account.videos));
   }, [accounts, activeFilter]);
+
+  const sourceUsageCounts = useMemo(() => {
+    const approvedVideos = sourceVideos.filter(
+      (video) => video.sourceDecision.status === "approved"
+    );
+
+    return {
+      all: sourceVideos.length,
+      unused: approvedVideos.filter(
+        (video) => video.sourceUsage.status === "unused"
+      ).length,
+      used: approvedVideos.filter(
+        (video) => video.sourceUsage.status === "used"
+      ).length,
+      rejected: sourceVideos.length - approvedVideos.length,
+    };
+  }, [sourceVideos]);
+
+  const feedVideos = useMemo(
+    () => filterVideosBySourceUsage(sourceVideos, sourceFeedFilter),
+    [sourceVideos, sourceFeedFilter]
+  );
 
   const selectedVideo = useMemo(
     () =>
@@ -284,6 +360,9 @@ export function InspirationPageClient({
   const activeSourceLabel = selectedAccount
     ? selectedAccount.handleDisplay
     : "Creator Feed";
+  const activeFeedFilterLabel =
+    SOURCE_FEED_FILTERS.find((filter) => filter.value === sourceFeedFilter)
+      ?.label ?? "All";
 
   useEffect(() => {
     if (!selectedVideoId) {
@@ -430,6 +509,44 @@ export function InspirationPageClient({
       );
     } finally {
       setUsingVideoId(null);
+    }
+  }
+
+  async function handleSetVideoRejection(
+    video: InspirationVideoCard,
+    rejected: boolean
+  ) {
+    setUpdatingRejectionIds((prev) =>
+      prev.includes(video.id) ? prev : [...prev, video.id]
+    );
+    setPageError(null);
+
+    try {
+      const result = await apiPost<SetInspirationRejectionResult>(
+        `/api/ugc-inspiration/videos/${video.id}/rejection`,
+        { rejected }
+      );
+
+      setAccounts((prev) =>
+        prev.map((account) => ({
+          ...account,
+          videos: account.videos.map((item) =>
+            item.id === result.videoId
+              ? { ...item, sourceDecision: result.sourceDecision }
+              : item
+          ),
+        }))
+      );
+    } catch (error) {
+      setPageError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update source decision."
+      );
+    } finally {
+      setUpdatingRejectionIds((prev) =>
+        prev.filter((id) => id !== video.id)
+      );
     }
   }
 
@@ -626,8 +743,57 @@ export function InspirationPageClient({
                   {activeSourceLabel}
                 </p>
                 <h2 className="mt-1 text-xl font-bold tracking-tight">
-                  {feedVideos.length} sources
+                  {sourceFeedFilter === "all"
+                    ? `${feedVideos.length} sources`
+                    : `${feedVideos.length} ${activeFeedFilterLabel.toLowerCase()}`}
                 </h2>
+              </div>
+
+              <div
+                data-source-feed-tabs="true"
+                role="tablist"
+                aria-label="Source usage filter"
+                className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-xl border border-border bg-card/70 p-1 sm:w-auto"
+              >
+                {SOURCE_FEED_FILTERS.map((filter) => {
+                  const isActive = sourceFeedFilter === filter.value;
+
+                  return (
+                    <button
+                      key={filter.value}
+                      type="button"
+                      role="tab"
+                      data-source-feed-filter={filter.value}
+                      aria-selected={isActive}
+                      onClick={() => setSourceFeedFilter(filter.value)}
+                      className={cn(
+                        "flex min-w-[7.5rem] items-center justify-between gap-3 rounded-lg px-3 py-2 text-left transition-colors sm:min-w-[8.75rem]",
+                        isActive
+                          ? "bg-white/10 text-foreground"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                      )}
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-xs font-bold">
+                          {filter.label}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[10px]">
+                          {filter.description}
+                        </span>
+                      </span>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold",
+                          isActive
+                            ? "bg-accent-blue/20 text-accent-blue"
+                            : "bg-white/5 text-muted-foreground"
+                        )}
+                      >
+                        {sourceUsageCounts[filter.value]}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -650,7 +816,7 @@ export function InspirationPageClient({
                 secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
                 className="min-h-[420px]"
               />
-            ) : feedVideos.length === 0 ? (
+            ) : sourceVideos.length === 0 ? (
               <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-14 text-center">
                 <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-accent-green/12 text-accent-green">
                   <CheckCircle2 className="size-6" />
@@ -678,14 +844,38 @@ export function InspirationPageClient({
                   </a>
                 )}
               </div>
+            ) : feedVideos.length === 0 ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/[0.01] px-6 py-14 text-center">
+                <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-accent-blue/12 text-accent-blue">
+                  <CheckCircle2 className="size-6" />
+                </div>
+                <h2 className="text-lg font-bold tracking-tight">
+                  {sourceFeedFilter === "used"
+                    ? "No used sources in this view"
+                    : sourceFeedFilter === "rejected"
+                      ? "No rejected sources in this view"
+                      : "Everything here is used or rejected"}
+                </h2>
+                <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                  {sourceFeedFilter === "used"
+                    ? "This creator view does not have any videos that have already been sent to Clone."
+                    : sourceFeedFilter === "rejected"
+                      ? "Reject a source when you know it will never become clone material."
+                      : "Switch to Used or Rejected to review prior decisions, or refresh creators to bring in new options."}
+                </p>
+              </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {feedVideos.map((video) => {
                   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
+                  const isRejected = video.sourceDecision.status === "rejected";
+                  const isUpdatingRejection = updatingRejectionIds.includes(video.id);
 
                   return (
                     <article
                       key={video.id}
+                      data-inspiration-video-id={video.id}
+                      data-source-decision={video.sourceDecision.status}
                       className="group flex flex-col gap-3"
                     >
                       <button
@@ -717,9 +907,21 @@ export function InspirationPageClient({
                           )}
                         </div>
 
-                        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                          <span className="rounded-md border border-white/10 bg-black/80 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-md">
-                            9:16
+                        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
+                          <span className="flex max-w-[70%] flex-wrap gap-1.5">
+                            <span className="rounded-md border border-white/10 bg-black/80 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-md">
+                              9:16
+                            </span>
+                            {video.sourceUsage.status === "used" && (
+                              <span className="rounded-md border border-accent-green/30 bg-accent-green/90 px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+                                Used in Clone
+                              </span>
+                            )}
+                            {isRejected && (
+                              <span className="rounded-md border border-destructive/30 bg-destructive/90 px-2 py-1 text-[10px] font-bold text-white shadow-sm">
+                                Rejected
+                              </span>
+                            )}
                           </span>
                           <span className="rounded-md bg-black/70 px-2 py-1 text-[10px] font-bold text-white">
                             {formatRelativeDate(video.publishedAt ?? video.createdAt)}
@@ -756,26 +958,68 @@ export function InspirationPageClient({
                       </button>
 
                       <div className="flex flex-col gap-2">
-                        <Button
-                          type="button"
-                          onClick={() => void handleUseInClone(video)}
-                          disabled={usingVideoId === video.id}
-                          className="h-11 w-full rounded-xl bg-accent-green text-sm font-bold text-white hover:brightness-110"
-                        >
-                          {usingVideoId === video.id ? (
-                            <>
-                              <Loader2 className="size-4 animate-spin" />
-                              Sending...
-                            </>
-                          ) : (
-                            <>
-                              Use in Clone
-                              <Sparkles className="size-4" />
-                            </>
-                          )}
-                        </Button>
+                        {video.sourceUsage.status === "used" && video.sourceUsage.usedAt && (
+                          <p className="rounded-lg border border-accent-green/20 bg-accent-green/10 px-3 py-2 text-xs font-medium text-accent-green">
+                            Used as a source {formatRelativeDate(video.sourceUsage.usedAt)}
+                          </p>
+                        )}
 
-                        <div className="grid grid-cols-[minmax(0,1fr)_2.25rem_2.25rem] gap-2">
+                        {isRejected && video.sourceDecision.rejectedAt && (
+                          <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+                            Rejected as a source {formatRelativeDate(video.sourceDecision.rejectedAt)}
+                          </p>
+                        )}
+
+                        {isRejected ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            data-source-action="restore"
+                            onClick={() => void handleSetVideoRejection(video, false)}
+                            disabled={isUpdatingRejection}
+                            className="h-11 w-full rounded-xl border-accent-blue/30 bg-accent-blue/10 text-sm font-bold text-accent-blue hover:bg-accent-blue/15 hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {isUpdatingRejection ? (
+                              <>
+                                <Loader2 className="size-4 animate-spin" />
+                                Restoring...
+                              </>
+                            ) : (
+                              <>
+                                Restore Source
+                                <Undo2 className="size-4" />
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() => void handleUseInClone(video)}
+                            disabled={usingVideoId === video.id}
+                            className="h-11 w-full rounded-xl bg-accent-green text-sm font-bold text-white hover:brightness-110"
+                          >
+                            {usingVideoId === video.id ? (
+                              <>
+                                <Loader2 className="size-4 animate-spin" />
+                                Sending...
+                              </>
+                            ) : (
+                              <>
+                                Use in Clone
+                                <Sparkles className="size-4" />
+                              </>
+                            )}
+                          </Button>
+                        )}
+
+                        <div
+                          className={cn(
+                            "grid gap-2",
+                            isRejected
+                              ? "grid-cols-[minmax(0,1fr)_2.25rem_2.25rem]"
+                              : "grid-cols-[minmax(0,1fr)_4.75rem_2.25rem_2.25rem]"
+                          )}
+                        >
                           <Button
                             type="button"
                             variant="outline"
@@ -784,6 +1028,24 @@ export function InspirationPageClient({
                           >
                             Preview Details
                           </Button>
+
+                          {!isRejected && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              data-source-action="reject"
+                              onClick={() => void handleSetVideoRejection(video, true)}
+                              disabled={isUpdatingRejection}
+                              aria-label={`Reject source from ${video.creatorHandle}`}
+                              className="h-9 min-w-0 rounded-lg bg-destructive/10 px-2 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/15 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {isUpdatingRejection ? (
+                                <Loader2 className="size-3.5 animate-spin" />
+                              ) : (
+                                "Reject"
+                              )}
+                            </Button>
+                          )}
 
                           <Button
                             type="button"
@@ -978,30 +1240,92 @@ export function InspirationPageClient({
                           {formatDuration(selectedVideo.durationSec)}
                         </span>
                       </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span>Source use</span>
+                        <span className="text-right text-foreground/90">
+                          {selectedVideo.sourceUsage.status === "used" &&
+                          selectedVideo.sourceUsage.usedAt
+                            ? `Used ${formatRelativeDate(selectedVideo.sourceUsage.usedAt)}`
+                            : "Not used yet"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span>Decision</span>
+                        <span className="text-right text-foreground/90">
+                          {selectedVideo.sourceDecision.status === "rejected" &&
+                          selectedVideo.sourceDecision.rejectedAt
+                            ? `Rejected ${formatRelativeDate(selectedVideo.sourceDecision.rejectedAt)}`
+                            : "Approved"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="border-t border-border bg-muted/35 px-6 py-5">
                   <div className="flex flex-col gap-3">
-                    <Button
-                      type="button"
-                      onClick={() => void handleUseInClone(selectedVideo)}
-                      disabled={usingVideoId === selectedVideo.id}
-                      className="h-11 rounded-2xl bg-accent-green text-white shadow-[0_16px_40px_rgba(123,165,67,0.24)] hover:brightness-110"
-                    >
-                      {usingVideoId === selectedVideo.id ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" />
-                          Sending to Clone...
-                        </>
-                      ) : (
-                        <>
-                          Use in Clone
-                          <Sparkles className="size-4" />
-                        </>
-                      )}
-                    </Button>
+                    {selectedVideo.sourceDecision.status === "rejected" ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => void handleSetVideoRejection(selectedVideo, false)}
+                        disabled={updatingRejectionIds.includes(selectedVideo.id)}
+                        className="h-11 rounded-2xl border-accent-blue/30 bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/15 hover:text-accent-blue disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {updatingRejectionIds.includes(selectedVideo.id) ? (
+                          <>
+                            <Loader2 className="size-4 animate-spin" />
+                            Restoring source...
+                          </>
+                        ) : (
+                          <>
+                            Restore Source
+                            <Undo2 className="size-4" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          type="button"
+                          onClick={() => void handleUseInClone(selectedVideo)}
+                          disabled={usingVideoId === selectedVideo.id}
+                          className="h-11 rounded-2xl bg-accent-green text-white shadow-[0_16px_40px_rgba(123,165,67,0.24)] hover:brightness-110"
+                        >
+                          {usingVideoId === selectedVideo.id ? (
+                            <>
+                              <Loader2 className="size-4 animate-spin" />
+                              Sending to Clone...
+                            </>
+                          ) : (
+                            <>
+                              Use in Clone
+                              <Sparkles className="size-4" />
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => void handleSetVideoRejection(selectedVideo, true)}
+                          disabled={updatingRejectionIds.includes(selectedVideo.id)}
+                          className="h-11 rounded-2xl border-destructive/25 bg-destructive/10 text-destructive hover:bg-destructive/15 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {updatingRejectionIds.includes(selectedVideo.id) ? (
+                            <>
+                              <Loader2 className="size-4 animate-spin" />
+                              Rejecting source...
+                            </>
+                          ) : (
+                            <>
+                              Reject Source
+                              <Ban className="size-4" />
+                            </>
+                          )}
+                        </Button>
+                      </>
+                    )}
 
                     <Button
                       type="button"

@@ -1,5 +1,16 @@
 export type InspirationSyncState = "idle" | "syncing" | "ready" | "error";
 
+export interface InspirationSourceUsage {
+  status: "unused" | "used";
+  sourceId: string | null;
+  usedAt: string | null;
+}
+
+export interface InspirationSourceDecision {
+  status: "approved" | "rejected";
+  rejectedAt: string | null;
+}
+
 export interface InspirationVideoCard {
   id: string;
   accountId: string;
@@ -22,6 +33,8 @@ export interface InspirationVideoCard {
   creatorDisplayName: string | null;
   creatorAvatarUrl: string | null;
   creatorProfileUrl: string | null;
+  sourceUsage: InspirationSourceUsage;
+  sourceDecision: InspirationSourceDecision;
 }
 
 export interface TrackedInspirationAccount {
@@ -45,4 +58,9 @@ export interface TrackedInspirationAccount {
 export interface UseInspirationResult {
   sourceId: string;
   redirectTo: string;
+}
+
+export interface SetInspirationRejectionResult {
+  videoId: string;
+  sourceDecision: InspirationSourceDecision;
 }

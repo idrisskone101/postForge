@@ -156,4 +156,30 @@ void (async () => {
       { jobId: "job-3", prompt: "warm window light", cost: 0.08, status: "generating" },
     ]
   );
+
+  // A selected hairstyle is forwarded to the reference-image endpoint, and is
+  // omitted entirely when no hairstyle is chosen (asserted above).
+  const hairstyleRequests: { path: string; body: unknown }[] = [];
+  await createReferenceImageBatchEntries({
+    batchSize: 1,
+    videoInfo: { id: "source-123", localPath: "/tmp/source.mp4" },
+    avatarId: "avatar-456",
+    prompt: "warm window light",
+    imageModel: "nano-banana-2",
+    unitCost: 0.08,
+    hairstyleRole: "ponytail",
+    post: async <T,>(path: string, body: unknown): Promise<T> => {
+      hairstyleRequests.push({ path, body });
+      return { id: `job-${hairstyleRequests.length}`, estimatedCost: 0.08 } as T;
+    },
+  });
+
+  assert.deepEqual(hairstyleRequests[0].body, {
+    tiktokVideoPath: "/tmp/source.mp4",
+    tiktokSourceId: "source-123",
+    avatarId: "avatar-456",
+    prompt: "warm window light",
+    imageModel: "nano-banana-2",
+    hairstyleRole: "ponytail",
+  });
 })();

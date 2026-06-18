@@ -217,7 +217,7 @@ function buildPromptJson(
 export async function analyzeSceneAndBuildPrompt(
   _frameImagePath: string,
   userPrompt?: string,
-  options?: { poseEmphasis?: boolean }
+  options?: { poseEmphasis?: boolean; hairstyleDirective?: string }
 ): Promise<{
   promptJson: ScenePromptJSON;
   promptString: string;
@@ -229,7 +229,8 @@ export async function analyzeSceneAndBuildPrompt(
     promptJson,
     options?.poseEmphasis,
     userPrompt,
-    wardrobeInstruction
+    wardrobeInstruction,
+    options?.hairstyleDirective
   );
 
   return {
@@ -243,7 +244,8 @@ function buildNaturalLanguagePrompt(
   json: ScenePromptJSON,
   poseEmphasis?: boolean,
   userPrompt?: string,
-  wardrobeInstruction = AVATAR_WARDROBE_INSTRUCTION
+  wardrobeInstruction = AVATAR_WARDROBE_INSTRUCTION,
+  hairstyleDirective?: string
 ): string {
   const imgNum = Math.floor(Math.random() * 9000) + 1000;
   const poseInstruction = poseEmphasis
@@ -254,10 +256,17 @@ function buildNaturalLanguagePrompt(
     ? `User direction: ${userPrompt.trim()}`
     : "";
 
+  // When a specific hairstyle is selected, the chosen variant is supplied as the
+  // FIRST reference image. This directive overrides the generic "use the hair
+  // from the references" instruction so the angle shots (which keep the avatar's
+  // original hair for face geometry) don't fight the chosen look.
+  const hairstyleInstruction = hairstyleDirective?.trim() ?? "";
+
   const parts = [
     `IMG_${imgNum}.HEIC`,
     "All reference images except the final one are the same avatar person.",
     "Use the avatar references for the person's identity: face, facial structure, eye shape, eyebrow shape, hair color, hair style, hair length, hair texture, skin tone, complexion, and body type.",
+    hairstyleInstruction,
     "This is a full person replacement, not a face swap.",
     "The final reference image is the target TikTok frame. Treat it as the composition authority for background, lighting, casual selfie perspective, crop, hand visibility, environment, pose, expression, subject placement, and subject scale.",
     "Do not create a more flattering alternate pose, a different camera distance, or a new starting composition.",

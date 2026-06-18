@@ -5,7 +5,10 @@ import { generateImage } from "@/lib/ai/generate-image";
 import { calculateEstimatedCost } from "@/lib/ai/models";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { analyzeSceneAndBuildPrompt } from "@/lib/ai/analyze-scene";
-import { resolveIdentityReferenceUrlsForAvatar } from "@/lib/ugc/avatar-identity-pack";
+import {
+  buildHairstyleDirective,
+  resolveIdentityReferenceUrlsForAvatar,
+} from "@/lib/ugc/avatar-identity-pack";
 
 export interface ReferenceImageRequest {
   tiktokVideoPath: string;
@@ -13,6 +16,7 @@ export interface ReferenceImageRequest {
   avatarId: string;
   prompt?: string;
   imageModel?: string;
+  hairstyleRole?: string | null;
 }
 
 export async function generateReferenceImage(
@@ -34,19 +38,30 @@ export async function generateReferenceImage(
   // Extract first frame from the TikTok video
   const referenceFramePath = await extractReferenceFrame(videoFullPath);
 
+  // Upload identity references and TikTok frame.
+  // Completed identity packs provide multiple face angles; if the pack is not
+  // ready yet we preserve the old behavior by repeating the avatar fallback.
+  // A selected hairstyle (if any) is resolved here so the prompt can be told to
+  // follow the chosen look rather than the avatar's original hair.
+  const [identityReferences, frameUrl] = await Promise.all([
+    resolveIdentityReferenceUrlsForAvatar(request.avatarId, {
+      hairstyleRole: request.hairstyleRole,
+    }),
+    uploadToFalStorage(referenceFramePath),
+  ]);
+
+  const hairstyleDirective = identityReferences.appliedHairstyleRole
+    ? buildHairstyleDirective(identityReferences.appliedHairstyleRole)
+    : undefined;
+
   // Build a lean fal-only edit prompt. The extracted frame is still supplied
   // to Nano Banana as the target visual reference, so no separate vision model
   // is needed for scene analysis.
   const { promptJson, promptString, negativePrompt } =
-    await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt, { poseEmphasis: true });
-
-  // Upload identity references and TikTok frame.
-  // Completed identity packs provide multiple face angles; if the pack is not
-  // ready yet we preserve the old behavior by repeating the avatar fallback.
-  const [identityReferences, frameUrl] = await Promise.all([
-    resolveIdentityReferenceUrlsForAvatar(request.avatarId),
-    uploadToFalStorage(referenceFramePath),
-  ]);
+    await analyzeSceneAndBuildPrompt(referenceFramePath, request.prompt, {
+      poseEmphasis: true,
+      hairstyleDirective,
+    });
 
   const generationRequest = {
     prompt: promptString,
@@ -77,6 +92,8 @@ export async function generateReferenceImage(
         avatarId: request.avatarId,
         identityPackId: identityReferences.identityPackId,
         identityReferenceRoles: identityReferences.identityReferenceRoles,
+        appliedHairstyleRole: identityReferences.appliedHairstyleRole,
+        requestedHairstyleRole: request.hairstyleRole ?? null,
         usedAvatarFallback: identityReferences.usedAvatarFallback,
         prompt: request.prompt,
         sceneAnalysis: JSON.parse(JSON.stringify(promptJson)) as Record<string, unknown>,

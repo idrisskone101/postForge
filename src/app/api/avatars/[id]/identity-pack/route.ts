@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   ensureAvatarIdentityPack,
+  ensureHairstyleVariantsForAvatar,
   getLatestAvatarIdentityPack,
   serializeAvatarIdentityPack,
 } from "@/lib/ugc/avatar-identity-pack";
@@ -30,7 +31,10 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
-    const pack = await ensureAvatarIdentityPack(id, { force: body.force === true });
+    const pack =
+      body.hairstyles === true
+        ? await ensureHairstyleVariantsForAvatar(id)
+        : await ensureAvatarIdentityPack(id, { force: body.force === true });
 
     return NextResponse.json(serializeAvatarIdentityPack(pack), { status: 202 });
   } catch (error) {

@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
+  InspirationSourceDecision,
+  InspirationSourceUsage,
   InspirationVideoCard,
+  SetInspirationRejectionResult,
   TrackedInspirationAccount,
 } from "@/lib/inspiration/types";
 import {
@@ -25,6 +28,13 @@ const inspirationAccountInclude = {
 type InspirationAccountRecord = Prisma.InspirationAccountGetPayload<{
   include: typeof inspirationAccountInclude;
 }>;
+
+type SourceUsageRecord = Pick<
+  Prisma.TikTokSourceGetPayload<{
+    select: { id: true; originalUrl: true; createdAt: true };
+  }>,
+  "id" | "originalUrl" | "createdAt"
+>;
 
 interface MappedVideoInput {
   externalVideoId: string;
@@ -303,11 +313,93 @@ function getAccountAvatarUrl(account: InspirationAccountRecord): string | null {
   return null;
 }
 
+function serializeSourceUsage(
+  source: SourceUsageRecord | null
+): InspirationSourceUsage {
+  if (!source) {
+    return {
+      status: "unused",
+      sourceId: null,
+      usedAt: null,
+    };
+  }
+
+  return {
+    status: "used",
+    sourceId: source.id,
+    usedAt: source.createdAt.toISOString(),
+  };
+}
+
+function serializeSourceDecision(rejectedAt: Date | null): InspirationSourceDecision {
+  return {
+    status: rejectedAt ? "rejected" : "approved",
+    rejectedAt: rejectedAt?.toISOString() ?? null,
+  };
+}
+
+async function getSourceUsageByVideoId(
+  accounts: InspirationAccountRecord[]
+): Promise<Map<string, SourceUsageRecord>> {
+  const videos = accounts.flatMap((account) => account.videos);
+  if (videos.length === 0) return new Map();
+
+  const originalUrls = Array.from(
+    new Set(videos.map((video) => video.originalUrl).filter(Boolean))
+  );
+  const externalVideoIds = Array.from(
+    new Set(videos.map((video) => video.externalVideoId).filter(Boolean))
+  );
+  const clauses: Prisma.TikTokSourceWhereInput[] = [
+    ...(originalUrls.length > 0
+      ? [{ originalUrl: { in: originalUrls } }]
+      : []),
+    ...externalVideoIds.map((externalVideoId) => ({
+      originalUrl: { contains: externalVideoId },
+    })),
+  ];
+
+  if (clauses.length === 0) return new Map();
+
+  const sources = await prisma.tikTokSource.findMany({
+    where: { OR: clauses },
+    select: { id: true, originalUrl: true, createdAt: true },
+  });
+
+  const sourcesByUrl = new Map(
+    sources.map((source) => [source.originalUrl, source])
+  );
+  const sourcesByExternalVideoId = new Map<string, SourceUsageRecord>();
+
+  for (const source of sources) {
+    const externalVideoId = extractTikTokVideoId(source.originalUrl);
+    if (externalVideoId && !sourcesByExternalVideoId.has(externalVideoId)) {
+      sourcesByExternalVideoId.set(externalVideoId, source);
+    }
+  }
+
+  const usageByVideoId = new Map<string, SourceUsageRecord>();
+  for (const video of videos) {
+    const source =
+      sourcesByUrl.get(video.originalUrl) ??
+      sourcesByExternalVideoId.get(video.externalVideoId);
+
+    if (source) {
+      usageByVideoId.set(video.id, source);
+    }
+  }
+
+  return usageByVideoId;
+}
+
 function serializeVideo(
   account: InspirationAccountRecord,
   video: InspirationAccountRecord["videos"][number],
-  accountAvatarUrl: string | null
+  accountAvatarUrl: string | null,
+  sourceUsageByVideoId: Map<string, SourceUsageRecord>
 ): InspirationVideoCard {
+  const source = sourceUsageByVideoId.get(video.id) ?? null;
+
   return {
     id: video.id,
     accountId: video.accountId,
@@ -330,10 +422,15 @@ function serializeVideo(
     creatorDisplayName: account.displayName,
     creatorAvatarUrl: accountAvatarUrl,
     creatorProfileUrl: account.profileUrl,
+    sourceUsage: serializeSourceUsage(source),
+    sourceDecision: serializeSourceDecision(video.rejectedAt),
   };
 }
 
-function serializeAccount(account: InspirationAccountRecord): TrackedInspirationAccount {
+function serializeAccount(
+  account: InspirationAccountRecord,
+  sourceUsageByVideoId: Map<string, SourceUsageRecord>
+): TrackedInspirationAccount {
   const accountAvatarUrl = getAccountAvatarUrl(account);
 
   return {
@@ -352,7 +449,7 @@ function serializeAccount(account: InspirationAccountRecord): TrackedInspiration
     updatedAt: account.updatedAt.toISOString(),
     isStale: isAccountStale(account.lastSyncedAt),
     videos: account.videos.map((video) =>
-      serializeVideo(account, video, accountAvatarUrl)
+      serializeVideo(account, video, accountAvatarUrl, sourceUsageByVideoId)
     ),
   };
 }
@@ -370,7 +467,11 @@ export async function listTrackedInspirationAccounts(): Promise<TrackedInspirati
     orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
   });
 
-  return accounts.map(serializeAccount);
+  const sourceUsageByVideoId = await getSourceUsageByVideoId(accounts);
+
+  return accounts.map((account) =>
+    serializeAccount(account, sourceUsageByVideoId)
+  );
 }
 
 export async function createTrackedInspirationAccount(
@@ -389,7 +490,8 @@ export async function createTrackedInspirationAccount(
   });
 
   if (existing) {
-    return serializeAccount(existing);
+    const sourceUsageByVideoId = await getSourceUsageByVideoId([existing]);
+    return serializeAccount(existing, sourceUsageByVideoId);
   }
 
   const account = await prisma.inspirationAccount.create({
@@ -403,7 +505,8 @@ export async function createTrackedInspirationAccount(
     include: inspirationAccountInclude,
   });
 
-  return serializeAccount(account);
+  const sourceUsageByVideoId = await getSourceUsageByVideoId([account]);
+  return serializeAccount(account, sourceUsageByVideoId);
 }
 
 export async function syncTrackedInspirationAccount(
@@ -517,7 +620,8 @@ export async function syncTrackedInspirationAccount(
     throw new VirloApiError("Tracked creator not found after sync.", 404);
   }
 
-  return serializeAccount(updated);
+  const sourceUsageByVideoId = await getSourceUsageByVideoId([updated]);
+  return serializeAccount(updated, sourceUsageByVideoId);
 }
 
 export async function deleteTrackedInspirationAccount(accountId: string): Promise<void> {
@@ -531,4 +635,34 @@ export async function deleteTrackedInspirationAccount(accountId: string): Promis
   }
 
   await prisma.inspirationAccount.delete({ where: { id: accountId } });
+}
+
+export async function setInspirationVideoRejection(
+  videoId: string,
+  rejected: boolean
+): Promise<SetInspirationRejectionResult> {
+  const existing = await prisma.inspirationVideo.findUnique({
+    where: { id: videoId },
+    select: { id: true },
+  });
+
+  if (!existing) {
+    throw new VirloApiError("Inspiration video not found.", 404);
+  }
+
+  const updated = await prisma.inspirationVideo.update({
+    where: { id: videoId },
+    data: {
+      rejectedAt: rejected ? new Date() : null,
+    },
+    select: {
+      id: true,
+      rejectedAt: true,
+    },
+  });
+
+  return {
+    videoId: updated.id,
+    sourceDecision: serializeSourceDecision(updated.rejectedAt),
+  };
 }

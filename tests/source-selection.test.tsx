@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
+  filterVideosBySourceUsage,
   InspirationHeaderControls,
   InspirationPageClient,
 } from "../src/app/ugc-inspiration/inspiration-page-client";
@@ -45,6 +46,79 @@ const accounts: TrackedInspirationAccount[] = [
         creatorDisplayName: "Creator",
         creatorAvatarUrl: null,
         creatorProfileUrl: "https://www.tiktok.com/@creator",
+        sourceUsage: {
+          status: "unused",
+          sourceId: null,
+          usedAt: null,
+        },
+        sourceDecision: {
+          status: "approved",
+          rejectedAt: null,
+        },
+      },
+      {
+        id: "video-2",
+        accountId: "account-1",
+        platform: "tiktok",
+        externalVideoId: "7350000000000000001",
+        originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000001",
+        embedUrl: null,
+        thumbnailUrl: null,
+        caption: "Already used source with a strong visual payoff.",
+        durationSec: 9,
+        publishedAt: "2026-06-11T12:00:00Z",
+        viewCount: 98000,
+        likeCount: 12000,
+        commentCount: 180,
+        shareCount: 64,
+        lastSeenAt: "2026-06-12T12:00:00Z",
+        createdAt: "2026-06-12T12:00:00Z",
+        updatedAt: "2026-06-12T12:00:00Z",
+        creatorHandle: "@creator",
+        creatorDisplayName: "Creator",
+        creatorAvatarUrl: null,
+        creatorProfileUrl: "https://www.tiktok.com/@creator",
+        sourceUsage: {
+          status: "used",
+          sourceId: "source-1",
+          usedAt: "2026-06-13T12:00:00Z",
+        },
+        sourceDecision: {
+          status: "approved",
+          rejectedAt: null,
+        },
+      },
+      {
+        id: "video-3",
+        accountId: "account-1",
+        platform: "tiktok",
+        externalVideoId: "7350000000000000002",
+        originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000002",
+        embedUrl: null,
+        thumbnailUrl: null,
+        caption: "Rejected source that should stay out of the fresh pile.",
+        durationSec: 11,
+        publishedAt: "2026-06-10T12:00:00Z",
+        viewCount: 54000,
+        likeCount: 6000,
+        commentCount: 90,
+        shareCount: 21,
+        lastSeenAt: "2026-06-12T12:00:00Z",
+        createdAt: "2026-06-12T12:00:00Z",
+        updatedAt: "2026-06-12T12:00:00Z",
+        creatorHandle: "@creator",
+        creatorDisplayName: "Creator",
+        creatorAvatarUrl: null,
+        creatorProfileUrl: "https://www.tiktok.com/@creator",
+        sourceUsage: {
+          status: "unused",
+          sourceId: null,
+          usedAt: null,
+        },
+        sourceDecision: {
+          status: "rejected",
+          rejectedAt: "2026-06-14T12:00:00Z",
+        },
       },
     ],
   },
@@ -64,6 +138,7 @@ const headerMarkup = renderToStaticMarkup(
 const emptyMarkup = renderToStaticMarkup(
   <InspirationPageClient initialAccounts={[]} />
 );
+const allVideos = accounts.flatMap((account) => account.videos);
 
 assert.match(headerMarkup, /Source Selection/);
 assert.match(headerMarkup, /Compare creator posts/);
@@ -75,6 +150,25 @@ assert.match(markup, /Use in Clone/);
 assert.match(markup, /Creators/);
 assert.match(markup, /Creator Feed/);
 assert.match(markup, /All tracked creator videos/);
+assert.match(markup, /data-source-feed-tabs="true"/);
+assert.match(markup, /data-source-feed-filter="all"/);
+assert.match(markup, /data-source-feed-filter="unused"/);
+assert.match(markup, /data-source-feed-filter="used"/);
+assert.match(markup, /data-source-feed-filter="rejected"/);
+assert.match(markup, /Source usage filter/);
+assert.match(markup, />All</);
+assert.match(markup, />Not used</);
+assert.match(markup, />Used</);
+assert.match(markup, />Rejected</);
+assert.match(markup, /Fresh source options/);
+assert.match(markup, /Already sent to Clone/);
+assert.match(markup, /Won&#x27;t use/);
+assert.match(markup, /Used in Clone/);
+assert.match(markup, /Used as a source/);
+assert.match(markup, /Rejected as a source/);
+assert.match(markup, /Reject/);
+assert.match(markup, /Reject source from @creator/);
+assert.match(markup, /Restore Source/);
 assert.match(markup, /data-creator-list="true"/);
 assert.match(markup, /size-8 shrink-0 items-center/);
 assert.match(markup, /mt-2 grid grid-cols-\[minmax\(0,1fr\)_1\.75rem\]/);
@@ -97,6 +191,14 @@ assert.match(markup, /mt-3 min-h-0 flex-1 space-y-1 overflow-y-auto/);
 assert.match(markup, /max-h-\[480px\]/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-contain/);
+
+assert.equal(filterVideosBySourceUsage(allVideos, "all").length, 3);
+assert.equal(filterVideosBySourceUsage(allVideos, "unused").length, 1);
+assert.equal(filterVideosBySourceUsage(allVideos, "used").length, 1);
+assert.equal(filterVideosBySourceUsage(allVideos, "rejected").length, 1);
+assert.equal(filterVideosBySourceUsage(allVideos, "unused")[0]?.id, "video-1");
+assert.equal(filterVideosBySourceUsage(allVideos, "used")[0]?.id, "video-2");
+assert.equal(filterVideosBySourceUsage(allVideos, "rejected")[0]?.id, "video-3");
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
 assert.match(emptyMarkup, /Start your discovery board/);

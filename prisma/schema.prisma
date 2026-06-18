@@ -235,6 +235,7 @@ model InspirationVideo {
   shareCount     Int?
   lastSeenAt     DateTime          @default(now())
   sourcePayload  Json
+  rejectedAt     DateTime?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
@@ -242,4 +243,5 @@ model InspirationVideo {
   @@index([accountId, publishedAt])
   @@index([publishedAt])
   @@index([lastSeenAt])
+  @@index([rejectedAt])
 }

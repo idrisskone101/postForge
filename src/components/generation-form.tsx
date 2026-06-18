@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,10 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ModelPicker } from "@/components/model-picker";
+import { AvatarPicker } from "@/components/avatar-picker";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { apiPost } from "@/lib/api/client";
+import { apiGet, apiPost } from "@/lib/api/client";
 import { calculateEstimatedCost } from "@/lib/ai/models";
 import type { ModelDefinition } from "@/lib/ai/types";
 import {
@@ -24,6 +25,7 @@ import {
   ChevronDown,
   ArrowRight,
   Sparkles,
+  Users,
 } from "lucide-react";
 import {
   FloatingToolbar,
@@ -35,6 +37,41 @@ import { WorkspaceState } from "@/components/workspace-state";
 
 interface GenerationFormProps {
   models: ModelDefinition[];
+}
+
+interface AvatarIdentityPackSummary {
+  id: string;
+  avatarId: string;
+  status: "queued" | "processing" | "completed" | "failed";
+  error: string | null;
+  images: { id: string }[];
+}
+
+function describeIdentityStatus(
+  pack: AvatarIdentityPackSummary | null
+): { label: string; tone: "ready" | "working" | "failed" } {
+  if (!pack) {
+    return {
+      label: "Using the original avatar image while identity references prepare.",
+      tone: "working",
+    };
+  }
+  if (pack.status === "completed") {
+    return {
+      label: `${pack.images.length} identity references ready.`,
+      tone: "ready",
+    };
+  }
+  if (pack.status === "failed") {
+    return {
+      label: "Identity prep failed; the original avatar image will be used.",
+      tone: "failed",
+    };
+  }
+  return {
+    label: "Preparing identity references; the original avatar is usable now.",
+    tone: "working",
+  };
 }
 
 interface GenerateFormViewProps {
@@ -58,6 +95,8 @@ interface GenerateFormViewProps {
   onAdvancedOpenChange: (open: boolean) => void;
   onSubmit: () => void;
   onAppendToPrompt: (text: string) => void;
+  avatarSection?: ReactNode;
+  avatarName?: string | null;
 }
 
 const CREATIVE_SPARKS = [
@@ -99,9 +138,52 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
+  // Optional avatar identity: when set, the image is rendered from this avatar's
+  // identity references (same identity-locking approach as the Clone tab).
+  const [avatarId, setAvatarId] = useState<string | null>(null);
+  const [identityPack, setIdentityPack] = useState<AvatarIdentityPackSummary | null>(null);
+
+  // Keep a fresh identity-pack status so we can tell the user whether the
+  // multi-angle references are ready (the backend falls back to the original
+  // avatar image while they prepare).
+  useEffect(() => {
+    if (!avatarId) {
+      return;
+    }
+
+    let active = true;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const load = async () => {
+      try {
+        const pack = await apiGet<AvatarIdentityPackSummary | null>(
+          `/api/avatars/${encodeURIComponent(avatarId)}/identity-pack`
+        );
+        if (!active) return;
+        setIdentityPack(pack);
+        if (pack && (pack.status === "queued" || pack.status === "processing")) {
+          timeoutId = setTimeout(load, 4000);
+        }
+      } catch {
+        if (active) setIdentityPack(null);
+      }
+    };
+
+    void load();
+    return () => {
+      active = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [avatarId]);
+
   if (models.length === 0) {
     return <GenerateEmptyState />;
   }
+
+  const isReferenceImageModel = (modelId: string | null) => {
+    const m = models.find((mod) => mod.id === modelId);
+    return m?.type === "image" && m.capabilities.referenceImages === true;
+  };
 
   const handleModelSelect = (modelId: string) => {
     setSelectedModel(modelId);
@@ -114,6 +196,23 @@ export function GenerationForm({ models }: GenerationFormProps) {
     }
   };
 
+  // Avatar identity needs an edit-capable image model. Selecting an avatar while
+  // a non-compatible model is active auto-switches to one that accepts
+  // reference images so the parameters (aspect ratio, image count) stay coherent.
+  const handleAvatarSelect = (id: string) => {
+    const next = id || null;
+    setAvatarId(next);
+    if (!next) {
+      setIdentityPack(null);
+    }
+    if (next && !isReferenceImageModel(selectedModel)) {
+      const fallback = models.find(
+        (m) => m.type === "image" && m.capabilities.referenceImages === true
+      );
+      if (fallback) handleModelSelect(fallback.id);
+    }
+  };
+
   const model = models.find((m) => m.id === selectedModel);
   const isImage = model?.type === "image";
   const canSubmit = selectedModel && prompt.trim().length > 0 && !isSubmitting;
@@ -123,7 +222,17 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setIsSubmitting(true);
 
     try {
-      if (isImage) {
+      if (avatarId) {
+        const result = await apiPost<{ id: string }>("/api/generate/images", {
+          prompt,
+          model: selectedModel,
+          aspectRatio,
+          numImages,
+          negativePrompt: negativePrompt || undefined,
+          avatarId,
+        });
+        router.push(`/generate/${result.id}`);
+      } else if (isImage) {
         const result = await apiPost<{ id: string }>("/api/generate/images", {
           prompt,
           model: selectedModel,
@@ -152,6 +261,51 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setPrompt((prev) => (prev ? `${prev}, ${text}` : text));
   };
 
+  const identityStatus = describeIdentityStatus(identityPack);
+  const avatarSection = (
+    <div className="launch-card bg-card p-6 border border-border">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Users className="size-4 text-accent-green" />
+          <h3 className="text-[10px] font-bold uppercase tracking-widest">
+            AI Avatar
+          </h3>
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Optional
+          </span>
+        </div>
+        {avatarId && (
+          <button
+            type="button"
+            onClick={() => handleAvatarSelect("")}
+            className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      <p className="mb-4 text-xs leading-5 text-muted-foreground">
+        Select an avatar to generate this image from their identity references —
+        the same identity used for Clone reference images.
+      </p>
+      {avatarId && (
+        <p
+          className={cn(
+            "mb-4 text-xs leading-5",
+            identityStatus.tone === "ready"
+              ? "text-accent-green"
+              : identityStatus.tone === "failed"
+                ? "text-destructive"
+                : "text-accent-blue"
+          )}
+        >
+          {identityStatus.label}
+        </p>
+      )}
+      <AvatarPicker selectedId={avatarId} onSelect={handleAvatarSelect} />
+    </div>
+  );
+
   return (
     <GenerateFormView
       models={models}
@@ -174,6 +328,8 @@ export function GenerationForm({ models }: GenerationFormProps) {
       onAdvancedOpenChange={setAdvancedOpen}
       onSubmit={handleSubmit}
       onAppendToPrompt={appendToPrompt}
+      avatarSection={avatarSection}
+      avatarName={avatarId ? "Avatar" : null}
     />
   );
 }
@@ -199,6 +355,8 @@ export function GenerateFormView({
   onAdvancedOpenChange,
   onSubmit,
   onAppendToPrompt,
+  avatarSection,
+  avatarName,
 }: GenerateFormViewProps) {
   const model = models.find((m) => m.id === selectedModel);
   const isImage = model?.type === "image";
@@ -272,6 +430,8 @@ export function GenerateFormView({
               </div>
             </div>
           </div>
+
+          {avatarSection}
         </div>
 
         {/* Right Column: Settings */}
@@ -443,6 +603,7 @@ export function GenerateFormView({
                 <ToolbarDivider />
                 <ToolbarLabel>{aspectRatio}</ToolbarLabel>
                 {isImage && <><ToolbarDivider /><ToolbarLabel>{numImages} img</ToolbarLabel></>}
+                {avatarName && <><ToolbarDivider /><ToolbarLabel>{avatarName}</ToolbarLabel></>}
               </>
             )}
           </>
