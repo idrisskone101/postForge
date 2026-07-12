@@ -39,7 +39,9 @@ import {
   Users,
   Layers,
   Zap,
-  Plus,
+  SlidersHorizontal,
+  CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 
 const IDENTITY_ROLE_LABELS: Record<string, string> = {
@@ -90,6 +92,7 @@ const UGC_CLONE_TIPS = [
 
 const UGC_CLONE_TIP_INDEX_KEY = "postforge:ugc-clone:tip-index";
 const REFERENCE_BATCH_OPTIONS = [1, 2, 3] as const;
+const REFERENCE_LIBRARY_PAGE_SIZE = 24;
 type ReferenceBatchSize = (typeof REFERENCE_BATCH_OPTIONS)[number];
 
 function formatIdentityRole(role: string) {
@@ -213,6 +216,37 @@ export function CloneSourceEmptyState() {
 }
 
 type Phase = "input" | "reviewing" | "submitted";
+type CloneSetupStep = "source" | "identity" | "reference";
+
+const CLONE_SETUP_STEPS = [
+  {
+    id: "source",
+    number: "01",
+    label: "Source",
+    shortLabel: "Source",
+    description: "Choose and trim the clip",
+  },
+  {
+    id: "identity",
+    number: "02",
+    label: "Identity",
+    shortLabel: "Who",
+    description: "Choose who appears",
+  },
+  {
+    id: "reference",
+    number: "03",
+    label: "Reference",
+    shortLabel: "Look",
+    description: "Set the final look",
+  },
+] as const satisfies readonly {
+  id: CloneSetupStep;
+  number: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+}[];
 
 interface RefJobStatus {
   status: "queued" | "processing" | "completed" | "failed";
@@ -599,6 +633,12 @@ export function UGCCloneForm() {
 
   // Phase
   const [phase, setPhase] = useState<Phase>("input");
+  const [activeSetupStep, setActiveSetupStep] = useState<CloneSetupStep>("source");
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
+  const [referenceLibraryOpen, setReferenceLibraryOpen] = useState(false);
+  const [visibleSavedReferenceCount, setVisibleSavedReferenceCount] = useState(
+    REFERENCE_LIBRARY_PAGE_SIZE
+  );
 
   // Reference image iterations
   const [refImages, setRefImages] = useState<RefImageEntry[]>([]);
@@ -895,6 +935,9 @@ export function UGCCloneForm() {
     setOriginalVideoInfo(info);
     setShowTrimmer(false);
     setSourceToolsOpen(!info);
+    if (info) {
+      setActiveSetupStep("identity");
+    }
   };
 
   const handlePreselectedSourceResolved = () => {
@@ -1073,6 +1116,19 @@ export function UGCCloneForm() {
     ? "Source, identity, and reference are ready."
     : "Add the missing source, identity, or reference.";
   const compactActionLabel = nextAction.label;
+  const primaryActionDisabled = selectedSavedReference || selectedRefFileId
+    ? !canGenerateClone
+    : !canSubmit || isSubmitting || isGenerating;
+  const handlePrimaryAction = selectedSavedReference
+    ? handleGenerateWithSavedReference
+    : selectedRefFileId
+      ? handleApproveAndGenerate
+      : handleGenerateRefImage;
+  const completedSetupSteps = new Set<CloneSetupStep>([
+    ...(sourceReady ? (["source"] as const) : []),
+    ...(avatarReady ? (["identity"] as const) : []),
+    ...(referenceReady ? (["reference"] as const) : []),
+  ]);
   const productionStatePanel = (
     <CloneProductionStatePanel
       sourceReady={sourceReady}
@@ -1334,14 +1390,65 @@ export function UGCCloneForm() {
     <>
       <div
         data-clone-production-state="true"
-        className="space-y-8 pb-[32rem] sm:pb-[24rem] lg:pb-[15rem]"
+        data-active-clone-step={activeSetupStep}
+        className="space-y-4 pb-28"
       >
-        <div className="space-y-8">
+        <nav
+          aria-label="Clone setup progress"
+          className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)] p-1.5 shadow-sm"
+        >
+          {CLONE_SETUP_STEPS.map((step) => {
+            const isActive = activeSetupStep === step.id;
+            const isComplete = completedSetupSteps.has(step.id);
+
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => setActiveSetupStep(step.id)}
+                aria-label={`${step.number}. ${step.label}`}
+                aria-current={isActive ? "step" : undefined}
+                className={cn(
+                  "group flex min-w-0 items-center gap-1.5 rounded-xl px-2 py-2.5 text-left transition-colors sm:gap-3 sm:px-4",
+                  isActive
+                    ? "bg-white/8 text-white shadow-sm ring-1 ring-white/10"
+                    : "text-white/40 hover:bg-white/[0.04] hover:text-white/70"
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-lg border font-mono text-[10px] font-bold sm:size-8",
+                    isComplete
+                      ? "border-accent-green/30 bg-accent-green/12 text-accent-green"
+                      : isActive
+                        ? "border-accent-coral/30 bg-accent-coral/12 text-accent-coral"
+                        : "border-white/10 bg-white/[0.03]"
+                  )}
+                >
+                  {isComplete ? <CheckCircle2 className="size-3.5" /> : step.number}
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[11px] font-semibold sm:text-sm">
+                    {step.shortLabel}
+                  </span>
+                  <span className="mt-0.5 hidden truncate text-[10px] text-white/35 sm:block">
+                    {step.description}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="min-w-0">
           <section
             data-clone-source-section="true"
-            className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6"
+            className={cn(
+              "rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-4 sm:p-6",
+              activeSetupStep !== "source" && "hidden"
+            )}
           >
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-accent-blue/10 text-accent-blue">
                   <Video className="size-5" />
@@ -1442,7 +1549,13 @@ export function UGCCloneForm() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6">
+          <section
+            data-clone-identity-section="true"
+            className={cn(
+              "rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-4 sm:p-6",
+              activeSetupStep !== "identity" && "hidden"
+            )}
+          >
             <div className="mb-6 flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-accent-green/10 text-accent-green">
                 <Users className="size-5" />
@@ -1473,13 +1586,22 @@ export function UGCCloneForm() {
                   }
                 }}
               />
-              <AvatarPicker selectedId={avatarId} onSelect={setAvatarId} />
+              <AvatarPicker
+                selectedId={avatarId}
+                onSelect={(nextAvatarId) => {
+                  setAvatarId(nextAvatarId);
+                  setActiveSetupStep(sourceReady ? "reference" : "source");
+                }}
+              />
             </div>
           </section>
 
           <section
             data-clone-reference-section="true"
-            className="rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-6"
+            className={cn(
+              "rounded-2xl border border-white/10 bg-[oklch(0.205_0_0)] p-4 sm:p-6",
+              activeSetupStep !== "reference" && "hidden"
+            )}
           >
             <div className="mb-6 flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-xl bg-accent-coral/10 text-accent-coral">
@@ -1493,10 +1615,27 @@ export function UGCCloneForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(180px,240px)_minmax(180px,240px)_minmax(0,1fr)]">
+            <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+              <div
+                data-reference-comparison-stage="true"
+                className="rounded-xl border border-white/10 bg-black/25 p-3 sm:p-4"
+              >
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-white/80">Inputs</p>
+                    <p className="mt-0.5 text-[10px] text-white/35">
+                      Source motion and selected identity
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-white/40">
+                    Side by side
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
               <div
                 data-reference-source-preview="true"
-                className="self-start rounded-xl border border-white/10 bg-black p-3"
+                className="h-full min-w-0 rounded-xl border border-white/10 bg-black/65 p-2.5 sm:p-3"
               >
                 {sourceReady && videoInfo && sourcePreviewSrc ? (
                   <>
@@ -1527,7 +1666,7 @@ export function UGCCloneForm() {
                 )}
               </div>
 
-              <div className="self-start rounded-xl border border-white/10 bg-black p-3">
+              <div className="h-full min-w-0 rounded-xl border border-white/10 bg-black/65 p-2.5 sm:p-3">
                 {selectedSavedReference ? (
                   <>
                     <ReferencePortraitFrame>
@@ -1628,10 +1767,18 @@ export function UGCCloneForm() {
                   </ReferencePortraitFrame>
                 )}
               </div>
+                </div>
+              </div>
 
-              <div className="flex min-w-0 flex-col gap-4 self-start">
+              <div className="flex min-w-0 flex-col gap-3 self-start rounded-xl border border-white/10 bg-black/25 p-3 sm:p-4 xl:sticky xl:top-4">
+                <div className="mb-1">
+                  <p className="text-xs font-semibold text-white/80">Reference options</p>
+                  <p className="mt-0.5 text-[10px] leading-4 text-white/35">
+                    Choose the look for your next reference.
+                  </p>
+                </div>
                 {hairstyleOptions.length > 0 && (
-                  <div className="w-full max-w-[220px] rounded-xl border border-white/10 bg-white/[0.02] p-2.5">
+                  <div className="w-full rounded-xl border border-white/10 bg-white/[0.02] p-2.5">
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">
                         Hairstyle
@@ -1674,7 +1821,7 @@ export function UGCCloneForm() {
                 )}
                 <div
                   data-reference-batch-size={referenceBatchSize}
-                  className="w-full max-w-[220px] rounded-xl border border-white/10 bg-white/[0.02] p-2.5"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.02] p-2.5"
                 >
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">
@@ -1706,43 +1853,74 @@ export function UGCCloneForm() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleGenerateRefImage}
-                  disabled={!canSubmit || isSubmitting || isGenerating}
-                  className="flex aspect-[9/16] w-full max-w-[220px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-60 md:mx-0"
-                >
-                  {isSubmitting || isGenerating ? (
-                    <Loader2 className="size-6 animate-spin text-white/30" />
-                  ) : (
-                    <Sparkles className="size-6 text-white/20" />
+                <div
+                  data-reference-generation-summary="true"
+                  className={cn(
+                    "rounded-xl border p-3",
+                    isGenerating
+                      ? "border-accent-blue/25 bg-accent-blue/[0.06]"
+                      : referenceReady
+                        ? "border-accent-green/25 bg-accent-green/[0.06]"
+                        : "border-white/10 bg-white/[0.02]"
                   )}
-                  <span className="text-xs font-semibold uppercase tracking-widest text-white/40">
-                    {isGenerating
-                      ? `Generating ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`
-                      : selectedRefFileId
-                        ? `Generate ${referenceBatchSize} more`
-                        : `Generate ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
-                  </span>
-                  <p className="max-w-[140px] text-[10px] text-white/20">
-                    {referenceBatchSize === 1
-                      ? "Create one reference image from the selected source and identity."
-                      : `Create ${referenceBatchSize} reference images from the selected source and identity.`}
-                  </p>
-                </button>
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className={cn(
+                      "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg",
+                      isGenerating
+                        ? "bg-accent-blue/10 text-accent-blue"
+                        : referenceReady
+                          ? "bg-accent-green/10 text-accent-green"
+                          : "bg-white/5 text-white/35"
+                    )}>
+                      {isGenerating ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : referenceReady ? (
+                        <Check className="size-3.5" />
+                      ) : (
+                        <Sparkles className="size-3.5" />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[11px] font-semibold text-white/75">
+                          {isGenerating
+                            ? "Generating references"
+                            : referenceReady
+                              ? "Reference ready"
+                              : `Ready for ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
+                        </p>
+                        <span className="shrink-0 font-mono text-[10px] text-white/30">
+                          {formatCost(referenceBatchCost)}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[10px] leading-4 text-white/30">
+                        {isGenerating
+                          ? "You can keep reviewing the inputs while this finishes."
+                          : referenceReady
+                            ? "The selected still is ready for clone generation."
+                            : "Use the action bar below when the options look right."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 {submitError && (
                   <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
                     {submitError}
                   </div>
                 )}
+              </div>
 
                 {refImages.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                      Generated references
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-2 rounded-xl border border-white/10 bg-black/20 p-3 sm:p-4 xl:col-span-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold text-white/80">This run</p>
+                      <span className="font-mono text-[10px] text-white/30">
+                        {refImages.length} generated
+                      </span>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
                       {refImages.map((entry, index) => (
                         <button
                           key={entry.jobId}
@@ -1752,7 +1930,7 @@ export function UGCCloneForm() {
                             setSelectedRefIndex(index);
                           }}
                           className={cn(
-                            "relative aspect-[9/16] overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                            "relative aspect-[9/16] w-24 shrink-0 overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral sm:w-28",
                             !selectedSavedReference && selectedRefIndex === index
                               ? "border-accent-coral"
                               : "border-white/10"
@@ -1784,27 +1962,56 @@ export function UGCCloneForm() {
                 )}
 
                 {isLoadingSavedReferences && (
-                  <div className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/40">
+                  <div className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/40 xl:col-span-2">
                     Loading saved references...
                   </div>
                 )}
 
                 {savedReferencesError && (
-                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive xl:col-span-2">
                     {savedReferencesError}
                   </div>
                 )}
 
                 {savedReferences.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
-                      Saved references
-                    </p>
-                    <div
-                      data-reference-thumbnail-grid="true"
-                      className="grid max-h-[260px] grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 overflow-y-auto pr-1"
+                  <div className="rounded-xl border border-white/10 bg-black/20 xl:col-span-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (referenceLibraryOpen) {
+                          setVisibleSavedReferenceCount(REFERENCE_LIBRARY_PAGE_SIZE);
+                        }
+                        setReferenceLibraryOpen((open) => !open);
+                      }}
+                      aria-expanded={referenceLibraryOpen}
+                      aria-controls="reference-library-grid"
+                      className="flex w-full items-center justify-between gap-3 p-3 text-left transition-colors hover:bg-white/[0.025] sm:p-4"
                     >
-                      {savedReferences.map((reference) => (
+                      <div>
+                        <p className="text-xs font-semibold text-white/80">Reference library</p>
+                        <p className="mt-0.5 text-[10px] text-white/35">
+                          Browse a saved look only when you need one.
+                        </p>
+                      </div>
+                      <span className="flex shrink-0 items-center gap-2">
+                        <span className="font-mono text-[10px] text-white/30">
+                          {savedReferences.length} saved
+                        </span>
+                        <span className="rounded-lg border border-white/10 bg-white/[0.03] p-1.5 text-white/40">
+                          <ChevronDown className={cn(
+                            "size-3.5 transition-transform",
+                            referenceLibraryOpen && "rotate-180"
+                          )} />
+                        </span>
+                      </span>
+                    </button>
+                    {referenceLibraryOpen && (
+                      <div
+                        id="reference-library-grid"
+                        data-reference-thumbnail-grid="true"
+                        className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 border-t border-white/10 p-3 sm:grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:p-4"
+                      >
+                      {savedReferences.slice(0, visibleSavedReferenceCount).map((reference) => (
                       <button
                         key={reference.id}
                         type="button"
@@ -1829,18 +2036,31 @@ export function UGCCloneForm() {
                         )}
                       </button>
                       ))}
-                      <button
-                        type="button"
-                        className="flex aspect-[9/16] items-center justify-center rounded-lg border border-dashed border-white/10 transition-colors hover:bg-white/5"
-                        title="Generate a scene reference from the selected avatar"
-                      >
-                        <Plus className="size-4 text-white/20" />
-                      </button>
-                    </div>
+                      </div>
+                    )}
+                    {referenceLibraryOpen && savedReferences.length > visibleSavedReferenceCount && (
+                      <div className="flex flex-col gap-2 border-t border-white/10 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                        <p className="text-[10px] text-white/35">
+                          Showing {visibleSavedReferenceCount} of {savedReferences.length} saved references
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setVisibleSavedReferenceCount((count) =>
+                            Math.min(count + REFERENCE_LIBRARY_PAGE_SIZE, savedReferences.length)
+                          )}
+                          className="h-8 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:bg-white/[0.06] hover:text-white/80"
+                        >
+                          Show {Math.min(
+                            REFERENCE_LIBRARY_PAGE_SIZE,
+                            savedReferences.length - visibleSavedReferenceCount
+                          )} more
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
-                <div className="space-y-2">
+                <div className="space-y-2 xl:col-span-2">
                   <button
                     type="button"
                     onClick={() => setShowAvatarReferences((current) => !current)}
@@ -1895,7 +2115,6 @@ export function UGCCloneForm() {
                     </div>
                   ) : null}
                 </div>
-              </div>
             </div>
           </section>
         </div>
@@ -1905,13 +2124,96 @@ export function UGCCloneForm() {
       <section
         data-clone-primary-action-bar="true"
         data-clone-generation-settings-bar="true"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:left-72 sm:px-5 lg:px-8"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:left-72 sm:px-5 lg:px-8"
       >
         <div
-          className="pointer-events-auto mx-auto max-w-[1120px] rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/94 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-3"
+          className="pointer-events-auto relative mx-auto max-w-[1120px] rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/96 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.45)] ring-1 ring-black/30 backdrop-blur-2xl sm:p-3"
           title={`${cloneTip.title}: ${cloneTip.body}`}
         >
-          <div className="grid gap-2 md:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] md:items-center">
+          {mobileSettingsOpen && (
+            <div className="absolute inset-x-0 bottom-[calc(100%+0.5rem)] max-h-[min(70vh,480px)] space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-[oklch(0.18_0_0)]/98 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.5)] ring-1 ring-black/30 backdrop-blur-2xl lg:hidden">
+              <div className="mb-1 flex items-center justify-between gap-3 px-1">
+                <div>
+                  <p className="text-xs font-semibold text-white">Generation settings</p>
+                  <p className="mt-0.5 text-[10px] text-white/35">Models, sound, and cleanup</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileSettingsOpen(false)}
+                  className="rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white/45 hover:bg-white/5 hover:text-white/70"
+                >
+                  Done
+                </button>
+              </div>
+
+              <CloneModelSelect
+                label="Final video"
+                description="Video model"
+                accentClassName="text-accent-blue"
+                models={cloneVideoModels}
+                selectedValue={selectedModel}
+                onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
+                getCost={(modelId) =>
+                  formatCost(calculateEstimatedCost(modelId, { durationSec }))
+                }
+              />
+              <CloneModelSelect
+                label="Reference image"
+                description="Image model"
+                accentClassName="text-accent-green"
+                models={referenceImageModels}
+                selectedValue={selectedReferenceImageModel}
+                onValueChange={setSelectedReferenceImageModel}
+                getCost={(modelId) =>
+                  formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
+                }
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3">
+                  <span className="truncate text-[11px] font-semibold text-white/80">Sound</span>
+                  <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
+                </div>
+                <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3">
+                  <span className="truncate text-[11px] font-semibold text-white/80">Remove text</span>
+                  <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-[minmax(0,1fr)_44px] gap-2 lg:hidden">
+            <button
+              type="button"
+              onClick={handlePrimaryAction}
+              disabled={primaryActionDisabled}
+              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl bg-accent-green px-4 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
+            >
+              <Zap className="size-3.5 shrink-0" />
+              <span className="truncate">
+                {isSubmitting
+                  ? "Starting..."
+                  : isGenerating
+                    ? "Generating reference..."
+                    : compactActionLabel}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileSettingsOpen((open) => !open)}
+              aria-label="Generation settings"
+              aria-expanded={mobileSettingsOpen}
+              className={cn(
+                "flex size-11 items-center justify-center rounded-xl border transition-colors",
+                mobileSettingsOpen
+                  ? "border-accent-blue/40 bg-accent-blue/12 text-accent-blue"
+                  : "border-white/10 bg-white/5 text-white/55 hover:bg-white/10 hover:text-white"
+              )}
+            >
+              <SlidersHorizontal className="size-4" />
+            </button>
+          </div>
+
+          <div className="hidden gap-2 lg:grid lg:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] lg:items-center">
               <CloneModelSelect
                 label="Final video"
                 description="Video model"
@@ -1960,18 +2262,8 @@ export function UGCCloneForm() {
 
               <button
                 type="button"
-                onClick={
-                  selectedSavedReference
-                    ? handleGenerateWithSavedReference
-                    : selectedRefFileId
-                      ? handleApproveAndGenerate
-                      : handleGenerateRefImage
-                }
-                disabled={
-                  selectedSavedReference || selectedRefFileId
-                    ? !canGenerateClone
-                    : !canSubmit || isSubmitting || isGenerating
-                }
+                onClick={handlePrimaryAction}
+                disabled={primaryActionDisabled}
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-4 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-accent-green/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
               >
                 <Zap className="size-3.5" />
