@@ -1,5 +1,12 @@
 export type WorkspaceNavigationItem = {
-  label: "Home" | "Inspiration" | "Clone" | "Gallery" | "Spend" | "Generate";
+  label:
+    | "Home"
+    | "Inspiration"
+    | "Clone"
+    | "Slideshow"
+    | "Gallery"
+    | "Spend"
+    | "Generate";
   href: string;
   match: string[];
   description: string;
@@ -31,6 +38,13 @@ export const workspaceNavigationGroups = {
       match: ["/ugc-clone"],
       description: "Build a clone from a source clip, identity, and reference image.",
       primaryAction: { label: "Browse Inspiration", href: "/ugc-inspiration" },
+    },
+    {
+      label: "Slideshow",
+      href: "/slideshow",
+      match: ["/slideshow"],
+      description: "Create, edit, automate, and export AI image carousels.",
+      primaryAction: { label: "New Slideshow", href: "/slideshow?new=true" },
     },
     {
       label: "Gallery",

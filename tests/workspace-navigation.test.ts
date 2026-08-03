@@ -9,6 +9,7 @@ assert.deepEqual(primaryLabels, [
   "Home",
   "Inspiration",
   "Clone",
+  "Slideshow",
   "Gallery",
   "Spend",
 ]);
@@ -20,11 +21,20 @@ assert.equal(getActiveWorkspaceItem("/")?.label, "Home");
 assert.equal(getActiveWorkspaceItem("/ugc-inspiration")?.label, "Inspiration");
 assert.equal(getActiveWorkspaceItem("/ugc-clone")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/ugc-clone/abc123")?.label, "Clone");
+assert.equal(getActiveWorkspaceItem("/slideshow")?.label, "Slideshow");
+assert.equal(
+  getActiveWorkspaceItem("/slideshow/project-123")?.label,
+  "Slideshow"
+);
+assert.equal(
+  getActiveWorkspaceItem("/slideshow?new=true")?.label,
+  "Slideshow"
+);
 assert.equal(getActiveWorkspaceItem("/gallery")?.label, "Gallery");
 assert.equal(getActiveWorkspaceItem("/costs?period=30d")?.label, "Spend");
 assert.equal(getActiveWorkspaceItem("/generate/abc123")?.label, "Generate");
 
-const allLabels = [
+const allLabels: string[] = [
   ...workspaceNavigationGroups.primary,
   ...workspaceNavigationGroups.tools,
 ].map((item) => item.label);

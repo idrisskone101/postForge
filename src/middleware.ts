@@ -52,6 +52,17 @@ export function middleware(request: NextRequest) {
   }
 
   const token = readAuthToken(request.headers.get("authorization"));
+  const automationCronSecrets = [
+    process.env.SLIDESHOW_AUTOMATION_CRON_SECRET,
+    process.env.CRON_SECRET,
+  ].filter(Boolean);
+  if (
+    request.nextUrl.pathname === "/api/internal/slideshow-automations/tick" &&
+    token !== null &&
+    automationCronSecrets.includes(token)
+  ) {
+    return NextResponse.next();
+  }
   if (token !== apiKey) {
     return unauthorized();
   }

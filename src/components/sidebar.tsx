@@ -13,6 +13,7 @@ import {
   Users,
   Compass,
   DollarSign,
+  GalleryHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ const NAV_ICONS: Record<
   Home: LayoutDashboard,
   Inspiration: Compass,
   Clone: Users,
+  Slideshow: GalleryHorizontal,
   Gallery: Image,
   Spend: DollarSign,
   Generate: Sparkles,

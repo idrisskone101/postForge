@@ -33,7 +33,9 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
-  const allowsPageSticky = pathname?.startsWith("/ugc-inspiration");
+  const allowsPageSticky =
+    pathname?.startsWith("/ugc-inspiration") ||
+    pathname?.startsWith("/slideshow");
 
   return (
     <main
