@@ -22,6 +22,7 @@ interface ModelPickerProps {
   selectedModel: string | null;
   onModelSelect: (modelId: string) => void;
   models: ModelDefinition[];
+  recommendedModelId?: string;
 }
 
 const MODEL_ICON_MAP: Record<
@@ -70,10 +71,12 @@ function capabilityItems(model: ModelDefinition): Array<{
 function ModelCard({
   model,
   selected,
+  recommended,
   onClick,
 }: {
   model: ModelDefinition;
   selected: boolean;
+  recommended: boolean;
   onClick: () => void;
 }) {
   const priceLabel =
@@ -99,6 +102,11 @@ function ModelCard({
           : "border-[#DEDFD8] hover:-translate-y-px hover:border-[#BFC0B9] hover:bg-[#FCFCFA] hover:shadow-[var(--pf-shadow-xs)]"
       )}
     >
+      {recommended && (
+        <span className="absolute -top-2 left-2.5 rounded-md bg-[#22C55E] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+          Recommended
+        </span>
+      )}
       <span className="flex items-center gap-2.5">
         <span
           className={cn(
@@ -146,6 +154,7 @@ export function ModelPicker({
   selectedModel,
   onModelSelect,
   models,
+  recommendedModelId,
 }: ModelPickerProps) {
   const selected = models.find((model) => model.id === selectedModel);
   const [requestedType, setRequestedType] = useState<"image" | "video">(
@@ -194,12 +203,16 @@ export function ModelPicker({
         })}
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+      <div
+        key={activeType}
+        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3"
+      >
         {visibleModels.map((model) => (
           <ModelCard
             key={model.id}
             model={model}
             selected={selectedModel === model.id}
+            recommended={recommendedModelId === model.id}
             onClick={() => onModelSelect(model.id)}
           />
         ))}

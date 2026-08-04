@@ -563,6 +563,12 @@ export function GenerateFormView({
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";
   const canSubmit = Boolean(model) && prompt.trim().length > 0 && !isSubmitting;
+  const missing: string[] = [];
+  if (!model) missing.push("a model");
+  if (!prompt.trim()) missing.push("a prompt");
+  const activeType = model?.type ?? "image";
+  const recommendedModelId =
+    models.find((item) => item.type === activeType)?.id ?? undefined;
   const estimatedCost = model
     ? calculateEstimatedCost(model.id, {
         numImages: isImage ? numImages : undefined,
@@ -675,11 +681,15 @@ export function GenerateFormView({
             selectedModel={selectedModel}
             onModelSelect={onModelSelect}
             models={models}
+            recommendedModelId={recommendedModelId}
           />
         </section>
 
         {model && (
-          <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+          <section
+            key={model.id}
+            className="animate-content-enter rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]"
+          >
             <div className="mb-3 flex items-center gap-2">
               <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
                 03
@@ -906,6 +916,7 @@ export function GenerateFormView({
             role={submitError ? "alert" : "status"}
             className={cn(
               "mx-3 mt-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[10px] leading-4",
+              !submitError && "animate-success-pulse",
               submitError
                 ? "bg-[#FEF0EF] text-[#C53A32]"
                 : "bg-[#EEF5FF] text-[#2A71C7]"
@@ -932,6 +943,11 @@ export function GenerateFormView({
             <strong className="mt-1 block text-[11px] font-semibold text-[#30312E]">
               Cost Estimate · {model ? formatCost(estimatedCost) : "—"}
             </strong>
+            {missing.length > 0 && (
+              <span className="mt-0.5 block text-[10px] text-[#B08A00]">
+                Add {missing.join(" and ")} to continue
+              </span>
+            )}
           </div>
           <Button
             type="submit"
@@ -961,6 +977,11 @@ export function GenerateFormView({
           <strong className="mt-0.5 block text-[10px] text-[#30312E]">
             {model ? formatCost(estimatedCost) : "—"}
           </strong>
+          {missing.length > 0 && (
+            <span className="mt-0.5 block truncate text-[10px] text-[#B08A00]">
+              Add {missing.join(" and ")} to continue
+            </span>
+          )}
         </div>
         <Button
           type="submit"

@@ -268,46 +268,46 @@ export function AvatarCreationCard({
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           data-avatar-action="upload"
           onClick={onUpload}
           disabled={isUploading}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97] disabled:opacity-50"
         >
           {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          <span className="text-[11px] font-bold uppercase tracking-wide">Upload</span>
+          <span className="text-[11px] font-semibold">Upload</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="generate"
           onClick={onGenerate}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-blue hover:text-accent-blue active:scale-[0.97]"
         >
           <Sparkles className="size-4" />
-          <span className="text-[11px] font-bold uppercase tracking-wide">Generate</span>
+          <span className="text-[11px] font-semibold">Generate</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="import"
           onClick={onImport}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97]"
         >
           <FileJson className="size-4" />
-          <span className="text-[11px] font-bold uppercase tracking-wide">Import</span>
+          <span className="text-[11px] font-semibold">Import</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="gallery"
           onClick={onGallery}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-coral hover:text-accent-coral active:scale-[0.97]"
         >
           <ImageIcon className="size-4" />
-          <span className="text-[11px] font-bold uppercase tracking-wide">Gallery</span>
+          <span className="text-[11px] font-semibold">Gallery</span>
         </button>
       </div>
     </div>
