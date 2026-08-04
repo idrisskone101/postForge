@@ -138,18 +138,40 @@ const headerMarkup = renderToStaticMarkup(
 const emptyMarkup = renderToStaticMarkup(
   <InspirationPageClient initialAccounts={[]} />
 );
+const manySourcesMarkup = renderToStaticMarkup(
+  <InspirationPageClient
+    initialAccounts={[
+      {
+        ...accounts[0],
+        videos: Array.from({ length: 30 }, (_, index) => ({
+          ...accounts[0].videos[0],
+          id: `paged-video-${index}`,
+          externalVideoId: `7350000000000000${String(index).padStart(3, "0")}`,
+          originalUrl: `https://www.tiktok.com/@creator/video/paged-${index}`,
+          publishedAt: new Date(Date.UTC(2026, 5, 30 - index)).toISOString(),
+        })),
+      },
+    ]}
+  />
+);
 const allVideos = accounts.flatMap((account) => account.videos);
 
 assert.match(headerMarkup, /Source Selection/);
 assert.match(headerMarkup, /Compare creator posts/);
 assert.match(headerMarkup, /Track Creator/);
-assert.match(headerMarkup, /lg:max-w-\[780px\]/);
+assert.match(headerMarkup, /lg:w-\[31rem\]/);
 assert.doesNotMatch(markup, /Source Selection/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
-assert.match(markup, /Creators/);
+assert.match(markup, /Tracked creators/);
 assert.match(markup, /Creator Feed/);
 assert.match(markup, /All tracked creator videos/);
+assert.doesNotMatch(markup, /Find the source worth rebuilding/);
+assert.match(markup, /Refresh all/);
+assert.match(markup, /Source library/);
+assert.match(markup, /Search source library/);
+assert.match(markup, /Sort source library/);
+assert.match(markup, /Use compact source grid/);
 assert.match(markup, /data-source-feed-tabs="true"/);
 assert.match(markup, /data-source-feed-filter="all"/);
 assert.match(markup, /data-source-feed-filter="unused"/);
@@ -170,14 +192,14 @@ assert.match(markup, /Reject/);
 assert.match(markup, /Reject source from @creator/);
 assert.match(markup, /Restore Source/);
 assert.match(markup, /data-creator-list="true"/);
+assert.match(markup, /data-creator-scroll-viewport="true"/);
 assert.match(markup, /size-8 shrink-0 items-center/);
-assert.match(markup, /mt-2 grid grid-cols-\[minmax\(0,1fr\)_1\.75rem\]/);
-assert.match(markup, /line-clamp-2 break-all/);
+assert.match(markup, /max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain/);
+assert.match(markup, /max-w-full overflow-hidden/);
 assert.match(markup, /Refresh @creator/);
 assert.match(markup, /Remove @creator/);
-assert.match(markup, />Refresh</);
+assert.match(markup, /sr-only">Refresh</);
 assert.match(markup, /sr-only">Remove</);
-assert.match(markup, /text-destructive\/65/);
 assert.match(markup, /size-full object-cover/);
 assert.match(markup, /\/api\/ugc-inspiration\/accounts\/account-1\/avatar/);
 assert.doesNotMatch(markup, /All sources/);
@@ -186,11 +208,11 @@ assert.doesNotMatch(markup, /Manage creators/);
 assert.doesNotMatch(markup, /New Sources/);
 assert.doesNotMatch(markup, /Tracked Creators/);
 assert.doesNotMatch(markup, /Top Creator/);
-assert.match(markup, /Preview Details/);
-assert.match(markup, /mt-3 min-h-0 flex-1 space-y-1 overflow-y-auto/);
-assert.match(markup, /max-h-\[480px\]/);
+assert.match(markup, />Preview</);
+assert.match(markup, /snap-start/);
+assert.match(markup, /max-h-\[440px\]/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
-assert.match(markup, /object-contain/);
+assert.match(markup, /object-cover/);
 
 assert.equal(filterVideosBySourceUsage(allVideos, "all").length, 3);
 assert.equal(filterVideosBySourceUsage(allVideos, "unused").length, 1);
@@ -204,8 +226,16 @@ assert.match(emptyMarkup, /data-workspace-state="empty"/);
 assert.match(emptyMarkup, /Start your discovery board/);
 assert.match(emptyMarkup, /Track Creator/);
 
-assert.match(markup, /<aside class="sticky top-0 hidden h-screen w-80 shrink-0/);
-assert.match(markup, /<section class="min-w-0 flex-1 overflow-y-auto/);
+assert.equal(
+  (manySourcesMarkup.match(/data-inspiration-video-id=/g) ?? []).length,
+  24,
+  "the initial source library should stay bounded"
+);
+assert.match(manySourcesMarkup, /Showing 24 of 30 matching sources/);
+assert.match(manySourcesMarkup, /Load 6 more/);
+
+assert.doesNotMatch(markup, /<aside/);
+assert.match(markup, /<section class="min-w-0 px-4 py-5/);
 assert.doesNotMatch(markup, /launch-card glass/);
 assert.doesNotMatch(markup, /Manual refresh required/);
 assert.doesNotMatch(markup, /transition-opacity/);

@@ -1,0 +1,154 @@
+{
+  "docH": 2583,
+  "docW": 390,
+  "fixed": [
+    {
+      "bottom": 844,
+      "dis": false,
+      "h": 78,
+      "right": 390,
+      "tag": "SECTION",
+      "text": "Add sourceFinal videoVideoKling 3.0$0.63▼Reference imageReferenceNano Banana 2$0.08▼SoundTextAdd source",
+      "w": 390,
+      "x": 0,
+      "y": 766
+    }
+  ],
+  "focus": [
+    {
+      "bottom": 821,
+      "dis": true,
+      "h": 44,
+      "right": 315,
+      "tag": "BUTTON",
+      "text": "Add source",
+      "w": 292,
+      "x": 23,
+      "y": 777
+    },
+    {
+      "bottom": 821,
+      "dis": false,
+      "h": 44,
+      "right": 367,
+      "tag": "BUTTON",
+      "text": "",
+      "w": 44,
+      "x": 323,
+      "y": 777
+    },
+    {
+      "bottom": 706.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.50|Jul 13",
+      "w": 324,
+      "x": 33,
+      "y": 630.7734375
+    },
+    {
+      "bottom": 622.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.50|Jul 14",
+      "w": 324,
+      "x": 33,
+      "y": 546.7734375
+    },
+    {
+      "bottom": 538.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.50|Jul 14",
+      "w": 324,
+      "x": 33,
+      "y": 462.7734375
+    },
+    {
+      "bottom": 454.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.50|Jul 21",
+      "w": 324,
+      "x": 33,
+      "y": 378.7734375
+    },
+    {
+      "bottom": 370.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.50|Jul 21",
+      "w": 324,
+      "x": 33,
+      "y": 294.7734375
+    },
+    {
+      "bottom": 286.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 22",
+      "w": 324,
+      "x": 33,
+      "y": 210.7734375
+    },
+    {
+      "bottom": 202.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 22",
+      "w": 324,
+      "x": 33,
+      "y": 126.7734375
+    },
+    {
+      "bottom": 118.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 23",
+      "w": 324,
+      "x": 33,
+      "y": 42.7734375
+    },
+    {
+      "bottom": 34.7734375,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.63|Jul 24",
+      "w": 324,
+      "x": 33,
+      "y": -41.2265625
+    },
+    {
+      "bottom": -49.2265625,
+      "dis": false,
+      "h": 76,
+      "right": 357,
+      "tag": "A",
+      "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.63|Jul 24",
+      "w": 324,
+      "x": 33,
+      "y": -125.2265625
+    }
+  ],
+  "ih": 844,
+  "iw": 390,
+  "scrollY": 1739.5
+}

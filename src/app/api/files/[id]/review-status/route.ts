@@ -5,6 +5,15 @@ import {
   serializeOutputReviewStatus,
   updateOutputReviewStatus,
 } from "@/lib/output-review-status";
+import {
+  assertAssetsAreNotPublicationLeased,
+  UnresolvedPublicationConflictError,
+  withLockedAutomationRecords,
+} from "@/lib/publication-lifecycle";
+import {
+  isSameOriginMutation,
+  rejectCrossOriginMutation,
+} from "@/lib/integrations/routes";
 
 export async function GET(
   request: NextRequest,
@@ -38,22 +47,30 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();
   try {
     const { id } = await params;
     const body = (await request.json()) as { reviewStatus?: unknown };
-    const result = await updateOutputReviewStatus({
-      outputId: id,
-      reviewStatus: body.reviewStatus,
-      update: (outputId, reviewStatus) =>
-        prisma.generatedFile.update({
-          where: { id: outputId },
-          data: { reviewStatus },
-          select: { id: true, reviewStatus: true },
-        }),
+    const result = await withLockedAutomationRecords(async (records, transaction) => {
+      assertAssetsAreNotPublicationLeased(records, [id]);
+      const updated = await updateOutputReviewStatus({
+        outputId: id,
+        reviewStatus: body.reviewStatus,
+        update: (outputId, reviewStatus) =>
+          transaction.generatedFile.update({
+            where: { id: outputId },
+            data: { reviewStatus },
+            select: { id: true, reviewStatus: true },
+          }),
+      });
+      return { result: updated };
     });
 
     return NextResponse.json(result);
   } catch (error) {
+    if (error instanceof UnresolvedPublicationConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     if (error instanceof OutputReviewStatusError) {
       return NextResponse.json(
         { error: error.message },

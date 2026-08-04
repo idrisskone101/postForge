@@ -2,11 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UGCInspirationLoading() {
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10">
+    <div className="min-w-0 px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+      <div className="mx-auto w-full min-w-0 max-w-[1280px]">
       <div className="mb-8">
         <Skeleton className="h-8 w-36 rounded-full" />
-        <Skeleton className="mt-4 h-11 w-72 rounded-xl" />
-        <Skeleton className="mt-3 h-5 w-[28rem]" />
+        <Skeleton className="mt-4 h-11 w-72 max-w-full rounded-xl" />
+        <Skeleton className="mt-3 h-5 w-[28rem] max-w-full" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -22,6 +23,7 @@ export default function UGCInspirationLoading() {
             <Skeleton className="aspect-[9/16] rounded-[28px]" />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

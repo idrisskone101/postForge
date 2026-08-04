@@ -1,0 +1,140 @@
+[
+  {
+    "name": "gallery",
+    "route": "/gallery",
+    "errRef": null,
+    "errLocal": null,
+    "ref": {
+      "body": "P\nPostForge\n＋ Create new\nHome\nInspiration\nClone\nGallery\n8\nCharacters\nAutomations\nAnalytics\nSpend\nGenerate\nCredits\n1,280\nRenews in 18 days\nIK\nIdriss\nCreator plan\n\nCONTENT LIBRARY\n\nGallery\n\nReview every generated asset, ma",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nCreate Asset\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nREVIEW\n\nGallery\n\nApprove, rejec",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "Gallery - PostForge"
+    },
+    "refBytes": 106860,
+    "localBytes": 161180
+  },
+  {
+    "name": "character-new",
+    "route": "/characters/new",
+    "errRef": null,
+    "errLocal": "Timed out waiting for tab 1 to navigate to http://127.0.0.1:3000/characters/new.",
+    "ref": {
+      "body": "P\nPostForge\nUGC production\nWORKSPACE\nHome\nInspiration\nClone\nGallery\nSpend\nGenerate\nCREATE & LEARN\nAutomations\nAnalytics\nImages\nCharacters\nWorkspace settings\nIK\n\nIdriss\nKode Studios\n\nCharacters\nCharacter Builder\n\nNAME\nRan",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nNew Character\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nIDENTITY STUDIO\n\nNew character",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "PostForge"
+    },
+    "refBytes": 98152,
+    "localBytes": 96752
+  },
+  {
+    "name": "settings",
+    "route": "/settings",
+    "errRef": null,
+    "errLocal": null,
+    "ref": {
+      "body": "P\nPostForge\n＋ New project\n⌂\nHome\n⌕\nInspiration\n◫\nClone\n▦\nGallery\n◎\nAutomations\n↗\nPerformance\n◌\nSpend\n✦\nGenerate\n▧\nCollections\n◇\nCharacters\n⚙\nSettings\nIK\nIdriss\nCreator plan\n•••\nWORKSPACE\nSettings\n\nManage your account, co",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nView Integrations\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nWORKSPACE\n\nSettings\n\nManag",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "PostForge"
+    },
+    "refBytes": 74229,
+    "localBytes": 93464
+  },
+  {
+    "name": "performance",
+    "route": "/performance",
+    "errRef": null,
+    "errLocal": null,
+    "ref": {
+      "body": "P\nPostForge\n＋ New project\n⌂\nHome\n⌕\nInspiration\n◫\nClone\n▦\nGallery\n◎\nAutomations\n↗\nPerformance\n◌\nSpend\n✦\nGenerate\n▧\nCollections\n◇\nCharacters\n● 1,248 credits\nTop up\nIK\nIdriss\nCreator plan\n•••\nCONTENT INTELLIGENCE\nPerformanc",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nOpen Automations\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nCONTENT INTELLIGENCE\n\nPerfo",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "PostForge"
+    },
+    "refBytes": 83433,
+    "localBytes": 55687
+  },
+  {
+    "name": "automation-picker",
+    "route": "/automations/new",
+    "errRef": null,
+    "errLocal": null,
+    "ref": {
+      "body": "PPostForge\nAUTOMATION STARTER\nChoose a playbook\n\nStart with a proven structure, then make every decision yours.\n\n×\n⌕\n⌘ K\nSort:\nRecommended\n⌄\nFILTER BY\nAll\n6\nPopular\n3\nEducation\n2\nProduct\n1\nStory\n1\n＋\nBuild from scratch\nFu",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nNew Automation\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nAUTOMATIONS / NEW\n\nDRAFT\nUnsa",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "PostForge"
+    },
+    "refBytes": 84273,
+    "localBytes": 89740
+  },
+  {
+    "name": "generate",
+    "route": "/generate",
+    "errRef": null,
+    "errLocal": null,
+    "ref": {
+      "body": "P\nPostForge\n＋ New project\n⌂\nHome\n⌕\nInspiration\n◫\nClone\n▦\nGallery\n◎\nAutomations\n↗\nPerformance\n◌\nSpend\n✦\nGenerate\n▧\nCollections\n◇\nCharacters\n1,248 credits\nTop up\nIK\nIdriss\nCreator plan\n•••\nCREATE\nGenerate studio\nHistory\n?\n",
+      "dpr": 1,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "%COMPONENT_NAME%"
+    },
+    "local": {
+      "body": "P\nPostForge\nView Gallery\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nCREATE\n\nGenerate\n\nCreate produc",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "title": "PostForge"
+    },
+    "refBytes": 90798,
+    "localBytes": 99856
+  }
+]

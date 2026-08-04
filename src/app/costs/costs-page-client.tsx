@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -20,17 +24,31 @@ import {
 } from "@/components/ui/table";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import { Download, ChevronLeft, ChevronRight, DollarSign } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  DollarSign,
+  Download,
+  Gauge,
+  Search,
+  Settings2,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
+  WalletCards,
+} from "lucide-react";
 import { PIE_COLORS } from "@/components/cost-chart";
 import { WorkspaceState } from "@/components/workspace-state";
 
 const CostChart = dynamic(
-  () => import("@/components/cost-chart").then((mod) => mod.CostChart),
+  () => import("@/components/cost-chart").then((module) => module.CostChart),
   { ssr: false }
 );
 
 const ModelPieChart = dynamic(
-  () => import("@/components/cost-chart").then((mod) => mod.ModelPieChart),
+  () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
   { ssr: false }
 );
 
@@ -62,15 +80,13 @@ interface CostsPageClientProps {
 
 const LOGS_PAGE_SIZE = 10;
 const PERIOD_OPTIONS = ["7d", "30d", "90d"] as const;
+const BUDGET_STORAGE_KEY = "postforge-production-budget";
 
 interface SpendPageContentProps extends CostsPageClientProps {
   onPeriodChange: (period: string) => void;
 }
 
-export function CostsPageClient({
-  period,
-  ...props
-}: CostsPageClientProps) {
+export function CostsPageClient({ period, ...props }: CostsPageClientProps) {
   const router = useRouter();
 
   return (
@@ -82,6 +98,11 @@ export function CostsPageClient({
       }}
     />
   );
+}
+
+function csvValue(value: string | number) {
+  const text = String(value);
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
 export function SpendPageContent({
@@ -99,46 +120,112 @@ export function SpendPageContent({
   onPeriodChange,
 }: SpendPageContentProps) {
   const [logPage, setLogPage] = useState(0);
+  const [query, setQuery] = useState("");
+  const [modelFilter, setModelFilter] = useState("all");
+  const [budget, setBudget] = useState(250);
+  const [budgetInput, setBudgetInput] = useState("250");
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
-  const modelEntries = Object.entries(byModel).sort(
-    (a, b) => b[1].cost - a[1].cost
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const stored = window.localStorage.getItem(BUDGET_STORAGE_KEY);
+        const parsed = stored ? Number(stored) : Number.NaN;
+        if (Number.isFinite(parsed) && parsed > 0) {
+          setBudget(parsed);
+          setBudgetInput(String(parsed));
+        }
+      } catch {
+        // Local budget preferences are optional; the spend dashboard still works.
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!feedback) return;
+    const timeout = window.setTimeout(() => setFeedback(null), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
+
+  const modelEntries = useMemo(
+    () => Object.entries(byModel).sort((a, b) => b[1].cost - a[1].cost),
+    [byModel]
   );
 
-  const pieData = modelEntries.map(([name, data]) => ({
-    name,
-    value: Math.round(data.cost * 100) / 100,
-  }));
+  const totalModelCost = modelEntries.reduce((sum, [, data]) => sum + data.cost, 0);
 
-  const totalModelCost = modelEntries.reduce((s, [, d]) => s + d.cost, 0);
+  const filteredLogs = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return logs.filter((log) => {
+      const matchesModel = modelFilter === "all" || log.model === modelFilter;
+      const matchesQuery =
+        normalizedQuery.length === 0 ||
+        [log.jobId, log.model, log.type, log.id].some((value) =>
+          value.toLowerCase().includes(normalizedQuery)
+        );
+      return matchesModel && matchesQuery;
+    });
+  }, [logs, modelFilter, query]);
 
   const exportCSV = () => {
-    const header = "Date,Model,Type,Amount\n";
-    const rows = logs
-      .map((l) => `${l.createdAt},${l.model},${l.type},${l.amount}`)
+    const header = ["Date", "Job", "Model", "Type", "Amount"];
+    const rows = logs.map((log) => [
+      log.createdAt,
+      log.jobId,
+      log.model,
+      log.type,
+      log.amount,
+    ]);
+    const csv = [header, ...rows]
+      .map((row) => row.map(csvValue).join(","))
       .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv" });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `postforge-spend-${period}.csv`;
-    a.click();
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `postforge-spend-${period}.csv`;
+    anchor.click();
     URL.revokeObjectURL(url);
+    setFeedback(`Exported ${logs.length} cost log ${logs.length === 1 ? "entry" : "entries"}.`);
   };
 
-  const pagedLogs = logs.slice(
-    logPage * LOGS_PAGE_SIZE,
-    (logPage + 1) * LOGS_PAGE_SIZE
+  const saveBudget = () => {
+    const nextBudget = Number(budgetInput);
+    if (!Number.isFinite(nextBudget) || nextBudget <= 0) return;
+    setBudget(nextBudget);
+    try {
+      window.localStorage.setItem(BUDGET_STORAGE_KEY, String(nextBudget));
+    } catch {
+      // Keep the in-session preference even if storage is unavailable.
+    }
+    setBudgetOpen(false);
+    setFeedback(`Production budget updated to ${formatCost(nextBudget)}.`);
+  };
+
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / LOGS_PAGE_SIZE));
+  const safeLogPage = Math.min(logPage, totalPages - 1);
+  const pagedLogs = filteredLogs.slice(
+    safeLogPage * LOGS_PAGE_SIZE,
+    (safeLogPage + 1) * LOGS_PAGE_SIZE
   );
-  const totalPages = Math.ceil(logs.length / LOGS_PAGE_SIZE);
   const formatTotal = breakdown.image.cost + breakdown.video.cost;
   const imagePct = formatTotal > 0 ? (breakdown.image.cost / formatTotal) * 100 : 0;
   const videoPct = formatTotal > 0 ? (breakdown.video.cost / formatTotal) * 100 : 0;
+  const workflowPieData = [
+    { name: "Image", value: breakdown.image.cost },
+    { name: "Video", value: breakdown.video.cost },
+  ].filter((entry) => entry.value > 0);
+  const budgetPercent = budget > 0 ? Math.min(100, (currentPeriodCost / budget) * 100) : 0;
+  const budgetRemaining = Math.max(0, budget - currentPeriodCost);
+  const changeIsUp = changePercent > 0;
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 p-5 sm:p-6 lg:p-8 animate-fade-in-up">
-      <div className="flex flex-col gap-4 rounded-lg border border-border bg-card/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
+      <section className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Spend controls
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -146,21 +233,29 @@ export function SpendPageContent({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center rounded-lg border border-border bg-background/60 p-1 text-[11px] font-semibold tracking-wide">
-            {PERIOD_OPTIONS.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => onPeriodChange(p)}
-                  className={cn(
-                    "rounded-md px-3 py-1.5 transition-colors",
-                    period === p
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                  )}
-                >
-                  {p.toUpperCase()}
-                </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="flex items-center rounded-lg border border-border bg-background p-1 text-[11px] font-semibold"
+            aria-label="Spend period"
+          >
+            {PERIOD_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={period === option}
+                onClick={() => {
+                  setLogPage(0);
+                  onPeriodChange(option);
+                }}
+                className={cn(
+                  "h-8 rounded-md px-3 transition-colors",
+                  period === option
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                )}
+              >
+                {option.toUpperCase()}
+              </button>
             ))}
           </div>
 
@@ -168,8 +263,9 @@ export function SpendPageContent({
             <TooltipTrigger
               render={
                 <button
+                  type="button"
                   onClick={exportCSV}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background/60 px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted"
                 />
               }
             >
@@ -179,192 +275,243 @@ export function SpendPageContent({
             <TooltipContent>Export CSV</TooltipContent>
           </Tooltip>
         </div>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Period Spend
-          </span>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold leading-tight">
-              {formatCost(currentPeriodCost)}
+      {feedback && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex min-w-0 items-start gap-2 rounded-lg border border-accent-green/30 bg-accent-green/10 px-4 py-3 text-sm"
+        >
+          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent-green" />
+          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{feedback}</span>
+        </div>
+      )}
+
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-[11px] font-semibold text-muted-foreground">Period Spend</span>
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold",
+                changePercent === 0 && "bg-muted text-muted-foreground",
+                changeIsUp && "bg-destructive/10 text-destructive",
+                changePercent < 0 && "bg-accent-green/10 text-accent-green"
+              )}
+            >
+              {changePercent === 0 ? (
+                "No change"
+              ) : changeIsUp ? (
+                <><TrendingUp className="size-3" /> {Math.abs(changePercent).toFixed(0)}%</>
+              ) : (
+                <><TrendingDown className="size-3" /> {Math.abs(changePercent).toFixed(0)}%</>
+              )}
             </span>
-            {changePercent !== 0 && (
-              <span
-                className={cn(
-                  "text-[10px] font-bold",
-                  changePercent > 0 ? "text-accent-coral" : "text-accent-green"
-                )}
-              >
-                {changePercent > 0 ? "+" : ""}
-                {Math.abs(changePercent).toFixed(0)}%
-              </span>
-            )}
           </div>
-          <p className="mt-2 text-[10px] text-muted-foreground">
+          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+            {formatCost(currentPeriodCost)}
+          </strong>
+          <p className="mt-1 text-[11px] text-muted-foreground">
             {formatCost(totalCost)} all-time spend
           </p>
-        </div>
+        </article>
 
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Forge Cycles
-          </span>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold leading-tight">{totalJobs}</span>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Avg Cost
-          </span>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold leading-tight">
-              {formatCost(avgCycleCost)}
+        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-[11px] font-semibold text-muted-foreground">Forge Cycles</span>
+            <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
+              <Sparkles className="size-3.5" />
             </span>
           </div>
-        </div>
+          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+            {totalJobs}
+          </strong>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Avg Cost {formatCost(avgCycleCost)} per cycle
+          </p>
+        </article>
 
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Top Model
-          </span>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="truncate text-2xl font-bold leading-tight">
-              {topModel ? topModel.name : "N/A"}
+        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-[11px] font-semibold text-muted-foreground">Top Model</span>
+            <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
+              <Gauge className="size-3.5" />
             </span>
-            {topModel && (
-              <span className="text-[10px] bg-muted px-1.5 rounded">
-                {topModel.pct}%
-              </span>
-            )}
           </div>
-        </div>
-      </div>
+          <strong className="mt-3 block truncate text-lg font-semibold tracking-tight">
+            {topModel ? topModel.name : "No data yet"}
+          </strong>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {topModel
+              ? `${formatCost(topModel.cost)} · ${topModel.pct}% of ${period.toUpperCase()} spend`
+              : "Model usage appears after your first generation"}
+          </p>
+        </article>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="mb-4 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            Spend by Format
+        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-[11px] font-semibold text-muted-foreground">Budget remaining</span>
+            <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
+              <WalletCards className="size-3.5" />
+            </span>
+          </div>
+          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+            {formatCost(budgetRemaining)}
+          </strong>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            of {formatCost(budget)} production budget
+          </p>
+        </article>
+      </section>
+
+      <section
+        className={cn(
+          "flex flex-col gap-4 rounded-xl border p-4 lg:flex-row lg:items-center",
+          budgetPercent >= 90
+            ? "border-destructive/30 bg-destructive/5"
+            : "border-amber-300/70 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/10"
+        )}
+      >
+        <div
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-lg",
+            budgetPercent >= 90
+              ? "bg-destructive/10 text-destructive"
+              : "bg-amber-200/70 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300"
+          )}
+        >
+          <AlertTriangle className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <strong className="text-sm">
+            You&apos;ve used {budgetPercent.toFixed(0)}% of your production budget
+          </strong>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Track the selected period against a budget you control locally in PostForge.
+          </p>
+        </div>
+        <div className="flex min-w-0 items-center gap-3 lg:w-72">
+          <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-black/10">
+            <div
+              className={cn(
+                "h-full rounded-full",
+                budgetPercent >= 90 ? "bg-destructive" : "bg-amber-500"
+              )}
+              style={{ width: `${budgetPercent}%` }}
+            />
+          </div>
+          <span className="shrink-0 text-[11px] font-medium text-muted-foreground">
+            {formatCost(currentPeriodCost)} / {formatCost(budget)}
           </span>
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-medium">
-                <span className="text-muted-foreground">Video generations</span>
-                <span>{formatCost(breakdown.video.cost)}</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-accent-coral"
-                  style={{ width: `${videoPct}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-muted-foreground">
-                {breakdown.video.count} video {breakdown.video.count === 1 ? "job" : "jobs"}
+        </div>
+        <button
+          type="button"
+          onClick={() => setBudgetOpen(true)}
+          className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted"
+        >
+          <Settings2 className="size-3.5" />
+          Edit budget
+        </button>
+      </section>
+
+      <section
+        data-spend-analysis-grid="true"
+        className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
+      >
+        <article className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5">
+          <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold">Spend Over Time</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Daily image and video cost · {period.toUpperCase()}
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-medium">
-                <span className="text-muted-foreground">Image generations</span>
-                <span>{formatCost(breakdown.image.cost)}</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-accent-blue"
-                  style={{ width: `${imagePct}%` }}
-                />
-              </div>
-              <p className="text-[10px] text-muted-foreground">
-                {breakdown.image.count} image {breakdown.image.count === 1 ? "job" : "jobs"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-border bg-card p-5">
-          <span className="mb-4 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            Spend by Model
-          </span>
-          <div className="space-y-3">
-            {modelEntries.length > 0 ? (
-              modelEntries.map(([name, data], i) => (
-                <div
-                  key={name}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-border bg-background/40 p-3"
-                >
-                  <span className="flex min-w-0 items-center gap-2 text-xs font-medium">
-                    <span
-                      className="inline-block size-2 rounded-full shrink-0"
-                      style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
-                    />
-                    <span className="truncate">{name}</span>
-                  </span>
-                  <span className="shrink-0 text-xs font-semibold">
-                    {formatCost(data.cost)}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <WorkspaceState
-                tone="empty"
-                icon={DollarSign}
-                title="No model spend yet"
-                description="Start a Clone or Generate an asset to see model-level cost signals here."
-                action={{ href: "/ugc-clone", label: "Start Clone" }}
-                secondaryAction={{ href: "/generate", label: "Open Generate" }}
-                className="min-h-48 border-0 bg-transparent px-0 py-6"
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-card border border-border rounded-lg p-5">
-        <div className="flex flex-col lg:flex-row lg:items-stretch gap-8">
-          <div className="flex-1 min-w-0 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                Spend Over Time
+            <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block size-2 rounded-sm bg-accent-blue" />
+                Image
               </span>
-              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <span className="inline-block size-2 rounded-full bg-accent-blue" />
-                  Image
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block size-2 rounded-full bg-accent-coral" />
-                  Video
-                </span>
-              </div>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block size-2 rounded-sm bg-primary" />
+                Video
+              </span>
             </div>
-            <CostChart data={chartData} />
-          </div>
+          </header>
+          <CostChart data={chartData} />
+        </article>
 
-          <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4 block">
-              Model Distribution
-            </span>
-            {pieData.length > 0 ? (
-              <div className="flex items-center gap-6 flex-1">
-                <div className="w-36 h-36 flex-shrink-0">
-                  <ModelPieChart data={pieData} />
+        <aside className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5">
+          <header className="border-b border-border pb-3">
+            <h2 className="text-sm font-semibold">Spend breakdown</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Workflow type and model mix · {period.toUpperCase()}
+            </p>
+          </header>
+
+          {workflowPieData.length > 0 ? (
+            <>
+              <div className="pt-4">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  Spend by Format
+                </h3>
+                <div className="mt-2 grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3">
+                  <div className="size-28 shrink-0" aria-label="Workflow type spend distribution">
+                    <ModelPieChart data={workflowPieData} />
+                  </div>
+                  <div className="min-w-0 space-y-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center justify-between gap-2 text-[10px]">
+                        <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                          <span className="size-2 shrink-0 rounded-sm bg-accent-blue" />
+                          <span className="truncate">Image</span>
+                        </span>
+                        <strong className="shrink-0 text-foreground">{imagePct.toFixed(0)}%</strong>
+                      </div>
+                      <p className="mt-1 truncate text-[10px] text-muted-foreground">
+                        {formatCost(breakdown.image.cost)} · {breakdown.image.count} {breakdown.image.count === 1 ? "job" : "jobs"}
+                      </p>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center justify-between gap-2 text-[10px]">
+                        <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                          <span className="size-2 shrink-0 rounded-sm bg-primary" />
+                          <span className="truncate">Video</span>
+                        </span>
+                        <strong className="shrink-0 text-foreground">{videoPct.toFixed(0)}%</strong>
+                      </div>
+                      <p className="mt-1 truncate text-[10px] text-muted-foreground">
+                        {formatCost(breakdown.video.cost)} · {breakdown.video.count} {breakdown.video.count === 1 ? "job" : "jobs"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2.5 flex-1 min-w-0 justify-center">
-                  {modelEntries.map(([name, data], i) => (
+              </div>
+
+              <div className="mt-4 border-t border-border pt-4">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    Spend by Model
+                  </h3>
+                  <span className="text-[10px] text-muted-foreground">Highest first</span>
+                </div>
+                <div className="mt-2 space-y-1.5">
+                  {modelEntries.slice(0, 5).map(([name, data], index) => (
                     <div
                       key={name}
-                      className="flex items-center justify-between text-[10px]"
+                      className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-muted/55 px-2.5 py-2"
                     >
-                      <span className="flex items-center gap-2 truncate">
+                      <span className="flex min-w-0 items-center gap-2 text-[10px] font-medium">
                         <span
-                          className="inline-block size-1.5 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
+                          className="inline-block size-2 shrink-0 rounded-sm"
+                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                         />
-                        <span className="truncate text-foreground/80">{name}</span>
+                        <span className="truncate">{name}</span>
                       </span>
-                      <span className="font-mono text-muted-foreground ml-2">
+                      <span className="shrink-0 text-right text-[10px] text-muted-foreground">
+                        <strong className="block font-mono text-[10px] text-foreground">
+                          {formatCost(data.cost)}
+                        </strong>
                         {totalModelCost > 0
                           ? ((data.cost / totalModelCost) * 100).toFixed(1)
                           : "0"}
@@ -374,44 +521,80 @@ export function SpendPageContent({
                   ))}
                 </div>
               </div>
-            ) : (
-              <WorkspaceState
-                tone="empty"
-                icon={DollarSign}
-                title="No data yet"
-                description="Model distribution appears after the first tracked production cost."
-                action={{ href: "/ugc-clone", label: "Start Clone" }}
-                className="min-h-48 border-0 bg-transparent px-0 py-6"
-              />
-            )}
+            </>
+          ) : (
+            <WorkspaceState
+              tone="empty"
+              icon={DollarSign}
+              title="No spend data yet"
+              description="Workflow and model breakdowns appear after the first tracked production cost."
+              action={{ href: "/ugc-clone", label: "Start Clone" }}
+              secondaryAction={{ href: "/generate", label: "Open Generate" }}
+              className="min-h-64 border-0 bg-transparent px-0 py-6"
+            />
+          )}
+        </aside>
+      </section>
+
+      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--pf-shadow-xs)]">
+        <header className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold">Generation Log</h2>
+            <span className="rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">
+              {filteredLogs.length} {filteredLogs.length === 1 ? "entry" : "entries"}
+            </span>
           </div>
-        </div>
-      </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-60">
+              <Search className="size-3.5 shrink-0" />
+              <span className="sr-only">Search cost log</span>
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setLogPage(0);
+                }}
+                placeholder="Search generations"
+                className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+            <select
+              value={modelFilter}
+              onChange={(event) => {
+                setModelFilter(event.target.value);
+                setLogPage(0);
+              }}
+              aria-label="Filter cost log by model"
+              className="h-9 rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
+            >
+              <option value="all">All models</option>
+              {modelEntries.map(([name]) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </header>
 
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <div className="px-5 py-3 border-b border-border flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            Cost Log
-          </span>
-          <span className="text-[10px] text-muted-foreground">
-            {logs.length} {logs.length === 1 ? "entry" : "entries"}
-          </span>
-        </div>
-
-        <ScrollArea className="max-h-[400px]">
-          <Table>
+        <div className="max-h-[430px] overflow-auto">
+          <Table className="min-w-[700px]">
             <TableHeader>
-              <TableRow className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground bg-muted/50">
-                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Time
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Generation
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Model
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Type
                 </TableHead>
-                <TableHead className="text-right text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Created
+                </TableHead>
+                <TableHead className="text-right text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Cost
                 </TableHead>
               </TableRow>
@@ -419,46 +602,61 @@ export function SpendPageContent({
             <TableBody>
               {pagedLogs.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="py-2"
-                  >
+                  <TableCell colSpan={5} className="py-2">
                     <WorkspaceState
                       tone="empty"
                       icon={DollarSign}
-                      title="No cost log entries yet"
-                      description="Create production work to populate Spend with cost entries."
-                      action={{ href: "/ugc-clone", label: "Start Clone" }}
-                      secondaryAction={{ href: "/generate", label: "Open Generate" }}
+                      title={logs.length === 0 ? "No cost log entries yet" : "No matching cost log entries"}
+                      description={
+                        logs.length === 0
+                          ? "Create production work to populate Spend with cost entries."
+                          : "Try a different model filter or search term."
+                      }
+                      action={
+                        logs.length === 0
+                          ? { href: "/ugc-clone", label: "Start Clone" }
+                          : { label: "Clear filters", onClick: () => { setQuery(""); setModelFilter("all"); } }
+                      }
+                      secondaryAction={
+                        logs.length === 0
+                          ? { href: "/generate", label: "Open Generate" }
+                          : undefined
+                      }
                       className="min-h-56 border-0 bg-transparent"
                     />
                   </TableCell>
                 </TableRow>
               ) : (
                 pagedLogs.map((log) => (
-                  <TableRow
-                    key={log.id}
-                    className="even:bg-muted/30 hover:bg-muted transition-colors"
-                  >
-                    <TableCell className="text-[11px] font-mono text-muted-foreground">
-                      {formatRelativeDate(log.createdAt)}
+                  <TableRow key={log.id} className="hover:bg-muted/40">
+                    <TableCell>
+                      <strong className="block max-w-52 truncate text-xs font-semibold">
+                        {log.jobId}
+                      </strong>
+                      <span className="mt-1 block text-[10px] text-muted-foreground">
+                        {log.id.slice(0, 12)}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-[11px] font-medium">
-                      {log.model}
-                    </TableCell>
+                    <TableCell className="text-xs font-medium">{log.model}</TableCell>
                     <TableCell>
                       <span
                         className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold uppercase",
+                          "inline-flex rounded-full px-2 py-1 text-[10px] font-semibold capitalize",
                           log.type === "image"
-                            ? "bg-accent-coral/20 text-accent-coral"
-                            : "bg-accent-blue/20 text-accent-blue"
+                            ? "bg-accent-blue/10 text-accent-blue"
+                            : "bg-primary/10 text-primary"
                         )}
                       >
                         {log.type}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right text-[11px] font-mono">
+                    <TableCell
+                      className="text-[11px] text-muted-foreground"
+                      suppressHydrationWarning
+                    >
+                      {formatRelativeDate(log.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-xs font-semibold">
                       {formatCost(log.amount)}
                     </TableCell>
                   </TableRow>
@@ -466,36 +664,75 @@ export function SpendPageContent({
               )}
             </TableBody>
           </Table>
-        </ScrollArea>
+        </div>
 
-        {totalPages > 1 && (
-          <div className="px-5 py-2 border-t border-border flex items-center justify-between bg-muted/30">
+        {filteredLogs.length > LOGS_PAGE_SIZE && (
+          <footer className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
             <span className="text-[10px] text-muted-foreground">
-              PAGE{" "}
-              <span className="font-mono font-bold text-foreground">
-                {logPage + 1}
-              </span>{" "}
-              / {totalPages}
+              Page <strong className="text-foreground">{safeLogPage + 1}</strong> of {totalPages}
             </span>
             <div className="flex gap-1">
               <button
-                disabled={logPage === 0}
-                onClick={() => setLogPage((p) => p - 1)}
-                className="p-1.5 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+                type="button"
+                aria-label="Previous cost log page"
+                disabled={safeLogPage === 0}
+                onClick={() => setLogPage((page) => Math.max(0, page - 1))}
+                className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronLeft className="size-3.5" />
               </button>
               <button
-                disabled={logPage >= totalPages - 1}
-                onClick={() => setLogPage((p) => p + 1)}
-                className="p-1.5 border border-border rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none"
+                type="button"
+                aria-label="Next cost log page"
+                disabled={safeLogPage >= totalPages - 1}
+                onClick={() => setLogPage((page) => Math.min(totalPages - 1, page + 1))}
+                className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronRight className="size-3.5" />
               </button>
             </div>
-          </div>
+          </footer>
         )}
-      </div>
+      </section>
+
+      <Dialog open={budgetOpen} onOpenChange={setBudgetOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit production budget</DialogTitle>
+            <DialogDescription>
+              This planning value is stored only in this browser and does not change provider limits.
+            </DialogDescription>
+          </DialogHeader>
+          <label className="space-y-2">
+            <span className="text-xs font-semibold">Budget amount (USD)</span>
+            <Input
+              type="number"
+              min="1"
+              step="1"
+              value={budgetInput}
+              onChange={(event) => setBudgetInput(event.target.value)}
+              className="h-10"
+            />
+          </label>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setBudgetOpen(false)}
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={!Number.isFinite(Number(budgetInput)) || Number(budgetInput) <= 0}
+              onClick={saveBudget}
+              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Save budget
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

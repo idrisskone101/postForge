@@ -1,0 +1,63 @@
+{
+  "aside": {
+    "bg": "rgb(39, 42, 37)",
+    "color": "rgb(243, 244, 239)",
+    "rect": {
+      "h": 1024,
+      "w": 256,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "cards": [
+    {
+      "bg": "rgb(29, 32, 28)",
+      "cls": "grid min-h-[238px] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(32,32,28,.04)] lg:grid",
+      "color": "rgb(243, 244, 239)",
+      "text": "Next production taskPerson performing the actions from the reference video, consistent appearance. U"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "cls": "grid gap-3 min-[1080px]:grid-cols-[minmax(0,1.15fr)_minmax(340px,.85fr)]",
+      "color": "rgb(243, 244, 239)",
+      "text": "Active jobsNothing generating right nowView all Your queue is clearStart a Clone or Generate asset t"
+    },
+    {
+      "bg": "rgba(0, 0, 0, 0)",
+      "cls": "grid gap-3 min-[920px]:grid-cols-2",
+      "color": "rgb(243, 244, 239)",
+      "text": "Compact SpendSpend todayAcross 0 production outputs$0.00$24.26 this month · 149 outputsOpen SpendTod"
+    }
+  ],
+  "docW": 1440,
+  "html": "dark",
+  "iw": 1440,
+  "main": {
+    "bg": "rgb(20, 22, 19)",
+    "color": "rgb(243, 244, 239)",
+    "rect": {
+      "h": 1024,
+      "w": 1184,
+      "x": 256,
+      "y": 0
+    }
+  },
+  "selectors": [
+    {
+      "css": "background-color: rgb(243, 244, 239);",
+      "s": ".bg-\\[\\#F3F4EF\\]"
+    },
+    {
+      "css": "background-color: rgb(243, 244, 239);",
+      "s": ".hover\\:bg-\\[\\#F3F4EF\\]:hover"
+    },
+    {
+      "css": "margin-left: 72px;",
+      "s": "body[data-sidebar-collapsed=\"true\"] #workspace-shell"
+    },
+    {
+      "css": "background-color: var(--pf-canvas) !important;",
+      "s": ".dark #workspace-shell, .dark .bg-\\[\\#F3F4EF\\]"
+    }
+  ]
+}

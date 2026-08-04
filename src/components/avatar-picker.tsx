@@ -16,6 +16,7 @@ import {
   Check,
   Image as ImageIcon,
   FileJson,
+  AlertCircle,
 } from "lucide-react";
 
 const AVATAR_GENERATION_STYLE_PROMPT = [
@@ -63,6 +64,36 @@ interface AvatarPickerProps {
 }
 
 type Mode = "grid" | "generate" | "gallery" | "import";
+
+export function getAvatarActionErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+export function AvatarActionErrorNotice({
+  message,
+  onDismiss,
+}: {
+  message: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      role="alert"
+      className="flex min-w-0 items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive"
+    >
+      <AlertCircle className="mt-0.5 size-4 shrink-0" />
+      <p className="min-w-0 flex-1 break-words text-xs leading-5 [overflow-wrap:anywhere]">{message}</p>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="grid size-6 shrink-0 place-items-center rounded-md transition-colors hover:bg-destructive/10"
+        aria-label="Dismiss avatar error"
+      >
+        <X className="size-3.5" />
+      </button>
+    </div>
+  );
+}
 
 interface GalleryFile {
   id: string;
@@ -226,57 +257,57 @@ export function AvatarCreationCard({
   onImport,
 }: AvatarCreationCardProps) {
   return (
-    <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-2.5">
-      <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-black/20 text-center">
-        <Sparkles className="size-6 text-white/25" />
-        <p className="mt-3 text-xs font-bold uppercase tracking-widest text-white/45">
+    <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-border bg-muted/25 p-2.5">
+      <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-muted/35 text-center">
+        <Sparkles className="size-6 text-muted-foreground/70" />
+        <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
           New Avatar
         </p>
-        <p className="mt-1 text-[10px] leading-4 text-white/25">
+        <p className="mt-1 text-[10px] leading-4 text-muted-foreground/70">
           Upload, generate, import, or choose from gallery.
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           data-avatar-action="upload"
           onClick={onUpload}
           disabled={isUploading}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97] disabled:opacity-50"
         >
           {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          <span className="text-[8px] font-bold uppercase tracking-wide">Upload</span>
+          <span className="text-[11px] font-semibold">Upload</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="generate"
           onClick={onGenerate}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-blue hover:text-accent-blue"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-blue hover:text-accent-blue active:scale-[0.97]"
         >
           <Sparkles className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Generate</span>
+          <span className="text-[11px] font-semibold">Generate</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="import"
           onClick={onImport}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-green hover:text-accent-green"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97]"
         >
           <FileJson className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Import</span>
+          <span className="text-[11px] font-semibold">Import</span>
         </button>
 
         <button
           type="button"
           data-avatar-action="gallery"
           onClick={onGallery}
-          className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-black/20 text-white/45 transition-colors hover:border-accent-coral hover:text-accent-coral"
+          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-coral hover:text-accent-coral active:scale-[0.97]"
         >
           <ImageIcon className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
+          <span className="text-[11px] font-semibold">Gallery</span>
         </button>
       </div>
     </div>
@@ -304,10 +335,10 @@ export function AvatarOptionCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border bg-white/[0.03] p-2.5 transition-all",
+        "group relative overflow-hidden rounded-xl border bg-muted/35 p-2.5 shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
         isSelected
-          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16)]"
-          : "border-white/10 hover:border-accent-green/45 hover:bg-white/[0.05]"
+          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16),var(--pf-shadow-sm)]"
+          : "border-border hover:-translate-y-0.5 hover:border-accent-green/45 hover:bg-muted/55 hover:shadow-[var(--pf-shadow-md)]"
       )}
     >
       <button
@@ -320,20 +351,20 @@ export function AvatarOptionCard({
           <img
             src={`/api/avatars/${avatar.id}`}
             alt={label}
-            className="size-full object-cover"
+            className="size-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
         </div>
 
         <div className="mt-3 flex items-center justify-between gap-2">
-          <p className="min-w-0 truncate text-xs font-semibold text-white/85">
+          <p className="min-w-0 truncate text-xs font-semibold text-foreground">
             {label}
           </p>
           <span
             className={cn(
-              "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
+              "shrink-0 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-widest",
               isSelected
                 ? "bg-accent-green/15 text-accent-green"
-                : "bg-white/5 text-white/35"
+                : "bg-muted/40 text-muted-foreground"
             )}
           >
             {isSelected ? "Active" : "Select"}
@@ -342,13 +373,13 @@ export function AvatarOptionCard({
 
         <div className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5">
           {originLabel && (
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/45">
+            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               {originLabel}
             </span>
           )}
           <span
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+              "rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
               avatar.identityPack?.status === "completed"
                 ? "border-accent-green/25 bg-accent-green/10 text-accent-green"
                 : avatar.identityPack?.status === "failed"
@@ -424,14 +455,14 @@ export function AvatarImportPanel({
         Back to avatars
       </button>
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-xl border border-border bg-muted/35 p-4">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent-green/10 text-accent-green">
             <FileJson className="size-5" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Import Avatar</h3>
-            <p className="mt-1 text-xs leading-5 text-white/45">
+            <h3 className="text-sm font-semibold text-foreground">Import Avatar</h3>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
               Add raw Avatar Profile JSON and 1 to 5 Seed Reference Images.
             </p>
           </div>
@@ -439,7 +470,7 @@ export function AvatarImportPanel({
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           Avatar name
         </label>
         <input
@@ -447,17 +478,17 @@ export function AvatarImportPanel({
           value={resolvedAvatarName}
           onChange={(event) => onAvatarNameChange?.(event.target.value)}
           maxLength={40}
-          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm font-semibold text-white/80 outline-none transition-colors placeholder:text-white/25 focus:border-accent-green/45"
+          className="w-full rounded-xl border border-border bg-muted/35 px-3 py-2 text-sm font-semibold text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-accent-green/45"
           placeholder="Imported Avatar"
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Avatar Profile JSON
           </label>
-          <label className="cursor-pointer rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green">
+          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
             Upload JSON
             <input
               type="file"
@@ -473,19 +504,19 @@ export function AvatarImportPanel({
           placeholder={`{
   "name": "Imported Avatar"
 }`}
-          className="min-h-[160px] resize-y rounded-xl border-white/10 bg-black/20 font-mono text-xs text-white/75 placeholder:text-white/25"
+          className="min-h-[160px] resize-y rounded-xl border-border bg-muted/35 font-mono text-xs text-foreground/90 placeholder:text-muted-foreground/70"
         />
         {readiness.jsonError && (
-          <p className="text-xs font-medium text-destructive">{readiness.jsonError}</p>
+          <p className="min-w-0 break-words text-xs font-medium text-destructive [overflow-wrap:anywhere]">{readiness.jsonError}</p>
         )}
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-white/45">
+          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Seed Reference Images
           </label>
-          <label className="cursor-pointer rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green">
+          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
             Upload Images
             <input
               type="file"
@@ -502,17 +533,17 @@ export function AvatarImportPanel({
             {seedReferenceImages.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/35 px-3 py-2"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-white/75">{file.name}</p>
-                  <p className="text-[10px] text-white/35">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
+                  <p className="truncate text-xs font-semibold text-foreground/90">{file.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onRemoveSeedReferenceImage(index)}
                   aria-label={`Remove ${file.name}`}
-                  className="flex size-7 shrink-0 items-center justify-center rounded-full text-white/35 transition-colors hover:bg-white/10 hover:text-white"
+                  className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <X className="size-3.5" />
                 </button>
@@ -520,28 +551,28 @@ export function AvatarImportPanel({
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-6 text-center text-xs text-white/35">
+          <div className="rounded-xl border border-dashed border-border bg-muted/25 px-4 py-6 text-center text-xs text-muted-foreground">
             Upload 1 to 5 Seed Reference Images.
           </div>
         )}
 
         {readiness.seedError && (
-          <p className="text-xs font-medium text-destructive">{readiness.seedError}</p>
+          <p className="min-w-0 break-words text-xs font-medium text-destructive [overflow-wrap:anywhere]">{readiness.seedError}</p>
         )}
       </div>
 
       {generationError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive">
+        <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive [overflow-wrap:anywhere]">
           {generationError}
         </div>
       )}
 
       {candidateCount > 0 && (
-        <div className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+        <div className="space-y-3 rounded-xl border border-border bg-muted/35 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h4 className="text-sm font-semibold text-white">Avatar Candidates</h4>
-              <p className="mt-1 text-xs text-white/40">
+              <h4 className="text-sm font-semibold text-foreground">Avatar Candidates</h4>
+              <p className="mt-1 text-xs text-muted-foreground">
                 Review generated candidates before saving one as an Avatar.
               </p>
             </div>
@@ -549,7 +580,7 @@ export function AvatarImportPanel({
               type="button"
               onClick={onGenerateCandidates}
               disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-              className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/55 transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 rounded-lg border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
             >
               Regenerate Candidates
             </button>
@@ -566,7 +597,7 @@ export function AvatarImportPanel({
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
               <div
                 key={candidate.fileId}
-                className="overflow-hidden rounded-lg border border-white/10 bg-black/20"
+                className="overflow-hidden rounded-lg border border-border bg-muted/35"
               >
                 <div className="aspect-[3/4] bg-black">
                   <img
@@ -576,13 +607,13 @@ export function AvatarImportPanel({
                   />
                 </div>
                 <div className="space-y-2 p-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Candidate {index + 1}
                   </p>
                   <button
                     type="button"
                     onClick={() => onAcceptCandidate?.(candidate.fileId)}
-                    className="w-full rounded-md bg-accent-green px-2 py-1.5 text-[10px] font-semibold text-white transition-all hover:brightness-110"
+                    className="w-full rounded-md bg-accent-coral px-2 py-1.5 text-[10px] font-semibold text-white transition-colors hover:bg-[#e9421c]"
                   >
                     Use Candidate
                   </button>
@@ -597,7 +628,7 @@ export function AvatarImportPanel({
         type="button"
         onClick={onGenerateCandidates}
         disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-green px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isGeneratingCandidates ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
         Generate candidates
@@ -646,15 +677,18 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const [importCandidateJobId, setImportCandidateJobId] = useState<string | null>(null);
   const [isGeneratingImportCandidates, setIsGeneratingImportCandidates] = useState(false);
   const [importGenerationError, setImportGenerationError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const imageModels = getModelsByType("image");
 
   const fetchAvatars = async () => {
     try {
+      setActionError(null);
       const data = await apiGet<Avatar[]>("/api/avatars");
       setAvatars(data);
     } catch (err) {
       console.error("Failed to load avatars:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Failed to load saved identities."));
     } finally {
       setIsLoading(false);
     }
@@ -669,6 +703,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     if (!file) return;
 
     setIsUploading(true);
+    setActionError(null);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -688,6 +723,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       onSelect(avatar.id);
     } catch (err) {
       console.error("Failed to upload avatar:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Avatar upload failed."));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -698,6 +734,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    setActionError(null);
     try {
       await apiDelete(`/api/avatars/${id}`);
       setAvatars((prev) => prev.filter((a) => a.id !== id));
@@ -706,6 +743,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       }
     } catch (err) {
       console.error("Failed to delete avatar:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Avatar could not be deleted."));
     }
   };
 
@@ -713,6 +751,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
     if (!genPrompt.trim()) return;
 
     try {
+      setActionError(null);
       const enhancedPrompt = buildAvatarGenerationPrompt(genPrompt);
       const result = await apiPost<{ id: string }>("/api/generate/images", {
         prompt: enhancedPrompt,
@@ -723,6 +762,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setGenJobId(result.id);
     } catch (err) {
       console.error("Failed to start generation:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Failed to start avatar generation."));
     }
   };
 
@@ -740,12 +780,16 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       try {
         const result = await apiGet<JobResult>(`/api/jobs/${genJobId}`);
         if (!active) return;
+        setActionError(null);
         setGenJob(result);
         if (result.status !== "completed" && result.status !== "failed") {
           timeoutId = setTimeout(poll, 3000);
         }
       } catch (err) {
         console.error("Failed to poll job:", err);
+        setActionError(
+          getAvatarActionErrorMessage(err, "Avatar generation status is temporarily unavailable.")
+        );
         if (active) {
           timeoutId = setTimeout(poll, 5000);
         }
@@ -762,6 +806,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   const handleSaveGenerated = async (fileId: string) => {
     setIsSavingGenerated(true);
+    setActionError(null);
     try {
       const avatar = await apiPost<Avatar>("/api/avatars/from-generation", {
         fileId,
@@ -775,6 +820,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setGenPrompt("");
     } catch (err) {
       console.error("Failed to save avatar:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Generated avatar could not be saved."));
     } finally {
       setIsSavingGenerated(false);
     }
@@ -783,11 +829,13 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const openGallery = async () => {
     setMode("gallery");
     setIsLoadingGallery(true);
+    setActionError(null);
     try {
       const files = await apiGet<GalleryFile[]>("/api/files?type=image&limit=50");
       setGalleryFiles(files);
     } catch (err) {
       console.error("Failed to load gallery:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Failed to load gallery images."));
     } finally {
       setIsLoadingGallery(false);
     }
@@ -795,6 +843,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   const handlePickFromGallery = async (fileId: string) => {
     setSavingFileId(fileId);
+    setActionError(null);
     try {
       const avatar = await apiPost<Avatar>("/api/avatars/from-generation", {
         fileId,
@@ -805,6 +854,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setMode("grid");
     } catch (err) {
       console.error("Failed to save gallery image as avatar:", err);
+      setActionError(getAvatarActionErrorMessage(err, "Gallery image could not be saved as an avatar."));
     } finally {
       setSavingFileId(null);
     }
@@ -966,6 +1016,12 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
     return (
       <div className="space-y-4">
+        {actionError && (
+          <AvatarActionErrorNotice
+            message={actionError}
+            onDismiss={() => setActionError(null)}
+          />
+        )}
         <button
           type="button"
           onClick={resetGenerate}
@@ -1016,7 +1072,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
               type="button"
               onClick={handleGenerate}
               disabled={!genPrompt.trim()}
-              className="w-full rounded-2xl bg-accent-green px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(123,165,67,0.25)] transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:opacity-50"
             >
               <Sparkles className="size-4" />
               Generate Avatar
@@ -1035,8 +1091,8 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
         {/* Failed state */}
         {isFailed && (
-          <div className="flex flex-col items-center justify-center py-8 gap-3">
-            <p className="text-sm text-destructive">Generation failed{genJob?.error ? `: ${genJob.error}` : ""}</p>
+          <div className="flex min-w-0 flex-col items-center justify-center gap-3 py-8">
+            <p className="min-w-0 max-w-full break-words text-center text-sm text-destructive [overflow-wrap:anywhere]">Generation failed{genJob?.error ? `: ${genJob.error}` : ""}</p>
             <button
               type="button"
               onClick={() => setGenJobId(null)}
@@ -1070,7 +1126,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                 type="button"
                 onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
                 disabled={isSavingGenerated}
-                className="flex-1 rounded-2xl bg-accent-green px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:opacity-50"
               >
                 {isSavingGenerated ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -1090,6 +1146,12 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   if (mode === "gallery") {
     return (
       <div className="space-y-4">
+        {actionError && (
+          <AvatarActionErrorNotice
+            message={actionError}
+            onDismiss={() => setActionError(null)}
+          />
+        )}
         <button
           type="button"
           onClick={() => setMode("grid")}
@@ -1150,7 +1212,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         seedReferenceImages={seedReferenceImages}
         candidateSets={avatarCandidateSets}
         isGeneratingCandidates={isGeneratingImportCandidates}
-        generationError={importGenerationError}
+        generationError={importGenerationError ?? actionError}
         onBack={abandonImport}
         onAvatarNameChange={(value) => {
           setImportGenerationError(null);
@@ -1188,7 +1250,14 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         onChange={handleUpload}
       />
 
-      <div className="grid max-h-[360px] grid-cols-2 gap-3 overflow-y-auto pr-1 lg:grid-cols-4">
+      {actionError && (
+        <AvatarActionErrorNotice
+          message={actionError}
+          onDismiss={() => setActionError(null)}
+        />
+      )}
+
+      <div className="grid max-h-[520px] grid-cols-2 gap-3 overflow-y-auto pr-1 2xl:grid-cols-3">
         {orderedAvatars.map((avatar, index) => {
           const isSelected = selectedId === avatar.id;
           const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
@@ -1206,7 +1275,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         })}
 
         {orderedAvatars.length === 0 && (
-          <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] py-6 text-white/40">
+          <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/25 py-6 text-muted-foreground">
             <User className="mb-2 size-7" />
             <p className="text-xs font-semibold">No saved identities yet</p>
           </div>

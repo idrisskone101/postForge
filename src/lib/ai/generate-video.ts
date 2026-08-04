@@ -6,7 +6,8 @@ import { prisma } from "@/lib/db";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 
 export async function generateVideo(
-  request: VideoGenerationRequest
+  request: VideoGenerationRequest,
+  options?: { jobInput?: Record<string, unknown> }
 ): Promise<string> {
   const model = getModel(request.model);
   if (!model) {
@@ -26,7 +27,7 @@ export async function generateVideo(
     type: "video",
     model: request.model,
     prompt: request.prompt,
-    input: request as unknown as Record<string, unknown>,
+    input: options?.jobInput ?? (request as unknown as Record<string, unknown>),
     estimatedCost,
   });
 

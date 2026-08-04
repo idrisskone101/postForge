@@ -15,7 +15,7 @@ function RowSkeleton() {
 
 export default function HomeLoading() {
   return (
-    <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-5 py-6 sm:px-6 lg:px-8">
+    <div className="mx-auto flex max-w-[1280px] flex-col gap-5 px-4 pb-6 pt-5 sm:px-6 lg:px-8 lg:pb-8 lg:pt-7">
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -79,7 +79,7 @@ export default function HomeLoading() {
       <section className="grid gap-5 lg:grid-cols-2">
         <div className="rounded-lg border border-border bg-card p-5">
           <h3 className="text-base font-semibold">Active jobs</h3>
-          <Skeleton className="mt-2 h-3 w-64" />
+          <Skeleton className="mt-2 h-3 w-64 max-w-full" />
           <div className="mt-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <RowSkeleton key={index} />
@@ -89,7 +89,7 @@ export default function HomeLoading() {
 
         <div className="rounded-lg border border-border bg-card p-5">
           <h3 className="text-base font-semibold">Pending review</h3>
-          <Skeleton className="mt-2 h-3 w-72" />
+          <Skeleton className="mt-2 h-3 w-72 max-w-full" />
           <div className="mt-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <RowSkeleton key={index} />

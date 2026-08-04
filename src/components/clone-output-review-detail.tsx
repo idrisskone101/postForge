@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -17,7 +17,16 @@ import {
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
+import { cn } from "@/lib/utils";
+import type {
+  OutputReviewStatus,
+  SerializedOutputReviewStatus,
+} from "@/lib/output-review-status";
+
+export interface CloneOutputActionFeedback {
+  tone: "success" | "error";
+  message: string;
+}
 
 export interface CloneOutputReviewOutput {
   id: string;
@@ -125,13 +134,13 @@ function DetailSection({
   children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="border-b border-border bg-white/[0.02] px-5 py-4">
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="border-b border-border bg-muted/25 px-4 py-3">
         <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
           {title}
         </h2>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </section>
   );
 }
@@ -139,22 +148,36 @@ function DetailSection({
 export function CloneOutputReviewDetail({
   job,
   isRetrying,
+  pendingReviewStatus = null,
+  handoffState = "idle",
+  actionFeedback = null,
   onBack,
   onRetry,
   onDownload,
+  onReviewStatusChange,
+  onHandoff,
   onNewClone,
 }: {
   job: CloneOutputReviewJob;
   isRetrying: boolean;
+  pendingReviewStatus?: OutputReviewStatus | null;
+  handoffState?: "idle" | "pending" | "success" | "error";
+  actionFeedback?: CloneOutputActionFeedback | null;
   onBack: () => void;
   onRetry: () => void;
   onDownload: (output: CloneOutputReviewOutput) => void;
+  onReviewStatusChange?: (
+    output: CloneOutputReviewOutput,
+    status: OutputReviewStatus
+  ) => void;
+  onHandoff?: (output: CloneOutputReviewOutput) => void;
   onNewClone: () => void;
 }) {
+  const [featuredIndex, setFeaturedIndex] = useState(0);
   const isActive = job.status === "queued" || job.status === "processing";
   const isCompleted = job.status === "completed";
   const isFailed = job.status === "failed";
-  const featured = job.outputs[0];
+  const featured = job.outputs[featuredIndex] ?? job.outputs[0];
   const sourceVideo = parseSourceVideo(job.input.sourceVideo);
   const avatarId = getStringInput(job.input, "avatarId");
   const avatarPreviewUrl = avatarId
@@ -166,11 +189,26 @@ export function CloneOutputReviewDetail({
     "AI avatar profile";
   const referenceImageFileId = getStringInput(job.input, "referenceImageFileId");
   const savedReferenceId = getStringInput(job.input, "savedReferenceId");
-  const referencePreviewUrl = savedReferenceId
-    ? `/api/ugc-clone/references/${savedReferenceId}`
-    : referenceImageFileId
-      ? `/api/files/${referenceImageFileId}`
-      : null;
+  const collectionAssetId = getStringInput(job.input, "collectionAssetId");
+  const reference = savedReferenceId
+    ? {
+        id: savedReferenceId,
+        label: "Saved clone reference",
+        previewUrl: `/api/ugc-clone/references/${encodeURIComponent(savedReferenceId)}`,
+      }
+    : collectionAssetId
+      ? {
+          id: collectionAssetId,
+          label: "Collection reference",
+          previewUrl: `/api/files/${encodeURIComponent(collectionAssetId)}`,
+        }
+      : referenceImageFileId
+        ? {
+            id: referenceImageFileId,
+            label: "Generated output reference",
+            previewUrl: `/api/files/${encodeURIComponent(referenceImageFileId)}`,
+          }
+        : null;
   const sourceTitle =
     sourceVideo?.label ?? job.tikTokSource?.label ?? "Source clip unavailable";
   const sourceUrl = sourceVideo?.originalUrl ?? job.tikTokSource?.originalUrl;
@@ -186,9 +224,9 @@ export function CloneOutputReviewDetail({
   const previewHeight = featured?.height ?? sourceVideo?.height;
 
   return (
-    <div className="min-h-screen animate-fade-in-up">
-      <div className="border-b border-border bg-background/60 px-5 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="pf-content-viewport min-w-0 animate-fade-in-up bg-background">
+      <div className="min-w-0 border-b border-border bg-background px-5 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-w-0 max-w-[1280px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <button
               type="button"
@@ -196,15 +234,15 @@ export function CloneOutputReviewDetail({
               className="mt-1 flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card transition-colors hover:bg-muted"
               aria-label="Back to previous page"
             >
-              <ArrowLeft className="size-4" />
+              <ArrowLeft className="size-4 shrink-0" />
             </button>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <Users className="size-4 text-accent-green" />
+                <Users className="size-4 shrink-0 text-accent-green" />
                 <h1 className="text-xl font-semibold tracking-tight">
                   Clone Output
                 </h1>
-                <span className="rounded-md bg-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
+                <span className="shrink-0 rounded-md bg-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
                   {job.id.slice(0, 8)}
                 </span>
               </div>
@@ -214,45 +252,60 @@ export function CloneOutputReviewDetail({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            <button
-              type="button"
-              onClick={onRetry}
-              disabled={isRetrying}
-              className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
-            >
-              {isRetrying ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <RefreshCw className="size-4" />
-              )}
-              {isRetrying ? "Retrying..." : "Retry"}
-            </button>
+          <div className="flex min-w-0 flex-wrap items-center gap-2 lg:justify-end">
+            {(isCompleted || isFailed) && (
+              <button
+                type="button"
+                onClick={onRetry}
+                disabled={isRetrying}
+                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              >
+                {isRetrying ? (
+                  <Loader2 className="size-4 shrink-0 animate-spin" />
+                ) : (
+                  <RefreshCw className="size-4 shrink-0" />
+                )}
+                {isRetrying ? "Retrying..." : "Retry"}
+              </button>
+            )}
             {featured && (
               <button
                 type="button"
                 onClick={() => onDownload(featured)}
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
-                <Download className="size-4" />
+                <Download className="size-4 shrink-0" />
                 Download
               </button>
             )}
             <button
               type="button"
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white transition-colors hover:bg-[#ff6540]"
+              onClick={() => featured && onHandoff?.(featured)}
+              disabled={!featured || handoffState === "pending"}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Send className="size-4" />
-              Handoff
+              {handoffState === "pending" ? (
+                <Loader2 className="size-4 shrink-0 animate-spin" />
+              ) : handoffState === "success" ? (
+                <Check className="size-4 shrink-0" />
+              ) : (
+                <Send className="size-4 shrink-0" />
+              )}
+              {handoffState === "pending"
+                ? "Copying..."
+                : handoffState === "success"
+                  ? "Copied"
+                  : "Handoff"}
             </button>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1280px] gap-6 px-5 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:px-8">
+      <div className="mx-auto grid min-w-0 max-w-[1280px] gap-5 px-5 py-6 sm:px-6 lg:grid-cols-[minmax(0,64fr)_minmax(340px,36fr)] lg:px-8">
         <div className="min-w-0 space-y-4">
-          <div className="rounded-xl border border-border bg-black p-3">
-            <div className="relative">
+          <div className="rounded-xl border border-border bg-[#edeee8] p-4 sm:p-6">
+            <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>
+            <div className="relative min-w-0">
               {isActive && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-card/80 text-center backdrop-blur-sm">
                   <Loader2 className="mb-4 size-10 animate-spin text-accent-blue" />
@@ -268,14 +321,14 @@ export function CloneOutputReviewDetail({
               )}
 
               {isFailed && (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-lg bg-card/90 p-6 text-center">
-                  <AlertCircle className="size-8 text-destructive" />
-                  <div>
+                <div className="absolute inset-0 z-10 flex min-w-0 flex-col items-center justify-center gap-4 rounded-lg bg-card/90 p-6 text-center">
+                  <AlertCircle className="size-8 shrink-0 text-destructive" />
+                  <div className="w-full min-w-0">
                     <p className="text-sm font-semibold text-destructive">
                       Clone Failed
                     </p>
                     {job.error && (
-                      <p className="mt-1 max-w-sm text-xs text-destructive/80">
+                      <p className="mx-auto mt-1 min-w-0 max-w-sm break-words text-xs text-destructive/80 [overflow-wrap:anywhere]">
                         {job.error}
                       </p>
                     )}
@@ -299,7 +352,7 @@ export function CloneOutputReviewDetail({
                       onClick={() => onDownload(featured)}
                       className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
                     >
-                      <Download className="size-3.5" />
+                      <Download className="size-3.5 shrink-0" />
                       Download
                     </button>
                   }
@@ -311,13 +364,56 @@ export function CloneOutputReviewDetail({
               )}
             </div>
 
+            {job.outputs.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
+                <p className="hidden text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:block">
+                  Variants
+                </p>
+                {job.outputs.map((output, index) => (
+                  <button
+                    key={output.id}
+                    type="button"
+                    onClick={() => setFeaturedIndex(index)}
+                    aria-label={`View variant ${index + 1}`}
+                    aria-pressed={featured?.id === output.id}
+                    className={cn(
+                      "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-black p-0.5 transition-colors",
+                      featured?.id === output.id
+                        ? "border-accent-coral"
+                        : "border-white hover:border-accent-coral/50"
+                    )}
+                  >
+                    {output.type === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={`/api/files/${output.id}`}
+                        alt=""
+                        className="size-full rounded-md object-cover"
+                      />
+                    ) : (
+                      <video
+                        src={`/api/files/${output.id}`}
+                        muted
+                        preload="metadata"
+                        className="size-full rounded-md object-cover"
+                      />
+                    )}
+                    <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[11px] font-bold text-white">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+            </div>
+
             {featured && (
-              <div className="mt-3 flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-white px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-white">
+                  <p className="truncate text-sm font-semibold text-foreground">
                     {featured.filename}
                   </p>
-                  <p className="mt-1 text-xs text-white/45">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {[featuredSize, job.model].filter(Boolean).join(" | ")}
                   </p>
                 </div>
@@ -325,10 +421,39 @@ export function CloneOutputReviewDetail({
             )}
           </div>
 
+          {actionFeedback && (
+            <div
+              role={actionFeedback.tone === "error" ? "alert" : "status"}
+              className={cn(
+                "flex min-w-0 items-start gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium",
+                actionFeedback.tone === "success"
+                  ? "border-accent-green/30 bg-accent-green/10 text-green-700"
+                  : "border-destructive/30 bg-destructive/10 text-destructive"
+              )}
+            >
+              {actionFeedback.tone === "success" ? (
+                <Check className="size-4 shrink-0" />
+              ) : (
+                <AlertCircle className="size-4 shrink-0" />
+              )}
+              <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+                {actionFeedback.message}
+              </span>
+            </div>
+          )}
+
           <div className="grid gap-3 sm:grid-cols-3">
             <button
               type="button"
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted/40"
+              onClick={() => featured && onReviewStatusChange?.(featured, "approved_output")}
+              disabled={!featured || pendingReviewStatus !== null}
+              aria-pressed={featured?.reviewStatus.value === "approved_output"}
+              className={cn(
+                "flex items-center justify-between rounded-xl border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
+                featured?.reviewStatus.value === "approved_output"
+                  ? "border-accent-green bg-accent-green/10"
+                  : "border-border"
+              )}
             >
               <span>
                 <span className="block text-sm font-semibold">
@@ -338,11 +463,23 @@ export function CloneOutputReviewDetail({
                   Ready for handoff
                 </span>
               </span>
-              <Check className="size-5 text-accent-green" />
+              {pendingReviewStatus === "approved_output" ? (
+                  <Loader2 className="size-5 shrink-0 animate-spin text-accent-green" />
+                ) : (
+                  <Check className="size-5 shrink-0 text-accent-green" />
+              )}
             </button>
             <button
               type="button"
-              className="flex items-center justify-between rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-muted/40"
+              onClick={() => featured && onReviewStatusChange?.(featured, "rejected_output")}
+              disabled={!featured || pendingReviewStatus !== null}
+              aria-pressed={featured?.reviewStatus.value === "rejected_output"}
+              className={cn(
+                "flex items-center justify-between rounded-xl border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
+                featured?.reviewStatus.value === "rejected_output"
+                  ? "border-destructive bg-destructive/10"
+                  : "border-border"
+              )}
             >
               <span>
                 <span className="block text-sm font-semibold">
@@ -352,7 +489,11 @@ export function CloneOutputReviewDetail({
                   Not usable
                 </span>
               </span>
-              <X className="size-5 text-red-400" />
+              {pendingReviewStatus === "rejected_output" ? (
+                  <Loader2 className="size-5 shrink-0 animate-spin text-destructive" />
+                ) : (
+                  <X className="size-5 shrink-0 text-destructive" />
+              )}
             </button>
             <button
               type="button"
@@ -365,7 +506,7 @@ export function CloneOutputReviewDetail({
                   Return to Clone
                 </span>
               </span>
-              <Users className="size-5" />
+              <Users className="size-5 shrink-0" />
             </button>
           </div>
         </div>
@@ -386,10 +527,10 @@ export function CloneOutputReviewDetail({
                       href={sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent-blue hover:underline"
+                      className="inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-accent-blue hover:underline"
                     >
                       View original
-                      <ExternalLink className="size-3" />
+                      <ExternalLink className="size-3 shrink-0" />
                     </a>
                   )}
                 </div>
@@ -431,7 +572,7 @@ export function CloneOutputReviewDetail({
                 />
               ) : (
                 <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-white/[0.05]">
-                  <Users className="size-5 text-muted-foreground" />
+                  <Users className="size-5 shrink-0 text-muted-foreground" />
                 </div>
               )}
               <div className="min-w-0">
@@ -486,18 +627,49 @@ export function CloneOutputReviewDetail({
             </div>
           </DetailSection>
 
-          {referencePreviewUrl && (
+          <DetailSection title="Input Checks">
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: "Identity", ready: Boolean(avatarId) },
+                { label: "Source", ready: Boolean(sourceVideo || job.tikTokSource) },
+                { label: "Output", ready: Boolean(featured) },
+              ].map((signal) => (
+                <div
+                  key={signal.label}
+                  className="rounded-lg border border-border bg-muted/25 px-2 py-3 text-center"
+                >
+                  {signal.ready ? (
+                    <Check className="mx-auto size-4 shrink-0 text-accent-green" />
+                  ) : (
+                    <AlertCircle className="mx-auto size-4 shrink-0 text-muted-foreground" />
+                  )}
+                  <p className="mt-1.5 text-[10px] font-semibold">{signal.label}</p>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    {signal.ready ? "Ready" : "Unavailable"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </DetailSection>
+
+          {reference && (
             <DetailSection title="Reference">
+              <div className="mb-3 min-w-0">
+                <p className="min-w-0 break-words text-sm font-medium [overflow-wrap:anywhere]">{reference.label}</p>
+                <p className="mt-1 break-all font-mono text-[10px] text-muted-foreground">
+                  {reference.id}
+                </p>
+              </div>
               <a
-                href={referencePreviewUrl}
+                href={reference.previewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block overflow-hidden rounded-lg border border-border bg-black"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={referencePreviewUrl}
-                  alt="Reference image used for this clone"
+                  src={reference.previewUrl}
+                  alt={`${reference.label} used for this clone`}
                   className="max-h-56 w-full object-contain transition-opacity hover:opacity-90"
                 />
               </a>

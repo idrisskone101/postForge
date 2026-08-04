@@ -1,0 +1,246 @@
+import assert from "node:assert/strict";
+import {
+  decodeIntegrationEncryptionKey,
+  decryptIntegrationSecret,
+  encryptIntegrationSecret,
+} from "../src/lib/integrations/crypto";
+import {
+  consumeOAuthStateRecord,
+  createMemoryIntegrationStorage,
+  pruneExpiredOAuthStateRecords,
+  readIntegrationConnection,
+  saveIntegrationConnection,
+  saveOAuthStateRecord,
+} from "../src/lib/integrations/store";
+import { isSameOriginMutation } from "../src/lib/integrations/routes";
+import {
+  createOAuthState,
+  verifyOAuthState,
+} from "../src/lib/integrations/state";
+import type { DecryptedIntegrationConnection } from "../src/lib/integrations/types";
+import { NextRequest } from "next/server";
+import { middleware } from "../src/middleware";
+
+async function run() {
+  const previousNodeEnv = process.env.NODE_ENV;
+  const previousApiKey = process.env.POSTFORGE_API_KEY;
+  Reflect.set(process.env, "NODE_ENV", "production");
+  process.env.POSTFORGE_API_KEY = "operator-api-key";
+  const cronPassThrough = middleware(
+    new NextRequest(
+      "https://postforge.example/api/integrations/retention",
+      { headers: { Authorization: "Bearer retention-secret-value" } }
+    )
+  );
+  assert.equal(cronPassThrough.headers.get("x-middleware-next"), "1");
+  const ordinaryApiResponse = middleware(
+    new NextRequest("https://postforge.example/api/integrations/youtube/sync", {
+      headers: { Authorization: "Bearer retention-secret-value" },
+    })
+  );
+  assert.equal(ordinaryApiResponse.status, 401);
+  if (previousNodeEnv === undefined) Reflect.deleteProperty(process.env, "NODE_ENV");
+  else Reflect.set(process.env, "NODE_ENV", previousNodeEnv);
+  if (previousApiKey === undefined) delete process.env.POSTFORGE_API_KEY;
+  else process.env.POSTFORGE_API_KEY = previousApiKey;
+
+  assert.equal(
+    isSameOriginMutation(
+      new Request("https://postforge.example/api/integrations/tiktok/sync", {
+        method: "POST",
+        headers: {
+          Origin: "https://postforge.example",
+          "Sec-Fetch-Site": "same-origin",
+        },
+      })
+    ),
+    true
+  );
+  assert.equal(
+    isSameOriginMutation(
+      new Request("https://postforge.example/api/integrations/tiktok/sync", {
+        method: "POST",
+        headers: {
+          Origin: "https://attacker.example",
+          "Sec-Fetch-Site": "cross-site",
+        },
+      })
+    ),
+    false
+  );
+  assert.equal(
+    isSameOriginMutation(
+      new Request("https://postforge.example/api/integrations/tiktok/sync", {
+        method: "POST",
+      })
+    ),
+    false,
+    "Missing browser origin metadata must fail closed"
+  );
+  const key = Buffer.alloc(32, 7);
+  assert.deepEqual(
+    decodeIntegrationEncryptionKey(key.toString("base64")),
+    key
+  );
+  assert.deepEqual(decodeIntegrationEncryptionKey(key.toString("hex")), key);
+  assert.throws(() => decodeIntegrationEncryptionKey("too-short"), /32 bytes/);
+
+  const encrypted = encryptIntegrationSecret(
+    "access-token-secret",
+    key,
+    "test:access",
+    () => Buffer.alloc(12, 3)
+  );
+  assert.equal(encrypted.algorithm, "aes-256-gcm");
+  assert.doesNotMatch(JSON.stringify(encrypted), /access-token-secret/);
+  assert.equal(
+    decryptIntegrationSecret(encrypted, key, "test:access"),
+    "access-token-secret"
+  );
+  assert.throws(
+    () => decryptIntegrationSecret(encrypted, key, "test:refresh"),
+    /could not be decrypted/
+  );
+
+  const now = new Date("2026-08-03T12:00:00.000Z");
+  const created = createOAuthState("tiktok", key, {
+    now,
+    randomBytes: () => Buffer.alloc(24, 9),
+  });
+  const verified = verifyOAuthState({
+    provider: "tiktok",
+    state: created.state,
+    cookieValue: created.cookieValue,
+    signingKey: key,
+    now: new Date("2026-08-03T12:05:00.000Z"),
+  });
+  assert.equal(verified.nonceHash, created.nonceHash);
+  assert.throws(
+    () =>
+      verifyOAuthState({
+        provider: "instagram",
+        state: created.state,
+        cookieValue: created.cookieValue,
+        signingKey: key,
+        now,
+      }),
+    /invalid or expired/
+  );
+  assert.throws(
+    () =>
+      verifyOAuthState({
+        provider: "tiktok",
+        state: created.state,
+        cookieValue: `${created.cookieValue}tampered`,
+        signingKey: key,
+        now,
+      }),
+    /invalid or expired/
+  );
+  assert.throws(
+    () =>
+      verifyOAuthState({
+        provider: "tiktok",
+        state: created.state,
+        cookieValue: created.cookieValue,
+        signingKey: key,
+        now: new Date("2026-08-03T12:11:00.000Z"),
+      }),
+    /invalid or expired/
+  );
+
+  const storage = createMemoryIntegrationStorage();
+  const expired = createOAuthState("instagram", key, {
+    now: new Date("2026-08-03T11:00:00.000Z"),
+    randomBytes: () => Buffer.alloc(24, 5),
+  });
+  await saveOAuthStateRecord(expired.nonceHash, expired.record, storage);
+  assert.equal(
+    await pruneExpiredOAuthStateRecords(
+      new Date("2026-08-03T11:11:00.000Z"),
+      storage
+    ),
+    1
+  );
+  await saveOAuthStateRecord(created.nonceHash, created.record, storage);
+  assert.equal(
+    (
+      await consumeOAuthStateRecord(
+        created.nonceHash,
+        "tiktok",
+        now,
+        storage
+      )
+    )?.provider,
+    "tiktok"
+  );
+  assert.equal(
+    await consumeOAuthStateRecord(created.nonceHash, "tiktok", now, storage),
+    null,
+    "OAuth state must be single-use"
+  );
+
+  const concurrent = createOAuthState("youtube", key, {
+    now,
+    randomBytes: () => Buffer.alloc(24, 8),
+  });
+  await saveOAuthStateRecord(concurrent.nonceHash, concurrent.record, storage);
+  const concurrentClaims = await Promise.all([
+    consumeOAuthStateRecord(concurrent.nonceHash, "youtube", now, storage),
+    consumeOAuthStateRecord(concurrent.nonceHash, "youtube", now, storage),
+  ]);
+  assert.equal(
+    concurrentClaims.filter(Boolean).length,
+    1,
+    "Only one concurrent callback may claim an OAuth state"
+  );
+  assert.equal(concurrentClaims.find(Boolean)?.provider, "youtube");
+
+  const connection: DecryptedIntegrationConnection = {
+    version: 1,
+    provider: "tiktok",
+    account: {
+      id: "open-id-1",
+      username: null,
+      displayName: "Creator",
+      avatarUrl: null,
+      profileUrl: null,
+    },
+    grantedScopes: ["user.info.basic", "video.list"],
+    tokens: {
+      accessToken: "stored-access-secret",
+      refreshToken: "stored-refresh-secret",
+      expiresAt: "2026-08-03T14:00:00.000Z",
+      refreshTokenExpiresAt: "2026-09-03T14:00:00.000Z",
+      grantedScopes: ["user.info.basic", "video.list"],
+      tokenType: "Bearer",
+    },
+    connectedAt: now.toISOString(),
+    updatedAt: now.toISOString(),
+    authorization: {
+      status: "healthy",
+      lastCheckedAt: now.toISOString(),
+    },
+    sync: {
+      status: "never",
+      lastAttemptAt: null,
+      lastSuccessfulAt: null,
+      warnings: [],
+    },
+  };
+  await saveIntegrationConnection(connection, key, storage);
+  const rawStored = [...storage.entries.values()].map((value) =>
+    Buffer.from(value).toString("utf8")
+  );
+  assert.doesNotMatch(rawStored.join("\n"), /stored-access-secret/);
+  assert.doesNotMatch(rawStored.join("\n"), /stored-refresh-secret/);
+  assert.deepEqual(
+    await readIntegrationConnection("tiktok", key, storage),
+    connection
+  );
+}
+
+run().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

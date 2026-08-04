@@ -66,6 +66,7 @@ const STATUS_CONFIG = {
 export function UGCCloneQueue() {
   const [jobs, setJobs] = useState<CloneJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const hasActiveJobs = jobs.some(
     (j) => j.status === "queued" || j.status === "processing"
@@ -73,6 +74,7 @@ export function UGCCloneQueue() {
 
   const fetchJobs = useCallback(async () => {
     try {
+      setLoadError(null);
       const data = await apiGet<JobsResponse>(
         "/api/jobs?tag=ugc-clone&limit=10&sort=createdAt:desc"
       );
@@ -82,6 +84,9 @@ export function UGCCloneQueue() {
       });
     } catch (err) {
       console.error("Failed to load clone jobs:", err);
+      setLoadError(
+        err instanceof Error ? err.message : "Failed to load clone activity."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -98,12 +103,8 @@ export function UGCCloneQueue() {
     return () => clearInterval(interval);
   }, [fetchJobs, hasActiveJobs]);
 
-  if (!isLoading && jobs.length === 0) {
-    return null;
-  }
-
   return (
-    <section className="rounded-lg border border-border bg-card shadow-sm">
+    <section className="rounded-xl border border-border bg-card shadow-[var(--pf-shadow-xs)]">
       <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
@@ -123,7 +124,22 @@ export function UGCCloneQueue() {
         )}
       </div>
 
-      {isLoading ? (
+      {loadError && jobs.length === 0 ? (
+        <div className="flex w-full min-w-0 flex-col items-center px-5 py-7 text-center">
+          <XCircle className="size-5 shrink-0 text-destructive" />
+          <p className="mt-2 text-sm font-semibold">Couldn&apos;t load clone activity</p>
+          <p className="mt-1 min-w-0 max-w-md break-words text-xs leading-5 text-muted-foreground [overflow-wrap:anywhere]">
+            {loadError}
+          </p>
+          <button
+            type="button"
+            onClick={() => void fetchJobs()}
+            className="mt-3 h-8 rounded-lg border border-border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted"
+          >
+            Try again
+          </button>
+        </div>
+      ) : isLoading ? (
         <div className="space-y-2 p-4">
           {Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="h-12 animate-pulse rounded-lg bg-muted/60" />
@@ -149,7 +165,7 @@ export function UGCCloneQueue() {
               key={job.id}
               href={`/ugc-clone/${job.id}`}
               className={cn(
-                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
+                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-xs)]",
                 isActive && "border-accent-blue/30 bg-accent-blue/5"
               )}
             >

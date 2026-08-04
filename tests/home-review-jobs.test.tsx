@@ -32,7 +32,12 @@ const markup = renderToStaticMarkup(
         type: "video",
         model: "kling-3.0-motion",
         status: "completed",
+        tags: ["ugc-clone"],
         createdAt: now,
+        productionContext: {
+          sourceDetail: "Saved creator clip",
+          identityDetail: "Avery Chen",
+        },
         output: {
           id: "output-video",
           width: 1080,
@@ -41,10 +46,11 @@ const markup = renderToStaticMarkup(
         },
       },
     ]}
+    now={now}
   />
 );
 
-assert.match(markup, /Pending review/);
+assert.match(markup, /Needs review/);
 assert.match(markup, /Clone output ready/);
 assert.match(markup, /completed-clone-video/);
 assert.doesNotMatch(markup, /Generated asset ready/);

@@ -1,0 +1,54 @@
+{
+  "w1280": {
+    "buttons": [
+      {
+        "cw": 205,
+        "h": 36,
+        "right": 475,
+        "sw": 205,
+        "text": "Import prompt or JSON",
+        "w": 207,
+        "x": 268
+      },
+      {
+        "cw": 205,
+        "h": 36,
+        "right": 475,
+        "sw": 205,
+        "text": "Copy attributes JSON",
+        "w": 207,
+        "x": 268
+      }
+    ],
+    "doc": {
+      "cw": 1280,
+      "sw": 1280
+    }
+  },
+  "w1440": {
+    "buttons": [
+      {
+        "cw": 205,
+        "h": 36,
+        "right": 475,
+        "sw": 205,
+        "text": "Import prompt or JSON",
+        "w": 207,
+        "x": 268
+      },
+      {
+        "cw": 205,
+        "h": 36,
+        "right": 475,
+        "sw": 205,
+        "text": "Copy attributes JSON",
+        "w": 207,
+        "x": 268
+      }
+    ],
+    "doc": {
+      "cw": 1440,
+      "sw": 1440
+    }
+  }
+}

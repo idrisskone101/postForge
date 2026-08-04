@@ -50,6 +50,9 @@ async function main() {
         return `avatars/${filename}`;
       },
       async createAvatar(data) {
+        if (typeof data.localPath !== "string") {
+          throw new Error("Imported avatar localPath must be persisted.");
+        }
         return {
           id: "avatar-imported",
           name: data.name,

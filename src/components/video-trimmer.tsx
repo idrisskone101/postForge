@@ -502,7 +502,7 @@ export function VideoTrimmer({
 
       {/* Error */}
       {trimError && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+        <div className="min-w-0 break-words rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive [overflow-wrap:anywhere]">
           {trimError}
         </div>
       )}

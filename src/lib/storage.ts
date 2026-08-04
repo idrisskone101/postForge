@@ -103,9 +103,61 @@ export interface StorageProvider {
   save(type: string, filename: string, data: Buffer): Promise<string>;
   saveFromFile(type: string, filename: string, sourcePath: string): Promise<string>;
   read(localPath: string): Promise<Buffer>;
+  readRange(localPath: string, start: number, end: number): Promise<Buffer>;
+  size(localPath: string): Promise<number>;
   delete(localPath: string): Promise<void>;
   exists(localPath: string): Promise<boolean>;
   ensureLocalFile(localPath: string): Promise<string>;
+}
+
+function validateReadRange(start: number, end: number) {
+  if (
+    !Number.isSafeInteger(start) ||
+    !Number.isSafeInteger(end) ||
+    start < 0 ||
+    end < start
+  ) {
+    throw new RangeError("Invalid storage byte range");
+  }
+}
+
+async function readFileRange(
+  fullPath: string,
+  start: number,
+  end: number
+): Promise<Buffer> {
+  validateReadRange(start, end);
+  const handle = await fs.open(fullPath, "r");
+  try {
+    const stat = await handle.stat();
+    if (!stat.isFile() || start >= stat.size) {
+      throw new RangeError("Storage byte range is outside the file");
+    }
+    const length = Math.min(end, stat.size - 1) - start + 1;
+    const data = Buffer.allocUnsafe(length);
+    let offset = 0;
+    while (offset < length) {
+      const read = await handle.read(data, offset, length - offset, start + offset);
+      if (read.bytesRead === 0) break;
+      offset += read.bytesRead;
+    }
+    if (offset !== length) {
+      throw new Error("Stored file changed while it was being read");
+    }
+    return data;
+  } finally {
+    await handle.close();
+  }
+}
+
+async function storedFileSize(fullPath: string): Promise<number> {
+  const stat = await fs.stat(fullPath);
+  if (!stat.isFile()) {
+    const err = new Error(`File not found: ${fullPath}`) as NodeJS.ErrnoException;
+    err.code = "ENOENT";
+    throw err;
+  }
+  return stat.size;
 }
 
 class LocalStorageDriver implements StorageProvider {
@@ -144,6 +196,14 @@ class LocalStorageDriver implements StorageProvider {
 
   async read(localPath: string): Promise<Buffer> {
     return fs.readFile(this.getFullPath(localPath));
+  }
+
+  async readRange(localPath: string, start: number, end: number): Promise<Buffer> {
+    return readFileRange(this.getFullPath(localPath), start, end);
+  }
+
+  async size(localPath: string): Promise<number> {
+    return storedFileSize(this.getFullPath(localPath));
   }
 
   async delete(localPath: string): Promise<void> {
@@ -213,6 +273,10 @@ class DatabaseStorageDriver implements StorageProvider {
     }
   }
 
+  private async legacyAssetSize(localPath: string): Promise<number> {
+    return storedFileSize(this.getLegacyPath(localPath));
+  }
+
   async save(type: string, filename: string, data: Buffer): Promise<string> {
     const relativePath = buildRelativePath(type, filename);
     await this.persistAsset(relativePath, data);
@@ -240,6 +304,36 @@ class DatabaseStorageDriver implements StorageProvider {
     }
 
     return this.readLegacyAsset(safeLocalPath);
+  }
+
+  async readRange(localPath: string, start: number, end: number): Promise<Buffer> {
+    validateReadRange(start, end);
+    const safeLocalPath = normalizeStoragePath(localPath);
+    const length = end - start + 1;
+    const rows = await prisma.$queryRaw<Array<{ data: Uint8Array }>>`
+      SELECT substring("data" FROM ${start + 1} FOR ${length}) AS "data"
+      FROM "StoredAsset"
+      WHERE "key" = ${safeLocalPath}
+    `;
+    if (rows[0]) return Buffer.from(rows[0].data);
+    return readFileRange(this.getLegacyPath(safeLocalPath), start, end);
+  }
+
+  async size(localPath: string): Promise<number> {
+    const safeLocalPath = normalizeStoragePath(localPath);
+    const rows = await prisma.$queryRaw<Array<{ size: bigint | number }>>`
+      SELECT octet_length("data") AS "size"
+      FROM "StoredAsset"
+      WHERE "key" = ${safeLocalPath}
+    `;
+    if (rows[0]) {
+      const size = Number(rows[0].size);
+      if (!Number.isSafeInteger(size) || size < 0) {
+        throw new Error("Stored asset size is outside the supported range");
+      }
+      return size;
+    }
+    return this.legacyAssetSize(safeLocalPath);
   }
 
   async delete(localPath: string): Promise<void> {

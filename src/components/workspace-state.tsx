@@ -40,10 +40,10 @@ function StateActionControl({
   primary?: boolean;
 }) {
   const className = cn(
-    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors",
+    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
     primary
-      ? "bg-accent-coral text-white hover:bg-[#ff6540]"
-      : "border border-border bg-background/50 text-muted-foreground hover:border-accent-coral/40 hover:text-foreground"
+      ? "bg-accent-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] hover:-translate-y-px hover:bg-[#ff6540]"
+      : "border border-border bg-background/50 text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:border-accent-coral/40 hover:text-foreground"
   );
 
   const content = (
@@ -81,7 +81,7 @@ export function WorkspaceState({
     <div
       data-workspace-state={tone}
       className={cn(
-        "flex min-h-[240px] flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
+        "flex min-h-[240px] min-w-0 flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
         tone === "empty" && "border-dashed border-border bg-white/[0.01]",
         tone === "error" && "border-destructive/30 bg-destructive/10",
         tone === "neutral" && "border-border",
@@ -90,23 +90,23 @@ export function WorkspaceState({
     >
       <div
         className={cn(
-          "mb-5 flex size-14 items-center justify-center rounded-lg",
+          "mb-5 flex size-14 items-center justify-center rounded-2xl shadow-[var(--pf-shadow-xs)] ring-1",
           tone === "error"
-            ? "bg-destructive/12 text-destructive"
-            : "bg-accent-blue/12 text-accent-blue"
+            ? "bg-destructive/12 text-destructive ring-destructive/15"
+            : "bg-accent-blue/12 text-accent-blue ring-accent-blue/15"
         )}
       >
         <Icon className="size-6" />
       </div>
       <h2
         className={cn(
-          "text-lg font-semibold tracking-tight",
+          "max-w-full break-words text-lg font-semibold tracking-tight [overflow-wrap:anywhere]",
           tone === "error" && "text-destructive"
         )}
       >
         {title}
       </h2>
-      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+      <p className="mt-2 min-w-0 max-w-md break-words text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">
         {description}
       </p>
       {(action || secondaryAction) && (

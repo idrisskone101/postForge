@@ -91,11 +91,8 @@ export async function getPendingReviewHomeJobs(
       FROM "GeneratedFile" f
       INNER JOIN "GenerationJob" j ON j."id" = f."jobId"
       WHERE
-        f."type" = 'video'
-        AND f."reviewStatus" = 'needs_review'
+        f."reviewStatus" = 'needs_review'
         AND j."status" = 'completed'
-        AND j."type" = 'video'
-        AND j."tags" @> ARRAY['ugc-clone']::TEXT[]
       ORDER BY f."createdAt" DESC, f."id" DESC
       OFFSET ${offset}
       LIMIT ${take}

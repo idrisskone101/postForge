@@ -1,4 +1,6 @@
 import { ensurePollerRunning } from "@/lib/jobs/poller";
+import { ensureAutomationSchedulerRunning } from "@/lib/automation-scheduler";
+import { ensureSlideshowAutomationWorkerRunning } from "@/lib/slideshow/automation-worker";
 import { backfillLegacyAssets } from "@/lib/storage-backfill";
 import { backfillUgcReferenceImages } from "@/lib/ugc/reference-library";
 import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
@@ -12,6 +14,8 @@ export async function bootstrapServerRuntime(): Promise<void> {
     globalForBootstrap.__postforge_runtime_bootstrap = (async () => {
       ensurePollerRunning();
       ensureCloneWorkerRunning();
+      ensureAutomationSchedulerRunning();
+      ensureSlideshowAutomationWorkerRunning();
       await backfillLegacyAssets();
       await backfillUgcReferenceImages();
     })();

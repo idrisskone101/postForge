@@ -47,6 +47,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      body.collectionAssetId !== undefined &&
+      typeof body.collectionAssetId !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "collectionAssetId must be a string" },
+        { status: 400 }
+      );
+    }
+
+    const suppliedReferenceCount = [
+      body.referenceImageFileId,
+      body.savedReferenceId,
+      body.collectionAssetId,
+    ].filter((value) => typeof value === "string" && value.length > 0).length;
+    if (suppliedReferenceCount > 1) {
+      return NextResponse.json(
+        { error: "Choose only one clone reference source" },
+        { status: 400 }
+      );
+    }
+
     const { jobId, estimatedCost, modelId } = await generateClone({
       tiktokVideoPath: body.tiktokVideoPath,
       tiktokSourceId: body.tiktokSourceId,
@@ -55,6 +77,7 @@ export async function POST(request: NextRequest) {
       keepOriginalSound: body.keepOriginalSound,
       modelId: body.model,
       referenceImageFileId: body.referenceImageFileId,
+      collectionAssetId: body.collectionAssetId,
       savedReferenceId: body.savedReferenceId,
       durationSec: typeof body.durationSec === "number" ? body.durationSec : undefined,
       removeTextOverlays: body.removeTextOverlays === true,

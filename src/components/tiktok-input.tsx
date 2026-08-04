@@ -44,7 +44,10 @@ interface TikTokInputProps {
   videoInfo: TikTokVideoInfo | null;
   refreshKey?: number;
   preselectedSourceId?: string | null;
-  onPreselectedSourceResolved?: () => void;
+  onPreselectedSourceResolved?: (result: {
+    status: "selected" | "missing";
+    sourceId: string;
+  }) => void;
 }
 
 export function TikTokInput({
@@ -93,11 +96,19 @@ export function TikTokInput({
   }, [refreshKey]);
 
   useEffect(() => {
-    if (!preselectedSourceId || isLoadingSources) return;
+    if (!preselectedSourceId || isLoadingSources || sourcesError) return;
     if (autoSelectedIdRef.current === preselectedSourceId) return;
 
     const source = savedSources.find((item) => item.id === preselectedSourceId);
-    if (!source) return;
+    if (!source) {
+      autoSelectedIdRef.current = preselectedSourceId;
+      setError("The handed-off saved source is no longer available. Choose another source.");
+      onPreselectedSourceResolved?.({
+        status: "missing",
+        sourceId: preselectedSourceId,
+      });
+      return;
+    }
 
     autoSelectedIdRef.current = preselectedSourceId;
     onDownloaded({
@@ -110,13 +121,18 @@ export function TikTokInput({
       width: source.width,
       height: source.height,
     });
-    onPreselectedSourceResolved?.();
+    setError(null);
+    onPreselectedSourceResolved?.({
+      status: "selected",
+      sourceId: preselectedSourceId,
+    });
   }, [
     isLoadingSources,
     onDownloaded,
     onPreselectedSourceResolved,
     preselectedSourceId,
     savedSources,
+    sourcesError,
   ]);
 
   useEffect(() => {
@@ -211,7 +227,7 @@ export function TikTokInput({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={isDownloading}
-            className="h-10 w-full rounded-lg border border-border bg-muted/50 px-3 text-sm placeholder:text-muted-foreground transition-all focus:border-accent-green/50 focus:bg-card focus:outline-none focus:ring-3 focus:ring-accent-green/10"
+            className="h-10 w-full rounded-lg border border-border bg-muted/50 px-3 text-sm placeholder:text-muted-foreground transition-all focus:border-accent-coral/50 focus:bg-card focus:outline-none focus:ring-3 focus:ring-accent-coral/10"
           />
         </div>
         <button
@@ -222,7 +238,7 @@ export function TikTokInput({
             "flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all",
             isDownloading
               ? "bg-muted text-muted-foreground"
-              : "bg-accent-green text-white shadow-[0_4px_16px_rgba(123,165,67,0.25)] hover:shadow-[0_4px_24px_rgba(123,165,67,0.35)] hover:brightness-110"
+              : "bg-accent-coral text-white hover:bg-[#e9421c]"
           )}
         >
           {isDownloading ? (
@@ -241,9 +257,9 @@ export function TikTokInput({
 
       {/* Error */}
       {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
+        <div className="flex min-w-0 items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
           <AlertCircle className="size-4 text-destructive shrink-0" />
-          <p className="text-xs text-destructive">{error}</p>
+          <p className="min-w-0 flex-1 break-words text-xs text-destructive [overflow-wrap:anywhere]">{error}</p>
         </div>
       )}
 
@@ -276,9 +292,9 @@ export function TikTokInput({
       )}
 
       {sourcesError && (
-        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
+        <div className="flex min-w-0 items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
           <AlertCircle className="size-4 shrink-0 text-destructive" />
-          <p className="text-xs text-destructive">{sourcesError}</p>
+          <p className="min-w-0 flex-1 break-words text-xs text-destructive [overflow-wrap:anywhere]">{sourcesError}</p>
         </div>
       )}
 
@@ -351,7 +367,7 @@ export function TikTokInput({
                           {source.label}
                         </p>
                         {source.fileSizeBytes && (
-                          <p className="text-[9px] text-white/60">
+                          <p className="text-[10px] text-white/60">
                             {formatSize(source.fileSizeBytes)}
                           </p>
                         )}

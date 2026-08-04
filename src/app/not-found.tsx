@@ -4,23 +4,23 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[80vh] items-center justify-center p-6">
-      <Card className="w-full max-w-md bg-zinc-900/50 border-zinc-800">
+    <div className="flex min-h-[80dvh] min-w-0 items-center justify-center p-6">
+      <Card className="w-full min-w-0 max-w-md border-[#DADBD2] bg-white">
         <CardContent className="flex flex-col items-center text-center pt-8 pb-8 px-6 space-y-4">
-          <div className="flex size-14 items-center justify-center rounded-full bg-zinc-800">
-            <FileQuestion className="size-7 text-zinc-400" />
+          <div className="flex size-14 items-center justify-center rounded-full bg-[#FFF0EC]">
+            <FileQuestion className="size-7 text-[#FF4A20]" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-[#232323]">
               Page Not Found
             </h2>
-            <p className="text-sm text-zinc-400 leading-relaxed">
+            <p className="text-sm leading-relaxed text-[#777873]">
               The page you are looking for does not exist or has been moved.
             </p>
           </div>
           <Link
             href="/"
-            className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="pf-button-primary mt-2"
           >
             Go Home
           </Link>

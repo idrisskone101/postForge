@@ -99,6 +99,29 @@ assert.match(markup, /Production State/);
 assert.match(markup, /wan-2\.2-video/);
 assert.match(markup, /\$0\.31/);
 
+const longFailureToken = `request_${"x".repeat(512)}`;
+const longFailureMarkup = renderToStaticMarkup(
+  <CloneOutputReviewDetail
+    job={{
+      ...completedJob,
+      status: "failed",
+      error: longFailureToken,
+      outputs: [],
+    }}
+    isRetrying={false}
+    actionFeedback={{ tone: "error", message: longFailureToken }}
+    onBack={() => {}}
+    onRetry={() => {}}
+    onDownload={() => {}}
+    onNewClone={() => {}}
+  />
+);
+
+assert.equal(/\s/.test(longFailureToken), false);
+assert.match(longFailureMarkup, new RegExp(longFailureToken));
+assert.match(longFailureMarkup, /min-w-0/);
+assert.match(longFailureMarkup, /\[overflow-wrap:anywhere\]/);
+
 const portraitSourceFallbackMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
     job={{
@@ -150,4 +173,30 @@ assert.match(
 assert.doesNotMatch(
   avatarFallbackMarkup,
   />8e18566f-49cf-4607-ace1-15b6161d00cc</
+);
+
+const collectionReferenceMarkup = renderToStaticMarkup(
+  <CloneOutputReviewDetail
+    job={{
+      ...completedJob,
+      input: {
+        ...completedJob.input,
+        savedReferenceId: undefined,
+        referenceImageFileId: undefined,
+        collectionAssetId: "collection asset/portrait-1",
+      },
+    }}
+    isRetrying={false}
+    onBack={() => {}}
+    onRetry={() => {}}
+    onDownload={() => {}}
+    onNewClone={() => {}}
+  />
+);
+
+assert.match(collectionReferenceMarkup, /Collection reference/);
+assert.match(collectionReferenceMarkup, /collection asset\/portrait-1/);
+assert.match(
+  collectionReferenceMarkup,
+  /src="\/api\/files\/collection%20asset%2Fportrait-1"/
 );

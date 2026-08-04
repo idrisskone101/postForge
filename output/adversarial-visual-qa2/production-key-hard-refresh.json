@@ -1,0 +1,86 @@
+[
+  {
+    "name": "gallery",
+    "navErr": null,
+    "state": {
+      "body": "",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "loading",
+      "url": "http://127.0.0.1:3000/gallery"
+    },
+    "bytes": 50310
+  },
+  {
+    "name": "character-new",
+    "navErr": null,
+    "state": {
+      "body": "P\nPostForge\nNew Character\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nIDENTITY STUDIO\n\nNew character\nRandomize\nOverview\nIdentity\nFemale · 18-24\nEthnicity\nCaucasian\nSkin Details\nClear · None\nFace Shape\nOval\nFace Details\nSoft · Subtle\nHair\nBlack · Buzz Cut\nEyes & Brows\nAlmond · Brown\nNose & Ears\nStraight · Low\nBody\nAthletic · Very Short\nStyle & Accessories\nCasual Minimal · None\nMarks & Features\nNone · None\nImport prompt or JSON\nCopy attributes JSON\n\nLIVE IDENTITY PREVIEW\n\nProcedural portrait · every selection updates locally without spending credits.\n\nReady\nRe-render preview\nRandomize identity\n\nFemale · 18-24 · Caucasian\n\nCHARACTER NAME\nSave character\n\nOVERVIEW\n\nCharacter blueprint\n\nReview every selected attribute before saving or copy the full prompt for another workflow",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "complete",
+      "url": "http://127.0.0.1:3000/characters/new"
+    },
+    "bytes": 96752
+  },
+  {
+    "name": "settings",
+    "navErr": null,
+    "state": {
+      "body": "P\nPostForge\nView Integrations\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nWORKSPACE\n\nSettings\n\nManage connections, publishing defaults, usage, and preferences.\n\nView Integrations\n\nWORKSPACE\n\nProfile\nBilling & usage\nIntegrations\nPublishing defaults\nTeam\nNotifications\n\nDEVELOPER\n\nAPI keys\nWebhooks\n\nCONNECTIONS\n\nIntegrations\n\nOne real connection state powers publishing and Performance.\n\nRefresh status\ni\nConnections are server-owned\n\nPostForge only reports an account as connected after OAuth and server-side token storage succeed.\n\nSocial accounts\n\nConnect supported destinations and use the same owned-post data in Performance.\n\nNOT CONFIGURED\nTikTok\n\nRead owned-post performance and verify upload permission for reviewed handoffs.\n\nServer setup required\n\nSet TIKTOK_CLIENT_KEY ",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "complete",
+      "url": "http://127.0.0.1:3000/settings"
+    },
+    "bytes": 93464
+  },
+  {
+    "name": "performance",
+    "navErr": null,
+    "state": {
+      "body": "P\nPostForge\nOpen Automations\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nCONTENT INTELLIGENCE\n\nPerformance\n\nLearn which posts, hooks, and formats earn meaningful attention.\n\nOpen Automations\n\nNO PERFORMANCE SOURCE\n\nConnect an account or import a local report\n\nPostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset.\n\nOpen integrations\nImport CSV\nDownload CSV template\nExpected columns\n\ntitle, views, likes, comments, shares, saves, publishedAt\n\nDownload CSV template\nImport local CSV",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "complete",
+      "url": "http://127.0.0.1:3000/performance"
+    },
+    "bytes": 55687
+  },
+  {
+    "name": "automation-picker",
+    "navErr": null,
+    "state": {
+      "body": "P\nPostForge\nNew Automation\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nAUTOMATIONS / NEW\n\nDRAFT\nUnsaved changes\nPlaybook\nSave draft\nReview automation\n01\nHook\nEditing\n02\nContent\n03\nCTA\nstory lesson\n01\n\nHOOK\n\nStop the scroll\n\nChoose how the first slide earns attention.\n\nHook strategy\nCuriosity gap\nUnexpected result\nContrarian truth\nSpecific transformation\nConcrete promise\nHook prompt\nGenerate a hook option\nSelected hook\nSchedule\nM\nT\nW\nT\nF\nS\nS\nAmerica/Toronto\nAmerica/New_York\nAmerica/Los_Angeles\nEurope/London\nBack\nNext\n\nLIVE PREVIEW\n\nSlide 1 of 6\n58%\nP\nCURIOSITY GAP\nThe small change I wish I tried sooner\n1 / 6\n1\n2\n3\n4\n5\n6\nAdd\n\nAUTOMATION STARTER\n\nChoose a playbook\n\nStart with a proven Hook, Content, and CTA structure. Preview it, select it, then apply when you are ready.\n\n",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "complete",
+      "url": "http://127.0.0.1:3000/automations/new"
+    },
+    "bytes": 89740
+  },
+  {
+    "name": "generate",
+    "navErr": null,
+    "state": {
+      "body": "P\nPostForge\nView Gallery\nHome\nInspiration\nClone\nGallery\nAutomations\nPerformance\nSpend\nGenerate\nCollections\nCharacters\nLocal workspace\nManage\nSettings\nPF\nPostForge\nSelf-hosted\nToggle theme\n\nCREATE\n\nGenerate\n\nCreate production-ready images and videos from structured prompts.\n\nHistory\nCreative Prompt Model Selection Current Config\n01\nDescribe your image\nImprove prompt\n0/1,500\nBe specific about the opening frame\nCandid UGC\nNatural window light\nCrisp product detail\nHandheld framing\nSoft focus\nCinematic lighting\n02\nChoose a model\nLive pricing\nImage\nVideo\nNano Banana 2\n$0.08/image\nText to image\nWeb grounding\nNano Banana Pro\n$0.15/image\nText to image\nWeb grounding\nNano Banana\n$0.04/image\nText to image\nCharacter identity\nOPTIONAL\n\nReuse a saved identity. A compatible image model is selected automatically.\n\nIdentity 1\n\nSELECT\nIMPORTED\nIDENTITY READY\n\nIdentity 2\n\nSELECT\nIDENTITY READY\n\nNEW AVATAR\n\n",
+      "docW": 1440,
+      "dpr": 2,
+      "ih": 1024,
+      "iw": 1440,
+      "ready": "complete",
+      "url": "http://127.0.0.1:3000/generate"
+    },
+    "bytes": 99876
+  }
+]
