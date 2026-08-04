@@ -8,16 +8,18 @@ MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/file
 | Home | `/` | `435053921048870912` | `435053921048870913` |
 | Inspiration | `/ugc-inspiration` | `435054032416018432` | `435054032420212736` |
 | Clone studio | `/ugc-clone` | `435054749532983296` | `435054749532983297` |
+| Slideshow studio home | `/slideshow` | `435413756852441088` | `435435892702842880` |
+| Slideshow slide editor | `/slideshow` editor state | `435416307991719936` | `435418288860856320` |
 | Clone output review | `/ugc-clone/[id]` | `435054738661343232` | `435054738661343233` |
 | Gallery | `/gallery` | `435057987107835904` | `435057987107835905` |
 | Spend | `/costs` | `435058034046300160` | `435058034046300161` |
 | Generate studio | `/generate` | `435054350382039040` | `435054350382039041` |
 | Generation editor | `/generate/[id]` | `435054353376751616` | `435054353376751617` |
-| Automations | `/automations` | `435056674701717504` | `435056674701717505` |
+| Automations | `/automations` | `435056674701717504` | `435438532786552832` |
 | Automation templates | `/automations/new` template modal | `435056693118922752` | `435056693118922753` |
 | Automation builder | `/automations/new` | `435056693525774336` | `435056693525774337` |
 | Performance | `/performance` | `435056679864922112` | `435056679864922113` |
-| Image collections | `/collections` | `435056677155393536` | `435056677155393537` |
+| Image collections | `/collections` | `435056677155393536` | `435440550880096256` |
 | Character library | `/characters` | `435056646067212288` | `435056646067212289` |
 | Character builder | `/characters/new` | `435057651588673536` | `435057651588673537` |
 | Settings and integrations | `/settings` | `435056692204552192` | `435056692204552193` |

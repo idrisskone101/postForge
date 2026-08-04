@@ -73,7 +73,7 @@ export const prismaIntegrationStorage: IntegrationStorage = {
   async runExclusive(lockKey, operation) {
     return prisma.$transaction(
       async (transaction) => {
-        await transaction.$queryRaw`
+        await transaction.$executeRaw`
           SELECT pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))
         `;
         return operation(createPrismaStorage(transaction));

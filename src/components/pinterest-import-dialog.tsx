@@ -12,13 +12,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  fetchPinterestCandidates,
+  importPinterestImages,
+  type PinterestCandidate,
+} from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
-
-import { fetchPinterestImageCandidates } from "./api";
-import type {
-  PinterestImageCandidate,
-  SlideshowCollection,
-} from "./types";
 
 const suggestions = [
   "clean desk",
@@ -41,25 +40,23 @@ function isPinterestBoardUrl(value: string) {
   }
 }
 
-export function ImageCollectionDialog({
+export function PinterestImportDialog({
   open,
   onOpenChange,
-  onCreate,
-  apiBaseUrl = "/api/slideshows",
+  onImported,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (collection: SlideshowCollection) => Promise<void>;
-  apiBaseUrl?: string;
+  onImported: (result: { imported: number; skipped: number }) => void;
 }) {
   const [source, setSource] = useState<"search" | "board">("search");
   const [query, setQuery] = useState("faceless wellness aesthetic");
   const [collectionName, setCollectionName] = useState("Wellness inspiration");
-  const [candidates, setCandidates] = useState<PinterestImageCandidate[]>([]);
+  const [candidates, setCandidates] = useState<PinterestCandidate[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [searching, setSearching] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const requestVersion = useRef(0);
@@ -105,10 +102,10 @@ export function ImageCollectionDialog({
     setFailedImages([]);
 
     try {
-      const results = await fetchPinterestImageCandidates(
-        { source, query: query.trim() },
-        apiBaseUrl,
-      );
+      const results = await fetchPinterestCandidates({
+        source,
+        query: query.trim(),
+      });
       if (requestVersion.current !== version) return;
       setCandidates(results);
       setSelected(results.slice(0, 5).map((candidate) => candidate.id));
@@ -133,31 +130,28 @@ export function ImageCollectionDialog({
     );
   };
 
-  const createCollection = async () => {
-    const selectedCandidates = candidates.filter((candidate) =>
-      selected.includes(candidate.id),
-    );
-    if (!selectedCandidates.length || saving) return;
-    setSaving(true);
+  const runImport = async () => {
+    const urls = candidates
+      .filter((candidate) => selected.includes(candidate.id))
+      .map((candidate) => candidate.imageUrl);
+    if (!urls.length || importing) return;
+    setImporting(true);
     setError(null);
     try {
-      await onCreate({
-        id: `local-collection-${Date.now()}`,
-        name: collectionName.trim() || "Untitled collection",
-        imageCount: selectedCandidates.length,
-        visualKeys: selectedCandidates.map((_, index) => `pinterest-${index + 1}`),
-        imageUrls: selectedCandidates.map((candidate) => candidate.imageUrl),
-        sourceUrls: selectedCandidates.map((candidate) => candidate.sourceUrl),
+      const result = await importPinterestImages({
+        urls,
+        name: collectionName.trim() || "Pinterest import",
       });
+      onImported(result);
       onOpenChange(false);
-    } catch (saveError) {
+    } catch (importError) {
       setError(
-        saveError instanceof Error
-          ? saveError.message
-          : "The Pinterest collection could not be saved.",
+        importError instanceof Error
+          ? importError.message
+          : "The selected images could not be imported.",
       );
     } finally {
-      setSaving(false);
+      setImporting(false);
     }
   };
 
@@ -165,34 +159,35 @@ export function ImageCollectionDialog({
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
-        if (!saving) onOpenChange(nextOpen);
+        if (!importing) onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-hidden p-0">
-        <DialogHeader className="border-b border-border px-6 py-5 pr-14">
-          <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
+      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-hidden rounded-[13px] border-[#DADBD2] p-0">
+        <DialogHeader className="border-b border-[#E9EAE4] px-6 py-5 pr-14">
+          <DialogTitle className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-[#232323]">
+            <span className="flex size-9 items-center justify-center rounded-[9px] bg-[#FF4A20]/10 text-[#FF4A20]">
               <Images className="size-4" />
             </span>
             Import from Pinterest
           </DialogTitle>
-          <DialogDescription>
-            Load a public Pinterest page, hand-pick its images, and save their
-            source URLs as a reusable collection.
+          <DialogDescription className="text-[11px] text-[#777873]">
+            Load a public Pinterest page, hand-pick its images, and save the
+            originals into your shared library. Import fails closed when page
+            data is unavailable.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="border-b border-border p-4 sm:p-5">
+        <div className="border-b border-[#E9EAE4] p-4 sm:p-5">
           <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
-            <div className="inline-flex h-10 rounded-lg bg-muted p-1">
+            <div className="inline-flex h-10 rounded-[9px] bg-[#F0F1EB] p-1">
               <button
                 type="button"
                 onClick={() => changeSource("search")}
                 className={cn(
-                  "rounded-md px-3 text-xs font-semibold transition",
+                  "rounded-[7px] px-3 text-[11px] font-semibold transition",
                   source === "search"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground",
+                    ? "bg-white text-[#232323] shadow-sm"
+                    : "text-[#777873] hover:text-[#30312E]",
                 )}
               >
                 Search
@@ -201,10 +196,10 @@ export function ImageCollectionDialog({
                 type="button"
                 onClick={() => changeSource("board")}
                 className={cn(
-                  "rounded-md px-3 text-xs font-semibold transition",
+                  "rounded-[7px] px-3 text-[11px] font-semibold transition",
                   source === "board"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground",
+                    ? "bg-white text-[#232323] shadow-sm"
+                    : "text-[#777873] hover:text-[#30312E]",
                 )}
               >
                 Board URL
@@ -212,9 +207,9 @@ export function ImageCollectionDialog({
             </div>
             <label className="relative block">
               {source === "search" ? (
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#969792]" />
               ) : (
-                <Link2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Link2 className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[#969792]" />
               )}
               <input
                 value={query}
@@ -224,22 +219,22 @@ export function ImageCollectionDialog({
                 }}
                 placeholder={
                   source === "search"
-                    ? "Search Pinterest…"
+                    ? "Search Pinterest..."
                     : "https://pinterest.com/creator/board"
                 }
                 aria-label={source === "search" ? "Pinterest search" : "Pinterest board URL"}
-                className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-3 text-xs outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
+                className="h-10 w-full rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] pl-9 pr-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
               />
             </label>
-            <Button
+            <button
               type="button"
               onClick={() => void runSearch()}
               disabled={!sourceIsValid || searching}
-              className="h-10 bg-foreground text-background hover:bg-foreground/80"
+              className="pf-button-primary h-10"
             >
-              {searching ? <LoaderCircle className="animate-spin" /> : <Search />}
+              {searching ? <LoaderCircle className="size-3.5 animate-spin" /> : <Search className="size-3.5" />}
               {source === "search" ? "Search" : "Load board"}
-            </Button>
+            </button>
           </div>
           {!sourceIsValid && query ? (
             <p className="mt-2 text-[10px] text-destructive">
@@ -255,7 +250,7 @@ export function ImageCollectionDialog({
                   key={suggestion}
                   type="button"
                   onClick={() => updateQuery(suggestion)}
-                  className="rounded-full border border-border px-2.5 py-1 text-[10px] text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                  className="rounded-full border border-[#DADBD2] px-2.5 py-1 text-[10px] text-[#777873] transition hover:bg-[#F0F1EB] hover:text-[#30312E]"
                 >
                   {suggestion}
                 </button>
@@ -269,22 +264,22 @@ export function ImageCollectionDialog({
             <div className="grid min-h-64 place-items-center text-center">
               <div>
                 <LoaderCircle className="mx-auto size-6 animate-spin text-accent-blue" />
-                <p className="mt-3 text-xs font-semibold">Loading public images…</p>
-                <p className="mt-1 text-[10px] text-muted-foreground">
+                <p className="mt-3 text-[12px] font-semibold">Loading public images...</p>
+                <p className="mt-1 text-[10px] text-[#777873]">
                   Pinterest may limit automated access to some pages.
                 </p>
               </div>
             </div>
-          ) : error ? (
+          ) : error && !candidates.length ? (
             <div className="grid min-h-64 place-items-center text-center" role="alert">
-              <div className="max-w-md rounded-xl border border-destructive/25 bg-destructive/5 p-5">
-                <p className="text-xs font-semibold text-destructive">
+              <div className="max-w-md rounded-[11px] border border-destructive/25 bg-destructive/5 p-5">
+                <p className="text-[12px] font-semibold text-destructive">
                   Pinterest import unavailable
                 </p>
-                <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                <p className="mt-2 text-[11px] leading-5 text-[#777873]">
                   {error}
                 </p>
-                <p className="mt-2 text-[10px] text-muted-foreground">
+                <p className="mt-2 text-[10px] text-[#969792]">
                   You can retry, paste another public board URL, or close this
                   dialog and upload images directly.
                 </p>
@@ -294,13 +289,12 @@ export function ImageCollectionDialog({
             <>
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold">Public page images</p>
-                  <p className="mt-1 text-[10px] text-muted-foreground">
-                    These are direct i.pinimg.com references found on the loaded
-                    page; PostForge does not claim ownership of them.
+                  <p className="text-[12px] font-semibold text-[#30312E]">Public page images</p>
+                  <p className="mt-1 text-[10px] text-[#777873]">
+                    Direct i.pinimg.com references found on the loaded page. PostForge stores the originals you select.
                   </p>
                 </div>
-                <span className="shrink-0 text-[10px] text-muted-foreground">
+                <span className="shrink-0 font-mono text-[10px] tabular-nums text-[#969792]">
                   {selected.length} selected
                 </span>
               </div>
@@ -320,16 +314,16 @@ export function ImageCollectionDialog({
                       }
                       aria-pressed={isSelected}
                       className={cn(
-                        "group relative mb-2 block w-full break-inside-avoid overflow-hidden rounded-xl border-2 bg-muted outline-none transition focus-visible:ring-2 focus-visible:ring-accent-blue",
+                        "group relative mb-2 block w-full break-inside-avoid overflow-hidden rounded-[9px] border-2 bg-[#F0F1EB] outline-none transition focus-visible:ring-2 focus-visible:ring-accent-blue",
                         isSelected
                           ? "border-accent-green"
-                          : "border-transparent hover:border-foreground/25",
+                          : "border-transparent hover:border-[#BFC0B9]",
                       )}
                     >
                       {failedImages.includes(candidate.id) ? (
                         <span
                           className={cn(
-                            "grid w-full place-items-center bg-muted px-3 text-[10px] text-muted-foreground",
+                            "grid w-full place-items-center px-3 text-[10px] text-[#969792]",
                             index % 3 === 0
                               ? "aspect-[4/5]"
                               : index % 3 === 1
@@ -366,8 +360,8 @@ export function ImageCollectionDialog({
                         />
                       )}
                       {isSelected ? (
-                        <span className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-accent-green text-white shadow-lg">
-                          <Check className="size-4" />
+                        <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-accent-green text-white shadow-lg">
+                          <Check className="size-3.5" />
                         </span>
                       ) : null}
                     </button>
@@ -378,11 +372,11 @@ export function ImageCollectionDialog({
           ) : (
             <div className="grid min-h-64 place-items-center text-center">
               <div className="max-w-sm">
-                <Images className="mx-auto size-7 text-muted-foreground" />
-                <p className="mt-3 text-xs font-semibold">
+                <Images className="mx-auto size-7 text-[#969792]" />
+                <p className="mt-3 text-[12px] font-semibold text-[#30312E]">
                   {hasSearched ? "No usable public images found" : "Choose a public source"}
                 </p>
-                <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
+                <p className="mt-1 text-[10px] leading-4 text-[#777873]">
                   {hasSearched
                     ? "Try a different public board or upload images from your device."
                     : "Search a visual direction or paste a public Pinterest board URL to load real image candidates."}
@@ -390,9 +384,14 @@ export function ImageCollectionDialog({
               </div>
             </div>
           )}
+          {error && candidates.length ? (
+            <p role="alert" className="mt-3 rounded-[9px] bg-destructive/10 p-3 text-[11px] text-destructive">
+              {error}
+            </p>
+          ) : null}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:p-5">
+        <div className="flex flex-col gap-3 border-t border-[#E9EAE4] bg-[#F7F8F2] p-4 sm:flex-row sm:items-center sm:p-5">
           <label className="min-w-0 flex-1">
             <span className="sr-only">Collection name</span>
             <input
@@ -400,7 +399,7 @@ export function ImageCollectionDialog({
               onChange={(event) => setCollectionName(event.target.value)}
               placeholder="Collection name"
               maxLength={160}
-              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-accent-blue"
+              className="h-10 w-full rounded-[9px] border border-[#D7D8D0] bg-white px-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
             />
           </label>
           <div className="flex flex-wrap items-center gap-1">
@@ -415,7 +414,7 @@ export function ImageCollectionDialog({
                     .map((candidate) => candidate.id),
                 )
               }
-              disabled={!candidates.length || saving}
+              disabled={!candidates.length || importing}
             >
               Select all
             </Button>
@@ -424,20 +423,20 @@ export function ImageCollectionDialog({
               variant="ghost"
               size="sm"
               onClick={() => setSelected([])}
-              disabled={!selected.length || saving}
+              disabled={!selected.length || importing}
             >
               Clear
             </Button>
           </div>
-          <Button
+          <button
             type="button"
-            onClick={() => void createCollection()}
-            disabled={!selected.length || saving}
-            className="bg-accent-coral text-white hover:bg-[#ff6540]"
+            onClick={() => void runImport()}
+            disabled={!selected.length || importing}
+            className="pf-button-primary h-10"
           >
-            {saving ? <LoaderCircle className="animate-spin" /> : null}
-            {saving ? "Saving…" : `Create collection (${selected.length})`}
-          </Button>
+            {importing ? <LoaderCircle className="size-3.5 animate-spin" /> : null}
+            {importing ? "Importing..." : `Import ${selected.length} image${selected.length === 1 ? "" : "s"}`}
+          </button>
         </div>
       </DialogContent>
     </Dialog>

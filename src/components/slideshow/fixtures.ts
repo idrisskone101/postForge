@@ -1,8 +1,5 @@
 import type {
-  SlideshowAnalytics,
-  SlideshowAutomation,
   SlideshowCollection,
-  SlideshowInspiration,
   SlideshowPhase,
   SlideshowPhaseSettings,
   SlideshowProject,
@@ -189,42 +186,7 @@ export const DEFAULT_SLIDESHOW_COLLECTIONS: SlideshowCollection[] = [
   },
 ];
 
-export const DEFAULT_SLIDESHOW_AUTOMATIONS: SlideshowAutomation[] = [];
 
-export const DEFAULT_SLIDESHOW_INSPIRATION: SlideshowInspiration[] = [
-  {
-    id: "inspiration-1",
-    creator: "Format library",
-    niche: "Creator tools",
-    hook: "Nobody tells first-time founders this until it is too late",
-    visualKeys: ["coral-glow", "blue-studio", "night-grid"],
-    templateId: "product-truths",
-  },
-  {
-    id: "inspiration-2",
-    creator: "Format library",
-    niche: "Wellness",
-    hook: "The routine that finally made consistency feel quiet",
-    visualKeys: ["mint-room", "lime-paper", "violet-dusk"],
-    templateId: "unpopular-advice",
-  },
-  {
-    id: "inspiration-3",
-    creator: "Format library",
-    niche: "Education",
-    hook: "Save these ideas for the week your brain feels full",
-    visualKeys: ["paper-stack", "violet-dusk", "blue-studio"],
-    templateId: "books-that-changed-me",
-  },
-];
-
-export const EMPTY_SLIDESHOW_ANALYTICS: SlideshowAnalytics = {
-  draftProjects: 0,
-  successfulExports: 0,
-  activeAutomations: 0,
-  successfulAutomationRuns: 0,
-  dailyActivity: Array.from({ length: 30 }, () => 0),
-};
 
 const defaultPhaseSettings = (): Record<
   SlideshowPhase,

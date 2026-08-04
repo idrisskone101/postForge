@@ -2,14 +2,9 @@ import assert from "node:assert/strict";
 
 import {
   deleteSlideshowAutomation,
-  deleteSlideshowCollection,
-  renameSlideshowCollection,
   updateSlideshowAutomation,
 } from "../src/components/slideshow/api";
-import type {
-  SlideshowAutomation,
-  SlideshowCollection,
-} from "../src/components/slideshow/types";
+import type { SlideshowAutomation } from "../src/components/slideshow/types";
 
 const originalFetch = globalThis.fetch;
 const requests: Array<{ url: string; init?: RequestInit }> = [];
@@ -33,17 +28,6 @@ const responses = [
         visualPolicy: "fresh-ai",
         imageModel: "nano-banana-2",
       },
-    }),
-    { status: 200, headers: { "Content-Type": "application/json" } },
-  ),
-  new Response(null, { status: 204 }),
-  new Response(
-    JSON.stringify({
-      id: "collection-1",
-      title: "Renamed visuals",
-      revision: 4,
-      images: [],
-      settings: {},
     }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   ),
@@ -96,34 +80,6 @@ async function main() {
   assert.equal(automationDelete.init?.method, "DELETE");
   assert.deepEqual(JSON.parse(String(automationDelete.init?.body)), {
     revision: 8,
-  });
-
-  const collection: SlideshowCollection = {
-    id: "collection-1",
-    name: "Old visuals",
-    imageCount: 0,
-    visualKeys: [],
-    revision: 3,
-  };
-  const renamed = await renameSlideshowCollection(
-    collection,
-    "  Renamed visuals  ",
-    "/slideshow-api",
-  );
-  assert.equal(renamed.name, "Renamed visuals");
-  assert.equal(renamed.revision, 4);
-  const renameRequest = requests[2];
-  assert.equal(renameRequest.init?.method, "PATCH");
-  assert.deepEqual(JSON.parse(String(renameRequest.init?.body)), {
-    revision: 3,
-    name: "Renamed visuals",
-  });
-
-  await deleteSlideshowCollection(renamed, "/slideshow-api");
-  const collectionDelete = requests[3];
-  assert.equal(collectionDelete.init?.method, "DELETE");
-  assert.deepEqual(JSON.parse(String(collectionDelete.init?.body)), {
-    revision: 4,
   });
   } finally {
     globalThis.fetch = originalFetch;

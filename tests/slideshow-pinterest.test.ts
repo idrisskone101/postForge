@@ -5,7 +5,7 @@ import {
   buildPinterestSourceUrl,
   extractPinterestImageUrls,
   findPinterestCandidates,
-} from "../src/lib/slideshow/pinterest";
+} from "../src/lib/pinterest";
 
 async function main() {
 const searchUrl = buildPinterestSourceUrl("search", " calm desk ");

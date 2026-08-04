@@ -130,10 +130,10 @@ export function PublishDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-y-auto p-0">
-        <DialogHeader className="border-b border-border px-6 py-5 pr-14">
-          <DialogTitle className="text-xl font-semibold">Publish or export</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-y-auto rounded-[13px] border-[#DADBD2] p-0">
+        <DialogHeader className="border-b border-[#E9EAE4] px-6 py-5 pr-14">
+          <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-[#232323]">Publish or export</DialogTitle>
+          <DialogDescription className="text-[11px] text-[#777873]">
             Prepare {project.slides.length} slides for download, TikTok drafts, or
             direct publishing.
           </DialogDescription>
@@ -142,25 +142,25 @@ export function PublishDialog({
         <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-6">
             <fieldset>
-              <legend className="text-xs font-semibold">Format</legend>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <legend className="text-[10px] font-semibold text-[#868686]">Format</legend>
+              <div className="mt-2 grid gap-3 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => setFormat("photo-carousel")}
                   aria-pressed={format === "photo-carousel"}
                   className={cn(
-                    "flex min-h-24 items-start gap-3 rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "flex min-h-24 items-start gap-3 rounded-[11px] border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     format === "photo-carousel"
-                      ? "border-accent-coral bg-accent-coral/5"
-                      : "border-border hover:bg-muted/40",
+                      ? "border-[#232323] bg-[#F3F4EF]"
+                      : "border-[#DADBD2] bg-white hover:border-[#BFC0B9]",
                   )}
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-coral/10 text-accent-coral">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[9px] bg-[#FF4A20]/10 text-[#FF4A20]">
                     <FileImage className="size-4" />
                   </span>
                   <span>
-                    <span className="block text-xs font-semibold">Native photo carousel</span>
-                    <span className="mt-1 block text-[10px] leading-4 text-muted-foreground">
+                    <span className="block text-[12px] font-semibold text-[#30312E]">Native photo carousel</span>
+                    <span className="mt-1 block text-[10px] leading-4 text-[#777873]">
                       Keep every slide swipeable as an individual image.
                     </span>
                   </span>
@@ -170,18 +170,18 @@ export function PublishDialog({
                   onClick={() => setFormat("mp4")}
                   aria-pressed={format === "mp4"}
                   className={cn(
-                    "relative flex min-h-24 items-start gap-3 rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "relative flex min-h-24 items-start gap-3 rounded-[11px] border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     format === "mp4"
-                      ? "border-accent-blue bg-accent-blue/5"
-                      : "border-border hover:bg-muted/40",
+                      ? "border-[#232323] bg-[#F3F4EF]"
+                      : "border-[#DADBD2] bg-white hover:border-[#BFC0B9]",
                   )}
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-blue/10 text-accent-blue">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-[9px] bg-accent-blue/10 text-accent-blue">
                     <Film className="size-4" />
                   </span>
                   <span>
-                    <span className="block text-xs font-semibold">MP4 slideshow</span>
-                    <span className="mt-1 block text-[10px] leading-4 text-muted-foreground">
+                    <span className="block text-[12px] font-semibold text-[#30312E]">MP4 slideshow</span>
+                    <span className="mt-1 block text-[10px] leading-4 text-[#777873]">
                       Render timed slides into a ready-to-upload video.
                     </span>
                     {!supportsMp4Export ? (
@@ -195,8 +195,8 @@ export function PublishDialog({
             </fieldset>
 
             <fieldset>
-              <legend className="text-xs font-semibold">Destination</legend>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              <legend className="text-[10px] font-semibold text-[#868686]">Destination</legend>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
                 {(
                   [
                     ["download", "Download", Download],
@@ -210,10 +210,10 @@ export function PublishDialog({
                     onClick={() => setDestination(value)}
                     aria-pressed={destination === value}
                     className={cn(
-                      "flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "flex h-10 items-center justify-center gap-2 rounded-[9px] border px-3 text-[11px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       destination === value
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border hover:bg-muted",
+                        ? "border-[#232323] bg-[#232323] text-white"
+                        : "border-[#DADBD2] bg-white text-[#666762] hover:border-[#BFC0B9] hover:text-[#30312E]",
                     )}
                   >
                     <Icon className="size-4" />
@@ -245,8 +245,8 @@ export function PublishDialog({
                 value={caption}
                 onChange={(event) => setCaption(event.target.value)}
                 maxLength={2200}
-                className="min-h-28 w-full resize-none rounded-xl border border-border bg-background p-3 text-xs leading-5 outline-none focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/20"
-                placeholder="Write a caption or let PostForge suggest one…"
+                className="min-h-28 w-full resize-none rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] p-3 text-[12px] leading-5 outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
+                placeholder="Write a caption or let PostForge suggest one..."
               />
               <span className="mt-1 flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
                 <span>
@@ -298,7 +298,7 @@ export function PublishDialog({
                   </label>
                 </div>
 
-                <div className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-3">
+                <div className="grid gap-3 rounded-[11px] border border-[#DADBD2] p-4 sm:grid-cols-3">
                   <label className="flex items-center justify-between gap-2 text-xs">
                     <span className="flex items-center gap-2">
                       <MessageCircle className="size-3.5 text-muted-foreground" />
@@ -331,7 +331,7 @@ export function PublishDialog({
                   </label>
                 </div>
 
-                <div className="space-y-3 rounded-xl border border-border p-4">
+                <div className="space-y-3 rounded-[11px] border border-[#DADBD2] p-4">
                   <label className="flex items-center justify-between gap-4 text-xs">
                     <span>
                       <span className="block font-semibold">Branded content</span>
@@ -345,7 +345,7 @@ export function PublishDialog({
                       aria-label="Disclose branded content"
                     />
                   </label>
-                  <label className="flex items-center justify-between gap-4 border-t border-border pt-3 text-xs">
+                  <label className="flex items-center justify-between gap-4 border-t border-[#E9EAE4] pt-3 text-xs">
                     <span>
                       <span className="block font-semibold">AI-generated content</span>
                       <span className="mt-1 block text-[10px] text-muted-foreground">
@@ -366,7 +366,7 @@ export function PublishDialog({
           <aside className="space-y-4">
             <div
               className={cn(
-                "rounded-xl border p-4",
+                "rounded-[11px] border p-4",
                 tiktokConnected
                   ? "border-accent-green/30 bg-accent-green/5"
                   : "border-amber-500/25 bg-amber-500/5",
@@ -406,7 +406,7 @@ export function PublishDialog({
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-muted/25 p-4">
+            <div className="rounded-[11px] border border-[#DADBD2] bg-[#F7F8F2] p-4">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Slides</span>
                 <span className="font-semibold">{project.slides.length}</span>
@@ -447,23 +447,23 @@ export function PublishDialog({
               </p>
             ) : null}
 
-            <Button
-              size="lg"
+            <button
+              type="button"
               onClick={() => void handleSubmit()}
               disabled={!canSubmit}
-              className="w-full bg-accent-coral text-white hover:bg-[#ff6540]"
+              className="pf-button-primary h-11 w-full"
             >
               {exporting ? (
-                <LoaderCircle className="animate-spin" />
+                <LoaderCircle className="size-3.5 animate-spin" />
               ) : destination === "download" ? (
-                <Download />
+                <Download className="size-3.5" />
               ) : scheduleEnabled ? (
-                <CalendarClock />
+                <CalendarClock className="size-3.5" />
               ) : (
-                <Sparkles />
+                <Sparkles className="size-3.5" />
               )}
               {exporting
-                ? "Preparing…"
+                ? "Preparing..."
                 : destination === "download"
                   ? "Export slideshow"
                   : scheduleEnabled
@@ -471,7 +471,7 @@ export function PublishDialog({
                     : destination === "tiktok-draft"
                       ? "Send to TikTok drafts"
                       : "Publish to TikTok"}
-            </Button>
+            </button>
           </aside>
         </div>
       </DialogContent>

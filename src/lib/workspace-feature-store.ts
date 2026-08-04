@@ -69,7 +69,7 @@ export async function transactWorkspaceFeatureRecords<
 ): Promise<R> {
   const key = workspaceFeatureKey(feature);
   return prisma.$transaction(async (transaction) => {
-    await transaction.$queryRaw<unknown[]>`
+    await transaction.$executeRaw`
       SELECT pg_advisory_xact_lock(hashtextextended(${key}, 0))
     `;
     const stored = await transaction.storedAsset.findUnique({

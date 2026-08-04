@@ -44,7 +44,8 @@ function routeProvidesHeaderAccessory(pathname: string) {
   return (
     pathname === "/ugc-inspiration" ||
     pathname === "/gallery" ||
-    pathname === "/generate"
+    pathname === "/generate" ||
+    pathname === "/slideshow"
   );
 }
 

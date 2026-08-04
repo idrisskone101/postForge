@@ -4,7 +4,6 @@ import type {
   SlideshowProjectStatus,
   SlideshowSlideKind,
 } from "@/generated/prisma/client";
-import { randomUUID } from "node:crypto";
 import { getModel } from "@/lib/ai/models";
 import type { SlideshowRenderProject } from "@/lib/ai/slideshow-renderer";
 import { prisma } from "@/lib/db";
@@ -23,13 +22,16 @@ import {
   DEFAULT_SLIDE_CONTENT,
   DEFAULT_SLIDE_LAYOUT,
   DEFAULT_SLIDE_SETTINGS,
-  MAX_IMAGES_PER_COLLECTION,
   MAX_SLIDES_PER_PROJECT,
   SLIDESHOW_AUTOMATION_STATUSES,
   SLIDESHOW_PROJECT_STATUSES,
   SLIDESHOW_SLIDE_KINDS,
   type SlideshowSlideKindValue,
 } from "@/lib/slideshow/constants";
+import {
+  platformCollectionExists,
+  resolvePlatformCollectionImageLocalPaths,
+} from "@/lib/slideshow/platform-collections";
 import {
   badRequest,
   notFound,
@@ -54,18 +56,10 @@ const projectInclude = {
   slides: { orderBy: [{ position: "asc" }, { createdAt: "asc" }] },
 } satisfies Prisma.SlideshowProjectInclude;
 
-const collectionInclude = {
-  images: { orderBy: [{ position: "asc" }, { createdAt: "asc" }] },
-} satisfies Prisma.SlideshowImageCollectionInclude;
-
 type ProjectRecord = Prisma.SlideshowProjectGetPayload<{
   include: typeof projectInclude;
 }>;
 type SlideRecord = ProjectRecord["slides"][number];
-type CollectionRecord = Prisma.SlideshowImageCollectionGetPayload<{
-  include: typeof collectionInclude;
-}>;
-type ImageRecord = CollectionRecord["images"][number];
 type Transaction = Prisma.TransactionClient;
 
 function recordOrEmpty(value: unknown): JsonRecord {
@@ -1075,13 +1069,9 @@ async function normalizeAutomationContentSettings(
     if (visualSettings.imageCollectionId.length > 100) {
       badRequest("imageCollectionId must be at most 100 characters");
     }
-    const collection = await prisma.slideshowImageCollection.findUnique({
-      where: { id: visualSettings.imageCollectionId },
-      select: { id: true },
-    });
-    if (!collection) {
+    if (!(await platformCollectionExists(visualSettings.imageCollectionId))) {
       badRequest(
-        "imageCollectionId does not reference an existing slideshow image collection",
+        "imageCollectionId does not reference an existing platform image collection",
       );
     }
     content.imageCollectionId = visualSettings.imageCollectionId;
@@ -1258,363 +1248,6 @@ export async function deleteSlideshowAutomation(id: string, input: unknown) {
   });
 }
 
-function serializeImage(image: ImageRecord) {
-  const metadata = recordOrEmpty(image.metadata);
-  return {
-    id: image.id,
-    collectionId: image.collectionId,
-    position: image.position,
-    url: image.url,
-    mimeType: image.mimeType,
-    fileSizeBytes: image.fileSizeBytes,
-    width: image.width,
-    height: image.height,
-    thumbnailUrl: image.thumbnailUrl,
-    altText: image.altText,
-    visualKey: readString(metadata.visualKey, `image-${(image.position % 8) + 1}`),
-    metadata: image.metadata,
-    createdAt: image.createdAt.toISOString(),
-    updatedAt: image.updatedAt.toISOString(),
-  };
-}
-
-function serializeCollection(collection: CollectionRecord) {
-  return {
-    id: collection.id,
-    title: collection.title,
-    name: collection.title,
-    source: collection.source,
-    settings: collection.settings,
-    revision: collection.revision,
-    imageCount: collection.images.length,
-    visualKeys: collection.images.slice(0, 4).map((image) =>
-      readString(
-        recordOrEmpty(image.metadata).visualKey,
-        `image-${(image.position % 8) + 1}`
-      )
-    ),
-    images: collection.images.map(serializeImage),
-    createdAt: collection.createdAt.toISOString(),
-    updatedAt: collection.updatedAt.toISOString(),
-  };
-}
-
-function parseImage(value: unknown, current?: ImageRecord) {
-  const body = requireRecord(value, "image");
-  const url =
-    optionalString(body, "url", { max: 4_000 }) ?? current?.url;
-  if (!url) badRequest("image.url is required");
-  return {
-    url,
-    thumbnailUrl:
-      body.thumbnailUrl !== undefined
-        ? (optionalString(body, "thumbnailUrl", {
-            max: 4_000,
-            nullable: true,
-          }) ?? null)
-        : (current?.thumbnailUrl ?? null),
-    altText:
-      body.altText !== undefined
-        ? (optionalString(body, "altText", { max: 500, nullable: true }) ?? null)
-        : (current?.altText ?? null),
-    metadata:
-      optionalJsonObject(body, "metadata") ??
-      inputJson(current?.metadata ?? {}),
-  };
-}
-
-async function getCollectionRecord(
-  id: string,
-  tx: Transaction | typeof prisma = prisma
-) {
-  const collection = await tx.slideshowImageCollection.findUnique({
-    where: { id },
-    include: collectionInclude,
-  });
-  if (!collection) notFound("Image collection");
-  return collection;
-}
-
-async function claimCollection(
-  tx: Transaction,
-  id: string,
-  expectedRevision: number
-) {
-  const claimed = await tx.slideshowImageCollection.updateMany({
-    where: { id, revision: expectedRevision },
-    data: { revision: { increment: 1 } },
-  });
-  if (claimed.count === 1) return;
-  const current = await tx.slideshowImageCollection.findUnique({
-    where: { id },
-    select: { revision: true },
-  });
-  if (!current) notFound("Image collection");
-  revisionConflict(current.revision);
-}
-
-async function setImagePositions(
-  tx: Transaction,
-  collectionId: string,
-  orderedIds: string[]
-) {
-  if (!orderedIds.length) return;
-  const offset = orderedIds.length + MAX_IMAGES_PER_COLLECTION + 1;
-  await tx.slideshowImage.updateMany({
-    where: { collectionId, id: { in: orderedIds } },
-    data: { position: { increment: offset } },
-  });
-  for (let position = 0; position < orderedIds.length; position += 1) {
-    await tx.slideshowImage.update({
-      where: { id: orderedIds[position] },
-      data: { position },
-    });
-  }
-}
-
-export async function listSlideshowImageCollections(options: {
-  limit: number;
-  offset: number;
-}) {
-  const [collections, total] = await Promise.all([
-    prisma.slideshowImageCollection.findMany({
-      include: collectionInclude,
-      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
-      take: options.limit,
-      skip: options.offset,
-    }),
-    prisma.slideshowImageCollection.count(),
-  ]);
-  return {
-    collections: collections.map(serializeCollection),
-    total,
-    limit: options.limit,
-    offset: options.offset,
-  };
-}
-
-export async function getSlideshowImageCollection(id: string) {
-  return serializeCollection(await getCollectionRecord(id));
-}
-
-export async function getSlideshowImage(collectionId: string, imageId: string) {
-  const collection = await getCollectionRecord(collectionId);
-  const image = collection.images.find((candidate) => candidate.id === imageId);
-  if (!image) notFound("Image");
-  return {
-    collectionId,
-    revision: collection.revision,
-    image: serializeImage(image),
-  };
-}
-
-export async function createSlideshowImageCollection(input: unknown) {
-  const body = requireRecord(input);
-  const title =
-    optionalString(body, "title", { max: 160 }) ??
-    optionalString(body, "name", { max: 160 });
-  if (!title) badRequest("title is required");
-  const source = optionalString(body, "source", { max: 80 }) ?? "upload";
-  const settings = optionalJsonObject(body, "settings") ?? inputJson({});
-  if (body.images !== undefined && !Array.isArray(body.images)) {
-    badRequest("images must be an array");
-  }
-  const images = body.images ?? [];
-  if ((images as unknown[]).length > MAX_IMAGES_PER_COLLECTION) {
-    badRequest(`A collection can contain at most ${MAX_IMAGES_PER_COLLECTION} images`);
-  }
-  const parsedImages = (images as unknown[]).map((value, position) => ({
-    position,
-    ...parseImage(value),
-  }));
-
-  const collection = await prisma.slideshowImageCollection.create({
-    data: {
-      title,
-      source,
-      settings,
-      images: parsedImages.length ? { create: parsedImages } : undefined,
-    },
-    include: collectionInclude,
-  });
-  return serializeCollection(collection);
-}
-
-export type UploadedSlideshowImage = {
-  localPath: string;
-  mimeType: string;
-  fileSizeBytes: number;
-  width?: number | null;
-  height?: number | null;
-  altText?: string | null;
-  metadata?: JsonRecord;
-};
-
-export async function createUploadedSlideshowImageCollection(input: {
-  title: string;
-  images: UploadedSlideshowImage[];
-  autoCaption?: boolean;
-}) {
-  const title = input.title.trim();
-  if (!title) badRequest("name is required");
-  if (title.length > 160) badRequest("name must be at most 160 characters");
-  if (!input.images.length) badRequest("At least one image is required");
-  if (input.images.length > MAX_IMAGES_PER_COLLECTION) {
-    badRequest(`A collection can contain at most ${MAX_IMAGES_PER_COLLECTION} images`);
-  }
-
-  const collectionId = randomUUID();
-  const images = input.images.map((image, position) => {
-    const imageId = randomUUID();
-    return {
-      id: imageId,
-      position,
-      url: `/api/slideshows/image-collections/${collectionId}/images/${imageId}/file`,
-      localPath: image.localPath,
-      mimeType: image.mimeType,
-      fileSizeBytes: image.fileSizeBytes,
-      width: image.width ?? null,
-      height: image.height ?? null,
-      altText: image.altText ?? null,
-      metadata: inputJson(image.metadata ?? {}),
-    };
-  });
-
-  const collection = await prisma.slideshowImageCollection.create({
-    data: {
-      id: collectionId,
-      title,
-      source: "upload",
-      settings: inputJson({ autoCaption: input.autoCaption ?? true }),
-      images: { create: images },
-    },
-    include: collectionInclude,
-  });
-  return serializeCollection(collection);
-}
-
-export async function updateSlideshowImageCollection(id: string, input: unknown) {
-  const body = requireRecord(input);
-  const revision = requireRevision(body);
-  const title =
-    optionalString(body, "title", { max: 160 }) ??
-    optionalString(body, "name", { max: 160 });
-  const source = optionalString(body, "source", { max: 80 });
-  const settings = optionalJsonObject(body, "settings");
-  return prisma.$transaction(async (tx) => {
-    await claimCollection(tx, id, revision);
-    await tx.slideshowImageCollection.update({
-      where: { id },
-      data: {
-        ...(title !== undefined ? { title } : {}),
-        ...(source !== undefined ? { source } : {}),
-        ...(settings !== undefined ? { settings } : {}),
-      },
-    });
-    return serializeCollection(await getCollectionRecord(id, tx));
-  });
-}
-
-export async function deleteSlideshowImageCollection(id: string, input: unknown) {
-  const body = requireRecord(input);
-  const revision = requireRevision(body);
-  const collection = await getCollectionRecord(id);
-  await prisma.$transaction(async (tx) => {
-    await claimCollection(tx, id, revision);
-    await tx.slideshowImageCollection.delete({ where: { id } });
-  });
-  await Promise.allSettled(
-    collection.images
-      .map((image) => image.localPath)
-      .filter((value): value is string => Boolean(value))
-      .map((localPath) => storage.delete(localPath))
-  );
-}
-
-export async function addSlideshowImages(collectionId: string, input: unknown) {
-  const body = requireRecord(input);
-  const revision = requireRevision(body);
-  const rawImages = Array.isArray(body.images)
-    ? body.images
-    : body.image !== undefined
-      ? [body.image]
-      : [body];
-  if (!rawImages.length) badRequest("At least one image is required");
-  if (rawImages.length > 100) badRequest("At most 100 images can be added at once");
-
-  return prisma.$transaction(async (tx) => {
-    await claimCollection(tx, collectionId, revision);
-    const collection = await getCollectionRecord(collectionId, tx);
-    if (collection.images.length + rawImages.length > MAX_IMAGES_PER_COLLECTION) {
-      badRequest(`A collection can contain at most ${MAX_IMAGES_PER_COLLECTION} images`);
-    }
-    for (let index = 0; index < rawImages.length; index += 1) {
-      const parsed = parseImage(rawImages[index]);
-      await tx.slideshowImage.create({
-        data: {
-          collectionId,
-          position: collection.images.length + index,
-          ...parsed,
-        },
-      });
-    }
-    return serializeCollection(await getCollectionRecord(collectionId, tx));
-  });
-}
-
-export async function updateSlideshowImage(
-  collectionId: string,
-  imageId: string,
-  input: unknown
-) {
-  const body = requireRecord(input);
-  const revision = requireRevision(body);
-  return prisma.$transaction(async (tx) => {
-    await claimCollection(tx, collectionId, revision);
-    const current = await tx.slideshowImage.findFirst({
-      where: { id: imageId, collectionId },
-    });
-    if (!current) notFound("Image");
-    const parsed = parseImage(body, current);
-    await tx.slideshowImage.update({ where: { id: imageId }, data: parsed });
-    return serializeCollection(await getCollectionRecord(collectionId, tx));
-  });
-}
-
-export async function deleteSlideshowImage(
-  collectionId: string,
-  imageId: string,
-  input: unknown
-) {
-  const body = requireRecord(input);
-  const revision = requireRevision(body);
-  const result = await prisma.$transaction(async (tx) => {
-    await claimCollection(tx, collectionId, revision);
-    const current = await tx.slideshowImage.findFirst({
-      where: { id: imageId, collectionId },
-      select: { id: true, localPath: true },
-    });
-    if (!current) notFound("Image");
-    await tx.slideshowImage.delete({ where: { id: imageId } });
-    const remaining = await tx.slideshowImage.findMany({
-      where: { collectionId },
-      orderBy: { position: "asc" },
-      select: { id: true },
-    });
-    await setImagePositions(
-      tx,
-      collectionId,
-      remaining.map((image) => image.id)
-    );
-    return {
-      collection: serializeCollection(await getCollectionRecord(collectionId, tx)),
-      localPath: current.localPath,
-    };
-  });
-  if (result.localPath) await storage.delete(result.localPath).catch(() => undefined);
-  return result.collection;
-}
-
 export async function getSlideshowRenderProject(
   id: string
 ): Promise<SlideshowRenderProject> {
@@ -1718,13 +1351,7 @@ export async function getSlideshowRenderProject(
     )
   );
   const reusableImages = reusableImageUrls.length
-    ? await prisma.slideshowImage.findMany({
-        where: {
-          url: { in: reusableImageUrls },
-          localPath: { not: null },
-        },
-        select: { url: true, localPath: true },
-      })
+    ? await resolvePlatformCollectionImageLocalPaths(reusableImageUrls)
     : [];
   const reusableImageBuffers = new Map<string, Buffer>();
   await Promise.all(

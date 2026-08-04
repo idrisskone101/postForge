@@ -1,10 +1,4 @@
-export type SlideshowSection =
-  | "create"
-  | "drafts"
-  | "automations"
-  | "images"
-  | "inspiration"
-  | "analytics";
+export type SlideshowSection = "create" | "drafts";
 
 export type SlideshowPhase = "hook" | "body" | "cta";
 
@@ -149,29 +143,6 @@ export interface SlideshowCollection {
   revision?: number;
 }
 
-export interface PinterestImageCandidate {
-  id: string;
-  imageUrl: string;
-  sourceUrl: string;
-}
-
-export interface SlideshowInspiration {
-  id: string;
-  creator: string;
-  niche: string;
-  hook: string;
-  visualKeys: [string, string, string];
-  templateId?: string;
-}
-
-export interface SlideshowAnalytics {
-  draftProjects: number;
-  successfulExports: number;
-  activeAutomations: number;
-  successfulAutomationRuns: number;
-  dailyActivity: number[];
-}
-
 export interface SlideshowPublishOptions {
   format: "photo-carousel" | "mp4";
   destination: "download" | "tiktok-direct" | "tiktok-draft";
@@ -189,10 +160,7 @@ export interface SlideshowStudioProps {
   initialProjects?: SlideshowProject[];
   initialProject?: SlideshowProject | null;
   initialSection?: SlideshowSection;
-  initialAutomations?: SlideshowAutomation[];
   initialCollections?: SlideshowCollection[];
-  initialInspiration?: SlideshowInspiration[];
-  initialAnalytics?: SlideshowAnalytics | null;
   templates?: SlideshowTemplate[];
   apiBaseUrl?: string;
   className?: string;

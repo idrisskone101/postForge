@@ -13,6 +13,7 @@ import {
   type SlideshowStoryInput,
 } from "@/lib/ai/slideshow-story";
 import { prisma } from "@/lib/db";
+import { readPlatformCollection } from "@/lib/slideshow/platform-collections";
 import {
   nextSlideshowAutomationRun,
   parseSlideshowAutomationSchedule,
@@ -330,15 +331,7 @@ async function reusableCollectionImages(
     readSlideshowAutomationVisualSettings(contentSettings);
   if (policy !== "reuse" || !imageCollectionId) return [];
 
-  const collection = await prisma.slideshowImageCollection.findUnique({
-    where: { id: imageCollectionId },
-    select: {
-      images: {
-        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
-        select: { id: true, url: true },
-      },
-    },
-  });
+  const collection = await readPlatformCollection(imageCollectionId);
   return collection?.images ?? [];
 }
 

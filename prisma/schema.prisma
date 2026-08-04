@@ -302,7 +302,6 @@ model SlideshowSlide {
   generatedFileId String?
   generatedFile   GeneratedFile?     @relation(fields: [generatedFileId], references: [id], onDelete: SetNull)
   sourceImageId   String?
-  sourceImage     SlideshowImage?    @relation(fields: [sourceImageId], references: [id], onDelete: SetNull)
   content         Json
   settings        Json
   layout          Json
@@ -336,40 +335,3 @@ model SlideshowAutomation {
   @@index([updatedAt])
 }
 
-model SlideshowImageCollection {
-  id        String   @id @default(uuid())
-  title     String
-  source    String   @default("upload")
-  settings  Json
-  revision  Int      @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  images SlideshowImage[]
-
-  @@index([updatedAt])
-  @@index([source])
-}
-
-model SlideshowImage {
-  id           String                   @id @default(uuid())
-  collectionId String
-  collection   SlideshowImageCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  position     Int
-  url          String
-  localPath    String?
-  mimeType     String?
-  fileSizeBytes Int?
-  width        Int?
-  height       Int?
-  thumbnailUrl String?
-  altText      String?
-  metadata     Json
-  createdAt    DateTime                 @default(now())
-  updatedAt    DateTime                 @updatedAt
-
-  slides SlideshowSlide[]
-
-  @@unique([collectionId, position])
-  @@index([collectionId, createdAt])
-}

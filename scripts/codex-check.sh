@@ -48,7 +48,6 @@ pnpm test:slideshow-image-recovery
 pnpm test:slideshow-pinterest
 pnpm test:slideshow-renderer
 pnpm test:slideshow-automation
-pnpm test:slideshow-analytics
 pnpm test:slideshow-management
 pnpm test:home-cockpit
 pnpm test:home-loading

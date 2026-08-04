@@ -1,15 +1,9 @@
-import {
-  createBlankSlideshowProject,
-  EMPTY_SLIDESHOW_ANALYTICS,
-} from "./fixtures";
+import { createBlankSlideshowProject } from "./fixtures";
 import { normalizeSlideshowSlides } from "./model";
 import type {
-  SlideshowAnalytics,
   SlideshowAutomation,
   SlideshowAspectRatio,
-  SlideshowCollection,
   SlideshowGrid,
-  PinterestImageCandidate,
   SlideshowPhase,
   SlideshowPhaseSettings,
   SlideshowProject,
@@ -99,20 +93,6 @@ function asDateHistory(value: unknown) {
     : [];
 }
 
-function isPinterestCandidateUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return (
-      url.protocol === "https:" &&
-      !url.username &&
-      !url.password &&
-      (!url.port || url.port === "443") &&
-      url.hostname.toLowerCase() === "i.pinimg.com"
-    );
-  } catch {
-    return false;
-  }
-}
 
 function normalizeAspectRatio(value: unknown): SlideshowAspectRatio {
   return value === "4:5" || value === "1:1" || value === "16:9"
@@ -797,67 +777,6 @@ export async function downloadSlideshowExport(
   };
 }
 
-export function deriveSlideshowAnalytics(
-  projects: SlideshowProject[],
-  automations: SlideshowAutomation[] = [],
-  now = new Date(),
-): SlideshowAnalytics {
-  const dayCount = EMPTY_SLIDESHOW_ANALYTICS.dailyActivity.length;
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - (dayCount - 1));
-  const dayKey = (value: Date) =>
-    `${value.getFullYear()}-${value.getMonth()}-${value.getDate()}`;
-  const buckets = new Map<string, number>();
-  for (let index = 0; index < dayCount; index += 1) {
-    const day = new Date(start);
-    day.setDate(start.getDate() + index);
-    buckets.set(dayKey(day), index);
-  }
-  const dailyActivity = Array.from({ length: dayCount }, () => 0);
-  const recordActivity = (value: string | undefined | null) => {
-    if (!value) return;
-    const date = new Date(value);
-    if (!Number.isFinite(date.getTime())) return;
-    const index = buckets.get(dayKey(date));
-    if (index !== undefined) dailyActivity[index] += 1;
-  };
-
-  for (const project of projects) {
-    recordActivity(project.createdAt);
-    for (const exportedAt of project.exportHistory ?? []) {
-      recordActivity(exportedAt);
-    }
-  }
-  for (const automation of automations) {
-    const runHistory = automation.runHistory ?? [];
-    if (runHistory.length) {
-      for (const ranAt of runHistory) recordActivity(ranAt);
-    } else {
-      // Pre-activity-metadata runs already have a server-owned lastRunAt.
-      recordActivity(automation.lastRunAt);
-    }
-  }
-
-  return {
-    draftProjects: projects.filter((project) => project.status === "draft").length,
-    successfulExports: projects.reduce(
-      (total, project) => total + (project.successfulExportCount ?? 0),
-      0,
-    ),
-    activeAutomations: automations.filter(
-      (automation) => automation.status === "active",
-    ).length,
-    successfulAutomationRuns: automations.reduce(
-      (total, automation) =>
-        total +
-        (automation.successfulRunCount ?? (automation.lastRunAt ? 1 : 0)),
-      0,
-    ),
-    dailyActivity,
-  };
-}
-
 export async function fetchSlideshowAutomations(
   apiBaseUrl = "/api/slideshows",
 ): Promise<SlideshowAutomation[]> {
@@ -1061,182 +980,4 @@ export async function updateSlideshowAutomationStatus(
   const item = await readJsonResponse(response);
   if (!isRecord(item)) return { ...automation, status };
   return deserializeAutomation(item, automation);
-}
-
-function deserializeCollection(input: unknown): SlideshowCollection | null {
-  if (!isRecord(input)) return null;
-  const settings = isRecord(input.settings) ? input.settings : {};
-  const images = Array.isArray(input.images) ? input.images.filter(isRecord) : [];
-  const visualKeys = Array.isArray(input.visualKeys)
-    ? input.visualKeys.filter((value): value is string => typeof value === "string")
-    : Array.isArray(settings.visualKeys)
-      ? settings.visualKeys.filter((value): value is string => typeof value === "string")
-      : images.map((image, index) => asString(image.visualKey, `image-${index + 1}`));
-  const imageUrls = images
-    .map((image) => asString(image.url))
-    .filter((value): value is string => Boolean(value));
-  const sourceUrls = Array.isArray(settings.sourceUrls)
-    ? settings.sourceUrls.filter((value): value is string => typeof value === "string")
-    : undefined;
-  return {
-    id: asString(input.id, `local-collection-${Date.now()}`),
-    name: asString(input.name ?? input.title, "Untitled collection"),
-    imageCount: Math.max(
-      asNumber(input.imageCount, 0),
-      visualKeys.length,
-      imageUrls.length,
-      sourceUrls?.length ?? 0,
-    ),
-    visualKeys,
-    imageUrls,
-    sourceUrls,
-    revision: asNumber(input.revision, 0),
-  };
-}
-
-export async function fetchSlideshowCollections(
-  apiBaseUrl = "/api/slideshows",
-) {
-  const response = await fetch(`${apiBaseUrl}/image-collections?limit=100`, {
-    cache: "no-store",
-  });
-  const data = await readJsonResponse(response);
-  const items = isRecord(data) && Array.isArray(data.collections) ? data.collections : [];
-  return items.map(deserializeCollection).filter(Boolean) as SlideshowCollection[];
-}
-
-export async function createSlideshowCollection(
-  collection: SlideshowCollection,
-  apiBaseUrl = "/api/slideshows",
-) {
-  const response = await fetch(`${apiBaseUrl}/image-collections`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: collection.name,
-      source: collection.sourceUrls?.length ? "pinterest-url" : "upload",
-      settings: {
-        visualKeys: collection.visualKeys,
-        sourceUrls: collection.sourceUrls ?? [],
-      },
-      images: (collection.imageUrls ?? []).filter((url) => /^https?:\/\//.test(url)).map(
-        (url, index) => ({
-          url,
-          altText: collection.name,
-          metadata: {
-            visualKey: collection.visualKeys[index] ?? `image-${index + 1}`,
-            sourceUrl: collection.sourceUrls?.[index],
-          },
-        }),
-      ),
-    }),
-  });
-  return deserializeCollection(await readJsonResponse(response)) ?? collection;
-}
-
-export async function renameSlideshowCollection(
-  collection: SlideshowCollection,
-  name: string,
-  apiBaseUrl = "/api/slideshows",
-): Promise<SlideshowCollection> {
-  const normalizedName = name.trim();
-  if (!normalizedName) {
-    throw new SlideshowApiError("Collection name is required.", 400);
-  }
-  if (collection.id.startsWith("local-")) {
-    return { ...collection, name: normalizedName };
-  }
-  const response = await fetch(
-    `${apiBaseUrl}/image-collections/${encodeURIComponent(collection.id)}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        revision: collection.revision ?? 0,
-        name: normalizedName,
-      }),
-    },
-  );
-  return (
-    deserializeCollection(await readJsonResponse(response)) ?? {
-      ...collection,
-      name: normalizedName,
-    }
-  );
-}
-
-export async function deleteSlideshowCollection(
-  collection: SlideshowCollection,
-  apiBaseUrl = "/api/slideshows",
-) {
-  if (collection.id.startsWith("local-")) return;
-  const response = await fetch(
-    `${apiBaseUrl}/image-collections/${encodeURIComponent(collection.id)}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ revision: collection.revision ?? 0 }),
-    },
-  );
-  if (!response.ok) await readJsonResponse(response);
-}
-
-export async function fetchPinterestImageCandidates(
-  input: { source: "search" | "board"; query: string },
-  apiBaseUrl = "/api/slideshows",
-) {
-  const response = await fetch(`${apiBaseUrl}/pinterest/candidates`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
-  const data = await readJsonResponse(response);
-  const record = isRecord(data) ? data : {};
-  const candidates = Array.isArray(record.candidates)
-    ? record.candidates
-        .filter(isRecord)
-        .map((candidate) => ({
-          id: asString(candidate.id),
-          imageUrl: asString(candidate.imageUrl),
-          sourceUrl: asString(candidate.sourceUrl),
-        }))
-        .filter(
-          (candidate): candidate is PinterestImageCandidate =>
-            Boolean(
-              candidate.id &&
-                candidate.sourceUrl &&
-                isPinterestCandidateUrl(candidate.imageUrl),
-            ),
-        )
-    : [];
-  if (!candidates.length) {
-    throw new SlideshowApiError("Pinterest returned no usable images.", 422);
-  }
-  return candidates;
-}
-
-export async function uploadSlideshowCollection(
-  files: FileList | File[],
-  apiBaseUrl = "/api/slideshows",
-) {
-  const selected = Array.from(files);
-  if (!selected.length) {
-    throw new SlideshowApiError("Select at least one image.", 400);
-  }
-  const formData = new FormData();
-  selected.forEach((file) => formData.append("files", file));
-  formData.set(
-    "name",
-    selected.length === 1 ? selected[0].name : `Uploaded set (${selected.length})`,
-  );
-  formData.set("autoCaption", "true");
-  const response = await fetch(`${apiBaseUrl}/image-collections/upload`, {
-    method: "POST",
-    body: formData,
-  });
-  const collection = deserializeCollection(await readJsonResponse(response));
-  if (!collection) {
-    throw new SlideshowApiError("Upload completed without a collection.", 500);
-  }
-  return collection;
 }
