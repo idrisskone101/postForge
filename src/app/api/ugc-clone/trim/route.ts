@@ -3,6 +3,7 @@ import { trimVideo } from "@/lib/ugc/trim-video";
 import { prisma } from "@/lib/db";
 import { isStoragePathUnder, storage } from "@/lib/storage";
 import { extractThumbnail } from "@/lib/ugc/thumbnail";
+import { MAX_MOTION_SOURCE_DURATION_SEC } from "@/lib/ugc/source-limits";
 
 const SOURCE_VIDEO_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
 
@@ -39,9 +40,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (endTime > 30) {
+    if (endTime - startTime > MAX_MOTION_SOURCE_DURATION_SEC) {
       return NextResponse.json(
-        { error: "endTime must be <= 30 seconds" },
+        { error: `Trim duration must be <= ${MAX_MOTION_SOURCE_DURATION_SEC} seconds` },
         { status: 400 }
       );
     }

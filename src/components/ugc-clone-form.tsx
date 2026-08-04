@@ -36,6 +36,10 @@ import {
   type CloneReferenceFileMetadata,
 } from "@/lib/ugc-clone-handoff";
 import {
+  MAX_MOTION_SOURCE_DURATION_SEC,
+  isMotionSourceWithinLimit,
+} from "@/lib/ugc/source-limits";
+import {
   Loader2,
   Check,
   ArrowLeft,
@@ -365,6 +369,7 @@ type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
 
 interface ClonePrimaryActionState {
   sourceReady: boolean;
+  trimReady: boolean;
   identityReady: boolean;
   referenceReady: boolean;
   canGenerate: boolean;
@@ -392,6 +397,7 @@ interface CloneProductionStatePanelProps {
 
 export function getClonePrimaryAction({
   sourceReady,
+  trimReady,
   identityReady,
   referenceReady,
   canGenerate,
@@ -401,6 +407,13 @@ export function getClonePrimaryAction({
     return {
       label: "Add source",
       detail: "Paste a TikTok URL or choose a saved source.",
+    };
+  }
+
+  if (!trimReady) {
+    return {
+      label: "Trim source",
+      detail: `Trim the source to ${MAX_MOTION_SOURCE_DURATION_SEC} seconds or less.`,
     };
   }
 
@@ -518,7 +531,7 @@ export function CloneProductionStatePanel({
         />
         <ProductionStateRow
           label="Trim"
-          status={sourceReady ? (trimReady ? "ready" : "optional") : "required"}
+          status={sourceReady ? (trimReady ? "ready" : "required") : "required"}
           detail={trimDetail}
         />
         <ProductionStateRow
@@ -897,10 +910,9 @@ export function UGCCloneForm() {
   const referenceImageUnitCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: 1 });
   const referenceBatchCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: referenceBatchSize });
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
+  const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
   const cloneVideoModels = getModelsByType("video").filter((model) => model.capabilities.motionControl);
   const referenceImageModels = getModelsByType("image");
-
-  const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
 
   // Poll for any "generating" ref images
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1233,7 +1245,7 @@ export function UGCCloneForm() {
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
     setOriginalVideoInfo(info);
-    setShowTrimmer(false);
+    setShowTrimmer(!!info && !isMotionSourceWithinLimit(info.durationSec));
     setSourceToolsOpen(!info);
     if (info) {
       setActiveSetupStep("identity");
@@ -1419,12 +1431,13 @@ export function UGCCloneForm() {
   const sourceReady = !!videoInfo?.id;
   const shouldShowSourceTools = !sourceReady || sourceToolsOpen;
   const avatarReady = !!avatarId;
-  const trimReady = !!videoInfo;
+  const trimReady = !!videoInfo && isMotionSourceWithinLimit(durationSec);
   const referenceReady =
     !!selectedCollectionAssetId || !!selectedSavedReference || !!selectedRefFileId;
-  const canGenerateClone = !!videoInfo?.id && !!avatarId && referenceReady && !isSubmitting;
+  const canGenerateClone = !!videoInfo?.id && trimReady && !!avatarId && referenceReady && !isSubmitting;
   const nextAction = getClonePrimaryAction({
     sourceReady,
+    trimReady,
     identityReady: avatarReady,
     referenceReady,
     canGenerate: canGenerateClone,
@@ -1437,7 +1450,9 @@ export function UGCCloneForm() {
     ? videoInfo.label || "Selected TikTok source"
     : "Paste a TikTok URL or choose a saved source.";
   const trimDetail = videoInfo
-    ? originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath
+    ? !trimReady
+      ? `Trim to ${MAX_MOTION_SOURCE_DURATION_SEC}s or less before generating.`
+      : originalVideoInfo && videoInfo.localPath !== originalVideoInfo.localPath
       ? `${Math.round(durationSec)}s source clip selected.`
       : "Full source selected; trim can still be edited."
     : "Choose a source before trimming.";
@@ -1455,12 +1470,12 @@ export function UGCCloneForm() {
       : "Generate or choose a reference image.";
   const readinessDetail = canGenerateClone
     ? "Source, identity, and reference are ready."
-    : "Add the missing source, identity, or reference.";
+    : "Add the missing source, trim, identity, or reference.";
   const compactActionLabel = nextAction.label;
   const primaryActionDisabled =
     selectedCollectionAssetId || selectedSavedReference || selectedRefFileId
     ? !canGenerateClone
-    : !canSubmit || isSubmitting || isGenerating;
+    : !canSubmit || !trimReady || isSubmitting || isGenerating;
   const handlePrimaryAction = selectedCollectionAssetId
     ? handleGenerateWithCollectionReference
     : selectedSavedReference

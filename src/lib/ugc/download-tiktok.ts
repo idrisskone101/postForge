@@ -7,7 +7,6 @@ import { storage } from "@/lib/storage";
 import { extractThumbnail } from "./thumbnail";
 
 const TIKTOK_URL_PATTERN = /^https?:\/\/(www\.|vm\.|vt\.)?tiktok\.com\//;
-const MAX_DURATION_SEC = 30;
 const MAX_FILE_SIZE = "100M";
 
 export interface TikTokDownloadResult {
@@ -70,12 +69,6 @@ export async function downloadTikTok(
   validateTikTokUrl(url);
 
   const metadata = existingMetadata ?? await fetchMetadata(url);
-
-  if (metadata.duration > MAX_DURATION_SEC) {
-    throw new Error(
-      `Video is ${metadata.duration}s long, which exceeds the ${MAX_DURATION_SEC}s limit for motion control.`
-    );
-  }
 
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "postforge-tiktok-"));
   const id = randomUUID();

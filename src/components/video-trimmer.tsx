@@ -5,6 +5,10 @@ import { apiPost } from "@/lib/api/client";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Loader2, Scissors, Film, GripVertical } from "lucide-react";
+import {
+  MAX_MOTION_SOURCE_DURATION_SEC,
+  isMotionSourceWithinLimit,
+} from "@/lib/ugc/source-limits";
 
 interface VideoTrimmerProps {
   videoPath: string;
@@ -47,20 +51,29 @@ export function normalizeTrimRange({
   endTime,
   durationSec,
   minDurationSec = MIN_TRIM_DURATION_SEC,
+  maxDurationSec,
 }: {
   startTime: number;
   endTime: number;
   durationSec: number;
   minDurationSec?: number;
+  maxDurationSec?: number;
 }) {
   const safeDuration = Math.max(0, snapTrimTime(durationSec));
   const safeMinDuration = Math.min(minDurationSec, safeDuration);
+  const safeMaxDuration =
+    typeof maxDurationSec === "number" && Number.isFinite(maxDurationSec)
+      ? Math.max(safeMinDuration, snapTrimTime(maxDurationSec))
+      : null;
   const maxStart = Math.max(0, safeDuration - safeMinDuration);
   const normalizedStart = clamp(snapTrimTime(startTime), 0, maxStart);
+  const maxEnd = safeMaxDuration
+    ? Math.min(safeDuration, normalizedStart + safeMaxDuration)
+    : safeDuration;
   const normalizedEnd = clamp(
     snapTrimTime(endTime),
     normalizedStart + safeMinDuration,
-    safeDuration
+    maxEnd
   );
   const trimmedDuration = snapTrimTime(normalizedEnd - normalizedStart);
   const removedFromStart = snapTrimTime(normalizedStart);
@@ -80,12 +93,14 @@ export function getTrimSummary({
   startTime,
   endTime,
   durationSec,
+  maxDurationSec,
 }: {
   startTime: number;
   endTime: number;
   durationSec: number;
+  maxDurationSec?: number;
 }): string {
-  const range = normalizeTrimRange({ startTime, endTime, durationSec });
+  const range = normalizeTrimRange({ startTime, endTime, durationSec, maxDurationSec });
 
   if (!range.hasTrim) {
     return "Full video selected. No trim will be applied.";
@@ -119,7 +134,9 @@ export function VideoTrimmer({
 
   // Trim range (in seconds)
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(durationSec);
+  const [endTime, setEndTime] = useState(
+    Math.min(durationSec, MAX_MOTION_SOURCE_DURATION_SEC)
+  );
 
   // Thumbnails are decorative; the trim controls must be usable before they load.
   const [thumbnails, setThumbnails] = useState<string[]>([]);
@@ -206,6 +223,7 @@ export function VideoTrimmer({
         startTime: nextStartTime,
         endTime: nextEndTime,
         durationSec,
+        maxDurationSec: MAX_MOTION_SOURCE_DURATION_SEC,
       });
 
       setStartTime(range.startTime);
@@ -246,7 +264,12 @@ export function VideoTrimmer({
   // Trim API call
   // ---------------------------------------------------------------------------
   const handleTrim = async () => {
-    const range = normalizeTrimRange({ startTime, endTime, durationSec });
+    const range = normalizeTrimRange({
+      startTime,
+      endTime,
+      durationSec,
+      maxDurationSec: MAX_MOTION_SOURCE_DURATION_SEC,
+    });
     if (!range.hasTrim) {
       onCancel();
       return;
@@ -279,12 +302,23 @@ export function VideoTrimmer({
   // ---------------------------------------------------------------------------
   // Derived values
   // ---------------------------------------------------------------------------
-  const trimRange = normalizeTrimRange({ startTime, endTime, durationSec });
+  const trimRange = normalizeTrimRange({
+    startTime,
+    endTime,
+    durationSec,
+    maxDurationSec: MAX_MOTION_SOURCE_DURATION_SEC,
+  });
   const trimmedDuration = trimRange.trimmedDuration;
   const startPct = durationSec > 0 ? (trimRange.startTime / durationSec) * 100 : 0;
   const endPct = durationSec > 0 ? (trimRange.endTime / durationSec) * 100 : 100;
-  const trimSummary = getTrimSummary({ startTime, endTime, durationSec });
+  const trimSummary = getTrimSummary({
+    startTime,
+    endTime,
+    durationSec,
+    maxDurationSec: MAX_MOTION_SOURCE_DURATION_SEC,
+  });
   const videoSrc = `/api/ugc-clone/preview?path=${encodeURIComponent(videoPath)}`;
+  const canUseFullVideo = isMotionSourceWithinLimit(durationSec);
 
   return (
     <div className="space-y-4 animate-fade-in-up">
@@ -512,10 +546,10 @@ export function VideoTrimmer({
         <button
           type="button"
           onClick={onCancel}
-          disabled={isTrimming}
+          disabled={isTrimming || !canUseFullVideo}
           className="flex-1 rounded-2xl border border-border px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground disabled:opacity-50"
         >
-          Use Full Video
+          {canUseFullVideo ? "Use Full Video" : "Trim required"}
         </button>
         <button
           type="button"

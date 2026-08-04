@@ -17,6 +17,7 @@ const emptyState = renderToStaticMarkup(
     canGenerate={false}
     nextAction={getClonePrimaryAction({
       sourceReady: false,
+      trimReady: false,
       identityReady: false,
       referenceReady: false,
       canGenerate: false,
@@ -42,6 +43,19 @@ assert.match(sourcePlaceholder, /Your selected clip appears here/);
 assert.equal(
   getClonePrimaryAction({
     sourceReady: true,
+    trimReady: false,
+    identityReady: true,
+    referenceReady: true,
+    canGenerate: false,
+    usesSavedReference: false,
+  }).label,
+  "Trim source"
+);
+
+assert.equal(
+  getClonePrimaryAction({
+    sourceReady: true,
+    trimReady: true,
     identityReady: false,
     referenceReady: false,
     canGenerate: false,
@@ -53,6 +67,7 @@ assert.equal(
 assert.equal(
   getClonePrimaryAction({
     sourceReady: true,
+    trimReady: true,
     identityReady: true,
     referenceReady: true,
     canGenerate: true,
