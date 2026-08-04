@@ -93,10 +93,10 @@ function ModelCard({
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        "group relative min-w-0 rounded-[9px] border bg-white p-2.5 text-left transition-[border-color,box-shadow,background-color] duration-150",
+        "group relative min-w-0 rounded-[9px] border bg-white p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
         selected
-          ? "border-[#FF4A20] shadow-[0_0_0_2px_rgba(255,74,32,0.09)]"
-          : "border-[#DEDFD8] hover:border-[#BFC0B9] hover:bg-[#FCFCFA]"
+          ? "border-[#FF4A20] shadow-[0_0_0_2px_rgba(255,74,32,0.09),var(--pf-shadow-sm)]"
+          : "border-[#DEDFD8] hover:-translate-y-px hover:border-[#BFC0B9] hover:bg-[#FCFCFA] hover:shadow-[var(--pf-shadow-xs)]"
       )}
     >
       <span className="flex items-center gap-2.5">
@@ -119,7 +119,7 @@ function ModelCard({
               <Circle className="mt-0.5 size-3.5 shrink-0 text-[#C5C6BF]" />
             )}
           </span>
-          <span className="mt-1 block truncate text-[9px] text-[#91928E]">
+          <span className="mt-1 block truncate text-[10px] text-[#91928E]">
             {priceLabel}
           </span>
         </span>
@@ -130,7 +130,7 @@ function ModelCard({
             <span
               key={item.label}
               title={item.label}
-              className="inline-flex items-center gap-1 rounded-md bg-[#F1F2EC] px-1.5 py-1 text-[8px] font-medium text-[#72736F]"
+              className="inline-flex items-center gap-1 rounded-md bg-[#F1F2EC] px-1.5 py-1 text-[10px] font-medium text-[#72736F]"
             >
               {item.icon}
               {item.label}

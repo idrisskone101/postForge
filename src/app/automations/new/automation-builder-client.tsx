@@ -626,22 +626,22 @@ export function AutomationBuilderClient() {
   return (
     <div className="pf-content-viewport flex flex-col bg-[#F3F4EF]">
       <header className="flex min-h-[82px] flex-wrap items-center justify-between gap-3 border-b border-[#DADBD2] bg-[#F7F7F3] px-4 py-3 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3"><Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-[9px] border border-[#D5D6CF] bg-white"><ArrowLeft className="size-4" /></Link><div className="min-w-0"><p className="pf-eyebrow">Automations / {editId ? "Edit" : "New"}</p><input value={record.name} onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))} className="mt-1 w-full min-w-0 bg-transparent text-[18px] font-semibold tracking-[-0.025em] outline-none" aria-label="Automation name" /></div><span className="rounded-full bg-[#ECECE6] px-2 py-1 text-[7px] font-bold text-[#777873]">{record.status.replace("_", " ").toUpperCase()}</span></div>
-        <div className="flex flex-wrap items-center justify-end gap-2"><span role="status" aria-live="polite" className={cn("mr-1 text-[7px] font-medium",saveFailed ? "text-[#D94A34]" : savedRecordSignature === recordSignature ? "text-[#268B42]" : "text-[#858681]")}>{saveStatus}</span><button onClick={openTemplatePicker} className="pf-button-secondary"><LayoutTemplate className="size-3.5" /> Playbook</button><button onClick={() => persist("draft")} disabled={saving} className="pf-button-secondary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save draft</button><button onClick={() => setValidationOpen(true)} className="pf-button-primary">Review automation <ArrowRight className="size-3.5" /></button></div>
+        <div className="flex min-w-0 items-center gap-3"><Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-[9px] border border-[#D5D6CF] bg-white"><ArrowLeft className="size-4" /></Link><div className="min-w-0"><p className="pf-eyebrow">Automations / {editId ? "Edit" : "New"}</p><input value={record.name} onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))} className="mt-1 w-full min-w-0 bg-transparent text-[18px] font-semibold tracking-[-0.025em] outline-none" aria-label="Automation name" /></div><span className="rounded-full bg-[#ECECE6] px-2 py-1 text-[10px] font-bold text-[#777873]">{record.status.replace("_", " ").toUpperCase()}</span></div>
+        <div className="flex flex-wrap items-center justify-end gap-2"><span role="status" aria-live="polite" className={cn("mr-1 text-[10px] font-medium",saveFailed ? "text-[#D94A34]" : savedRecordSignature === recordSignature ? "text-[#268B42]" : "text-[#858681]")}>{saveStatus}</span><button onClick={openTemplatePicker} className="pf-button-secondary"><LayoutTemplate className="size-3.5" /> Playbook</button><button onClick={() => persist("draft")} disabled={saving} className="pf-button-secondary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save draft</button><button onClick={() => setValidationOpen(true)} className="pf-button-primary">Review automation <ArrowRight className="size-3.5" /></button></div>
       </header>
 
       <div className="flex min-h-[59px] items-center justify-between gap-4 overflow-x-auto border-b border-[#D9DAD3] bg-white px-3 sm:px-6">
-        <div className="flex h-[59px]">{PHASES.map((item, index) => <button key={item} onClick={() => setPhase(item)} className={cn("relative grid min-w-[118px] grid-cols-[24px_1fr] items-center gap-2 px-3 text-left text-[10px] font-semibold text-[#777873]",phase === item && "text-[#232323] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#FF4A20]")}><span className={cn("grid size-5 place-items-center rounded-full bg-[#EFF0EA] text-[7px]",phase === item && "bg-[#FF4A20] text-white")}>0{index + 1}</span><span>{item}<small className="mt-0.5 block text-[6px] font-normal text-[#AAA]">{phase === item ? "Editing" : index < phaseIndex ? "Complete" : ""}</small></span></button>)}</div>
-        <span className="hidden rounded-full bg-[#F0F1EB] px-2.5 py-1 text-[7px] text-[#777873] sm:block">{record.template.replaceAll("-", " ")}</span>
+        <div className="flex h-[59px]">{PHASES.map((item, index) => <button key={item} onClick={() => setPhase(item)} className={cn("relative grid min-w-[118px] grid-cols-[24px_1fr] items-center gap-2 px-3 text-left text-[10px] font-semibold text-[#777873]",phase === item && "text-[#232323] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#FF4A20]")}><span className={cn("grid size-5 place-items-center rounded-full bg-[#EFF0EA] text-[10px]",phase === item && "bg-[#FF4A20] text-white")}>0{index + 1}</span><span>{item}<small className="mt-0.5 block text-[9px] font-normal text-[#AAA]">{phase === item ? "Editing" : index < phaseIndex ? "Complete" : ""}</small></span></button>)}</div>
+        <span className="hidden rounded-full bg-[#F0F1EB] px-2.5 py-1 text-[10px] text-[#777873] sm:block">{record.template.replaceAll("-", " ")}</span>
       </div>
 
       {error && <div role="alert" className="mx-4 mt-3 flex min-w-0 items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D] sm:mx-6"><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5 shrink-0" /></button></div>}
 
       <section className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="relative border-b border-[#D9DAD3] bg-[#F8F8F5] p-5 lg:border-b-0 lg:border-r">
-          <div className="flex gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-[#ECECE6] text-[8px] font-bold text-[#777873]">0{phaseIndex + 1}</span><div><p className="pf-eyebrow">{phase}</p><h2 className="mt-1 text-[17px] font-semibold tracking-[-0.025em]">{phase === "Hook" ? "Stop the scroll" : phase === "Content" ? "Deliver the value" : "Close with intent"}</h2><p className="mt-1 text-[8px] leading-4 text-[#858681]">{phase === "Hook" ? "Choose how the first slide earns attention." : phase === "Content" ? "Shape the repeatable middle of every post." : "Decide what the final slide asks viewers to do."}</p></div></div>
+          <div className="flex gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-[#ECECE6] text-[11px] font-bold text-[#777873]">0{phaseIndex + 1}</span><div><p className="pf-eyebrow">{phase}</p><h2 className="mt-1 text-[17px] font-semibold tracking-[-0.025em]">{phase === "Hook" ? "Stop the scroll" : phase === "Content" ? "Deliver the value" : "Close with intent"}</h2><p className="mt-1 text-[11px] leading-4 text-[#858681]">{phase === "Hook" ? "Choose how the first slide earns attention." : phase === "Content" ? "Shape the repeatable middle of every post." : "Decide what the final slide asks viewers to do."}</p></div></div>
           <div className="mt-5 space-y-4">
-            {phase === "Hook" && <><Field label="Hook strategy"><Select value={record.hook.strategy} onChange={(value) => updateHook({ strategy: value })} options={["Curiosity gap","Unexpected result","Contrarian truth","Specific transformation","Concrete promise"]} /></Field><Field label="Hook prompt"><textarea value={record.hook.prompt} onChange={(event) => updateHook({ prompt: event.target.value })} className="pf-input h-24" /></Field><div><button type="button" disabled={!record.hook.prompt.trim()} onClick={() => updateHook({ selected: composeAutomationHook(record.hook.strategy, record.hook.prompt) })} className="flex h-9 w-full items-center justify-center gap-2 rounded-[8px] border border-[#FFB5A4] bg-[#FFF7F5] text-[8px] font-semibold text-[#E44B2F] disabled:cursor-not-allowed disabled:opacity-45"><Sparkles className="size-3.5" /> Compose from prompt</button><p className="mt-1.5 text-[6.5px] leading-3 text-[#8A8B85]">Composed locally from your prompt and strategy. No network request.</p></div><Field label="Selected hook"><input value={record.hook.selected} onChange={(event) => updateHook({ selected: event.target.value })} className="pf-input h-10" /></Field></>}
+            {phase === "Hook" && <><Field label="Hook strategy"><Select value={record.hook.strategy} onChange={(value) => updateHook({ strategy: value })} options={["Curiosity gap","Unexpected result","Contrarian truth","Specific transformation","Concrete promise"]} /></Field><Field label="Hook prompt"><textarea value={record.hook.prompt} onChange={(event) => updateHook({ prompt: event.target.value })} className="pf-input h-24" /></Field><div><button type="button" disabled={!record.hook.prompt.trim()} onClick={() => updateHook({ selected: composeAutomationHook(record.hook.strategy, record.hook.prompt) })} className="flex h-9 w-full items-center justify-center gap-2 rounded-[8px] border border-[#FFB5A4] bg-[#FFF7F5] text-[11px] font-semibold text-[#E44B2F] disabled:cursor-not-allowed disabled:opacity-45"><Sparkles className="size-3.5" /> Compose from prompt</button><p className="mt-1.5 text-[9px] leading-3 text-[#8A8B85]">Composed locally from your prompt and strategy. No network request.</p></div><Field label="Selected hook"><input value={record.hook.selected} onChange={(event) => updateHook({ selected: event.target.value })} className="pf-input h-10" /></Field></>}
             {phase === "Content" && (
               <>
                 <Field label="Story structure">
@@ -666,8 +666,8 @@ export function AutomationBuilderClient() {
                         )}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <b className="block truncate text-[8px]">{sourceFileLoading ? "Checking source asset…" : sourceFile?.filename ?? "Source asset unavailable"}</b>
-                        <small className="mt-0.5 block text-[6px] text-[#999]">Persisted with this plan for the creative handoff</small>
+                        <b className="block truncate text-[11px]">{sourceFileLoading ? "Checking source asset…" : sourceFile?.filename ?? "Source asset unavailable"}</b>
+                        <small className="mt-0.5 block text-[9px] text-[#999]">Persisted with this plan for the creative handoff</small>
                       </span>
                       <button type="button" onClick={() => updateContent({ sourceFileId: null })} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#D8D9D2]" aria-label="Remove source asset"><X className="size-3" /></button>
                     </div>
@@ -685,41 +685,41 @@ export function AutomationBuilderClient() {
                       <option key={collection.id} value={collection.id}>{collection.name} · {collection.assetIds.length} assets</option>
                     ))}
                   </select>
-                  <Link href="/collections" className="mt-1.5 inline-flex text-[6.5px] font-semibold text-[#D44B34]">Manage collections →</Link>
+                  <Link href="/collections" className="mt-1.5 inline-flex text-[9px] font-semibold text-[#D44B34]">Manage collections →</Link>
                 </Field>
                 <Field label="Writing guidance">
                   <textarea value={record.content.guidance} onChange={(event) => updateContent({ guidance: event.target.value })} className="pf-input h-24" />
                 </Field>
               </>
             )}
-            {phase === "CTA" && <><Field label="CTA style"><Select value={record.cta.style} onChange={(value) => updateCta({ style: value })} options={["Save this post","Follow for part two","Comment a keyword","Visit profile link","No CTA"]} /></Field><Field label="CTA prompt"><textarea value={record.cta.prompt} onChange={(event) => updateCta({ prompt: event.target.value })} className="pf-input h-24" /></Field><DestinationSelector destination={record.destination} accountId={record.accountId ?? null} providers={integrationStatuses} loading={integrationsLoading} error={integrationsError} onSelect={selectDestination} onAccountSelect={(accountId, accountLabel) => setRecord((current) => ({ ...current, accountId, accountLabel }))} onRetry={() => setIntegrationRefreshKey((current) => current + 1)} /><label className="flex items-center justify-between gap-3 border-t border-[#E1E2DC] pt-4"><span><b className="block text-[9px]">Require approval</b><small className="mt-1 block text-[7px] leading-3 text-[#999]">{isAutomationSocialDestination(record.destination) ? "Required for every social publishing destination" : "Keep a review decision in the local workflow"}</small></span><input type="checkbox" checked={record.approvalRequired} disabled={isAutomationSocialDestination(record.destination)} onChange={(event) => setRecord((current) => ({ ...current, approvalRequired: event.target.checked }))} aria-describedby="automation-approval-rule" className="size-4 shrink-0 accent-[#FF4A20] disabled:cursor-not-allowed disabled:opacity-70" /><span id="automation-approval-rule" className="sr-only">Social publishing destinations always require approval.</span></label></>}
-            <fieldset><legend className="mb-2 text-[8px] font-semibold text-[#666762]">Schedule</legend><div className="grid grid-cols-7 gap-1">{DAYS.map((day) => <button key={day} onClick={() => toggleDay(day)} className={cn("h-8 rounded-[7px] border text-[7px]",record.schedule.days.includes(day) ? "border-[#232323] bg-[#232323] text-white" : "border-[#D8D9D2] bg-white text-[#777873]")}>{day[0]}</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><input type="time" value={record.schedule.time} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, time: event.target.value } }))} className="pf-input h-9" /><select value={record.schedule.timezone} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, timezone: event.target.value } }))} className="pf-input h-9"><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></div></fieldset>
+            {phase === "CTA" && <><Field label="CTA style"><Select value={record.cta.style} onChange={(value) => updateCta({ style: value })} options={["Save this post","Follow for part two","Comment a keyword","Visit profile link","No CTA"]} /></Field><Field label="CTA prompt"><textarea value={record.cta.prompt} onChange={(event) => updateCta({ prompt: event.target.value })} className="pf-input h-24" /></Field><DestinationSelector destination={record.destination} accountId={record.accountId ?? null} providers={integrationStatuses} loading={integrationsLoading} error={integrationsError} onSelect={selectDestination} onAccountSelect={(accountId, accountLabel) => setRecord((current) => ({ ...current, accountId, accountLabel }))} onRetry={() => setIntegrationRefreshKey((current) => current + 1)} /><label className="flex items-center justify-between gap-3 border-t border-[#E1E2DC] pt-4"><span><b className="block text-[10px]">Require approval</b><small className="mt-1 block text-[10px] leading-3 text-[#999]">{isAutomationSocialDestination(record.destination) ? "Required for every social publishing destination" : "Keep a review decision in the local workflow"}</small></span><input type="checkbox" checked={record.approvalRequired} disabled={isAutomationSocialDestination(record.destination)} onChange={(event) => setRecord((current) => ({ ...current, approvalRequired: event.target.checked }))} aria-describedby="automation-approval-rule" className="size-4 shrink-0 accent-[#FF4A20] disabled:cursor-not-allowed disabled:opacity-70" /><span id="automation-approval-rule" className="sr-only">Social publishing destinations always require approval.</span></label></>}
+            <fieldset><legend className="mb-2 text-[11px] font-semibold text-[#666762]">Schedule</legend><div className="grid grid-cols-7 gap-1">{DAYS.map((day) => <button key={day} onClick={() => toggleDay(day)} className={cn("h-8 rounded-[7px] border text-[10px]",record.schedule.days.includes(day) ? "border-[#232323] bg-[#232323] text-white" : "border-[#D8D9D2] bg-white text-[#777873]")}>{day[0]}</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><input type="time" value={record.schedule.time} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, time: event.target.value } }))} className="pf-input h-9" /><select value={record.schedule.timezone} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, timezone: event.target.value } }))} className="pf-input h-9"><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></div></fieldset>
           </div>
-          <div className="mt-7 flex justify-between border-t border-[#E1E2DC] pt-4"><button onClick={() => setPhase(PHASES[Math.max(0, phaseIndex - 1)])} disabled={phaseIndex === 0} className="pf-button-secondary disabled:opacity-40"><ArrowLeft className="size-3" /> Back</button><button onClick={() => phaseIndex === 2 ? setValidationOpen(true) : setPhase(PHASES[phaseIndex + 1])} className="inline-flex h-9 items-center gap-2 rounded-[8px] bg-[#232323] px-3 text-[8px] font-semibold text-white">{phaseIndex === 2 ? "Review" : "Next"}<ArrowRight className="size-3" /></button></div>
+          <div className="mt-7 flex justify-between border-t border-[#E1E2DC] pt-4"><button onClick={() => setPhase(PHASES[Math.max(0, phaseIndex - 1)])} disabled={phaseIndex === 0} className="pf-button-secondary disabled:opacity-40"><ArrowLeft className="size-3" /> Back</button><button onClick={() => phaseIndex === 2 ? setValidationOpen(true) : setPhase(PHASES[phaseIndex + 1])} className="inline-flex h-9 items-center gap-2 rounded-[8px] bg-[#232323] px-3 text-[11px] font-semibold text-white">{phaseIndex === 2 ? "Review" : "Next"}<ArrowRight className="size-3" /></button></div>
         </aside>
 
         <div className="flex min-w-0 flex-col bg-[#EFEFE9]">
-          <div className="flex h-12 items-center justify-between border-b border-[#D9DAD3] bg-white px-4"><div><p className="pf-eyebrow">Live preview</p><b className="mt-0.5 block text-[8px]">Slide {previewSlide + 1} of {record.content.slideCount}</b></div><div className="flex items-center gap-1 text-[7px] text-[#888]" aria-label="Preview zoom controls"><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MIN} aria-label="Zoom preview out" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Minus className="size-3" /></button><output aria-live="polite" className="w-9 text-center tabular-nums">{previewZoom}%</output><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MAX} aria-label="Zoom preview in" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Plus className="size-3" /></button></div></div>
+          <div className="flex h-12 items-center justify-between border-b border-[#D9DAD3] bg-white px-4"><div><p className="pf-eyebrow">Live preview</p><b className="mt-0.5 block text-[11px]">Slide {previewSlide + 1} of {record.content.slideCount}</b></div><div className="flex items-center gap-1 text-[10px] text-[#888]" aria-label="Preview zoom controls"><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MIN} aria-label="Zoom preview out" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Minus className="size-3" /></button><output aria-live="polite" className="w-9 text-center tabular-nums">{previewZoom}%</output><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MAX} aria-label="Zoom preview in" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Plus className="size-3" /></button></div></div>
           <div className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[linear-gradient(#E6E7E0_1px,transparent_1px),linear-gradient(90deg,#E6E7E0_1px,transparent_1px)] bg-[size:24px_24px] p-5">
             <div style={{ width: `${Math.round((320 * previewZoom) / 58)}px` }} className="relative aspect-[9/16] shrink-0 overflow-hidden rounded-[13px] border-[6px] border-white bg-[#20211D] shadow-[0_22px_52px_rgba(34,35,31,.19)] transition-[width] duration-150 motion-reduce:transition-none">
               <div className="absolute inset-0 grid place-items-center bg-[#E9EAE4] p-8 text-center text-[#696A65]">
                 <div>
                   <span className="mx-auto grid size-12 place-items-center rounded-full border border-[#D2D3CB] bg-white"><ImageIcon className="size-5" /></span>
                   <b className="mt-3 block text-[10px] text-[#31322E]">No real media preview</b>
-                  <p className="mt-1 text-[7px] leading-3">{previewEmptyCopy}</p>
+                  <p className="mt-1 text-[10px] leading-3">{previewEmptyCopy}</p>
                 </div>
               </div>
               {previewAsset && <AutomationPreviewMedia asset={previewAsset} className="absolute inset-0 size-full object-cover" />}
               {previewAsset && <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/55" />}
-              {previewAsset && <span className="absolute left-3 top-3 z-20 max-w-[calc(100%-24px)] truncate rounded-full bg-black/65 px-2 py-1 text-[6px] font-semibold text-white">{previewAsset.origin} · {previewAsset.name}</span>}
+              {previewAsset && <span className="absolute left-3 top-3 z-20 max-w-[calc(100%-24px)] truncate rounded-full bg-black/65 px-2 py-1 text-[9px] font-semibold text-white">{previewAsset.origin} · {previewAsset.name}</span>}
               <div className={cn("absolute inset-x-5 z-20 min-w-0 break-words text-center [overflow-wrap:anywhere]", previewAsset ? "text-white drop-shadow-md" : "bottom-8 rounded-[9px] bg-white/95 p-3 text-[#2A2621] shadow-sm", previewAsset && (previewSlide === record.content.slideCount - 1 ? "bottom-10 rounded-[9px] bg-black/55 p-3" : previewSlide === 0 ? "top-14" : "top-[44%]") )}>
-                <span className="block text-[8px] font-bold uppercase tracking-[.09em]">{previewSlide === 0 ? record.hook.strategy : previewSlide === record.content.slideCount - 1 ? "Keep this for later" : `Point ${previewSlide}`}</span>
+                <span className="block text-[11px] font-bold uppercase tracking-[.09em]">{previewSlide === 0 ? record.hook.strategy : previewSlide === record.content.slideCount - 1 ? "Keep this for later" : `Point ${previewSlide}`}</span>
                 <b className="mt-1 block min-w-0 break-words font-serif text-[21px] italic leading-tight [overflow-wrap:anywhere]">{slideCopy[Math.min(previewSlide, slideCopy.length - 1)]}</b>
               </div>
-              <span className="absolute bottom-2 right-2 z-20 rounded-full bg-black/70 px-2 py-1 text-[7px] text-white">{previewSlide + 1} / {record.content.slideCount}</span>
+              <span className="absolute bottom-2 right-2 z-20 rounded-full bg-black/70 px-2 py-1 text-[10px] text-white">{previewSlide + 1} / {record.content.slideCount}</span>
             </div>
           </div>
-          <div className="flex h-24 gap-2 overflow-x-auto border-t border-[#D9DAD3] bg-white p-3">{Array.from({ length: record.content.slideCount }, (_, index) => <button key={index} type="button" onClick={() => setPreviewSlide(index)} aria-label={`Preview slide ${index + 1}`} aria-pressed={previewSlide === index} className={cn("relative aspect-[9/16] h-16 shrink-0 overflow-hidden rounded-[7px] border-2 bg-[#E7E8E1]",previewSlide === index ? "border-[#FF4A20]" : "border-transparent")}>{previewAsset?.kind === "image" ? <AutomationPreviewMedia asset={previewAsset} className="size-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-[#888984]"><ImageIcon className="size-3" /></span>}<span className="absolute bottom-1 right-1 grid size-3 place-items-center rounded-full bg-black/70 text-[5px] text-white">{index + 1}</span></button>)}<button type="button" onClick={() => setRecord((current) => ({ ...current, content: { ...current.content, slideCount: Math.min(9, current.content.slideCount + 1) } }))} className="flex aspect-[9/16] h-16 shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#CFCFC7] text-[#777873]"><Plus className="size-3" /><span className="text-[5px]">Add</span></button></div>
+          <div className="flex h-24 gap-2 overflow-x-auto border-t border-[#D9DAD3] bg-white p-3">{Array.from({ length: record.content.slideCount }, (_, index) => <button key={index} type="button" onClick={() => setPreviewSlide(index)} aria-label={`Preview slide ${index + 1}`} aria-pressed={previewSlide === index} className={cn("relative aspect-[9/16] h-16 shrink-0 overflow-hidden rounded-[7px] border-2 bg-[#E7E8E1]",previewSlide === index ? "border-[#FF4A20]" : "border-transparent")}>{previewAsset?.kind === "image" ? <AutomationPreviewMedia asset={previewAsset} className="size-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-[#888984]"><ImageIcon className="size-3" /></span>}<span className="absolute bottom-1 right-1 grid size-3 place-items-center rounded-full bg-black/70 text-[9px] text-white">{index + 1}</span></button>)}<button type="button" onClick={() => setRecord((current) => ({ ...current, content: { ...current.content, slideCount: Math.min(9, current.content.slideCount + 1) } }))} className="flex aspect-[9/16] h-16 shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#CFCFC7] text-[#777873]"><Plus className="size-3" /><span className="text-[9px]">Add</span></button></div>
         </div>
       </section>
 
@@ -749,7 +749,7 @@ export function AutomationBuilderClient() {
         />
       )}
 
-      {validationOpen && <div className="pf-safe-overlay fixed inset-0 z-[85] grid min-w-0 place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[16px] bg-white p-6 text-center shadow-2xl"><span className={cn("mx-auto grid size-11 shrink-0 place-items-center rounded-full",socialApprovalMissing ? "bg-[#FDE9E5] text-[#D94A34]" : "bg-[#E7F5E9] text-[#268B42]")}>{socialApprovalMissing ? <X className="size-5 shrink-0" /> : <Check className="size-5 shrink-0" />}</span><h2 className="mt-4 text-[19px] font-semibold tracking-[-0.03em]">{socialApprovalMissing ? "Approval is required" : "Creative setup looks good"}</h2><p className="mt-1 min-w-0 break-words text-[8px] leading-4 text-[#81827D] [overflow-wrap:anywhere]">Saving creates a paused plan. Manual Review queue schedules can create local drafts. Social publishing stays separate and requires an approved Gallery video, a live provider check, and explicit confirmation for every post.</p><div className="my-5 min-w-0 space-y-2 text-left text-[8px]"><ValidationRow ok text="Hook, content, and CTA configured" /><ValidationRow ok={record.destination === "manual" || record.approvalRequired} text={record.destination === "manual" ? "Local review plan" : record.approvalRequired ? "Approval required before any provider handoff" : "Social handoffs require approval"} /><ValidationRow ok={record.destination === "manual" || (!integrationsLoading && destinationReadiness.ready)} text={record.destination !== "manual" && integrationsLoading ? `Checking ${automationDestinationLabel(record.destination)} connection readiness` : destinationReadiness.message} /></div><div className="flex min-w-0 flex-col-reverse justify-center gap-2 min-[420px]:flex-row"><button onClick={() => setValidationOpen(false)} className="pf-button-secondary shrink-0">Return to setup</button><button onClick={() => { setValidationOpen(false); persist("create"); }} disabled={saving || socialApprovalMissing} className="pf-button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-45">{saving ? <Loader2 className="size-3.5 shrink-0 animate-spin" /> : <Save className="size-3.5 shrink-0" />} {record.destination !== "manual" && !destinationReadiness.ready ? "Save for connection" : "Save reviewed plan"}</button></div></div></div>}
+      {validationOpen && <div className="pf-safe-overlay fixed inset-0 z-[85] grid min-w-0 place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[16px] bg-white p-6 text-center shadow-2xl"><span className={cn("mx-auto grid size-11 shrink-0 place-items-center rounded-full",socialApprovalMissing ? "bg-[#FDE9E5] text-[#D94A34]" : "bg-[#E7F5E9] text-[#268B42]")}>{socialApprovalMissing ? <X className="size-5 shrink-0" /> : <Check className="size-5 shrink-0" />}</span><h2 className="mt-4 text-[19px] font-semibold tracking-[-0.03em]">{socialApprovalMissing ? "Approval is required" : "Creative setup looks good"}</h2><p className="mt-1 min-w-0 break-words text-[11px] leading-4 text-[#81827D] [overflow-wrap:anywhere]">Saving creates a paused plan. Manual Review queue schedules can create local drafts. Social publishing stays separate and requires an approved Gallery video, a live provider check, and explicit confirmation for every post.</p><div className="my-5 min-w-0 space-y-2 text-left text-[11px]"><ValidationRow ok text="Hook, content, and CTA configured" /><ValidationRow ok={record.destination === "manual" || record.approvalRequired} text={record.destination === "manual" ? "Local review plan" : record.approvalRequired ? "Approval required before any provider handoff" : "Social handoffs require approval"} /><ValidationRow ok={record.destination === "manual" || (!integrationsLoading && destinationReadiness.ready)} text={record.destination !== "manual" && integrationsLoading ? `Checking ${automationDestinationLabel(record.destination)} connection readiness` : destinationReadiness.message} /></div><div className="flex min-w-0 flex-col-reverse justify-center gap-2 min-[420px]:flex-row"><button onClick={() => setValidationOpen(false)} className="pf-button-secondary shrink-0">Return to setup</button><button onClick={() => { setValidationOpen(false); persist("create"); }} disabled={saving || socialApprovalMissing} className="pf-button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-45">{saving ? <Loader2 className="size-3.5 shrink-0 animate-spin" /> : <Save className="size-3.5 shrink-0" />} {record.destination !== "manual" && !destinationReadiness.ready ? "Save for connection" : "Save reviewed plan"}</button></div></div></div>}
       {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
       <style jsx>{`.pf-input{width:100%;border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface);color:var(--pf-ink);padding:0 10px;font-size:8px;outline:none;resize:none}.pf-input:focus{border-color:#ff4a20;box-shadow:0 0 0 3px rgba(255,74,32,.08)}`}</style>
     </div>
@@ -822,7 +822,7 @@ function DestinationSelector({
 
   return (
     <fieldset>
-      <legend className="mb-1.5 text-[8px] font-semibold text-[#666762]">
+      <legend className="mb-1.5 text-[11px] font-semibold text-[#666762]">
         Destination
       </legend>
       <div className="grid grid-cols-2 gap-1.5">
@@ -874,10 +874,10 @@ function DestinationSelector({
                 )}
               </span>
               <span className="min-w-0">
-                <b className="block truncate text-[8px]">{option.label}</b>
+                <b className="block truncate text-[11px]">{option.label}</b>
                 <small
                   className={cn(
-                    "mt-0.5 block truncate text-[6px]",
+                    "mt-0.5 block truncate text-[9px]",
                     optionReadiness.ready || option.id === "manual"
                       ? "text-[#268B42]"
                       : "text-[#9A6D63]"
@@ -894,7 +894,7 @@ function DestinationSelector({
       {destination !== "manual" && (
         <div
           className={cn(
-            "mt-2 rounded-[9px] border p-3 text-[8px]",
+            "mt-2 rounded-[9px] border p-3 text-[11px]",
             readiness.ready
               ? "border-[#B9DCC2] bg-[#F3FBF5]"
               : "border-[#EFB1A5] bg-[#FFF7F5]"
@@ -944,7 +944,7 @@ function DestinationSelector({
 
               {providerStatus?.connected && providerStatus.account && (
                 <label className="mt-3 block border-t border-black/8 pt-3">
-                  <span className="mb-1.5 block text-[7px] font-semibold text-[#666762]">
+                  <span className="mb-1.5 block text-[10px] font-semibold text-[#666762]">
                     Connected account
                   </span>
                   <select
@@ -954,7 +954,7 @@ function DestinationSelector({
                     onChange={(event) =>
                       onAccountSelect(event.target.value, readiness.accountLabel ?? "Connected account")
                     }
-                    className="h-9 w-full rounded-[8px] border border-[#D8D9D2] bg-white px-2 text-[8px] outline-none focus:border-[#FF4A20]"
+                    className="h-9 w-full rounded-[8px] border border-[#D8D9D2] bg-white px-2 text-[11px] outline-none focus:border-[#FF4A20]"
                     aria-label="Connected social account"
                   >
                     {accountId !== providerStatus.account.id && (
@@ -976,7 +976,7 @@ function DestinationSelector({
                   </span>
                   <span
                     className={cn(
-                      "rounded-full px-2 py-1 text-[6px] font-bold",
+                      "rounded-full px-2 py-1 text-[9px] font-bold",
                       providerStatus.capabilities.publish
                         ? "bg-[#E7F5E9] text-[#268B42]"
                         : "bg-[#FDE9E5] text-[#D94A34]"
@@ -1084,7 +1084,7 @@ function PlaybookPicker({
             >
               Choose a playbook
             </h2>
-            <p className="mt-1 max-w-[560px] text-[8px] leading-4 text-[#858681] sm:text-[9px]">
+            <p className="mt-1 max-w-[560px] text-[11px] leading-4 text-[#858681] sm:text-[10px]">
               Start with a proven Hook, Content, and CTA structure. Preview it,
               select it, then apply when you are ready.
             </p>
@@ -1101,7 +1101,7 @@ function PlaybookPicker({
 
         <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] overflow-y-auto lg:grid-cols-[170px_minmax(0,1fr)] lg:overflow-hidden">
           <aside className="border-b border-[#DEDFD8] bg-[#F2F2ED] p-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-4">
-            <div className="mb-2 flex items-center gap-2 px-1 text-[7px] font-bold uppercase tracking-[0.11em] text-[#90918C]">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[10px] font-bold uppercase tracking-[0.11em] text-[#90918C]">
               <SlidersHorizontal className="size-3" /> Categories
             </div>
             <div className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
@@ -1112,7 +1112,7 @@ function PlaybookPicker({
                   onClick={() => onCategoryChange(item)}
                   aria-pressed={category === item}
                   className={cn(
-                    "flex h-9 shrink-0 items-center justify-between gap-4 rounded-[8px] px-2.5 text-left text-[8px] font-medium transition-colors",
+                    "flex h-9 shrink-0 items-center justify-between gap-4 rounded-[8px] px-2.5 text-left text-[11px] font-medium transition-colors",
                     category === item
                       ? "bg-[#232323] text-white"
                       : "text-[#666762] hover:bg-[#E4E5DE]"
@@ -1126,7 +1126,7 @@ function PlaybookPicker({
                   </span>
                   <span
                     className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[6px] tabular-nums",
+                      "rounded-full px-1.5 py-0.5 text-[9px] tabular-nums",
                       category === item ? "bg-white/15" : "bg-[#E3E4DD] text-[#858681]"
                     )}
                   >
@@ -1144,8 +1144,8 @@ function PlaybookPicker({
                 <Plus className="size-3.5" />
               </span>
               <span>
-                <b className="block text-[8px]">Build from scratch</b>
-                <small className="mt-0.5 block text-[6px] text-[#8D8E89]">Blank three-phase workflow</small>
+                <b className="block text-[11px]">Build from scratch</b>
+                <small className="mt-0.5 block text-[9px] text-[#8D8E89]">Blank three-phase workflow</small>
               </span>
             </button>
           </aside>
@@ -1158,7 +1158,7 @@ function PlaybookPicker({
                   <input
                     value={search}
                     onChange={(event) => onSearchChange(event.target.value)}
-                    className="min-w-0 flex-1 bg-transparent text-[9px] outline-none"
+                    className="min-w-0 flex-1 bg-transparent text-[10px] outline-none"
                     placeholder="Search playbooks, formats, or outcomes…"
                     aria-label="Search playbooks"
                   />
@@ -1173,12 +1173,12 @@ function PlaybookPicker({
                     </button>
                   )}
                 </label>
-                <label className="flex h-9 items-center gap-1.5 rounded-[9px] border border-[#D6D7CF] bg-white px-2 text-[7px] text-[#777873]">
+                <label className="flex h-9 items-center gap-1.5 rounded-[9px] border border-[#D6D7CF] bg-white px-2 text-[10px] text-[#777873]">
                   Sort
                   <select
                     value={sort}
                     onChange={(event) => onSortChange(event.target.value as TemplateSort)}
-                    className="bg-transparent text-[8px] font-semibold text-[#363733] outline-none"
+                    className="bg-transparent text-[11px] font-semibold text-[#363733] outline-none"
                     aria-label="Sort playbooks"
                   >
                     <option value="recommended">Recommended</option>
@@ -1207,7 +1207,7 @@ function PlaybookPicker({
                   </button>
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between text-[7px] text-[#8A8B86]">
+              <div className="mt-2 flex items-center justify-between text-[10px] text-[#8A8B86]">
                 <span>{templates.length} {templates.length === 1 ? "playbook" : "playbooks"}</span>
                 <span>{category === "All" ? "All categories" : category}</span>
               </div>
@@ -1218,7 +1218,7 @@ function PlaybookPicker({
                 <div>
                   <Search className="mx-auto size-6 text-[#A6A7A1]" />
                   <h3 className="mt-3 text-[11px] font-semibold">No matching playbooks</h3>
-                  <p className="mt-1 text-[8px] text-[#858681]">Try another search or category.</p>
+                  <p className="mt-1 text-[11px] text-[#858681]">Try another search or category.</p>
                   <button
                     type="button"
                     onClick={() => {
@@ -1258,8 +1258,8 @@ function PlaybookPicker({
               {templateNumber(selectedTemplate)}
             </span>
             <span className="min-w-0">
-              <small className="block text-[6px] font-bold uppercase tracking-[.1em] text-[#8A8B86]">Selected playbook</small>
-              <b className="mt-0.5 block truncate text-[9px]">{selectedTemplate.name}</b>
+              <small className="block text-[9px] font-bold uppercase tracking-[.1em] text-[#8A8B86]">Selected playbook</small>
+              <b className="mt-0.5 block truncate text-[10px]">{selectedTemplate.name}</b>
             </span>
           </div>
           <div className="flex gap-2">
@@ -1303,7 +1303,7 @@ function PlaybookCard({
     >
       <div className={cn("relative overflow-hidden", TEMPLATE_VISUALS[template.id], view === "grid" ? "h-28" : "h-28 sm:h-full sm:min-h-[138px]")}>
         <span className="absolute left-4 top-4 font-serif text-2xl font-bold italic text-white">{templateNumber(template)}</span>
-        <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[6px] text-white">{template.slides} slides</span>
+        <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[9px] text-white">{template.slides} slides</span>
         <button
           type="button"
           onClick={onToggleFavorite}
@@ -1315,20 +1315,20 @@ function PlaybookCard({
         </button>
       </div>
       <div className="flex min-w-0 flex-col p-3">
-        <span className="text-[6px] font-bold uppercase tracking-[.09em] text-[#FF4A20]">{template.category}</span>
+        <span className="text-[9px] font-bold uppercase tracking-[.09em] text-[#FF4A20]">{template.category}</span>
         <div className="mt-1 flex items-start justify-between gap-2">
           <h3 className="text-[11px] font-semibold">{template.name}</h3>
           {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[#268B42]" aria-label="Selected" />}
         </div>
-        <p className="mt-1 min-h-8 text-[7px] leading-4 text-[#81827D]">{template.description}</p>
+        <p className="mt-1 min-h-8 text-[10px] leading-4 text-[#81827D]">{template.description}</p>
         <div className="mt-3 flex items-center gap-2 border-t border-[#ECECE7] pt-2">
-          <button type="button" onClick={onPreview} className="h-7 flex-1 rounded-[7px] border border-[#D8D9D2] text-[7px] font-semibold hover:bg-[#F2F3ED]">
+          <button type="button" onClick={onPreview} className="h-7 flex-1 rounded-[7px] border border-[#D8D9D2] text-[10px] font-semibold hover:bg-[#F2F3ED]">
             Preview
           </button>
           <button
             type="button"
             onClick={onSelect}
-            className={cn("flex h-7 flex-1 items-center justify-center gap-1 rounded-[7px] text-[7px] font-semibold", selected ? "bg-[#E7F5E9] text-[#268B42]" : "bg-[#232323] text-white")}
+            className={cn("flex h-7 flex-1 items-center justify-center gap-1 rounded-[7px] text-[10px] font-semibold", selected ? "bg-[#E7F5E9] text-[#268B42]" : "bg-[#232323] text-white")}
           >
             {selected && <Check className="size-2.5" />}
             {selected ? "Selected" : "Select"}
@@ -1346,11 +1346,11 @@ function templateNumber(template: AutomationTemplate) {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><span className="mb-1.5 block text-[8px] font-semibold text-[#666762]">{label}</span>{children}</label>;
+  return <label className="block"><span className="mb-1.5 block text-[11px] font-semibold text-[#666762]">{label}</span>{children}</label>;
 }
 
 function Select({ value, onChange, options, labels }: { value: string; onChange: (value: string) => void; options: readonly string[]; labels?: Record<string, string> }) {
-  return <select value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-[8px] border border-[#D8D9D2] bg-[var(--pf-surface)] px-2 text-[8px] text-[var(--pf-ink)] outline-none focus:border-[#FF4A20]">{options.map((option) => <option key={option} value={option}>{labels?.[option] ?? option}</option>)}</select>;
+  return <select value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-[8px] border border-[#D8D9D2] bg-[var(--pf-surface)] px-2 text-[11px] text-[var(--pf-ink)] outline-none focus:border-[#FF4A20]">{options.map((option) => <option key={option} value={option}>{labels?.[option] ?? option}</option>)}</select>;
 }
 
 function ValidationRow({ ok, text }: { ok: boolean; text: string }) {

@@ -277,7 +277,7 @@ export function AvatarCreationCard({
           className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:opacity-50"
         >
           {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          <span className="text-[8px] font-bold uppercase tracking-wide">Upload</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide">Upload</span>
         </button>
 
         <button
@@ -287,7 +287,7 @@ export function AvatarCreationCard({
           className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-blue hover:text-accent-blue"
         >
           <Sparkles className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Generate</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide">Generate</span>
         </button>
 
         <button
@@ -297,7 +297,7 @@ export function AvatarCreationCard({
           className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green"
         >
           <FileJson className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Import</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide">Import</span>
         </button>
 
         <button
@@ -307,7 +307,7 @@ export function AvatarCreationCard({
           className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35 text-muted-foreground transition-colors hover:border-accent-coral hover:text-accent-coral"
         >
           <ImageIcon className="size-4" />
-          <span className="text-[8px] font-bold uppercase tracking-wide">Gallery</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide">Gallery</span>
         </button>
       </div>
     </div>
@@ -335,10 +335,10 @@ export function AvatarOptionCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border bg-muted/35 p-2.5 transition-all",
+        "group relative overflow-hidden rounded-xl border bg-muted/35 p-2.5 shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
         isSelected
-          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16)]"
-          : "border-border hover:border-accent-green/45 hover:bg-muted/55"
+          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16),var(--pf-shadow-sm)]"
+          : "border-border hover:-translate-y-0.5 hover:border-accent-green/45 hover:bg-muted/55 hover:shadow-[var(--pf-shadow-md)]"
       )}
     >
       <button
@@ -351,7 +351,7 @@ export function AvatarOptionCard({
           <img
             src={`/api/avatars/${avatar.id}`}
             alt={label}
-            className="size-full object-cover"
+            className="size-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
         </div>
 
@@ -361,7 +361,7 @@ export function AvatarOptionCard({
           </p>
           <span
             className={cn(
-              "shrink-0 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-widest",
+              "shrink-0 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-widest",
               isSelected
                 ? "bg-accent-green/15 text-accent-green"
                 : "bg-muted/40 text-muted-foreground"
@@ -373,13 +373,13 @@ export function AvatarOptionCard({
 
         <div className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5">
           {originLabel && (
-            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               {originLabel}
             </span>
           )}
           <span
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider",
+              "rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
               avatar.identityPack?.status === "completed"
                 ? "border-accent-green/25 bg-accent-green/10 text-accent-green"
                 : avatar.identityPack?.status === "failed"

@@ -104,7 +104,7 @@ export function UGCCloneQueue() {
   }, [fetchJobs, hasActiveJobs]);
 
   return (
-    <section className="rounded-lg border border-border bg-card shadow-sm">
+    <section className="rounded-xl border border-border bg-card shadow-[var(--pf-shadow-xs)]">
       <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
@@ -165,7 +165,7 @@ export function UGCCloneQueue() {
               key={job.id}
               href={`/ugc-clone/${job.id}`}
               className={cn(
-                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-colors duration-150 hover:border-foreground/20 hover:bg-muted/50",
+                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-xs)]",
                 isActive && "border-accent-blue/30 bg-accent-blue/5"
               )}
             >

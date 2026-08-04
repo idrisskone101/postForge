@@ -649,12 +649,45 @@ export function InspirationPageClient({
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-border bg-card px-4 py-3">
-              <div><strong className="text-lg font-semibold">{accounts.length}</strong><span className="ml-2 text-xs text-muted-foreground">tracked creators</span></div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-border bg-card px-4 py-3 shadow-[var(--pf-shadow-xs)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveFilter("all");
+                  document.getElementById("tracked-creators-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                title="Show all tracked creators"
+                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+              >
+                <strong className="text-lg font-semibold tabular-nums">{accounts.length}</strong>
+                <span className="ml-2 text-xs text-muted-foreground underline-offset-2">tracked creators</span>
+              </button>
               <span className="hidden h-6 w-px bg-border sm:block" />
-              <div><strong className="text-lg font-semibold">{trackedVideoCount}</strong><span className="ml-2 text-xs text-muted-foreground">saved sources</span></div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSourceFeedFilter("all");
+                  document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                title="Show every saved source"
+                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+              >
+                <strong className="text-lg font-semibold tabular-nums">{trackedVideoCount}</strong>
+                <span className="ml-2 text-xs text-muted-foreground">saved sources</span>
+              </button>
               <span className="hidden h-6 w-px bg-border sm:block" />
-              <div><strong className="text-lg font-semibold">{sourceUsageCounts.unused}</strong><span className="ml-2 text-xs text-muted-foreground">ready to use</span></div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSourceFeedFilter("unused");
+                  document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                title="Filter the library to fresh sources"
+                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+              >
+                <strong className="text-lg font-semibold tabular-nums">{sourceUsageCounts.unused}</strong>
+                <span className="ml-2 text-xs text-muted-foreground">ready to use</span>
+              </button>
               <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
                 <span className="inline-flex min-w-0 items-center gap-1.5 text-xs font-medium text-[#ff4a20]">
                   <Sparkles className="size-3.5 shrink-0" /> <span className="min-w-0 break-words [overflow-wrap:anywhere]">Fresh posts stay at the front</span>
@@ -682,12 +715,9 @@ export function InspirationPageClient({
               aria-labelledby="tracked-creators-heading"
               className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
             >
-              <div className="mb-3 flex items-end justify-between gap-4">
-                <div>
-                  <h3 id="tracked-creators-heading" className="text-sm font-semibold">Tracked creators</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">Choose a creator to narrow the source library.</p>
-                </div>
-                <span className="text-[11px] text-muted-foreground">Scroll to browse</span>
+              <div className="mb-3">
+                <h3 id="tracked-creators-heading" className="text-sm font-semibold">Tracked creators</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Choose a creator to narrow the source library.</p>
               </div>
 
               <div
@@ -699,10 +729,10 @@ export function InspirationPageClient({
                   type="button"
                   onClick={() => setActiveFilter("all")}
                   className={cn(
-                    "flex w-44 max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors",
+                    "flex w-44 max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
                     activeFilter === "all"
-                      ? "border-foreground/20 bg-foreground text-background"
-                      : "border-border bg-card hover:bg-muted/60"
+                      ? "border-foreground/20 bg-foreground text-background shadow-[var(--pf-shadow-sm)]"
+                      : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:bg-muted/60 hover:shadow-[var(--pf-shadow-xs)]"
                   )}
                 >
                   <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", activeFilter === "all" ? "bg-background/15" : "bg-muted text-muted-foreground")}>
@@ -727,10 +757,10 @@ export function InspirationPageClient({
                     <div
                       key={account.id}
                       className={cn(
-                        "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-lg border pr-1.5 transition-colors",
+                        "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-lg border pr-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                         isActive
-                          ? "border-foreground/20 bg-card shadow-sm"
-                          : "border-border bg-card hover:bg-muted/40"
+                          ? "border-foreground/20 bg-card shadow-[var(--pf-shadow-sm)]"
+                          : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:bg-muted/40 hover:shadow-[var(--pf-shadow-xs)]"
                       )}
                     >
                       <button
@@ -777,7 +807,7 @@ export function InspirationPageClient({
 
             <div className="flex flex-wrap items-end justify-between gap-3 border-t border-border pt-5">
               <div className="min-w-0">
-                <h3 className="text-lg font-semibold tracking-tight">Source library</h3>
+                <h3 id="source-library-heading" className="text-lg font-semibold tracking-tight">Source library</h3>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {activeSourceLabel} · {visibleFeedVideos.length} of {feedVideos.length} {activeFeedFilterLabel.toLowerCase()}
                 </p>
@@ -787,7 +817,7 @@ export function InspirationPageClient({
                 data-source-feed-tabs="true"
                 role="tablist"
                 aria-label="Source usage filter"
-                className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 sm:w-auto"
+                className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-[var(--pf-shadow-xs)] sm:w-auto"
               >
                 {SOURCE_FEED_FILTERS.map((filter) => {
                   const isActive = sourceFeedFilter === filter.value;
@@ -825,7 +855,7 @@ export function InspirationPageClient({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-2 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-xs)] sm:flex-row sm:items-center">
               <label className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -943,7 +973,7 @@ export function InspirationPageClient({
                       key={video.id}
                       data-inspiration-video-id={video.id}
                       data-source-decision={video.sourceDecision.status}
-                      className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-foreground/20"
+                      className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-[var(--pf-shadow-md)]"
                     >
                       <button
                         type="button"
@@ -1290,7 +1320,7 @@ export function InspirationPageClient({
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-border bg-card p-3">
+                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         Views
                       </p>
@@ -1298,7 +1328,7 @@ export function InspirationPageClient({
                         {formatMetric(selectedVideo.viewCount)}
                       </p>
                     </div>
-                    <div className="rounded-lg border border-border bg-card p-3">
+                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         Likes
                       </p>
@@ -1306,7 +1336,7 @@ export function InspirationPageClient({
                         {formatMetric(selectedVideo.likeCount)}
                       </p>
                     </div>
-                    <div className="rounded-lg border border-border bg-card p-3">
+                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         Comments
                       </p>
@@ -1314,7 +1344,7 @@ export function InspirationPageClient({
                         {formatMetric(selectedVideo.commentCount)}
                       </p>
                     </div>
-                    <div className="rounded-lg border border-border bg-card p-3">
+                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         Shares
                       </p>
@@ -1324,7 +1354,7 @@ export function InspirationPageClient({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border border-border bg-card p-4">
+                  <div className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                       Post Details
                     </p>

@@ -149,7 +149,7 @@ function CloneModelSelect({
             {() => (
               <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
                 <span className="min-w-0 flex-1 overflow-hidden text-left">
-                  <span className={cn("block text-[9px] font-bold uppercase tracking-wider", accentClassName)}>
+                  <span className={cn("block text-[10px] font-bold uppercase tracking-wider", accentClassName)}>
                     {compactLabel}
                   </span>
                   <span className="block truncate text-[11px] font-semibold leading-4">
@@ -645,6 +645,7 @@ function CloneLiveComposition({
   sourceReady,
   identityReady,
   referenceReady,
+  onJumpToStep,
 }: {
   activeStep: CloneSetupStep;
   videoInfo: TikTokVideoInfo | null;
@@ -656,6 +657,7 @@ function CloneLiveComposition({
   sourceReady: boolean;
   identityReady: boolean;
   referenceReady: boolean;
+  onJumpToStep: (step: CloneSetupStep) => void;
 }) {
   const referencePreview = collectionReferenceUrl ?? selectedReference?.previewUrl ??
     (selectedGeneratedReference?.status === "completed" && selectedGeneratedReference.fileId
@@ -664,6 +666,7 @@ function CloneLiveComposition({
   const avatarPreview = avatarId
     ? `/api/avatars/${encodeURIComponent(avatarId)}`
     : null;
+  const hasComposition = Boolean(referencePreview ?? avatarPreview ?? (sourcePreviewSrc && videoInfo));
   const stageLabel = referencePreview
     ? "Reference composition"
     : avatarPreview
@@ -672,88 +675,162 @@ function CloneLiveComposition({
         ? "Source composition"
         : "Live composition";
 
+  const slots: {
+    id: CloneSetupStep;
+    label: string;
+    ready: boolean;
+    thumb: ReactNode;
+  }[] = [
+    {
+      id: "source",
+      label: "Source",
+      ready: sourceReady,
+      thumb: (
+        <span className="grid size-full place-items-center bg-accent-blue/10 text-accent-blue">
+          <Video className="size-3.5" />
+        </span>
+      ),
+    },
+    {
+      id: "identity",
+      label: "Identity",
+      ready: identityReady,
+      thumb: avatarPreview ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={avatarPreview} alt="" className="size-full object-cover" />
+      ) : (
+        <span className="grid size-full place-items-center bg-accent-green/10 text-accent-green">
+          <Users className="size-3.5" />
+        </span>
+      ),
+    },
+    {
+      id: "reference",
+      label: "Reference",
+      ready: referenceReady,
+      thumb: referencePreview ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={referencePreview} alt="" className="size-full object-cover" />
+      ) : (
+        <span className="grid size-full place-items-center bg-accent-coral/10 text-accent-coral">
+          <Layers className="size-3.5" />
+        </span>
+      ),
+    },
+  ];
+
   return (
     <aside
       data-clone-live-composition="true"
-      className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#edeee8] lg:sticky lg:top-4"
+      className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#edeee8] shadow-[var(--pf-shadow-xs)] lg:sticky lg:top-4"
     >
       <div className="flex h-12 items-center justify-between border-b border-border px-4">
         <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-accent-green" />
+          {hasComposition && <span className="size-1.5 rounded-full bg-accent-green" />}
           {stageLabel}
         </span>
-        <span className="rounded-md border border-border bg-white px-2 py-1 text-[9px] font-semibold text-muted-foreground">
+        <span className="rounded-md border border-border bg-white px-2 py-1 text-[10px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
           9:16 · Fit
         </span>
       </div>
 
-      <div className="bg-[radial-gradient(#d3d4cd_0.75px,transparent_0.75px)] bg-[length:16px_16px] p-5 sm:p-7">
-        <div className="mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-[18px] border-[7px] border-white bg-[#242522] shadow-[0_18px_45px_rgba(41,42,37,0.2)]">
-          {referencePreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={referencePreview}
-              alt="Selected clone reference"
-              className="size-full object-contain"
-            />
-          ) : avatarPreview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarPreview}
-              alt="Selected clone identity"
-              className="size-full object-cover"
-            />
-          ) : sourcePreviewSrc && videoInfo ? (
-            <video
-              src={sourcePreviewSrc}
-              width={videoInfo.width}
-              height={videoInfo.height}
-              muted
-              playsInline
-              controls
-              preload="metadata"
-              className="size-full object-cover"
-            />
-          ) : (
-            <div className="grid size-full place-items-center px-8 text-center">
-              <div>
-                <span className="mx-auto grid size-12 place-items-center rounded-full border border-white/15 bg-white/10 text-white">
-                  <Eye className="size-5" />
-                </span>
-                <p className="mt-4 text-sm font-semibold text-white">Your clone takes shape here</p>
-                <p className="mt-1 text-xs leading-5 text-white/55">
-                  Add a source, identity, and reference to prepare the composition.
-                </p>
-              </div>
+      <div className="bg-[radial-gradient(#d3d4cd_0.75px,transparent_0.75px)] bg-[length:16px_16px] p-5 dark:bg-[radial-gradient(rgba(255,255,255,0.09)_0.75px,transparent_0.75px)] sm:p-7">
+        {hasComposition ? (
+          <div className="mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-[20px] border-[6px] border-white bg-[#242522] shadow-[var(--pf-shadow-lg)]">
+            {referencePreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={referencePreview}
+                alt="Selected clone reference"
+                className="size-full object-contain"
+              />
+            ) : avatarPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarPreview}
+                alt="Selected clone identity"
+                className="size-full object-cover"
+              />
+            ) : sourcePreviewSrc && videoInfo ? (
+              <video
+                src={sourcePreviewSrc}
+                width={videoInfo.width}
+                height={videoInfo.height}
+                muted
+                playsInline
+                controls
+                preload="metadata"
+                className="size-full object-cover"
+              />
+            ) : null}
+          </div>
+        ) : (
+          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#C7C8C0] bg-[#F7F7F3] px-8 text-center shadow-[inset_0_1px_2px_rgba(67,60,42,0.04)]">
+            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-white text-muted-foreground shadow-[var(--pf-shadow-xs)]">
+              <Eye className="size-5" />
+            </span>
+            <p className="mt-4 text-sm font-semibold text-foreground">Your clone takes shape here</p>
+            <p className="mt-1 max-w-[240px] text-xs leading-5 text-muted-foreground">
+              Complete the three inputs and the composition builds live.
+            </p>
+            <div className="mt-5 grid w-full max-w-[240px] gap-1.5">
+              {slots.map((slot) => (
+                <button
+                  key={slot.id}
+                  type="button"
+                  onClick={() => onJumpToStep(slot.id)}
+                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-white px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
+                >
+                  <span className="size-6 shrink-0 overflow-hidden rounded-md">{slot.thumb}</span>
+                  <span className="min-w-0 flex-1 truncate text-[11px] font-semibold text-foreground">
+                    {slot.label}
+                  </span>
+                  <span className={cn(
+                    "shrink-0 text-[10px] font-bold uppercase tracking-wider",
+                    slot.ready ? "text-accent-green" : "text-accent-coral"
+                  )}>
+                    {slot.ready ? "Ready" : "Add"}
+                  </span>
+                </button>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-px border-t border-border bg-border">
-        {[
-          { label: "Source", ready: sourceReady },
-          { label: "Identity", ready: identityReady },
-          { label: "Reference", ready: referenceReady },
-        ].map((item) => (
-          <div key={item.label} className="bg-white px-3 py-3">
-            <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-              {item.label}
-            </p>
-            <p className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold">
-              <span
-                className={cn(
-                  "size-1.5 rounded-full",
-                  item.ready ? "bg-accent-green" : "bg-border"
-                )}
-              />
-              {item.ready ? "Ready" : "Required"}
-            </p>
-          </div>
+        {slots.map((slot) => (
+          <button
+            key={slot.id}
+            type="button"
+            onClick={() => onJumpToStep(slot.id)}
+            aria-label={`${slot.label}: ${slot.ready ? "ready" : "required"}. Edit ${slot.label}.`}
+            className="group flex items-center gap-2 bg-white px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[#F8F9F5]"
+          >
+            <span className="size-7 shrink-0 overflow-hidden rounded-md border border-border shadow-[var(--pf-shadow-2xs)]">
+              {slot.thumb}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                {slot.label}
+              </span>
+              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold">
+                <span
+                  className={cn(
+                    "size-1.5 shrink-0 rounded-full",
+                    slot.ready ? "bg-accent-green" : "bg-[#D9DAD3]"
+                  )}
+                />
+                <span className={cn("truncate", !slot.ready && "text-muted-foreground")}>
+                  {slot.ready ? "Ready" : "Required"}
+                </span>
+              </span>
+            </span>
+          </button>
         ))}
       </div>
       <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3 text-[10px] text-muted-foreground">
-        <span>Editing {activeStep}</span>
+        <span className="capitalize">Editing {activeStep}</span>
         <span>{referenceReady && identityReady && sourceReady ? "All inputs ready" : "Setup in progress"}</span>
       </div>
     </aside>
@@ -1544,10 +1621,10 @@ export function UGCCloneForm() {
                         </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-destructive/10">
-                          <span className="text-[9px] text-destructive">Failed</span>
+                          <span className="text-[10px] text-destructive">Failed</span>
                         </div>
                       )}
-                      <span className="absolute bottom-0.5 right-1 text-[9px] font-bold text-white drop-shadow-md">
+                      <span className="absolute bottom-0.5 right-1 text-[10px] font-bold text-white drop-shadow-md">
                         #{i + 1}
                       </span>
                     </button>
@@ -1662,7 +1739,7 @@ export function UGCCloneForm() {
       >
         <nav
           aria-label="Clone setup progress"
-          className="grid grid-cols-3 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-sm"
+          className="grid grid-cols-3 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-[var(--pf-shadow-xs)]"
         >
           {CLONE_SETUP_STEPS.map((step) => {
             const isActive = activeSetupStep === step.id;
@@ -1676,19 +1753,19 @@ export function UGCCloneForm() {
                 aria-label={`${step.number}. ${step.label}`}
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "group flex min-w-0 items-center gap-1.5 rounded-xl px-2 py-2.5 text-left transition-colors sm:gap-3 sm:px-4",
+                  "group flex min-w-0 items-center gap-1.5 rounded-[10px] px-2 py-2.5 text-left transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-3 sm:px-4",
                   isActive
-                    ? "bg-foreground text-white shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground/80"
+                    ? "bg-muted/70 text-foreground shadow-[var(--pf-shadow-xs)] ring-1 ring-border"
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground/80 active:scale-[0.98]"
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-7 shrink-0 items-center justify-center rounded-lg border font-mono text-[10px] font-bold sm:size-8",
+                    "flex size-7 shrink-0 items-center justify-center rounded-lg border font-mono text-[10px] font-bold transition-colors duration-[180ms] sm:size-8",
                     isComplete
                       ? "border-accent-green/30 bg-accent-green/12 text-accent-green"
                       : isActive
-                        ? "border-accent-coral/30 bg-accent-coral/12 text-accent-coral"
+                        ? "border-transparent bg-accent-coral text-white shadow-[var(--pf-shadow-2xs)]"
                         : "border-border bg-muted/50"
                   )}
                 >
@@ -1698,10 +1775,7 @@ export function UGCCloneForm() {
                   <span className="block truncate text-[11px] font-semibold sm:text-sm">
                     {step.shortLabel}
                   </span>
-                  <span className={cn(
-                    "mt-0.5 hidden truncate text-[10px] sm:block",
-                    isActive ? "text-white/55" : "text-muted-foreground"
-                  )}>
+                  <span className="mt-0.5 hidden truncate text-[10px] text-muted-foreground sm:block">
                     {step.description}
                   </span>
                 </span>
@@ -1710,11 +1784,11 @@ export function UGCCloneForm() {
           })}
         </nav>
 
-        <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(360px,36fr)_minmax(0,64fr)]">
+        <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(420px,45fr)_minmax(0,55fr)]">
           <section
             data-clone-source-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 sm:p-5",
+              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
               activeSetupStep !== "source" && "hidden"
             )}
           >
@@ -1822,7 +1896,7 @@ export function UGCCloneForm() {
           <section
             data-clone-identity-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 sm:p-5",
+              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
               activeSetupStep !== "identity" && "hidden"
             )}
           >
@@ -1869,7 +1943,7 @@ export function UGCCloneForm() {
           <section
             data-clone-reference-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 sm:p-5",
+              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
               activeSetupStep !== "reference" && "hidden"
             )}
           >
@@ -1897,7 +1971,7 @@ export function UGCCloneForm() {
                       Source motion and selected identity
                     </p>
                   </div>
-                  <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Side by side
                   </span>
                 </div>
@@ -1930,7 +2004,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[#C7C8C0] bg-[#F7F7F3] p-4 text-center">
                     <CloneSourceEmptyState />
                   </ReferencePortraitFrame>
                 )}
@@ -1980,7 +2054,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : selectedRef?.status === "generating" ? (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-[#F7F7F3] p-4 text-center">
                     <Loader2 className="size-7 animate-spin text-accent-coral" />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Generating reference
@@ -2047,7 +2121,7 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[#C7C8C0] bg-[#F7F7F3] p-4 text-center">
                     <Users className="size-6 text-muted-foreground/60" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Choose identity
@@ -2268,11 +2342,11 @@ export function UGCCloneForm() {
                               <Loader2 className="size-4 animate-spin" />
                             </span>
                           ) : (
-                            <span className="grid size-full place-items-center bg-destructive/10 text-[9px] font-semibold uppercase text-destructive">
+                            <span className="grid size-full place-items-center bg-destructive/10 text-[10px] font-semibold uppercase text-destructive">
                               Failed
                             </span>
                           )}
-                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-white">
                             #{index + 1}
                           </span>
                         </button>
@@ -2420,7 +2494,7 @@ export function UGCCloneForm() {
                             alt={reference.label}
                             className="size-full object-cover"
                           />
-                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
+                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[10px] font-medium text-white">
                             <span className="block truncate">{reference.label}</span>
                           </span>
                         </div>
@@ -2453,6 +2527,7 @@ export function UGCCloneForm() {
             sourceReady={sourceReady}
             identityReady={avatarReady}
             referenceReady={referenceReady}
+            onJumpToStep={setActiveSetupStep}
           />
         </div>
 
@@ -2464,11 +2539,11 @@ export function UGCCloneForm() {
         className="workspace-sidebar-offset-left pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 md:left-[72px] lg:px-8 xl:left-64"
       >
         <div
-          className="pointer-events-auto relative mx-auto max-w-[1120px] rounded-xl border border-border bg-card/96 p-2.5 shadow-[0_18px_50px_rgba(35,35,35,0.16)] backdrop-blur-2xl sm:p-3"
+          className="pointer-events-auto relative mx-auto max-w-[1120px] rounded-2xl border border-border bg-card/96 p-2.5 shadow-[var(--pf-shadow-lg)] backdrop-blur-2xl sm:p-3"
           title={`${cloneTip.title}: ${cloneTip.body}`}
         >
           {mobileSettingsOpen && (
-            <div className="absolute inset-x-0 bottom-[calc(100%+0.5rem)] max-h-[min(70dvh,480px)] space-y-2 overflow-y-auto rounded-xl border border-border bg-card/98 p-3 shadow-[0_18px_50px_rgba(35,35,35,0.16)] backdrop-blur-2xl lg:hidden">
+            <div className="absolute inset-x-0 bottom-[calc(100%+0.5rem)] max-h-[min(70dvh,480px)] space-y-2 overflow-y-auto rounded-2xl border border-border bg-card/98 p-3 shadow-[var(--pf-shadow-lg)] backdrop-blur-2xl lg:hidden">
               <div className="mb-1 flex items-center justify-between gap-3 px-1">
                 <div>
                   <p className="text-xs font-semibold text-foreground">Generation settings</p>
@@ -2523,7 +2598,7 @@ export function UGCCloneForm() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={primaryActionDisabled}
-              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:bg-[#e9421c] active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
             >
               <Zap className="size-3.5 shrink-0" />
               <span className="truncate">
@@ -2601,9 +2676,9 @@ export function UGCCloneForm() {
                 type="button"
                 onClick={handlePrimaryAction}
                 disabled={primaryActionDisabled}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:bg-[#e9421c] active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
               >
-                <Zap className="size-3.5" />
+                <Zap className="size-3.5 shrink-0" />
                 <span className="truncate">
                   {isSubmitting
                     ? "Starting..."
@@ -2611,6 +2686,11 @@ export function UGCCloneForm() {
                       ? "Generating reference..."
                       : compactActionLabel}
                 </span>
+                {!isSubmitting && !isGenerating && (
+                  <span className="shrink-0 rounded-md bg-white/15 px-1.5 py-0.5 font-mono text-[10px] font-bold normal-case tracking-normal">
+                    {formatCost((totalRefCost || referenceBatchCost) + videoCost + textErasureCost)}
+                  </span>
+                )}
               </button>
           </div>
         </div>

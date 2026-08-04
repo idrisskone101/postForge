@@ -637,19 +637,19 @@ export function AutomationsPageClient() {
   return (
     <div className="px-5 py-5 sm:px-7 lg:px-8">
       {error && <div role="alert" className="mb-4 grid min-w-0 grid-cols-[28px_minmax(0,1fr)] items-center gap-2 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D] sm:grid-cols-[28px_minmax(0,1fr)_auto]"><CircleAlert className="size-4 shrink-0" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={load} className="pf-button-secondary col-span-2 shrink-0 !min-h-8 sm:col-span-1"><RefreshCw className="size-3 shrink-0" /> Retry</button></div>}
-      {integrationsError && <div role="alert" className="mb-4 grid min-w-0 grid-cols-[28px_minmax(0,1fr)] items-center gap-2 rounded-[9px] border border-[#E7C990] bg-[#FFFAEC] px-3 py-2 text-[9px] text-[#806126] sm:grid-cols-[28px_minmax(0,1fr)_auto]"><CircleAlert className="size-4 shrink-0" /><span className="min-w-0 break-words [overflow-wrap:anywhere]"><b className="block text-[8px]">Live social connection status is unavailable</b><small className="mt-0.5 block min-w-0 break-words text-[7px] [overflow-wrap:anywhere]">{integrationsError}. Social automations remain visibly gated; no connection is assumed.</small></span><button onClick={load} className="pf-button-secondary col-span-2 shrink-0 !min-h-8 sm:col-span-1"><RefreshCw className="size-3 shrink-0" /> Check again</button></div>}
-      {records.length === 0 ? <section className="pf-card flex min-h-[650px] min-w-0 flex-col items-center justify-center p-6 text-center"><div className="relative h-36 w-full min-w-0 max-w-72"><span className="absolute left-7 right-7 top-16 h-0.5 bg-[#DEDFD8]" /><span className="absolute left-5 top-8 grid size-[58px] place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[9px] font-bold text-[#FF4A20] shadow-md min-[380px]:size-[66px]">HOOK</span><span className="absolute left-1/2 top-8 grid size-[58px] -translate-x-1/2 place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[9px] font-bold text-[#378EFF] shadow-md min-[380px]:size-[66px]">POST</span><span className="absolute right-5 top-8 grid size-[58px] place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[#22A052] shadow-md min-[380px]:size-[66px]"><Check className="size-4 shrink-0" /></span></div><p className="pf-eyebrow">Reusable content planning</p><h2 className="mt-2 text-[24px] font-semibold tracking-[-0.04em]">Build your first reviewed content plan</h2><p className="mt-2 max-w-[440px] text-[10px] leading-5 text-[#7F807B]">Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation.</p><Link href="/automations/new" className="pf-button-primary mt-5"><Plus className="size-3.5 shrink-0" /> Create a content plan</Link><div className="mt-7 flex flex-col gap-2 text-left text-[8px] text-[#777873] sm:flex-row sm:gap-6"><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">1</i>Pick a playbook</span><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">2</i>Choose a destination</span><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">3</i>Save approval rules</span></div></section> : <>
+      {integrationsError && <div role="alert" className="mb-4 grid min-w-0 grid-cols-[28px_minmax(0,1fr)] items-center gap-2 rounded-[9px] border border-[#E7C990] bg-[#FFFAEC] px-3 py-2 text-[9px] text-[#806126] sm:grid-cols-[28px_minmax(0,1fr)_auto]"><CircleAlert className="size-4 shrink-0" /><span className="min-w-0 break-words [overflow-wrap:anywhere]"><b className="block text-[11px]">Live social connection status is unavailable</b><small className="mt-0.5 block min-w-0 break-words text-[10px] [overflow-wrap:anywhere]">{integrationsError}. Social automations remain visibly gated; no connection is assumed.</small></span><button onClick={load} className="pf-button-secondary col-span-2 shrink-0 !min-h-8 sm:col-span-1"><RefreshCw className="size-3 shrink-0" /> Check again</button></div>}
+      {records.length === 0 ? <section className="pf-card pf-empty-stage flex min-h-[650px] min-w-0 flex-col items-center justify-center p-6 text-center"><div className="relative h-36 w-full min-w-0 max-w-72"><span className="absolute left-7 right-7 top-16 h-0.5 bg-[#DEDFD8]" /><span className="absolute left-5 top-8 grid size-[58px] place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[9px] font-bold text-[#FF4A20] shadow-md min-[380px]:size-[66px]">HOOK</span><span className="absolute left-1/2 top-8 grid size-[58px] -translate-x-1/2 place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[9px] font-bold text-[#378EFF] shadow-md min-[380px]:size-[66px]">POST</span><span className="absolute right-5 top-8 grid size-[58px] place-items-center rounded-[13px] border border-[#DADBD2] bg-[#FAFAF7] text-[#22A052] shadow-md min-[380px]:size-[66px]"><Check className="size-4 shrink-0" /></span></div><p className="pf-eyebrow">Reusable content planning</p><h2 className="mt-2 text-[24px] font-semibold tracking-[-0.04em]">Build your first reviewed content plan</h2><p className="mt-2 max-w-[440px] text-[10px] leading-5 text-[#7F807B]">Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation.</p><Link href="/automations/new" className="pf-button-primary mt-5"><Plus className="size-3.5 shrink-0" /> Create a content plan</Link><div className="mt-7 flex flex-col gap-2 text-left text-[11px] text-[#777873] sm:flex-row sm:gap-6"><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">1</i>Pick a playbook</span><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">2</i>Choose a destination</span><span><i className="mr-1.5 inline-grid size-5 place-items-center rounded-full bg-[#F0F1EB] not-italic">3</i>Save approval rules</span></div></section> : <>
         <section className="grid grid-cols-2 gap-2 xl:grid-cols-4"><Metric label="Ready plans" value={String(readyPlanCount)} detail={`${activeScheduleCount} local schedule${activeScheduleCount === 1 ? "" : "s"} active`} tone="success" /><Metric label="Saved workflows" value={String(records.length)} detail={`${records.filter((record) => record.status === "draft").length} drafts`} /><Metric label="Planned days" value={String(scheduledDays)} detail="Across the current week" /><Metric label="Requires attention" value={String(attentionCount)} detail={attentionCount ? "Review schedule or connection" : "Everything is configured"} tone={attentionCount ? "danger" : "success"} /></section>
-        <section className="pf-card mt-3 p-4"><div className="flex items-start justify-between"><div><p className="pf-eyebrow">This week</p><h2 className="pf-section-title mt-1">Planning calendar</h2></div><span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F1EB] px-2.5 py-1 text-[7px] text-[#777873]"><CalendarDays className="size-3" /> Local review schedule</span></div><div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">{DAYS.map((day, index) => { const matching = records.filter((record) => record.schedule.days.includes(day)); const date = weekDates[index]; const isToday = localDateKey(date) === todayKey; return <div key={day} className={cn("min-h-[96px] min-w-0 rounded-[9px] border border-[#E0E1DA] bg-white p-2",isToday && "bg-[#FFF9F7]")}><b className="block truncate text-[7px] uppercase text-[#777873]">{day}</b><span title={date.toLocaleDateString()} className={cn("mt-1 grid size-5 place-items-center rounded-full text-[8px]",isToday && "bg-[#FF4A20] text-white")}>{date.getDate()}</span><div className="mt-2 space-y-1">{matching.slice(0, 2).map((record) => <span key={record.id} className={cn("block truncate rounded-[4px] border-l-2 px-1.5 py-1 text-[5.5px]",automationNeedsAttention(record, integrationStatuses, integrationsLoading) ? "border-[#EF4444] bg-[#FFF0ED] text-[#C74331]" : isAutomationExecutionEnabled(record) && record.status === "active" ? "border-[#22A052] bg-[#EEF8F0] text-[#268B42]" : "border-[#FF4A20] bg-[#FFF0EB] text-[#DF482D]")}>{record.schedule.time} · {record.name}</span>)}</div></div>; })}</div></section>
-        <section className="pf-card mt-3 overflow-visible p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><p className="pf-eyebrow">Workflows</p><h2 className="pf-section-title mt-1">Your automations</h2><p className="mt-1 max-w-[560px] min-w-0 break-words text-[7px] leading-4 text-[#858681] [overflow-wrap:anywhere]">Manual Review queue plans can generate real image drafts on their saved local schedule after you activate them. Social plans never auto-publish: each approved Gallery video requires a separate provider review and explicit confirmation.</p></div><div className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-[#F0F1EB] p-1">{FILTERS.map((item) => <button key={item} onClick={() => setFilter(item)} className={cn("h-7 whitespace-nowrap rounded-[6px] px-2 text-[7px] text-[#777873]",filter === item && "bg-white font-semibold text-[#232323] shadow-sm")}>{item}{item === "Needs attention" && attentionCount > 0 && <span className="ml-1 rounded-full bg-[#FF4A20] px-1.5 py-0.5 text-[5px] text-white">{attentionCount}</span>}</button>)}</div></div>
-          <div className="mt-4 hidden grid-cols-[1.5fr_1fr_1fr_.8fr_28px] gap-3 px-2 text-[6px] font-bold uppercase tracking-[.08em] text-[#979893] md:grid"><span>Automation</span><span>Destination</span><span>Cadence</span><span>Status</span><span /></div>
+        <section className="pf-card mt-3 p-4"><div className="flex items-start justify-between"><div><p className="pf-eyebrow">This week</p><h2 className="pf-section-title mt-1">Planning calendar</h2></div><span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F1EB] px-2.5 py-1 text-[10px] text-[#777873]"><CalendarDays className="size-3" /> Local review schedule</span></div><div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">{DAYS.map((day, index) => { const matching = records.filter((record) => record.schedule.days.includes(day)); const date = weekDates[index]; const isToday = localDateKey(date) === todayKey; return <div key={day} className={cn("min-h-[96px] min-w-0 rounded-[9px] border border-[#E0E1DA] bg-white p-2",isToday && "bg-[#FFF9F7]")}><b className="block truncate text-[10px] uppercase text-[#777873]">{day}</b><span title={date.toLocaleDateString()} className={cn("mt-1 grid size-5 place-items-center rounded-full text-[11px]",isToday && "bg-[#FF4A20] text-white")}>{date.getDate()}</span><div className="mt-2 space-y-1">{matching.slice(0, 2).map((record) => <span key={record.id} className={cn("block truncate rounded-[4px] border-l-2 px-1.5 py-1 text-[9px]",automationNeedsAttention(record, integrationStatuses, integrationsLoading) ? "border-[#EF4444] bg-[#FFF0ED] text-[#C74331]" : isAutomationExecutionEnabled(record) && record.status === "active" ? "border-[#22A052] bg-[#EEF8F0] text-[#268B42]" : "border-[#FF4A20] bg-[#FFF0EB] text-[#DF482D]")}>{record.schedule.time} · {record.name}</span>)}</div></div>; })}</div></section>
+        <section className="pf-card mt-3 overflow-visible p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><p className="pf-eyebrow">Workflows</p><h2 className="pf-section-title mt-1">Your automations</h2><p className="mt-1 max-w-[560px] min-w-0 break-words text-[10px] leading-4 text-[#858681] [overflow-wrap:anywhere]">Manual Review queue plans can generate real image drafts on their saved local schedule after you activate them. Social plans never auto-publish: each approved Gallery video requires a separate provider review and explicit confirmation.</p></div><div className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-[#F0F1EB] p-1">{FILTERS.map((item) => <button key={item} onClick={() => setFilter(item)} className={cn("h-7 whitespace-nowrap rounded-[6px] px-2 text-[10px] text-[#777873]",filter === item && "bg-white font-semibold text-[#232323] shadow-sm")}>{item}{item === "Needs attention" && attentionCount > 0 && <span className="ml-1 rounded-full bg-[#FF4A20] px-1.5 py-0.5 text-[9px] text-white">{attentionCount}</span>}</button>)}</div></div>
+          <div className="mt-4 hidden grid-cols-[1.5fr_1fr_1fr_.8fr_28px] gap-3 px-2 text-[9px] font-bold uppercase tracking-[.08em] text-[#979893] md:grid"><span>Automation</span><span>Destination</span><span>Cadence</span><span>Status</span><span /></div>
           {filtered.length === 0 ? (
             <div className="py-14 text-center">
               <Workflow className="mx-auto size-7 text-[#B0B1AC]" />
               <h3 className="mt-2 text-[11px] font-semibold">
                 No automations in this filter
               </h3>
-              <p className="mt-1 text-[8px] text-[#858681]">
+              <p className="mt-1 text-[11px] text-[#858681]">
                 Try All or create another workflow.
               </p>
             </div>
@@ -740,7 +740,7 @@ export function AutomationsPageClient() {
                       </span>
                       <span className="min-w-0">
                         <b className="block truncate text-[9px]">{record.name}</b>
-                        <small className="mt-1 block truncate text-[7px] text-[#969792]">
+                        <small className="mt-1 block truncate text-[10px] text-[#969792]">
                           {record.content.slideCount} slides ·{" "}
                           {record.template.replaceAll("-", " ")}
                         </small>
@@ -751,27 +751,27 @@ export function AutomationsPageClient() {
                       providers={integrationStatuses}
                       loading={integrationsLoading}
                     />
-                    <div className="min-w-0 break-words text-[8px] text-[#5F605C] [overflow-wrap:anywhere]">
+                    <div className="min-w-0 break-words text-[11px] text-[#5F605C] [overflow-wrap:anywhere]">
                       <span>
                         {record.schedule.days.join(", ")} · {record.schedule.time}
                       </span>
-                      <small className="mt-1 block text-[6px] text-[#92938E]">
+                      <small className="mt-1 block text-[9px] text-[#92938E]">
                         {record.schedule.timezone}
                       </small>
                       {record.lastRunAt && (
-                        <small className="mt-1 block text-[6px] text-[#92938E]">
+                        <small className="mt-1 block text-[9px] text-[#92938E]">
                           Draft queued {new Date(record.lastRunAt).toLocaleDateString()}
                         </small>
                       )}
                       {record.scheduler?.lastJobId && (
-                        <small className="mt-1 block min-w-0 break-words font-mono text-[6px] text-[#92938E] [overflow-wrap:anywhere]">
+                        <small className="mt-1 block min-w-0 break-words font-mono text-[9px] text-[#92938E] [overflow-wrap:anywhere]">
                           Job {record.scheduler.lastJobId}
                         </small>
                       )}
                       {record.scheduler?.lastError && (
                         <small
                           role="alert"
-                          className="mt-1 block min-w-0 break-words text-[6px] leading-3 text-[#C74331] [overflow-wrap:anywhere]"
+                          className="mt-1 block min-w-0 break-words text-[9px] leading-3 text-[#C74331] [overflow-wrap:anywhere]"
                         >
                           {record.scheduler.lastError}
                         </small>
@@ -780,7 +780,7 @@ export function AutomationsPageClient() {
                     <div className="min-w-0">
                       <span
                         className={cn(
-                          "inline-block max-w-full break-words rounded-full px-2 py-1 text-[6px] font-bold [overflow-wrap:anywhere]",
+                          "inline-block max-w-full break-words rounded-full px-2 py-1 text-[9px] font-bold [overflow-wrap:anywhere]",
                           needsAttention
                             ? "bg-[#FDE9E5] text-[#D94A34]"
                             : scheduleActive
@@ -803,7 +803,7 @@ export function AutomationsPageClient() {
                         <MoreHorizontal className="size-4 shrink-0" />
                       </button>
                       {menu === record.id && (
-                        <div className="absolute right-0 top-8 z-30 max-h-[min(70dvh,420px)] w-56 min-w-0 overscroll-contain overflow-y-auto rounded-[9px] border border-[#DADBD2] bg-white p-1.5 text-[8px] shadow-xl">
+                        <div className="absolute right-0 top-8 z-30 max-h-[min(70dvh,420px)] w-56 min-w-0 overscroll-contain overflow-y-auto rounded-[9px] border border-[#DADBD2] bg-white p-1.5 text-[11px] shadow-xl">
                           {canControlLocalSchedule ? (
                             <button
                               onClick={() =>
@@ -826,7 +826,7 @@ export function AutomationsPageClient() {
                               </span>
                             </button>
                           ) : (
-                            <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[7px] leading-3 text-[#858681]">
+                            <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[10px] leading-3 text-[#858681]">
                               <CircleAlert className="mt-0.5 size-3 shrink-0" />
                               <span className="min-w-0 break-words [overflow-wrap:anywhere]">
                                 Local scheduling is unavailable for social destinations.
@@ -877,7 +877,7 @@ export function AutomationsPageClient() {
                             </button>
                           )}
                           {manualOutcomeStage && (
-                              <div className="min-w-0 px-2 py-2 text-[7px] leading-3 text-[#806126]">
+                              <div className="min-w-0 px-2 py-2 text-[10px] leading-3 text-[#806126]">
                                 <p className="flex min-w-0 items-start gap-2">
                                   <CircleAlert className="mt-0.5 size-3 shrink-0" />
                                   <span className="min-w-0 break-words [overflow-wrap:anywhere]">
@@ -935,7 +935,7 @@ export function AutomationsPageClient() {
                             <Copy className="size-3 shrink-0" /> Duplicate
                           </button>
                           {publicationIsUnresolved(record.publication) ? (
-                            <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[7px] leading-3 text-[#858681]">
+                            <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[10px] leading-3 text-[#858681]">
                               <ShieldCheck className="mt-0.5 size-3 shrink-0" />
                               <span className="min-w-0 break-words [overflow-wrap:anywhere]">
                                 Destination, account, approved asset, and deletion stay locked until the provider reaches a final state.
@@ -1040,7 +1040,7 @@ function ManualResolutionDialog({
             ? "Only continue after you personally found this exact video on the connected account. PostForge will record your confirmation as the final outcome."
             : "Only continue after checking the connected account after the provider settling window. This unlocks a new explicit review and could duplicate a delayed post if the verification is wrong."}
         </p>
-        <div className="mt-3 min-w-0 rounded-[9px] bg-[#F4F4EF] p-3 text-[8px] text-[#5F605C] dark:bg-[#2C2C29] dark:text-[#D4D4CE]">
+        <div className="mt-3 min-w-0 rounded-[9px] bg-[#F4F4EF] p-3 text-[11px] text-[#5F605C] dark:bg-[#2C2C29] dark:text-[#D4D4CE]">
           <b className="block min-w-0 break-words [overflow-wrap:anywhere]">
             {state.record.name}
           </b>
@@ -1051,7 +1051,7 @@ function ManualResolutionDialog({
         {state.error && (
           <p
             role="alert"
-            className="mt-3 min-w-0 break-words rounded-[9px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[8px] leading-4 text-[#B83F2D] [overflow-wrap:anywhere]"
+            className="mt-3 min-w-0 break-words rounded-[9px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[11px] leading-4 text-[#B83F2D] [overflow-wrap:anywhere]"
           >
             {state.error}
           </p>
@@ -1070,7 +1070,7 @@ function ManualResolutionDialog({
             onClick={onConfirm}
             disabled={busy}
             className={cn(
-              "inline-flex h-9 items-center justify-center gap-2 rounded-[8px] px-3 text-[8px] font-semibold text-white disabled:opacity-45",
+              "inline-flex h-9 items-center justify-center gap-2 rounded-[8px] px-3 text-[11px] font-semibold text-white disabled:opacity-45",
               published ? "bg-[#268B42]" : "bg-[#806126]"
             )}
           >
@@ -1114,7 +1114,7 @@ function PublicationStatus({
           ? "Provider published"
           : "Publish failed";
   return (
-    <div className="mt-1 min-w-0 text-[6px] leading-3 text-[#777873]">
+    <div className="mt-1 min-w-0 text-[9px] leading-3 text-[#777873]">
       <b
         className={cn(
           "block min-w-0 break-words [overflow-wrap:anywhere]",
@@ -1216,7 +1216,7 @@ function PublishReviewDialog({
             >
               Publish {state.recordName} to {providerName}
             </h2>
-            <p className="mt-1 min-w-0 break-words text-[8px] text-[#777873] [overflow-wrap:anywhere]">
+            <p className="mt-1 min-w-0 break-words text-[11px] text-[#777873] [overflow-wrap:anywhere]">
               Connected account: {accountName}
               {state.preflight.account.username
                 ? ` (@${state.preflight.account.username.replace(/^@/, "")})`
@@ -1244,8 +1244,8 @@ function PublishReviewDialog({
                 className="aspect-[9/16] max-h-[42dvh] w-full object-contain md:max-h-[390px]"
               />
             </div>
-            <p className="mx-auto mt-3 max-w-[210px] min-w-0 break-words text-[7px] leading-4 text-[#6F706B] [overflow-wrap:anywhere] dark:text-[#B6B7B1]">
-              <b className="block text-[8px] text-[#232323]">
+            <p className="mx-auto mt-3 max-w-[210px] min-w-0 break-words text-[10px] leading-4 text-[#6F706B] [overflow-wrap:anywhere] dark:text-[#B6B7B1]">
+              <b className="block text-[11px] text-[#232323]">
                 Approved Gallery output
               </b>
               {state.preflight.asset.filename}
@@ -1262,7 +1262,7 @@ function PublishReviewDialog({
             {state.error && (
               <div
                 role="alert"
-                className="flex min-w-0 items-start gap-2 rounded-[10px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[8px] leading-4 text-[#B83F2D]"
+                className="flex min-w-0 items-start gap-2 rounded-[10px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[11px] leading-4 text-[#B83F2D]"
               >
                 <CircleAlert className="mt-0.5 size-3.5 shrink-0" />
                 <span className="min-w-0 break-words [overflow-wrap:anywhere]">
@@ -1272,7 +1272,7 @@ function PublishReviewDialog({
             )}
             {state.preflight.provider === "tiktok" && creator && (
               <>
-                <div className="min-w-0 rounded-[10px] border border-[#DEDFD8] bg-[#FAFAF8] p-3 text-[8px] leading-4 text-[#5F605C]">
+                <div className="min-w-0 rounded-[10px] border border-[#DEDFD8] bg-[#FAFAF8] p-3 text-[11px] leading-4 text-[#5F605C]">
                   <b className="block min-w-0 break-words text-[9px] text-[#232323] [overflow-wrap:anywhere]">
                     {creator.creatorNickname} · @{creator.creatorUsername}
                   </b>
@@ -1317,7 +1317,7 @@ function PublishReviewDialog({
                     ))}
                   </select>
                   {state.brandContent && state.tiktokPrivacy === "SELF_ONLY" && (
-                    <p role="alert" className="mt-1 text-[7px] text-[#C74331]">
+                    <p role="alert" className="mt-1 text-[10px] text-[#C74331]">
                       Paid partnership posts cannot use Only me. Choose another option.
                     </p>
                   )}
@@ -1365,7 +1365,7 @@ function PublishReviewDialog({
                 />
                 {state.commercial && (
                   <div className="min-w-0 space-y-2 rounded-[10px] border border-[#E7C990] bg-[#FFFAEC] p-3">
-                    <p className="min-w-0 break-words text-[8px] leading-4 text-[#806126] [overflow-wrap:anywhere]">
+                    <p className="min-w-0 break-words text-[11px] leading-4 text-[#806126] [overflow-wrap:anywhere]">
                       Select at least one commercial disclosure. Branded content cannot use Only me privacy.
                     </p>
                     <CheckControl
@@ -1382,7 +1382,7 @@ function PublishReviewDialog({
                         onChange({ ...state, brandContent: checked })
                       }
                     />
-                    <p className="min-w-0 break-words text-[7px] font-semibold text-[#806126] [overflow-wrap:anywhere]">
+                    <p className="min-w-0 break-words text-[10px] font-semibold text-[#806126] [overflow-wrap:anywhere]">
                       TikTok will label this {state.brandContent ? "Paid partnership" : "Promotional content"}.
                     </p>
                     {state.brandContent && (
@@ -1391,7 +1391,7 @@ function PublishReviewDialog({
                           href="https://www.tiktok.com/legal/page/global/bc-policy/en"
                           target="_blank"
                           rel="noreferrer"
-                          className="block min-w-0 break-words text-[7px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
+                          className="block min-w-0 break-words text-[10px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
                         >
                           Read TikTok&apos;s Branded Content Policy
                         </a>
@@ -1399,7 +1399,7 @@ function PublishReviewDialog({
                     )}
                     {!state.preflight.tiktokDirectPostApprovalAcknowledged &&
                       state.brandContent && (
-                        <p role="alert" className="min-w-0 break-words text-[7px] text-[#B83F2D] [overflow-wrap:anywhere]">
+                        <p role="alert" className="min-w-0 break-words text-[10px] text-[#B83F2D] [overflow-wrap:anywhere]">
                           Live Direct Post is unavailable until TikTok approves this app. Internal or team-only upload tools may not qualify for approval.
                         </p>
                       )}
@@ -1432,11 +1432,11 @@ function PublishReviewDialog({
                   href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en"
                   target="_blank"
                   rel="noreferrer"
-                  className="block min-w-0 break-words text-[7px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
+                  className="block min-w-0 break-words text-[10px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
                 >
                   Read TikTok&apos;s Music Usage Confirmation
                 </a>
-                <p className="min-w-0 break-words text-[7px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
+                <p className="min-w-0 break-words text-[10px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
                   {state.preflight.tiktokDirectPostApprovalAcknowledged
                     ? "An operator acknowledged external TikTok Direct Post approval. This setting does not obtain or prove approval; verify it remains current in TikTok's developer portal. TikTok's status API does not return privacy."
                     : "Live TikTok publishing is unavailable until an operator verifies external Direct Post approval in TikTok's developer portal. Internal or team-only upload tools may not qualify. A configuration flag cannot substitute for provider approval."}
@@ -1446,7 +1446,7 @@ function PublishReviewDialog({
 
             {state.preflight.provider === "instagram" && (
               <>
-                <div className="rounded-[10px] border border-[#DEDFD8] bg-[#FAFAF8] p-3 text-[8px] leading-4 text-[#5F605C]">
+                <div className="rounded-[10px] border border-[#DEDFD8] bg-[#FAFAF8] p-3 text-[11px] leading-4 text-[#5F605C]">
                   Instagram Reels are public media. Instagram must fetch this approved video from a short-lived signed URL before publishing.
                 </div>
                 <FieldLabel label="Reel caption" detail={`${state.caption.length}/2200`}>
@@ -1464,7 +1464,7 @@ function PublishReviewDialog({
 
             {state.preflight.provider === "youtube" && (
               <>
-                <div className="rounded-[10px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[8px] leading-4 text-[#B83F2D]">
+                <div className="rounded-[10px] border border-[#F0B5AA] bg-[#FFF2EF] p-3 text-[11px] leading-4 text-[#B83F2D]">
                   This upload includes YouTube&apos;s synthetic-media disclosure. Unverified API projects may force uploads to private; the saved record will show YouTube&apos;s actual privacy response.
                 </div>
                 <FieldLabel
@@ -1549,12 +1549,12 @@ function PublishReviewDialog({
                     href="https://www.youtube.com/howyoutubeworks/policies/community-guidelines/"
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2 inline-flex min-w-0 items-center gap-1 break-words text-[7px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
+                    className="mt-2 inline-flex min-w-0 items-center gap-1 break-words text-[10px] font-semibold text-[#B64B2E] underline [overflow-wrap:anywhere] dark:text-[#FF9A7F]"
                   >
                     Review YouTube Community Guidelines
                     <ExternalLink className="size-2.5 shrink-0" />
                   </a>
-                  <p className="mt-2 min-w-0 break-words text-[7px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
+                  <p className="mt-2 min-w-0 break-words text-[10px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
                     By uploading, you agree to the{" "}
                     <a
                       href="https://www.youtube.com/t/terms"
@@ -1576,7 +1576,7 @@ function PublishReviewDialog({
                 checked={state.consent}
                 onChange={(checked) => onChange({ ...state, consent: checked })}
               />
-              <p className="mt-2 min-w-0 break-words text-[7px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
+              <p className="mt-2 min-w-0 break-words text-[10px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
                 This is an external mutation. The scheduler will not repeat it. Provider acceptance, processing, failures, and retry state are persisted to this workflow.
               </p>
             </div>
@@ -1584,7 +1584,7 @@ function PublishReviewDialog({
         </div>
 
         <footer className="flex min-w-0 shrink-0 flex-col-reverse gap-2 border-t border-[#E1E2DB] bg-white px-4 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <p className="min-w-0 break-words text-[7px] text-[#777873] [overflow-wrap:anywhere]">
+          <p className="min-w-0 break-words text-[10px] text-[#777873] [overflow-wrap:anywhere]">
             {state.retryFailed
               ? "This creates a new explicit attempt for the same approved asset."
               : "Nothing is sent until you confirm this review."}
@@ -1629,7 +1629,7 @@ function FieldLabel({
 }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 flex min-w-0 items-start justify-between gap-2 text-[8px] font-semibold">
+      <span className="mb-1.5 flex min-w-0 items-start justify-between gap-2 text-[11px] font-semibold">
         <span className="min-w-0 break-words [overflow-wrap:anywhere]">{label}</span>
         <small className="shrink-0 font-normal text-[#898A85] dark:text-[#B6B7B1]">{detail}</small>
       </span>
@@ -1652,7 +1652,7 @@ function CheckControl({
   return (
     <label
       className={cn(
-        "flex min-w-0 items-start gap-2 rounded-[8px] border border-[#E0E1DA] bg-white px-2.5 py-2 text-[8px] leading-4",
+        "flex min-w-0 items-start gap-2 rounded-[8px] border border-[#E0E1DA] bg-white px-2.5 py-2 text-[11px] leading-4",
         disabled && "cursor-not-allowed opacity-50"
       )}
     >
@@ -1725,13 +1725,13 @@ function AutomationDestinationCell({
 }) {
   if (!isAutomationSocialDestination(record.destination)) {
     return (
-      <div className="flex min-w-0 items-center gap-2 text-[8px] text-[#5F605C]">
+      <div className="flex min-w-0 items-center gap-2 text-[11px] text-[#5F605C]">
         <span className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[#ECEDE7] text-[#62635E]">
           <Inbox className="size-3.5" />
         </span>
         <span className="min-w-0">
-          <b className="block truncate text-[8px]">Review queue</b>
-          <small className="mt-0.5 block truncate text-[6px] text-[#92938E]">
+          <b className="block truncate text-[11px]">Review queue</b>
+          <small className="mt-0.5 block truncate text-[9px] text-[#92938E]">
             No external account
           </small>
         </span>
@@ -1764,7 +1764,7 @@ function AutomationDestinationCell({
           : "Connection status unavailable";
 
   return (
-    <div className="flex min-w-0 items-start gap-2 text-[8px] text-[#5F605C]">
+    <div className="flex min-w-0 items-start gap-2 text-[11px] text-[#5F605C]">
       <SocialProviderIcon
         provider={record.destination}
         label={providerName}
@@ -1772,21 +1772,21 @@ function AutomationDestinationCell({
         className="size-7 shrink-0"
       />
       <span className="min-w-0">
-        <b className="block truncate text-[8px]">{providerName}</b>
-        <small className="mt-0.5 block truncate text-[6px] text-[#777873]">
+        <b className="block truncate text-[11px]">{providerName}</b>
+        <small className="mt-0.5 block truncate text-[9px] text-[#777873]">
           {accountLabel ?? "No connected account"}
         </small>
         {loading ? (
-          <small className="mt-1 flex items-center gap-1 text-[6px] text-[#8B8C87]">
+          <small className="mt-1 flex items-center gap-1 text-[9px] text-[#8B8C87]">
             <Loader2 className="size-2.5 animate-spin" /> Checking live connection
           </small>
         ) : readiness.ready ? (
-          <small className="mt-1 flex items-center gap-1 text-[6px] font-semibold text-[#268B42]">
+          <small className="mt-1 flex items-center gap-1 text-[9px] font-semibold text-[#268B42]">
             <Check className="size-2.5" /> Connection verified
           </small>
         ) : (
           <small
-            className="mt-1 flex items-center gap-1 text-[6px] font-semibold text-[#D94A34]"
+            className="mt-1 flex items-center gap-1 text-[9px] font-semibold text-[#D94A34]"
             title={readiness.message}
           >
             <CircleAlert className="size-2.5 shrink-0" /> {warningLabel}
@@ -1798,5 +1798,5 @@ function AutomationDestinationCell({
 }
 
 function Metric({ label, value, detail, tone }: { label: string; value: string; detail: string; tone?: "success" | "danger" }) {
-  return <article className="pf-card p-3"><span className="pf-eyebrow !text-[6.5px]">{label}</span><div className="mt-2 flex items-center justify-between"><b className={cn("text-[23px] tracking-[-.04em]",tone === "danger" && "text-[#E34C33]")}>{value}</b>{tone && <i className={cn("size-2 rounded-full",tone === "success" ? "bg-[#22C55E]" : "bg-[#EF4444]")} />}</div><small className="mt-1 block text-[7px] text-[#8D8E89]">{detail}</small></article>;
+  return <article className="pf-card p-3"><span className="pf-eyebrow !text-[9px]">{label}</span><div className="mt-2 flex items-center justify-between"><b className={cn("text-[23px] tracking-[-.04em]",tone === "danger" && "text-[#E34C33]")}>{value}</b>{tone && <i className={cn("size-2 rounded-full",tone === "success" ? "bg-[#22C55E]" : "bg-[#EF4444]")} />}</div><small className="mt-1 block text-[10px] text-[#8D8E89]">{detail}</small></article>;
 }

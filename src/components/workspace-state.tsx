@@ -40,10 +40,10 @@ function StateActionControl({
   primary?: boolean;
 }) {
   const className = cn(
-    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors",
+    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
     primary
-      ? "bg-accent-coral text-white hover:bg-[#ff6540]"
-      : "border border-border bg-background/50 text-muted-foreground hover:border-accent-coral/40 hover:text-foreground"
+      ? "bg-accent-coral text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] hover:-translate-y-px hover:bg-[#ff6540]"
+      : "border border-border bg-background/50 text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:border-accent-coral/40 hover:text-foreground"
   );
 
   const content = (
@@ -90,10 +90,10 @@ export function WorkspaceState({
     >
       <div
         className={cn(
-          "mb-5 flex size-14 items-center justify-center rounded-lg",
+          "mb-5 flex size-14 items-center justify-center rounded-2xl shadow-[var(--pf-shadow-xs)] ring-1",
           tone === "error"
-            ? "bg-destructive/12 text-destructive"
-            : "bg-accent-blue/12 text-accent-blue"
+            ? "bg-destructive/12 text-destructive ring-destructive/15"
+            : "bg-accent-blue/12 text-accent-blue ring-accent-blue/15"
         )}
       >
         <Icon className="size-6" />

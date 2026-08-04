@@ -79,14 +79,14 @@ export function CollectionReferencePicker({
     return (
       <div className="flex min-h-24 items-center justify-center rounded-lg border border-[#E1E2DC] bg-[#FAFBF7] text-[#858681]">
         <Loader2 className="mr-2 size-3.5 animate-spin" />
-        <span className="text-[9px]">Loading collections…</span>
+        <span className="text-[10px]">Loading collections…</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <p role="alert" className="min-w-0 break-words rounded-lg bg-[#FEF0EF] px-3 py-2 text-[9px] text-[#C53A32] [overflow-wrap:anywhere]">
+      <p role="alert" className="min-w-0 break-words rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] text-[#C53A32] [overflow-wrap:anywhere]">
         {error}
       </p>
     );
@@ -96,7 +96,7 @@ export function CollectionReferencePicker({
     return (
       <a
         href="/collections"
-        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] bg-[#FAFBF7] px-3 text-[9px] font-semibold text-[#686965]"
+        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] bg-[#FAFBF7] px-3 text-[10px] font-semibold text-[#686965]"
       >
         <FolderOpen className="size-4" /> Create a collection to reuse its images
       </a>
@@ -122,17 +122,17 @@ export function CollectionReferencePicker({
             ))}
           </select>
         </label>
-        <span className="shrink-0 text-[8px] text-[#858681]">
+        <span className="shrink-0 text-[11px] text-[#858681]">
           {selectedAssetIds.length}/{maxSelection} selected
         </span>
       </div>
 
       {disabledMessage && disabled ? (
-        <p className="rounded-lg bg-[#F1F2EC] px-3 py-2 text-[9px] leading-4 text-[#777873]">
+        <p className="rounded-lg bg-[#F1F2EC] px-3 py-2 text-[10px] leading-4 text-[#777873]">
           {disabledMessage}
         </p>
       ) : collectionAssets.length === 0 ? (
-        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] text-[9px] text-[#858681]">
+        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] text-[10px] text-[#858681]">
           <ImageIcon className="size-4" /> This collection has no images yet.
         </p>
       ) : (

@@ -101,7 +101,7 @@ assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: non
 
 // Primary workbenches collapse before their fixed minimum tracks can overflow.
 assert.match(generationStudio, /xl:grid-cols-\[minmax\(360px,0\.72fr\)_minmax\(500px,1\.28fr\)\]/);
-assert.match(cloneStudio, /lg:grid-cols-\[minmax\(360px,36fr\)_minmax\(0,64fr\)\]/);
+assert.match(cloneStudio, /lg:grid-cols-\[minmax\(420px,45fr\)_minmax\(0,55fr\)\]/);
 assert.match(characterBuilder, /min-\[1280px\]:grid-cols-\[200px_minmax\(420px,1\.2fr\)_minmax\(360px,0\.8fr\)\]/);
 assert.match(settings, /lg:grid-cols-\[210px_minmax\(0,1fr\)\]/);
 

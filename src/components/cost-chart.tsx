@@ -106,11 +106,11 @@ interface ModelPieChartProps {
 
 export const PIE_COLORS = [
   ACCENT_CORAL,
-  "#7777E8",
-  "#7CB99A",
   "#E6B759",
+  "#7CB99A",
+  "#C97C5D",
   ACCENT_BLUE,
-  "#A78BFA",
+  "#8A8B86",
 ];
 
 export function ModelPieChart({ data }: ModelPieChartProps) {

@@ -92,14 +92,14 @@ export function SettingsNavigation({
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
             className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[9px] text-[#71726D] lg:w-full",
+              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[10px] text-[#71726D] lg:w-full",
               tab === id && "bg-white font-semibold text-[#232323] shadow-sm"
             )}
           >
             <Icon className={cn("size-3.5", tab === id && "text-[#FF4A20]")} />
             {label}
             {id === "integrations" && connectedIntegrations > 0 && (
-              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[#FF4A20] text-[6px] text-white">
+              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[#FF4A20] text-[9px] text-white">
                 {connectedIntegrations}
               </span>
             )}
@@ -116,7 +116,7 @@ export function SettingsNavigation({
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
             className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[9px] text-[#71726D] lg:w-full",
+              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[10px] text-[#71726D] lg:w-full",
               tab === id && "bg-white font-semibold text-[#232323] shadow-sm"
             )}
           >
@@ -559,7 +559,7 @@ export function IntegrationsPanel({
         <div>
           <p className="pf-eyebrow">Connections</p>
           <h2 className="mt-1 text-[23px] font-semibold tracking-[-0.035em]">Integrations</h2>
-          <p className="mt-1 text-[9px] text-[#858681]">One server-owned connection state powers Performance and destination readiness.</p>
+          <p className="mt-1 text-[10px] text-[#858681]">One server-owned connection state powers Performance and destination readiness.</p>
         </div>
         <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0">
           <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
@@ -570,16 +570,16 @@ export function IntegrationsPanel({
       <div className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] p-3">
         <span className="grid size-7 place-items-center rounded-full bg-[#378EFF] text-[10px] text-white">i</span>
         <div className="min-w-0">
-          <b className="block text-[8.5px]">Connections are server-owned</b>
-          <p className="mt-1 text-[7px] leading-3 text-[#6F7D8F]">PostForge only reports an account as connected after OAuth and server-side token storage succeed.</p>
+          <b className="block text-[11px]">Connections are server-owned</b>
+          <p className="mt-1 text-[10px] leading-3 text-[#6F7D8F]">PostForge only reports an account as connected after OAuth and server-side token storage succeed.</p>
         </div>
         <ShieldCheck className="size-4 text-[#378EFF]" />
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 flex flex-col items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-3 text-[9px] text-[#B83F2D] sm:flex-row sm:items-center">
+        <div role="alert" className="mt-4 flex flex-col items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-3 text-[10px] text-[#B83F2D] sm:flex-row sm:items-center">
           <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]"><AlertCircle className="size-4 shrink-0" />{error}</span>
-          <button type="button" onClick={onRefresh} className="rounded-[6px] border border-[#E3A99E] bg-white px-2.5 py-1.5 text-[7px] font-semibold">Try again</button>
+          <button type="button" onClick={onRefresh} className="rounded-[6px] border border-[#E3A99E] bg-white px-2.5 py-1.5 text-[10px] font-semibold">Try again</button>
         </div>
       )}
 
@@ -680,44 +680,44 @@ export function SocialIntegrationCard({
         {loading && !status ? (
           <span className="h-5 w-20 animate-pulse rounded-full bg-[#ECEDE7]" />
         ) : (
-          <span className={cn("rounded-full border px-2 py-1 text-[6px] font-bold uppercase tracking-[.06em]", unavailable ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]" : syncTone)}>
+          <span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[.06em]", unavailable ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]" : syncTone)}>
             {unavailable ? "Status unavailable" : syncLabel}
           </span>
         )}
       </div>
       <h3 className="mt-3 text-[11px] font-semibold">{displayName}</h3>
-      <p className="mt-1 text-[7px] leading-4 text-[#858681]">{content.description}</p>
+      <p className="mt-1 text-[10px] leading-4 text-[#858681]">{content.description}</p>
 
       {connected && status?.account ? (
         <div className="mt-3 rounded-[8px] border border-[#E0E1DA] bg-[#FAFAF8] p-2.5">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#232323] text-[7px] font-bold text-white">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">
               {accountName.slice(0, 2).toUpperCase()}
             </span>
             <span className="min-w-0 flex-1">
-              <b className="block truncate text-[8px]">{accountName}</b>
-              <small className="mt-0.5 block truncate text-[6.5px] text-[#858681]">{accountUsername}</small>
+              <b className="block truncate text-[11px]">{accountName}</b>
+              <small className="mt-0.5 block truncate text-[9px] text-[#858681]">{accountUsername}</small>
             </span>
             {status.account.profileUrl && <Link href={status.account.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${displayName} profile`} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#DADBD2] bg-white"><ExternalLink className="size-3" /></Link>}
           </div>
-          <p className={cn("mt-2 flex min-w-0 items-start gap-1.5 break-words text-[6.5px] [overflow-wrap:anywhere]", authorizationRequired || status.sync.status === "error" ? "text-[#B83F2D]" : status.sync.status === "partial" ? "text-[#806126]" : "text-[#777873]") }>
+          <p className={cn("mt-2 flex min-w-0 items-start gap-1.5 break-words text-[9px] [overflow-wrap:anywhere]", authorizationRequired || status.sync.status === "error" ? "text-[#B83F2D]" : status.sync.status === "partial" ? "text-[#806126]" : "text-[#777873]") }>
             <span className={cn("mt-1 size-1.5 shrink-0 rounded-full", authorizationRequired || status.sync.status === "error" ? "bg-[#EF4444]" : status.sync.status === "partial" ? "bg-[#E1A52F]" : "bg-[#22C55E]")} />
             {authorizationRequired ? "Authorization must be renewed" : status.sync.status === "partial" ? status.sync.warnings[0] ?? "Some provider metrics were unavailable" : status.sync.lastSuccessfulAt ? <>Last synced <time dateTime={status.sync.lastSuccessfulAt}>{formatConnectionDate(status.sync.lastSuccessfulAt)}</time></> : status.sync.status === "error" ? status.sync.warnings[0] ?? "Last sync failed" : "Not synced yet"}
           </p>
           <div className="mt-2 flex flex-wrap gap-1">
-            {(["metrics", "publish"] as const).map((capability) => <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[5.5px] font-semibold", status.capabilities[capability] ? "border-[#C8DDCE] bg-[#F0F8F2] text-[#347646]" : "border-[#DEDFD8] bg-white text-[#999A95]")}>{capability === "metrics" ? "Metrics" : status.publishingUnavailableReason ? "Upload runtime" : "Upload scope"} {status.capabilities[capability] ? "verified" : capability === "publish" && status.publishingUnavailableReason ? "unavailable" : "not granted"}</span>)}
+            {(["metrics", "publish"] as const).map((capability) => <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", status.capabilities[capability] ? "border-[#C8DDCE] bg-[#F0F8F2] text-[#347646]" : "border-[#DEDFD8] bg-white text-[#999A95]")}>{capability === "metrics" ? "Metrics" : status.publishingUnavailableReason ? "Upload runtime" : "Upload scope"} {status.capabilities[capability] ? "verified" : capability === "publish" && status.publishingUnavailableReason ? "unavailable" : "not granted"}</span>)}
           </div>
           {status.publishingUnavailableReason && (
-            <p className="mt-2 min-w-0 break-words text-[6.5px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">
+            <p className="mt-2 min-w-0 break-words text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">
               {status.publishingUnavailableReason}
             </p>
           )}
         </div>
       ) : notConfigured ? (
         <div className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5">
-          <b className="block text-[7px] text-[#61625E]">Server setup required</b>
-          <p className="mt-1 min-w-0 break-words text-[6.5px] leading-3.5 text-[#858681] [overflow-wrap:anywhere]">{content.setup}</p>
-          <Link href={content.documentation} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[6.5px] font-semibold text-[#378EFF]">Setup documentation <ExternalLink className="size-2.5" /></Link>
+          <b className="block text-[10px] text-[#61625E]">Server setup required</b>
+          <p className="mt-1 min-w-0 break-words text-[9px] leading-3.5 text-[#858681] [overflow-wrap:anywhere]">{content.setup}</p>
+          <Link href={content.documentation} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-semibold text-[#378EFF]">Setup documentation <ExternalLink className="size-2.5" /></Link>
           {content.policyLinks && (
             <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
               {content.policyLinks.map((link) => (
@@ -726,7 +726,7 @@ export function SocialIntegrationCard({
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-w-0 items-center gap-1 break-words text-[6.5px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
+                  className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
                 >
                   {link.label} <ExternalLink className="size-2.5 shrink-0" />
                 </Link>
@@ -735,11 +735,11 @@ export function SocialIntegrationCard({
           )}
         </div>
       ) : connectionUnreadable && status ? (
-        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[6.5px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">{status.sync.warnings[0] ?? "Stored credentials could not be read. Reconnect this account."}</p>
+        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">{status.sync.warnings[0] ?? "Stored credentials could not be read. Reconnect this account."}</p>
       ) : unavailable ? (
-        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[6.5px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">The integration service did not return this provider. Refresh status before attempting a connection.</p>
+        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">The integration service did not return this provider. Refresh status before attempting a connection.</p>
       ) : (
-        <p className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5 text-[6.5px] leading-3.5 text-[#858681]">OAuth is configured, but no account is connected to this workspace.</p>
+        <p className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5 text-[9px] leading-3.5 text-[#858681]">OAuth is configured, but no account is connected to this workspace.</p>
       )}
 
       {content.policyLinks && !notConfigured && (
@@ -750,7 +750,7 @@ export function SocialIntegrationCard({
               href={link.href}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-w-0 items-center gap-1 break-words text-[6.5px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
+              className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
             >
               {link.label} <ExternalLink className="size-2.5 shrink-0" />
             </Link>
@@ -763,7 +763,7 @@ export function SocialIntegrationCard({
           data-youtube-owner-policies
           className="mt-3 rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] p-2.5"
         >
-          <b className="block text-[7px] text-[#364C68]">
+          <b className="block text-[10px] text-[#364C68]">
             PostForge policies for YouTube API Services
           </b>
           <div className="mt-1.5 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
@@ -777,14 +777,14 @@ export function SocialIntegrationCard({
                 href={href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1 break-words text-[6.5px] font-semibold text-[#246FC2] [overflow-wrap:anywhere]"
+                className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#246FC2] [overflow-wrap:anywhere]"
               >
                 {label} <ExternalLink className="size-2.5 shrink-0" />
               </Link>
             ))}
           </div>
           {youtubeOAuthNeedsConsent && (
-            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-[#D6E3F2] pt-2 text-[6.5px] leading-3.5 text-[#52667D]">
+            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-[#D6E3F2] pt-2 text-[9px] leading-3.5 text-[#52667D]">
               <input
                 type="checkbox"
                 aria-label="Accept policies before connecting YouTube"
@@ -816,7 +816,7 @@ export function SocialIntegrationCard({
             </button>
           </>
         ) : (
-          <button type="button" onClick={() => status && onConnect(status, youtubePolicyConsent)} disabled={!status || status.configuration !== "ready" || !status.connectUrl || loading || busy || !canStartOAuth} className={cn("h-9 w-full rounded-[8px] text-[8px] font-semibold", status?.configuration === "ready" && status.connectUrl && canStartOAuth ? "bg-[#232323] text-white hover:bg-black" : "cursor-not-allowed bg-[#E5E6DF] text-[#999A95]")}>
+          <button type="button" onClick={() => status && onConnect(status, youtubePolicyConsent)} disabled={!status || status.configuration !== "ready" || !status.connectUrl || loading || busy || !canStartOAuth} className={cn("h-9 w-full rounded-[8px] text-[11px] font-semibold", status?.configuration === "ready" && status.connectUrl && canStartOAuth ? "bg-[#232323] text-white hover:bg-black" : "cursor-not-allowed bg-[#E5E6DF] text-[#999A95]")}>
             {loading && !status ? "Checking configuration…" : notConfigured ? "Setup required" : unavailable ? "Status unavailable" : connectionUnreadable ? `Reconnect ${displayName}` : status?.connectUrl ? `Connect ${displayName}` : "Connect endpoint unavailable"}
           </button>
         )}
@@ -840,25 +840,25 @@ export function DeveloperSettingsPanel({ tab }: { tab: "api-keys" | "webhooks" }
   const isApiKeys = tab === "api-keys";
   const Icon = isApiKeys ? KeyRound : Webhook;
 
-  return <div data-developer-settings-panel={tab}><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><div className="mt-4 flex flex-wrap items-start justify-between gap-3"><div><p className="pf-eyebrow">Developer</p><h2 className="mt-1 text-[22px] font-semibold tracking-[-0.035em]">{isApiKeys ? "API keys" : "Webhooks"}</h2><p className="mt-1 max-w-[620px] text-[8.5px] leading-4 text-[#858681]">{isApiKeys ? "Create scoped credentials only after server-side identity, hashing, revocation, and audit ownership exist." : "Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist."}</p></div><span className="rounded-full border border-[#D7D8D0] bg-[#F0F1EB] px-2.5 py-1 text-[7px] font-bold text-[#777873]">NOT CONFIGURED</span></div><div className="pf-card mt-6 max-w-[720px] p-5"><div className="rounded-[10px] border border-dashed border-[#CFCFC7] bg-[#FAFAF8] px-5 py-8 text-center"><Icon className="mx-auto size-6 text-[#999A95]" /><h3 className="mt-3 text-[11px] font-semibold">{isApiKeys ? "No API keys have been issued" : "No webhook endpoints are registered"}</h3><p className="mx-auto mt-2 max-w-[480px] text-[8px] leading-4 text-[#858681]">{isApiKeys ? "PostForge will not fabricate, reveal, or retain credentials in this browser. A server-owned key service must be configured before keys can be created." : "No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."}</p><button type="button" disabled className="mt-4 h-9 rounded-[8px] bg-[#E5E6DF] px-4 text-[8px] font-semibold text-[#999A95] disabled:cursor-not-allowed">{isApiKeys ? "API key service not configured" : "Webhook delivery not configured"}</button></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{(isApiKeys ? [["Scoped access", "Per-key permissions and expiry"], ["Secure storage", "Hashed secrets, never plaintext"], ["Audit trail", "Creation, use, and revocation logs"]] : [["Signed events", "Server-owned signing secret"], ["Reliable delivery", "Retries and failure handling"], ["Delivery history", "Status and response audit log"]]).map(([title, detail]) => <div key={title} className="rounded-[8px] border border-[#E1E2DB] bg-[#FAFAF8] p-3"><b className="block text-[8px]">{title}</b><span className="mt-1 block text-[7px] leading-3 text-[#92938E]">{detail}</span></div>)}</div></div></div>;
+  return <div data-developer-settings-panel={tab}><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><div className="mt-4 flex flex-wrap items-start justify-between gap-3"><div><p className="pf-eyebrow">Developer</p><h2 className="mt-1 text-[22px] font-semibold tracking-[-0.035em]">{isApiKeys ? "API keys" : "Webhooks"}</h2><p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">{isApiKeys ? "Create scoped credentials only after server-side identity, hashing, revocation, and audit ownership exist." : "Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist."}</p></div><span className="rounded-full border border-[#D7D8D0] bg-[#F0F1EB] px-2.5 py-1 text-[10px] font-bold text-[#777873]">NOT CONFIGURED</span></div><div className="pf-card mt-6 max-w-[720px] p-5"><div className="rounded-[10px] border border-dashed border-[#CFCFC7] bg-[#FAFAF8] px-5 py-8 text-center"><Icon className="mx-auto size-6 text-[#999A95]" /><h3 className="mt-3 text-[11px] font-semibold">{isApiKeys ? "No API keys have been issued" : "No webhook endpoints are registered"}</h3><p className="mx-auto mt-2 max-w-[480px] text-[11px] leading-4 text-[#858681]">{isApiKeys ? "PostForge will not fabricate, reveal, or retain credentials in this browser. A server-owned key service must be configured before keys can be created." : "No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."}</p><button type="button" disabled className="mt-4 h-9 rounded-[8px] bg-[#E5E6DF] px-4 text-[11px] font-semibold text-[#999A95] disabled:cursor-not-allowed">{isApiKeys ? "API key service not configured" : "Webhook delivery not configured"}</button></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{(isApiKeys ? [["Scoped access", "Per-key permissions and expiry"], ["Secure storage", "Hashed secrets, never plaintext"], ["Audit trail", "Creation, use, and revocation logs"]] : [["Signed events", "Server-owned signing secret"], ["Reliable delivery", "Retries and failure handling"], ["Delivery history", "Status and response audit log"]]).map(([title, detail]) => <div key={title} className="rounded-[8px] border border-[#E1E2DB] bg-[#FAFAF8] p-3"><b className="block text-[11px]">{title}</b><span className="mt-1 block text-[10px] leading-3 text-[#92938E]">{detail}</span></div>)}</div></div></div>;
 }
 
 function SettingsForm({ tab, settings, setSettings, saving, onSave }: { tab: string; settings: SettingsRecord; setSettings: React.Dispatch<React.SetStateAction<SettingsRecord>>; saving: boolean; onSave: () => void }) {
   const info = tab === "profile" ? ["Profile", "Workspace identity and timezone.", UserRound] as const : tab === "publishing" ? ["Publishing defaults", "Set safe defaults for new automations.", Settings2] as const : ["Notifications", "Choose which live workspace events appear in the navigation rail.", Bell] as const;
   const Icon = info[2];
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">{info[0]}</h2><p className="mt-1 text-[8.5px] text-[#858681]">{info[1]}</p><div className="pf-card mt-6 max-w-[620px] space-y-5 p-5">{tab === "profile" && <><Field label="Workspace name"><input value={settings.workspaceName} onChange={(event) => setSettings((current) => ({ ...current, workspaceName: event.target.value }))} /></Field><Field label="Default timezone"><select value={settings.timezone} onChange={(event) => setSettings((current) => ({ ...current, timezone: event.target.value }))}><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></Field></>}{tab === "publishing" && <Toggle label="Require approval by default" detail="New automations begin with a human review gate" checked={settings.approvalDefault} onChange={(checked) => setSettings((current) => ({ ...current, approvalDefault: checked }))} />}{tab === "notifications" && <><Toggle label="Generation failures" detail="Show failed generation counts in the workspace navigation" checked={settings.emailFailures} onChange={(checked) => setSettings((current) => ({ ...current, emailFailures: checked }))} /><Toggle label="Approval requests" detail="Show outputs awaiting review in the workspace navigation" checked={settings.emailApprovals} onChange={(checked) => setSettings((current) => ({ ...current, emailApprovals: checked }))} /></>}<div className="flex justify-end border-t border-[#E3E4DD] pt-4"><button onClick={onSave} disabled={saving} className="pf-button-primary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save changes</button></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">{info[0]}</h2><p className="mt-1 text-[11px] text-[#858681]">{info[1]}</p><div className="pf-card mt-6 max-w-[620px] space-y-5 p-5">{tab === "profile" && <><Field label="Workspace name"><input value={settings.workspaceName} onChange={(event) => setSettings((current) => ({ ...current, workspaceName: event.target.value }))} /></Field><Field label="Default timezone"><select value={settings.timezone} onChange={(event) => setSettings((current) => ({ ...current, timezone: event.target.value }))}><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></Field></>}{tab === "publishing" && <Toggle label="Require approval by default" detail="New automations begin with a human review gate" checked={settings.approvalDefault} onChange={(checked) => setSettings((current) => ({ ...current, approvalDefault: checked }))} />}{tab === "notifications" && <><Toggle label="Generation failures" detail="Show failed generation counts in the workspace navigation" checked={settings.emailFailures} onChange={(checked) => setSettings((current) => ({ ...current, emailFailures: checked }))} /><Toggle label="Approval requests" detail="Show outputs awaiting review in the workspace navigation" checked={settings.emailApprovals} onChange={(checked) => setSettings((current) => ({ ...current, emailApprovals: checked }))} /></>}<div className="flex justify-end border-t border-[#E3E4DD] pt-4"><button onClick={onSave} disabled={saving} className="pf-button-primary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save changes</button></div></div></div>;
 }
 
 function Billing() {
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><CircleDollarSign className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Billing & usage</h2><p className="mt-1 text-[8.5px] text-[#858681]">This self-hosted workspace tracks provider spend rather than charging a PostForge subscription.</p><div className="mt-6 grid max-w-[720px] gap-3 sm:grid-cols-2"><div className="pf-card p-4"><p className="pf-eyebrow">Plan</p><b className="mt-2 block text-lg">Self-hosted</b><p className="mt-1 text-[8px] text-[#858681]">No PostForge subscription configured.</p></div><div className="pf-card p-4"><p className="pf-eyebrow">Provider costs</p><b className="mt-2 block text-lg">Tracked live</b><Link href="/costs" className="mt-2 inline-flex items-center gap-1 text-[8px] font-semibold text-[#378EFF]">Open Spend <ChevronRight className="size-3" /></Link></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><CircleDollarSign className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Billing & usage</h2><p className="mt-1 text-[11px] text-[#858681]">This self-hosted workspace tracks provider spend rather than charging a PostForge subscription.</p><div className="mt-6 grid max-w-[720px] gap-3 sm:grid-cols-2"><div className="pf-card p-4"><p className="pf-eyebrow">Plan</p><b className="mt-2 block text-lg">Self-hosted</b><p className="mt-1 text-[11px] text-[#858681]">No PostForge subscription configured.</p></div><div className="pf-card p-4"><p className="pf-eyebrow">Provider costs</p><b className="mt-2 block text-lg">Tracked live</b><Link href="/costs" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#378EFF]">Open Spend <ChevronRight className="size-3" /></Link></div></div></div>;
 }
 
 function Team() {
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Users className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Team</h2><p className="mt-1 text-[8.5px] text-[#858681]">PostForge is currently running as one local workspace.</p><div className="pf-card mt-6 max-w-[620px] p-5"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">PF</span><div><b className="block text-[9px]">Local administrator</b><p className="mt-1 text-[7px] text-[#858681]">Full access · local runtime</p></div><span className="ml-auto rounded-full bg-[#E7F5E9] px-2 py-1 text-[6px] font-bold text-[#268B42]">ACTIVE</span></div><div className="mt-5 rounded-[9px] border border-dashed border-[#CFCFC7] p-4 text-center"><Code2 className="mx-auto size-5 text-[#999]" /><p className="mt-2 text-[8px] text-[#777]">User accounts and workspace permissions need an authentication owner before invitations can be enabled.</p></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Users className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Team</h2><p className="mt-1 text-[11px] text-[#858681]">PostForge is currently running as one local workspace.</p><div className="pf-card mt-6 max-w-[620px] p-5"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">PF</span><div><b className="block text-[10px]">Local administrator</b><p className="mt-1 text-[10px] text-[#858681]">Full access · local runtime</p></div><span className="ml-auto rounded-full bg-[#E7F5E9] px-2 py-1 text-[9px] font-bold text-[#268B42]">ACTIVE</span></div><div className="mt-5 rounded-[9px] border border-dashed border-[#CFCFC7] p-4 text-center"><Code2 className="mx-auto size-5 text-[#999]" /><p className="mt-2 text-[11px] text-[#777]">User accounts and workspace permissions need an authentication owner before invitations can be enabled.</p></div></div></div>;
 }
 
-function SectionHeading({ title, description }: { title: string; description: string }) { return <div className="mb-2 mt-6"><h3 className="text-[11px] font-semibold">{title}</h3><p className="mt-1 text-[7px] text-[#8A8B86]">{description}</p></div>; }
+function SectionHeading({ title, description }: { title: string; description: string }) { return <div className="mb-2 mt-6"><h3 className="text-[11px] font-semibold">{title}</h3><p className="mt-1 text-[10px] text-[#8A8B86]">{description}</p></div>; }
 function BrandAsset({ src, label }: { src: string; label: string }) { return <Image src={src} alt={label} width={18} height={18} unoptimized className="size-[18px]" />; }
-function ServiceRow({ icon, name, description, action, onAction }: { icon: React.ReactNode; name: string; description: string; action: string; onAction?: () => void }) { return <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]"><span className="grid size-9 place-items-center rounded-[9px] bg-[#F0F1EB] text-[#555651]">{icon}</span><div className="min-w-0"><h3 className="truncate text-[9px] font-semibold">{name}</h3><p className="mt-1 break-words text-[7px] leading-3 text-[#888984]">{description}</p></div>{onAction ? <button type="button" onClick={onAction} className="col-span-2 w-full rounded-[6px] border border-[#D7D8D0] bg-white px-2 py-1.5 text-[7px] font-semibold text-[#555651] hover:bg-[#F0F1EB] sm:col-span-1 sm:w-auto">{action}</button> : <span className="col-span-2 text-[7px] text-[#777] sm:col-span-1">{action}</span>}</article>; }
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="grid min-w-0 gap-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center"><span className="text-[8px] font-semibold text-[#666]">{label}</span><span className="min-w-0 [&_input]:h-9 [&_input]:w-full [&_input]:min-w-0 [&_input]:rounded-[7px] [&_input]:border [&_input]:border-[#D7D8D0] [&_input]:bg-[var(--pf-surface)] [&_input]:px-3 [&_input]:text-[8px] [&_input]:text-[var(--pf-ink)] [&_select]:h-9 [&_select]:w-full [&_select]:min-w-0 [&_select]:rounded-[7px] [&_select]:border [&_select]:border-[#D7D8D0] [&_select]:bg-[var(--pf-surface)] [&_select]:px-3 [&_select]:text-[8px] [&_select]:text-[var(--pf-ink)]">{children}</span></label>; }
-function Toggle({ label, detail, checked, onChange }: { label: string; detail: string; checked: boolean; onChange: (checked: boolean) => void }) { return <label className="flex min-w-0 items-center justify-between gap-3"><span className="min-w-0"><b className="block text-[8.5px]">{label}</b><small className="mt-1 block break-words text-[7px] text-[#999]">{detail}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 shrink-0 accent-[#FF4A20]" /></label>; }
+function ServiceRow({ icon, name, description, action, onAction }: { icon: React.ReactNode; name: string; description: string; action: string; onAction?: () => void }) { return <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]"><span className="grid size-9 place-items-center rounded-[9px] bg-[#F0F1EB] text-[#555651]">{icon}</span><div className="min-w-0"><h3 className="truncate text-[10px] font-semibold">{name}</h3><p className="mt-1 break-words text-[10px] leading-3 text-[#888984]">{description}</p></div>{onAction ? <button type="button" onClick={onAction} className="col-span-2 w-full rounded-[6px] border border-[#D7D8D0] bg-white px-2 py-1.5 text-[10px] font-semibold text-[#555651] hover:bg-[#F0F1EB] sm:col-span-1 sm:w-auto">{action}</button> : <span className="col-span-2 text-[10px] text-[#777] sm:col-span-1">{action}</span>}</article>; }
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="grid min-w-0 gap-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center"><span className="text-[11px] font-semibold text-[#666]">{label}</span><span className="min-w-0 [&_input]:h-9 [&_input]:w-full [&_input]:min-w-0 [&_input]:rounded-[7px] [&_input]:border [&_input]:border-[#D7D8D0] [&_input]:bg-[var(--pf-surface)] [&_input]:px-3 [&_input]:text-[11px] [&_input]:text-[var(--pf-ink)] [&_select]:h-9 [&_select]:w-full [&_select]:min-w-0 [&_select]:rounded-[7px] [&_select]:border [&_select]:border-[#D7D8D0] [&_select]:bg-[var(--pf-surface)] [&_select]:px-3 [&_select]:text-[11px] [&_select]:text-[var(--pf-ink)]">{children}</span></label>; }
+function Toggle({ label, detail, checked, onChange }: { label: string; detail: string; checked: boolean; onChange: (checked: boolean) => void }) { return <label className="flex min-w-0 items-center justify-between gap-3"><span className="min-w-0"><b className="block text-[11px]">{label}</b><small className="mt-1 block break-words text-[10px] text-[#999]">{detail}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 shrink-0 accent-[#FF4A20]" /></label>; }

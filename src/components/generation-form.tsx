@@ -362,7 +362,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
   const identityStatus = describeIdentityStatus(identityPack);
   const avatarSection = selectedDefinition?.type !== "video" ? (
-    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4">
+    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -372,7 +372,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
             <h2 className="text-[13px] font-semibold text-[#30312E]">
               Character identity
             </h2>
-            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
               Optional
             </span>
           </div>
@@ -434,7 +434,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       ? 1
       : selectedDefinition?.capabilities.maxReferenceImages ?? 14;
   const referenceSection = (
-    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4">
+    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -444,7 +444,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
             <h2 className="text-[13px] font-semibold text-[#30312E]">
               Visual collection
             </h2>
-            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
               Optional
             </span>
           </div>
@@ -607,10 +607,10 @@ export function GenerateFormView({
       </span>
 
       <div className="min-w-0 space-y-3">
-        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4">
+        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[9px] font-bold text-[#777873]">
+              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
                 01
               </span>
               <h2 className="text-[13px] font-semibold text-[#30312E]">
@@ -638,7 +638,7 @@ export function GenerateFormView({
             onChange={(event) => onPromptChange(event.target.value.slice(0, 1500))}
             className="min-h-[118px] resize-none rounded-[9px] border-[#D7D8D0] bg-[#FCFCFA] px-3 py-3 text-[12px] leading-5 text-[#30312E] shadow-none focus-visible:border-[#FF4A20] focus-visible:ring-[#FF4A20]/10"
           />
-          <div className="mt-2 flex items-center justify-between text-[9px] text-[#969792]">
+          <div className="mt-2 flex items-center justify-between text-[10px] text-[#969792]">
             <span>{prompt.length}/1,500</span>
             <span>Be specific about the opening frame</span>
           </div>
@@ -649,7 +649,7 @@ export function GenerateFormView({
                 key={spark}
                 type="button"
                 onClick={() => onAppendToPrompt(spark)}
-                className="rounded-md border border-[#DEDFD8] bg-[#F8F9F5] px-2.5 py-1.5 text-[9px] font-medium text-[#686965] transition-colors hover:border-[#BFC0B9] hover:text-[#30312E]"
+                className="rounded-md border border-[#DEDFD8] bg-[#F8F9F5] px-2.5 py-1.5 text-[10px] font-medium text-[#686965] transition-colors hover:border-[#BFC0B9] hover:text-[#30312E]"
               >
                 {spark}
               </button>
@@ -657,17 +657,17 @@ export function GenerateFormView({
           </div>
         </section>
 
-        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4">
+        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[9px] font-bold text-[#777873]">
+              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
                 02
               </span>
               <h2 className="text-[13px] font-semibold text-[#30312E]">
                 Choose a model
               </h2>
             </div>
-            <span className="rounded-full bg-[#E9F7EC] px-2 py-1 text-[8px] font-bold text-[#238A40]">
+            <span className="rounded-full bg-[#E9F7EC] px-2 py-1 text-[11px] font-bold text-[#238A40]">
               Live pricing
             </span>
           </div>
@@ -679,9 +679,9 @@ export function GenerateFormView({
         </section>
 
         {model && (
-          <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4">
+          <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
             <div className="mb-3 flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[9px] font-bold text-[#777873]">
+              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
                 03
               </span>
               <h2 className="text-[13px] font-semibold text-[#30312E]">
@@ -700,7 +700,7 @@ export function GenerateFormView({
                       aria-pressed={aspectRatio === ratio}
                       onClick={() => onAspectRatioChange(ratio)}
                       className={cn(
-                        "flex h-8 min-w-[64px] items-center justify-center gap-1.5 rounded-lg border px-2 text-[9px] font-medium transition-colors",
+                        "flex h-8 min-w-[64px] items-center justify-center gap-1.5 rounded-lg border px-2 text-[10px] font-medium transition-colors",
                         aspectRatio === ratio
                           ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
                           : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
@@ -725,7 +725,7 @@ export function GenerateFormView({
                         aria-pressed={numImages === count}
                         onClick={() => onNumImagesChange(count)}
                         className={cn(
-                          "grid size-8 place-items-center rounded-lg border text-[9px] font-semibold transition-colors",
+                          "grid size-8 place-items-center rounded-lg border text-[10px] font-semibold transition-colors",
                           numImages === count
                             ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
                             : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
@@ -749,7 +749,7 @@ export function GenerateFormView({
                         aria-pressed={duration === seconds}
                         onClick={() => onDurationChange(seconds)}
                         className={cn(
-                          "flex h-8 min-w-12 items-center justify-center gap-1 rounded-lg border px-2 text-[9px] font-semibold transition-colors",
+                          "flex h-8 min-w-12 items-center justify-center gap-1 rounded-lg border px-2 text-[10px] font-semibold transition-colors",
                           duration === seconds
                             ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
                             : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
@@ -783,7 +783,7 @@ export function GenerateFormView({
               <CollapsibleContent className="space-y-3 pt-3">
                 {isImage && (
                   <label className="block">
-                    <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[0.09em] text-[#777873]">
+                    <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.09em] text-[#777873]">
                       Negative prompt
                     </span>
                     <Textarea
@@ -803,7 +803,7 @@ export function GenerateFormView({
                         <strong className="block text-[10px] font-semibold text-[#363733]">
                           Web grounding
                         </strong>
-                        <small className="mt-0.5 block text-[8px] text-[#92938E]">
+                        <small className="mt-0.5 block text-[11px] text-[#92938E]">
                           Use current context to enrich the prompt
                         </small>
                       </span>
@@ -824,7 +824,7 @@ export function GenerateFormView({
                         <strong className="block text-[10px] font-semibold text-[#363733]">
                           Native audio
                         </strong>
-                        <small className="mt-0.5 block text-[8px] text-[#92938E]">
+                        <small className="mt-0.5 block text-[11px] text-[#92938E]">
                           Generate ambient sound and dialogue
                         </small>
                       </span>
@@ -845,10 +845,10 @@ export function GenerateFormView({
         {referenceSection}
       </div>
 
-      <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white xl:sticky xl:top-4">
+      <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
         <div className="flex h-12 items-center justify-between border-b border-[#E1E2DC] px-4">
           <span className="text-[11px] font-semibold text-[#3F403C]">Preview</span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F1F2EC] px-2 py-1 text-[8px] font-semibold text-[#777873]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-semibold text-[#777873]">
             {isVideo ? <Video className="size-3" /> : <ImageIcon className="size-3" />}
             {RATIO_LABELS[aspectRatio] ?? aspectRatio}
           </span>
@@ -858,7 +858,7 @@ export function GenerateFormView({
           <div
             aria-label={`${aspectRatio} output preview`}
             className={cn(
-              "relative grid max-h-[520px] min-h-[220px] place-items-center overflow-hidden rounded-[13px] border-[6px] border-white bg-[#F8F0E8] shadow-[0_20px_50px_rgba(37,38,33,0.18)]",
+              "relative grid max-h-[520px] min-h-[220px] place-items-center overflow-hidden rounded-[13px] border-[6px] border-white bg-[#F8F0E8] shadow-[var(--pf-shadow-lg)]",
               previewWidthClass
             )}
             style={{ aspectRatio: aspectRatio.replace(":", " / ") }}
@@ -869,14 +869,14 @@ export function GenerateFormView({
               <strong className="mt-2 block text-[11px] font-semibold text-[#30312E]">
                 {model ? "Ready to generate" : "Choose a model"}
               </strong>
-              <span className="mt-1 block min-w-0 max-w-52 break-words text-[9px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
+              <span className="mt-1 block min-w-0 max-w-52 break-words text-[10px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
                 {prompt.trim()
                   ? prompt.trim().slice(0, 112)
                   : "Your prompt and output settings will appear here before submission."}
               </span>
             </div>
             {model && (
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#232323] px-2.5 py-1 text-[8px] font-semibold text-white">
+              <span className="absolute bottom-3 left-3 rounded-full bg-[#232323] px-2.5 py-1 text-[11px] font-semibold text-white">
                 {model.name}
               </span>
             )}
@@ -888,14 +888,14 @@ export function GenerateFormView({
             <div
               key={index}
               className={cn(
-                "relative grid h-12 w-10 shrink-0 place-items-center rounded-[7px] border bg-[#F3F4EF] text-[8px] font-semibold text-[#8A8B86]",
+                "relative grid h-12 w-10 shrink-0 place-items-center rounded-[7px] border bg-[#F3F4EF] text-[11px] font-semibold text-[#8A8B86]",
                 index === 0 ? "border-[#FF4A20]" : "border-[#DADBD2]"
               )}
             >
               {String(index + 1).padStart(2, "0")}
             </div>
           ))}
-          <span className="ml-1 text-[9px] leading-4 text-[#858681]">
+          <span className="ml-1 text-[10px] leading-4 text-[#858681]">
             {variationCount} output{variationCount === 1 ? "" : "s"} will be added to
             the editor.
           </span>
@@ -924,7 +924,7 @@ export function GenerateFormView({
 
         <div className="sticky bottom-0 hidden gap-3 border-t border-[#E1E2DC] bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
           <div className="min-w-0">
-            <span className="block truncate text-[9px] text-[#858681]">
+            <span className="block truncate text-[10px] text-[#858681]">
               {model
                 ? `${model.name} · ${aspectRatio} · ${isImage ? `${numImages} output${numImages === 1 ? "" : "s"}` : `${duration}s video`}${avatarName ? ` · ${avatarName}` : ""}`
                 : "Select a model and describe your asset"}
@@ -955,7 +955,7 @@ export function GenerateFormView({
 
       <div className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 flex items-center gap-3 rounded-[12px] border border-border bg-card/95 p-2.5 shadow-[0_12px_36px_rgba(35,35,35,0.18)] backdrop-blur-md md:hidden">
         <div className="min-w-0 flex-1 pl-1">
-          <span className="block truncate text-[8px] text-[#858681]">
+          <span className="block truncate text-[11px] text-[#858681]">
             {model ? `${model.name} · ${aspectRatio}` : "Choose a model"}
           </span>
           <strong className="mt-0.5 block text-[10px] text-[#30312E]">

@@ -400,7 +400,7 @@ export function CharacterBuilderClient() {
             <ArrowLeft className="size-4" />
           </Link>
           <div className="min-w-0">
-            <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938E]">Characters</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938E]">Characters</p>
             <h1 className="truncate text-[12px] font-semibold">{editId ? "Edit character" : "Character builder"}</h1>
           </div>
         </div>
@@ -426,10 +426,10 @@ export function CharacterBuilderClient() {
         <div className="border-b border-[#DADBD2] px-3 py-3">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="text-[7px] font-bold uppercase tracking-[0.13em] text-[#858681]">Attribute recipe</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#858681]">Attribute recipe</p>
               <p className="mt-1 text-[10px] font-semibold">{completedRecipeGroups} of {recipeGroups.length} complete</p>
             </div>
-            <span className="text-[8px] font-semibold text-[#777873]">{recipeProgress}%</span>
+            <span className="text-[11px] font-semibold text-[#777873]">{recipeProgress}%</span>
           </div>
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#D9DAD3]"><span className="block h-full rounded-full bg-[#FF4A20]" style={{ width: `${recipeProgress}%` }} /></div>
         </div>
@@ -442,14 +442,14 @@ export function CharacterBuilderClient() {
               activeSection === "overview" ? "bg-white font-semibold shadow-[0_1px_0_rgba(35,35,35,0.04)]" : "text-[#666762] hover:bg-[#E5E6DF]"
             )}
           >
-            <span className="grid size-5 place-items-center rounded-md bg-[#E5E6DF] text-[7px] font-bold">00</span>
+            <span className="grid size-5 place-items-center rounded-md bg-[#E5E6DF] text-[10px] font-bold">00</span>
             <span className="min-w-0 flex-1 text-left">Overview</span>
             <Check className="size-3 text-[#3A9B55]" />
           </button>
           {CHARACTER_ATTRIBUTE_SECTIONS.map((section, sectionIndex) => {
             const summary = section.groups.slice(0, 2).map((group) => attributes[group.key]).join(" · ");
             const sectionComplete = section.groups.every((group) => Boolean(attributes[group.key]?.trim()));
-            return <button key={section.id} onClick={() => setActiveSection(section.id)} aria-current={activeSection === section.id ? "page" : undefined} className={cn("group flex min-w-[150px] items-center gap-2 rounded-lg px-2.5 py-2 text-left min-[1280px]:w-full min-[1280px]:min-w-0",activeSection === section.id ? "bg-white shadow-[0_1px_0_rgba(35,35,35,0.04)]" : "hover:bg-[#E5E6DF]")}><span className={cn("grid size-5 shrink-0 place-items-center rounded-md text-[7px] font-bold",activeSection === section.id ? "bg-[#232323] text-white" : "bg-[#E5E6DF] text-[#777873]")}>{String(sectionIndex + 1).padStart(2, "0")}</span><span className="min-w-0 flex-1"><b className="block truncate text-[10px] font-medium">{section.label}</b><small className="mt-0.5 block truncate text-[7px] text-[#92938E]">{summary}</small></span>{sectionComplete ? <Check className="size-3 text-[#3A9B55]" /> : activeSection === section.id ? <ChevronDown className="size-3 text-[#FF4A20]" /> : <ChevronRight className="size-3 text-[#999A95]" />}</button>;
+            return <button key={section.id} onClick={() => setActiveSection(section.id)} aria-current={activeSection === section.id ? "page" : undefined} className={cn("group flex min-w-[150px] items-center gap-2 rounded-lg px-2.5 py-2 text-left min-[1280px]:w-full min-[1280px]:min-w-0",activeSection === section.id ? "bg-white shadow-[0_1px_0_rgba(35,35,35,0.04)]" : "hover:bg-[#E5E6DF]")}><span className={cn("grid size-5 shrink-0 place-items-center rounded-md text-[10px] font-bold",activeSection === section.id ? "bg-[#232323] text-white" : "bg-[#E5E6DF] text-[#777873]")}>{String(sectionIndex + 1).padStart(2, "0")}</span><span className="min-w-0 flex-1"><b className="block truncate text-[10px] font-medium">{section.label}</b><small className="mt-0.5 block truncate text-[10px] text-[#92938E]">{summary}</small></span>{sectionComplete ? <Check className="size-3 text-[#3A9B55]" /> : activeSection === section.id ? <ChevronDown className="size-3 text-[#FF4A20]" /> : <ChevronRight className="size-3 text-[#999A95]" />}</button>;
           })}
         </nav>
       </aside>
@@ -464,7 +464,7 @@ export function CharacterBuilderClient() {
             <p className="pf-eyebrow !text-[#51524E]">Photographic recipe preview</p>
             <p className="mt-1 max-w-[310px] text-[10px] leading-4 text-[#5F605C]">Every attribute becomes part of the generation recipe. Changes apply to the photo when you re-render.</p>
           </div>
-          <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-semibold shadow-sm",rendering ? "bg-[#EAF2FF] text-[#347DCC]" : previewDirty ? "bg-[#FFF3DD] text-[#8B641A]" : "bg-[#E7F5E9] text-[#268B42]")}>{rendering ? <Loader2 className="size-3 animate-spin" /> : previewDirty ? <RefreshCw className="size-3" /> : <Check className="size-3" />}{rendering ? "Rendering" : previewDirty ? "Changes pending" : "Preview ready"}</span>
+          <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold shadow-sm",rendering ? "bg-[#EAF2FF] text-[#347DCC]" : previewDirty ? "bg-[#FFF3DD] text-[#8B641A]" : "bg-[#E7F5E9] text-[#268B42]")}>{rendering ? <Loader2 className="size-3 animate-spin" /> : previewDirty ? <RefreshCw className="size-3" /> : <Check className="size-3" />}{rendering ? "Rendering" : previewDirty ? "Changes pending" : "Preview ready"}</span>
         </div>
 
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -483,7 +483,7 @@ export function CharacterBuilderClient() {
           <button onClick={randomize} className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)]"><Dices className="size-3.5" /> Randomize identity</button>
           <div className="flex min-w-0 items-center gap-2 px-1 py-1 sm:col-span-2 min-[1280px]:col-span-1 min-[1420px]:col-span-2">
             <span className="size-1.5 shrink-0 rounded-full bg-[#22C55E]" />
-            <p className="min-w-0 break-words text-[9px] font-medium text-[#4E504C]">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</p>
+            <p className="min-w-0 break-words text-[10px] font-medium text-[#4E504C]">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</p>
           </div>
         </div>
       </section>
@@ -500,7 +500,7 @@ export function CharacterBuilderClient() {
                 <div>
                   <p className="pf-eyebrow">Overview</p>
                   <h2 className="mt-1 text-[19px] font-semibold tracking-[-0.035em]">Character blueprint</h2>
-                  <p className="mt-1 max-w-xl text-[9px] leading-4 text-[#858681]">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
+                  <p className="mt-1 max-w-xl text-[10px] leading-4 text-[#858681]">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
                 </div>
                 <button onClick={copyPrompt} className="pf-button-secondary shrink-0"><Copy className="size-3.5" /> Copy prompt</button>
               </div>
@@ -508,7 +508,7 @@ export function CharacterBuilderClient() {
                 {CHARACTER_ATTRIBUTE_SECTIONS.map((section) => (
                   <button key={section.id} onClick={() => setActiveSection(section.id)} className="pf-card p-3 text-left transition hover:-translate-y-px hover:border-[#BFC0B8] hover:shadow-sm motion-reduce:transform-none">
                     <span className="flex items-center justify-between"><b className="text-[10px]">{section.label}</b><ChevronRight className="size-3 text-[#999A95]" /></span>
-                    <span className="mt-1.5 block text-[8px] leading-4 text-[#858681]">{section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}</span>
+                    <span className="mt-1.5 block text-[11px] leading-4 text-[#858681]">{section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}</span>
                   </button>
                 ))}
               </div>
@@ -518,14 +518,14 @@ export function CharacterBuilderClient() {
               <div>
                 <p className="pf-eyebrow">Editing attributes</p>
                 <h2 className="mt-1 text-[19px] font-semibold tracking-[-0.035em]">{active.label}</h2>
-                <p className="mt-1 max-w-xl text-[9px] leading-4 text-[#858681]">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</p>
+                <p className="mt-1 max-w-xl text-[10px] leading-4 text-[#858681]">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</p>
               </div>
               <div className="mt-4 space-y-4">
                 {active.groups.map((group) => (
                   <fieldset key={group.key}>
                     <legend className="mb-1.5 flex w-full items-center justify-between gap-3 text-[10px] font-semibold">
                       <span>{group.label}</span>
-                      <span className="truncate text-[8px] font-medium text-[#858681]">
+                      <span className="truncate text-[11px] font-medium text-[#858681]">
                         {group.key === "lipFullness" ? `${attributes[group.key]}%` : attributes[group.key]}
                       </span>
                     </legend>
@@ -541,7 +541,7 @@ export function CharacterBuilderClient() {
                           aria-label="Lip fullness"
                           className="h-1.5 w-full cursor-pointer accent-[#FF4A20]"
                         />
-                        <div className="mt-1 flex justify-between text-[7px] text-[#92938E]"><span>0%</span><span>100%</span></div>
+                        <div className="mt-1 flex justify-between text-[10px] text-[#92938E]"><span>0%</span><span>100%</span></div>
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 min-[1280px]:grid-cols-2 min-[1380px]:grid-cols-3">
@@ -554,7 +554,7 @@ export function CharacterBuilderClient() {
                               aria-pressed={selected}
                               onClick={() => selectAttribute(group.key, option)}
                               className={cn(
-                                "relative min-h-[38px] rounded-[8px] border px-2.5 py-1.5 text-left text-[9px] leading-4 transition-colors",
+                                "relative min-h-[38px] rounded-[8px] border px-2.5 py-1.5 text-left text-[10px] leading-4 transition-colors",
                                 selected
                                   ? "border-[#378EFF] bg-[#F5F8FF] pr-7 font-semibold text-[#232323] shadow-[0_0_0_1px_#378EFF]"
                                   : "border-[#E1E2DC] bg-[#FAFAF8] text-[#62635F] hover:border-[#BFC0B8] hover:bg-white"
@@ -575,7 +575,7 @@ export function CharacterBuilderClient() {
         </section>
       </main>
 
-      {importOpen && <div className="pf-safe-overlay fixed inset-0 z-[70] grid place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="import-character-title"><div className="max-h-full min-w-0 w-full max-w-lg overflow-y-auto rounded-[16px] bg-white p-5 shadow-2xl"><div className="flex min-w-0 items-start justify-between gap-3"><div className="min-w-0"><p className="pf-eyebrow">Import</p><h2 id="import-character-title" className="mt-1 break-words text-lg font-semibold">Paste a prompt or attributes JSON</h2><p className="mt-1 break-words text-[9px] leading-4 text-[#858681]">Recognized fields are merged into the current character. Everything else is ignored.</p></div><button onClick={() => setImportOpen(false)} className="grid size-8 shrink-0 place-items-center rounded-full border border-[#DADBD2]"><X className="size-3.5" /></button></div><textarea value={importValue} onChange={(event) => setImportValue(event.target.value)} className="mt-4 h-52 w-full min-w-0 resize-none rounded-[9px] border border-[#DADBD2] bg-[#FAFAF8] p-3 font-mono text-[10px] leading-5 outline-none focus:border-[#FF4A20]" placeholder={'{"gender":"Female","age":"25-30","freckles":"Light Subtle"}'} /><div className="mt-4 flex flex-col-reverse gap-2 min-[420px]:flex-row min-[420px]:justify-end"><button onClick={() => setImportOpen(false)} className="pf-button-secondary">Cancel</button><button onClick={applyImport} className="pf-button-primary"><Download className="size-3.5" /> Import attributes</button></div></div></div>}
+      {importOpen && <div className="pf-safe-overlay fixed inset-0 z-[70] grid place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="import-character-title"><div className="max-h-full min-w-0 w-full max-w-lg overflow-y-auto rounded-[16px] bg-white p-5 shadow-2xl"><div className="flex min-w-0 items-start justify-between gap-3"><div className="min-w-0"><p className="pf-eyebrow">Import</p><h2 id="import-character-title" className="mt-1 break-words text-lg font-semibold">Paste a prompt or attributes JSON</h2><p className="mt-1 break-words text-[10px] leading-4 text-[#858681]">Recognized fields are merged into the current character. Everything else is ignored.</p></div><button onClick={() => setImportOpen(false)} className="grid size-8 shrink-0 place-items-center rounded-full border border-[#DADBD2]"><X className="size-3.5" /></button></div><textarea value={importValue} onChange={(event) => setImportValue(event.target.value)} className="mt-4 h-52 w-full min-w-0 resize-none rounded-[9px] border border-[#DADBD2] bg-[#FAFAF8] p-3 font-mono text-[10px] leading-5 outline-none focus:border-[#FF4A20]" placeholder={'{"gender":"Female","age":"25-30","freckles":"Light Subtle"}'} /><div className="mt-4 flex flex-col-reverse gap-2 min-[420px]:flex-row min-[420px]:justify-end"><button onClick={() => setImportOpen(false)} className="pf-button-secondary">Cancel</button><button onClick={applyImport} className="pf-button-primary"><Download className="size-3.5" /> Import attributes</button></div></div></div>}
       {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
     </div>
   );

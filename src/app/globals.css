@@ -58,8 +58,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-sans: var(--font-geist-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -162,6 +162,28 @@
   --pf-link: #378eff;
   --pf-success: #22c55e;
   --pf-danger: #ef4444;
+
+  /* Elevation: warm-tinted layered shadows, single light source (top-left) */
+  --pf-shadow-2xs: 0 1px 2px rgba(67, 60, 42, 0.05);
+  --pf-shadow-xs:
+    0 1px 2px rgba(67, 60, 42, 0.05),
+    0 1px 1px rgba(67, 60, 42, 0.04);
+  --pf-shadow-sm:
+    0 1px 2px rgba(67, 60, 42, 0.05),
+    0 4px 12px -2px rgba(67, 60, 42, 0.07);
+  --pf-shadow-md:
+    0 1px 2px rgba(67, 60, 42, 0.05),
+    0 8px 24px -6px rgba(67, 60, 42, 0.1);
+  --pf-shadow-lg:
+    0 2px 4px rgba(67, 60, 42, 0.05),
+    0 16px 40px -12px rgba(67, 60, 42, 0.16);
+  --pf-shadow-orange:
+    0 1px 2px rgba(130, 25, 0, 0.2),
+    0 6px 16px -4px rgba(255, 74, 32, 0.35);
+
+  /* Motion: one shared ease, quick-but-weighty */
+  --pf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pf-duration: 180ms;
 }
 
 .dark {
@@ -216,6 +238,23 @@
   --pf-link: #6aa7ff;
   --pf-success: #69d583;
   --pf-danger: #ff7667;
+
+  --pf-shadow-2xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pf-shadow-xs:
+    0 1px 2px rgba(0, 0, 0, 0.32),
+    0 1px 1px rgba(0, 0, 0, 0.24);
+  --pf-shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.32),
+    0 4px 12px -2px rgba(0, 0, 0, 0.36);
+  --pf-shadow-md:
+    0 1px 2px rgba(0, 0, 0, 0.32),
+    0 8px 24px -6px rgba(0, 0, 0, 0.44);
+  --pf-shadow-lg:
+    0 2px 4px rgba(0, 0, 0, 0.36),
+    0 16px 40px -12px rgba(0, 0, 0, 0.56);
+  --pf-shadow-orange:
+    0 1px 2px rgba(64, 12, 0, 0.5),
+    0 6px 16px -4px rgba(255, 101, 64, 0.3);
 }
 
 /* The ReelFarm-inspired screens contain intentional, exact light palette
@@ -612,9 +651,16 @@
   body {
     @apply bg-background text-foreground;
     min-width: 320px;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--pf-orange) 22%, transparent);
+  }
+  a, button {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -836,8 +882,35 @@
 
   .pf-card {
     border: 1px solid var(--pf-border);
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
     background: var(--pf-surface);
+    box-shadow: var(--pf-shadow-xs);
+  }
+
+  .pf-empty-stage {
+    background-image:
+      radial-gradient(ellipse 62% 52% at 50% 42%, var(--pf-surface) 0%, transparent 72%),
+      radial-gradient(#e0e1da 0.75px, transparent 0.75px);
+    background-size: auto, 18px 18px;
+  }
+
+  .dark .pf-empty-stage {
+    background-image:
+      radial-gradient(ellipse 62% 52% at 50% 42%, var(--pf-surface) 0%, transparent 72%),
+      radial-gradient(rgba(255, 255, 255, 0.1) 0.75px, transparent 0.75px);
+  }
+
+  .pf-card-hover {
+    transition:
+      transform var(--pf-duration) var(--pf-ease),
+      box-shadow var(--pf-duration) var(--pf-ease),
+      border-color var(--pf-duration) var(--pf-ease);
+  }
+
+  .pf-card-hover:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in oklch, var(--pf-border) 70%, var(--pf-ink) 30%);
+    box-shadow: var(--pf-shadow-md);
   }
 
   .pf-button-primary {
@@ -853,10 +926,31 @@
     font-size: 0.75rem;
     font-weight: 700;
     white-space: nowrap;
-    transition: filter 150ms ease;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      var(--pf-shadow-orange);
+    transition:
+      transform var(--pf-duration) var(--pf-ease),
+      box-shadow var(--pf-duration) var(--pf-ease),
+      filter var(--pf-duration) var(--pf-ease);
   }
 
-  .pf-button-primary:hover { filter: brightness(0.96); }
+  .pf-button-primary:hover {
+    filter: brightness(1.04);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 1px 2px rgba(130, 25, 0, 0.22),
+      0 10px 24px -6px rgba(255, 74, 32, 0.45);
+  }
+
+  .pf-button-primary:active {
+    transform: translateY(0) scale(0.98);
+    filter: brightness(0.95);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 1px 2px rgba(130, 25, 0, 0.24);
+  }
 
   .pf-button-secondary {
     display: inline-flex;
@@ -872,10 +966,24 @@
     font-size: 0.75rem;
     font-weight: 650;
     white-space: nowrap;
-    transition: background 150ms ease;
+    box-shadow: var(--pf-shadow-2xs);
+    transition:
+      transform var(--pf-duration) var(--pf-ease),
+      box-shadow var(--pf-duration) var(--pf-ease),
+      background var(--pf-duration) var(--pf-ease),
+      border-color var(--pf-duration) var(--pf-ease);
   }
 
-  .pf-button-secondary:hover { background: #f8f8f5; }
+  .pf-button-secondary:hover {
+    background: #f8f8f5;
+    transform: translateY(-1px);
+    box-shadow: var(--pf-shadow-sm);
+  }
+
+  .pf-button-secondary:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: var(--pf-shadow-2xs);
+  }
 
   .dark .pf-button-secondary:hover { background: var(--pf-active); }
 

@@ -186,17 +186,20 @@ export function Sidebar() {
         aria-current={active ? "page" : undefined}
         onClick={() => mobile && setMobileOpen(false)}
         className={cn(
-          "sidebar-nav-item group flex h-[38px] items-center gap-2.5 rounded-lg text-[13px] font-medium transition-colors duration-150",
+          "sidebar-nav-item group relative flex h-[38px] items-center gap-2.5 rounded-lg text-[13px] font-medium transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           mobile ? "justify-start px-2.5" : "justify-center px-0 xl:justify-start xl:px-2.5",
           active
-            ? "bg-[#E1E2DB] font-semibold text-[#232323]"
-            : "text-[#62635F] hover:bg-[#E5E6DF] hover:text-[#232323]"
+            ? "bg-[var(--pf-surface)] font-semibold text-[#232323] shadow-[var(--pf-shadow-xs)]"
+            : "text-[#62635F] hover:bg-[#E5E6DF] hover:text-[#232323] active:scale-[0.98]"
         )}
       >
+        {active && (
+          <span className="absolute left-0 top-1/2 h-[18px] w-[3px] -translate-y-1/2 rounded-full bg-[#FF4A20] xl:left-0" />
+        )}
         <Icon
           className={cn(
-            "size-[17px] shrink-0 text-[#74756F]",
-            active && "text-[#FF4A20]"
+            "size-[17px] shrink-0 transition-colors duration-[180ms]",
+            active ? "text-[#FF4A20]" : "text-[#74756F] group-hover:text-[#232323]"
           )}
           strokeWidth={1.8}
         />
@@ -216,18 +219,18 @@ export function Sidebar() {
       {(notificationPreferences.failures || notificationPreferences.approvals) && (
         <div className={cn("mb-2 gap-1 rounded-lg border border-[#D7D8D0] bg-[var(--pf-surface)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
           {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
-            <Link href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && setMobileOpen(false)} className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-[9px] text-[#62635F] hover:bg-[#E5E6DF]">
+            <Link href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && setMobileOpen(false)} className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-[10px] text-[#62635F] hover:bg-[#E5E6DF]">
               <Bell className="size-3 shrink-0 text-[#D94A34]" /><span className="min-w-0 flex-1 truncate">Failed generations</span><b>{notificationCounts.generationFailures}</b>
             </Link>
           )}
           {notificationPreferences.approvals && notificationCounts.approvalsWaiting > 0 && (
-            <Link href="/gallery?reviewStatus=needs_review" onClick={() => mobile && setMobileOpen(false)} className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-[9px] text-[#62635F] hover:bg-[#E5E6DF]">
+            <Link href="/gallery?reviewStatus=needs_review" onClick={() => mobile && setMobileOpen(false)} className="flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-[10px] text-[#62635F] hover:bg-[#E5E6DF]">
               <Bell className="size-3 shrink-0 text-[#FF4A20]" /><span className="min-w-0 flex-1 truncate">Outputs to review</span><b>{notificationCounts.approvalsWaiting}</b>
             </Link>
           )}
           {(!notificationPreferences.failures || notificationCounts.generationFailures === 0) &&
             (!notificationPreferences.approvals || notificationCounts.approvalsWaiting === 0) && (
-              <span className="flex items-center gap-2 px-2 py-1.5 text-[9px] text-[#777873]"><Bell className="size-3" /> No workflow alerts</span>
+              <span className="flex items-center gap-2 px-2 py-1.5 text-[10px] text-[#777873]"><Bell className="size-3" /> No workflow alerts</span>
             )}
         </div>
       )}
@@ -253,7 +256,7 @@ export function Sidebar() {
         </span>
         <span className="min-w-0">
           <strong className="block truncate text-[11px] font-semibold">{workspaceName}</strong>
-          <small className="mt-0.5 block truncate text-[9px] text-[#8A8B86]">Self-hosted</small>
+          <small className="mt-0.5 block truncate text-[10px] text-[#8A8B86]">Self-hosted</small>
         </span>
         <ThemeToggle />
       </div>
@@ -324,7 +327,7 @@ export function Sidebar() {
             href={quickAction.href}
             aria-label={quickAction.label}
             title={quickAction.label}
-            className="mt-5 inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] bg-[#FF4A20] px-0 text-[12px] font-semibold text-white shadow-[0_2px_0_rgba(130,25,0,0.14)] transition-[filter] hover:brightness-95 xl:px-3"
+            className="mt-5 inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] bg-[#FF4A20] px-0 text-[12px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:brightness-[1.04] active:translate-y-0 active:scale-[0.98] active:brightness-95 xl:px-3"
           >
             <Plus className="size-4 shrink-0" /> <span className="sidebar-expanded-only">{quickAction.label}</span>
           </Link>

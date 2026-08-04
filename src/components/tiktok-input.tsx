@@ -367,7 +367,7 @@ export function TikTokInput({
                           {source.label}
                         </p>
                         {source.fileSizeBytes && (
-                          <p className="text-[9px] text-white/60">
+                          <p className="text-[10px] text-white/60">
                             {formatSize(source.fileSizeBytes)}
                           </p>
                         )}

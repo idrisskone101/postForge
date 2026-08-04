@@ -254,7 +254,7 @@ export function GallerySelectionInspector({
     <aside
       data-gallery-selection-inspector
       aria-label="Selected asset preview"
-      className="order-first min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-[0_5px_18px_rgba(31,32,29,0.07)] min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
+      className="order-first min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-[var(--pf-shadow-sm)] min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
     >
       <div className="flex min-w-0 items-center justify-between gap-3 border-b border-border px-3 py-2.5">
         <span className="flex min-w-0 items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
@@ -551,7 +551,7 @@ export function GalleryGrid({
             <article
               key={item.id}
               className={cn(
-                "group min-w-0 overflow-hidden rounded-xl border bg-card transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(31,32,29,0.07)]",
+                "group min-w-0 overflow-hidden rounded-xl border bg-card shadow-[var(--pf-shadow-2xs)] transition-[border-color,box-shadow,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[var(--pf-shadow-md)]",
                 isSelected ? "border-primary ring-1 ring-primary/25" : "border-border",
                 view === "list" &&
                   "grid grid-cols-[128px_minmax(0,1fr)] sm:grid-cols-[156px_minmax(0,1fr)]"
@@ -586,7 +586,7 @@ export function GalleryGrid({
                   </span>
                 </button>
 
-                <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-md bg-black/65 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white">
+                <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-md bg-black/65 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                   <span>{item.type}</span>
                   {item.durationSec != null && <span>· {item.durationSec}s</span>}
                 </div>
@@ -776,7 +776,7 @@ export function GalleryGrid({
                   className="max-h-[calc(100dvh-5rem)] rounded-xl"
                 />
               </div>
-              <aside className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4">
+              <aside className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                     Previewing asset

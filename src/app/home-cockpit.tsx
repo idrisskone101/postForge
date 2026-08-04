@@ -121,7 +121,7 @@ function JobStatusPill({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center gap-1.5 rounded-full border px-2 py-1 text-[9px] font-semibold capitalize",
+        "inline-flex max-w-full items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold capitalize",
         isProcessing && "border-blue-200 bg-blue-50 text-blue-700",
         isQueued && "border-amber-200 bg-amber-50 text-amber-700",
         isComplete && "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -210,7 +210,7 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
       </span>
       <span className="min-w-0">
         <span className="block truncate text-[11px] font-semibold">{getJobPreview(job, 54)}</span>
-        <span className="mt-0.5 block truncate text-[9px] text-muted-foreground">
+        <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
           {job.model} · {formatRelativeDate(job.createdAt)}
         </span>
       </span>
@@ -225,19 +225,19 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
 function ReviewCard({ job }: { job: HomeJob }) {
   return (
     <Link href={getJobHref(job)} className="group min-w-0">
-      <span className="relative block aspect-[4/5] overflow-hidden rounded-lg border border-border bg-[#E8E9E2]">
+      <span className="relative block aspect-[4/5] overflow-hidden rounded-lg border border-border bg-[#E8E9E2] shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-0.5 group-hover:shadow-[var(--pf-shadow-md)]">
         <JobMedia job={job} />
         <span className="absolute bottom-1.5 left-1.5 grid size-6 place-items-center rounded-full bg-white/95 text-stone-900 shadow-sm">
           {job.type === "video" ? <Play className="size-3" fill="currentColor" /> : <ImageIcon className="size-3" />}
         </span>
         {job.output?.durationSec ? (
-          <span className="absolute bottom-1.5 right-1.5 rounded bg-black/65 px-1.5 py-0.5 text-[8px] font-medium text-white">
+          <span className="absolute bottom-1.5 right-1.5 rounded bg-black/65 px-1.5 py-0.5 text-[11px] font-medium text-white">
             0:{String(Math.round(job.output.durationSec)).padStart(2, "0")}
           </span>
         ) : null}
       </span>
       <span className="mt-1.5 block truncate text-[10px] font-semibold">{getJobTitle(job)}</span>
-      <span className="mt-0.5 block truncate text-[8px] text-muted-foreground">
+      <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
         {job.model} · {job.id.slice(0, 6)}
       </span>
     </Link>
@@ -320,7 +320,7 @@ export function HomeCockpit({
           <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">
             <div
               data-home-production-status="true"
-              className="inline-flex h-9 min-w-0 items-center gap-1 rounded-lg border border-[#DADBD2] bg-[#ECEDE7] p-1 text-[8px]"
+              className="inline-flex h-9 min-w-0 items-center gap-1 rounded-lg border border-[#DADBD2] bg-[#ECEDE7] p-1 text-[11px]"
               aria-label={`Workspace state: ${workspaceState}`}
             >
               <span className="px-1.5 font-semibold uppercase tracking-[0.1em] text-[#858681]">Live</span>
@@ -334,9 +334,9 @@ export function HomeCockpit({
 
         <div className="mt-5 flex flex-col gap-3.5">
           {nextJob ? (
-            <section className="grid min-h-[238px] overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_rgba(32,32,28,.04)] lg:grid-cols-[minmax(0,1fr)_250px]">
+            <section className="grid min-h-[238px] overflow-hidden rounded-xl border border-border bg-card shadow-[var(--pf-shadow-md)] lg:grid-cols-[minmax(0,1fr)_250px]">
               <div className="flex min-w-0 flex-col p-4 sm:p-5">
-                <p className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
                   Next production task
                 </p>
@@ -355,10 +355,10 @@ export function HomeCockpit({
                       : "The generation request is saved. Open its workspace to inspect the current queue state."}
                 </p>
                 <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
-                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[9px] text-muted-foreground">
+                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[10px] text-muted-foreground">
                     <Clock3 className="size-3" /> {formatRelativeDate(nextJob.createdAt)}
                   </span>
-                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[9px] text-muted-foreground">
+                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[10px] text-muted-foreground">
                     <WandSparkles className="size-3" /> <span className="truncate">{nextJob.model}</span>
                   </span>
                   <JobStatusPill status={nextJob.status} />
@@ -369,18 +369,18 @@ export function HomeCockpit({
                     <ArrowRight className="size-3.5" />
                   </Link>
                   <Link href="/ugc-inspiration" className="pf-button-secondary">
-                    Do this later
+                    Browse inspiration
                   </Link>
                 </div>
                 <div className="mt-auto grid min-w-0 grid-cols-3 gap-2 border-t border-border pt-3">
                   {getHomeProductionSteps(nextJob).map((step, index) => (
                     <span key={step.label} className="flex min-w-0 items-center gap-2">
-                      <i className={cn("grid size-5 shrink-0 place-items-center rounded-full border text-[8px] not-italic", step.complete ? "border-stone-700 bg-stone-800 text-white" : "border-border bg-background text-muted-foreground")}>
+                      <i className={cn("grid size-5 shrink-0 place-items-center rounded-full border text-[11px] not-italic", step.complete ? "border-stone-700 bg-stone-800 text-white" : "border-border bg-background text-muted-foreground")}>
                         {step.complete ? <Check className="size-3" /> : index + 1}
                       </i>
                       <span className="min-w-0">
-                        <b className="block truncate text-[8px]">{step.label}</b>
-                        <small className="block truncate text-[7px] text-muted-foreground">{step.detail}</small>
+                        <b className="block truncate text-[11px]">{step.label}</b>
+                        <small className="block truncate text-[10px] text-muted-foreground">{step.detail}</small>
                       </span>
                     </span>
                   ))}
@@ -392,7 +392,7 @@ export function HomeCockpit({
                 <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
                 <span className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2 text-white">
                   <span className="min-w-0">
-                    <small className="block truncate text-[8px] text-white/65">{isCloneJob(nextJob) ? "Clone workspace" : "Generation workspace"}</small>
+                    <small className="block truncate text-[11px] text-white/65">{isCloneJob(nextJob) ? "Clone workspace" : "Generation workspace"}</small>
                     <b className="mt-0.5 block truncate text-[10px]">Open production workspace</b>
                   </span>
                   <i className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-stone-900 not-italic transition-transform group-hover:scale-105">
@@ -406,35 +406,35 @@ export function HomeCockpit({
           )}
 
           <section className="grid gap-3 min-[1080px]:grid-cols-[minmax(0,1.15fr)_minmax(340px,.85fr)]">
-            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 sm:p-4">
+            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
               <PanelHeading
                 title="Active jobs"
                 description={visibleActiveJobs.length > 0 ? `${activeJobs.length} job${activeJobs.length === 1 ? " is" : "s are"} moving` : "Nothing generating right now"}
-                action={<Link href="/generate" className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-muted-foreground hover:text-foreground">View all <ArrowRight className="size-3" /></Link>}
+                action={<Link href="/generate" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground">View all <ArrowRight className="size-3" /></Link>}
               />
               {visibleActiveJobs.length === 0 ? (
                 <div className="flex min-h-[132px] flex-col items-center justify-center px-4 py-5 text-center">
                   <span className="grid size-9 place-items-center rounded-lg bg-muted text-muted-foreground"><Sparkles className="size-4" /></span>
                   <p className="mt-2 text-[11px] font-semibold">Your queue is clear</p>
-                  <p className="mt-1 max-w-xs text-[9px] text-muted-foreground">Start a Clone or Generate asset to fill this lane.</p>
-                  <Link href="/ugc-clone" className="mt-2 text-[9px] font-semibold text-[#ff4a20] hover:underline">Start a Clone</Link>
+                  <p className="mt-1 max-w-xs text-[10px] text-muted-foreground">Start a Clone or Generate asset to fill this lane.</p>
+                  <Link href="/ugc-clone" className="mt-2 text-[10px] font-semibold text-[#ff4a20] hover:underline">Start a Clone</Link>
                 </div>
               ) : (
                 <div>{visibleActiveJobs.map((job) => <ActiveJobRow key={job.id} job={job} />)}</div>
               )}
             </div>
 
-            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 sm:p-4">
+            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
               <PanelHeading
                 title="Needs review"
                 description={`${recentJobs.length} visible output${recentJobs.length === 1 ? "" : "s"} awaiting a decision`}
-                action={<Link href="/gallery" className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-muted-foreground hover:text-foreground">Review all <ArrowRight className="size-3" /></Link>}
+                action={<Link href="/gallery" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground">Review all <ArrowRight className="size-3" /></Link>}
               />
               {visibleRecentJobs.length === 0 ? (
                 <div className="flex min-h-[132px] flex-col items-center justify-center px-4 py-5 text-center">
                   <GalleryHorizontalEnd className="size-5 text-muted-foreground" />
                   <p className="mt-2 text-[11px] font-semibold">No outputs are waiting</p>
-                  <p className="mt-1 text-[9px] text-muted-foreground">Completed work appears here first.</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">Completed work appears here first.</p>
                 </div>
               ) : (
                 <div data-home-pending-review-grid="true" className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -447,7 +447,7 @@ export function HomeCockpit({
           </section>
 
           <section className="grid gap-3 min-[920px]:grid-cols-2">
-            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 sm:p-4">
+            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
               <span className="sr-only">Compact Spend</span>
               <PanelHeading
                 title="Spend today"
@@ -457,9 +457,9 @@ export function HomeCockpit({
               <div className="mt-3 flex min-w-0 flex-wrap items-end justify-between gap-3">
                 <div>
                   <p className="text-[25px] font-semibold leading-none tracking-[-0.04em]">{formatCost(todaySummary.totalCost)}</p>
-                  <p className="mt-1 text-[9px] text-muted-foreground">{formatCost(monthSummary.totalCost)} this month · {monthCount} tracked generations</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">{formatCost(monthSummary.totalCost)} this month · {monthCount} tracked generations</p>
                 </div>
-                <Link href="/costs" className="text-[9px] font-semibold text-foreground hover:underline">Open Spend</Link>
+                <Link href="/costs" className="text-[10px] font-semibold text-foreground hover:underline">Open Spend</Link>
               </div>
               {todaySpendTotal > 0 ? (
                 <div className="mt-3" aria-label="Today's spend mix by generation type">
@@ -477,7 +477,7 @@ export function HomeCockpit({
                       />
                     )}
                   </div>
-                  <div className="mt-2 grid grid-cols-2 gap-3 text-[8px] text-muted-foreground">
+                  <div className="mt-2 grid grid-cols-2 gap-3 text-[11px] text-muted-foreground">
                     <span className="min-w-0 truncate">
                       Image · {formatCost(todaySummary.breakdown.image.cost)}
                     </span>
@@ -487,17 +487,17 @@ export function HomeCockpit({
                   </div>
                 </div>
               ) : (
-                <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-[9px] text-muted-foreground">
+                <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-[10px] text-muted-foreground">
                   No tracked generation spend today.
                 </p>
               )}
             </div>
 
-            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 sm:p-4">
+            <div className="min-w-0 rounded-xl border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
               <PanelHeading
                 title="Today's loop"
                 description={`${jobsStartedToday.length} visible job${jobsStartedToday.length === 1 ? "" : "s"} started today`}
-                action={<span className="rounded-full bg-muted px-2 py-1 text-[8px] font-semibold text-muted-foreground">Live data</span>}
+                action={<span className="rounded-full bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">Live data</span>}
               />
               <div className="mt-1">
                 {[
@@ -530,10 +530,10 @@ export function HomeCockpit({
                   },
                 ].map((step, index) => (
                   <Link key={step.label} href={step.href} className="group grid min-w-0 grid-cols-[1.5rem_minmax(0,1fr)_auto] items-center gap-2 border-t border-border py-2 first:border-t-0">
-                    <span className={cn("grid size-6 place-items-center rounded-full border text-[8px] font-semibold", step.attention ? "border-amber-300 bg-amber-50 text-amber-800" : step.value > 0 ? "border-stone-700 bg-stone-800 text-white" : "border-border bg-background text-muted-foreground")}>
+                    <span className={cn("grid size-6 place-items-center rounded-full border text-[11px] font-semibold", step.attention ? "border-amber-300 bg-amber-50 text-amber-800" : step.value > 0 ? "border-stone-700 bg-stone-800 text-white" : "border-border bg-background text-muted-foreground")}>
                       {step.value > 99 ? "99+" : step.value > 0 ? step.value : index + 1}
                     </span>
-                    <span className="min-w-0"><b className="block truncate text-[10px]">{step.label}</b><small className="block truncate text-[8px] text-muted-foreground">{step.detail}</small></span>
+                    <span className="min-w-0"><b className="block truncate text-[10px]">{step.label}</b><small className="block truncate text-[11px] text-muted-foreground">{step.detail}</small></span>
                     <ArrowRight className="size-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 ))}

@@ -128,7 +128,7 @@ function StatusBadge({ status }: { status: JobDetail["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[9px] font-semibold",
+        "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[10px] font-semibold",
         completed && "bg-[#E9F7EC] text-[#238A40]",
         failed && "bg-[#FEF0EF] text-[#C53A32]",
         status === "processing" && "bg-[#EEF5FF] text-[#2A71C7]",
@@ -414,7 +414,7 @@ export default function JobDetailPage() {
               <ArrowLeft className="size-3.5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#92938F]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#92938F]">
                 Generate / {job.id.slice(0, 8)}
               </p>
               <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-2.5">
@@ -489,7 +489,7 @@ export default function JobDetailPage() {
               >
                 <ZoomOut className="size-3.5" />
               </button>
-              <span className="w-12 text-center text-[9px] font-semibold text-[#777873]">
+              <span className="w-12 text-center text-[10px] font-semibold text-[#777873]">
                 {previewZoom}%
               </span>
               <button
@@ -512,7 +512,7 @@ export default function JobDetailPage() {
                     showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
                   }}
                   className={cn(
-                    "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[9px] font-semibold transition-colors",
+                    "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[10px] font-semibold transition-colors",
                     cropMode
                       ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
                       : "border-[#DADBD2] bg-white text-[#686965] hover:bg-[#F8F9F5]"
@@ -524,7 +524,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => void handleFullscreen()}
-                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[#DADBD2] bg-white px-2 text-[9px] font-semibold text-[#686965] hover:bg-[#F8F9F5]"
+                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[#DADBD2] bg-white px-2 text-[10px] font-semibold text-[#686965] hover:bg-[#F8F9F5]"
               >
                 <Maximize2 className="size-3.5" />
                 {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
@@ -629,7 +629,7 @@ export default function JobDetailPage() {
           {isCompleted && (
             <div className="flex min-h-[92px] items-center gap-2 overflow-x-auto border-t border-[#E1E2DC] px-3 py-2.5">
               <div className="mr-1 w-20 shrink-0">
-                <span className="block text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
                   Variations
                 </span>
                 <strong className="mt-1 block text-[10px] font-semibold text-[#3F403C]">
@@ -658,7 +658,7 @@ export default function JobDetailPage() {
                     fill
                     className="size-full rounded-[5px]"
                   />
-                  <span className="absolute bottom-1 right-1 rounded bg-[#232323]/80 px-1 py-0.5 text-[7px] font-semibold text-white">
+                  <span className="absolute bottom-1 right-1 rounded bg-[#232323]/80 px-1 py-0.5 text-[10px] font-semibold text-white">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </button>
@@ -666,7 +666,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => router.push(buildGenerateSimilarHref(job))}
-                className="flex h-[68px] w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#C7C8C1] text-[8px] font-semibold text-[#777873] hover:border-[#FF4A20] hover:text-[#FF4A20]"
+                className="flex h-[68px] w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#C7C8C1] text-[11px] font-semibold text-[#777873] hover:border-[#FF4A20] hover:text-[#FF4A20]"
               >
                 <Plus className="size-4" /> New variation
               </button>
@@ -702,14 +702,14 @@ export default function JobDetailPage() {
             <div className="space-y-4 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
                     Quick actions
                   </p>
                   <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
                     Refine this output
                   </h2>
                 </div>
-                <span className="rounded-full bg-[#EEF5FF] px-2 py-1 text-[8px] font-bold text-[#2A71C7]">
+                <span className="rounded-full bg-[#EEF5FF] px-2 py-1 text-[11px] font-bold text-[#2A71C7]">
                   AI
                 </span>
               </div>
@@ -739,10 +739,10 @@ export default function JobDetailPage() {
                           <Icon className="size-3.5" />
                         </span>
                         <span className="min-w-0">
-                          <strong className="block truncate text-[9px] font-semibold text-[#30312E]">
+                          <strong className="block truncate text-[10px] font-semibold text-[#30312E]">
                             {tool.title}
                           </strong>
-                          <small className="mt-1 block text-[8px] leading-3.5 text-[#858681]">
+                          <small className="mt-1 block text-[11px] leading-3.5 text-[#858681]">
                             {tool.detail}
                           </small>
                         </span>
@@ -755,7 +755,7 @@ export default function JobDetailPage() {
               <div className="border-t border-[#ECECE7] pt-4">
                 <label
                   htmlFor="enhancement-instruction"
-                  className="mb-1.5 block text-[9px] font-semibold text-[#686965]"
+                  className="mb-1.5 block text-[10px] font-semibold text-[#686965]"
                 >
                   Instruction · {selectedTool.title}
                 </label>
@@ -768,7 +768,7 @@ export default function JobDetailPage() {
               </div>
 
               <label className="block">
-                <span className="mb-2 flex items-center justify-between text-[9px] font-semibold text-[#686965]">
+                <span className="mb-2 flex items-center justify-between text-[10px] font-semibold text-[#686965]">
                   Edit strength <strong className="text-[#232323]">{editStrength}%</strong>
                 </span>
                 <input
@@ -787,7 +787,7 @@ export default function JobDetailPage() {
                   <strong className="block text-[10px] font-semibold text-[#363733]">
                     Preserve subject
                   </strong>
-                  <small className="mt-0.5 block text-[8px] text-[#92938E]">
+                  <small className="mt-0.5 block text-[11px] text-[#92938E]">
                     Lock identity and camera geometry
                   </small>
                 </span>
@@ -825,7 +825,7 @@ export default function JobDetailPage() {
 
           {activeTab === "details" && (
             <div className="p-4">
-              <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
                 Output details
               </p>
               <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
@@ -857,7 +857,7 @@ export default function JobDetailPage() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="grid grid-cols-[110px_minmax(0,1fr)] gap-3 py-2.5 text-[9px]"
+                    className="grid grid-cols-[110px_minmax(0,1fr)] gap-3 py-2.5 text-[10px]"
                   >
                     <dt className="text-[#858681]">{label}</dt>
                     <dd className="truncate text-right font-semibold capitalize text-[#3F403C]">
@@ -867,13 +867,13 @@ export default function JobDetailPage() {
                 ))}
               </dl>
               <div className="mt-3 rounded-[9px] bg-[#F3F4EF] p-3">
-                <span className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
                   Source
                 </span>
                 <strong className="mt-1 block text-[10px] font-semibold text-[#30312E]">
                   Generate Studio
                 </strong>
-                <small className="mt-1 block min-w-0 break-words text-[8px] text-[#858681] [overflow-wrap:anywhere]">
+                <small className="mt-1 block min-w-0 break-words text-[11px] text-[#858681] [overflow-wrap:anywhere]">
                   Job {job.id}
                 </small>
               </div>
@@ -884,7 +884,7 @@ export default function JobDetailPage() {
             <div className="space-y-4 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
                     Prompt record
                   </p>
                   <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
@@ -895,19 +895,19 @@ export default function JobDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={() => void handleCopyPrompt()}
-                  className="h-7 rounded-lg border-[#DADBD2] bg-white px-2 text-[9px]"
+                  className="h-7 rounded-lg border-[#DADBD2] bg-white px-2 text-[10px]"
                 >
                   <Copy className="size-3" /> Copy
                 </Button>
               </div>
               <div>
-                <p className="mb-1.5 text-[9px] font-semibold text-[#686965]">Main prompt</p>
+                <p className="mb-1.5 text-[10px] font-semibold text-[#686965]">Main prompt</p>
                 <div className="min-w-0 break-words rounded-[9px] border border-[#E1E2DC] bg-[#FAFBF7] p-3 text-[10px] leading-5 text-[#4F504C] [overflow-wrap:anywhere]">
                   {job.prompt}
                 </div>
               </div>
               <div>
-                <p className="mb-1.5 text-[9px] font-semibold text-[#686965]">
+                <p className="mb-1.5 text-[10px] font-semibold text-[#686965]">
                   Negative prompt
                 </p>
                 <div className="min-w-0 break-words rounded-[9px] border border-[#E1E2DC] bg-[#F3F4EF] p-3 text-[10px] leading-5 text-[#777873] [overflow-wrap:anywhere]">
@@ -976,7 +976,7 @@ export default function JobDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={() => router.push(buildCloneHandoffHref(featured.id))}
-                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[9px] xl:hidden"
+                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[10px] xl:hidden"
                 >
                   <Users className="size-3.5 shrink-0" /> Use in Clone
                 </Button>
@@ -990,7 +990,7 @@ export default function JobDetailPage() {
                       `/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`
                     )
                   }
-                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[9px] xl:hidden"
+                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[10px] xl:hidden"
                 >
                   <Workflow className="size-3.5 shrink-0" /> Automate
                 </Button>
@@ -1003,7 +1003,7 @@ export default function JobDetailPage() {
                 render={
                   <button
                     type="button"
-                    className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-dashed border-[#E5AAA3] text-[9px] font-semibold text-[#C53A32] transition-colors hover:bg-[#FEF0EF] disabled:opacity-50"
+                    className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-dashed border-[#E5AAA3] text-[10px] font-semibold text-[#C53A32] transition-colors hover:bg-[#FEF0EF] disabled:opacity-50"
                   />
                 }
               >
@@ -1035,7 +1035,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => router.push("/generate")}
-                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-[#DADBD2] text-[9px] font-semibold text-[#686965] transition-colors hover:bg-[#F3F4EF]"
+                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-[#DADBD2] text-[10px] font-semibold text-[#686965] transition-colors hover:bg-[#F3F4EF]"
               >
                 <ArrowLeft className="size-3.5" /> Leave editor
               </button>

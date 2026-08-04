@@ -366,7 +366,7 @@ export function CloneOutputReviewDetail({
 
             {job.outputs.length > 1 && (
               <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
-                <p className="hidden text-[9px] font-bold uppercase tracking-wider text-muted-foreground sm:block">
+                <p className="hidden text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:block">
                   Variants
                 </p>
                 {job.outputs.map((output, index) => (
@@ -398,7 +398,7 @@ export function CloneOutputReviewDetail({
                         className="size-full rounded-md object-cover"
                       />
                     )}
-                    <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[8px] font-bold text-white">
+                    <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[11px] font-bold text-white">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </button>
@@ -644,7 +644,7 @@ export function CloneOutputReviewDetail({
                     <AlertCircle className="mx-auto size-4 shrink-0 text-muted-foreground" />
                   )}
                   <p className="mt-1.5 text-[10px] font-semibold">{signal.label}</p>
-                  <p className="mt-0.5 text-[9px] text-muted-foreground">
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">
                     {signal.ready ? "Ready" : "Unavailable"}
                   </p>
                 </div>

@@ -1,6 +1,5 @@
 import { UGCCloneForm } from "@/components/ugc-clone-form";
 import { UGCCloneQueue } from "@/components/ugc-clone-queue";
-import { Workflow } from "lucide-react";
 
 export default function UGCClonePage() {
   return (
@@ -17,13 +16,6 @@ export default function UGCClonePage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Turn a proven source into an on-brand creator video.
             </p>
-          </div>
-          <div
-            aria-label="Three step guided setup"
-            className="inline-flex h-9 w-fit items-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground"
-          >
-            <Workflow className="size-3.5" />
-            Source · Identity · Reference
           </div>
         </header>
         <UGCCloneForm />

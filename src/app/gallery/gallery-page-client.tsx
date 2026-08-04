@@ -624,7 +624,7 @@ export function GalleryPageClient({
         </div>
       )}
 
-      <section className="rounded-xl border border-border bg-card p-2 shadow-[0_1px_2px_rgba(35,35,35,0.03)]">
+      <section className="rounded-xl border border-border bg-card p-2 shadow-[var(--pf-shadow-xs)]">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <div
             className="grid grid-cols-2 gap-1 sm:flex sm:items-center"
@@ -741,8 +741,9 @@ export function GalleryPageClient({
       {selectionCount > 0 && (
         <section
           data-gallery-bulk-bar
-          className="flex min-w-0 flex-col gap-3 rounded-xl bg-foreground px-3 py-3 text-background shadow-lg md:flex-row md:items-center md:justify-between"
+          className="workspace-sidebar-offset-left pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 md:left-[72px] lg:px-8 xl:left-64"
         >
+          <div className="pointer-events-auto mx-auto flex min-w-0 max-w-[1120px] flex-col gap-3 rounded-2xl bg-foreground px-3 py-3 text-background shadow-[var(--pf-shadow-lg)] md:flex-row md:items-center md:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <span className="inline-flex size-6 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
               {selectionCount}
@@ -750,6 +751,13 @@ export function GalleryPageClient({
             <strong className="min-w-0 truncate text-xs">
               {selectionCount} asset{selectionCount === 1 ? "" : "s"} selected
             </strong>
+            <button
+              type="button"
+              onClick={() => setSelectedIds(new Set(filtered.map((item) => item.id)))}
+              className="text-xs text-background/60 underline underline-offset-2 hover:text-background"
+            >
+              Select all {filtered.length}
+            </button>
             <button
               type="button"
               onClick={() => setSelectedIds(new Set())}
@@ -826,8 +834,9 @@ export function GalleryPageClient({
                     Delete assets
                   </AlertDialogAction>
                 </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+               </AlertDialogContent>
+             </AlertDialog>
+          </div>
           </div>
         </section>
       )}
@@ -911,6 +920,7 @@ export function GalleryPageClient({
               </button>
             </div>
           )}
+          {selectionCount > 0 && <div className="h-24" aria-hidden="true" />}
         </>
       )}
       </div>
