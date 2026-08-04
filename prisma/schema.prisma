@@ -18,31 +18,55 @@ enum InspirationSyncStatus {
   error
 }
 
+enum SlideshowProjectStatus {
+  draft
+  generating
+  ready
+  scheduled
+  published
+  exported
+  failed
+  archived
+}
+
+enum SlideshowSlideKind {
+  hook
+  content
+  cta
+}
+
+enum SlideshowAutomationStatus {
+  paused
+  active
+  archived
+}
+
 model GenerationJob {
-  id            String   @id @default(uuid())
-  type          String   // "image" | "video"
-  model         String   // model ID from registry
-  status        String   @default("queued") // queued | processing | completed | failed
+  id            String    @id @default(uuid())
+  type          String // "image" | "video"
+  model         String // model ID from registry
+  status        String    @default("queued") // queued | processing | completed | failed
   prompt        String
-  input         Json     // full request parameters
-  output        Json?    // generation result
-  falRequestId  String?  // fal.ai request ID for async polling
-  queueStage    String?  // queued | preparing | submitted | downloading | completed | failed
+  input         Json // full request parameters
+  output        Json? // generation result
+  falRequestId  String? // fal.ai request ID for async polling
+  queueStage    String? // queued | preparing | submitted | downloading | completed | failed
   lockOwner     String?
   lockExpiresAt DateTime?
-  attempts      Int      @default(0)
+  attempts      Int       @default(0)
   nextAttemptAt DateTime?
   lastPolledAt  DateTime?
   estimatedCost Float?
   actualCost    Float?
   durationMs    Int?
   error         String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
   startedAt     DateTime?
   completedAt   DateTime?
 
-  outputs GeneratedFile[]
-  tags    String[]
+  outputs         GeneratedFile[]
+  slideshowSlides SlideshowSlide[]
+  tags            String[]
 
   @@index([status])
   @@index([type])
@@ -54,21 +78,22 @@ model GenerationJob {
 }
 
 model GeneratedFile {
-  id            String   @id @default(uuid())
-  jobId         String
-  job           GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  type          String   // "image" | "video"
-  originalUrl   String
-  localPath     String   @default("")
-  filename      String
-  mimeType      String
-  width         Int?
-  height        Int?
-  durationSec   Float?
-  fileSizeBytes Int?
-  reviewStatus  String   @default("needs_review")
-  data          Bytes?
-  createdAt     DateTime @default(now())
+  id              String           @id @default(uuid())
+  jobId           String
+  job             GenerationJob    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  type            String // "image" | "video"
+  originalUrl     String
+  localPath       String           @default("")
+  filename        String
+  mimeType        String
+  width           Int?
+  height          Int?
+  durationSec     Float?
+  fileSizeBytes   Int?
+  reviewStatus    String           @default("needs_review")
+  data            Bytes?
+  createdAt       DateTime         @default(now())
+  slideshowSlides SlideshowSlide[]
 
   @@index([jobId])
   @@index([type])
@@ -79,8 +104,8 @@ model CostLog {
   id        String   @id @default(uuid())
   jobId     String
   model     String
-  type      String   // "image" | "video"
-  amount    Float    // USD
+  type      String // "image" | "video"
+  amount    Float // USD
   details   Json?
   createdAt DateTime @default(now())
 
@@ -96,21 +121,21 @@ model StoredAsset {
 }
 
 model Avatar {
-  id            String   @id @default(uuid())
-  name          String
-  localPath     String   @default("")
-  filename      String
-  mimeType      String
-  width         Int?
-  height        Int?
-  fileSizeBytes Int?
-  origin        String   @default("uploaded")
-  provenance    Json?
-  data          Bytes?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                 String               @id @default(uuid())
+  name               String
+  localPath          String               @default("")
+  filename           String
+  mimeType           String
+  width              Int?
+  height             Int?
+  fileSizeBytes      Int?
+  origin             String               @default("uploaded")
+  provenance         Json?
+  data               Bytes?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
   ugcReferenceImages UgcReferenceImage[]
-  identityPacks AvatarIdentityPack[]
+  identityPacks      AvatarIdentityPack[]
 
   @@index([createdAt])
   @@index([origin])
@@ -133,62 +158,62 @@ model AvatarIdentityPack {
 }
 
 model AvatarIdentityImage {
-  id            String   @id @default(uuid())
+  id            String             @id @default(uuid())
   packId        String
   pack          AvatarIdentityPack @relation(fields: [packId], references: [id], onDelete: Cascade)
   role          String
-  localPath     String   @default("")
+  localPath     String             @default("")
   filename      String
   mimeType      String
   width         Int?
   height        Int?
   fileSizeBytes Int?
   originalUrl   String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime           @default(now())
 
   @@unique([packId, role])
   @@index([packId])
 }
 
 model TikTokSource {
-  id            String   @id @default(uuid())
-  label         String
-  originalUrl   String   @unique
-  localPath     String   @default("")
-  filename      String
-  durationSec   Float
-  width         Int
-  height        Int
-  fileSizeBytes Int?
-  thumbnailPath String?
-  data          Bytes?
-  thumbnailData Bytes?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                 String              @id @default(uuid())
+  label              String
+  originalUrl        String              @unique
+  localPath          String              @default("")
+  filename           String
+  durationSec        Float
+  width              Int
+  height             Int
+  fileSizeBytes      Int?
+  thumbnailPath      String?
+  data               Bytes?
+  thumbnailData      Bytes?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   ugcReferenceImages UgcReferenceImage[]
 
   @@index([createdAt])
 }
 
 model UgcReferenceImage {
-  id                  String       @id @default(uuid())
-  avatarId            String
-  avatar              Avatar       @relation(fields: [avatarId], references: [id], onDelete: Cascade)
-  tikTokSourceId      String?
-  tikTokSource        TikTokSource? @relation(fields: [tikTokSourceId], references: [id], onDelete: SetNull)
-  originJobId         String?
-  originGeneratedFileId String?    @unique
+  id                      String        @id @default(uuid())
+  avatarId                String
+  avatar                  Avatar        @relation(fields: [avatarId], references: [id], onDelete: Cascade)
+  tikTokSourceId          String?
+  tikTokSource            TikTokSource? @relation(fields: [tikTokSourceId], references: [id], onDelete: SetNull)
+  originJobId             String?
+  originGeneratedFileId   String?       @unique
   sourceVideoPathSnapshot String
-  prompt              String
-  sceneAnalysis       Json?
-  localPath           String       @default("")
-  filename            String
-  mimeType            String
-  width               Int?
-  height              Int?
-  fileSizeBytes       Int?
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+  prompt                  String
+  sceneAnalysis           Json?
+  localPath               String        @default("")
+  filename                String
+  mimeType                String
+  width                   Int?
+  height                  Int?
+  fileSizeBytes           Int?
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
 
   @@index([avatarId, createdAt])
   @@index([tikTokSourceId])
@@ -218,30 +243,133 @@ model InspirationAccount {
 }
 
 model InspirationVideo {
-  id             String            @id @default(uuid())
-  accountId      String
-  account        InspirationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  platform       SocialPlatform    @default(tiktok)
+  id              String             @id @default(uuid())
+  accountId       String
+  account         InspirationAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  platform        SocialPlatform     @default(tiktok)
   externalVideoId String
-  originalUrl    String
-  embedUrl       String?
-  thumbnailUrl   String?
-  caption        String?
-  durationSec    Float?
-  publishedAt    DateTime?
-  viewCount      Int?
-  likeCount      Int?
-  commentCount   Int?
-  shareCount     Int?
-  lastSeenAt     DateTime          @default(now())
-  sourcePayload  Json
-  rejectedAt     DateTime?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  originalUrl     String
+  embedUrl        String?
+  thumbnailUrl    String?
+  caption         String?
+  durationSec     Float?
+  publishedAt     DateTime?
+  viewCount       Int?
+  likeCount       Int?
+  commentCount    Int?
+  shareCount      Int?
+  lastSeenAt      DateTime           @default(now())
+  sourcePayload   Json
+  rejectedAt      DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@unique([platform, externalVideoId])
   @@index([accountId, publishedAt])
   @@index([publishedAt])
   @@index([lastSeenAt])
   @@index([rejectedAt])
+}
+
+model SlideshowProject {
+  id          String                 @id @default(uuid())
+  title       String                 @default("Untitled slideshow")
+  description String?
+  status      SlideshowProjectStatus @default(draft)
+  settings    Json
+  layout      Json
+  revision    Int                    @default(1)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  slides      SlideshowSlide[]
+  automations SlideshowAutomation[]
+
+  @@index([status, updatedAt])
+  @@index([createdAt])
+}
+
+model SlideshowSlide {
+  id              String             @id @default(uuid())
+  projectId       String
+  project         SlideshowProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  position        Int
+  kind            SlideshowSlideKind @default(content)
+  imageUrl        String?
+  imagePrompt     String?
+  generationJobId String?
+  generationJob   GenerationJob?     @relation(fields: [generationJobId], references: [id], onDelete: SetNull)
+  generatedFileId String?
+  generatedFile   GeneratedFile?     @relation(fields: [generatedFileId], references: [id], onDelete: SetNull)
+  sourceImageId   String?
+  sourceImage     SlideshowImage?    @relation(fields: [sourceImageId], references: [id], onDelete: SetNull)
+  content         Json
+  settings        Json
+  layout          Json
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([projectId, position])
+  @@index([projectId, kind])
+  @@index([generationJobId])
+  @@index([generatedFileId])
+  @@index([sourceImageId])
+}
+
+model SlideshowAutomation {
+  id              String                    @id @default(uuid())
+  projectId       String?
+  project         SlideshowProject?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  name            String
+  status          SlideshowAutomationStatus @default(paused)
+  schedule        Json
+  contentSettings Json
+  publishSettings Json
+  revision        Int                       @default(1)
+  lastRunAt       DateTime?
+  nextRunAt       DateTime?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  @@index([status, nextRunAt])
+  @@index([projectId])
+  @@index([updatedAt])
+}
+
+model SlideshowImageCollection {
+  id        String   @id @default(uuid())
+  title     String
+  source    String   @default("upload")
+  settings  Json
+  revision  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images SlideshowImage[]
+
+  @@index([updatedAt])
+  @@index([source])
+}
+
+model SlideshowImage {
+  id           String                   @id @default(uuid())
+  collectionId String
+  collection   SlideshowImageCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  position     Int
+  url          String
+  localPath    String?
+  mimeType     String?
+  fileSizeBytes Int?
+  width        Int?
+  height       Int?
+  thumbnailUrl String?
+  altText      String?
+  metadata     Json
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  slides SlideshowSlide[]
+
+  @@unique([collectionId, position])
+  @@index([collectionId, createdAt])
 }

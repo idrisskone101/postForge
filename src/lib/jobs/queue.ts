@@ -213,15 +213,19 @@ export async function addGeneratedFile(params: {
   });
 }
 
-export async function getPendingVideoJobs(): Promise<GenerationJob[]> {
+export async function getPendingFalJobs(
+  options: { tag?: string; limit?: number } = {}
+): Promise<GenerationJob[]> {
   return prisma.generationJob.findMany({
     where: {
       status: "processing",
-      type: "video",
       falRequestId: { not: null },
+      ...(options.tag ? { tags: { has: options.tag } } : {}),
       NOT: {
         tags: { has: "ugc-clone" },
       },
     },
+    orderBy: [{ lastPolledAt: "asc" }, { createdAt: "asc" }],
+    ...(options.limit ? { take: options.limit } : {}),
   });
 }

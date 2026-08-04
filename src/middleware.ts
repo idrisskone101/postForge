@@ -69,9 +69,10 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(
       "/api/integrations/publish-media/"
     ) ||
-    // Vercel Cron cannot send the operator key. This exact route performs its
-    // own timing-safe, fail-closed CRON_SECRET bearer validation.
-    request.nextUrl.pathname === "/api/integrations/retention"
+    // Vercel Cron cannot send the operator key. Both cron routes perform
+    // their own fail-closed CRON_SECRET bearer validation.
+    request.nextUrl.pathname === "/api/integrations/retention" ||
+    request.nextUrl.pathname === "/api/internal/slideshow-automations/tick"
   ) {
     return NextResponse.next();
   }

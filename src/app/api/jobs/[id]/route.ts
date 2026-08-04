@@ -89,6 +89,19 @@ export async function GET(
           })
         : null);
 
+    const slideshowResult = job.tags.includes("slideshow")
+      ? await prisma.slideshowSlide.findFirst({
+          where: { generationJobId: job.id },
+          select: {
+            id: true,
+            projectId: true,
+            imageUrl: true,
+            generatedFileId: true,
+            project: { select: { revision: true } },
+          },
+        })
+      : null;
+
     return NextResponse.json({
       id: job.id,
       type: job.type,
@@ -103,6 +116,15 @@ export async function GET(
       error: job.error,
       tags: job.tags,
       outputs,
+      slideshow: slideshowResult
+        ? {
+            projectId: slideshowResult.projectId,
+            slideId: slideshowResult.id,
+            projectRevision: slideshowResult.project.revision,
+            imageUrl: slideshowResult.imageUrl,
+            generatedFileId: slideshowResult.generatedFileId,
+          }
+        : null,
       tikTokSource: resolvedTikTokSource,
       createdAt: job.createdAt.toISOString(),
       startedAt: job.startedAt?.toISOString() ?? null,

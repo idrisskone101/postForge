@@ -2,6 +2,7 @@ export type WorkspaceNavigationLabel =
   | "Home"
   | "Inspiration"
   | "Clone"
+  | "Slideshow"
   | "Gallery"
   | "Automations"
   | "Performance"
@@ -48,6 +49,14 @@ export const workspaceNavigationGroups = {
       eyebrow: "Create",
       description: "Combine a source clip, identity, and reference into a new asset.",
       primaryAction: { label: "Browse Inspiration", href: "/ugc-inspiration" },
+    },
+    {
+      label: "Slideshow",
+      href: "/slideshow",
+      match: ["/slideshow"],
+      eyebrow: "Create",
+      description: "Create, edit, automate, and export AI image carousels.",
+      primaryAction: { label: "New Slideshow", href: "/slideshow?new=true" },
     },
     {
       label: "Gallery",

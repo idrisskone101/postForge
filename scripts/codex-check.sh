@@ -41,6 +41,15 @@ pnpm test:source-selection
 pnpm test:spend-page
 pnpm test:home-active-jobs
 pnpm test:home-review-jobs
+pnpm test:slideshow-story
+pnpm test:slideshow-model
+pnpm test:slideshow-image
+pnpm test:slideshow-image-recovery
+pnpm test:slideshow-pinterest
+pnpm test:slideshow-renderer
+pnpm test:slideshow-automation
+pnpm test:slideshow-analytics
+pnpm test:slideshow-management
 pnpm test:home-cockpit
 pnpm test:home-loading
 pnpm test:generate-empty-state
