@@ -5,7 +5,7 @@ MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/file
 | Production surface | Route | MagicPath component | Revision |
 | --- | --- | --- | --- |
 | Shared design system | all workspace routes | `435052823424700416` | `435052823424700417` |
-| Home | `/` | `435053921048870912` | `435053921048870913` |
+| Home | `/` | `435053921048870912` | `435513846518673408` |
 | Inspiration | `/ugc-inspiration` | `435054032416018432` | `435054032420212736` |
 | Clone studio | `/ugc-clone` | `435054749532983296` | `435054749532983297` |
 | Slideshow studio home | `/slideshow` | `435413756852441088` | `435435892702842880` |

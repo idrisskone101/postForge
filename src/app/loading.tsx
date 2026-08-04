@@ -2,101 +2,77 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function RowSkeleton() {
   return (
-    <div className="border-t border-border py-3 first:border-t-0">
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-5 w-16 rounded-md" />
-        <Skeleton className="h-3 w-14" />
+    <div className="border-t border-border py-2.5 first:border-t-0">
+      <div className="flex items-center gap-2.5">
+        <Skeleton className="h-[42px] w-9 rounded-md" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-3.5 w-full max-w-[240px]" />
+          <Skeleton className="mt-1.5 h-3 w-32 max-w-full" />
+        </div>
       </div>
-      <Skeleton className="mt-3 h-4 w-full" />
-      <Skeleton className="mt-2 h-3 w-32" />
     </div>
   );
 }
 
 export default function HomeLoading() {
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-5 px-4 pb-6 pt-5 sm:px-6 lg:px-8 lg:pb-8 lg:pt-7">
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase text-muted-foreground">
-                Home
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-                Daily Production Loop
-              </h2>
-              <Skeleton className="mt-3 h-4 w-full max-w-xl" />
-            </div>
-            <Skeleton className="h-10 w-44 rounded-lg" />
-          </div>
+    <div className="mx-auto flex max-w-[1280px] flex-col gap-3.5 px-4 pb-6 pt-5 sm:px-6 lg:px-8 lg:pb-8 lg:pt-7">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="pf-eyebrow">Home</p>
+          <h2 className="mt-1 text-[27px] font-semibold leading-none tracking-[-0.045em] text-[#232323] sm:text-[30px]">
+            Daily production cockpit
+          </h2>
+          <Skeleton className="mt-2.5 h-3.5 w-72 max-w-full" />
+        </div>
+        <Skeleton className="h-9 w-32 shrink-0 rounded-[10px]" />
+      </div>
 
-          <div className="mt-6 border-y border-border py-4">
-            <p className="text-[11px] font-semibold uppercase text-muted-foreground">
-              Next up
+      <section
+        aria-label="Today at a glance"
+        className="grid grid-cols-2 gap-px overflow-hidden rounded-[13px] border border-border bg-border shadow-[var(--pf-shadow-xs)] min-[860px]:grid-cols-4"
+      >
+        {["In progress", "Awaiting review", "Started today", "Spend today"].map((label) => (
+          <div key={label} className="flex min-w-0 flex-col gap-1 bg-white px-4 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
+              {label}
             </p>
-            <Skeleton className="mt-3 h-5 w-full max-w-xl" />
-            <Skeleton className="mt-2 h-3 w-40" />
+            <Skeleton className="h-6 w-12" />
+            <Skeleton className="h-3 w-24 max-w-full" />
           </div>
+        ))}
+      </section>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              "Review new Outputs",
-              "Inspect active jobs",
-              "Return to Inspiration",
-            ].map((label) => (
-              <div
-                key={label}
-                className="h-9 rounded-lg border border-border bg-background/40 px-3"
-              >
-                <span className="text-xs font-semibold leading-9 text-muted-foreground">
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
+      <div className="grid items-start gap-3.5 min-[1080px]:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="flex min-w-0 flex-col gap-3.5">
+          <section className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+            <h3 className="text-sm font-semibold tracking-tight">In progress</h3>
+            <div className="mt-1">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <RowSkeleton key={index} />
+              ))}
+            </div>
+          </section>
+
+          <section className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+            <h3 className="text-sm font-semibold tracking-tight">Needs review</h3>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-[4/5] rounded-[10px]" />
+              ))}
+            </div>
+          </section>
         </div>
 
-        <aside className="rounded-lg border border-border bg-card p-5">
-          <p className="text-[11px] font-semibold uppercase text-muted-foreground">
-            Compact Spend
-          </p>
-          <Skeleton className="mt-3 h-8 w-24" />
-          <div className="mt-5 grid grid-cols-3 gap-3">
-            {["Today", "Outputs", "Active"].map((label) => (
-              <div key={label}>
-                <p className="text-[10px] font-semibold uppercase text-muted-foreground">
-                  {label}
-                </p>
-                <Skeleton className="mt-2 h-4 w-12" />
-              </div>
+        <aside className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+          <h3 className="text-sm font-semibold tracking-tight">Start new work</h3>
+          <div className="mt-1">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <RowSkeleton key={index} />
             ))}
           </div>
-          <Skeleton className="mt-5 h-12 rounded-md" />
         </aside>
-      </section>
-
-      <section className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-lg border border-border bg-card p-5">
-          <h3 className="text-base font-semibold">Active jobs</h3>
-          <Skeleton className="mt-2 h-3 w-64 max-w-full" />
-          <div className="mt-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <RowSkeleton key={index} />
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-border bg-card p-5">
-          <h3 className="text-base font-semibold">Pending review</h3>
-          <Skeleton className="mt-2 h-3 w-72 max-w-full" />
-          <div className="mt-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <RowSkeleton key={index} />
-            ))}
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
