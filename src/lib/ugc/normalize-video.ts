@@ -1,6 +1,5 @@
 import * as path from "path";
 import { randomUUID } from "crypto";
-import * as fs from "fs/promises";
 import { execFileAsync, FFMPEG, FFPROBE } from "./ffmpeg";
 
 /**

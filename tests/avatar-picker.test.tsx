@@ -3,11 +3,26 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   AvatarOptionCard,
   AvatarCreationCard,
+  AvatarActionErrorNotice,
   AvatarImportPanel,
   buildAvatarGenerationPrompt,
+  getAvatarActionErrorMessage,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
 } from "../src/components/avatar-picker";
+
+assert.equal(
+  getAvatarActionErrorMessage(new Error("Upload service unavailable"), "Upload failed"),
+  "Upload service unavailable"
+);
+assert.equal(getAvatarActionErrorMessage(null, "Upload failed"), "Upload failed");
+
+const avatarErrorMarkup = renderToStaticMarkup(
+  <AvatarActionErrorNotice message="Avatar upload failed." onDismiss={() => {}} />
+);
+assert.match(avatarErrorMarkup, /role="alert"/);
+assert.match(avatarErrorMarkup, /Avatar upload failed/);
+assert.match(avatarErrorMarkup, /Dismiss avatar error/);
 
 assert.equal(getAvatarOptionLabel(0), "Identity 1");
 assert.equal(getAvatarOptionLabel(4), "Identity 5");
@@ -109,9 +124,9 @@ const readyImportMarkup = renderToStaticMarkup(
 
 assert.doesNotMatch(readyImportMarkup, /Avatar Profile must be valid JSON\./);
 assert.doesNotMatch(readyImportMarkup, /Add at least 1 Seed Reference Image\./);
-assert.match(readyImportMarkup, /<button[^>]*>.*Generate candidates/s);
+assert.match(readyImportMarkup, /<button[^>]*>[\s\S]*Generate candidates/);
 assert.doesNotMatch(
-  readyImportMarkup.match(/<button[^>]*>.*Generate candidates/s)?.[0] ?? "",
+  readyImportMarkup.match(/<button[^>]*>[\s\S]*Generate candidates/)?.[0] ?? "",
   /disabled=""/
 );
 

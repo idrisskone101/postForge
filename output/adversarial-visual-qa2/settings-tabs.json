@@ -1,0 +1,115 @@
+{
+  "api": {
+    "buttons": [
+      {
+        "dis": false,
+        "t": "Toggle theme"
+      },
+      {
+        "dis": false,
+        "t": "Toggle theme"
+      },
+      {
+        "dis": false,
+        "t": "Profile"
+      },
+      {
+        "dis": false,
+        "t": "Billing & usage"
+      },
+      {
+        "dis": false,
+        "t": "Integrations"
+      },
+      {
+        "dis": false,
+        "t": "Publishing defaults"
+      },
+      {
+        "dis": false,
+        "t": "Team"
+      },
+      {
+        "dis": false,
+        "t": "Notifications"
+      },
+      {
+        "dis": false,
+        "t": "API keys"
+      },
+      {
+        "dis": false,
+        "t": "Webhooks"
+      },
+      {
+        "dis": true,
+        "t": "API key service not configured"
+      }
+    ],
+    "docW": 1440,
+    "heading": [
+      "Settings",
+      "API keys",
+      "No API keys have been issued"
+    ],
+    "iw": 1440,
+    "url": "http://127.0.0.1:3000/settings?tab=api-keys"
+  },
+  "webhooks": {
+    "buttons": [
+      {
+        "dis": false,
+        "t": "Toggle theme"
+      },
+      {
+        "dis": false,
+        "t": "Toggle theme"
+      },
+      {
+        "dis": false,
+        "t": "Profile"
+      },
+      {
+        "dis": false,
+        "t": "Billing & usage"
+      },
+      {
+        "dis": false,
+        "t": "Integrations"
+      },
+      {
+        "dis": false,
+        "t": "Publishing defaults"
+      },
+      {
+        "dis": false,
+        "t": "Team"
+      },
+      {
+        "dis": false,
+        "t": "Notifications"
+      },
+      {
+        "dis": false,
+        "t": "API keys"
+      },
+      {
+        "dis": false,
+        "t": "Webhooks"
+      },
+      {
+        "dis": true,
+        "t": "Webhook delivery not configured"
+      }
+    ],
+    "docW": 1440,
+    "heading": [
+      "Settings",
+      "Webhooks",
+      "No webhook endpoints are registered"
+    ],
+    "inputs": [],
+    "iw": 1440,
+    "url": "http://127.0.0.1:3000/settings?tab=webhooks"
+  }
+}

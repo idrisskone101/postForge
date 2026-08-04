@@ -3,10 +3,20 @@ import { generateImage } from "@/lib/ai/generate-image";
 import { generateAvatarImage } from "@/lib/ugc/generate-avatar-image";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import type { ImageGenerationRequest } from "@/lib/ai/types";
+import {
+  parseReferenceFileIds,
+  resolveGeneratedImageReferences,
+} from "@/lib/ai/generated-file-references";
+import {
+  CollectionAssetRequestError,
+  parseCollectionAssetIds,
+  resolveCollectionImageReferences,
+} from "@/lib/collection-assets-server";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const collectionAssetIds = parseCollectionAssetIds(body.collectionAssetIds);
 
     // Validate required fields
     if (!body.prompt || typeof body.prompt !== "string") {
@@ -22,6 +32,16 @@ export async function POST(request: NextRequest) {
       if (typeof body.avatarId !== "string") {
         return NextResponse.json(
           { error: "avatarId must be a string" },
+          { status: 400 }
+        );
+      }
+
+      if (collectionAssetIds.length > 0) {
+        return NextResponse.json(
+          {
+            error:
+              "Collection references cannot be combined with character identity yet. Choose one reference source.",
+          },
           { status: 400 }
         );
       }
@@ -76,13 +96,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const ownedReferenceIds = parseReferenceFileIds(body.referenceFileIds);
+    const maximumReferences = modelDef.capabilities.maxReferenceImages ?? 0;
+    if (ownedReferenceIds.length + collectionAssetIds.length > maximumReferences) {
+      return NextResponse.json(
+        { error: `This model accepts up to ${maximumReferences} reference images` },
+        { status: 400 }
+      );
+    }
+    const [ownedReferenceUrls, collectionReferenceUrls] = await Promise.all([
+      resolveGeneratedImageReferences(ownedReferenceIds),
+      resolveCollectionImageReferences(collectionAssetIds),
+    ]);
+    const requestedReferenceUrls = body.referenceImageUrls ?? body.imageUrls;
+    if (
+      requestedReferenceUrls !== undefined &&
+      (!Array.isArray(requestedReferenceUrls) ||
+        !requestedReferenceUrls.every((url: unknown) => typeof url === "string"))
+    ) {
+      return NextResponse.json(
+        { error: "referenceImageUrls must be an array of URLs" },
+        { status: 400 }
+      );
+    }
+
+    const editEndpoint =
+      body.editEndpoint === true ||
+      ownedReferenceIds.length > 0 ||
+      collectionAssetIds.length > 0;
+    if (editEndpoint && !modelDef.capabilities.referenceImages) {
+      return NextResponse.json(
+        { error: `Model ${model} does not support reference-image editing` },
+        { status: 400 }
+      );
+    }
+
     const genRequest: ImageGenerationRequest = {
       prompt: body.prompt,
       model,
       aspectRatio: body.aspectRatio,
       numImages: body.numImages,
       negativePrompt: body.negativePrompt,
-      imageUrls: body.referenceImageUrls ?? body.imageUrls,
+      imageUrls: [
+        ...ownedReferenceUrls,
+        ...collectionReferenceUrls,
+        ...(requestedReferenceUrls ?? []),
+      ],
+      editEndpoint,
       enableWebSearch: body.enableWebSearch,
     };
 
@@ -90,7 +150,28 @@ export async function POST(request: NextRequest) {
       numImages: body.numImages ?? modelDef.defaults.numImages ?? 1,
     });
 
-    const jobId = await generateImage(genRequest);
+    const jobId = await generateImage(genRequest, undefined, {
+      jobInput: {
+        prompt: body.prompt,
+        model,
+        aspectRatio: body.aspectRatio,
+        numImages: body.numImages,
+        negativePrompt: body.negativePrompt,
+        referenceFileIds: ownedReferenceIds,
+        collectionAssetIds,
+        referenceImageUrls:
+          ownedReferenceIds.length > 0 ? undefined : requestedReferenceUrls,
+        editEndpoint,
+        enableWebSearch: body.enableWebSearch,
+        characterPreview: body.characterPreview === true || undefined,
+        characterRecipeFingerprint:
+          body.characterPreview === true &&
+          typeof body.characterRecipeFingerprint === "string"
+            ? body.characterRecipeFingerprint
+            : undefined,
+      },
+      jobTags: body.characterPreview === true ? ["character-preview"] : undefined,
+    });
 
     return NextResponse.json(
       {
@@ -103,6 +184,9 @@ export async function POST(request: NextRequest) {
       { status: 202 }
     );
   } catch (error) {
+    if (error instanceof CollectionAssetRequestError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Image generation error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to submit image generation" },

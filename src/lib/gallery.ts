@@ -1,12 +1,54 @@
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { serializeOutputReviewStatus } from "@/lib/output-review-status";
+import type { OutputReviewStatus } from "@/lib/output-review-status";
 import type { Prisma } from "@/generated/prisma/client";
 
 export const GALLERY_PAGE_SIZE = 48;
 
 export type GalleryTypeFilter = "all" | "image" | "video";
 export type GallerySortOrder = "newest" | "oldest";
+export type GalleryReviewStatusFilter = OutputReviewStatus | "all";
+
+export type GalleryReviewCounts = Record<GalleryReviewStatusFilter, number>;
+
+const GALLERY_REVIEW_STATUS_FILTERS = new Set<GalleryReviewStatusFilter>([
+  "all",
+  "needs_review",
+  "approved_output",
+  "rejected_output",
+]);
+
+export function normalizeGalleryReviewStatusFilter(
+  value: unknown,
+  fallback: GalleryReviewStatusFilter
+): GalleryReviewStatusFilter {
+  return typeof value === "string" &&
+    GALLERY_REVIEW_STATUS_FILTERS.has(value as GalleryReviewStatusFilter)
+    ? (value as GalleryReviewStatusFilter)
+    : fallback;
+}
+
+export function buildGalleryWhere({
+  type,
+  reviewStatus,
+}: {
+  type: GalleryTypeFilter;
+  reviewStatus: GalleryReviewStatusFilter;
+}): Prisma.GeneratedFileWhereInput {
+  return {
+    ...(type === "all" ? {} : { type }),
+    ...(reviewStatus === "all"
+      ? {}
+      : reviewStatus === "needs_review"
+        ? {
+            reviewStatus: {
+              notIn: ["approved_output", "rejected_output"],
+            },
+          }
+        : { reviewStatus }),
+  };
+}
 
 export interface GalleryItem {
   id: string;
@@ -28,6 +70,7 @@ export interface GalleryPageResult {
   items: GalleryItem[];
   nextCursor: string | null;
   hasMore: boolean;
+  reviewCounts: GalleryReviewCounts;
 }
 
 type GalleryFileRecord = {
@@ -157,15 +200,38 @@ export async function getGalleryPage({
   limit = GALLERY_PAGE_SIZE,
   type = "all",
   sort = "newest",
+  reviewStatus = "all",
 }: {
   cursor?: string | null;
   limit?: number;
   type?: GalleryTypeFilter;
   sort?: GallerySortOrder;
+  reviewStatus?: GalleryReviewStatusFilter;
 }): Promise<GalleryPageResult> {
   const pageSize = Math.min(Math.max(limit, 1), 60);
   const direction = sort === "oldest" ? "asc" : "desc";
-  const where = type === "all" ? {} : { type };
+  const typeWhere = buildGalleryWhere({ type, reviewStatus: "all" });
+  const where = buildGalleryWhere({ type, reviewStatus });
+  const [allCount, approvedOutputCount, rejectedOutputCount] =
+    await Promise.all([
+      prisma.generatedFile.count({ where: typeWhere }),
+      prisma.generatedFile.count({
+        where: { ...typeWhere, reviewStatus: "approved_output" },
+      }),
+      prisma.generatedFile.count({
+        where: { ...typeWhere, reviewStatus: "rejected_output" },
+      }),
+    ]);
+  const needsReviewCount = Math.max(
+    0,
+    allCount - approvedOutputCount - rejectedOutputCount
+  );
+  const reviewCounts: GalleryReviewCounts = {
+    needs_review: needsReviewCount,
+    approved_output: approvedOutputCount,
+    rejected_output: rejectedOutputCount,
+    all: allCount,
+  };
   const validFiles: GalleryFileRecord[] = [];
   let dbCursor = cursor ?? undefined;
   let hasMoreCandidates = true;
@@ -209,5 +275,6 @@ export async function getGalleryPage({
     items: await serializeGalleryItems(pageFiles),
     nextCursor: hasMore ? pageFiles[pageFiles.length - 1]?.id ?? null : null,
     hasMore,
+    reviewCounts,
   };
 }

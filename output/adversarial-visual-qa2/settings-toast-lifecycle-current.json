@@ -1,0 +1,46 @@
+[
+  {
+    "label": "after-navigation-timeout",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "after-4.5s",
+    "hits": [
+      {
+        "cls": "min-h-screen",
+        "role": null,
+        "text": "PPostForgePPostForge View IntegrationsHomeInspirationCloneGalleryAutomationsPerformanceSpendGenerateCollectionsCharactersLocal workspaceManageSettingsPFPostForgeSelf-hostedToggle t"
+      },
+      {
+        "cls": "grid min-h-[calc(100vh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]",
+        "role": null,
+        "text": "WorkspaceProfileBilling & usageIntegrationsPublishing defaultsTeamNotificationsDeveloperAPI keysWebhooksConnectionsIntegrationsOne real connection state powers publishing and Perfo"
+      },
+      {
+        "cls": "fixed bottom-5 right-5 z-[90] flex items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl",
+        "role": "status",
+        "text": "Social account connected. Account status refreshed."
+      }
+    ],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "reload-400ms",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "reload-4.9s",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  }
+]

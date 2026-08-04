@@ -7,11 +7,11 @@ import { Sun, Moon } from "lucide-react";
 export function ThemeToggle() {
   const [dark, setDark] = useState(() => {
     if (typeof window === "undefined") {
-      return true;
+      return false;
     }
 
     const stored = localStorage.getItem("postforge-theme");
-    return stored ? stored === "dark" : true;
+    return stored === "dark";
   });
 
   useEffect(() => {

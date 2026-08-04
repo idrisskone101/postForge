@@ -9,7 +9,7 @@ export default async function UGCInspirationPage() {
   const initialAccounts = await listTrackedInspirationAccounts();
 
   return (
-    <div className="min-h-[calc(100vh-76px)] bg-background">
+    <div className="min-w-0 bg-background">
       <InspirationPageClient initialAccounts={initialAccounts} />
     </div>
   );

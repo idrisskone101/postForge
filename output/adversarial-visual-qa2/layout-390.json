@@ -1,0 +1,3974 @@
+[
+  {
+    "slug": "home",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1589,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1573
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1609.5,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1593
+        },
+        "sw": 183,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1678.5,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1662.5
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1699,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1682.5
+        },
+        "sw": 188,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1768,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1752
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1788.5,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1772
+        },
+        "sw": 185,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1857.5,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1841.5
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1878,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1861.5
+        },
+        "sw": 188,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1947,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1931
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 1967.5,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 1951
+        },
+        "sw": 189,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2036.5,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2020.5
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2057,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2040.5
+        },
+        "sw": 183,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2126,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2110
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2146.5,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2130
+        },
+        "sw": 189,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2215.5,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2199.5
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2236,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2219.5
+        },
+        "sw": 184,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2305,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2289
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2325.5,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2309
+        },
+        "sw": 188,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-xs text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2394.5,
+          "h": 16,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2378.5
+        },
+        "sw": 391,
+        "tag": "span"
+      },
+      {
+        "cls": "mt-1 block truncate text-[11px] text-muted-foreground",
+        "cw": 131,
+        "r": {
+          "bottom": 2415,
+          "h": 16.5,
+          "right": 224.2,
+          "w": 131.2,
+          "x": 93,
+          "y": 2398.5
+        },
+        "sw": 187,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 2565.5,
+      "h": 2565.5,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Home",
+    "url": "/",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 133.3,
+          "w": 113.3,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "New Clone"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 607,
+          "h": 40,
+          "right": 238.2,
+          "w": 201.2,
+          "x": 37,
+          "y": 567
+        },
+        "tag": "a",
+        "text": "Continue latest Clone"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 655,
+          "h": 40,
+          "right": 206.2,
+          "w": 169.2,
+          "x": 37,
+          "y": 615
+        },
+        "tag": "a",
+        "text": "Find another source"
+      },
+      {
+        "lines": 8.7,
+        "r": {
+          "bottom": 883,
+          "h": 208,
+          "right": 373,
+          "w": 356,
+          "x": 17,
+          "y": 675
+        },
+        "tag": "a",
+        "text": "Open Clone output ready"
+      },
+      {
+        "lines": 2.6,
+        "r": {
+          "bottom": 966,
+          "h": 62,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 904
+        },
+        "tag": "a",
+        "text": "Review new Outputs12 waiting in review"
+      },
+      {
+        "lines": 2.6,
+        "r": {
+          "bottom": 1040,
+          "h": 62,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 978
+        },
+        "tag": "a",
+        "text": "Inspect active jobs0 queued or processing"
+      },
+      {
+        "lines": 2.6,
+        "r": {
+          "bottom": 1114,
+          "h": 62,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 1052
+        },
+        "tag": "a",
+        "text": "Return to InspirationFind a strong source to clone"
+      },
+      {
+        "lines": 3.7,
+        "r": {
+          "bottom": 1623.5,
+          "h": 88.5,
+          "right": 349,
+          "w": 312,
+          "x": 37,
+          "y": 1535
+        },
+        "tag": "a",
+        "text": "Clone output readyPerson performing the actions from the reference video, consis"
+      },
+      {
+        "lines": 3.7,
+        "r": {
+          "bottom": 1713,
+          "h": 89.5,
+          "right": 349,
+          "w": 312,
+          "x": 37,
+          "y": 1623.5
+        },
+        "tag": "a",
+        "text": "Clone output readyPerson performing the actions from the reference video, consis"
+      },
+      {
+        "lines": 3.7,
+        "r": {
+          "bottom": 1802.5,
+          "h": 89.5,
+          "right": 349,
+          "w": 312,
+          "x": 37,
+          "y": 1713
+        },
+        "tag": "a",
+        "text": "Clone output readyPerson performing the actions from the reference video, consis"
+      },
+      {
+        "lines": 3.7,
+        "r": {
+          "bottom": 1892,
+          "h": 89.5,
+          "right": 349,
+          "w": 312,
+          "x": 37,
+          "y": 1802.5
+        },
+        "tag": "a",
+        "text": "Clone output readyPerson performing the actions from the reference video, consis"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "inspiration",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 521,
+          "h": 24,
+          "right": 409,
+          "w": 24,
+          "x": 385,
+          "y": 497
+        },
+        "tag": "button",
+        "text": "Refresh @nicole.hormonecare"
+      },
+      {
+        "r": {
+          "bottom": 547,
+          "h": 24,
+          "right": 409,
+          "w": 24,
+          "x": 385,
+          "y": 523
+        },
+        "tag": "button",
+        "text": "Remove @nicole.hormonecare"
+      },
+      {
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 609,
+          "w": 184,
+          "x": 425,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@mary.cycletipsSync failed29"
+      },
+      {
+        "r": {
+          "bottom": 521,
+          "h": 24,
+          "right": 633,
+          "w": 24,
+          "x": 609,
+          "y": 497
+        },
+        "tag": "button",
+        "text": "Refresh @mary.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 547,
+          "h": 24,
+          "right": 633,
+          "w": 24,
+          "x": 609,
+          "y": 523
+        },
+        "tag": "button",
+        "text": "Remove @mary.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 833,
+          "w": 184,
+          "x": 649,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@anna.cyclesyncSynced Apr 1415"
+      },
+      {
+        "r": {
+          "bottom": 521,
+          "h": 24,
+          "right": 857,
+          "w": 24,
+          "x": 833,
+          "y": 497
+        },
+        "tag": "button",
+        "text": "Refresh @anna.cyclesync"
+      },
+      {
+        "r": {
+          "bottom": 547,
+          "h": 24,
+          "right": 857,
+          "w": 24,
+          "x": 833,
+          "y": 523
+        },
+        "tag": "button",
+        "text": "Remove @anna.cyclesync"
+      },
+      {
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1057,
+          "w": 184,
+          "x": 873,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@clau.cycletipsSynced Apr 1429"
+      },
+      {
+        "r": {
+          "bottom": 521,
+          "h": 24,
+          "right": 1081,
+          "w": 24,
+          "x": 1057,
+          "y": 497
+        },
+        "tag": "button",
+        "text": "Refresh @clau.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 547,
+          "h": 24,
+          "right": 1081,
+          "w": 24,
+          "x": 1057,
+          "y": 523
+        },
+        "tag": "button",
+        "text": "Remove @clau.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1281,
+          "w": 184,
+          "x": 1097,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@ange.hormonesSynced May 1030"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 164,
+          "h": 1,
+          "right": 20,
+          "w": 1,
+          "x": 19,
+          "y": 163
+        },
+        "sw": 693,
+        "tag": "p"
+      },
+      {
+        "cls": "sr-only sm:hidden",
+        "cw": 1,
+        "r": {
+          "bottom": 184.5,
+          "h": 1,
+          "right": 350.5,
+          "w": 1,
+          "x": 349.5,
+          "y": 183.5
+        },
+        "sw": 79,
+        "tag": "span"
+      },
+      {
+        "cls": "min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]",
+        "cw": 358,
+        "r": {
+          "bottom": 573,
+          "h": 162,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 411
+        },
+        "sw": 5086,
+        "tag": "section"
+      },
+      {
+        "cls": "flex w-full min-w-0 max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 [contain:inlin",
+        "cw": 358,
+        "r": {
+          "bottom": 573,
+          "h": 94,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 479
+        },
+        "sw": 5104,
+        "tag": "div"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 100,
+        "r": {
+          "bottom": 521.5,
+          "h": 16,
+          "right": 353,
+          "w": 100,
+          "x": 253,
+          "y": 505.5
+        },
+        "sw": 129,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 397.5,
+          "w": 1,
+          "x": 396.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 535.5,
+          "h": 1,
+          "right": 397.5,
+          "w": 1,
+          "x": 396.5,
+          "y": 534.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 522.5,
+          "h": 1,
+          "right": 201,
+          "w": 1,
+          "x": 200,
+          "y": 521.5
+        },
+        "sw": 352,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 621.5,
+          "w": 1,
+          "x": 620.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 535.5,
+          "h": 1,
+          "right": 621.5,
+          "w": 1,
+          "x": 620.5,
+          "y": 534.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 522.5,
+          "h": 1,
+          "right": 425,
+          "w": 1,
+          "x": 424,
+          "y": 521.5
+        },
+        "sw": 352,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 845.5,
+          "w": 1,
+          "x": 844.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 535.5,
+          "h": 1,
+          "right": 845.5,
+          "w": 1,
+          "x": 844.5,
+          "y": 534.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 1069.5,
+          "w": 1,
+          "x": 1068.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 535.5,
+          "h": 1,
+          "right": 1069.5,
+          "w": 1,
+          "x": 1068.5,
+          "y": 534.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 99,
+        "r": {
+          "bottom": 521.5,
+          "h": 16,
+          "right": 1248,
+          "w": 99,
+          "x": 1149,
+          "y": 505.5
+        },
+        "sw": 103,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 1293.5,
+          "w": 1,
+          "x": 1292.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 535.5,
+          "h": 1,
+          "right": 1293.5,
+          "w": 1,
+          "x": 1292.5,
+          "y": 534.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 102,
+        "r": {
+          "bottom": 521.5,
+          "h": 16,
+          "right": 1474.6,
+          "w": 101.6,
+          "x": 1373,
+          "y": 505.5
+        },
+        "sw": 131,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 509.5,
+          "h": 1,
+          "right": 1517.5,
+          "w": 1,
+          "x": 1516.5,
+          "y": 508.5
+        },
+        "sw": 58,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 16908.5,
+      "h": 16908.5,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Inspiration",
+    "url": "/ugc-inspiration",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 204,
+          "h": 40,
+          "right": 370,
+          "w": 40,
+          "x": 330,
+          "y": 164
+        },
+        "tag": "button",
+        "text": "Track CreatorTrack Creator"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 378,
+          "h": 40,
+          "right": 357,
+          "w": 108.4,
+          "x": 248.6,
+          "y": 338
+        },
+        "tag": "button",
+        "text": "Refresh all"
+      },
+      {
+        "lines": 3.6,
+        "r": {
+          "bottom": 565,
+          "h": 86,
+          "right": 192,
+          "w": 176,
+          "x": 16,
+          "y": 479
+        },
+        "tag": "button",
+        "text": "Creator FeedAll tracked creator videos618"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 385,
+          "w": 184,
+          "x": 201,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@nicole.hormonecareSync failed72"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 609,
+          "w": 184,
+          "x": 425,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@mary.cycletipsSync failed29"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 833,
+          "w": 184,
+          "x": 649,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@anna.cyclesyncSynced Apr 1415"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1057,
+          "w": 184,
+          "x": 873,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@clau.cycletipsSynced Apr 1429"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1281,
+          "w": 184,
+          "x": 1097,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@ange.hormonesSynced May 1030"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1505,
+          "w": 184,
+          "x": 1321,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@appleuser49969229Synced May 1015"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1729,
+          "w": 184,
+          "x": 1545,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@liza.hormonesSynced Apr 1615"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 546.5,
+          "h": 49,
+          "right": 1953,
+          "w": 184,
+          "x": 1769,
+          "y": 497.5
+        },
+        "tag": "button",
+        "text": "@aylin.hormonesSynced May 1030"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "clone",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 78,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 766
+        },
+        "tag": "section",
+        "text": "Add sourceFinal videoVideoKling 3.0$0.63▼Reference imageRefe"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Clone setup progress",
+        "position": "static",
+        "r": {
+          "bottom": 291,
+          "h": 62,
+          "right": 374,
+          "w": 358,
+          "x": 16,
+          "y": 229
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 1645.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 1625.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 1729.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 1709.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 1813.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 1793.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 1897.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 1877.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 1981.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 1961.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 2065.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 2045.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 2149.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 2129.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 2233.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 2213.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 2317.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 2297.3
+        },
+        "sw": 297,
+        "tag": "p"
+      },
+      {
+        "cls": "text-sm font-medium truncate",
+        "cw": 109,
+        "r": {
+          "bottom": 2401.3,
+          "h": 20,
+          "right": 196.9,
+          "w": 108.9,
+          "x": 88,
+          "y": 2381.3
+        },
+        "sw": 297,
+        "tag": "p"
+      }
+    ],
+    "shell": {
+      "bottom": 2583.3,
+      "h": 2583.3,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": null,
+    "url": "/ugc-clone",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 284,
+          "h": 48,
+          "right": 137.7,
+          "w": 114.7,
+          "x": 23,
+          "y": 236
+        },
+        "tag": "button",
+        "text": "01. Source"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 284,
+          "h": 48,
+          "right": 252.3,
+          "w": 114.7,
+          "x": 137.7,
+          "y": 236
+        },
+        "tag": "button",
+        "text": "02. Identity"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 284,
+          "h": 48,
+          "right": 367,
+          "w": 114.7,
+          "x": 252.3,
+          "y": 236
+        },
+        "tag": "button",
+        "text": "03. Reference"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 517,
+          "h": 40,
+          "right": 340,
+          "w": 290,
+          "x": 50,
+          "y": 477
+        },
+        "tag": "button",
+        "text": "Import"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 821,
+          "h": 44,
+          "right": 315,
+          "w": 292,
+          "x": 23,
+          "y": 777
+        },
+        "tag": "button",
+        "text": "Add source"
+      },
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 821,
+          "h": 44,
+          "right": 367,
+          "w": 44,
+          "x": 323,
+          "y": 777
+        },
+        "tag": "button",
+        "text": "Generation settings"
+      },
+      {
+        "lines": 3.2,
+        "r": {
+          "bottom": 1690.3,
+          "h": 76,
+          "right": 357,
+          "w": 324,
+          "x": 33,
+          "y": 1614.3
+        },
+        "tag": "a",
+        "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.63|Jul 2"
+      },
+      {
+        "lines": 3.2,
+        "r": {
+          "bottom": 1774.3,
+          "h": 76,
+          "right": 357,
+          "w": 324,
+          "x": 33,
+          "y": 1698.3
+        },
+        "tag": "a",
+        "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.63|Jul 2"
+      },
+      {
+        "lines": 3.2,
+        "r": {
+          "bottom": 1858.3,
+          "h": 76,
+          "right": 357,
+          "w": 324,
+          "x": 33,
+          "y": 1782.3
+        },
+        "tag": "a",
+        "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 2"
+      },
+      {
+        "lines": 3.2,
+        "r": {
+          "bottom": 1942.3,
+          "h": 76,
+          "right": 357,
+          "w": 324,
+          "x": 33,
+          "y": 1866.3
+        },
+        "tag": "a",
+        "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 2"
+      },
+      {
+        "lines": 3.2,
+        "r": {
+          "bottom": 2026.3,
+          "h": 76,
+          "right": 357,
+          "w": 324,
+          "x": 33,
+          "y": 1950.3
+        },
+        "tag": "a",
+        "text": "@Element1 Person performing the actions ...Completedkling-3.0-motion|$0.38|Jul 2"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "gallery",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 433,
+          "h": 32,
+          "right": 411.4,
+          "w": 32,
+          "x": 379.4,
+          "y": 401
+        },
+        "tag": "button",
+        "text": "List view"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 368.5,
+          "h": 1,
+          "right": 42,
+          "w": 1,
+          "x": 41,
+          "y": 367.5
+        },
+        "sw": 109,
+        "tag": "span"
+      },
+      {
+        "cls": "flex min-w-0 items-center gap-1 overflow-x-auto",
+        "cw": 332,
+        "r": {
+          "bottom": 438,
+          "h": 42,
+          "right": 361,
+          "w": 332,
+          "x": 29,
+          "y": 396
+        },
+        "sw": 387,
+        "tag": "div"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 417.5,
+          "h": 1,
+          "right": 29,
+          "w": 1,
+          "x": 28,
+          "y": 416.5
+        },
+        "sw": 85,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 517,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 516
+        },
+        "sw": 440,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 769.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 768.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 769.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 768.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 958,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 957
+        },
+        "sw": 441,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1210.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 1209.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1210.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 1209.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1399,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 1398
+        },
+        "sw": 437,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1651.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 1650.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1651.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 1650.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1840,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 1839
+        },
+        "sw": 433,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2092.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 2091.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2092.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 2091.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2281,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 2280
+        },
+        "sw": 431,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2533.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 2532.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2533.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 2532.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2722,
+          "h": 1,
+          "right": 349.5,
+          "w": 1,
+          "x": 348.5,
+          "y": 2721
+        },
+        "sw": 433,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 2974.5,
+          "h": 1,
+          "right": 33,
+          "w": 1,
+          "x": 32,
+          "y": 2973.5
+        },
+        "sw": 76,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 21739.5,
+      "h": 21739.5,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Gallery",
+    "url": "/gallery",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 111.4,
+          "w": 91.4,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "Start Clone"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 236,
+          "w": 116.7,
+          "x": 119.4,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "Generate asset"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 292,
+          "h": 40,
+          "right": 193,
+          "w": 164,
+          "x": 29,
+          "y": 252
+        },
+        "tag": "button",
+        "text": "Needs Review48"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 292,
+          "h": 40,
+          "right": 361,
+          "w": 164,
+          "x": 197,
+          "y": 252
+        },
+        "tag": "button",
+        "text": "Approved Output0"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 336,
+          "h": 40,
+          "right": 193,
+          "w": 164,
+          "x": 29,
+          "y": 296
+        },
+        "tag": "button",
+        "text": "Rejected Output0"
+      },
+      {
+        "lines": 2.5,
+        "r": {
+          "bottom": 336,
+          "h": 40,
+          "right": 361,
+          "w": 164,
+          "x": 197,
+          "y": 296
+        },
+        "tag": "button",
+        "text": "All48"
+      },
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 435,
+          "h": 36,
+          "right": 105.7,
+          "w": 76.7,
+          "x": 29,
+          "y": 399
+        },
+        "tag": "button",
+        "text": "All media"
+      },
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 435,
+          "h": 36,
+          "right": 175.4,
+          "w": 65.7,
+          "x": 109.7,
+          "y": 399
+        },
+        "tag": "button",
+        "text": "Images"
+      },
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 435,
+          "h": 36,
+          "right": 243.1,
+          "w": 63.7,
+          "x": 179.4,
+          "y": 399
+        },
+        "tag": "button",
+        "text": "Videos"
+      },
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 435,
+          "h": 36,
+          "right": 338.4,
+          "w": 91.3,
+          "x": 247.1,
+          "y": 399
+        },
+        "tag": "button",
+        "text": "Newest"
+      },
+      {
+        "lines": 10.9,
+        "r": {
+          "bottom": 757.5,
+          "h": 261,
+          "right": 369,
+          "w": 348,
+          "x": 21,
+          "y": 496.5
+        },
+        "tag": "button",
+        "text": "Preview Output 04363191-3a52-4882-ae70-454420c6919c"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "automations",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [],
+    "shell": {
+      "bottom": 913,
+      "h": 913,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Automations",
+    "url": "/automations",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 167.6,
+          "w": 147.6,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "New Automation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 698.5,
+          "h": 38,
+          "right": 282.9,
+          "w": 175.7,
+          "x": 107.1,
+          "y": 660.5
+        },
+        "tag": "a",
+        "text": "Create an automation"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "automation-new",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 214.3,
+          "h": 36,
+          "right": 400.9,
+          "w": 110.3,
+          "x": 290.6,
+          "y": 178.3
+        },
+        "tag": "button",
+        "text": "Transformation1"
+      },
+      {
+        "r": {
+          "bottom": 214.3,
+          "h": 36,
+          "right": 486.8,
+          "w": 81.9,
+          "x": 404.9,
+          "y": 178.3
+        },
+        "tag": "button",
+        "text": "Product1"
+      },
+      {
+        "r": {
+          "bottom": 214.3,
+          "h": 36,
+          "right": 569.6,
+          "w": 78.8,
+          "x": 490.8,
+          "y": 178.3
+        },
+        "tag": "button",
+        "text": "Listicle1"
+      },
+      {
+        "r": {
+          "bottom": 214.3,
+          "h": 36,
+          "right": 646.6,
+          "w": 73,
+          "x": 573.6,
+          "y": 178.3
+        },
+        "tag": "button",
+        "text": "Blank1"
+      }
+    ],
+    "dialogs": [
+      {
+        "bottom": 844,
+        "h": 844,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      }
+    ],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "Automation starterChoose a playbookStart with a proven Hook,"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 446.8,
+          "h": 147.5,
+          "right": 382,
+          "w": 374,
+          "x": 8,
+          "y": 299.3
+        },
+        "tag": "div",
+        "text": "SortRecommendedNameSlides6 playbooksAll categories"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "jsx-9df8a1ce144e1552 relative aspect-[9/16] shrink-0 overflow-hidden rounded-[13px] border-[6px] bor",
+        "cw": 308,
+        "r": {
+          "bottom": 1559.4,
+          "h": 568.9,
+          "right": 355,
+          "w": 320,
+          "x": 35,
+          "y": 990.6
+        },
+        "sw": 336,
+        "tag": "div"
+      },
+      {
+        "cls": "flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible",
+        "cw": 350,
+        "r": {
+          "bottom": 218.3,
+          "h": 40,
+          "right": 370,
+          "w": 350,
+          "x": 20,
+          "y": 178.3
+        },
+        "sw": 627,
+        "tag": "div"
+      }
+    ],
+    "shell": {
+      "bottom": 1676,
+      "h": 1676,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": null,
+    "url": "/automations/new",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 164,
+          "h": 36,
+          "right": 259.6,
+          "w": 101.1,
+          "x": 158.4,
+          "y": 128
+        },
+        "tag": "button",
+        "text": "Playbook"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 164,
+          "h": 36,
+          "right": 374,
+          "w": 106.4,
+          "x": 267.6,
+          "y": 128
+        },
+        "tag": "button",
+        "text": "Save draft"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 210,
+          "h": 38,
+          "right": 374,
+          "w": 161.6,
+          "x": 212.4,
+          "y": 172
+        },
+        "tag": "button",
+        "text": "Review automation"
+      },
+      {
+        "lines": 3.9,
+        "r": {
+          "bottom": 282,
+          "h": 59,
+          "right": 130,
+          "w": 118,
+          "x": 12,
+          "y": 223
+        },
+        "tag": "button",
+        "text": "01HookEditing"
+      },
+      {
+        "lines": 3.9,
+        "r": {
+          "bottom": 282,
+          "h": 59,
+          "right": 248,
+          "w": 118,
+          "x": 130,
+          "y": 223
+        },
+        "tag": "button",
+        "text": "02Content"
+      },
+      {
+        "lines": 3.9,
+        "r": {
+          "bottom": 282,
+          "h": 59,
+          "right": 366,
+          "w": 118,
+          "x": 248,
+          "y": 223
+        },
+        "tag": "button",
+        "text": "03CTA"
+      },
+      {
+        "lines": 4.2,
+        "r": {
+          "bottom": 445.5,
+          "h": 40,
+          "right": 370,
+          "w": 350,
+          "x": 20,
+          "y": 405.5
+        },
+        "tag": "select",
+        "text": "Curiosity gapUnexpected resultContrarian truthSpecific transformationConcrete pr"
+      },
+      {
+        "lines": 8,
+        "r": {
+          "bottom": 575.5,
+          "h": 96,
+          "right": 370,
+          "w": 350,
+          "x": 20,
+          "y": 479.5
+        },
+        "tag": "textarea",
+        "text": "Open with one concrete result or surprising observation. Keep it under 12 words."
+      },
+      {
+        "lines": 3,
+        "r": {
+          "bottom": 634,
+          "h": 36,
+          "right": 370,
+          "w": 350,
+          "x": 20,
+          "y": 598
+        },
+        "tag": "button",
+        "text": "Generate a hook option"
+      },
+      {
+        "lines": 3,
+        "r": {
+          "bottom": 776,
+          "h": 32,
+          "right": 66.6,
+          "w": 46.6,
+          "x": 20,
+          "y": 744
+        },
+        "tag": "button",
+        "text": "M"
+      },
+      {
+        "lines": 3,
+        "r": {
+          "bottom": 776,
+          "h": 32,
+          "right": 117.1,
+          "w": 46.6,
+          "x": 70.6,
+          "y": 744
+        },
+        "tag": "button",
+        "text": "T"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "performance",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [],
+    "shell": {
+      "bottom": 902,
+      "h": 902,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Performance",
+    "url": "/performance",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 179.5,
+          "w": 159.5,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "Open Automations"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 614,
+          "h": 38,
+          "right": 200.4,
+          "w": 132.9,
+          "x": 67.5,
+          "y": 576
+        },
+        "tag": "a",
+        "text": "Open integrations"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 614,
+          "h": 38,
+          "right": 322.5,
+          "w": 114.1,
+          "x": 208.4,
+          "y": 576
+        },
+        "tag": "button",
+        "text": "Import CSV"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 882,
+          "h": 36,
+          "right": 370,
+          "w": 144.8,
+          "x": 225.2,
+          "y": 846
+        },
+        "tag": "button",
+        "text": "Import local CSV"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "spend",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [],
+    "shell": {
+      "bottom": 2521,
+      "h": 2521,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Spend",
+    "url": "/costs",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 145.8,
+          "w": 125.8,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "Create Asset"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "generate",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 2183.2,
+          "h": 115,
+          "right": 377,
+          "w": 364,
+          "x": 13,
+          "y": 2068.2
+        },
+        "tag": "div",
+        "text": "Select a model and describe your assetCost Estimate · —Gener"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 2266.2,
+          "h": 62,
+          "right": 378,
+          "w": 366,
+          "x": 12,
+          "y": 2204.2
+        },
+        "tag": "div",
+        "text": "Choose a model—Generate image"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 254.2,
+          "h": 1,
+          "right": 12,
+          "w": 1,
+          "x": 11,
+          "y": 253.2
+        },
+        "sw": 365,
+        "tag": "span"
+      },
+      {
+        "cls": "grid grid-cols-4 gap-2",
+        "cw": 136,
+        "r": {
+          "bottom": 1433.2,
+          "h": 44,
+          "right": 176,
+          "w": 136,
+          "x": 40,
+          "y": 1389.2
+        },
+        "sw": 141,
+        "tag": "div"
+      },
+      {
+        "cls": "flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35",
+        "cw": 26,
+        "r": {
+          "bottom": 1433.2,
+          "h": 44,
+          "right": 68,
+          "w": 28,
+          "x": 40,
+          "y": 1389.2
+        },
+        "sw": 30,
+        "tag": "button"
+      },
+      {
+        "cls": "flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35",
+        "cw": 26,
+        "r": {
+          "bottom": 1433.2,
+          "h": 44,
+          "right": 104,
+          "w": 28,
+          "x": 76,
+          "y": 1389.2
+        },
+        "sw": 35,
+        "tag": "button"
+      },
+      {
+        "cls": "flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35",
+        "cw": 26,
+        "r": {
+          "bottom": 1433.2,
+          "h": 44,
+          "right": 140,
+          "w": 28,
+          "x": 112,
+          "y": 1389.2
+        },
+        "sw": 29,
+        "tag": "button"
+      },
+      {
+        "cls": "flex min-h-11 flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/35",
+        "cw": 26,
+        "r": {
+          "bottom": 1433.2,
+          "h": 44,
+          "right": 176,
+          "w": 28,
+          "x": 148,
+          "y": 1389.2
+        },
+        "sw": 32,
+        "tag": "button"
+      }
+    ],
+    "shell": {
+      "bottom": 2273,
+      "h": 2273,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Generate",
+    "url": "/generate",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.2,
+        "r": {
+          "bottom": 218,
+          "h": 36,
+          "right": 106.6,
+          "w": 86.6,
+          "x": 20,
+          "y": 182
+        },
+        "tag": "a",
+        "text": "History"
+      },
+      {
+        "lines": 5.9,
+        "r": {
+          "bottom": 425.2,
+          "h": 118,
+          "right": 361,
+          "w": 332,
+          "x": 29,
+          "y": 307.2
+        },
+        "tag": "textarea",
+        "text": "Creative prompt"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 486.2,
+          "h": 27.5,
+          "right": 103.9,
+          "w": 74.9,
+          "x": 29,
+          "y": 458.7
+        },
+        "tag": "button",
+        "text": "Candid UGC"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 486.2,
+          "h": 27.5,
+          "right": 220,
+          "w": 110,
+          "x": 109.9,
+          "y": 458.7
+        },
+        "tag": "button",
+        "text": "Natural window light"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 486.2,
+          "h": 27.5,
+          "right": 332.7,
+          "w": 106.8,
+          "x": 226,
+          "y": 458.7
+        },
+        "tag": "button",
+        "text": "Crisp product detail"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 519.7,
+          "h": 27.5,
+          "right": 127.9,
+          "w": 98.9,
+          "x": 29,
+          "y": 492.2
+        },
+        "tag": "button",
+        "text": "Handheld framing"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 519.7,
+          "h": 27.5,
+          "right": 199.8,
+          "w": 65.9,
+          "x": 133.9,
+          "y": 492.2
+        },
+        "tag": "button",
+        "text": "Soft focus"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 519.7,
+          "h": 27.5,
+          "right": 305.2,
+          "w": 99.4,
+          "x": 205.8,
+          "y": 492.2
+        },
+        "tag": "button",
+        "text": "Cinematic lighting"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 641.7,
+          "h": 36,
+          "right": 195,
+          "w": 162,
+          "x": 33,
+          "y": 605.7
+        },
+        "tag": "button",
+        "text": "image"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 641.7,
+          "h": 36,
+          "right": 357,
+          "w": 162,
+          "x": 195,
+          "y": 605.7
+        },
+        "tag": "button",
+        "text": "video"
+      },
+      {
+        "lines": 3.6,
+        "r": {
+          "bottom": 743.7,
+          "h": 86,
+          "right": 361,
+          "w": 332,
+          "x": 29,
+          "y": 657.7
+        },
+        "tag": "button",
+        "text": "Nano Banana 2$0.08/imageText to imageWeb grounding"
+      }
+    ],
+    "overflowInteractive": [
+      {
+        "cw": 26,
+        "display": "flex",
+        "h": 44,
+        "position": "static",
+        "right": 68,
+        "sw": 30,
+        "tag": "button",
+        "text": "Upload",
+        "visibility": "visible",
+        "w": 28,
+        "x": 40
+      },
+      {
+        "cw": 26,
+        "display": "flex",
+        "h": 44,
+        "position": "static",
+        "right": 104,
+        "sw": 35,
+        "tag": "button",
+        "text": "Generate",
+        "visibility": "visible",
+        "w": 28,
+        "x": 76
+      },
+      {
+        "cw": 26,
+        "display": "flex",
+        "h": 44,
+        "position": "static",
+        "right": 176,
+        "sw": 32,
+        "tag": "button",
+        "text": "Gallery",
+        "visibility": "visible",
+        "w": 28,
+        "x": 148
+      }
+    ]
+  },
+  {
+    "slug": "collections",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [],
+    "shell": {
+      "bottom": 931,
+      "h": 931,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Collections",
+    "url": "/collections",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 220,
+          "h": 38,
+          "right": 157.2,
+          "w": 137.2,
+          "x": 20,
+          "y": 182
+        },
+        "tag": "a",
+        "text": "Upload Images"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 749.8,
+          "h": 38,
+          "right": 291.8,
+          "w": 193.6,
+          "x": 98.2,
+          "y": 711.8
+        },
+        "tag": "button",
+        "text": "Upload your first images"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "characters",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [],
+    "shell": {
+      "bottom": 844,
+      "h": 844,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Characters",
+    "url": "/characters",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 157.6,
+          "w": 137.6,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "New Character"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "character-new",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 395.3,
+          "w": 150,
+          "x": 245.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "EthnicityCaucasian"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 549.3,
+          "w": 150,
+          "x": 399.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Skin DetailsClear · None"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 703.3,
+          "w": 150,
+          "x": 553.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Face ShapeOval"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 857.3,
+          "w": 150,
+          "x": 707.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Face DetailsSoft · Subtle"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1011.3,
+          "w": 150,
+          "x": 861.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "HairBlack · Buzz Cut"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1165.3,
+          "w": 150,
+          "x": 1015.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Eyes & BrowsAlmond · Brown"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1319.3,
+          "w": 150,
+          "x": 1169.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Nose & EarsStraight · Low"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1473.3,
+          "w": 150,
+          "x": 1323.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "BodyAthletic · Very Short"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1627.3,
+          "w": 150,
+          "x": 1477.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Style & AccessoriesCasual Minimal · None"
+      },
+      {
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1781.3,
+          "w": 150,
+          "x": 1631.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Marks & FeaturesNone · None"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 1213.5,
+          "h": 144.5,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 1069
+        },
+        "tag": "div",
+        "text": "Character name Save character"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Character attributes",
+        "position": "static",
+        "r": {
+          "bottom": 259.5,
+          "h": 62.5,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 197
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "flex gap-1 overflow-x-auto p-2 min-[1280px]:block min-[1280px]:h-[calc(100vh-278px)] min-[1280px]:ov",
+        "cw": 390,
+        "r": {
+          "bottom": 259.5,
+          "h": 62.5,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 197
+        },
+        "sw": 1789,
+        "tag": "nav"
+      },
+      {
+        "cls": "pointer-events-none absolute inset-0 overflow-hidden",
+        "cw": 390,
+        "r": {
+          "bottom": 1068,
+          "h": 702.5,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 365.5
+        },
+        "sw": 470,
+        "tag": "div"
+      }
+    ],
+    "shell": {
+      "bottom": 2225.5,
+      "h": 2225.5,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "New character",
+    "url": "/characters/new",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.4,
+        "r": {
+          "bottom": 184,
+          "h": 40,
+          "right": 378,
+          "w": 366,
+          "x": 12,
+          "y": 144
+        },
+        "tag": "button",
+        "text": "Randomize"
+      },
+      {
+        "lines": 2.2,
+        "r": {
+          "bottom": 245,
+          "h": 40,
+          "right": 87.3,
+          "w": 79.3,
+          "x": 8,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Overview"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 241.3,
+          "w": 150,
+          "x": 91.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "IdentityFemale · 18-24"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 395.3,
+          "w": 150,
+          "x": 245.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "EthnicityCaucasian"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 549.3,
+          "w": 150,
+          "x": 399.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Skin DetailsClear · None"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 703.3,
+          "w": 150,
+          "x": 553.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Face ShapeOval"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 857.3,
+          "w": 150,
+          "x": 707.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Face DetailsSoft · Subtle"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1011.3,
+          "w": 150,
+          "x": 861.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "HairBlack · Buzz Cut"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1165.3,
+          "w": 150,
+          "x": 1015.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Eyes & BrowsAlmond · Brown"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1319.3,
+          "w": 150,
+          "x": 1169.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "Nose & EarsStraight · Low"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 251.5,
+          "h": 46.5,
+          "right": 1473.3,
+          "w": 150,
+          "x": 1323.3,
+          "y": 205
+        },
+        "tag": "button",
+        "text": "BodyAthletic · Very Short"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "settings",
+    "aside": {
+      "bottom": 0,
+      "h": 0,
+      "right": 0,
+      "w": 0,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 430.5,
+          "w": 126.8,
+          "x": 303.7,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Publishing defaults"
+      },
+      {
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 503.9,
+          "w": 69.4,
+          "x": 434.5,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Team"
+      },
+      {
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 607.6,
+          "w": 99.7,
+          "x": 507.9,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Notifications"
+      },
+      {
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 694.1,
+          "w": 82.5,
+          "x": 611.6,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "API keys"
+      },
+      {
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 789.1,
+          "w": 91,
+          "x": 698.1,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Webhooks"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 58,
+          "h": 58,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "PPostForge"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 824,
+          "h": 35,
+          "right": 370,
+          "w": 299.5,
+          "x": 70.5,
+          "y": 789
+        },
+        "tag": "div",
+        "text": "Social account connected. Account status refreshed."
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 844,
+          "h": 844,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [],
+    "scrollers": [
+      {
+        "cls": "flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-[#DEDFD8] ",
+        "cw": 390,
+        "r": {
+          "bottom": 284,
+          "h": 61,
+          "right": 390,
+          "w": 390,
+          "x": 0,
+          "y": 223
+        },
+        "sw": 801,
+        "tag": "aside"
+      }
+    ],
+    "shell": {
+      "bottom": 1815.8,
+      "h": 1815.8,
+      "right": 390,
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "title": "Settings",
+    "url": "/settings?tab=integrations",
+    "wrapped": [
+      {
+        "lines": 1.8,
+        "r": {
+          "bottom": 46.5,
+          "h": 36,
+          "right": 48,
+          "w": 36,
+          "x": 12,
+          "y": 10.5
+        },
+        "tag": "button",
+        "text": "Open workspace navigation"
+      },
+      {
+        "lines": 2.1,
+        "r": {
+          "bottom": 202,
+          "h": 38,
+          "right": 173,
+          "w": 153,
+          "x": 20,
+          "y": 164
+        },
+        "tag": "a",
+        "text": "View Integrations"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 85.3,
+          "w": 73.3,
+          "x": 12,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Profile"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 197.5,
+          "w": 108.2,
+          "x": 89.3,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Billing & usage"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 299.7,
+          "w": 98.2,
+          "x": 201.5,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Integrations"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 430.5,
+          "w": 126.8,
+          "x": 303.7,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Publishing defaults"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 503.9,
+          "w": 69.4,
+          "x": 434.5,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Team"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 607.6,
+          "w": 99.7,
+          "x": 507.9,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Notifications"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 694.1,
+          "w": 82.5,
+          "x": 611.6,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "API keys"
+      },
+      {
+        "lines": 2.7,
+        "r": {
+          "bottom": 271,
+          "h": 36,
+          "right": 789.1,
+          "w": 91,
+          "x": 698.1,
+          "y": 235
+        },
+        "tag": "button",
+        "text": "Webhooks"
+      },
+      {
+        "lines": 2,
+        "r": {
+          "bottom": 427,
+          "h": 36,
+          "right": 151.8,
+          "w": 131.8,
+          "x": 20,
+          "y": 391
+        },
+        "tag": "button",
+        "text": "Refresh status"
+      },
+      {
+        "lines": 3,
+        "r": {
+          "bottom": 826.8,
+          "h": 36,
+          "right": 353,
+          "w": 316,
+          "x": 37,
+          "y": 790.8
+        },
+        "tag": "button",
+        "text": "Setup required"
+      }
+    ],
+    "overflowInteractive": []
+  }
+]

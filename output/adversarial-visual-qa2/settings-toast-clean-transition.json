@@ -1,0 +1,30 @@
+[
+  {
+    "label": "500ms",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "2s",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "5s",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  },
+  {
+    "label": "8s",
+    "hits": [],
+    "href": "http://127.0.0.1:3000/settings?tab=integrations",
+    "pathname": "/settings",
+    "search": "?tab=integrations"
+  }
+]

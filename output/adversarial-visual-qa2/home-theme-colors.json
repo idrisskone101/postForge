@@ -1,0 +1,20 @@
+{
+  "before": {
+    "asideBg": "rgb(238, 239, 232)",
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "cardBg": "rgb(255, 255, 255)",
+    "htmlClass": "",
+    "shellBg": "rgb(243, 244, 239)",
+    "shellColor": "rgb(35, 35, 35)"
+  },
+  "after": {
+    "asideBg": "rgb(238, 239, 232)",
+    "bodyBg": "lab(2.75381 0 0)",
+    "bodyColor": "lab(98.26 0 0)",
+    "cardBg": "lab(7.78201 -0.0000149012 0)",
+    "htmlClass": "dark",
+    "shellBg": "rgb(243, 244, 239)",
+    "shellColor": "lab(98.26 0 0)"
+  }
+}

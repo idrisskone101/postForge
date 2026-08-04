@@ -1,0 +1,66 @@
+{
+  "btns": [
+    {
+      "bottom": 435,
+      "clientWidth": 89,
+      "cls": "flex h-9 shrink-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted",
+      "h": 36,
+      "overflowX": "visible",
+      "right": 338.375,
+      "scrollWidth": 89,
+      "tag": "BUTTON",
+      "text": "Newest",
+      "w": 91.265625,
+      "x": 247.109375,
+      "y": 399
+    },
+    {
+      "bottom": 433,
+      "clientWidth": 32,
+      "cls": "inline-flex size-8 items-center justify-center rounded-md bg-muted text-foreground",
+      "h": 32,
+      "overflowX": "visible",
+      "right": 379.375,
+      "scrollWidth": 32,
+      "tag": "BUTTON",
+      "text": "",
+      "w": 32,
+      "x": 347.375,
+      "y": 401
+    },
+    {
+      "bottom": 433,
+      "clientWidth": 32,
+      "cls": "inline-flex size-8 items-center justify-center rounded-md text-muted-foreground",
+      "h": 32,
+      "overflowX": "visible",
+      "right": 411.375,
+      "scrollWidth": 32,
+      "tag": "BUTTON",
+      "text": "",
+      "w": 32,
+      "x": 379.375,
+      "y": 401
+    }
+  ],
+  "docH": 21739,
+  "docW": 390,
+  "iw": 390,
+  "scrollers": [
+    {
+      "bottom": 438,
+      "clientWidth": 332,
+      "cls": "flex min-w-0 items-center gap-1 overflow-x-auto",
+      "h": 42,
+      "overflowX": "auto",
+      "right": 361,
+      "scrollWidth": 387,
+      "tag": "DIV",
+      "text": "Media typeAll mediaImagesVideosNewest",
+      "w": 332,
+      "x": 29,
+      "y": 396
+    }
+  ],
+  "url": "http://127.0.0.1:3000/gallery"
+}

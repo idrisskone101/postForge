@@ -1,0 +1,369 @@
+{
+  "cloneTitle": [
+    {
+      "clientWidth": 316,
+      "cls": "mt-3 max-w-3xl text-xl font-semibold tracking-tight sm:text-2xl",
+      "display": "block",
+      "id": null,
+      "maxWidth": "768px",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 28,
+        "right": 353,
+        "w": 316,
+        "x": 37,
+        "y": 383
+      },
+      "scrollWidth": 316,
+      "tag": "h3",
+      "text": "Clone output ready",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 316,
+      "cls": "",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "auto",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 233.5,
+        "right": 353,
+        "w": 316,
+        "x": 37,
+        "y": 313.5
+      },
+      "scrollWidth": 316,
+      "tag": "div",
+      "text": "Next production taskcompleted853f1f43Clone output readyPerson performing the actions from the refere",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 356,
+      "cls": "flex min-w-0 flex-col justify-between p-5 sm:p-6",
+      "display": "flex",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 381.5,
+        "right": 373,
+        "w": 356,
+        "x": 17,
+        "y": 293.5
+      },
+      "scrollWidth": 356,
+      "tag": "div",
+      "text": "Next production taskcompleted853f1f43Clone output readyPerson performing the actions from the refere",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 356,
+      "cls": "grid overflow-hidden rounded-lg border border-border bg-card lg:grid-cols-[minmax(0,1fr)_280px]",
+      "display": "grid",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "auto",
+      "overflowX": "hidden",
+      "position": "static",
+      "rect": {
+        "h": 591.5,
+        "right": 374,
+        "w": 358,
+        "x": 16,
+        "y": 292.5
+      },
+      "scrollWidth": 356,
+      "tag": "section",
+      "text": "Next production taskcompleted853f1f43Clone output readyPerson performing the actions from the refere",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "mx-auto flex max-w-[1280px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8 lg:py-7",
+      "display": "flex",
+      "id": null,
+      "maxWidth": "1280px",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2342.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 223
+      },
+      "scrollWidth": 390,
+      "tag": "div",
+      "text": "Daily Production Loop0 active · 12 awaiting reviewNext production taskcompleted853f1f43Clone output ",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "min-h-screen min-w-0 overflow-x-hidden bg-[#F3F4EF] pt-[58px] md:ml-[72px] md:pt-0 xl:ml-64",
+      "display": "block",
+      "id": "workspace-shell",
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "hidden",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "main",
+      "text": "ProductionHomeToday’s jobs, reviews, and the next useful action.New CloneDaily Production Loop0 acti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "min-h-screen",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "div",
+      "text": "PPostForgePPostForge New CloneHomeInspirationCloneGalleryAutomationsPerformanceSpendGenerateCollecti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "inter_8db6fa51-module__MMaAbG__variable antialiased",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "320px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "body",
+      "text": "PPostForgePPostForge New CloneHomeInspirationCloneGalleryAutomationsPerformanceSpendGenerateCollecti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "html",
+      "text": "PostForge(function(){try{var t=localStorage.getItem(\"postforge-theme\");document.documentElement.clas",
+      "whiteSpace": "normal"
+    }
+  ],
+  "loop": [],
+  "root": {
+    "clientWidth": 390,
+    "overflowX": "visible",
+    "scrollWidth": 390
+  },
+  "today": [
+    {
+      "clientWidth": 350,
+      "cls": "mt-1.5 max-w-2xl text-[11px] leading-[1.125rem] text-[#777873]",
+      "display": "block",
+      "id": null,
+      "maxWidth": "672px",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 18,
+        "right": 370,
+        "w": 350,
+        "x": 20,
+        "y": 130
+      },
+      "scrollWidth": 350,
+      "tag": "p",
+      "text": "Today’s jobs, reviews, and the next useful action.",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 350,
+      "cls": "min-w-0",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 70,
+        "right": 370,
+        "w": 350,
+        "x": 20,
+        "y": 78
+      },
+      "scrollWidth": 350,
+      "tag": "div",
+      "text": "ProductionHomeToday’s jobs, reviews, and the next useful action.",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "grid min-h-[104px] gap-4 px-5 py-5 sm:px-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8",
+      "display": "grid",
+      "id": "workspace-header-grid",
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 164,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 58
+      },
+      "scrollWidth": 390,
+      "tag": "div",
+      "text": "ProductionHomeToday’s jobs, reviews, and the next useful action.New Clone",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "border-b border-[#DEDFD8] bg-[#F3F4EF]",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 165,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 58
+      },
+      "scrollWidth": 390,
+      "tag": "div",
+      "text": "ProductionHomeToday’s jobs, reviews, and the next useful action.New Clone",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "min-h-screen min-w-0 overflow-x-hidden bg-[#F3F4EF] pt-[58px] md:ml-[72px] md:pt-0 xl:ml-64",
+      "display": "block",
+      "id": "workspace-shell",
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "hidden",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "main",
+      "text": "ProductionHomeToday’s jobs, reviews, and the next useful action.New CloneDaily Production Loop0 acti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "min-h-screen",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "div",
+      "text": "PPostForgePPostForge New CloneHomeInspirationCloneGalleryAutomationsPerformanceSpendGenerateCollecti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "inter_8db6fa51-module__MMaAbG__variable antialiased",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "320px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "body",
+      "text": "PPostForgePPostForge New CloneHomeInspirationCloneGalleryAutomationsPerformanceSpendGenerateCollecti",
+      "whiteSpace": "normal"
+    },
+    {
+      "clientWidth": 390,
+      "cls": "",
+      "display": "block",
+      "id": null,
+      "maxWidth": "none",
+      "minWidth": "0px",
+      "overflowX": "visible",
+      "position": "static",
+      "rect": {
+        "h": 2565.5,
+        "right": 390,
+        "w": 390,
+        "x": 0,
+        "y": 0
+      },
+      "scrollWidth": 390,
+      "tag": "html",
+      "text": "PostForge(function(){try{var t=localStorage.getItem(\"postforge-theme\");document.documentElement.clas",
+      "whiteSpace": "normal"
+    }
+  ]
+}

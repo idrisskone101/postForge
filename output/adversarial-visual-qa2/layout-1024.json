@@ -1,0 +1,4306 @@
+[
+  {
+    "slug": "home",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge New CloneHomeInspirationCloneGalleryAutomationsPe"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 1415,
+          "h": 1,
+          "right": 125,
+          "w": 1,
+          "x": 124,
+          "y": 1414
+        },
+        "sw": 122,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1721,
+      "h": 1721,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Home",
+    "url": "/",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "New Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "inspiration",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 346.5,
+          "h": 49,
+          "right": 1145,
+          "w": 184,
+          "x": 961,
+          "y": 297.5
+        },
+        "tag": "button",
+        "text": "@clau.cycletipsSynced Apr 1429"
+      },
+      {
+        "r": {
+          "bottom": 321,
+          "h": 24,
+          "right": 1169,
+          "w": 24,
+          "x": 1145,
+          "y": 297
+        },
+        "tag": "button",
+        "text": "Refresh @clau.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 347,
+          "h": 24,
+          "right": 1169,
+          "w": 24,
+          "x": 1145,
+          "y": 323
+        },
+        "tag": "button",
+        "text": "Remove @clau.cycletips"
+      },
+      {
+        "r": {
+          "bottom": 346.5,
+          "h": 49,
+          "right": 1369,
+          "w": 184,
+          "x": 1185,
+          "y": 297.5
+        },
+        "tag": "button",
+        "text": "@ange.hormonesSynced May 1030"
+      },
+      {
+        "r": {
+          "bottom": 321,
+          "h": 24,
+          "right": 1393,
+          "w": 24,
+          "x": 1369,
+          "y": 297
+        },
+        "tag": "button",
+        "text": "Refresh @ange.hormones"
+      },
+      {
+        "r": {
+          "bottom": 347,
+          "h": 24,
+          "right": 1393,
+          "w": 24,
+          "x": 1369,
+          "y": 323
+        },
+        "tag": "button",
+        "text": "Remove @ange.hormones"
+      },
+      {
+        "r": {
+          "bottom": 346.5,
+          "h": 49,
+          "right": 1593,
+          "w": 184,
+          "x": 1409,
+          "y": 297.5
+        },
+        "tag": "button",
+        "text": "@appleuser49969229Synced May 1015"
+      },
+      {
+        "r": {
+          "bottom": 321,
+          "h": 24,
+          "right": 1617,
+          "w": 24,
+          "x": 1593,
+          "y": 297
+        },
+        "tag": "button",
+        "text": "Refresh @appleuser49969229"
+      },
+      {
+        "r": {
+          "bottom": 347,
+          "h": 24,
+          "right": 1617,
+          "w": 24,
+          "x": 1593,
+          "y": 323
+        },
+        "tag": "button",
+        "text": "Remove @appleuser49969229"
+      },
+      {
+        "r": {
+          "bottom": 346.5,
+          "h": 49,
+          "right": 1817,
+          "w": 184,
+          "x": 1633,
+          "y": 297.5
+        },
+        "tag": "button",
+        "text": "@liza.hormonesSynced Apr 1615"
+      },
+      {
+        "r": {
+          "bottom": 321,
+          "h": 24,
+          "right": 1841,
+          "w": 24,
+          "x": 1817,
+          "y": 297
+        },
+        "tag": "button",
+        "text": "Refresh @liza.hormones"
+      },
+      {
+        "r": {
+          "bottom": 347,
+          "h": 24,
+          "right": 1841,
+          "w": 24,
+          "x": 1817,
+          "y": 323
+        },
+        "tag": "button",
+        "text": "Remove @liza.hormones"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Open CloneHomeInspirationCloneGalleryAutomationsP"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]",
+        "cw": 888,
+        "r": {
+          "bottom": 373,
+          "h": 146,
+          "right": 992,
+          "w": 888,
+          "x": 104,
+          "y": 227
+        },
+        "sw": 5086,
+        "tag": "section"
+      },
+      {
+        "cls": "flex w-full min-w-0 max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 [contain:inlin",
+        "cw": 888,
+        "r": {
+          "bottom": 373,
+          "h": 94,
+          "right": 992,
+          "w": 888,
+          "x": 104,
+          "y": 279
+        },
+        "sw": 5104,
+        "tag": "div"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 100,
+        "r": {
+          "bottom": 321.5,
+          "h": 16,
+          "right": 441,
+          "w": 100,
+          "x": 341,
+          "y": 305.5
+        },
+        "sw": 129,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 485.5,
+          "w": 1,
+          "x": 484.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 485.5,
+          "w": 1,
+          "x": 484.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 322.5,
+          "h": 1,
+          "right": 289,
+          "w": 1,
+          "x": 288,
+          "y": 321.5
+        },
+        "sw": 352,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 709.5,
+          "w": 1,
+          "x": 708.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 709.5,
+          "w": 1,
+          "x": 708.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 322.5,
+          "h": 1,
+          "right": 513,
+          "w": 1,
+          "x": 512,
+          "y": 321.5
+        },
+        "sw": 352,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 933.5,
+          "w": 1,
+          "x": 932.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 933.5,
+          "w": 1,
+          "x": 932.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 1157.5,
+          "w": 1,
+          "x": 1156.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 1157.5,
+          "w": 1,
+          "x": 1156.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 99,
+        "r": {
+          "bottom": 321.5,
+          "h": 16,
+          "right": 1336,
+          "w": 99,
+          "x": 1237,
+          "y": 305.5
+        },
+        "sw": 103,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 1381.5,
+          "w": 1,
+          "x": 1380.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 1381.5,
+          "w": 1,
+          "x": 1380.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "block truncate text-xs font-semibold",
+        "cw": 102,
+        "r": {
+          "bottom": 321.5,
+          "h": 16,
+          "right": 1562.6,
+          "w": 101.6,
+          "x": 1461,
+          "y": 305.5
+        },
+        "sw": 131,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 309.5,
+          "h": 1,
+          "right": 1605.5,
+          "w": 1,
+          "x": 1604.5,
+          "y": 308.5
+        },
+        "sw": 58,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 335.5,
+          "h": 1,
+          "right": 1605.5,
+          "w": 1,
+          "x": 1604.5,
+          "y": 334.5
+        },
+        "sw": 61,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 6027.5,
+      "h": 6027.5,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Inspiration",
+    "url": "/ugc-inspiration",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Open Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "clone",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Browse InspirationHomeInspirationCloneGalleryAuto"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 1060.3,
+          "h": 845,
+          "right": 992,
+          "w": 512,
+          "x": 480,
+          "y": 215.3
+        },
+        "tag": "aside",
+        "text": "Live composition9:16 · FitYour clone takes shape hereAdd a s"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 78,
+          "right": 1024,
+          "w": 952,
+          "x": 72,
+          "y": 946
+        },
+        "tag": "section",
+        "text": "Add sourceFinal videoVideoKling 3.0$0.63▼Reference imageRefe"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "tag": "input",
+        "text": ""
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "tag": "input",
+        "text": ""
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "tag": "input",
+        "text": ""
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "tag": "input",
+        "text": ""
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      },
+      {
+        "label": "Clone setup progress",
+        "position": "static",
+        "r": {
+          "bottom": 199.3,
+          "h": 71,
+          "right": 992,
+          "w": 888,
+          "x": 104,
+          "y": 128.3
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 959,
+          "h": 1,
+          "right": 117,
+          "w": 1,
+          "x": 116,
+          "y": 958
+        },
+        "sw": 82,
+        "tag": "legend"
+      },
+      {
+        "cls": "",
+        "cw": 1,
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "sw": 126,
+        "tag": "input"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 959,
+          "h": 1,
+          "right": 305,
+          "w": 1,
+          "x": 304,
+          "y": 958
+        },
+        "sw": 128,
+        "tag": "legend"
+      },
+      {
+        "cls": "",
+        "cw": 1,
+        "r": {
+          "bottom": 947,
+          "h": 1,
+          "right": 105,
+          "w": 1,
+          "x": 104,
+          "y": 946
+        },
+        "sw": 117,
+        "tag": "input"
+      },
+      {
+        "cls": "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent ",
+        "cw": 30,
+        "r": {
+          "bottom": 988.2,
+          "h": 18.4,
+          "right": 620,
+          "w": 32,
+          "x": 588,
+          "y": 969.8
+        },
+        "sw": 42,
+        "tag": "span"
+      },
+      {
+        "cls": "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent ",
+        "cw": 30,
+        "r": {
+          "bottom": 988.2,
+          "h": 18.4,
+          "right": 760,
+          "w": 32,
+          "x": 728,
+          "y": 969.8
+        },
+        "sw": 42,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 2079.8,
+      "h": 2079.8,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": null,
+    "url": "/ugc-clone",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Browse Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "gallery",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Create AssetHomeInspirationCloneGalleryAutomation"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 227.5,
+          "h": 1,
+          "right": 126,
+          "w": 1,
+          "x": 125,
+          "y": 226.5
+        },
+        "sw": 109,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 227.5,
+          "h": 1,
+          "right": 345,
+          "w": 1,
+          "x": 344,
+          "y": 226.5
+        },
+        "sw": 85,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 327,
+          "h": 1,
+          "right": 371.5,
+          "w": 1,
+          "x": 370.5,
+          "y": 326
+        },
+        "sw": 440,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 117,
+          "w": 1,
+          "x": 116,
+          "y": 532
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 117,
+          "w": 1,
+          "x": 116,
+          "y": 532
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 327,
+          "h": 1,
+          "right": 671.5,
+          "w": 1,
+          "x": 670.5,
+          "y": 326
+        },
+        "sw": 441,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 417,
+          "w": 1,
+          "x": 416,
+          "y": 532
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 417,
+          "w": 1,
+          "x": 416,
+          "y": 532
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 327,
+          "h": 1,
+          "right": 971.5,
+          "w": 1,
+          "x": 970.5,
+          "y": 326
+        },
+        "sw": 437,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 717,
+          "w": 1,
+          "x": 716,
+          "y": 532
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 533,
+          "h": 1,
+          "right": 717,
+          "w": 1,
+          "x": 716,
+          "y": 532
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 681.5,
+          "h": 1,
+          "right": 371.5,
+          "w": 1,
+          "x": 370.5,
+          "y": 680.5
+        },
+        "sw": 433,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 887.5,
+          "h": 1,
+          "right": 117,
+          "w": 1,
+          "x": 116,
+          "y": 886.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 887.5,
+          "h": 1,
+          "right": 117,
+          "w": 1,
+          "x": 116,
+          "y": 886.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 681.5,
+          "h": 1,
+          "right": 671.5,
+          "w": 1,
+          "x": 670.5,
+          "y": 680.5
+        },
+        "sw": 431,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 887.5,
+          "h": 1,
+          "right": 417,
+          "w": 1,
+          "x": 416,
+          "y": 886.5
+        },
+        "sw": 76,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 887.5,
+          "h": 1,
+          "right": 417,
+          "w": 1,
+          "x": 416,
+          "y": 886.5
+        },
+        "sw": 61,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 681.5,
+          "h": 1,
+          "right": 971.5,
+          "w": 1,
+          "x": 970.5,
+          "y": 680.5
+        },
+        "sw": 433,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 887.5,
+          "h": 1,
+          "right": 717,
+          "w": 1,
+          "x": 716,
+          "y": 886.5
+        },
+        "sw": 76,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 6065.5,
+      "h": 6065.5,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Gallery",
+    "url": "/gallery",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Create Asset"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "automations",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge New AutomationHomeInspirationCloneGalleryAutomati"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Automations",
+    "url": "/automations",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "New Automation"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "automation-new",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [
+      {
+        "bottom": 1024,
+        "h": 1024,
+        "right": 1024,
+        "w": 1024,
+        "x": 0,
+        "y": 0
+      }
+    ],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge New AutomationHomeInspirationCloneGalleryAutomati"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": "Automation starterChoose a playbookStart with a proven Hook,"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 279,
+          "h": 87.5,
+          "right": 734,
+          "w": 552,
+          "x": 182,
+          "y": 191.5
+        },
+        "tag": "div",
+        "text": "SortRecommendedNameSlides6 playbooksAll categories"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "jsx-9df8a1ce144e1552 relative aspect-[9/16] shrink-0 overflow-hidden rounded-[13px] border-[6px] bor",
+        "cw": 308,
+        "r": {
+          "bottom": 843.9,
+          "h": 568.9,
+          "right": 878,
+          "w": 320,
+          "x": 558,
+          "y": 275.1
+        },
+        "sw": 336,
+        "tag": "div"
+      }
+    ],
+    "shell": {
+      "bottom": 1025,
+      "h": 1025,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": null,
+    "url": "/automations/new",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "New Automation"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "performance",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Open AutomationsHomeInspirationCloneGalleryAutoma"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Performance",
+    "url": "/performance",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Open Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "spend",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Create AssetHomeInspirationCloneGalleryAutomation"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 2123,
+      "h": 2123,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Spend",
+    "url": "/costs",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Create Asset"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "generate",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge View GalleryHomeInspirationCloneGalleryAutomation"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 2137,
+          "h": 69,
+          "right": 991,
+          "w": 886,
+          "x": 105,
+          "y": 2068
+        },
+        "tag": "div",
+        "text": "Select a model and describe your assetCost Estimate · —Gener"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 154,
+          "h": 1,
+          "right": 104,
+          "w": 1,
+          "x": 103,
+          "y": 153
+        },
+        "sw": 365,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 2167,
+      "h": 2167,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Generate",
+    "url": "/generate",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "View Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "collections",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge Upload ImagesHomeInspirationCloneGalleryAutomatio"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Collections",
+    "url": "/collections",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "Upload Images"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "characters",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge New CharacterHomeInspirationCloneGalleryAutomatio"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Characters",
+    "url": "/characters",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "New Character"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "character-new",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1083.3,
+          "w": 150,
+          "x": 933.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "HairBlack · Buzz Cut"
+      },
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1237.3,
+          "w": 150,
+          "x": 1087.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "Eyes & BrowsAlmond · Brown"
+      },
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1391.3,
+          "w": 150,
+          "x": 1241.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "Nose & EarsStraight · Low"
+      },
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1545.3,
+          "w": 150,
+          "x": 1395.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "BodyAthletic · Very Short"
+      },
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1699.3,
+          "w": 150,
+          "x": 1549.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "Style & AccessoriesCasual Minimal · None"
+      },
+      {
+        "r": {
+          "bottom": 193.5,
+          "h": 46.5,
+          "right": 1853.3,
+          "w": 150,
+          "x": 1703.3,
+          "y": 147
+        },
+        "tag": "button",
+        "text": "Marks & FeaturesNone · None"
+      }
+    ],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge New CharacterHomeInspirationCloneGalleryAutomatio"
+      },
+      {
+        "position": "sticky",
+        "r": {
+          "bottom": 1015.5,
+          "h": 92.5,
+          "right": 1024,
+          "w": 952,
+          "x": 72,
+          "y": 923
+        },
+        "tag": "div",
+        "text": "Character name Save character"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      },
+      {
+        "label": "Character attributes",
+        "position": "static",
+        "r": {
+          "bottom": 201.5,
+          "h": 62.5,
+          "right": 1024,
+          "w": 952,
+          "x": 72,
+          "y": 139
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      },
+      {
+        "cls": "flex gap-1 overflow-x-auto p-2 min-[1280px]:block min-[1280px]:h-[calc(100vh-278px)] min-[1280px]:ov",
+        "cw": 952,
+        "r": {
+          "bottom": 201.5,
+          "h": 62.5,
+          "right": 1024,
+          "w": 952,
+          "x": 72,
+          "y": 139
+        },
+        "sw": 1789,
+        "tag": "nav"
+      },
+      {
+        "cls": "pointer-events-none absolute inset-0 overflow-hidden",
+        "cw": 952,
+        "r": {
+          "bottom": 922,
+          "h": 658.5,
+          "right": 1024,
+          "w": 952,
+          "x": 72,
+          "y": 263.5
+        },
+        "sw": 1032,
+        "tag": "div"
+      }
+    ],
+    "shell": {
+      "bottom": 1582.5,
+      "h": 1582.5,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "New character",
+    "url": "/characters/new",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "New Character"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  },
+  {
+    "slug": "settings",
+    "aside": {
+      "bottom": 1024,
+      "h": 1024,
+      "right": 72,
+      "w": 72,
+      "x": 0,
+      "y": 0
+    },
+    "bodyBg": "rgb(243, 244, 239)",
+    "bodyColor": "rgb(35, 35, 35)",
+    "clipped": [],
+    "dialogs": [],
+    "doc": {
+      "bodyClientWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "clientWidth": 1024,
+      "scrollWidth": 1024
+    },
+    "fixed": [
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 72,
+          "w": 72,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "aside",
+        "text": "PPostForge View IntegrationsHomeInspirationCloneGalleryAutom"
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1004,
+          "h": 35,
+          "right": 1004,
+          "w": 299.5,
+          "x": 704.5,
+          "y": 969
+        },
+        "tag": "div",
+        "text": "Social account connected. Account status refreshed."
+      },
+      {
+        "position": "fixed",
+        "r": {
+          "bottom": 1024,
+          "h": 1024,
+          "right": 1024,
+          "w": 1024,
+          "x": 0,
+          "y": 0
+        },
+        "tag": "div",
+        "text": ""
+      }
+    ],
+    "navs": [
+      {
+        "label": "Workspace navigation",
+        "position": "static",
+        "r": {
+          "bottom": 524,
+          "h": 398,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        }
+      }
+    ],
+    "scrollers": [
+      {
+        "cls": "sr-only",
+        "cw": 1,
+        "r": {
+          "bottom": 986.5,
+          "h": 1,
+          "right": 36,
+          "w": 1,
+          "x": 35,
+          "y": 985.5
+        },
+        "sw": 91,
+        "tag": "span"
+      }
+    ],
+    "shell": {
+      "bottom": 1542.8,
+      "h": 1542.8,
+      "right": 1024,
+      "w": 952,
+      "x": 72,
+      "y": 0
+    },
+    "title": "Settings",
+    "url": "/settings?tab=integrations",
+    "wrapped": [
+      {
+        "lines": 2.3,
+        "r": {
+          "bottom": 110,
+          "h": 42,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 68
+        },
+        "tag": "a",
+        "text": "View Integrations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 164,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 126
+        },
+        "tag": "a",
+        "text": "Home"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 204,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 166
+        },
+        "tag": "a",
+        "text": "Inspiration"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 244,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 206
+        },
+        "tag": "a",
+        "text": "Clone"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 284,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 246
+        },
+        "tag": "a",
+        "text": "Gallery"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 324,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 286
+        },
+        "tag": "a",
+        "text": "Automations"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 364,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 326
+        },
+        "tag": "a",
+        "text": "Performance"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 404,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 366
+        },
+        "tag": "a",
+        "text": "Spend"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 444,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 406
+        },
+        "tag": "a",
+        "text": "Generate"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 484,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 446
+        },
+        "tag": "a",
+        "text": "Collections"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 524,
+          "h": 38,
+          "right": 61,
+          "w": 53,
+          "x": 8,
+          "y": 486
+        },
+        "tag": "a",
+        "text": "Characters"
+      },
+      {
+        "lines": 1.9,
+        "r": {
+          "bottom": 947,
+          "h": 38,
+          "right": 63,
+          "w": 55,
+          "x": 8,
+          "y": 909
+        },
+        "tag": "a",
+        "text": "Settings"
+      }
+    ],
+    "overflowInteractive": []
+  }
+]

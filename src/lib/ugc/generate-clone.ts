@@ -17,6 +17,7 @@ import {
   setCloneQueueStage,
 } from "@/lib/ugc/clone-queue-store";
 import type { TikTokSource } from "@/generated/prisma/client";
+import { findCollectionAsset } from "@/lib/collection-assets-server";
 
 // Default prompts for motion control.
 // When a reference image is provided, it already contains the avatar in the scene,
@@ -41,6 +42,7 @@ export interface CloneGenerationRequest {
   keepOriginalSound?: boolean;
   modelId?: string;
   referenceImageFileId?: string;
+  collectionAssetId?: string;
   savedReferenceId?: string;
   durationSec?: number;
   removeTextOverlays?: boolean;
@@ -266,6 +268,7 @@ function parseCloneJobInput(
     keepOriginalSound: asBoolean(input.keepOriginalSound),
     modelId: asString(input.modelId) ?? fallbackModelId,
     referenceImageFileId: asString(input.referenceImageFileId),
+    collectionAssetId: asString(input.collectionAssetId),
     savedReferenceId: asString(input.savedReferenceId),
     durationSec: asNumber(input.durationSec),
     removeTextOverlays: input.removeTextOverlays === true,
@@ -289,6 +292,11 @@ export async function enqueueCloneJob(
   const model = getModel(modelId);
   if (!model) {
     throw new Error("Motion control model not found in registry");
+  }
+  if (request.collectionAssetId && !modelId.startsWith("kling-3.0")) {
+    throw new InvalidCloneRequestError(
+      "Collection references require a Kling 3 model so the selected avatar identity stays bound"
+    );
   }
 
   // Look up avatar
@@ -332,6 +340,13 @@ export async function enqueueCloneJob(
         "Saved reference image does not belong to the selected avatar"
       );
     }
+  } else if (request.collectionAssetId) {
+    const collectionAsset = await findCollectionAsset(request.collectionAssetId);
+    if (!collectionAsset) {
+      throw new InvalidCloneRequestError(
+        `Collection image not found: ${request.collectionAssetId}`
+      );
+    }
   } else if (request.referenceImageFileId) {
     const refFile = await prisma.generatedFile.findUnique({
       where: { id: request.referenceImageFileId },
@@ -344,7 +359,10 @@ export async function enqueueCloneJob(
     }
   }
 
-  const hasRefImage = !!request.referenceImageFileId || !!request.savedReferenceId;
+  const hasRefImage =
+    !!request.referenceImageFileId ||
+    !!request.collectionAssetId ||
+    !!request.savedReferenceId;
   const isV3 = modelId.startsWith("kling-3.0");
   const rawDuration = request.durationSec ?? model.defaults.duration ?? 5;
   const minDuration = model.limits.minDuration ?? 1;
@@ -473,7 +491,10 @@ export async function processCloneJob(jobId: string): Promise<void> {
     const videoFullPath = await normalizeVideoForMotionControl(rawVideoFullPath);
     console.log(`[ugc-clone] Normalized video → ${videoFullPath}`);
 
-    const hasRefImage = !!request.referenceImageFileId || !!request.savedReferenceId;
+    const hasRefImage =
+      !!request.referenceImageFileId ||
+      !!request.collectionAssetId ||
+      !!request.savedReferenceId;
     let sceneImageUrl: string;
     let videoUrl: string;
     let identityPackId: string | null = null;
@@ -509,6 +530,14 @@ export async function processCloneJob(jobId: string): Promise<void> {
         }
 
         refLocalPath = savedReference.localPath;
+      } else if (request.collectionAssetId) {
+        const collectionAsset = await findCollectionAsset(request.collectionAssetId);
+        if (!collectionAsset) {
+          throw new InvalidCloneRequestError(
+            `Collection image not found: ${request.collectionAssetId}`
+          );
+        }
+        refLocalPath = collectionAsset.localPath;
       } else {
         // Reference image already has the avatar composited into the scene.
         // We only need the reference image + the TikTok video — no separate avatar upload.

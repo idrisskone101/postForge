@@ -2,20 +2,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UGCCloneLoading() {
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-10">
-      <div className="mb-8">
-        <Skeleton className="h-9 w-40" />
-        <Skeleton className="mt-2 h-5 w-72" />
+    <div className="pf-content-viewport overflow-x-hidden bg-background">
+      <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+      <div className="mb-5">
+        <Skeleton className="h-3 w-36" />
+        <Skeleton className="mt-3 h-8 w-56" />
+        <Skeleton className="mt-2 h-4 w-80 max-w-full" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-7 space-y-8">
-          <Skeleton className="h-48 rounded-[32px]" />
-          <Skeleton className="h-64 rounded-[32px]" />
-        </div>
-        <div className="lg:col-span-5 space-y-8">
-          <Skeleton className="h-80 rounded-[32px]" />
-          <Skeleton className="h-32 rounded-[32px]" />
-        </div>
+      <Skeleton className="mb-4 h-14 rounded-xl" />
+      <div className="grid min-h-[680px] gap-4 lg:grid-cols-[minmax(360px,36fr)_minmax(0,64fr)]">
+        <Skeleton className="rounded-xl" />
+        <Skeleton className="rounded-xl" />
+      </div>
       </div>
     </div>
   );

@@ -2,102 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { getJob } from "@/lib/jobs/queue";
 import { generateImage } from "@/lib/ai/generate-image";
 import { generateVideo } from "@/lib/ai/generate-video";
+import { getModel } from "@/lib/ai/models";
 import type { ImageGenerationRequest, VideoGenerationRequest } from "@/lib/ai/types";
 import {
   generateClone,
   InvalidCloneRequestError,
-  type CloneGenerationRequest,
-  type SourceVideoSnapshot,
 } from "@/lib/ugc/generate-clone";
 import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : null;
-}
-
-function asString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim().length > 0
-    ? value
-    : undefined;
-}
-
-function asNumber(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value)
-    ? value
-    : undefined;
-}
-
-function asBoolean(value: unknown): boolean | undefined {
-  return typeof value === "boolean" ? value : undefined;
-}
-
-function parseSourceVideoSnapshot(value: unknown): SourceVideoSnapshot | undefined {
-  const input = asRecord(value);
-  if (!input) return undefined;
-
-  const sourceId = asString(input.sourceId);
-  const label = asString(input.label);
-  const originalUrl = asString(input.originalUrl);
-  const localPath = asString(input.localPath);
-  const filename = asString(input.filename);
-  const durationSec = asNumber(input.durationSec);
-  const width = asNumber(input.width);
-  const height = asNumber(input.height);
-
-  if (
-    !sourceId ||
-    !label ||
-    !originalUrl ||
-    !localPath ||
-    !filename ||
-    durationSec === undefined ||
-    width === undefined ||
-    height === undefined
-  ) {
-    return undefined;
-  }
-
-  return {
-    sourceId,
-    label,
-    originalUrl,
-    localPath,
-    filename,
-    durationSec,
-    width,
-    height,
-  };
-}
-
-function buildCloneRetryRequest(
-  input: Record<string, unknown>,
-  fallbackModel: string
-): CloneGenerationRequest | null {
-  const sourceVideoSnapshot = parseSourceVideoSnapshot(input.sourceVideo);
-  const tiktokSourceId = asString(input.tiktokSourceId) ?? sourceVideoSnapshot?.sourceId;
-  const tiktokVideoPath = sourceVideoSnapshot?.localPath ?? asString(input.tiktokVideoPath);
-  const avatarId = asString(input.avatarId);
-
-  if (!tiktokSourceId || !tiktokVideoPath || !avatarId) {
-    return null;
-  }
-
-  return {
-    tiktokSourceId,
-    tiktokVideoPath,
-    avatarId,
-    prompt: asString(input.prompt),
-    keepOriginalSound: asBoolean(input.keepOriginalSound),
-    modelId: asString(input.modelId) ?? fallbackModel,
-    referenceImageFileId: asString(input.referenceImageFileId),
-    savedReferenceId: asString(input.savedReferenceId),
-    durationSec: asNumber(input.durationSec),
-    removeTextOverlays: input.removeTextOverlays === true,
-    sourceVideoSnapshot,
-  };
-}
+import {
+  CollectionAssetRequestError,
+  resolveCollectionAssetLocalPath,
+} from "@/lib/collection-assets-server";
+import {
+  asRetryBoolean,
+  asRetryNumber,
+  asRetryString,
+  buildCloneRetryRequest,
+  parseRetryMultiShot,
+} from "@/lib/jobs/retry-inputs";
+import {
+  resolveImageRetryReferences,
+  resolveVideoRetryReference,
+} from "@/lib/jobs/retry-reference-resolution";
 
 export async function POST(
   request: NextRequest,
@@ -132,9 +58,18 @@ export async function POST(
 
       if (!cloneRequest) {
         return NextResponse.json(
-          { error: "This UGC clone job is missing the saved source, avatar, or video inputs needed to retry it." },
+          {
+            error:
+              "This UGC clone job is missing saved inputs or contains conflicting reference sources, so it cannot be retried.",
+          },
           { status: 400 }
         );
+      }
+
+      if (cloneRequest.collectionAssetId) {
+        // Resolve the server-owned collection record again for every retry.
+        // Provider URLs are transient execution details, never persisted inputs.
+        await resolveCollectionAssetLocalPath(cloneRequest.collectionAssetId);
       }
 
       const { jobId, estimatedCost, modelId } = await generateClone(cloneRequest);
@@ -164,31 +99,75 @@ export async function POST(
     let newJobId: string;
 
     if (originalJob.type === "image") {
+      const model = getModel(originalJob.model);
+      if (!model || model.type !== "image") {
+        return NextResponse.json(
+          { error: `Model ${originalJob.model} is not available for image retry` },
+          { status: 400 }
+        );
+      }
+      const retryReferences = await resolveImageRetryReferences(input, {
+        maximumReferences: model.capabilities.maxReferenceImages ?? 0,
+        supportsReferences: model.capabilities.referenceImages === true,
+      });
       const imageRequest: ImageGenerationRequest = {
         prompt: originalJob.prompt,
         model: originalJob.model,
-        aspectRatio: asString(input.aspectRatio),
-        numImages: asNumber(input.numImages),
-        negativePrompt: asString(input.negativePrompt),
-        imageUrls: (input.referenceImageUrls ?? input.imageUrls) as string[] | undefined,
-        editEndpoint: asBoolean(input.editEndpoint),
-        enableWebSearch: asBoolean(input.enableWebSearch),
+        aspectRatio: asRetryString(input.aspectRatio),
+        numImages: asRetryNumber(input.numImages),
+        negativePrompt: asRetryString(input.negativePrompt),
+        imageUrls: retryReferences.executionUrls,
+        editEndpoint:
+          retryReferences.hasServerOwnedReferences ||
+          asRetryBoolean(input.editEndpoint),
+        enableWebSearch: asRetryBoolean(input.enableWebSearch),
         thinkingLevel:
           input.thinkingLevel === "high" || input.thinkingLevel === "minimal"
             ? input.thinkingLevel
             : undefined,
       };
-      newJobId = await generateImage(imageRequest);
+      newJobId = await generateImage(imageRequest, undefined, {
+        jobInput: {
+          ...input,
+          referenceFileIds: retryReferences.referenceFileIds,
+          collectionAssetIds: retryReferences.collectionAssetIds,
+          referenceImageUrls: retryReferences.hasServerOwnedReferences
+            ? undefined
+            : retryReferences.persistedRemoteUrls,
+          imageUrls: undefined,
+        },
+      });
     } else if (originalJob.type === "video") {
+      const model = getModel(originalJob.model);
+      if (!model || model.type !== "video") {
+        return NextResponse.json(
+          { error: `Model ${originalJob.model} is not available for video retry` },
+          { status: 400 }
+        );
+      }
+      const retryReference = await resolveVideoRetryReference(input, {
+        supportsCollectionReference: model.capabilities.imageToVideo === true,
+      });
       const videoRequest: VideoGenerationRequest = {
         prompt: originalJob.prompt,
         model: originalJob.model,
-        duration: asNumber(input.duration),
-        aspectRatio: asString(input.aspectRatio),
-        inputImageUrl: asString(input.inputImageUrl),
-        enableAudio: asBoolean(input.enableAudio),
+        duration: asRetryNumber(input.duration),
+        aspectRatio: asRetryString(input.aspectRatio),
+        inputImageUrl:
+          retryReference.executionUrl ?? asRetryString(input.inputImageUrl),
+        enableAudio: asRetryBoolean(input.enableAudio),
+        multiShot: parseRetryMultiShot(input.multiShot),
       };
-      newJobId = await generateVideo(videoRequest);
+      newJobId = await generateVideo(videoRequest, {
+        jobInput: {
+          ...input,
+          collectionAssetIds: retryReference.collectionAssetIds,
+          inputImageUrl:
+            retryReference.collectionAssetIds.length > 0
+              ? undefined
+              : asRetryString(input.inputImageUrl),
+        },
+      });
     } else {
       return NextResponse.json(
         { error: `Unsupported job type: ${originalJob.type}` },
@@ -209,7 +188,10 @@ export async function POST(
       { status: 202 }
     );
   } catch (error) {
-    if (error instanceof InvalidCloneRequestError) {
+    if (
+      error instanceof InvalidCloneRequestError ||
+      error instanceof CollectionAssetRequestError
+    ) {
       return NextResponse.json(
         { error: error.message },
         { status: 400 }

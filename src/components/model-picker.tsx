@@ -1,15 +1,22 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Check,
+  Circle,
+  Film,
+  Globe,
+  ImageIcon,
+  Layers,
+  Palette,
+  Sparkles,
+  Video,
+  Volume2,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { ModelDefinition } from "@/lib/ai/types";
-import { ImageIcon, Video, Globe, Volume2, Layers, Zap, Palette, Film, Sparkles, Check, Circle } from "lucide-react";
 
 interface ModelPickerProps {
   selectedModel: string | null;
@@ -17,26 +24,47 @@ interface ModelPickerProps {
   models: ModelDefinition[];
 }
 
-const MODEL_ICON_MAP: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string }> = {
-  "nano-banana-2": { icon: Zap, color: "bg-accent-blue" },
-  "nano-banana-pro": { icon: Palette, color: "bg-accent-green" },
-  "nano-banana": { icon: Sparkles, color: "bg-accent-coral" },
-  "kling-3.0": { icon: Film, color: "bg-accent-blue" },
-  "kling-3.0-pro": { icon: Film, color: "bg-accent-green" },
-  "kling-3.0-i2v": { icon: Layers, color: "bg-accent-coral" },
-  "veo3": { icon: Video, color: "bg-accent-blue" },
-  "veo3-fast": { icon: Zap, color: "bg-accent-coral" },
+const MODEL_ICON_MAP: Record<
+  string,
+  {
+    icon: ComponentType<{ className?: string; strokeWidth?: number }>;
+    accent: string;
+  }
+> = {
+  "nano-banana-2": { icon: Zap, accent: "from-[#FFB49F] to-[#FF4A20]" },
+  "nano-banana-pro": { icon: Palette, accent: "from-[#B9EEE4] to-[#22A887]" },
+  "nano-banana": { icon: Sparkles, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
+  "kling-3.0": { icon: Film, accent: "from-[#B7DDFF] to-[#378EFF]" },
+  "kling-3.0-pro": { icon: Film, accent: "from-[#B9EEE4] to-[#22A887]" },
+  "kling-3.0-i2v": { icon: Layers, accent: "from-[#FFB49F] to-[#FF4A20]" },
+  veo3: { icon: Video, accent: "from-[#B7DDFF] to-[#378EFF]" },
+  "veo3-fast": { icon: Zap, accent: "from-[#FFB49F] to-[#FF4A20]" },
 };
 
-function capabilityIcons(model: ModelDefinition) {
-  const icons: Array<{ icon: React.ReactNode; label: string }> = [];
-  const caps = model.capabilities;
-  if (caps.textToImage) icons.push({ icon: <ImageIcon className="size-3" />, label: "Text to Image" });
-  if (caps.textToVideo) icons.push({ icon: <Video className="size-3" />, label: "Text to Video" });
-  if (caps.imageToVideo) icons.push({ icon: <Layers className="size-3" />, label: "Image to Video" });
-  if (caps.nativeAudio) icons.push({ icon: <Volume2 className="size-3" />, label: "Native Audio" });
-  if (caps.webSearch) icons.push({ icon: <Globe className="size-3" />, label: "Web Search" });
-  return icons;
+function capabilityItems(model: ModelDefinition): Array<{
+  icon: ReactNode;
+  label: string;
+}> {
+  const items: Array<{ icon: ReactNode; label: string }> = [];
+  const capabilities = model.capabilities;
+
+  if (capabilities.textToImage) {
+    items.push({ icon: <ImageIcon className="size-3" />, label: "Text to image" });
+  }
+  if (capabilities.textToVideo) {
+    items.push({ icon: <Video className="size-3" />, label: "Text to video" });
+  }
+  if (capabilities.imageToVideo) {
+    items.push({ icon: <Layers className="size-3" />, label: "Image to video" });
+  }
+  if (capabilities.nativeAudio) {
+    items.push({ icon: <Volume2 className="size-3" />, label: "Native audio" });
+  }
+  if (capabilities.webSearch) {
+    items.push({ icon: <Globe className="size-3" />, label: "Web grounding" });
+  }
+
+  return items;
 }
 
 function ModelCard({
@@ -50,54 +78,67 @@ function ModelCard({
 }) {
   const priceLabel =
     model.pricing.unit === "per_image"
-      ? `${formatCost(model.pricing.amount)}/img`
-      : `${formatCost(model.pricing.amount)}/s`;
-
-  const icons = capabilityIcons(model);
-  const iconConfig = MODEL_ICON_MAP[model.id] ?? { icon: Sparkles, color: "bg-accent-blue" };
-  const IconComponent = iconConfig.icon;
+      ? `${formatCost(model.pricing.amount)}/image`
+      : `${formatCost(model.pricing.amount)}/second`;
+  const capabilityList = capabilityItems(model);
+  const iconConfig = MODEL_ICON_MAP[model.id] ?? {
+    icon: Sparkles,
+    accent: "from-[#B7DDFF] to-[#378EFF]",
+  };
+  const Icon = iconConfig.icon;
 
   return (
-    <div
-      className={cn(
-        "relative p-3 rounded-md border cursor-pointer transition-all duration-150 flex items-center justify-between",
-        selected
-          ? "border-accent-blue/50 bg-accent-blue/5"
-          : "border-border hover:border-foreground/20 bg-muted/30"
-      )}
+    <button
+      type="button"
+      aria-pressed={selected}
       onClick={onClick}
+      className={cn(
+        "group relative min-w-0 rounded-[9px] border bg-white p-2.5 text-left transition-[border-color,box-shadow,background-color] duration-150",
+        selected
+          ? "border-[#FF4A20] shadow-[0_0_0_2px_rgba(255,74,32,0.09)]"
+          : "border-[#DEDFD8] hover:border-[#BFC0B9] hover:bg-[#FCFCFA]"
+      )}
     >
-      <div className="flex items-center gap-3">
-        <div className={cn("w-7 h-7 rounded-md text-white flex items-center justify-center shrink-0", iconConfig.color)}>
-          <IconComponent className="size-3.5" />
-        </div>
-        <div className="flex items-center gap-3">
-          <p className="font-bold text-sm">{model.name}</p>
-          <span className="text-[10px] text-muted-foreground font-bold font-mono uppercase">
+      <span className="flex items-center gap-2.5">
+        <span
+          className={cn(
+            "grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br text-white",
+            iconConfig.accent
+          )}
+        >
+          <Icon className="size-4" strokeWidth={1.9} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-start justify-between gap-2">
+            <strong className="block truncate text-[11px] font-semibold text-[#30312E]">
+              {model.name}
+            </strong>
+            {selected ? (
+              <Check className="mt-0.5 size-3.5 shrink-0 text-[#FF4A20]" />
+            ) : (
+              <Circle className="mt-0.5 size-3.5 shrink-0 text-[#C5C6BF]" />
+            )}
+          </span>
+          <span className="mt-1 block truncate text-[9px] text-[#91928E]">
             {priceLabel}
           </span>
-          {icons.length > 0 && (
-            <div className="flex items-center gap-1 ml-1">
-              {icons.map((item, i) => (
-                <Tooltip key={i}>
-                  <TooltipTrigger className="text-muted-foreground">
-                    {item.icon}
-                  </TooltipTrigger>
-                  <TooltipContent>{item.label}</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="shrink-0 ml-3">
-        {selected ? (
-          <Check className="size-4 text-accent-blue" />
-        ) : (
-          <Circle className="size-4 text-muted-foreground/30" />
-        )}
-      </div>
-    </div>
+        </span>
+      </span>
+      {capabilityList.length > 0 && (
+        <span className="mt-2 flex flex-wrap gap-1" aria-label="Model capabilities">
+          {capabilityList.map((item) => (
+            <span
+              key={item.label}
+              title={item.label}
+              className="inline-flex items-center gap-1 rounded-md bg-[#F1F2EC] px-1.5 py-1 text-[8px] font-medium text-[#72736F]"
+            >
+              {item.icon}
+              {item.label}
+            </span>
+          ))}
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -106,47 +147,69 @@ export function ModelPicker({
   onModelSelect,
   models,
 }: ModelPickerProps) {
-  const imageModels = models.filter((m) => m.type === "image");
-  const videoModels = models.filter((m) => m.type === "video");
+  const selected = models.find((model) => model.id === selectedModel);
+  const [requestedType, setRequestedType] = useState<"image" | "video">(
+    selected?.type ?? "image"
+  );
+  const activeType = selected?.type ?? requestedType;
+
+  const visibleModels = models.filter((model) => model.type === activeType);
+
+  const selectType = (type: "image" | "video") => {
+    setRequestedType(type);
+    if (selected?.type !== type) {
+      const firstModel = models.find((model) => model.type === type);
+      if (firstModel) onModelSelect(firstModel.id);
+    }
+  };
 
   return (
-    <Tabs defaultValue="image">
-      <TabsList>
-        <TabsTrigger value="image" className="gap-1.5">
-          <ImageIcon className="size-3.5" />
-          Image
-        </TabsTrigger>
-        <TabsTrigger value="video" className="gap-1.5">
-          <Video className="size-3.5" />
-          Video
-        </TabsTrigger>
-      </TabsList>
+    <div>
+      <div
+        role="tablist"
+        aria-label="Generation type"
+        className="grid grid-cols-2 rounded-[11px] bg-[#E8E9E2] p-1"
+      >
+        {(["image", "video"] as const).map((type) => {
+          const active = activeType === type;
+          const Icon = type === "image" ? ImageIcon : Video;
+          return (
+            <button
+              key={type}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => selectType(type)}
+              className={cn(
+                "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
+                active
+                  ? "bg-white text-[#232323] shadow-[0_1px_4px_rgba(36,37,32,0.07)]"
+                  : "text-[#777873] hover:text-[#3F403C]"
+              )}
+            >
+              <Icon className="size-3.5" />
+              {type}
+            </button>
+          );
+        })}
+      </div>
 
-      <TabsContent value="image">
-        <div className="grid grid-cols-1 gap-2 mt-4">
-          {imageModels.map((model) => (
-            <ModelCard
-              key={model.id}
-              model={model}
-              selected={selectedModel === model.id}
-              onClick={() => onModelSelect(model.id)}
-            />
-          ))}
-        </div>
-      </TabsContent>
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+        {visibleModels.map((model) => (
+          <ModelCard
+            key={model.id}
+            model={model}
+            selected={selectedModel === model.id}
+            onClick={() => onModelSelect(model.id)}
+          />
+        ))}
+      </div>
 
-      <TabsContent value="video">
-        <div className="grid grid-cols-1 gap-2 mt-4">
-          {videoModels.map((model) => (
-            <ModelCard
-              key={model.id}
-              model={model}
-              selected={selectedModel === model.id}
-              onClick={() => onModelSelect(model.id)}
-            />
-          ))}
+      {visibleModels.length === 0 && (
+        <div className="mt-3 rounded-[9px] border border-dashed border-[#DADBD2] px-4 py-8 text-center text-[11px] text-[#868686]">
+          No {activeType} models are configured.
         </div>
-      </TabsContent>
-    </Tabs>
+      )}
+    </div>
   );
 }

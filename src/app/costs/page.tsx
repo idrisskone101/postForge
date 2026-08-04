@@ -13,38 +13,37 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
   const periodDays = periodParam === "7d" ? 7 : periodParam === "90d" ? 90 : 30;
   const periodLabel = periodParam === "7d" ? "7d" : periodParam === "90d" ? "90d" : "30d";
 
-  const summary = await getCostSummary({ period: "all" });
+  const allTimeSummaryPromise = getCostSummary({ period: "all" });
 
-  // Date range
+  // The selected range includes today and exactly periodDays - 1 prior days.
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - periodDays);
+  startDate.setDate(startDate.getDate() - (periodDays - 1));
   startDate.setHours(0, 0, 0, 0);
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + 1);
+  endDate.setHours(0, 0, 0, 0);
 
   // Previous period for comparison
   const prevStartDate = new Date(startDate);
   prevStartDate.setDate(prevStartDate.getDate() - periodDays);
 
-  const [costLogs, prevCostLogs, recentLogs] = await Promise.all([
+  const [allTimeSummary, costLogs, prevCostLogs] = await Promise.all([
+    allTimeSummaryPromise,
     prisma.costLog.findMany({
-      where: { createdAt: { gte: startDate } },
+      where: { createdAt: { gte: startDate, lt: endDate } },
       orderBy: { createdAt: "asc" },
-      select: { createdAt: true, type: true, amount: true, model: true },
+      select: {
+        id: true,
+        jobId: true,
+        createdAt: true,
+        type: true,
+        amount: true,
+        model: true,
+      },
     }),
     prisma.costLog.findMany({
       where: { createdAt: { gte: prevStartDate, lt: startDate } },
       select: { amount: true },
-    }),
-    prisma.costLog.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 50,
-      select: {
-        id: true,
-        jobId: true,
-        model: true,
-        type: true,
-        amount: true,
-        createdAt: true,
-      },
     }),
   ]);
 
@@ -53,17 +52,20 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
   const prevTotal = prevCostLogs.reduce((sum, log) => sum + log.amount, 0);
   const changePercent = prevTotal > 0 ? ((currentTotal - prevTotal) / prevTotal) * 100 : 0;
 
-  // Aggregate by date and type
+  const dayKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  // Aggregate every selected-period metric from the same bounded log set.
   const dailyMap = new Map<string, { image: number; video: number }>();
   for (let i = 0; i < periodDays; i++) {
     const d = new Date(startDate);
     d.setDate(d.getDate() + i);
-    const key = d.toISOString().slice(0, 10);
+    const key = dayKey(d);
     dailyMap.set(key, { image: 0, video: 0 });
   }
 
   for (const log of costLogs) {
-    const key = log.createdAt.toISOString().slice(0, 10);
+    const key = dayKey(log.createdAt);
     const entry = dailyMap.get(key);
     if (entry) {
       if (log.type === "image") entry.image += log.amount;
@@ -72,7 +74,7 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
   }
 
   const chartData = Array.from(dailyMap.entries()).map(([date, costs]) => ({
-    date: new Date(date).toLocaleDateString("en-US", {
+    date: new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     }),
@@ -80,21 +82,36 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
     video: Math.round(costs.video * 100) / 100,
   }));
 
-  // Compute top model
-  const modelEntries = Object.entries(summary.byModel);
+  const breakdown = {
+    image: { count: 0, cost: 0 },
+    video: { count: 0, cost: 0 },
+  };
+  const byModel: Record<string, { count: number; cost: number }> = {};
+  for (const log of costLogs) {
+    const bucket = log.type === "image" ? breakdown.image : breakdown.video;
+    bucket.count += 1;
+    bucket.cost += log.amount;
+    const model = byModel[log.model] ?? { count: 0, cost: 0 };
+    model.count += 1;
+    model.cost += log.amount;
+    byModel[log.model] = model;
+  }
+
+  // Compute top model for the selected period.
+  const modelEntries = Object.entries(byModel);
   const topModel =
     modelEntries.length > 0
       ? modelEntries.sort((a, b) => b[1].cost - a[1].cost)[0]
       : null;
 
-  const totalJobs = summary.breakdown.image.count + summary.breakdown.video.count;
-  const avgCycleCost = totalJobs > 0 ? summary.totalCost / totalJobs : 0;
-  const topModelPct = topModel && summary.totalCost > 0
-    ? (topModel[1].cost / summary.totalCost * 100).toFixed(0)
+  const totalJobs = breakdown.image.count + breakdown.video.count;
+  const avgCycleCost = totalJobs > 0 ? currentTotal / totalJobs : 0;
+  const topModelPct = topModel && currentTotal > 0
+    ? (topModel[1].cost / currentTotal * 100).toFixed(0)
     : "0";
 
   // Format logs
-  const formattedLogs = recentLogs.map((log) => ({
+  const formattedLogs = [...costLogs].reverse().map((log) => ({
     id: log.id,
     jobId: log.jobId,
     model: log.model,
@@ -105,15 +122,15 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
 
   return (
     <CostsPageClient
-      totalCost={summary.totalCost}
+      totalCost={allTimeSummary.totalCost}
       currentPeriodCost={currentTotal}
       changePercent={changePercent}
       avgCycleCost={avgCycleCost}
       totalJobs={totalJobs}
       topModel={topModel ? { name: topModel[0], cost: topModel[1].cost, pct: topModelPct } : null}
       chartData={chartData}
-      byModel={summary.byModel}
-      breakdown={summary.breakdown}
+      byModel={byModel}
+      breakdown={breakdown}
       logs={formattedLogs}
       period={periodLabel}
     />

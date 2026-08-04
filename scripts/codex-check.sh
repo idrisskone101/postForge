@@ -9,6 +9,20 @@ cd "$REPO_ROOT"
 corepack enable 2>/dev/null || true
 
 pnpm test:workspace-shell
+pnpm test:responsive-layout
+pnpm test:character-attributes
+pnpm test:character-builder-workbench
+pnpm test:automations
+pnpm test:automation-builder-parity
+pnpm test:retry-collection-references
+pnpm test:workspace-features
+pnpm test:clone-handoff
+pnpm test:generation-editor-redesign
+pnpm test:performance-csv
+pnpm test:social-integrations-ui
+pnpm test:settings-developer-navigation
+pnpm test:workspace-header
+pnpm test:integrations
 pnpm test:workspace-state
 pnpm test:media-preview-frame
 pnpm test:generate-tool

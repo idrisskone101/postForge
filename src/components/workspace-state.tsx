@@ -81,7 +81,7 @@ export function WorkspaceState({
     <div
       data-workspace-state={tone}
       className={cn(
-        "flex min-h-[240px] flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
+        "flex min-h-[240px] min-w-0 flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
         tone === "empty" && "border-dashed border-border bg-white/[0.01]",
         tone === "error" && "border-destructive/30 bg-destructive/10",
         tone === "neutral" && "border-border",
@@ -100,13 +100,13 @@ export function WorkspaceState({
       </div>
       <h2
         className={cn(
-          "text-lg font-semibold tracking-tight",
+          "max-w-full break-words text-lg font-semibold tracking-tight [overflow-wrap:anywhere]",
           tone === "error" && "text-destructive"
         )}
       >
         {title}
       </h2>
-      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+      <p className="mt-2 min-w-0 max-w-md break-words text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">
         {description}
       </p>
       {(action || secondaryAction) && (

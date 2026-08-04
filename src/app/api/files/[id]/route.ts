@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
+import { findCollectionAsset } from "@/lib/collection-assets-server";
+import {
+  assertAssetsAreNotPublicationLeased,
+  UnresolvedPublicationConflictError,
+  withLockedAutomationRecords,
+} from "@/lib/publication-lifecycle";
+import {
+  isSameOriginMutation,
+  rejectCrossOriginMutation,
+} from "@/lib/integrations/routes";
 
 export async function GET(
   request: NextRequest,
@@ -13,16 +23,17 @@ export async function GET(
       where: { id },
     });
 
-    if (!file) {
-      return NextResponse.json(
-        { error: "File not found" },
-        { status: 404 }
-      );
+    const collectionAsset = file ? null : await findCollectionAsset(id);
+    if (!file && !collectionAsset) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
+
+    const localPath = file?.localPath ?? collectionAsset!.localPath;
+    const mimeType = file?.mimeType ?? collectionAsset!.mimeType;
 
     let data: Buffer;
     try {
-      data = await storage.read(file.localPath);
+      data = await storage.read(localPath);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === "ENOENT") {
         return NextResponse.json(
@@ -43,9 +54,11 @@ export async function GET(
     return new Response(new Uint8Array(data), {
       status: 200,
       headers: {
-        "Content-Type": file.mimeType,
+        "Content-Type": mimeType,
         "Content-Length": String(data.length),
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control": file
+          ? "public, max-age=31536000, immutable"
+          : "private, max-age=3600",
       },
     });
   } catch (error) {
@@ -61,27 +74,26 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();
   try {
     const { id } = await params;
-
-    const file = await prisma.generatedFile.findUnique({
-      where: { id },
+    const localPath = await withLockedAutomationRecords(async (records, transaction) => {
+      assertAssetsAreNotPublicationLeased(records, [id]);
+      const file = await transaction.generatedFile.findUnique({ where: { id } });
+      if (!file) return { result: null };
+      await transaction.generatedFile.delete({ where: { id } });
+      return { result: file.localPath };
     });
-
-    if (!file) {
-      return NextResponse.json(
-        { error: "File not found" },
-        { status: 404 }
-      );
+    if (localPath === null) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
-
-    await storage.delete(file.localPath);
-    await prisma.generatedFile.delete({
-      where: { id },
-    });
+    await storage.delete(localPath);
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof UnresolvedPublicationConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     console.error("Failed to delete file:", error);
     return NextResponse.json(
       { error: "Failed to delete file" },

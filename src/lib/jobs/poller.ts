@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/db";
 import { checkQueueStatus, getQueueResult } from "@/lib/ai/fal-client";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import {
