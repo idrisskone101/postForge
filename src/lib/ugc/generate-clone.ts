@@ -288,7 +288,8 @@ function parseCloneJobInput(
 export async function enqueueCloneJob(
   request: CloneGenerationRequest
 ): Promise<{ jobId: string; estimatedCost: number; modelId: string }> {
-  const modelId = request.modelId ?? "kling-3.0-motion";
+  const { getDefaultModel } = await import("@/lib/ai/model-availability");
+  const modelId = request.modelId ?? (await getDefaultModel("video"));
   const model = getModel(modelId);
   if (!model) {
     throw new Error("Motion control model not found in registry");

@@ -12,6 +12,8 @@ export type SlideshowAutomationVisualSettings = {
   imageModel: string;
 };
 
+export const DEFAULT_SLIDESHOW_AUTOMATION_IMAGE_MODEL = "nano-banana-2";
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -35,7 +37,7 @@ export function readSlideshowAutomationVisualSettings(
   const imageModel =
     typeof settings.imageModel === "string" && settings.imageModel.trim()
       ? settings.imageModel.trim()
-      : "nano-banana-2";
+      : DEFAULT_SLIDESHOW_AUTOMATION_IMAGE_MODEL;
 
   return {
     policy,

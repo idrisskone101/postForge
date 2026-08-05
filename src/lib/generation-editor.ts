@@ -71,6 +71,12 @@ export function buildEnhancementRequest({
     ? "Preserve the subject identity, expression, product, and camera geometry."
     : "The subject and composition may change when needed.";
 
+  const sourceModel = asString(job.model);
+  const editModel =
+    sourceModel && sourceModel.startsWith("nano-banana")
+      ? sourceModel
+      : "nano-banana-2";
+
   return {
     prompt: [
       job.prompt,
@@ -78,7 +84,7 @@ export function buildEnhancementRequest({
       preserveInstruction,
       `Apply the change at approximately ${Math.min(100, Math.max(0, editStrength))}% strength.`,
     ].join("\n\n"),
-    model: "nano-banana-2",
+    model: editModel,
     aspectRatio: asString(job.input.aspectRatio) ?? "9:16",
     numImages: 1,
     negativePrompt: asString(job.input.negativePrompt),

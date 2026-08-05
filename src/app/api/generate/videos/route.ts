@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateVideo } from "@/lib/ai/generate-video";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 import type { VideoGenerationRequest } from "@/lib/ai/types";
 import {
   CollectionAssetRequestError,
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = body.model ?? "kling-3.0";
+    const model = body.model ?? (await getDefaultModel("video"));
 
     // Validate model exists and is a video model
     const modelDef = getModel(model);

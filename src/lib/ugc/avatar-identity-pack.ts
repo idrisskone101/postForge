@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
 import { storage, downloadFromUrl } from "@/lib/storage";
 import { subscribeToGeneration, uploadToFalStorage } from "@/lib/ai/fal-client";
+import { getModel } from "@/lib/ai/models";
+import { getDefaultEditCapableImageModel } from "@/lib/ai/model-availability";
 import { Prisma } from "@/generated/prisma/client";
 import type { AvatarIdentityImage, AvatarIdentityPack } from "@/generated/prisma/client";
 
@@ -217,7 +219,7 @@ export async function ensureAvatarIdentityPack(
       data: {
         avatarId,
         status: "queued",
-        imageModel: "nano-banana-2",
+        imageModel: await getDefaultEditCapableImageModel(),
       },
       include: { images: true },
     });
@@ -448,7 +450,16 @@ async function generateIdentityRoleImage(
   avatarUrl: string,
   role: AnyIdentityRole
 ): Promise<void> {
-  const result = await subscribeToGeneration("fal-ai/nano-banana-2/edit", {
+  const pack = await prisma.avatarIdentityPack.findUnique({
+    where: { id: packId },
+    select: { imageModel: true },
+  });
+  const modelId = pack?.imageModel ?? (await getDefaultEditCapableImageModel());
+  const modelDef = getModel(modelId);
+  const baseEndpoint = modelDef?.endpoint ?? "fal-ai/nano-banana-2";
+  const endpoint = `${baseEndpoint}/edit`;
+
+  const result = await subscribeToGeneration(endpoint, {
     prompt: ALL_ROLE_PROMPTS[role],
     image_urls: [avatarUrl],
     aspect_ratio: "1:1",

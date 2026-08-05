@@ -57,6 +57,7 @@ type SettingsRecord = {
 
 export const SETTINGS_NAVIGATION = [
   { id: "profile", label: "Profile", group: "workspace", icon: UserRound },
+  { id: "models", label: "Available models", group: "workspace", icon: Settings2 },
   { id: "billing", label: "Billing & usage", group: "workspace", icon: CreditCard },
   { id: "integrations", label: "Integrations", group: "workspace", icon: Plug },
   { id: "publishing", label: "Publishing defaults", group: "workspace", icon: Send },
@@ -473,7 +474,7 @@ export function SettingsPageClient() {
 
       <main className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
         {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
-        {tab === "integrations" ? <IntegrationsPanel providers={providers} loading={integrationsLoading} error={integrationsError} busyProvider={busyProvider} onRefresh={() => refreshIntegrations(true)} onConnect={connectProvider} onSync={syncProvider} onDisconnect={disconnectProvider} onOpenWebhooks={() => selectTab("webhooks")} /> : tab === "billing" ? <Billing /> : tab === "team" ? <Team /> : tab === "api-keys" || tab === "webhooks" ? <DeveloperSettingsPanel tab={tab} /> : <SettingsForm tab={tab} settings={settings} setSettings={setSettings} saving={saving} onSave={save} />}
+        {tab === "integrations" ? <IntegrationsPanel providers={providers} loading={integrationsLoading} error={integrationsError} busyProvider={busyProvider} onRefresh={() => refreshIntegrations(true)} onConnect={connectProvider} onSync={syncProvider} onDisconnect={disconnectProvider} onOpenWebhooks={() => selectTab("webhooks")} /> : tab === "billing" ? <Billing /> : tab === "team" ? <Team /> : tab === "models" ? <ModelsPanel /> : tab === "api-keys" ? <ProviderCredentialsPanel /> : tab === "webhooks" ? <DeveloperSettingsPanel tab="webhooks" /> : <SettingsForm tab={tab} settings={settings} setSettings={setSettings} saving={saving} onSave={save} />}
       </main>
 
       {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
@@ -834,6 +835,458 @@ function formatConnectionDate(value: string) {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+type ModelsCatalogResponse = {
+  models: Array<{
+    id: string;
+    name: string;
+    type: "image" | "video";
+    pricing: { unit: string; amount: number };
+    capabilities: Record<string, unknown>;
+    defaults: Record<string, unknown>;
+  }>;
+  defaults: { image: string; video: string };
+  availability: {
+    enabledModelIds: string[];
+    defaultImageModelId: string | null;
+    defaultVideoModelId: string | null;
+  } | null;
+};
+
+function ModelsPanel() {
+  const [catalog, setCatalog] = useState<ModelsCatalogResponse | null>(null);
+  const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
+  const [defaultImageModelId, setDefaultImageModelId] = useState("");
+  const [defaultVideoModelId, setDefaultVideoModelId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const response = await fetch("/api/models");
+        if (!response.ok) throw new Error("Model catalog could not be loaded.");
+        const data = (await response.json()) as ModelsCatalogResponse;
+        if (cancelled) return;
+        setCatalog(data);
+        setEnabledModelIds(
+          data.availability?.enabledModelIds ??
+            data.models.map((model) => model.id)
+        );
+        setDefaultImageModelId(
+          data.availability?.defaultImageModelId ?? data.defaults.image
+        );
+        setDefaultVideoModelId(
+          data.availability?.defaultVideoModelId ?? data.defaults.video
+        );
+      } catch (cause) {
+        if (!cancelled)
+          setError(
+            cause instanceof Error ? cause.message : "Model catalog could not be loaded."
+          );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const imageModels = catalog?.models.filter((model) => model.type === "image") ?? [];
+  const videoModels = catalog?.models.filter((model) => model.type === "video") ?? [];
+
+  const toggleModel = (modelId: string) => {
+    setEnabledModelIds((current) => {
+      const next = current.includes(modelId)
+        ? current.filter((id) => id !== modelId)
+        : [...current, modelId];
+      if (!next.includes(defaultImageModelId)) setDefaultImageModelId("");
+      if (!next.includes(defaultVideoModelId)) setDefaultVideoModelId("");
+      return next;
+    });
+  };
+
+  const handleSave = async () => {
+    if (!catalog) return;
+    setSaving(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const nextImageDefault =
+        defaultImageModelId && enabledModelIds.includes(defaultImageModelId)
+          ? defaultImageModelId
+          : null;
+      const nextVideoDefault =
+        defaultVideoModelId && enabledModelIds.includes(defaultVideoModelId)
+          ? defaultVideoModelId
+          : null;
+      const response = await fetch("/api/settings/models", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          availability: {
+            enabledModelIds,
+            defaultImageModelId: nextImageDefault,
+            defaultVideoModelId: nextVideoDefault,
+          },
+        }),
+      });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? "Model availability could not be saved.");
+      }
+      setNotice("Model availability saved. Picker defaults now follow these settings.");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Model availability could not be saved.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const modelRows = (models: ModelsCatalogResponse["models"]) =>
+    models.map((model) => {
+      const enabled = enabledModelIds.includes(model.id);
+      const isDefault =
+        model.type === "image"
+          ? defaultImageModelId === model.id
+          : defaultVideoModelId === model.id;
+      return (
+        <label
+          key={model.id}
+          data-model-availability-row={model.id}
+          className={cn(
+            "flex min-w-0 items-center gap-3 rounded-[9px] border px-3 py-2.5 transition-colors",
+            enabled ? "border-[#D7D8D0] bg-white" : "border-[#E5E6DF] bg-[#FAFAF8] opacity-60"
+          )}
+        >
+          <input
+            type="checkbox"
+            checked={enabled}
+            onChange={() => toggleModel(model.id)}
+            aria-label={`Enable ${model.name}`}
+            className="size-4 shrink-0 accent-[#FF4A20]"
+          />
+          <span className="min-w-0 flex-1">
+            <b className="block truncate text-[11px] text-[#30312E]">{model.name}</b>
+            <small className="mt-0.5 block truncate text-[10px] text-[#92938E]">
+              {model.pricing.unit === "per_image"
+                ? `$${model.pricing.amount.toFixed(3)}/image`
+                : model.pricing.unit === "per_clip"
+                  ? `$${model.pricing.amount.toFixed(2)}/clip`
+                  : `$${model.pricing.amount.toFixed(3)}/second`}
+            </small>
+          </span>
+          {isDefault && (
+            <span className="rounded-full bg-[#EEF5FF] px-2 py-1 text-[9px] font-bold text-[#2A71C7]">
+              DEFAULT
+            </span>
+          )}
+        </label>
+      );
+    });
+
+  if (loading) {
+    return (
+      <div className="grid min-h-[420px] place-items-center">
+        <Loader2 className="size-6 animate-spin text-[#FF4A20]" />
+      </div>
+    );
+  }
+
+  return (
+    <div data-settings-models-panel>
+      <span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]">
+        <Settings2 className="size-4" />
+      </span>
+      <h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Available models</h2>
+      <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">
+        One central catalog powers the Generate, Clone, Slideshow, and automation surfaces. Disabled models disappear from every picker; the default model is used when a surface does not expose a picker.
+      </p>
+
+      {error && (
+        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2.5 text-[10px] leading-4 text-[#B83F2D]">
+          <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
+        </div>
+      )}
+      {notice && (
+        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2.5 text-[10px] leading-4 text-[#2A71C7]">
+          <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
+        </div>
+      )}
+
+      <div className="pf-card mt-6 max-w-[760px] space-y-5 p-5">
+        <div>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[11px] font-semibold">Image models</h3>
+              <p className="mt-1 text-[10px] text-[#92938E]">
+                {imageModels.length} in catalog · {imageModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
+              </p>
+            </div>
+            <select
+              aria-label="Default image model"
+              value={defaultImageModelId}
+              onChange={(event) => setDefaultImageModelId(event.target.value)}
+              className="h-9 max-w-[220px] rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+            >
+              <option value="">No default</option>
+              {imageModels
+                .filter((model) => enabledModelIds.includes(model.id))
+                .map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(imageModels)}</div>
+        </div>
+
+        <div className="border-t border-[#E3E4DD] pt-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[11px] font-semibold">Video models</h3>
+              <p className="mt-1 text-[10px] text-[#92938E]">
+                {videoModels.length} in catalog · {videoModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
+              </p>
+            </div>
+            <select
+              aria-label="Default video model"
+              value={defaultVideoModelId}
+              onChange={(event) => setDefaultVideoModelId(event.target.value)}
+              className="h-9 max-w-[220px] rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+            >
+              <option value="">No default</option>
+              {videoModels
+                .filter((model) => enabledModelIds.includes(model.id))
+                .map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(videoModels)}</div>
+        </div>
+
+        <div className="flex justify-end border-t border-[#E3E4DD] pt-4">
+          <button onClick={() => void handleSave()} disabled={saving} className="pf-button-primary">
+            {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save model settings
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ProviderCredentialStatus = {
+  provider: "fal" | "gemini" | "virlo";
+  configured: boolean;
+  source: "stored" | "env" | "none";
+  envKey: string;
+};
+
+const PROVIDER_LABELS: Record<string, string> = {
+  fal: "fal.ai",
+  gemini: "Google Gemini",
+  virlo: "Virlo",
+};
+
+function ProviderCredentialsPanel() {
+  const [statuses, setStatuses] = useState<ProviderCredentialStatus[] | null>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch("/api/settings/provider-credentials");
+      if (!response.ok) throw new Error("Credential status could not be loaded.");
+      const data = (await response.json()) as { providers: ProviderCredentialStatus[] };
+      setStatuses(data.providers);
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "Credential status could not be loaded."
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const handleSave = async (provider: string) => {
+    const value = values[provider] ?? "";
+    if (!value.trim()) {
+      setError("Enter a key before saving.");
+      return;
+    }
+    setBusy(provider);
+    setError(null);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/settings/provider-credentials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, value }),
+      });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? "The provider key could not be saved.");
+      }
+      setValues((current) => ({ ...current, [provider]: "" }));
+      await refresh();
+      setNotice(`${PROVIDER_LABELS[provider] ?? provider} key saved server-side.`);
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "The provider key could not be saved."
+      );
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleClear = async (provider: string) => {
+    setBusy(provider);
+    setError(null);
+    setNotice(null);
+    try {
+      const response = await fetch(
+        `/api/settings/provider-credentials?provider=${encodeURIComponent(provider)}`,
+        { method: "DELETE" }
+      );
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? "The provider key could not be cleared.");
+      }
+      await refresh();
+      setNotice(`${PROVIDER_LABELS[provider] ?? provider} key cleared.`);
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "The provider key could not be cleared."
+      );
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div data-provider-credentials-panel>
+      <span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]">
+        <KeyRound className="size-4" />
+      </span>
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="pf-eyebrow">Developer</p>
+          <h2 className="mt-1 text-[22px] font-semibold tracking-[-0.035em]">API keys</h2>
+          <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">
+            Manage the provider credentials this workspace uses for generation. Keys are encrypted at rest on the server and are never sent back to this browser.
+          </p>
+        </div>
+      </div>
+
+      {error && (
+        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2.5 text-[10px] leading-4 text-[#B83F2D]">
+          <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
+        </div>
+      )}
+      {notice && (
+        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2.5 text-[10px] leading-4 text-[#2A71C7]">
+          <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
+        </div>
+      )}
+
+      <div className="mt-6 max-w-[760px] space-y-3">
+        {!statuses && (
+          <div className="pf-card grid min-h-[200px] place-items-center p-5">
+            <Loader2 className="size-5 animate-spin text-[#FF4A20]" />
+          </div>
+        )}
+        {(statuses ?? []).map((status) => {
+          const tone =
+            status.source === "stored"
+              ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]"
+              : status.source === "env"
+                ? "border-[#BED3EF] bg-[#F4F8FE] text-[#2A71C7]"
+                : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]";
+          return (
+            <article
+              key={status.provider}
+              data-provider-credential={status.provider}
+              className="pf-card grid min-w-0 gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+            >
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-[11px] font-semibold">
+                    {PROVIDER_LABELS[status.provider] ?? status.provider}
+                  </h3>
+                  <span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.06em]", tone)}>
+                    {status.source === "stored"
+                      ? "Configured"
+                      : status.source === "env"
+                        ? "Env configured"
+                        : "Not configured"}
+                  </span>
+                </div>
+                <p className="mt-1 text-[10px] leading-3.5 text-[#92938E]">
+                  Environment fallback: {status.envKey}
+                </p>
+              </div>
+              <div className="flex min-w-0 flex-col gap-2 sm:max-w-[340px]">
+                <div className="flex min-w-0 gap-2">
+                  <input
+                    type="password"
+                    value={values[status.provider] ?? ""}
+                    onChange={(event) =>
+                      setValues((current) => ({
+                        ...current,
+                        [status.provider]: event.target.value,
+                      }))
+                    }
+                    placeholder={
+                      status.configured ? "Rotate with a new key…" : `Paste ${PROVIDER_LABELS[status.provider]} key…`
+                    }
+                    className="h-9 min-w-0 flex-1 rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleSave(status.provider)}
+                    disabled={busy !== null || !(values[status.provider] ?? "").trim()}
+                    className="h-9 shrink-0 rounded-[7px] bg-[#232323] px-3 text-[10px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-[#E5E6DF] disabled:text-[#999A95]"
+                  >
+                    {busy === status.provider ? <Loader2 className="size-3.5 animate-spin" /> : "Save"}
+                  </button>
+                </div>
+                {status.source === "stored" && (
+                  <button
+                    type="button"
+                    onClick={() => void handleClear(status.provider)}
+                    disabled={busy !== null}
+                    className="self-end text-[9px] font-semibold text-[#B83F2D] hover:underline disabled:opacity-50"
+                  >
+                    {busy === status.provider ? "Clearing…" : "Clear stored key"}
+                  </button>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export function DeveloperSettingsPanel({ tab }: { tab: "api-keys" | "webhooks" }) {

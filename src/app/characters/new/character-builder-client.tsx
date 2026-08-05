@@ -273,7 +273,6 @@ export function CharacterBuilderClient() {
     try {
       const job = await apiPost<{ id: string }>("/api/generate/images", {
         prompt: buildCharacterImagePrompt(attributes),
-        model: "nano-banana-2",
         aspectRatio: "3:4",
         numImages: 1,
         negativePrompt:

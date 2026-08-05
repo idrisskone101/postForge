@@ -16,6 +16,10 @@ const SLIDESHOW_ASPECT_RATIOS = new Set(["9:16", "4:5", "1:1", "16:9"]);
 const SLIDESHOW_SUBMISSION_LEASE_MS = 10 * 60 * 1000;
 const slideshowSubmissionWorkerId = `${process.pid}:${randomUUID()}`;
 
+// Legacy sync default; callers resolve the centralized default (when no model
+// is provided) before building the request.
+const DEFAULT_SLIDESHOW_IMAGE_MODEL = "nano-banana-2";
+
 export type QueueSlideshowImageInput = {
   projectId: string;
   slideId: string;
@@ -44,7 +48,7 @@ export function buildSlideshowImageQueueRequest(input: QueueSlideshowImageInput)
     throw new Error("A slideshow project and slide are required.");
   }
 
-  const model = input.model?.trim() || "nano-banana-2";
+  const model = input.model?.trim() || DEFAULT_SLIDESHOW_IMAGE_MODEL;
   const modelDefinition = getModel(model);
   if (!modelDefinition || modelDefinition.type !== "image") {
     throw new Error(`Unknown slideshow image model: ${model}`);

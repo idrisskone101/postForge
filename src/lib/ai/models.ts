@@ -52,6 +52,48 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     defaults: { aspectRatio: "9:16", numImages: 1 },
     limits: { maxImages: 4, aspectRatios: IMAGE_ASPECT_RATIOS },
   },
+  "gpt-image-2": {
+    id: "gpt-image-2",
+    name: "GPT Image 2",
+    type: "image",
+    provider: "fal",
+    endpoint: "openai/gpt-image-2",
+    pricing: { unit: "per_image", amount: 0.211 },
+    capabilities: {
+      textToImage: true,
+    },
+    defaults: { aspectRatio: "16:9", numImages: 1 },
+    limits: {
+      maxImages: 1,
+      aspectRatios: ["16:9", "1:1", "4:5", "3:2", "4:3"],
+    },
+  },
+  "seedream-5.0-pro": {
+    id: "seedream-5.0-pro",
+    name: "Seedream 5.0 Pro",
+    type: "image",
+    provider: "fal",
+    endpoint: "bytedance/seedream/v5/pro/text-to-image",
+    pricing: { unit: "per_image", amount: 0.0675 },
+    capabilities: {
+      textToImage: true,
+    },
+    defaults: { aspectRatio: "9:16", numImages: 1 },
+    limits: { maxImages: 4, aspectRatios: IMAGE_ASPECT_RATIOS },
+  },
+  "flux-2-flex": {
+    id: "flux-2-flex",
+    name: "FLUX.2 Flex",
+    type: "image",
+    provider: "fal",
+    endpoint: "fal-ai/flux-2-flex",
+    pricing: { unit: "per_image", amount: 0.075 },
+    capabilities: {
+      textToImage: true,
+    },
+    defaults: { aspectRatio: "9:16", numImages: 1 },
+    limits: { maxImages: 4, aspectRatios: IMAGE_ASPECT_RATIOS },
+  },
   "kling-3.0": {
     id: "kling-3.0",
     name: "Kling 3.0",
@@ -99,6 +141,7 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     provider: "fal",
     endpoint: "fal-ai/veo3",
     pricing: { unit: "per_second", amount: 0.2 },
+    audioMultiplier: 2,
     capabilities: {
       textToVideo: true,
       nativeAudio: true,
@@ -158,6 +201,92 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     defaults: { aspectRatio: "9:16", duration: 5 },
     limits: { minDuration: 3, maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
   },
+  "veo3.1": {
+    id: "veo3.1",
+    name: "Veo 3.1",
+    type: "video",
+    provider: "fal",
+    endpoint: "fal-ai/veo3.1",
+    pricing: { unit: "per_second", amount: 0.2 },
+    audioMultiplier: 2,
+    capabilities: {
+      textToVideo: true,
+      nativeAudio: true,
+    },
+    defaults: { aspectRatio: "16:9", duration: 8 },
+    limits: { maxDuration: 8, aspectRatios: ["16:9", "9:16"] },
+  },
+  "seedance-2.0": {
+    id: "seedance-2.0",
+    name: "Seedance 2.0",
+    type: "video",
+    provider: "fal",
+    endpoint: "bytedance/seedance-2.0/text-to-video",
+    pricing: { unit: "per_second", amount: 0.3034 },
+    capabilities: {
+      textToVideo: true,
+      nativeAudio: true,
+    },
+    defaults: { aspectRatio: "16:9", duration: 8 },
+    limits: { minDuration: 4, maxDuration: 15, aspectRatios: ["16:9", "9:16", "1:1", "21:9"] },
+  },
+  "gemini-omni-flash": {
+    id: "gemini-omni-flash",
+    name: "Gemini Omni Flash",
+    type: "video",
+    provider: "fal",
+    endpoint: "google/gemini-omni-flash",
+    pricing: { unit: "per_second", amount: 0.125 },
+    capabilities: {
+      textToVideo: true,
+      nativeAudio: true,
+    },
+    defaults: { aspectRatio: "16:9", duration: 8 },
+    limits: { minDuration: 3, maxDuration: 10, aspectRatios: ["16:9", "9:16"] },
+  },
+  "minimax-h3": {
+    id: "minimax-h3",
+    name: "MiniMax H3",
+    type: "video",
+    provider: "fal",
+    endpoint: "minimax/h3/text-to-video",
+    pricing: { unit: "per_second", amount: 0.26 },
+    capabilities: {
+      textToVideo: true,
+    },
+    defaults: { aspectRatio: "16:9", duration: 8 },
+    limits: { minDuration: 5, maxDuration: 15, aspectRatios: ["16:9", "9:16", "1:1", "21:9"] },
+  },
+  "pixverse-swap": {
+    id: "pixverse-swap",
+    name: "PixVerse Swap",
+    type: "video",
+    provider: "fal",
+    endpoint: "fal-ai/pixverse/swap",
+    pricing: { unit: "per_clip", amount: 0.2 },
+    capabilities: {
+      videoToVideo: true,
+      subjectSwap: true,
+      keepOriginalAudio: true,
+    },
+    defaults: { aspectRatio: "9:16", duration: 5 },
+    limits: { maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
+  },
+  "gemini-omni-edit": {
+    id: "gemini-omni-edit",
+    name: "Gemini Omni Edit",
+    type: "video",
+    provider: "fal",
+    endpoint: "google/gemini-omni-flash/edit",
+    pricing: { unit: "per_clip", amount: 0.5 },
+    capabilities: {
+      videoToVideo: true,
+      subjectSwap: true,
+      nativeAudio: true,
+    },
+    defaults: { aspectRatio: "9:16", duration: 5 },
+    limits: { maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
+  },
 };
 
 export function getModel(modelId: string): ModelDefinition | undefined {
@@ -186,12 +315,20 @@ export function calculateEstimatedCost(
     return model.pricing.amount * count;
   }
 
+  if (model.pricing.unit === "per_clip") {
+    // Swap endpoints bill per clip. PixVerse Swap doubles for input videos
+    // longer than 5 seconds.
+    const duration = params.durationSec ?? model.defaults.duration ?? 5;
+    return model.pricing.amount * (duration > 5 ? 2 : 1);
+  }
+
   // per_second pricing
   const duration = params.durationSec ?? model.defaults.duration ?? 5;
 
-  // Special case: veo3 with audio costs 2x the base rate
-  if (modelId === "veo3" && params.enableAudio) {
-    return model.pricing.amount * 2 * duration;
+  // Models with native audio charge an audio multiplier when enabled
+  const audioMultiplier = model.audioMultiplier ?? 1;
+  if (params.enableAudio && model.capabilities.nativeAudio) {
+    return model.pricing.amount * audioMultiplier * duration;
   }
 
   return model.pricing.amount * duration;
@@ -206,6 +343,27 @@ const ASPECT_RATIO_FAL_MAP: Record<string, string> = {
   "4:3": "landscape_4_3",
 };
 
+// GPT Image 2 has no portrait_9_16 preset; its closest portrait options
+// are portrait_16_9 (576x1024) and portrait_4_3 (768x1024).
+const GPT_IMAGE_2_SIZE_MAP: Record<string, string> = {
+  "16:9": "landscape_16_9",
+  "1:1": "square_hd",
+  "4:5": "portrait_4_3",
+  "3:2": "landscape_4_3",
+  "4:3": "landscape_4_3",
+};
+
+// Seedream 5.0 Pro accepts the same preset set as GPT Image 2; portrait_9_16
+// is not a valid preset, so 9:16 maps to portrait_16_9.
+const SEEDREAM_5_SIZE_MAP: Record<string, string> = {
+  "9:16": "portrait_16_9",
+  "16:9": "landscape_16_9",
+  "1:1": "square_hd",
+  "4:5": "portrait_4_3",
+  "3:2": "landscape_4_3",
+  "4:3": "landscape_4_3",
+};
+
 export function mapAspectRatioToFalFormat(
   aspectRatio: string,
   modelId: string
@@ -217,6 +375,16 @@ export function mapAspectRatioToFalFormat(
 
   // Image models use the mapped format, video models pass through
   if (model.type === "image") {
+    if (modelId === "gpt-image-2") {
+      return GPT_IMAGE_2_SIZE_MAP[aspectRatio] ?? "landscape_4_3";
+    }
+    if (modelId === "seedream-5.0-pro") {
+      return SEEDREAM_5_SIZE_MAP[aspectRatio] ?? "landscape_4_3";
+    }
+    if (modelId === "flux-2-flex") {
+      // FLUX.2 flex accepts explicit 1K/2K size keys; map to 1K dimensions.
+      return ASPECT_RATIO_FAL_MAP[aspectRatio] ?? aspectRatio;
+    }
     return ASPECT_RATIO_FAL_MAP[aspectRatio] ?? aspectRatio;
   }
 

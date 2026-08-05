@@ -40,6 +40,15 @@ const MODEL_ICON_MAP: Record<
   "kling-3.0-i2v": { icon: Layers, accent: "from-[#FFB49F] to-[#FF4A20]" },
   veo3: { icon: Video, accent: "from-[#B7DDFF] to-[#378EFF]" },
   "veo3-fast": { icon: Zap, accent: "from-[#FFB49F] to-[#FF4A20]" },
+  "veo3.1": { icon: Video, accent: "from-[#B9EEE4] to-[#22A887]" },
+  "seedance-2.0": { icon: Film, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
+  "gemini-omni-flash": { icon: Sparkles, accent: "from-[#B7DDFF] to-[#378EFF]" },
+  "minimax-h3": { icon: Film, accent: "from-[#FFB49F] to-[#FF4A20]" },
+  "pixverse-swap": { icon: Layers, accent: "from-[#B9EEE4] to-[#22A887]" },
+  "gemini-omni-edit": { icon: Video, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
+  "gpt-image-2": { icon: ImageIcon, accent: "from-[#B7DDFF] to-[#378EFF]" },
+  "seedream-5.0-pro": { icon: ImageIcon, accent: "from-[#FFB49F] to-[#FF4A20]" },
+  "flux-2-flex": { icon: Palette, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
 };
 
 function capabilityItems(model: ModelDefinition): Array<{
@@ -82,7 +91,9 @@ function ModelCard({
   const priceLabel =
     model.pricing.unit === "per_image"
       ? `${formatCost(model.pricing.amount)}/image`
-      : `${formatCost(model.pricing.amount)}/second`;
+      : model.pricing.unit === "per_clip"
+        ? `${formatCost(model.pricing.amount)}/clip`
+        : `${formatCost(model.pricing.amount)}/second`;
   const capabilityList = capabilityItems(model);
   const iconConfig = MODEL_ICON_MAP[model.id] ?? {
     icon: Sparkles,

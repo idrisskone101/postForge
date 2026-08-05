@@ -7,6 +7,10 @@ import {
   upsertWorkspaceFeatureRecord,
 } from "@/lib/workspace-feature-store";
 import {
+  isModelAvailabilityState,
+  MODEL_AVAILABILITY_RECORD_ID,
+} from "@/lib/ai/model-availability";
+import {
   createAutomationSchedulerState,
   isAutomationRecord,
   publicationIsUnresolved,
@@ -67,13 +71,18 @@ function isConnectionRecord(value: unknown): value is StoredRecord {
 }
 
 function isWritableFeatureRecord(
-  feature: "automations" | "characters" | "collections" | "connections",
+  feature: "automations" | "characters" | "collections" | "connections" | "models",
   value: unknown
 ): value is StoredRecord {
   if (feature === "automations") return isAutomationRecord(value);
   if (feature === "characters") return isCharacterRecord(value);
   // Asset metadata is server-owned and can only be created by the upload route.
   if (feature === "collections") return isCollectionRecord(value);
+  if (feature === "models") {
+    if (!isModelAvailabilityState(value)) return false;
+    const record = value as unknown as StoredRecord;
+    return record.id === MODEL_AVAILABILITY_RECORD_ID;
+  }
   return isConnectionRecord(value);
 }
 

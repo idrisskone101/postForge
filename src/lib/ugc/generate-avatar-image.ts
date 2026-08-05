@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { generateImage } from "@/lib/ai/generate-image";
 import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
+import { getDefaultEditCapableImageModel } from "@/lib/ai/model-availability";
 import {
   buildHairstyleDirective,
   resolveIdentityReferenceUrlsForAvatar,
@@ -15,10 +16,6 @@ export interface AvatarImageRequest {
   negativePrompt?: string;
   hairstyleRole?: string | null;
 }
-
-// Default model is the edit-capable Nano Banana 2 so the avatar's identity
-// references can be supplied to the edit endpoint.
-const DEFAULT_AVATAR_IMAGE_MODEL = "nano-banana-2";
 
 // Identity references give the model the person; the user's prompt gives the
 // scene. This negative prompt keeps the output a believable photo rather than a
@@ -75,7 +72,8 @@ export function buildAvatarScenePrompt(
 export async function generateAvatarImage(
   request: AvatarImageRequest
 ): Promise<{ jobId: string; estimatedCost: number; model: string }> {
-  const requestedModel = request.imageModel ?? DEFAULT_AVATAR_IMAGE_MODEL;
+  const requestedModel =
+    request.imageModel ?? (await getDefaultEditCapableImageModel());
   const modelDef = getModel(requestedModel);
 
   // Avatar identity requires an edit-capable image model that accepts reference
@@ -83,7 +81,7 @@ export async function generateAvatarImage(
   const modelId =
     modelDef?.type === "image" && modelDef.capabilities.referenceImages
       ? requestedModel
-      : DEFAULT_AVATAR_IMAGE_MODEL;
+      : await getDefaultEditCapableImageModel();
 
   const aspectRatio = request.aspectRatio ?? "9:16";
   const numImages = request.numImages ?? 1;

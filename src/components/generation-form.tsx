@@ -19,6 +19,7 @@ import {
 import { AvatarPicker } from "@/components/avatar-picker";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
 import { ModelPicker } from "@/components/model-picker";
+import { SwapInputSection, type SwapUploadedAsset } from "@/components/swap-input-section";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -29,7 +30,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { WorkspaceState } from "@/components/workspace-state";
 import { calculateEstimatedCost } from "@/lib/ai/models";
-import type { ModelDefinition } from "@/lib/ai/types";
+import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -73,6 +74,9 @@ interface GenerateFormViewProps {
   onAppendToPrompt: (text: string) => void;
   avatarSection?: ReactNode;
   referenceSection?: ReactNode;
+  swapSection?: ReactNode;
+  swapReady?: boolean;
+  swapSourceDurationSec?: number;
   avatarName?: string | null;
 }
 
@@ -176,6 +180,9 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [identityPack, setIdentityPack] =
     useState<AvatarIdentityPackSummary | null>(null);
   const [identityError, setIdentityError] = useState<string | null>(null);
+  const [swapVideo, setSwapVideo] = useState<SwapUploadedAsset | null>(null);
+  const [swapReference, setSwapReference] = useState<SwapUploadedAsset | null>(null);
+  const [swapMode, setSwapMode] = useState<SwapMode>("person");
 
   useEffect(() => {
     if (!avatarId) return;
@@ -322,13 +329,30 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const canSubmit =
     Boolean(selectedDefinition) && prompt.trim().length > 0 && !isSubmitting;
 
+  const isSwapSelected = selectedDefinition?.capabilities.subjectSwap === true;
+  const swapCanSubmit =
+    !isSwapSelected ||
+    (Boolean(swapVideo) &&
+      (selectedDefinition?.id !== "pixverse-swap" || Boolean(swapReference)));
+
   const handleSubmit = async () => {
-    if (!canSubmit || !selectedDefinition) return;
+    if (!canSubmit || !selectedDefinition || !swapCanSubmit) return;
     setIsSubmitting(true);
     setSubmitError(null);
     setNotice(null);
 
     try {
+      if (selectedDefinition.capabilities.subjectSwap) {
+        const result = await apiPost<{ id: string }>("/api/generate/swap", {
+          prompt: prompt.trim(),
+          model: selectedDefinition.id,
+          swapVideoId: swapVideo?.id,
+          swapReferenceId: swapReference?.id,
+          swapMode,
+        });
+        router.push(`/generate/${result.id}`);
+        return;
+      }
       if (selectedDefinition.type === "image") {
         const result = await apiPost<{ id: string }>("/api/generate/images", {
           prompt: prompt.trim(),
@@ -359,7 +383,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
       setIsSubmitting(false);
     }
   };
-
   const identityStatus = describeIdentityStatus(identityPack);
   const avatarSection = selectedDefinition?.type !== "video" ? (
     <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
@@ -472,6 +495,40 @@ export function GenerationForm({ models }: GenerationFormProps) {
     </div>
   );
 
+  const swapSection = isSwapSelected ? (
+    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="grid size-6 place-items-center rounded-[7px] bg-[#FFF0EC] text-[#FF4A20]">
+              <ImageIcon className="size-3.5" />
+            </span>
+            <h2 className="text-[13px] font-semibold text-[#30312E]">
+              Subject swap
+            </h2>
+            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+              {selectedDefinition?.id === "pixverse-swap" ? "Reference required" : "Prompt-driven"}
+            </span>
+          </div>
+          <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+            {selectedDefinition?.id === "pixverse-swap"
+              ? "Upload a video and a reference image. The referenced subject replaces the matching subject while the rest of the video stays the same."
+              : "Upload a video and describe the swap in your prompt. Gemini Omni Edit keeps everything else in the frame consistent."}
+          </p>
+        </div>
+      </div>
+      <SwapInputSection
+        value={{ video: swapVideo, reference: swapReference, swapMode }}
+        onChange={({ video, reference, swapMode: nextSwapMode }) => {
+          setSwapVideo(video);
+          setSwapReference(reference);
+          setSwapMode(nextSwapMode);
+        }}
+        requireReference={selectedDefinition?.id === "pixverse-swap"}
+      />
+    </div>
+  ) : undefined;
+
   return (
     <GenerateFormView
       models={models}
@@ -500,8 +557,11 @@ export function GenerationForm({ models }: GenerationFormProps) {
       onAppendToPrompt={(text) =>
         setPrompt((current) => (current ? `${current}, ${text}` : text))
       }
-      avatarSection={avatarSection}
-      referenceSection={referenceSection}
+      avatarSection={isSwapSelected ? undefined : avatarSection}
+      referenceSection={isSwapSelected ? undefined : referenceSection}
+      swapSection={swapSection}
+      swapReady={swapCanSubmit}
+      swapSourceDurationSec={swapVideo?.durationSec ?? undefined}
       avatarName={
         avatarId
           ? "Character identity"
@@ -557,12 +617,17 @@ export function GenerateFormView({
   onAppendToPrompt,
   avatarSection,
   referenceSection,
+  swapSection,
+  swapReady = true,
+  swapSourceDurationSec,
   avatarName,
 }: GenerateFormViewProps) {
   const model = models.find((item) => item.id === selectedModel);
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";
-  const canSubmit = Boolean(model) && prompt.trim().length > 0 && !isSubmitting;
+  const isSwap = model?.capabilities.subjectSwap === true;
+  const canSubmit =
+    Boolean(model) && prompt.trim().length > 0 && !isSubmitting && swapReady;
   const missing: string[] = [];
   if (!model) missing.push("a model");
   if (!prompt.trim()) missing.push("a prompt");
@@ -572,7 +637,7 @@ export function GenerateFormView({
   const estimatedCost = model
     ? calculateEstimatedCost(model.id, {
         numImages: isImage ? numImages : undefined,
-        durationSec: isVideo ? duration : undefined,
+        durationSec: isSwap ? swapSourceDurationSec : isVideo ? duration : undefined,
         enableAudio: enableAudio && model.id === "veo3",
       })
     : 0;
@@ -853,6 +918,7 @@ export function GenerateFormView({
 
         {avatarSection}
         {referenceSection}
+        {swapSection}
       </div>
 
       <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
@@ -937,7 +1003,9 @@ export function GenerateFormView({
           <div className="min-w-0">
             <span className="block truncate text-[10px] text-[#858681]">
               {model
-                ? `${model.name} · ${aspectRatio} · ${isImage ? `${numImages} output${numImages === 1 ? "" : "s"}` : `${duration}s video`}${avatarName ? ` · ${avatarName}` : ""}`
+                ? isSwap
+                  ? `${model.name} · subject swap · ${swapSourceDurationSec ? `${Math.round(swapSourceDurationSec)}s source` : "source video"}`
+                  : `${model.name} · ${aspectRatio} · ${isImage ? `${numImages} output${numImages === 1 ? "" : "s"}` : `${duration}s video`}${avatarName ? ` · ${avatarName}` : ""}`
                 : "Select a model and describe your asset"}
             </span>
             <strong className="mt-1 block text-[11px] font-semibold text-[#30312E]">
@@ -945,7 +1013,11 @@ export function GenerateFormView({
             </strong>
             {missing.length > 0 && (
               <span className="mt-0.5 block text-[10px] text-[#B08A00]">
-                Add {missing.join(" and ")} to continue
+                {isSwap && !swapReady
+                  ? model?.id === "pixverse-swap"
+                    ? "Add a source video and a swap reference to continue"
+                    : "Add a source video to continue"
+                  : `Add ${missing.join(" and ")} to continue`}
               </span>
             )}
           </div>
@@ -961,7 +1033,7 @@ export function GenerateFormView({
               </>
             ) : (
               <>
-                Generate {isVideo ? "video" : "image"}
+                {isSwap ? "Swap subject" : `Generate ${isVideo ? "video" : "image"}`}
                 <ArrowRight className="ml-2 size-3.5" />
               </>
             )}
@@ -972,14 +1044,22 @@ export function GenerateFormView({
       <div className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 flex items-center gap-3 rounded-[12px] border border-border bg-card/95 p-2.5 shadow-[0_12px_36px_rgba(35,35,35,0.18)] backdrop-blur-md md:hidden">
         <div className="min-w-0 flex-1 pl-1">
           <span className="block truncate text-[11px] text-[#858681]">
-            {model ? `${model.name} · ${aspectRatio}` : "Choose a model"}
+            {model
+              ? isSwap
+                ? `${model.name} · subject swap${swapSourceDurationSec ? ` · ${Math.round(swapSourceDurationSec)}s source` : ""}`
+                : `${model.name} · ${aspectRatio}`
+              : "Choose a model"}
           </span>
           <strong className="mt-0.5 block text-[10px] text-[#30312E]">
             {model ? formatCost(estimatedCost) : "—"}
           </strong>
           {missing.length > 0 && (
             <span className="mt-0.5 block truncate text-[10px] text-[#B08A00]">
-              Add {missing.join(" and ")} to continue
+              {isSwap && !swapReady
+                ? model?.id === "pixverse-swap"
+                  ? "Add a source video and a swap reference"
+                  : "Add a source video"
+                : `Add ${missing.join(" and ")} to continue`}
             </span>
           )}
         </div>
@@ -994,7 +1074,7 @@ export function GenerateFormView({
           ) : (
             <ArrowRight className="size-3.5" />
           )}
-          {isSubmitting ? "Generating…" : `Generate ${isVideo ? "video" : "image"}`}
+          {isSubmitting ? "Generating…" : isSwap ? "Swap subject" : `Generate ${isVideo ? "video" : "image"}`}
         </Button>
       </div>
     </form>

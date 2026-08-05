@@ -356,34 +356,38 @@ assert.equal(
   "an unavailable provider must fail closed"
 );
 
-const reviewSpec = buildAutomationReviewDraftSpec(beforeAfter);
-assert.deepEqual(
-  reviewSpec,
-  buildAutomationReviewDraftSpec(beforeAfter),
-  "the same saved automation must produce the same review request"
-);
-assert.equal(reviewSpec.request.model, "nano-banana-2");
-assert.equal(reviewSpec.request.aspectRatio, "4:5");
-assert.equal(reviewSpec.request.numImages, 1);
-assert.deepEqual(reviewSpec.jobTags, ["automation-review"]);
-assert.match(reviewSpec.request.prompt, /The small change I wish I tried sooner/);
-assert.match(reviewSpec.request.prompt, /Before → Change → After/);
-assert.match(reviewSpec.request.prompt, /Each slide should make one concrete point/);
-assert.match(reviewSpec.request.prompt, /Follow for part two/);
-assert.match(reviewSpec.request.prompt, /review draft only/i);
-assert.deepEqual(
-  (reviewSpec.jobInput.provenance as { automationId?: string }).automationId,
-  beforeAfter.id
-);
+async function reviewSpecChecks() {
+  const reviewSpec = await buildAutomationReviewDraftSpec(beforeAfter);
+  assert.deepEqual(
+    reviewSpec,
+    await buildAutomationReviewDraftSpec(beforeAfter),
+    "the same saved automation must produce the same review request"
+  );
+  assert.equal(reviewSpec.request.model, "nano-banana-2");
+  assert.equal(reviewSpec.request.aspectRatio, "4:5");
+  assert.equal(reviewSpec.request.numImages, 1);
+  assert.deepEqual(reviewSpec.jobTags, ["automation-review"]);
+  assert.match(reviewSpec.request.prompt, /The small change I wish I tried sooner/);
+  assert.match(reviewSpec.request.prompt, /Before → Change → After/);
+  assert.match(reviewSpec.request.prompt, /Each slide should make one concrete point/);
+  assert.match(reviewSpec.request.prompt, /Follow for part two/);
+  assert.match(reviewSpec.request.prompt, /review draft only/i);
+  assert.deepEqual(
+    (reviewSpec.jobInput.provenance as { automationId?: string }).automationId,
+    beforeAfter.id
+  );
 
-assert.throws(
-  () =>
+  await assert.rejects(
     buildAutomationReviewDraftSpec({
       ...beforeAfter,
       hook: { ...beforeAfter.hook, selected: "" },
     }),
-  AutomationReviewValidationError
-);
+    AutomationReviewValidationError
+  );
+  return reviewSpec;
+}
+
+let reviewSpec: Awaited<ReturnType<typeof reviewSpecChecks>>;
 
 async function testAutomationReviewRun() {
   const reviewEvents: string[] = [];
@@ -592,7 +596,7 @@ async function testAutomationScheduler() {
     },
     generateReviewDraft: async (automation, slot) => {
       generatedCount += 1;
-      const scheduledSpec = buildAutomationReviewDraftSpec(automation, {
+      const scheduledSpec = await buildAutomationReviewDraftSpec(automation, {
         scheduleSlot: slot,
       });
       assert.deepEqual(
@@ -715,9 +719,14 @@ async function testAutomationScheduleRouteSecurity() {
 }
 
 Promise.all([
-  testAutomationReviewRun(),
-  testAutomationScheduler(),
-  testAutomationScheduleRouteSecurity(),
+  reviewSpecChecks().then(async (spec) => {
+    reviewSpec = spec;
+    await Promise.all([
+      testAutomationReviewRun(),
+      testAutomationScheduler(),
+      testAutomationScheduleRouteSecurity(),
+    ]);
+  }),
 ]).catch((error) => {
   console.error(error);
   process.exitCode = 1;
