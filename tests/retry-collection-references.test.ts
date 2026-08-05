@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildCloneRetryRequest } from "../src/lib/jobs/retry-inputs";
+import { buildCloneRetryRequest, buildSwapRetryRequest } from "../src/lib/jobs/retry-inputs";
 import {
   resolveImageRetryReferences,
   resolveVideoRetryReference,
@@ -138,6 +138,40 @@ void (async () => {
     /cannot be combined with a visual collection reference/
   );
 
+  const swapRetry = buildSwapRetryRequest(
+    {
+      prompt: "Swap the hand",
+      model: "pixverse-swap",
+      swapVideoId: "swap-video-1",
+      swapReferenceId: "swap-ref-1",
+      swapMode: "person",
+      keyframeId: 2,
+      resolution: "720p",
+      keepOriginalSound: false,
+    },
+    "pixverse-swap"
+  );
+  assert.equal(swapRetry?.model, "pixverse-swap");
+  assert.equal(swapRetry?.videoUrl, "swap-video-1");
+  assert.equal(swapRetry?.referenceImageUrl, "swap-ref-1");
+  assert.equal(swapRetry?.swapMode, "person");
+  assert.equal(swapRetry?.keyframeId, 2);
+  assert.equal(swapRetry?.resolution, "720p");
+  assert.equal(swapRetry?.keepOriginalSound, false);
+  assert.equal(
+    buildSwapRetryRequest(
+      { model: "pixverse-swap", swapVideoId: "swap-video-1", swapReferenceId: "a", referenceFileId: "b" },
+      "pixverse-swap"
+    ),
+    null,
+    "swap retries must reject conflicting persisted reference sources"
+  );
+  assert.equal(
+    buildSwapRetryRequest({ model: "pixverse-swap" }, "pixverse-swap"),
+    null,
+    "swap retries require the persisted source video"
+  );
+
   const routeSource = readFileSync(
     new URL("../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
     "utf8"
@@ -150,6 +184,10 @@ void (async () => {
   assert.match(routeSource, /resolveVideoRetryReference\(input/);
   assert.match(routeSource, /inputImageUrl:\s*retryReference\.executionUrl/);
   assert.match(routeSource, /collectionAssetIds: retryReference\.collectionAssetIds/);
+  assert.match(routeSource, /isVideoSwap = originalJob\.tags\.includes\("video-swap"\)/);
+  assert.match(routeSource, /buildSwapRetryRequest\(input, originalJob\.model\)/);
+  assert.match(routeSource, /resolveSwapSourceVideoUrl\(swapRequest\.videoUrl\)/);
+  assert.match(routeSource, /generateVideoSwap\(/);
 
   console.log("collection-backed retry tests passed");
 })();
