@@ -304,7 +304,11 @@ export default function JobDetailPage() {
   const handleApplyEnhancement = async (output: JobOutput) => {
     if (!job || isApplying || !enhancementInstruction.trim()) return;
     if (job.type === "video") {
-      router.push(buildContinueVideoHref(job, output.id));
+      router.push(
+        job.tags.includes("video-swap")
+          ? buildGenerateSimilarHref(job)
+          : buildContinueVideoHref(job, output.id)
+      );
       return;
     }
 
@@ -815,7 +819,9 @@ export default function JobDetailPage() {
                 {isApplying
                   ? "Starting enhancement…"
                   : job.type === "video"
-                    ? "Continue this video"
+                    ? job.tags.includes("video-swap")
+                      ? "Remix video in Generate"
+                      : "Continue this video"
                     : "Apply enhancement"}
                 {isCompleted && job.type === "image" && (
                   <span className="ml-auto opacity-75">{formatCost(job.estimatedCost)}</span>
@@ -920,7 +926,8 @@ export default function JobDetailPage() {
                 variant="outline"
                 onClick={() =>
                   router.push(
-                    job.type === "video"
+                    job.type === "video" &&
+                      !job.tags.includes("video-swap")
                       ? buildContinueVideoHref(job, featured?.id)
                       : buildGenerateSimilarHref(job)
                   )
@@ -929,7 +936,9 @@ export default function JobDetailPage() {
               >
                 <Redo2 className="size-3.5" />{" "}
                 {job.type === "video"
-                  ? "Continue this video"
+                  ? job.tags.includes("video-swap")
+                    ? "Remix in Generate Studio"
+                    : "Continue this video"
                   : "Remix in Generate Studio"}
               </Button>
             </div>

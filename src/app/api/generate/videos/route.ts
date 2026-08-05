@@ -61,7 +61,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (referenceFileId && !modelDef.capabilities.videoToVideo) {
+    if (
+      referenceFileId &&
+      (modelDef.capabilities.videoToVideo !== true ||
+        modelDef.capabilities.subjectSwap === true)
+    ) {
       return NextResponse.json(
         { error: `Model ${model} does not support video seed references` },
         { status: 400 }

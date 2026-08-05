@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJob } from "@/lib/jobs/queue";
 import { generateImage } from "@/lib/ai/generate-image";
-import { generateVideo } from "@/lib/ai/generate-video";
+import { generateVideo, generateVideoSwap } from "@/lib/ai/generate-video";
 import { getModel } from "@/lib/ai/models";
-import type { ImageGenerationRequest, VideoGenerationRequest } from "@/lib/ai/types";
+import type {
+  ImageGenerationRequest,
+  VideoGenerationRequest,
+} from "@/lib/ai/types";
 import {
   generateClone,
   InvalidCloneRequestError,
@@ -14,10 +17,15 @@ import {
   resolveCollectionAssetLocalPath,
 } from "@/lib/collection-assets-server";
 import {
+  resolveSwapReferenceUrl,
+  resolveSwapSourceVideoUrl,
+} from "@/lib/swap-assets-server";
+import {
   asRetryBoolean,
   asRetryNumber,
   asRetryString,
   buildCloneRetryRequest,
+  buildSwapRetryRequest,
   parseRetryMultiShot,
 } from "@/lib/jobs/retry-inputs";
 import {
@@ -43,8 +51,68 @@ export async function POST(
 
     const input = originalJob.input as Record<string, unknown>;
     const isUgcClone = originalJob.tags.includes("ugc-clone");
+    const isVideoSwap = originalJob.tags.includes("video-swap");
     const isTerminal =
       originalJob.status === "completed" || originalJob.status === "failed";
+
+    if (isVideoSwap) {
+      if (!isTerminal) {
+        return NextResponse.json(
+          { error: `Can only retry completed or failed subject swap jobs. Current status: ${originalJob.status}` },
+          { status: 400 }
+        );
+      }
+
+      const swapRequest = buildSwapRetryRequest(input, originalJob.model);
+      if (!swapRequest) {
+        return NextResponse.json(
+          {
+            error:
+              "This subject swap job is missing saved inputs, so it cannot be retried.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const resolvedVideo = await resolveSwapSourceVideoUrl(swapRequest.videoUrl);
+      if (!resolvedVideo) {
+        return NextResponse.json(
+          { error: "The swap source video could not be found for retry" },
+          { status: 404 }
+        );
+      }
+      const referenceUrl = swapRequest.referenceImageUrl
+        ? ((await resolveSwapReferenceUrl(swapRequest.referenceImageUrl)) ?? undefined)
+        : undefined;
+      if (
+        swapRequest.model === "pixverse-swap" &&
+        !referenceUrl
+      ) {
+        return NextResponse.json(
+          { error: "The swap reference image could not be found for retry" },
+          { status: 404 }
+        );
+      }
+
+      const newJobId = await generateVideoSwap({
+        ...swapRequest,
+        videoUrl: resolvedVideo.url,
+        referenceImageUrl: referenceUrl,
+      });
+
+      return NextResponse.json(
+        {
+          id: newJobId,
+          originalJobId: id,
+          status: "queued",
+          type: "video",
+          model: originalJob.model,
+          estimatedCost: originalJob.estimatedCost,
+          createdAt: new Date().toISOString(),
+        },
+        { status: 202 }
+      );
+    }
 
     if (isUgcClone) {
       if (!isTerminal) {

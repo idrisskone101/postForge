@@ -1,4 +1,7 @@
-import type { VideoGenerationRequest } from "@/lib/ai/types";
+import type {
+  VideoGenerationRequest,
+  VideoSwapGenerationRequest,
+} from "@/lib/ai/types";
 import type {
   CloneGenerationRequest,
   SourceVideoSnapshot,
@@ -102,6 +105,40 @@ export function buildCloneRetryRequest(
     durationSec: asRetryNumber(input.durationSec),
     removeTextOverlays: input.removeTextOverlays === true,
     sourceVideoSnapshot,
+  };
+}
+
+const SWAP_MODES = new Set(["person", "object", "background"]);
+const SWAP_RESOLUTIONS = new Set(["360p", "540p", "720p"]);
+
+export function buildSwapRetryRequest(
+  input: Record<string, unknown>,
+  fallbackModel: string
+): VideoSwapGenerationRequest | null {
+  const model = asRetryString(input.model) ?? fallbackModel;
+  const swapVideoId = asRetryString(input.swapVideoId);
+  const swapReferenceId = asRetryString(input.swapReferenceId);
+  const referenceFileId = asRetryString(input.referenceFileId);
+  const swapMode = asRetryString(input.swapMode);
+  const keyframeId = asRetryNumber(input.keyframeId);
+  const resolution = asRetryString(input.resolution);
+  const keepOriginalSound = asRetryBoolean(input.keepOriginalSound);
+
+  if (!swapVideoId) return null;
+  if (swapReferenceId && referenceFileId) return null;
+
+  return {
+    prompt: asRetryString(input.prompt) ?? "",
+    model,
+    videoUrl: swapVideoId,
+    referenceImageUrl: swapReferenceId ?? referenceFileId ?? undefined,
+    swapMode: swapMode && SWAP_MODES.has(swapMode) ? (swapMode as "person" | "object" | "background") : undefined,
+    keyframeId: keyframeId !== undefined ? Math.max(1, Math.round(keyframeId)) : undefined,
+    resolution:
+      resolution && SWAP_RESOLUTIONS.has(resolution)
+        ? (resolution as "360p" | "540p" | "720p")
+        : undefined,
+    keepOriginalSound: keepOriginalSound ?? undefined,
   };
 }
 
