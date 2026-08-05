@@ -25,7 +25,7 @@ import {
 } from "../src/lib/automations";
 import {
   completeOAuthConnection,
-  disconnectIntegrationProvider,
+  disconnectIntegrationAccount,
   IntegrationMutationSupersededError,
   publishIntegrationShort,
 } from "../src/lib/integrations/service";
@@ -690,7 +690,7 @@ async function run() {
   let revokeCalls = 0;
   await assert.rejects(
     () =>
-      disconnectIntegrationProvider("tiktok", {
+      disconnectIntegrationAccount("tiktok", "account-1", {
         env: integrationEnv,
         storage: disconnectStorage,
         automationRecords: [unresolvedRecord],
@@ -703,7 +703,7 @@ async function run() {
   );
   assert.equal(revokeCalls, 0, "disconnect guard runs before provider revocation");
   assert.equal(
-    (await readIntegrationConnection("tiktok", encryptionKey, disconnectStorage))
+    (await readIntegrationConnection("tiktok", "account-1", encryptionKey, disconnectStorage))
       ?.tokens.accessToken,
     "old-access"
   );
@@ -715,42 +715,49 @@ async function run() {
     reconnectStorage
   );
   let incompatibleRevoke = 0;
-  await assert.rejects(
-    () =>
-      completeOAuthConnection("tiktok", "code", {
-        env: integrationEnv,
-        storage: reconnectStorage,
-        automationRecords: [unresolvedRecord],
-        now: new Date("2026-08-03T12:00:00.000Z"),
-        fetch: async (input) => {
-          const url = String(input);
-          if (url.includes("oauth/token")) {
-            return Response.json({
-              access_token: "new-access",
-              refresh_token: "new-refresh",
-              expires_in: 3600,
-              scope: "user.info.basic,video.list,video.publish",
-            });
-          }
-          if (url.includes("user/info")) {
-            return Response.json({
-              data: {
-                user: { open_id: "different-account", display_name: "Other" },
-              },
-              error: { code: "ok" },
-            });
-          }
-          incompatibleRevoke += 1;
-          return new Response(null, { status: 200 });
-        },
-      }),
-    UnresolvedPublicationConflictError
-  );
-  assert.equal(incompatibleRevoke, 1);
+  await completeOAuthConnection("tiktok", "code", {
+    env: integrationEnv,
+    storage: reconnectStorage,
+    automationRecords: [unresolvedRecord],
+    now: new Date("2026-08-03T12:00:00.000Z"),
+    fetch: async (input) => {
+      const url = String(input);
+      if (url.includes("oauth/token")) {
+        return Response.json({
+          access_token: "new-access",
+          refresh_token: "new-refresh",
+          expires_in: 3600,
+          scope: "user.info.basic,video.list,video.publish",
+        });
+      }
+      if (url.includes("user/info")) {
+        return Response.json({
+          data: {
+            user: { open_id: "different-account", display_name: "Other" },
+          },
+          error: { code: "ok" },
+        });
+      }
+      incompatibleRevoke += 1;
+      return new Response(null, { status: 200 });
+    },
+  });
   assert.equal(
-    (await readIntegrationConnection("tiktok", encryptionKey, reconnectStorage))
+    incompatibleRevoke,
+    0,
+    "connecting an additional account must not revoke the published account"
+  );
+  assert.equal(
+    (await readIntegrationConnection("tiktok", "account-1", encryptionKey, reconnectStorage))
       ?.tokens.accessToken,
-    "old-access"
+    "old-access",
+    "the unresolved publication's account remains connected when a new account is added"
+  );
+  assert.equal(
+    (await readIntegrationConnection("tiktok", "different-account", encryptionKey, reconnectStorage))
+      ?.tokens.accessToken,
+    "new-access",
+    "the additional account is stored alongside the published account"
   );
 
   const authRaceStorage = createMemoryIntegrationStorage();
@@ -842,6 +849,7 @@ async function run() {
   assert.ok(publishFetchCall >= 3);
   const afterAuthRace = await readIntegrationConnection(
     "tiktok",
+    "account-1",
     encryptionKey,
     authRaceStorage
   );

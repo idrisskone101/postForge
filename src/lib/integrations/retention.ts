@@ -3,13 +3,13 @@ import { isProviderConfigured } from "./config";
 import {
   deleteProviderMetrics,
   findExpiredYouTubePublishSessions,
+  listProviderConnections,
   prismaIntegrationStorage,
-  readIntegrationConnection,
   readProviderMetrics,
 } from "./store";
 import {
   forceDeleteLocalIntegrationData,
-  syncIntegrationProvider,
+  syncIntegrationAccount,
   type IntegrationServiceDependencies,
 } from "./service";
 import {
@@ -102,21 +102,6 @@ function connectionReferenceTimes(connection: DecryptedIntegrationConnection) {
   };
 }
 
-async function readConnection(
-  input: IntegrationServiceDependencies,
-  storage: NonNullable<IntegrationServiceDependencies["storage"]>
-) {
-  try {
-    const key = getIntegrationEncryptionKey(input.env ?? process.env);
-    return {
-      connection: await readIntegrationConnection("youtube", key, storage),
-      unreadable: false,
-    };
-  } catch {
-    return { connection: null, unreadable: true };
-  }
-}
-
 export async function runYouTubeDataRetentionSweep(
   input: IntegrationServiceDependencies = {}
 ) {
@@ -135,11 +120,26 @@ export async function runYouTubeDataRetentionSweep(
   await Promise.all(expiredSessions.map(({ key }) => storage.delete(key)));
   const publishSessionsDeleted = expiredSessions.length;
 
-  let { connection, unreadable } = await readConnection(input, storage);
+  let encryptionKey: Buffer | null = null;
+  try {
+    encryptionKey = getIntegrationEncryptionKey(env);
+  } catch {
+    encryptionKey = null;
+  }
+
+  const connections = encryptionKey
+    ? await listProviderConnections("youtube", encryptionKey, storage)
+        .then((result) => result.connections)
+        .catch(() => [])
+    : [];
+
   let refreshAttempted = false;
   let refreshSucceeded = false;
+  let connectionDeleted = false;
+  let metricsDeleted = false;
+  let automationsScrubbed = 0;
 
-  if (connection) {
+  for (const connection of connections) {
     const references = connectionReferenceTimes(connection);
     const refreshDue =
       connection.authorization.status !== "healthy" ||
@@ -148,64 +148,80 @@ export async function runYouTubeDataRetentionSweep(
     if (refreshDue && isProviderConfigured("youtube", env)) {
       refreshAttempted = true;
       try {
-        await syncIntegrationProvider("youtube", input);
+        await syncIntegrationAccount("youtube", connection.account.id, input);
         refreshSucceeded = true;
       } catch {
         // Sync persists authorization failures. The deletion decision below
         // uses the post-attempt record and the immutable provider-data clocks.
       }
-      ({ connection, unreadable } = await readConnection(input, storage));
     }
-  }
+    const refreshed = encryptionKey
+      ? await listProviderConnections("youtube", encryptionKey, storage)
+          .then((result) =>
+            result.connections.find(
+              (candidate) => candidate.account.id === connection.account.id
+            )
+          )
+          .catch(() => null)
+      : null;
+    const reference = refreshed
+      ? connectionReferenceTimes(refreshed)
+      : references;
+    const authorizationExpired =
+      !refreshed ||
+      refreshed.authorization.status === "reauthorization_required" ||
+      !youtubeApiDataIsFresh(reference.authorization, now);
+    const accountDataExpired = !youtubeApiDataIsFresh(reference.account, now);
+    const deleteConnection = authorizationExpired || accountDataExpired;
 
-  const references = connection ? connectionReferenceTimes(connection) : null;
-  const authorizationExpired =
-    !connection ||
-    unreadable ||
-    connection.authorization.status === "reauthorization_required" ||
-    !youtubeApiDataIsFresh(references?.authorization ?? null, now);
-  const accountDataExpired =
-    !connection ||
-    unreadable ||
-    !youtubeApiDataIsFresh(references?.account ?? null, now);
-  const deleteConnection = authorizationExpired || accountDataExpired;
+    const automationsScrubbedNow = await applyAutomationRetention(input, {
+      now,
+      scrubAccountBindings: deleteConnection,
+      disconnectedAccountId: deleteConnection ? connection.account.id : null,
+      activeAccount: deleteConnection
+        ? null
+        : {
+            id: connection.account.id,
+            username: connection.account.username,
+            displayName: connection.account.displayName,
+          },
+    });
+    automationsScrubbed += automationsScrubbedNow;
 
-  const automationsScrubbed = await applyAutomationRetention(input, {
-    now,
-    scrubAccountBindings: deleteConnection,
-    activeAccount: deleteConnection
-      ? null
-      : {
-          id: connection!.account.id,
-          username: connection!.account.username,
-          displayName: connection!.account.displayName,
-        },
-  });
+    if (deleteConnection) {
+      await forceDeleteLocalIntegrationData(
+        "youtube",
+        connection.account.id,
+        input
+      );
+      connectionDeleted = true;
+      metricsDeleted = true;
+      continue;
+    }
 
-  let connectionDeleted = false;
-  if (deleteConnection) {
-    await forceDeleteLocalIntegrationData("youtube", input);
-    connectionDeleted = true;
-  }
-
-  const metrics = await readProviderMetrics("youtube", storage).catch(
-    () => null
-  );
-  const authorizationHealthy =
-    !connectionDeleted && connection?.authorization.status === "healthy";
-  const metricsMustBeDeleted =
-    Boolean(metrics) &&
-    (!authorizationHealthy ||
-      !youtubeApiDataIsFresh(metrics?.syncedAt ?? null, now));
-  if (metricsMustBeDeleted) {
-    await deleteProviderMetrics("youtube", storage);
+    const metrics = await readProviderMetrics(
+      "youtube",
+      connection.account.id,
+      storage
+    ).catch(() => null);
+    if (
+      metrics &&
+      !youtubeApiDataIsFresh(metrics.syncedAt, now)
+    ) {
+      await deleteProviderMetrics(
+        "youtube",
+        connection.account.id,
+        storage
+      );
+      metricsDeleted = true;
+    }
   }
 
   return {
     refreshAttempted,
     refreshSucceeded,
     connectionDeleted,
-    metricsDeleted: metricsMustBeDeleted || connectionDeleted,
+    metricsDeleted,
     publishSessionsDeleted,
     uploadRecoveriesExpired,
     automationsScrubbed,

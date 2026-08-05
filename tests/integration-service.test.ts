@@ -3,7 +3,7 @@ import {
   beginOAuthConnection,
   completeOAuthConnection,
   consumeProviderOAuthState,
-  disconnectIntegrationProvider,
+  disconnectIntegrationAccount,
   forceDeleteLocalIntegrationData,
   getIntegrationPerformanceResponse,
   getIntegrationsResponse,
@@ -11,7 +11,7 @@ import {
   IntegrationDisconnectError,
   IntegrationMutationSupersededError,
   IntegrationSyncError,
-  syncIntegrationProvider,
+  syncIntegrationAccount,
   YouTubePolicyConsentRequiredError,
   youtubeProviderDataIsFresh,
 } from "../src/lib/integrations/service";
@@ -214,8 +214,8 @@ async function run() {
   );
   assert.equal(youtubeConnectFetches, 2);
   assert.equal(consentedConnection.youtubeCompliance?.consentAccepted, true);
-  assert.equal(consentedConnection.capabilities.publish, true);
-  assert.equal(consentedConnection.capabilities.metrics, true);
+  assert.equal(consentedConnection.accounts[0].capabilities.publish, true);
+  assert.equal(consentedConnection.accounts[0].capabilities.metrics, true);
 
   const instagramReadinessStorage = createMemoryIntegrationStorage();
   await saveIntegrationConnection(
@@ -258,10 +258,10 @@ async function run() {
     }
   );
   assert.equal(instagramRuntimeUnavailable.connected, true);
-  assert.equal(instagramRuntimeUnavailable.capabilities.metrics, true);
-  assert.equal(instagramRuntimeUnavailable.capabilities.publish, false);
+  assert.equal(instagramRuntimeUnavailable.accounts[0].capabilities.metrics, true);
+  assert.equal(instagramRuntimeUnavailable.accounts[0].capabilities.publish, false);
   assert.match(
-    instagramRuntimeUnavailable.publishingUnavailableReason ?? "",
+    instagramRuntimeUnavailable.accounts[0].publishingUnavailableReason ?? "",
     /FFPROBE_PATH/
   );
 
@@ -283,7 +283,7 @@ async function run() {
 
   await assert.rejects(
     () =>
-      syncIntegrationProvider("tiktok", {
+      syncIntegrationAccount("tiktok", "account-current", {
         env,
         storage,
         fetch: refreshThenFail,
@@ -291,9 +291,7 @@ async function run() {
       }),
     IntegrationSyncError
   );
-  const afterFailedSync = await readIntegrationConnection(
-    "tiktok",
-    key,
+  const afterFailedSync = await readIntegrationConnection("tiktok", "account-current", key,
     storage
   );
   assert.equal(afterFailedSync?.tokens.accessToken, "fresh-access");
@@ -307,6 +305,7 @@ async function run() {
       posts: [post("account-current")],
       syncedAt: "2026-08-03T12:00:00.000Z",
     },
+    "account-current",
     storage
   );
   await saveProviderMetrics(
@@ -316,6 +315,7 @@ async function run() {
       posts: [post("orphan-account", "instagram")],
       syncedAt: "2026-08-03T13:00:00.000Z",
     },
+    "orphan-account",
     storage
   );
   const performance = await getIntegrationPerformanceResponse({ env, storage });
@@ -381,10 +381,10 @@ async function run() {
   assert.equal(legacyYouTubeStatus.connected, true);
   assert.equal(legacyYouTubeStatus.youtubeCompliance?.consentAccepted, false);
   assert.equal(
-    legacyYouTubeStatus.authorization.status,
+    legacyYouTubeStatus.accounts[0].authorization.status,
     "reauthorization_required"
   );
-  assert.deepEqual(legacyYouTubeStatus.capabilities, {
+  assert.deepEqual(legacyYouTubeStatus.accounts[0].capabilities, {
     profile: false,
     ownedMedia: false,
     metrics: false,
@@ -393,7 +393,7 @@ async function run() {
   let legacyApiCalls = 0;
   await assert.rejects(
     () =>
-      syncIntegrationProvider("youtube", {
+      syncIntegrationAccount("youtube", "youtube-account", {
         env: youtubeEnv,
         storage: staleYouTubeStorage,
         now: new Date("2026-08-03T12:00:00.000Z"),
@@ -413,6 +413,7 @@ async function run() {
       posts: [post("youtube-account", "youtube")],
       syncedAt: "2026-07-03T12:00:00.000Z",
     },
+    "youtube-account",
     staleYouTubeStorage
   );
   const staleYouTubePerformance = await getIntegrationPerformanceResponse({
@@ -422,7 +423,7 @@ async function run() {
   });
   assert.deepEqual(staleYouTubePerformance.posts, []);
   assert.equal(
-    await readProviderMetrics("youtube", staleYouTubeStorage),
+    await readProviderMetrics("youtube", "youtube-account", staleYouTubeStorage),
     null,
     "stale YouTube API data is purged before display or export"
   );
@@ -446,6 +447,7 @@ async function run() {
       posts: [post("youtube-account", "youtube")],
       syncedAt: "2026-08-03T11:00:00.000Z",
     },
+    "youtube-account",
     revokedYouTubeStorage
   );
   const revokedYouTubePerformance = await getIntegrationPerformanceResponse({
@@ -455,7 +457,7 @@ async function run() {
   });
   assert.deepEqual(revokedYouTubePerformance.posts, []);
   assert.equal(
-    await readProviderMetrics("youtube", revokedYouTubeStorage),
+    await readProviderMetrics("youtube", "youtube-account", revokedYouTubeStorage),
     null,
     "revoked YouTube authorization purges cached provider data"
   );
@@ -467,6 +469,7 @@ async function run() {
       posts: [post("old-account")],
       syncedAt: "2026-08-03T14:00:00.000Z",
     },
+    "old-account",
     storage
   );
   let reconnectCall = 0;
@@ -497,20 +500,30 @@ async function run() {
     fetch: reconnectFetch,
     now: new Date("2026-08-03T15:00:00.000Z"),
   });
-  assert.equal(reconnected.account?.id, "new-account");
+  assert.equal(reconnected.accounts[0].account.id, "new-account");
   assert.equal(reconnected.connected, true);
-  assert.equal(reconnected.sync.status, "never");
+  assert.equal(reconnected.accounts[0].sync.status, "never");
   assert.equal(reconnectCall, 2);
+  const statusesAfterReconnect = await getPublicIntegrationStatus("tiktok", {
+    env,
+    storage,
+  });
+  assert.equal(statusesAfterReconnect.accountCount, 2);
   const afterReconnect = await getIntegrationPerformanceResponse({ env, storage });
-  assert.deepEqual(afterReconnect.posts, []);
-  assert.equal(afterReconnect.lastUpdatedAt, null);
+  assert.deepEqual(
+    afterReconnect.posts.map((item) => item.accountId).sort(),
+    ["account-current"]
+  );
+  assert.equal(afterReconnect.lastUpdatedAt, "2026-08-03T12:00:00.000Z");
 
   const statuses = await getIntegrationsResponse({ env, storage });
   const serialized = JSON.stringify(statuses);
   assert.doesNotMatch(serialized, /new-account-token|new-account-refresh/);
   assert.equal(statuses.providers.length, 3);
   assert.equal(
-    statuses.providers.find((item) => item.provider === "tiktok")
+    statuses.providers
+      .find((item) => item.provider === "tiktok")
+      ?.accounts.find((account) => account.account.id === "new-account")
       ?.capabilities.publish,
     true
   );
@@ -530,13 +543,13 @@ async function run() {
     storage,
   });
   assert.equal(rotatedKeyStatus.configuration, "ready");
-  assert.equal(rotatedKeyStatus.connected, false);
+  assert.equal(rotatedKeyStatus.connected, true);
   assert.equal(
-    rotatedKeyStatus.authorization.status,
+    rotatedKeyStatus.accounts[0].authorization.status,
     "reauthorization_required"
   );
-  assert.equal(rotatedKeyStatus.sync.status, "error");
-  assert.match(rotatedKeyStatus.sync.warnings[0] ?? "", /Reconnect/);
+  assert.equal(rotatedKeyStatus.accounts[0].sync.status, "error");
+  assert.match(rotatedKeyStatus.accounts[0].sync.warnings[0] ?? "", /Reconnect/);
 
   const invalidGrantStorage = createMemoryIntegrationStorage();
   await saveIntegrationConnection(
@@ -556,7 +569,7 @@ async function run() {
   );
   await assert.rejects(
     () =>
-      syncIntegrationProvider("tiktok", {
+      syncIntegrationAccount("tiktok", "account-current", {
         env,
         storage: invalidGrantStorage,
         now: new Date("2026-08-03T12:00:00.000Z"),
@@ -565,9 +578,7 @@ async function run() {
       }),
     IntegrationSyncError
   );
-  const invalidGrantConnection = await readIntegrationConnection(
-    "tiktok",
-    key,
+  const invalidGrantConnection = await readIntegrationConnection("tiktok", "account-current", key,
     invalidGrantStorage
   );
   assert.equal(
@@ -599,7 +610,7 @@ async function run() {
   const olderSyncGate = new Promise<void>((resolve) => {
     releaseOlderSync = resolve;
   });
-  const olderSync = syncIntegrationProvider("tiktok", {
+  const olderSync = syncIntegrationAccount("tiktok", "account-current", {
     env,
     storage: concurrentStorage,
     now: new Date("2026-08-03T12:00:00.000Z"),
@@ -624,7 +635,7 @@ async function run() {
     },
   });
   await olderSyncStarted;
-  const newerSync = await syncIntegrationProvider("tiktok", {
+  const newerSync = await syncIntegrationAccount("tiktok", "account-current", {
     env,
     storage: concurrentContext,
     now: new Date("2026-08-03T12:01:00.000Z"),
@@ -646,15 +657,13 @@ async function run() {
       });
     },
   });
-  assert.equal(newerSync.provider.account?.displayName, "Newer sync result");
+  assert.equal(newerSync.provider.accounts[0].account.displayName, "Newer sync result");
   releaseOlderSync();
   await assert.rejects(
     () => olderSync,
     IntegrationMutationSupersededError
   );
-  const afterConcurrentSync = await readIntegrationConnection(
-    "tiktok",
-    key,
+  const afterConcurrentSync = await readIntegrationConnection("tiktok", "account-current", key,
     concurrentContext
   );
   assert.equal(afterConcurrentSync?.account.displayName, "Newer sync result");
@@ -683,6 +692,7 @@ async function run() {
       posts: [post("account-current")],
       syncedAt: "2026-08-03T12:00:00.000Z",
     },
+    "account-current",
     disconnectWinsStorage
   );
   let releaseInFlightSync!: () => void;
@@ -693,7 +703,7 @@ async function run() {
   const inFlightSyncGate = new Promise<void>((resolve) => {
     releaseInFlightSync = resolve;
   });
-  const inFlightSync = syncIntegrationProvider("tiktok", {
+  const inFlightSync = syncIntegrationAccount("tiktok", "account-current", {
     env,
     storage: disconnectWinsStorage,
     now: new Date("2026-08-03T13:00:00.000Z"),
@@ -719,7 +729,7 @@ async function run() {
   });
   await inFlightSyncStarted;
   let disconnectRevokeToken: string | null = null;
-  const disconnectedDuringSync = await disconnectIntegrationProvider("tiktok", {
+  const disconnectedDuringSync = await disconnectIntegrationAccount("tiktok", "account-current", {
     env,
     storage: disconnectWinsContext,
     fetch: async (input, init) => {
@@ -736,17 +746,17 @@ async function run() {
   assert.equal(disconnectedDuringSync.connected, false);
   assert.equal(disconnectRevokeToken, "disconnect-me-access");
   assert.equal(
-    await readIntegrationConnection("tiktok", key, disconnectWinsStorage),
+    await readIntegrationConnection("tiktok", "account-current", key, disconnectWinsStorage),
     null
   );
-  assert.equal(await readProviderMetrics("tiktok", disconnectWinsStorage), null);
+  assert.equal(await readProviderMetrics("tiktok", "account-current", disconnectWinsStorage), null);
   releaseInFlightSync();
   await assert.rejects(
     () => inFlightSync,
     IntegrationMutationSupersededError
   );
   assert.equal(
-    await readIntegrationConnection("tiktok", key, disconnectWinsContext),
+    await readIntegrationConnection("tiktok", "account-current", key, disconnectWinsContext),
     null,
     "an in-flight sync from another context must not recreate a disconnected account"
   );
@@ -788,7 +798,7 @@ async function run() {
     },
   });
   await reconnectStarted;
-  const disconnected = await disconnectIntegrationProvider("tiktok", {
+  const disconnected = await disconnectIntegrationAccount("tiktok", "account-current", {
     env,
     storage: reconnectDisconnectContext,
   });
@@ -800,7 +810,7 @@ async function run() {
   );
   assert.equal(reconnectRevoked, true);
   assert.equal(
-    await readIntegrationConnection("tiktok", key, reconnectDisconnectStorage),
+    await readIntegrationConnection("tiktok", "account-current", key, reconnectDisconnectStorage),
     null,
     "an in-flight reconnect from another context must not recreate a disconnected account"
   );
@@ -814,11 +824,12 @@ async function run() {
       posts: [post("account-current")],
       syncedAt: "2026-08-03T12:00:00.000Z",
     },
+    "account-current",
     revokeFailureStorage
   );
   await assert.rejects(
     () =>
-      disconnectIntegrationProvider("tiktok", {
+      disconnectIntegrationAccount("tiktok", "account-current", {
         env,
         storage: revokeFailureStorage,
         fetch: async () =>
@@ -829,27 +840,25 @@ async function run() {
       }),
     IntegrationDisconnectError
   );
-  const retainedAfterRevokeFailure = await readIntegrationConnection(
-    "tiktok",
-    key,
+  const retainedAfterRevokeFailure = await readIntegrationConnection("tiktok", "account-current", key,
     revokeFailureStorage
   );
   assert.equal(retainedAfterRevokeFailure?.tokens.accessToken, "expired-access");
   assert.notEqual(
-    await readProviderMetrics("tiktok", revokeFailureStorage),
+    await readProviderMetrics("tiktok", "account-current", revokeFailureStorage),
     null
   );
-  const forceDeleted = await forceDeleteLocalIntegrationData("tiktok", {
+  const forceDeleted = await forceDeleteLocalIntegrationData("tiktok", "account-current", {
     env: { INTEGRATION_ENCRYPTION_KEY: key.toString("base64") },
     storage: revokeFailureStorage,
     automationRecords: [],
   });
   assert.equal(forceDeleted.connected, false);
   assert.equal(
-    await readIntegrationConnection("tiktok", key, revokeFailureStorage),
+    await readIntegrationConnection("tiktok", "account-current", key, revokeFailureStorage),
     null
   );
-  assert.equal(await readProviderMetrics("tiktok", revokeFailureStorage), null);
+  assert.equal(await readProviderMetrics("tiktok", "account-current", revokeFailureStorage), null);
 
   await saveIntegrationConnection(connection(), key, revokeFailureStorage);
   await saveProviderMetrics(
@@ -859,19 +868,20 @@ async function run() {
       posts: [post("account-current")],
       syncedAt: "2026-08-03T12:00:00.000Z",
     },
+    "account-current",
     revokeFailureStorage
   );
-  const retriedDisconnect = await disconnectIntegrationProvider("tiktok", {
+  const retriedDisconnect = await disconnectIntegrationAccount("tiktok", "account-current", {
     env,
     storage: revokeFailureStorage,
     fetch: async () => new Response(null, { status: 200 }),
   });
   assert.equal(retriedDisconnect.connected, false);
   assert.equal(
-    await readIntegrationConnection("tiktok", key, revokeFailureStorage),
+    await readIntegrationConnection("tiktok", "account-current", key, revokeFailureStorage),
     null
   );
-  assert.equal(await readProviderMetrics("tiktok", revokeFailureStorage), null);
+  assert.equal(await readProviderMetrics("tiktok", "account-current", revokeFailureStorage), null);
 
   const errorResponse = integrationJsonError(
     new Error("provider secret should never reach the browser")

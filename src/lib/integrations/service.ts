@@ -44,9 +44,10 @@ import {
   deleteProviderMetrics,
   deleteYouTubePublishSession,
   deleteIntegrationConnection,
+  listProviderConnections,
+  listProviderMetricRecords,
   prismaIntegrationStorage,
   readIntegrationConnection,
-  readProviderMetrics,
   readYouTubePublishSession,
   pruneExpiredOAuthStateRecords,
   saveIntegrationConnection,
@@ -55,10 +56,12 @@ import {
   saveYouTubePublishSession,
   type IntegrationStorage,
   type StoredOAuthStateRecord,
+  type StoredProviderMetrics,
 } from "./store";
 import { createOAuthState, verifyOAuthState } from "./state";
 import {
   INTEGRATION_PROVIDERS,
+  type ConnectedIntegrationAccountStatus,
   type DecryptedIntegrationConnection,
   type IntegrationPerformanceResponse,
   type IntegrationProvider,
@@ -192,13 +195,17 @@ async function withIntegrationPublicationRecords<R>(
 
 async function scrubYouTubeAutomationRecords(
   runtime: ReturnType<typeof dependencies>,
-  now: Date
+  now: Date,
+  accountId?: string
 ) {
+  const scrub = (records: AutomationRecord[]) =>
+    scrubYouTubeAutomationProviderData(records, {
+      now,
+      scrubAccountBindings: true,
+      disconnectedAccountId: accountId,
+    });
   if (runtime.automationRecords) {
-    const scrubbed = scrubYouTubeAutomationProviderData(
-      runtime.automationRecords,
-      { now, scrubAccountBindings: true }
-    );
+    const scrubbed = scrub(runtime.automationRecords);
     runtime.automationRecords.splice(
       0,
       runtime.automationRecords.length,
@@ -208,10 +215,7 @@ async function scrubYouTubeAutomationRecords(
   }
   if (runtime.storage !== prismaIntegrationStorage) return 0;
   return withLockedAutomationRecords(async (records) => {
-    const scrubbed = scrubYouTubeAutomationProviderData(records, {
-      now,
-      scrubAccountBindings: true,
-    });
+    const scrubbed = scrub(records);
     return {
       records: scrubbed.records,
       result: scrubbed.changed,
@@ -303,26 +307,26 @@ function assertYouTubePolicyConsent(
 }
 
 async function applyPublishingRuntimeReadiness(
-  status: PublicIntegrationStatus,
+  provider: IntegrationProvider,
+  accountStatus: ConnectedIntegrationAccountStatus,
   env: IntegrationEnvironment
 ) {
   if (
-    status.provider === "instagram" &&
-    status.connected &&
-    status.authorization.status === "healthy" &&
-    status.capabilities.publish &&
+    accountStatus.authorization.status === "healthy" &&
+    accountStatus.capabilities.publish &&
+    provider === "instagram" &&
     !(await instagramMediaProbeIsAvailable(
       instagramMediaProbeExecutable(env)
     ))
   ) {
     return {
-      ...status,
-      capabilities: { ...status.capabilities, publish: false },
+      ...accountStatus,
+      capabilities: { ...accountStatus.capabilities, publish: false },
       publishingUnavailableReason:
         "Instagram publishing requires an executable FFPROBE_PATH on the server before media can be verified.",
     };
   }
-  return status;
+  return accountStatus;
 }
 
 function unconnectedStatus(
@@ -335,22 +339,8 @@ function unconnectedStatus(
     displayName: INTEGRATION_PROVIDER_NAMES[provider],
     configuration: configured ? "ready" : "not_configured",
     connected: false,
-    account: null,
-    grantedScopes: [],
-    capabilities: emptyCapabilities(),
-    connectedAt: null,
-    updatedAt: null,
-    authorization: {
-      status: "unknown",
-      lastCheckedAt: null,
-    },
-    sync: {
-      status: "never",
-      lastAttemptAt: null,
-      lastSuccessfulAt: null,
-      warnings: [],
-    },
-    publishingUnavailableReason: null,
+    accountCount: 0,
+    accounts: [],
     youtubeCompliance: youtubeComplianceStatus(
       provider,
       complianceUrls,
@@ -360,43 +350,43 @@ function unconnectedStatus(
   };
 }
 
-function unreadableConnectionStatus(
+function unreadableAccountStatus(
   provider: IntegrationProvider,
-  complianceUrls: ReturnType<typeof getYouTubeComplianceUrls> = null
-): PublicIntegrationStatus {
-  const status = unconnectedStatus(provider, true, complianceUrls);
+  accountId: string
+): ConnectedIntegrationAccountStatus {
   return {
-    ...status,
+    account: {
+      id: accountId,
+      username: null,
+      displayName: null,
+      avatarUrl: null,
+      profileUrl: null,
+    },
+    grantedScopes: [],
+    capabilities: emptyCapabilities(),
+    connectedAt: null,
+    updatedAt: null,
     authorization: {
       status: "reauthorization_required",
       lastCheckedAt: null,
     },
     sync: {
-      ...status.sync,
       status: "error",
+      lastAttemptAt: null,
+      lastSuccessfulAt: null,
       warnings: [
         "Stored credentials could not be read. Reconnect this account to replace them safely.",
       ],
     },
+    publishingUnavailableReason: null,
   };
 }
 
-export function toPublicIntegrationStatus(
+function toAccountStatus(
   provider: IntegrationProvider,
-  configured: boolean,
-  connection: DecryptedIntegrationConnection | null,
-  complianceUrls: ReturnType<typeof getYouTubeComplianceUrls> = null
-): PublicIntegrationStatus {
-  if (!connection) {
-    return unconnectedStatus(provider, configured, complianceUrls);
-  }
-  const compliance = youtubeComplianceStatus(
-    provider,
-    complianceUrls,
-    connection
-  );
-  const policyConsentRequired =
-    provider === "youtube" && !compliance?.consentAccepted;
+  connection: DecryptedIntegrationConnection,
+  policyConsentRequired: boolean
+): ConnectedIntegrationAccountStatus {
   const storedAuthorization = connection.authorization ?? {
     status: "unknown" as const,
     lastCheckedAt: null,
@@ -417,10 +407,6 @@ export function toPublicIntegrationStatus(
       : (connection.sync.warnings ?? []),
   };
   return {
-    provider,
-    displayName: INTEGRATION_PROVIDER_NAMES[provider],
-    configuration: configured ? "ready" : "not_configured",
-    connected: true,
     account: connection.account,
     grantedScopes: [...connection.grantedScopes],
     capabilities:
@@ -432,9 +418,58 @@ export function toPublicIntegrationStatus(
     authorization,
     sync,
     publishingUnavailableReason: null,
-    youtubeCompliance: compliance,
-    connectUrl: `/api/integrations/${provider}/connect`,
   };
+}
+
+export function toPublicIntegrationStatus(
+  provider: IntegrationProvider,
+  configured: boolean,
+  connections: readonly DecryptedIntegrationConnection[],
+  complianceUrls: ReturnType<typeof getYouTubeComplianceUrls> = null,
+  unreadableAccountIds: readonly string[] = []
+): PublicIntegrationStatus {
+  const base = unconnectedStatus(provider, configured, complianceUrls);
+  if (connections.length === 0 && unreadableAccountIds.length === 0) {
+    return base;
+  }
+  const policyConsentRequired = (connection: DecryptedIntegrationConnection) =>
+    provider === "youtube" &&
+    !youtubePolicyAcceptanceMatches(
+      connection.youtubePolicyAcceptance,
+      complianceUrls
+    );
+  const accounts = buildAccountStatuses(
+    provider,
+    connections,
+    policyConsentRequired,
+    unreadableAccountIds
+  );
+  return {
+    ...base,
+    connected: true,
+    accountCount: accounts.length,
+    accounts,
+  };
+}
+
+function buildAccountStatuses(
+  provider: IntegrationProvider,
+  connections: readonly DecryptedIntegrationConnection[],
+  policyConsentRequired: (connection: DecryptedIntegrationConnection) => boolean,
+  unreadableAccountIds: readonly string[]
+): ConnectedIntegrationAccountStatus[] {
+  return [
+    ...connections.map((connection) =>
+      toAccountStatus(
+        provider,
+        connection,
+        policyConsentRequired(connection)
+      )
+    ),
+    ...unreadableAccountIds.map((accountId) =>
+      unreadableAccountStatus(provider, accountId)
+    ),
+  ];
 }
 
 function providerRuntime(
@@ -474,20 +509,36 @@ export async function getPublicIntegrationStatus(
   } catch {
     return unconnectedStatus(provider, false, complianceUrls);
   }
-  let connection: DecryptedIntegrationConnection | null;
+  let connections: DecryptedIntegrationConnection[] = [];
+  let unreadableAccountIds: string[] = [];
   try {
-    connection = await readIntegrationConnection(
+    ({ connections, unreadableAccountIds } = await listProviderConnections(
       provider,
       encryptionKey,
       deps.storage
-    );
+    ));
   } catch {
-    return unreadableConnectionStatus(provider, complianceUrls);
+    return unconnectedStatus(provider, true, complianceUrls);
   }
-  return applyPublishingRuntimeReadiness(
-    toPublicIntegrationStatus(provider, true, connection, complianceUrls),
-    deps.env
+  const accounts = await Promise.all(
+    buildAccountStatuses(
+      provider,
+      connections,
+      (connection) =>
+        provider === "youtube" &&
+        !youtubePolicyAcceptanceMatches(
+          connection.youtubePolicyAcceptance,
+          complianceUrls
+        ),
+      unreadableAccountIds
+    ).map((status) => applyPublishingRuntimeReadiness(provider, status, deps.env))
   );
+  return {
+    ...unconnectedStatus(provider, true, complianceUrls),
+    connected: accounts.length > 0,
+    accountCount: accounts.length,
+    accounts,
+  };
 }
 
 export async function getIntegrationsResponse(
@@ -643,12 +694,36 @@ export async function completeOAuthConnection(
   };
   const persistCompatibleConnection = () =>
     withIntegrationPublicationRecords(runtime, async (records) => {
-      assertReconnectCompatibleWithPublications(
-        records,
+      const existing = await readIntegrationConnection(
         provider,
         account.id,
-        deriveCapabilities(provider, scopes).publish
+        runtime.encryptionKey,
+        runtime.storage
       );
+      // Replacing the same account: the new grant must remain compatible with
+      // any unresolved publications bound to that account.
+      if (existing) {
+        assertReconnectCompatibleWithPublications(
+          records,
+          provider,
+          account.id,
+          deriveCapabilities(provider, scopes).publish
+        );
+      } else if (
+        unresolvedPublications(records).some(
+          (publication) => publication.provider === provider && publication.accountId === account.id
+        )
+      ) {
+        // A brand-new account is not blocked by unresolved publications bound
+        // to other connected accounts; only an unresolved publication that
+        // somehow references this exact new account id is a conflict.
+        assertReconnectCompatibleWithPublications(
+          records,
+          provider,
+          account.id,
+          deriveCapabilities(provider, scopes).publish
+        );
+      }
       return commitProviderMutation(
         provider,
         mutation.revision,
@@ -658,7 +733,7 @@ export async function completeOAuthConnection(
             runtime.encryptionKey,
             lockedStorage
           );
-          await deleteProviderMetrics(provider, lockedStorage);
+          await deleteProviderMetrics(provider, account.id, lockedStorage);
         },
         runtime.storage
       );
@@ -703,15 +778,35 @@ export async function completeOAuthConnection(
   // Keep the OAuth callback bounded to token exchange and account discovery.
   // Providers such as Instagram can require one insight request per post, so
   // the explicit sync endpoint owns metrics ingestion after connection.
-  return applyPublishingRuntimeReadiness(
-    toPublicIntegrationStatus(
-      provider,
-      true,
-      connection,
-      runtime.config.youtubeComplianceUrls
-    ),
-    runtime.env
-  );
+  return {
+    ...unconnectedStatus(provider, true, runtime.config.youtubeComplianceUrls),
+    ...(provider === "youtube"
+      ? {
+          youtubeCompliance: youtubeComplianceStatus(
+            provider,
+            runtime.config.youtubeComplianceUrls,
+            connection
+          ),
+        }
+      : {}),
+    connected: true,
+    accountCount: 1,
+    accounts: [
+      await applyPublishingRuntimeReadiness(
+        provider,
+        toAccountStatus(
+          provider,
+          connection,
+          provider === "youtube" &&
+            !youtubePolicyAcceptanceMatches(
+              connection.youtubePolicyAcceptance,
+              runtime.config.youtubeComplianceUrls
+            )
+        ),
+        runtime.env
+      ),
+    ],
+  };
 }
 
 async function refreshIfNeeded(
@@ -773,6 +868,7 @@ export async function getTikTokPublishingPreflight(
     (lockedStorage) =>
       readIntegrationConnection(
         "tiktok",
+        normalizedAccountId,
         runtime.encryptionKey,
         lockedStorage
       ),
@@ -894,6 +990,7 @@ export async function publishIntegrationShort(
     (lockedStorage) =>
       readIntegrationConnection(
         provider,
+        expectedAccountId,
         runtime.encryptionKey,
         lockedStorage
       ),
@@ -1039,6 +1136,7 @@ export async function publishIntegrationShort(
         (lockedStorage) =>
           readIntegrationConnection(
             provider,
+            expectedAccountId,
             runtime.encryptionKey,
             lockedStorage
           ),
@@ -1107,6 +1205,7 @@ export async function refreshIntegrationPublicationStatus(
     (lockedStorage) =>
       readIntegrationConnection(
         provider,
+        expectedAccountId,
         runtime.encryptionKey,
         lockedStorage
       ),
@@ -1286,16 +1385,20 @@ export async function refreshIntegrationPublicationStatus(
   }
 }
 
-export async function syncIntegrationProvider(
+export async function syncIntegrationAccount(
   provider: IntegrationProvider,
+  accountId: string,
   input: IntegrationServiceDependencies = {}
 ): Promise<IntegrationSyncResponse> {
+  const expectedAccountId = accountId.trim();
+  if (!expectedAccountId) throw new IntegrationAccountBindingError();
   const runtime = providerRuntime(provider, input);
   const mutation = await beginProviderMutation(
     provider,
     (lockedStorage) =>
       readIntegrationConnection(
         provider,
+        expectedAccountId,
         runtime.encryptionKey,
         lockedStorage
       ),
@@ -1313,6 +1416,9 @@ export async function syncIntegrationProvider(
 
   try {
     current = await refreshIfNeeded(existing, runtime);
+    if (current.account.id !== expectedAccountId) {
+      throw new IntegrationAccountBindingError();
+    }
     const account = await runtime.adapter.fetchAccount(
       runtime.config,
       current.tokens.accessToken,
@@ -1362,6 +1468,7 @@ export async function syncIntegrationProvider(
         );
         await saveProviderMetrics(
           { version: 1, provider, posts, syncedAt: attemptAt },
+          expectedAccountId,
           lockedStorage
         );
       },
@@ -1371,15 +1478,8 @@ export async function syncIntegrationProvider(
       throw new IntegrationMutationSupersededError();
     }
     return {
-      provider: await applyPublishingRuntimeReadiness(
-        toPublicIntegrationStatus(
-          provider,
-          true,
-          next,
-          runtime.config.youtubeComplianceUrls
-        ),
-        runtime.env
-      ),
+      provider: await getPublicIntegrationStatus(provider, input),
+      accountId: expectedAccountId,
       posts,
       syncedAt: attemptAt,
     };
@@ -1423,7 +1523,7 @@ export async function syncIntegrationProvider(
           lockedStorage
         );
         if (authorizationFailed) {
-          await deleteProviderMetrics(provider, lockedStorage);
+          await deleteProviderMetrics(provider, expectedAccountId, lockedStorage);
         }
       },
       runtime.storage
@@ -1435,24 +1535,28 @@ export async function syncIntegrationProvider(
   }
 }
 
-export async function disconnectIntegrationProvider(
+export async function disconnectIntegrationAccount(
   provider: IntegrationProvider,
+  accountId: string,
   input: IntegrationServiceDependencies = {}
 ) {
+  const expectedAccountId = accountId.trim();
+  if (!expectedAccountId) throw new IntegrationAccountBindingError();
   const runtime = providerRuntime(provider, input);
   const mutation = await beginProviderMutation(
     provider,
     (lockedStorage) =>
       readIntegrationConnection(
         provider,
+        expectedAccountId,
         runtime.encryptionKey,
         lockedStorage
       ),
     runtime.storage
   );
+  const original = mutation.snapshot;
 
-  if (mutation.snapshot) {
-    const original = mutation.snapshot;
+  if (original) {
     await withIntegrationPublicationRecords(runtime, async (records) => {
       assertProviderHasNoUnresolvedPublication(
         records,
@@ -1496,6 +1600,7 @@ export async function disconnectIntegrationProvider(
         (lockedStorage) =>
           readIntegrationConnection(
             provider,
+            expectedAccountId,
             runtime.encryptionKey,
             lockedStorage
           ),
@@ -1520,56 +1625,63 @@ export async function disconnectIntegrationProvider(
       throw new IntegrationDisconnectError();
     }
     if (provider === "youtube") {
-      await scrubYouTubeAutomationRecords(runtime, runtime.now);
-      await deleteAllYouTubePublishSessions(runtime.storage);
+      await scrubYouTubeAutomationRecords(runtime, runtime.now, expectedAccountId);
     }
   }
 
-  let committed = await commitProviderMutation(
+  const committed = await commitProviderMutation(
     provider,
     mutation.revision,
-    (lockedStorage) => deleteIntegrationConnection(provider, lockedStorage),
+    (lockedStorage) =>
+      deleteIntegrationConnection(provider, expectedAccountId, lockedStorage),
     runtime.storage
   );
-  if (!committed.committed && mutation.snapshot) {
+  if (!committed.committed && original) {
     const completion = await beginProviderMutation(
       provider,
       (lockedStorage) =>
         readIntegrationConnection(
           provider,
+          expectedAccountId,
           runtime.encryptionKey,
           lockedStorage
         ),
       runtime.storage
     );
     if (
-      completion.snapshot?.account.id === mutation.snapshot.account.id &&
+      completion.snapshot?.account.id === original.account.id &&
       completion.snapshot.authorization.status === "unknown"
     ) {
-      committed = await commitProviderMutation(
+      const retry = await commitProviderMutation(
         provider,
         completion.revision,
-        (lockedStorage) => deleteIntegrationConnection(provider, lockedStorage),
+        (lockedStorage) =>
+          deleteIntegrationConnection(provider, expectedAccountId, lockedStorage),
         runtime.storage
       );
+      if (!retry.committed) {
+        throw new IntegrationMutationSupersededError();
+      }
+    } else {
+      throw new IntegrationMutationSupersededError();
     }
-  }
-  if (!committed.committed) {
-    throw new IntegrationMutationSupersededError();
   }
   return getPublicIntegrationStatus(provider, input);
 }
 
 /**
- * Delete PostForge's local connection, tokens, and cached metrics without
- * claiming that the provider revoked its grant. This is intentionally a
- * separate, explicit workflow from disconnect so a failed remote revocation
- * can never be presented as successful.
+ * Delete PostForge's local connection, tokens, and cached metrics for one
+ * account without claiming that the provider revoked its grant. This is
+ * intentionally a separate, explicit workflow from disconnect so a failed
+ * remote revocation can never be presented as successful.
  */
 export async function forceDeleteLocalIntegrationData(
   provider: IntegrationProvider,
+  accountId: string,
   input: IntegrationServiceDependencies = {}
 ) {
+  const expectedAccountId = accountId.trim();
+  if (!expectedAccountId) throw new IntegrationAccountBindingError();
   const runtime = dependencies(input);
   let encryptionKey: Buffer | null = null;
   try {
@@ -1583,7 +1695,12 @@ export async function forceDeleteLocalIntegrationData(
     provider,
     (lockedStorage) =>
       encryptionKey
-        ? readIntegrationConnection(provider, encryptionKey, lockedStorage)
+        ? readIntegrationConnection(
+            provider,
+            expectedAccountId,
+            encryptionKey,
+            lockedStorage
+          )
         : Promise.resolve(null),
     runtime.storage
   );
@@ -1614,7 +1731,11 @@ export async function forceDeleteLocalIntegrationData(
     if (provider === "youtube") {
       const scrubbed = scrubYouTubeAutomationProviderData(
         runtime.automationRecords,
-        { now: runtime.now, scrubAccountBindings: true }
+        {
+          now: runtime.now,
+          scrubAccountBindings: true,
+          disconnectedAccountId: expectedAccountId,
+        }
       );
       runtime.automationRecords.splice(
         0,
@@ -1626,7 +1747,12 @@ export async function forceDeleteLocalIntegrationData(
     committed = await commitProviderMutation(
       provider,
       mutation.revision,
-      (lockedStorage) => deleteIntegrationConnection(provider, lockedStorage),
+      (lockedStorage) =>
+        deleteIntegrationConnection(
+          provider,
+          expectedAccountId,
+          lockedStorage
+        ),
       runtime.storage
     );
   } else if (runtime.storage === prismaIntegrationStorage) {
@@ -1637,6 +1763,7 @@ export async function forceDeleteLocalIntegrationData(
           ? scrubYouTubeAutomationProviderData(records, {
               now: runtime.now,
               scrubAccountBindings: true,
+              disconnectedAccountId: expectedAccountId,
             })
           : { records, changed: 0 };
       const result = await commitProviderMutation(
@@ -1646,7 +1773,11 @@ export async function forceDeleteLocalIntegrationData(
           if (provider === "youtube") {
             await deleteAllYouTubePublishSessions(lockedStorage);
           }
-          await deleteIntegrationConnection(provider, lockedStorage);
+          await deleteIntegrationConnection(
+            provider,
+            expectedAccountId,
+            lockedStorage
+          );
         },
         runtime.storage
       );
@@ -1660,7 +1791,12 @@ export async function forceDeleteLocalIntegrationData(
     committed = await commitProviderMutation(
       provider,
       mutation.revision,
-      (lockedStorage) => deleteIntegrationConnection(provider, lockedStorage),
+      (lockedStorage) =>
+        deleteIntegrationConnection(
+          provider,
+          expectedAccountId,
+          lockedStorage
+        ),
       runtime.storage
     );
   }
@@ -1678,41 +1814,65 @@ export async function getIntegrationPerformanceResponse(
   const metricRecords = await Promise.all(
     INTEGRATION_PROVIDERS.map(async (provider) => {
       try {
-        const record = await readProviderMetrics(provider, deps.storage);
-        if (!record || provider !== "youtube") return record;
+        const records = await listProviderMetricRecords(provider, deps.storage);
+        if (provider !== "youtube") return records;
         const status = statusResponse.providers.find(
           (candidate) => candidate.provider === "youtube"
         );
-        if (
-          !youtubeProviderDataIsFresh(record.syncedAt, deps.now) ||
-          !status?.connected ||
-          status.authorization.status !== "healthy"
-        ) {
-          await deleteProviderMetrics("youtube", deps.storage);
-          return null;
+        const freshAccountIds = new Set(
+          status?.accounts
+            .filter((account) => account.authorization.status === "healthy")
+            .map((account) => account.account.id) ?? []
+        );
+        const retained: StoredProviderMetrics[] = [];
+        for (const record of records) {
+          const accountId = record.posts[0]?.accountId;
+          if (!accountId) continue;
+          if (
+            !youtubeProviderDataIsFresh(record.syncedAt, deps.now) ||
+            !status?.connected ||
+            !freshAccountIds.has(accountId)
+          ) {
+            await deleteProviderMetrics(provider, accountId, deps.storage);
+            continue;
+          }
+          retained.push(record);
         }
-        return record;
+        return retained;
       } catch {
-        return null;
+        return [];
       }
     })
   );
-  const available = metricRecords.filter(
-    (record): record is NonNullable<typeof record> =>
-      record !== null &&
-      statusResponse.providers.some(
-        (status) =>
-          status.provider === record.provider &&
-          status.configuration === "ready" &&
-          status.connected &&
-          status.authorization.status === "healthy" &&
-          (record.provider !== "youtube" ||
-            status.youtubeCompliance?.consentAccepted === true) &&
-          record.posts.every(
-            (post) => post.accountId === status.account?.id
-          )
+  const flatRecords = metricRecords.flat();
+  const connectedAccountIds = new Map<
+    IntegrationProvider,
+    Set<string>
+  >();
+  for (const status of statusResponse.providers) {
+    connectedAccountIds.set(
+      status.provider,
+      new Set(
+        status.configuration === "ready"
+          ? status.accounts
+              .filter(
+                (account) =>
+                  account.authorization.status === "healthy" &&
+                  (status.provider !== "youtube" ||
+                    status.youtubeCompliance?.consentAccepted === true)
+              )
+              .map((account) => account.account.id)
+          : []
       )
-  );
+    );
+  }
+  const available = flatRecords.filter((record) => {
+    const accountId = record.posts[0]?.accountId;
+    if (!accountId) return false;
+    return (
+      connectedAccountIds.get(record.provider)?.has(accountId) ?? false
+    );
+  });
   const posts = available
     .flatMap((record) => record.posts)
     .sort((left, right) => {

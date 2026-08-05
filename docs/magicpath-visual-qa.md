@@ -17,12 +17,12 @@ MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/file
 | Generation editor | `/generate/[id]` | `435054353376751616` | `435054353376751617` |
 | Automations | `/automations` | `435056674701717504` | `435438532786552832` |
 | Automation templates | `/automations/new` template modal | `435056693118922752` | `435056693118922753` |
-| Automation builder | `/automations/new` | `435056693525774336` | `435056693525774337` |
-| Performance | `/performance` | `435056679864922112` | `435056679864922113` |
+| Automation builder | `/automations/new` | `435056693525774336` | `435576454441488384` |
+| Performance | `/performance` | `435056679864922112` | `435576280629534720` |
 | Image collections | `/collections` | `435056677155393536` | `435440550880096256` |
 | Character library | `/characters` | `435056646067212288` | `435056646067212289` |
 | Character builder | `/characters/new` | `435057651588673536` | `435057651588673537` |
-| Settings and integrations | `/settings` | `435056692204552192` | `435056692204552193` |
+| Settings and integrations | `/settings` | `435056692204552192` | `435575811848957952` |
 | Settings — available models and API keys | `/settings?tab=models` / `?tab=api-keys` | `435546352966057984` | latest revision |
 | Generate — subject swap studio | `/generate` with a swap model selected | `435546873634381824` | latest revision |
 
@@ -52,7 +52,7 @@ For every width, assert `document.documentElement.scrollWidth === document.docum
 - Settings exposes a centralized Available models panel (Workspace group) whose toggles and defaults drive every picker through `/api/models`; the API keys tab stores provider credentials (fal.ai, Gemini, Virlo) encrypted at rest with env fallback and never returns plaintext to the browser.
 - Character Builder preserves all 36 appearance groups in its saved recipe and generated-photo prompt. A changed recipe cannot be saved against a stale portrait; legacy or edited recipes must be rendered again before save.
 - Manual Automation runs create real image-generation jobs in the Review queue. Local schedules are opt-in, timezone-aware, idempotent per slot, and require a continuously running PostForge server; they never publish to a social provider.
-- TikTok, Instagram, and YouTube connection state is shared across Settings, Performance, and Automations. Missing configuration, missing scopes, token refresh errors, and sync errors remain explicit; provider data is never fabricated.
+- TikTok, Instagram, and YouTube connection state is shared across Settings, Performance, and Automations. Missing configuration, missing scopes, token refresh errors, and sync errors remain explicit; provider data is never fabricated. Multiple accounts per provider are fully supported: each account keeps its own connection, tokens, scopes, sync state, and metrics; sync, disconnect, reconnect, and force-local-delete are scoped to one account; connecting a new account never replaces or revokes another connected account, and an unresolved publication stays locked to its exact account.
 - Provider tokens remain server-only and encrypted at rest. Performance preserves unavailable metrics as unavailable, while CSV imports remain a separate local data source.
 - External publishing is a separate, approval-only action from an Automation. It accepts only that workflow's generated Gallery video while it is still marked **Approved output**, revalidates the bound account and publishing scope on the server, shows a provider-specific final review, and requires fresh explicit consent. The scheduler never invokes this action.
 - TikTok publishing must use the live creator controls returned by TikTok: no default privacy choice, interaction controls default off and honor creator restrictions, commercial disclosure stays off until selected, and the Music Usage Confirmation and applicable Branded Content Policy declarations remain linked and explicit. Requested privacy must never be mislabeled as provider-confirmed privacy.

@@ -230,6 +230,7 @@ async function run() {
       posts: [],
       syncedAt: "2026-07-04T12:00:00.000Z",
     },
+    "youtube-account",
     storage
   );
   storage.entries.set(
@@ -284,7 +285,7 @@ async function run() {
   assert.equal(sweep.metricsDeleted, true);
   assert.equal(sweep.publishSessionsDeleted, 1);
   assert.equal(sweep.uploadRecoveriesExpired, 1);
-  assert.equal(await readProviderMetrics("youtube", storage), null);
+  assert.equal(await readProviderMetrics("youtube", "youtube-account", storage), null);
   assert.equal(sweepRecords[0].publication?.externalId, null);
   assert.equal(sweepRecords[0].publication?.status, "failed");
   assert.equal(
@@ -316,6 +317,7 @@ async function run() {
       posts: [],
       syncedAt: "2026-08-02T12:00:00.000Z",
     },
+    "youtube-account",
     forceStorage
   );
   forceStorage.entries.set(
@@ -332,17 +334,17 @@ async function run() {
       })
     ),
   ];
-  await forceDeleteLocalIntegrationData("youtube", {
+  await forceDeleteLocalIntegrationData("youtube", "youtube-account", {
     env,
     storage: forceStorage,
     now,
     automationRecords: forceRecords,
   });
   assert.equal(
-    await readIntegrationConnection("youtube", key, forceStorage),
+    await readIntegrationConnection("youtube", "youtube-account", key, forceStorage),
     null
   );
-  assert.equal(await readProviderMetrics("youtube", forceStorage), null);
+  assert.equal(await readProviderMetrics("youtube", "youtube-account", forceStorage), null);
   assert.equal(
     forceStorage.entries.has(
       "integrations/publish-sessions/youtube/terminal-attempt.json"

@@ -32,6 +32,7 @@ import {
   automationStatusAfterReview,
   composeAutomationHook,
   createAutomationRecord,
+  integrationAccountLabel,
   isAutomationRecord,
   isAutomationSocialDestination,
   resolveAutomationDestination,
@@ -942,29 +943,42 @@ function DestinationSelector({
                 )}
               </div>
 
-              {providerStatus?.connected && providerStatus.account && (
+              {providerStatus?.connected && providerStatus.accounts.length > 0 && (
                 <label className="mt-3 block border-t border-black/8 pt-3">
                   <span className="mb-1.5 block text-[10px] font-semibold text-[#666762]">
                     Connected account
                   </span>
                   <select
-                    value={
-                      accountId === providerStatus.account.id ? accountId : ""
-                    }
-                    onChange={(event) =>
-                      onAccountSelect(event.target.value, readiness.accountLabel ?? "Connected account")
-                    }
+                    value={accountId ?? ""}
+                    onChange={(event) => {
+                      const selected = providerStatus.accounts.find(
+                        (candidate) =>
+                          candidate.account.id === event.target.value
+                      );
+                      onAccountSelect(
+                        event.target.value,
+                        selected
+                          ? integrationAccountLabel(selected.account) ??
+                              "Connected account"
+                          : "Connected account"
+                      );
+                    }}
                     className="h-9 w-full rounded-[8px] border border-[#D8D9D2] bg-white px-2 text-[11px] outline-none focus:border-[#FF4A20]"
                     aria-label="Connected social account"
                   >
-                    {accountId !== providerStatus.account.id && (
-                      <option value="" disabled>
-                        Select the currently connected account
-                      </option>
-                    )}
-                    <option value={providerStatus.account.id}>
-                      {readiness.accountLabel ?? "Connected account"}
+                    <option value="" disabled>
+                      Select one of the connected accounts
                     </option>
+                    {providerStatus.accounts.map((candidate) => (
+                      <option
+                        key={candidate.account.id}
+                        value={candidate.account.id}
+                      >
+                        {integrationAccountLabel(candidate.account) ??
+                          "Connected account"}
+                        {candidate.capabilities.publish ? "" : " (no upload scope)"}
+                      </option>
+                    ))}
                   </select>
                 </label>
               )}
@@ -977,12 +991,12 @@ function DestinationSelector({
                   <span
                     className={cn(
                       "rounded-full px-2 py-1 text-[9px] font-bold",
-                      providerStatus.capabilities.publish
+                      readiness.ready
                         ? "bg-[#E7F5E9] text-[#268B42]"
                         : "bg-[#FDE9E5] text-[#D94A34]"
                     )}
                   >
-                    {providerStatus.capabilities.publish ? "Granted" : "Missing"}
+                    {readiness.ready ? "Granted" : "Missing"}
                   </span>
                 </div>
               )}

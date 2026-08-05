@@ -101,12 +101,17 @@ export function scrubYouTubeAutomationProviderData(
       username: string | null;
       displayName: string | null;
     } | null;
+    /** Scrub only bindings to this specific account id (per-account disconnect). */
+    disconnectedAccountId?: string | null;
   }
 ) {
   const now = input.now.toISOString();
   let changed = 0;
   const updatedRecords = records.map((candidate) => {
     if (!isAutomationRecord(candidate)) return candidate;
+
+    const providerWideScrub =
+      input.scrubAccountBindings && !input.disconnectedAccountId;
 
     let accountId = candidate.accountId;
     let accountLabel = candidate.accountLabel;
@@ -115,7 +120,10 @@ export function scrubYouTubeAutomationProviderData(
     let didChange = false;
 
     if (candidate.destination === "youtube") {
-      if (input.scrubAccountBindings) {
+      const boundToDisconnectedAccount =
+        input.disconnectedAccountId &&
+        accountId === input.disconnectedAccountId;
+      if (providerWideScrub || boundToDisconnectedAccount) {
         if (accountId !== null || accountLabel !== null) didChange = true;
         accountId = null;
         accountLabel = null;
@@ -144,7 +152,9 @@ export function scrubYouTubeAutomationProviderData(
 
     if (
       publication?.provider === "youtube" &&
-      (input.scrubAccountBindings ||
+      (providerWideScrub ||
+        (input.disconnectedAccountId &&
+          publication.accountId === input.disconnectedAccountId) ||
         !youtubeApiDataIsFresh(
           publication.providerDataRefreshedAt ?? publication.requestedAt,
           input.now
