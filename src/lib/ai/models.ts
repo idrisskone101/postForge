@@ -130,6 +130,7 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     pricing: { unit: "per_second", amount: 0.029 },
     capabilities: {
       imageToVideo: true,
+      videoToVideo: true,
     },
     defaults: { aspectRatio: "9:16", duration: 5 },
     limits: { maxDuration: 15, aspectRatios: VIDEO_ASPECT_RATIOS },
@@ -295,6 +296,24 @@ export function getModel(modelId: string): ModelDefinition | undefined {
 
 export function getModelsByType(type: "image" | "video"): ModelDefinition[] {
   return Object.values(MODEL_REGISTRY).filter((m) => m.type === type);
+}
+
+/** First video model that accepts a video seed reference (character continuity). */
+export function getContinuityVideoModel(): ModelDefinition | undefined {
+  return Object.values(MODEL_REGISTRY).find(
+    (m) =>
+      m.type === "video" &&
+      m.capabilities.videoToVideo === true &&
+      m.capabilities.subjectSwap !== true
+  );
+}
+
+export function acceptsVideoContinuity(model: ModelDefinition | undefined): boolean {
+  return (
+    model?.type === "video" &&
+    model.capabilities.videoToVideo === true &&
+    model.capabilities.subjectSwap !== true
+  );
 }
 
 export function getAllModels(): ModelDefinition[] {

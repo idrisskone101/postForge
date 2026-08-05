@@ -147,6 +147,7 @@ export async function POST(
       }
       const retryReference = await resolveVideoRetryReference(input, {
         supportsCollectionReference: model.capabilities.imageToVideo === true,
+        supportsVideoReference: model.capabilities.videoToVideo === true,
       });
       const videoRequest: VideoGenerationRequest = {
         prompt: originalJob.prompt,
@@ -162,8 +163,10 @@ export async function POST(
         jobInput: {
           ...input,
           collectionAssetIds: retryReference.collectionAssetIds,
+          referenceFileId: retryReference.referenceFileId ?? undefined,
           inputImageUrl:
-            retryReference.collectionAssetIds.length > 0
+            retryReference.collectionAssetIds.length > 0 ||
+            retryReference.referenceFileId
               ? undefined
               : asRetryString(input.inputImageUrl),
         },

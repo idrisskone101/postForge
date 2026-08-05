@@ -1,6 +1,8 @@
 import {
   parseReferenceFileIds,
   resolveGeneratedImageReferences,
+  parseSingleVideoReferenceFileId,
+  resolveVideoReferenceImage,
 } from "@/lib/ai/generated-file-references";
 import {
   CollectionAssetRequestError,
@@ -12,11 +14,13 @@ import { parsePersistedHttpUrls } from "@/lib/jobs/retry-inputs";
 type RetryReferenceResolvers = {
   resolveGenerated: (ids: string[]) => Promise<string[]>;
   resolveCollection: (ids: string[]) => Promise<string[]>;
+  resolveVideoReference: (id: string) => Promise<string>;
 };
 
 const defaultResolvers: RetryReferenceResolvers = {
   resolveGenerated: resolveGeneratedImageReferences,
   resolveCollection: resolveCollectionImageReferences,
+  resolveVideoReference: resolveVideoReferenceImage,
 };
 
 export async function resolveImageRetryReferences(
@@ -62,14 +66,20 @@ export async function resolveImageRetryReferences(
 
 export async function resolveVideoRetryReference(
   input: Record<string, unknown>,
-  options: { supportsCollectionReference: boolean },
-  resolveCollection: RetryReferenceResolvers["resolveCollection"] =
-    resolveCollectionImageReferences
+  options: {
+    supportsCollectionReference: boolean;
+    supportsVideoReference: boolean;
+  },
+  resolvers: Pick<
+    RetryReferenceResolvers,
+    "resolveCollection" | "resolveVideoReference"
+  > = defaultResolvers
 ) {
   const collectionAssetIds = parseCollectionAssetIds(
     input.collectionAssetIds,
     1
   );
+  const referenceFileId = parseSingleVideoReferenceFileId(input.referenceFileId);
   if (
     collectionAssetIds.length > 0 &&
     !options.supportsCollectionReference
@@ -78,6 +88,25 @@ export async function resolveVideoRetryReference(
       "This model does not support a collection image reference"
     );
   }
-  const [executionUrl] = await resolveCollection(collectionAssetIds);
-  return { collectionAssetIds, executionUrl };
+  if (referenceFileId && !options.supportsVideoReference) {
+    throw new CollectionAssetRequestError(
+      "This model does not support video seed references"
+    );
+  }
+  if (referenceFileId && collectionAssetIds.length > 0) {
+    throw new CollectionAssetRequestError(
+      "A video seed reference cannot be combined with a visual collection reference. Choose one."
+    );
+  }
+  const [collectionUrl, videoReferenceUrl] = await Promise.all([
+    collectionAssetIds.length > 0
+      ? resolvers.resolveCollection(collectionAssetIds)
+      : Promise.resolve([]),
+    referenceFileId ? resolvers.resolveVideoReference(referenceFileId) : Promise.resolve(undefined),
+  ]);
+  return {
+    collectionAssetIds,
+    referenceFileId,
+    executionUrl: collectionUrl[0] ?? videoReferenceUrl,
+  };
 }

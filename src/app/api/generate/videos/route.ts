@@ -4,6 +4,10 @@ import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import { getDefaultModel } from "@/lib/ai/model-availability";
 import type { VideoGenerationRequest } from "@/lib/ai/types";
 import {
+  parseSingleVideoReferenceFileId,
+  resolveVideoReferenceImage,
+} from "@/lib/ai/generated-file-references";
+import {
   CollectionAssetRequestError,
   parseCollectionAssetIds,
   resolveCollectionImageReferences,
@@ -13,6 +17,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const collectionAssetIds = parseCollectionAssetIds(body.collectionAssetIds, 1);
+    const referenceFileId = parseSingleVideoReferenceFileId(body.referenceFileId);
 
     // Validate required fields
     if (!body.prompt || typeof body.prompt !== "string") {
@@ -39,6 +44,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (referenceFileId && collectionAssetIds.length > 0) {
+      return NextResponse.json(
+        {
+          error:
+            "A video seed reference cannot be combined with a visual collection reference. Choose one.",
+        },
+        { status: 400 }
+      );
+    }
+
     if (collectionAssetIds.length > 0 && !modelDef.capabilities.imageToVideo) {
       return NextResponse.json(
         { error: `Model ${model} does not support a collection image reference` },
@@ -46,16 +61,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const [collectionImageUrl] = await resolveCollectionImageReferences(
-      collectionAssetIds
-    );
+    if (referenceFileId && !modelDef.capabilities.videoToVideo) {
+      return NextResponse.json(
+        { error: `Model ${model} does not support video seed references` },
+        { status: 400 }
+      );
+    }
+
+    const [collectionImageUrl, videoReferenceImageUrl] = await Promise.all([
+      resolveCollectionImageReferences(collectionAssetIds),
+      referenceFileId ? resolveVideoReferenceImage(referenceFileId) : Promise.resolve([]),
+    ]);
 
     const genRequest: VideoGenerationRequest = {
       prompt: body.prompt,
       model,
       duration: body.duration,
       aspectRatio: body.aspectRatio,
-      inputImageUrl: collectionImageUrl ?? body.inputImageUrl,
+      inputImageUrl:
+        collectionImageUrl[0] ??
+        videoReferenceImageUrl[0] ??
+        body.inputImageUrl,
       enableAudio: body.enableAudio,
       multiShot: body.multiShot,
     };
@@ -72,6 +98,7 @@ export async function POST(request: NextRequest) {
         duration: body.duration,
         aspectRatio: body.aspectRatio,
         collectionAssetIds,
+        referenceFileId,
         enableAudio: body.enableAudio,
         multiShot: body.multiShot,
       },

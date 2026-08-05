@@ -1,3 +1,5 @@
+import { getContinuityVideoModel } from "@/lib/ai/models";
+
 export interface JobOutput {
   id: string;
   url: string;
@@ -42,6 +44,21 @@ export function clampPreviewZoom(value: number) {
 
 export function buildGenerateSimilarHref(job: Pick<JobDetail, "prompt" | "model">) {
   return `/generate?prompt=${encodeURIComponent(job.prompt)}&model=${encodeURIComponent(job.model)}`;
+}
+
+export function buildContinueVideoHref(
+  job: Pick<JobDetail, "type" | "prompt" | "model">,
+  outputId?: string
+) {
+  if (job.type !== "video") {
+    throw new Error("Only video outputs can seed a continued generation.");
+  }
+  const continuityModel = getContinuityVideoModel();
+  const params = new URLSearchParams();
+  params.set("prompt", job.prompt);
+  params.set("model", continuityModel?.id ?? job.model);
+  if (outputId) params.set("referenceFileId", outputId);
+  return `/generate?${params.toString().replace(/\+/g, "%20")}`;
 }
 
 export function buildCloneHandoffHref(outputId?: string) {

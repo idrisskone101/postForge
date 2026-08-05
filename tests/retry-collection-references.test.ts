@@ -50,6 +50,9 @@ void (async () => {
         imageResolutionCalls.push(ids);
         return ids.map((id) => `https://provider.test/resolved/${id}`);
       },
+      resolveVideoReference: async (id) => {
+        assert.fail(`video seed resolver should not run: ${id}`);
+      },
     }
   );
   assert.deepEqual(imageResolutionCalls, [
@@ -71,10 +74,15 @@ void (async () => {
 
   const videoReferences = await resolveVideoRetryReference(
     { collectionAssetIds: ["collection-video-1"] },
-    { supportsCollectionReference: true },
-    async (ids) => {
-      assert.deepEqual(ids, ["collection-video-1"]);
-      return ["https://provider.test/resolved/collection-video-1"];
+    { supportsCollectionReference: true, supportsVideoReference: false },
+    {
+      resolveCollection: async (ids) => {
+        assert.deepEqual(ids, ["collection-video-1"]);
+        return ["https://provider.test/resolved/collection-video-1"];
+      },
+      resolveVideoReference: async (id) => {
+        assert.fail(`video seed resolver should not run: ${id}`);
+      },
     }
   );
   assert.deepEqual(videoReferences.collectionAssetIds, ["collection-video-1"]);
@@ -83,14 +91,51 @@ void (async () => {
     "https://provider.test/resolved/collection-video-1"
   );
 
+  const seededVideoReferences = await resolveVideoRetryReference(
+    { referenceFileId: "seed-video-1" },
+    { supportsCollectionReference: false, supportsVideoReference: true },
+    {
+      resolveCollection: async () => {
+        assert.fail("collection resolver should not run for a video seed");
+      },
+      resolveVideoReference: async (id) => {
+        assert.equal(id, "seed-video-1");
+        return "https://provider.test/resolved/seed-frame-1";
+      },
+    }
+  );
+  assert.equal(seededVideoReferences.referenceFileId, "seed-video-1");
+  assert.equal(
+    seededVideoReferences.executionUrl,
+    "https://provider.test/resolved/seed-frame-1"
+  );
+
   await assert.rejects(
     () =>
       resolveVideoRetryReference(
         { collectionAssetIds: ["collection-video-1", "collection-video-2"] },
-        { supportsCollectionReference: true },
-        async () => []
+        { supportsCollectionReference: true, supportsVideoReference: false },
+        {
+          resolveCollection: async () => [],
+          resolveVideoReference: async () => {
+            throw new Error("unexpected video seed resolution");
+          },
+        }
       ),
     /collectionAssetIds must contain 1 to 1/
+  );
+
+  await assert.rejects(
+    () =>
+      resolveVideoRetryReference(
+        { referenceFileId: "seed-video-1", collectionAssetIds: ["collection-video-1"] },
+        { supportsCollectionReference: true, supportsVideoReference: true },
+        {
+          resolveCollection: async () => [],
+          resolveVideoReference: async () => "",
+        }
+      ),
+    /cannot be combined with a visual collection reference/
   );
 
   const routeSource = readFileSync(
