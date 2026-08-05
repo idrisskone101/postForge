@@ -20,31 +20,53 @@ function status(
     displayName,
     configuration: "ready",
     connected: false,
-    account: null,
-    grantedScopes: [],
-    capabilities: {
-      profile: false,
-      ownedMedia: false,
-      metrics: false,
-      publish: false,
-    },
-    connectedAt: null,
-    updatedAt: null,
-    authorization: {
-      status: "healthy",
-      lastCheckedAt: null,
-    },
-    sync: {
-      status: "never",
-      lastAttemptAt: null,
-      lastSuccessfulAt: null,
-      warnings: [],
-    },
-    publishingUnavailableReason: null,
+    accountCount: 0,
+    accounts: [],
     youtubeCompliance: null,
     connectUrl: `/api/integrations/${provider}/connect`,
     ...rest,
   };
+}
+
+function connected(
+  provider: "tiktok" | "instagram" | "youtube",
+  account: PublicIntegrationStatus["accounts"][number]["account"],
+  patch: Partial<PublicIntegrationStatus["accounts"][number]> = {}
+): PublicIntegrationStatus {
+  return status({
+    provider,
+    displayName:
+      provider === "tiktok"
+        ? "TikTok"
+        : provider === "instagram"
+          ? "Instagram"
+          : "YouTube",
+    connected: true,
+    accountCount: 1,
+    accounts: [
+      {
+        account,
+        grantedScopes: [],
+        capabilities: {
+          profile: false,
+          ownedMedia: false,
+          metrics: false,
+          publish: false,
+        },
+        connectedAt: null,
+        updatedAt: null,
+        authorization: { status: "healthy", lastCheckedAt: null },
+        sync: {
+          status: "never",
+          lastAttemptAt: null,
+          lastSuccessfulAt: null,
+          warnings: [],
+        },
+        publishingUnavailableReason: null,
+        ...patch,
+      },
+    ],
+  });
 }
 
 const notConfiguredInstagram = status({
@@ -53,33 +75,33 @@ const notConfiguredInstagram = status({
   configuration: "not_configured",
 });
 
-const connectedTikTok = status({
-  provider: "tiktok",
-  displayName: "TikTok",
-  connected: true,
-  account: {
+const connectedTikTok = connected(
+  "tiktok",
+  {
     id: "tt-1",
     username: "real_creator",
     displayName: "Real Creator",
     avatarUrl: null,
     profileUrl: "https://www.tiktok.com/@real_creator",
   },
-  grantedScopes: ["user.info.basic", "video.list"],
-  capabilities: {
-    profile: true,
-    ownedMedia: true,
-    metrics: true,
-    publish: false,
-  },
-  connectedAt: "2026-08-03T12:00:00.000Z",
-  updatedAt: "2026-08-03T12:02:00.000Z",
-  sync: {
-    status: "error",
-    lastAttemptAt: "2026-08-03T12:03:00.000Z",
-    lastSuccessfulAt: "2026-08-03T12:02:00.000Z",
-    warnings: ["The latest provider sync failed; previously stored metrics were kept."],
-  },
-});
+  {
+    grantedScopes: ["user.info.basic", "video.list"],
+    capabilities: {
+      profile: true,
+      ownedMedia: true,
+      metrics: true,
+      publish: false,
+    },
+    connectedAt: "2026-08-03T12:00:00.000Z",
+    updatedAt: "2026-08-03T12:02:00.000Z",
+    sync: {
+      status: "error",
+      lastAttemptAt: "2026-08-03T12:03:00.000Z",
+      lastSuccessfulAt: "2026-08-03T12:02:00.000Z",
+      warnings: ["The latest provider sync failed; previously stored metrics were kept."],
+    },
+  }
+);
 
 const readyYouTube = status({
   provider: "youtube",
@@ -144,20 +166,20 @@ assert.doesNotMatch(connectedMarkup, /Connect TikTok/);
 const instagramRuntimeUnavailableMarkup = renderToStaticMarkup(
   <SocialIntegrationCard
     provider="instagram"
-    status={status({
-      provider: "instagram",
-      displayName: "Instagram",
-      connected: true,
-      account: {
+    status={connected(
+      "instagram",
+      {
         id: "instagram-account",
         username: "creator",
         displayName: "Creator",
         avatarUrl: null,
         profileUrl: null,
       },
-      publishingUnavailableReason:
-        "Instagram publishing requires an executable FFPROBE_PATH on the server before media can be verified.",
-    })}
+      {
+        publishingUnavailableReason:
+          "Instagram publishing requires an executable FFPROBE_PATH on the server before media can be verified.",
+      }
+    )}
     loading={false}
     busy={false}
     onConnect={noOp}
@@ -218,14 +240,13 @@ const connectedYouTubeMarkup = renderToStaticMarkup(
     provider="youtube"
     status={{
       ...readyYouTube,
-      connected: true,
-      account: {
+      ...connected("youtube", {
         id: "youtube-account",
         username: "@channel",
         displayName: "Channel",
         avatarUrl: null,
         profileUrl: "https://www.youtube.com/channel/youtube-account",
-      },
+      }),
     }}
     loading={false}
     busy={false}
@@ -251,8 +272,8 @@ const panelMarkup = renderToStaticMarkup(
 );
 assert.match(panelMarkup, /Refresh status/);
 assert.equal((panelMarkup.match(/data-social-provider=/g) ?? []).length, 3);
-assert.match(panelMarkup, /min-\[1100px\]:grid-cols-2/);
-assert.match(panelMarkup, /min-\[1360px\]:grid-cols-3/);
+assert.match(panelMarkup, /Social accounts/);
+assert.match(panelMarkup, /Connect another/);
 
 const navigationMarkup = renderToStaticMarkup(
   <SettingsNavigation

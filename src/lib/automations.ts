@@ -1,4 +1,8 @@
-import type { PublicIntegrationStatus } from "./integrations/types";
+import type {
+  ConnectedIntegrationAccountStatus,
+  PublicIntegrationAccount,
+  PublicIntegrationStatus,
+} from "./integrations/types";
 
 export type AutomationStatus = "active" | "paused" | "draft" | "needs_connection";
 export type AutomationSocialDestination = "tiktok" | "instagram" | "youtube";
@@ -148,7 +152,7 @@ export type AutomationDestinationReadiness = {
 };
 
 export function integrationAccountLabel(
-  account: PublicIntegrationStatus["account"]
+  account: PublicIntegrationAccount | null | undefined
 ) {
   if (!account) return null;
   const username = account.username?.trim() ?? "";
@@ -162,6 +166,18 @@ export function integrationAccountLabel(
     return `${displayName} (${handle})`;
   }
   return displayName || handle || "Connected account";
+}
+
+export function findConnectedAccount(
+  providerStatus: PublicIntegrationStatus | null | undefined,
+  accountId: string | null | undefined
+): ConnectedIntegrationAccountStatus | null {
+  if (!providerStatus || !accountId) return null;
+  return (
+    providerStatus.accounts.find(
+      (candidate) => candidate.account.id === accountId
+    ) ?? null
+  );
 }
 
 export function resolveAutomationDestination(
@@ -205,7 +221,7 @@ export function resolveAutomationDestination(
     };
   }
 
-  if (!providerStatus.connected || !providerStatus.account) {
+  if (!providerStatus.connected || providerStatus.accounts.length === 0) {
     return {
       ready: false,
       code: "disconnected",
@@ -216,53 +232,91 @@ export function resolveAutomationDestination(
     };
   }
 
-  if (providerStatus.authorization.status !== "healthy") {
-    return {
-      ready: false,
-      code: "reauthorization_required",
-      message:
-        providerStatus.authorization.status === "reauthorization_required"
-          ? `${providerStatus.displayName} authorization is no longer valid. Reconnect the account before using this plan.`
-          : `${providerStatus.displayName} authorization has not been verified yet. Sync or reconnect the account before using this plan.`,
-      providerStatus,
-      accountId: providerStatus.account.id,
-      accountLabel: integrationAccountLabel(providerStatus.account),
-    };
-  }
-
-  const accountLabel = integrationAccountLabel(providerStatus.account);
-  if (expectedAccountId === null) {
-    return {
-      ready: false,
-      code: "account_unbound",
-      message: `${providerStatus.displayName} is connected as ${accountLabel}, but this automation is not bound to that account yet.`,
-      providerStatus,
-      accountId: providerStatus.account.id,
-      accountLabel,
-    };
-  }
-  if (
-    expectedAccountId !== undefined &&
-    expectedAccountId !== providerStatus.account.id
-  ) {
-    return {
-      ready: false,
-      code: "account_changed",
-      message: `${providerStatus.displayName} is now connected as ${accountLabel}. Review and explicitly rebind this automation before activation.`,
-      providerStatus,
-      accountId: providerStatus.account.id,
-      accountLabel,
-    };
-  }
-  if (!providerStatus.capabilities.publish) {
+  const bound = findConnectedAccount(providerStatus, expectedAccountId);
+  if (!bound) {
+    if (expectedAccountId !== undefined && expectedAccountId !== null) {
+      return {
+        ready: false,
+        code: "account_changed",
+        message: `${providerStatus.displayName} no longer has the bound account connected. Review and explicitly rebind this automation before activation.`,
+        providerStatus,
+        accountId: null,
+        accountLabel: null,
+      };
+    }
+    if (expectedAccountId === null) {
+      return {
+        ready: false,
+        code: "account_unbound",
+        message: `${providerStatus.displayName} is connected, but this automation is not bound to one of its ${providerStatus.accounts.length} account${providerStatus.accounts.length === 1 ? "" : "s"} yet.`,
+        providerStatus,
+        accountId: providerStatus.accounts[0]?.account.id ?? null,
+        accountLabel: integrationAccountLabel(
+          providerStatus.accounts[0]?.account
+        ),
+      };
+    }
+    // No explicit binding yet: evaluate the connected accounts so the UI can
+    // show publish-scope readiness instead of forcing a manual selection.
+    const publishable = providerStatus.accounts.find(
+      (candidate) => candidate.capabilities.publish
+    );
+    if (publishable) {
+      return {
+        ready: true,
+        code: "ready",
+        message: `${providerStatus.displayName} is connected as ${integrationAccountLabel(publishable.account)} with the required upload scope. This plan can be saved for review.`,
+        providerStatus,
+        accountId: publishable.account.id,
+        accountLabel: integrationAccountLabel(publishable.account),
+      };
+    }
+    const first = providerStatus.accounts[0];
+    if (!first) {
+      return {
+        ready: false,
+        code: "disconnected",
+        message: `${providerStatus.displayName} is configured but no account is connected.`,
+        providerStatus,
+        accountId: null,
+        accountLabel: null,
+      };
+    }
     return {
       ready: false,
       code: "missing_publish",
       message:
-        providerStatus.publishingUnavailableReason ??
+        first.publishingUnavailableReason ??
+        `${providerStatus.displayName} is connected as ${integrationAccountLabel(first.account)}, but the upload scope is not granted.`,
+      providerStatus,
+      accountId: first.account.id,
+      accountLabel: integrationAccountLabel(first.account),
+    };
+  }
+
+  const accountLabel = integrationAccountLabel(bound.account);
+  if (bound.authorization.status !== "healthy") {
+    return {
+      ready: false,
+      code: "reauthorization_required",
+      message:
+        bound.authorization.status === "reauthorization_required"
+          ? `${providerStatus.displayName} authorization for ${accountLabel} is no longer valid. Reconnect the account before using this plan.`
+          : `${providerStatus.displayName} authorization for ${accountLabel} has not been verified yet. Sync or reconnect the account before using this plan.`,
+      providerStatus,
+      accountId: bound.account.id,
+      accountLabel,
+    };
+  }
+  if (!bound.capabilities.publish) {
+    return {
+      ready: false,
+      code: "missing_publish",
+      message:
+        bound.publishingUnavailableReason ??
         `${providerStatus.displayName} is connected as ${accountLabel}, but the upload scope is not granted.`,
       providerStatus,
-      accountId: providerStatus.account.id,
+      accountId: bound.account.id,
       accountLabel,
     };
   }
@@ -272,7 +326,7 @@ export function resolveAutomationDestination(
     code: "ready",
     message: `${providerStatus.displayName} is connected as ${accountLabel} with the required upload scope. This plan can be saved for review.`,
     providerStatus,
-    accountId: providerStatus.account.id,
+    accountId: bound.account.id,
     accountLabel,
   };
 }

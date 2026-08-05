@@ -629,12 +629,15 @@ export async function POST(
 
     if (action === "preflight") {
       const status = await getPublicIntegrationStatus(destination);
+      const bound = status.accounts.find(
+        (candidate) => candidate.account.id === accountId
+      );
       if (
         status.configuration !== "ready" ||
         !status.connected ||
-        status.authorization.status !== "healthy" ||
-        !status.capabilities.publish ||
-        status.account?.id !== accountId
+        !bound ||
+        bound.authorization.status !== "healthy" ||
+        !bound.capabilities.publish
       ) {
         throw new IntegrationPublishScopeError();
       }
@@ -644,7 +647,7 @@ export async function POST(
           : null;
       return noStoreJson({
         provider: destination,
-        account: tiktok?.account ?? status.account,
+        account: tiktok?.account ?? bound.account,
         asset: {
           id: file.id,
           filename: file.filename,

@@ -6,7 +6,7 @@ import {
   rejectCrossOriginMutation,
 } from "@/lib/integrations/routes";
 import {
-  disconnectIntegrationProvider,
+  disconnectIntegrationAccount,
   forceDeleteLocalIntegrationData,
 } from "@/lib/integrations/service";
 
@@ -14,10 +14,12 @@ const LOCAL_DELETE_CONFIRMATION = "DELETE LOCAL DATA";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ provider: string }> }
+  {
+    params,
+  }: { params: Promise<{ provider: string; accountId: string }> }
 ) {
   if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();
-  const { provider } = await params;
+  const { provider, accountId } = await params;
   if (!isIntegrationProvider(provider)) {
     return noStoreJson(
       { error: "Unknown integration provider" },
@@ -25,6 +27,7 @@ export async function POST(
     );
   }
   try {
+    const decodedAccountId = decodeURIComponent(accountId);
     const payload = (await request.json().catch(() => null)) as {
       forceLocalDelete?: unknown;
       confirmation?: unknown;
@@ -40,10 +43,11 @@ export async function POST(
       );
     }
     const status = forceLocalDelete
-      ? await forceDeleteLocalIntegrationData(provider)
-      : await disconnectIntegrationProvider(provider);
+      ? await forceDeleteLocalIntegrationData(provider, decodedAccountId)
+      : await disconnectIntegrationAccount(provider, decodedAccountId);
     return noStoreJson({
       provider: status,
+      accountId: decodedAccountId,
       disconnected: true,
       localDataDeleted: forceLocalDelete,
       remoteRevocationConfirmed: !forceLocalDelete,

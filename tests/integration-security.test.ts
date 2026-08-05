@@ -235,7 +235,7 @@ async function run() {
   assert.doesNotMatch(rawStored.join("\n"), /stored-access-secret/);
   assert.doesNotMatch(rawStored.join("\n"), /stored-refresh-secret/);
   assert.deepEqual(
-    await readIntegrationConnection("tiktok", key, storage),
+    await readIntegrationConnection("tiktok", "open-id-1", key, storage),
     connection
   );
 }

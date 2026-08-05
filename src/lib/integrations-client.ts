@@ -1,5 +1,6 @@
 import {
   INTEGRATION_PROVIDERS,
+  type ConnectedIntegrationAccountStatus,
   type IntegrationPerformanceResponse,
   type IntegrationProvider,
   type IntegrationSyncResponse,
@@ -15,6 +16,7 @@ export type SocialProvider = IntegrationProvider;
 export type ProviderPostMetrics = OwnedPostMetrics;
 export type ProviderOwnedPost = PublicOwnedPostMetric;
 export type {
+  ConnectedIntegrationAccountStatus,
   IntegrationPerformanceResponse,
   IntegrationsResponse,
   PublicIntegrationAccount,
@@ -54,9 +56,15 @@ export async function fetchIntegrationPerformance(options?: {
   );
 }
 
-export async function syncIntegration(provider: SocialProvider) {
+export async function syncIntegration(
+  provider: SocialProvider,
+  accountId: string
+) {
   return parseResponse<IntegrationSyncResponse>(
-    await fetch(`/api/integrations/${provider}/sync`, { method: "POST" })
+    await fetch(
+      `/api/integrations/${provider}/accounts/${encodeURIComponent(accountId)}/sync`,
+      { method: "POST" }
+    )
   );
 }
 
@@ -77,23 +85,28 @@ export const LOCAL_INTEGRATION_DELETE_CONFIRMATION = "DELETE LOCAL DATA";
 
 export async function disconnectIntegration(
   provider: SocialProvider,
+  accountId: string,
   options?: { forceLocalDelete?: boolean; confirmation?: string }
 ) {
   return parseResponse<{
     provider: PublicIntegrationStatus;
+    accountId: string;
     disconnected: true;
     localDataDeleted: boolean;
     remoteRevocationConfirmed: boolean;
   }>(
-    await fetch(`/api/integrations/${provider}/disconnect`, {
-      method: "POST",
-      ...(options?.forceLocalDelete
-        ? {
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(options),
-          }
-        : {}),
-    })
+    await fetch(
+      `/api/integrations/${provider}/accounts/${encodeURIComponent(accountId)}/disconnect`,
+      {
+        method: "POST",
+        ...(options?.forceLocalDelete
+          ? {
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(options),
+            }
+          : {}),
+      }
+    )
   );
 }
 

@@ -36,6 +36,7 @@ import {
   LOCAL_INTEGRATION_DELETE_CONFIRMATION,
   SOCIAL_PROVIDERS,
   syncIntegration,
+  type ConnectedIntegrationAccountStatus,
   type PublicIntegrationStatus,
   type SocialProvider,
 } from "@/lib/integrations-client";
@@ -309,7 +310,7 @@ export function SettingsPageClient() {
         (candidate) =>
           candidate.provider === feedback.provider &&
           candidate.connected &&
-          candidate.account
+          candidate.accounts.length > 0
       );
       if (!confirmed) {
         setError(
@@ -317,10 +318,9 @@ export function SettingsPageClient() {
         );
         return;
       }
+      const account = confirmed.accounts[confirmed.accounts.length - 1].account;
       const accountLabel =
-        confirmed.account?.displayName ||
-        confirmed.account?.username ||
-        confirmed.displayName;
+        account?.displayName || account?.username || confirmed.displayName;
       setToast(`${confirmed.displayName} connected as ${accountLabel}.`);
       window.setTimeout(() => setToast(null), 2600);
     });
@@ -357,11 +357,7 @@ export function SettingsPageClient() {
     status: PublicIntegrationStatus,
     acceptPolicies = false
   ) {
-    if (
-      status.configuration !== "ready" ||
-      status.connected ||
-      !status.connectUrl
-    ) {
+    if (status.configuration !== "ready" || !status.connectUrl) {
       return;
     }
     if (status.provider !== "youtube") {
@@ -385,11 +381,14 @@ export function SettingsPageClient() {
     }
   }
 
-  async function syncProvider(status: PublicIntegrationStatus) {
+  async function syncProvider(
+    status: PublicIntegrationStatus,
+    accountId: string
+  ) {
     setBusyProvider(status.provider);
     setIntegrationsError(null);
     try {
-      const result = await syncIntegration(status.provider);
+      const result = await syncIntegration(status.provider, accountId);
       await refreshIntegrations();
       notify(
         `${status.displayName} synced ${result.posts.length} owned post${result.posts.length === 1 ? "" : "s"}`
@@ -403,9 +402,17 @@ export function SettingsPageClient() {
     }
   }
 
-  async function disconnectProvider(status: PublicIntegrationStatus) {
+  async function disconnectProvider(
+    status: PublicIntegrationStatus,
+    accountId: string
+  ) {
+    const bound =
+      status.accounts.find((candidate) => candidate.account.id === accountId) ??
+      null;
     const accountName =
-      status.account?.displayName || status.account?.username || status.displayName;
+      bound?.account.displayName ||
+      bound?.account.username ||
+      status.displayName;
     if (
       !window.confirm(
         `Disconnect ${accountName} from ${status.displayName}? Provider-owned metrics will stop refreshing. Imported CSV data will not be removed. Disconnect is blocked while a publication is pending or processing.`
@@ -417,21 +424,21 @@ export function SettingsPageClient() {
     setBusyProvider(status.provider);
     setIntegrationsError(null);
     try {
-      await disconnectIntegration(status.provider);
+      await disconnectIntegration(status.provider, accountId);
       await refreshIntegrations();
-      notify(`${status.displayName} disconnected`);
+      notify(`${accountName} disconnected from ${status.displayName}`);
     } catch (cause) {
       const message =
         cause instanceof Error
           ? cause.message
-          : `Unable to disconnect ${status.displayName}`;
+          : `Unable to disconnect ${accountName}`;
       if (/provider revocation failed/i.test(message)) {
         const confirmation = window.prompt(
           `${status.displayName} did not confirm remote revocation. To permanently delete the local connection, encrypted tokens, and cached metrics anyway, type ${LOCAL_INTEGRATION_DELETE_CONFIRMATION}. You must separately revoke PostForge in ${status.displayName}'s account permissions.`
         );
         if (confirmation === LOCAL_INTEGRATION_DELETE_CONFIRMATION) {
           try {
-            await disconnectIntegration(status.provider, {
+            await disconnectIntegration(status.provider, accountId, {
               forceLocalDelete: true,
               confirmation,
             });
@@ -469,7 +476,10 @@ export function SettingsPageClient() {
       <SettingsNavigation
         tab={tab}
         onSelect={selectTab}
-        connectedIntegrations={providers.filter((provider) => provider.connected).length}
+        connectedIntegrations={providers.reduce(
+          (sum, provider) => sum + provider.accounts.length,
+          0
+        )}
       />
 
       <main className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
@@ -550,17 +560,21 @@ export function IntegrationsPanel({
     status: PublicIntegrationStatus,
     acceptPolicies?: boolean
   ) => void;
-  onSync: (status: PublicIntegrationStatus) => void;
-  onDisconnect: (status: PublicIntegrationStatus) => void;
+  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
+  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
   onOpenWebhooks: () => void;
 }) {
+  const connectedCount = providers.reduce(
+    (sum, provider) => sum + provider.accounts.length,
+    0
+  );
   return (
     <>
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div>
           <p className="pf-eyebrow">Connections</p>
           <h2 className="mt-1 text-[23px] font-semibold tracking-[-0.035em]">Integrations</h2>
-          <p className="mt-1 text-[10px] text-[#858681]">One server-owned connection state powers Performance and destination readiness.</p>
+          <p className="mt-1 text-[10px] text-[#858681]">Connect every account you publish or measure. Each account keeps its own scope and sync state.</p>
         </div>
         <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0">
           <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
@@ -572,7 +586,7 @@ export function IntegrationsPanel({
         <span className="grid size-7 place-items-center rounded-full bg-[#378EFF] text-[10px] text-white">i</span>
         <div className="min-w-0">
           <b className="block text-[11px]">Connections are server-owned</b>
-          <p className="mt-1 text-[10px] leading-3 text-[#6F7D8F]">PostForge only reports an account as connected after OAuth and server-side token storage succeed.</p>
+          <p className="mt-1 text-[10px] leading-3 text-[#6F7D8F]">PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported.</p>
         </div>
         <ShieldCheck className="size-4 text-[#378EFF]" />
       </div>
@@ -584,8 +598,14 @@ export function IntegrationsPanel({
         </div>
       )}
 
-      <SectionHeading title="Social accounts" description="Connect supported destinations and use the same owned-post data in Performance." />
-      <div className="grid gap-3 min-[1100px]:grid-cols-2 min-[1360px]:grid-cols-3" aria-busy={loading}>
+      <div className="mt-5 flex items-end justify-between gap-3">
+        <div>
+          <h3 className="text-[13px] font-semibold">Social accounts</h3>
+          <p className="mt-1 text-[10px] text-[#858681]">Multiple accounts per platform share the same server-owned connection state in Performance and Automations.</p>
+        </div>
+        <span className="shrink-0 text-[10px] text-[#999A95]">{connectedCount} connected</span>
+      </div>
+      <div className="mt-3 grid gap-3" aria-busy={loading}>
         {SOCIAL_PROVIDERS.map((provider) => (
           <SocialIntegrationCard
             key={provider}
@@ -625,94 +645,76 @@ export function SocialIntegrationCard({
     status: PublicIntegrationStatus,
     acceptPolicies?: boolean
   ) => void;
-  onSync: (status: PublicIntegrationStatus) => void;
-  onDisconnect: (status: PublicIntegrationStatus) => void;
+  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
+  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
 }) {
   const [youtubePolicyConsent, setYouTubePolicyConsent] = useState(false);
   const content = PROVIDER_CONTENT[provider];
   const displayName = status?.displayName ?? provider[0].toUpperCase() + provider.slice(1);
   const notConfigured = status?.configuration === "not_configured";
-  const connected = Boolean(status?.connected && status.account);
+  const connected = Boolean(status?.connected && status.accounts.length > 0);
   const unavailable = !loading && !status;
-  const authorizationRequired =
-    Boolean(status?.connected) &&
-    (status?.authorization.status !== "healthy" ||
-      (provider === "youtube" &&
-        status?.youtubeCompliance?.consentAccepted !== true));
-  const connectionUnreadable =
-    Boolean(status) && !status?.connected && status?.sync.status === "error";
-  const syncLabel = authorizationRequired
-    ? "Reconnect required"
-      : status?.sync.status === "error"
-      ? "Sync error"
-      : status?.sync.status === "partial"
-        ? "Partially synced"
-        : connected
-          ? "Connected"
-          : status?.configuration === "ready"
-            ? "Ready to connect"
-            : "Not configured";
-  const syncTone = authorizationRequired || status?.sync.status === "error"
-    ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]"
-    : status?.sync.status === "partial"
-      ? "border-[#E7C990] bg-[#FFFAEC] text-[#806126]"
-      : connected
-        ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]"
-        : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]";
-  const accountName = status?.account?.displayName || status?.account?.username || `${displayName} account`;
-  const accountUsername = status?.account?.username
-    ? status.account.username.startsWith("@")
-      ? status.account.username
-      : `@${status.account.username}`
-    : "Username unavailable";
   const youtubeCompliance = status?.youtubeCompliance;
   const youtubeOAuthNeedsConsent =
     provider === "youtube" &&
     status?.configuration === "ready" &&
-    (!connected || authorizationRequired);
+    (!connected || status.accounts.some((account) => account.authorization.status !== "healthy"));
   const canStartOAuth =
     provider !== "youtube" ||
     (Boolean(youtubeCompliance) && youtubePolicyConsent);
 
   return (
-    <article data-social-provider={provider} className="pf-card flex min-h-[236px] flex-col p-4">
-      <div className="flex items-start justify-between gap-3">
-        <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9" />
-        {loading && !status ? (
-          <span className="h-5 w-20 animate-pulse rounded-full bg-[#ECEDE7]" />
-        ) : (
-          <span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[.06em]", unavailable ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]" : syncTone)}>
-            {unavailable ? "Status unavailable" : syncLabel}
-          </span>
-        )}
-      </div>
-      <h3 className="mt-3 text-[11px] font-semibold">{displayName}</h3>
-      <p className="mt-1 text-[10px] leading-4 text-[#858681]">{content.description}</p>
-
-      {connected && status?.account ? (
-        <div className="mt-3 rounded-[8px] border border-[#E0E1DA] bg-[#FAFAF8] p-2.5">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">
-              {accountName.slice(0, 2).toUpperCase()}
-            </span>
-            <span className="min-w-0 flex-1">
-              <b className="block truncate text-[11px]">{accountName}</b>
-              <small className="mt-0.5 block truncate text-[9px] text-[#858681]">{accountUsername}</small>
-            </span>
-            {status.account.profileUrl && <Link href={status.account.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${displayName} profile`} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#DADBD2] bg-white"><ExternalLink className="size-3" /></Link>}
+    <article data-social-provider={provider} className="pf-card p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
+          <div className="min-w-0">
+            <h3 className="text-[13px] font-semibold">{displayName}</h3>
+            <p className="mt-0.5 text-[10px] text-[#858681]">{status?.connected ? `${status.accounts.length} connected` : "No account connected"}</p>
           </div>
-          <p className={cn("mt-2 flex min-w-0 items-start gap-1.5 break-words text-[9px] [overflow-wrap:anywhere]", authorizationRequired || status.sync.status === "error" ? "text-[#B83F2D]" : status.sync.status === "partial" ? "text-[#806126]" : "text-[#777873]") }>
-            <span className={cn("mt-1 size-1.5 shrink-0 rounded-full", authorizationRequired || status.sync.status === "error" ? "bg-[#EF4444]" : status.sync.status === "partial" ? "bg-[#E1A52F]" : "bg-[#22C55E]")} />
-            {authorizationRequired ? "Authorization must be renewed" : status.sync.status === "partial" ? status.sync.warnings[0] ?? "Some provider metrics were unavailable" : status.sync.lastSuccessfulAt ? <>Last synced <time dateTime={status.sync.lastSuccessfulAt}>{formatConnectionDate(status.sync.lastSuccessfulAt)}</time></> : status.sync.status === "error" ? status.sync.warnings[0] ?? "Last sync failed" : "Not synced yet"}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {(["metrics", "publish"] as const).map((capability) => <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", status.capabilities[capability] ? "border-[#C8DDCE] bg-[#F0F8F2] text-[#347646]" : "border-[#DEDFD8] bg-white text-[#999A95]")}>{capability === "metrics" ? "Metrics" : status.publishingUnavailableReason ? "Upload runtime" : "Upload scope"} {status.capabilities[capability] ? "verified" : capability === "publish" && status.publishingUnavailableReason ? "unavailable" : "not granted"}</span>)}
-          </div>
-          {status.publishingUnavailableReason && (
-            <p className="mt-2 min-w-0 break-words text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">
-              {status.publishingUnavailableReason}
-            </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {loading && !status ? (
+            <span className="h-5 w-20 animate-pulse rounded-full bg-[#ECEDE7]" />
+          ) : (
+            <span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[.06em]", unavailable ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]" : connected ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]" : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]")}>
+              {unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"}
+            </span>
           )}
+          {status?.configuration === "ready" && !loading && status.connected && (
+            <button type="button" onClick={() => onConnect(status, youtubePolicyConsent)} disabled={busy || !canStartOAuth} className="pf-button-secondary h-8 px-2.5 text-[10px]" title={`Connect another ${displayName} account`}>
+              <Plug className="size-3" /> Connect another
+            </button>
+          )}
+        </div>
+      </div>
+      <p className="mt-2 max-w-[560px] text-[10px] leading-4 text-[#858681]">{content.description}</p>
+
+      {status?.connected && status.accounts.length > 0 ? (
+        <div className="mt-3 grid gap-2">
+          {status.accounts.map((account) => (
+            <AccountRow
+              key={account.account.id}
+              providerStatus={status}
+              displayName={displayName}
+              account={account}
+              busy={busy}
+              onSync={onSync}
+              onDisconnect={onDisconnect}
+              onReconnect={() =>
+                onConnect(
+                  {
+                    ...status,
+                    connected: false,
+                    accounts: [],
+                    accountCount: 0,
+                  },
+                  youtubePolicyConsent
+                )
+              }
+              canStartOAuth={canStartOAuth}
+            />
+          ))}
         </div>
       ) : notConfigured ? (
         <div className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5">
@@ -722,21 +724,13 @@ export function SocialIntegrationCard({
           {content.policyLinks && (
             <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
               {content.policyLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
-                >
+                <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]">
                   {link.label} <ExternalLink className="size-2.5 shrink-0" />
                 </Link>
               ))}
             </div>
           )}
         </div>
-      ) : connectionUnreadable && status ? (
-        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">{status.sync.warnings[0] ?? "Stored credentials could not be read. Reconnect this account."}</p>
       ) : unavailable ? (
         <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">The integration service did not return this provider. Refresh status before attempting a connection.</p>
       ) : (
@@ -744,15 +738,9 @@ export function SocialIntegrationCard({
       )}
 
       {content.policyLinks && !notConfigured && (
-        <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
+        <div className="mt-3 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
           {content.policyLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]"
-            >
+            <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]">
               {link.label} <ExternalLink className="size-2.5 shrink-0" />
             </Link>
           ))}
@@ -760,10 +748,7 @@ export function SocialIntegrationCard({
       )}
 
       {provider === "youtube" && youtubeCompliance && (
-        <div
-          data-youtube-owner-policies
-          className="mt-3 rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] p-2.5"
-        >
+        <div data-youtube-owner-policies className="mt-3 rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] p-2.5">
           <b className="block text-[10px] text-[#364C68]">
             PostForge policies for YouTube API Services
           </b>
@@ -773,13 +758,7 @@ export function SocialIntegrationCard({
               ["Terms", youtubeCompliance.termsUrl],
               ["Data deletion", youtubeCompliance.dataDeletionUrl],
             ].map(([label, href]) => (
-              <Link
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#246FC2] [overflow-wrap:anywhere]"
-              >
+              <Link key={label} href={href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#246FC2] [overflow-wrap:anywhere]">
                 {label} <ExternalLink className="size-2.5 shrink-0" />
               </Link>
             ))}
@@ -806,23 +785,103 @@ export function SocialIntegrationCard({
         </div>
       )}
 
-      <div className="mt-auto flex gap-2 pt-3">
-        {connected && status ? (
-          <>
-            <button type="button" onClick={() => authorizationRequired ? onConnect({ ...status, connected: false }, youtubePolicyConsent) : onSync(status)} disabled={busy || (authorizationRequired && (!status.connectUrl || !canStartOAuth))} className="pf-button-secondary min-w-0 flex-1">
-              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />} {authorizationRequired ? "Reconnect" : "Sync"}
-            </button>
-            <button type="button" onClick={() => onDisconnect(status)} disabled={busy} className="pf-button-secondary min-w-0 flex-1 text-[#B83F2D]">
-              <Unplug className="size-3.5" /> Disconnect
-            </button>
-          </>
-        ) : (
+      {!status?.connected && (
+        <div className="mt-3 flex">
           <button type="button" onClick={() => status && onConnect(status, youtubePolicyConsent)} disabled={!status || status.configuration !== "ready" || !status.connectUrl || loading || busy || !canStartOAuth} className={cn("h-9 w-full rounded-[8px] text-[11px] font-semibold", status?.configuration === "ready" && status.connectUrl && canStartOAuth ? "bg-[#232323] text-white hover:bg-black" : "cursor-not-allowed bg-[#E5E6DF] text-[#999A95]")}>
-            {loading && !status ? "Checking configuration…" : notConfigured ? "Setup required" : unavailable ? "Status unavailable" : connectionUnreadable ? `Reconnect ${displayName}` : status?.connectUrl ? `Connect ${displayName}` : "Connect endpoint unavailable"}
+            {loading && !status ? "Checking configuration…" : notConfigured ? "Setup required" : unavailable ? "Status unavailable" : status?.connectUrl ? `Connect ${displayName}` : "Connect endpoint unavailable"}
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </article>
+  );
+}
+
+function AccountRow({
+  providerStatus,
+  displayName,
+  account,
+  busy,
+  onSync,
+  onDisconnect,
+  onReconnect,
+  canStartOAuth,
+}: {
+  providerStatus: PublicIntegrationStatus;
+  displayName: string;
+  account: ConnectedIntegrationAccountStatus;
+  busy: boolean;
+  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
+  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
+  onReconnect: () => void;
+  canStartOAuth: boolean;
+}) {
+  const { account: info } = account;
+  const accountName = info.displayName || info.username || `${displayName} account`;
+  const accountUsername = info.username
+    ? info.username.startsWith("@")
+      ? info.username
+      : `@${info.username}`
+    : "Username unavailable";
+  const authorizationRequired = account.authorization.status !== "healthy";
+  const syncTone = authorizationRequired || account.sync.status === "error"
+    ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]"
+    : account.sync.status === "partial"
+      ? "border-[#E7C990] bg-[#FFFAEC] text-[#806126]"
+      : account.sync.status === "ready"
+        ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]"
+        : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]";
+  const syncLabel = authorizationRequired
+    ? "Reconnect required"
+    : account.sync.status === "error"
+      ? "Sync error"
+      : account.sync.status === "partial"
+        ? "Partially synced"
+        : account.sync.status === "ready"
+          ? "Ready"
+          : "Not synced";
+  return (
+    <div className="grid min-w-0 gap-2 rounded-[10px] border border-[#E0E1DA] bg-[#FAFAF8] p-2.5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-3">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">
+          {accountName.slice(0, 2).toUpperCase()}
+        </span>
+        <span className="min-w-0 flex-1">
+          <b className="block truncate text-[11px]">{accountName}</b>
+          <small className="mt-0.5 block truncate text-[9px] text-[#858681]">{accountUsername}</small>
+        </span>
+        {info.profileUrl && <Link href={info.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${displayName} profile`} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#DADBD2] bg-white"><ExternalLink className="size-3" /></Link>}
+      </div>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div className="flex flex-wrap gap-1">
+          {(["metrics", "publish"] as const).map((capability) => (
+            <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", account.capabilities[capability] ? "border-[#C8DDCE] bg-[#F0F8F2] text-[#347646]" : "border-[#DEDFD8] bg-white text-[#999A95]")}>
+              {capability === "metrics" ? "Metrics" : account.publishingUnavailableReason ? "Upload runtime" : "Upload scope"} {account.capabilities[capability] ? "verified" : capability === "publish" && account.publishingUnavailableReason ? "unavailable" : "not granted"}
+            </span>
+          ))}
+        </div>
+        <span className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", syncTone)}>{syncLabel}</span>
+        {authorizationRequired && <span className="rounded-full border border-[#F0B5AA] bg-[#FFF2EF] px-1.5 py-0.5 text-[9px] font-semibold text-[#B83F2D]">Authorization required</span>}
+      </div>
+      {account.sync.status === "ready" && account.sync.lastSuccessfulAt && (
+        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#777873] [overflow-wrap:anywhere] lg:col-span-2">
+          Last synced <time dateTime={account.sync.lastSuccessfulAt}>{formatConnectionDate(account.sync.lastSuccessfulAt)}</time>
+        </p>
+      )}
+      {account.publishingUnavailableReason && (
+        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere] lg:col-span-2">{account.publishingUnavailableReason}</p>
+      )}
+      {account.sync.status === "error" && account.sync.warnings[0] && (
+        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#B83F2D] [overflow-wrap:anywhere] lg:col-span-2">{account.sync.warnings[0]}</p>
+      )}
+      <div className="flex flex-wrap gap-1.5 lg:col-span-2">
+        <button type="button" onClick={() => authorizationRequired ? onReconnect() : onSync(providerStatus, account.account.id)} disabled={busy || (authorizationRequired && !canStartOAuth)} className="pf-button-secondary h-7 px-2.5 text-[10px]">
+          {busy ? <Loader2 className="size-3 animate-spin" /> : <RefreshCw className="size-3" />} {authorizationRequired ? "Reconnect" : "Sync"}
+        </button>
+        <button type="button" onClick={() => onDisconnect(providerStatus, account.account.id)} disabled={busy} className="pf-button-secondary h-7 px-2.5 text-[10px] text-[#B83F2D]">
+          <Unplug className="size-3" /> Disconnect
+        </button>
+      </div>
+    </div>
   );
 }
 

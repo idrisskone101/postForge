@@ -190,36 +190,53 @@ function integrationStatus(
           : "YouTube",
     configuration: "ready",
     connected: true,
-    account: {
-      id: `${provider}-account-1`,
-      username: "postforge",
-      displayName: "PostForge Studio",
-      avatarUrl: null,
-      profileUrl: null,
-    },
-    grantedScopes: ["publish"],
-    capabilities: {
-      profile: true,
-      ownedMedia: true,
-      metrics: true,
-      publish: true,
-    },
-    connectedAt: "2026-08-03T12:00:00.000Z",
-    updatedAt: "2026-08-03T12:00:00.000Z",
-    authorization: {
-      status: "healthy",
-      lastCheckedAt: "2026-08-03T12:00:00.000Z",
-    },
-    sync: {
-      status: "ready",
-      lastAttemptAt: "2026-08-03T12:00:00.000Z",
-      lastSuccessfulAt: "2026-08-03T12:00:00.000Z",
-      warnings: [],
-    },
-    publishingUnavailableReason: null,
+    accountCount: 1,
+    accounts: [
+      {
+        account: {
+          id: `${provider}-account-1`,
+          username: "postforge",
+          displayName: "PostForge Studio",
+          avatarUrl: null,
+          profileUrl: null,
+        },
+        grantedScopes: ["publish"],
+        capabilities: {
+          profile: true,
+          ownedMedia: true,
+          metrics: true,
+          publish: true,
+        },
+        connectedAt: "2026-08-03T12:00:00.000Z",
+        updatedAt: "2026-08-03T12:00:00.000Z",
+        authorization: {
+          status: "healthy",
+          lastCheckedAt: "2026-08-03T12:00:00.000Z",
+        },
+        sync: {
+          status: "ready",
+          lastAttemptAt: "2026-08-03T12:00:00.000Z",
+          lastSuccessfulAt: "2026-08-03T12:00:00.000Z",
+          warnings: [],
+        },
+        publishingUnavailableReason: null,
+      },
+    ],
     youtubeCompliance: null,
     connectUrl: `/api/integrations/${provider}/connect`,
     ...patch,
+  };
+}
+
+function withAccount(
+  provider: IntegrationProvider,
+  patch: Partial<PublicIntegrationStatus["accounts"][number]>
+): PublicIntegrationStatus {
+  const base = integrationStatus(provider);
+  return {
+    ...base,
+    accountCount: 1,
+    accounts: [{ ...base.accounts[0], ...patch }],
   };
 }
 
@@ -235,18 +252,17 @@ const notConfiguredReadiness = resolveAutomationDestination("instagram", [
   integrationStatus("instagram", {
     configuration: "not_configured",
     connected: false,
-    account: null,
   }),
 ]);
 assert.equal(notConfiguredReadiness.code, "not_configured");
 
 const disconnectedReadiness = resolveAutomationDestination("tiktok", [
-  integrationStatus("tiktok", { connected: false, account: null }),
+  integrationStatus("tiktok", { connected: false }),
 ]);
 assert.equal(disconnectedReadiness.code, "disconnected");
 
 const missingPublishReadiness = resolveAutomationDestination("youtube", [
-  integrationStatus("youtube", {
+  withAccount("youtube", {
     capabilities: {
       profile: true,
       ownedMedia: true,
@@ -262,7 +278,7 @@ assert.equal(missingPublishReadiness.accountId, "youtube-account-1");
 const missingInstagramProbeReadiness = resolveAutomationDestination(
   "instagram",
   [
-    integrationStatus("instagram", {
+    withAccount("instagram", {
       capabilities: {
         profile: true,
         ownedMedia: true,
@@ -338,7 +354,7 @@ assert.equal(
 );
 assert.equal(
   automationStatusAfterReview("instagram", [
-    integrationStatus("instagram", {
+    withAccount("instagram", {
       capabilities: {
         profile: true,
         ownedMedia: true,

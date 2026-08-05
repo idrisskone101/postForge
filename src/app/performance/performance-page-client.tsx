@@ -23,6 +23,7 @@ import {
   fetchIntegrationPerformance,
   integrationAccountKey,
   syncIntegration,
+  type ConnectedIntegrationAccountStatus,
   type IntegrationPerformanceResponse,
   type ProviderPostMetrics,
   type PublicIntegrationStatus,
@@ -271,16 +272,21 @@ function providerDisplayName(provider: SocialProvider) {
     : provider[0].toUpperCase() + provider.slice(1);
 }
 
-function connectedAccountName(
-  status: PublicIntegrationStatus & {
-    account: NonNullable<PublicIntegrationStatus["account"]>;
-  }
-) {
+function connectedAccountName(account: ConnectedIntegrationAccountStatus) {
   return (
-    status.account.displayName ||
-    (status.account.username ? accountHandle(status.account.username) : `${status.displayName} account`)
+    account.account.displayName ||
+    (account.account.username
+      ? accountHandle(account.account.username)
+      : "Connected account")
   );
 }
+
+export type ConnectedAccountView = {
+  provider: SocialProvider;
+  status: PublicIntegrationStatus;
+  account: ConnectedIntegrationAccountStatus;
+  sourceKey: string;
+};
 
 function accountHandle(username: string | null) {
   return username
@@ -406,20 +412,23 @@ export function PerformancePageClient() {
     void loadAll();
   }, [loadAll]);
 
-  const connectedAccounts = useMemo(
+  const connectedAccounts = useMemo<ConnectedAccountView[]>(
     () =>
-      providerData.providers.filter(
-        (status): status is PublicIntegrationStatus & {
-          account: NonNullable<PublicIntegrationStatus["account"]>;
-        } => status.connected && Boolean(status.account)
+      providerData.providers.flatMap((status) =>
+        status.connected
+          ? status.accounts.map((account) => ({
+              provider: status.provider,
+              status,
+              account,
+              sourceKey: integrationAccountKey(status.provider, account.account.id),
+            }))
+          : []
       ),
     [providerData.providers]
   );
 
   const sourceOptions = useMemo(() => {
-    const options = connectedAccounts.map((status) =>
-      integrationAccountKey(status.provider, status.account.id)
-    );
+    const options = connectedAccounts.map((account) => account.sourceKey);
     if (canAggregateConnectedProviders(connectedAccounts)) {
       options.unshift("all-connected");
     }
@@ -437,8 +446,7 @@ export function PerformancePageClient() {
     : sourceOptions[0] ?? "";
 
   const activeAccount = connectedAccounts.find(
-    (status) =>
-      integrationAccountKey(status.provider, status.account.id) === activeSource
+    (account) => account.sourceKey === activeSource
   );
   const activeIsYouTube = activeAccount?.provider === "youtube";
 
@@ -447,9 +455,7 @@ export function PerformancePageClient() {
       return (csvDataset?.posts ?? []).map(csvPostToView);
     }
     const connectedKeys = new Set(
-      connectedAccounts.map((status) =>
-        integrationAccountKey(status.provider, status.account.id)
-      )
+      connectedAccounts.map((account) => account.sourceKey)
     );
     return providerData.posts
       .filter((post) => {
@@ -489,6 +495,24 @@ export function PerformancePageClient() {
   const aggregates = useMemo(
     () => aggregatePerformanceSource(posts, activeAccount?.provider),
     [activeAccount?.provider, posts]
+  );
+
+  const accountAggregates = useMemo(
+    () =>
+      connectedAccounts.map((entry) => {
+        const key = entry.sourceKey;
+        const accountPosts = providerData.posts.filter(
+          (post) => integrationAccountKey(post.provider, post.accountId) === key
+        );
+        return {
+          ...entry,
+          aggregate: aggregatePerformanceSource(
+            accountPosts.map(providerPostToView),
+            entry.provider
+          ),
+        };
+      }),
+    [connectedAccounts, providerData.posts]
   );
 
   function notify(message: string) {
@@ -544,18 +568,29 @@ export function PerformancePageClient() {
     }
   }
 
-  async function syncProviders(providers: SocialProvider[]) {
-    const unique = [...new Set(providers)];
-    if (unique.length === 0) return;
+  async function syncAccounts(targets: ConnectedAccountView[]) {
+    const unique = new Map<string, ConnectedAccountView>();
+    for (const target of targets) {
+      unique.set(
+        `${target.provider}:${target.account.account.id}`,
+        target
+      );
+    }
+    if (unique.size === 0) return;
     setProviderError(null);
     const failures: string[] = [];
     try {
-      for (const provider of unique) {
-        setBusyProvider(provider);
+      for (const target of unique.values()) {
+        setBusyProvider(target.provider);
         try {
-          await syncIntegration(provider);
+          await syncIntegration(
+            target.provider,
+            target.account.account.id
+          );
         } catch {
-          failures.push(providerDisplayName(provider));
+          failures.push(
+            connectedAccountName(target.account) || providerDisplayName(target.provider)
+          );
         }
       }
     } finally {
@@ -566,23 +601,28 @@ export function PerformancePageClient() {
       setProviderError(
         `${failures.join(", ")} could not be synced. Other connected accounts were still attempted.`
       );
+    } else {
+      notify(
+        unique.size === 1
+          ? `${connectedAccountName([...unique.values()][0].account)} synced`
+          : `${unique.size} connected accounts synced`
+      );
     }
-    else notify(`${unique.length === 1 ? providerDisplayName(unique[0]) : "Connected accounts"} synced`);
   }
 
-  const syncTargets = activeSource === "all-connected"
-    ? connectedAccounts
-        .filter(
-          (status) =>
-            status.provider !== "youtube" &&
-            status.authorization.status === "healthy"
-        )
-        .map((status) => status.provider)
-    : activeAccount
-      ? activeAccount.authorization.status === "healthy"
-        ? [activeAccount.provider]
-        : []
+  const syncTargets = useMemo(() => {
+    if (activeSource === "all-connected") {
+      return connectedAccounts.filter(
+        (entry) =>
+          entry.provider !== "youtube" &&
+          entry.account.authorization.status === "healthy"
+      );
+    }
+    return activeAccount &&
+      activeAccount.account.authorization.status === "healthy"
+      ? [activeAccount]
       : [];
+  }, [activeAccount, activeSource, connectedAccounts]);
 
   if (loading) {
     return (
@@ -645,10 +685,48 @@ export function PerformancePageClient() {
             busyProvider={busyProvider}
             lastUpdatedAt={providerData.lastUpdatedAt}
             onSelect={setSelectedSource}
-            onSync={(provider) => syncProviders([provider])}
+            onSync={(entry) => syncAccounts([entry])}
             onImport={() => inputRef.current?.click()}
             onClearCsv={clearCsvData}
           />
+
+          {connectedAccounts.length > 0 && (
+            <section className="mt-4" aria-label="Per account performance">
+              <p className="pf-eyebrow">Accounts</p>
+              <h2 className="mt-1 text-[13px] font-semibold">Performance by account</h2>
+              <div className="mt-2 grid gap-2 min-[1100px]:grid-cols-2 min-[1400px]:grid-cols-3">
+                {accountAggregates.map((entry) => (
+                  <article key={entry.sourceKey} className="rounded-[9px] border border-[#DEDFD8] p-2.5">
+                    <div className="flex items-center gap-2">
+                      <SocialProviderIcon provider={entry.provider} className="size-6 shrink-0" />
+                      <div className="min-w-0">
+                        <b className="block truncate text-[10px]">{connectedAccountName(entry.account)}</b>
+                        <span className="block truncate text-[9px] text-[#858681]">{entry.account.account.username ? accountHandle(entry.account.account.username) : entry.status.displayName}</span>
+                      </div>
+                      {entry.account.authorization.status !== "healthy" && (
+                        <Link href="/settings?tab=integrations" className="ml-auto rounded-full border border-[#E4C0B8] bg-white px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[.05em] text-[#B83F2D]">Reconnect</Link>
+                      )}
+                    </div>
+                    <div className="mt-2 grid grid-cols-3 gap-x-2 gap-y-1.5 border-t border-[#E9EAE4] pt-2">
+                      {([
+                        ["Views", entry.aggregate.views.value],
+                        ["Likes", entry.aggregate.likes.value],
+                        ["Comments", entry.aggregate.comments.value],
+                        ["Shares", entry.aggregate.shares.value],
+                        ["Saves", entry.aggregate.saves.value],
+                        ["Posts", entry.aggregate.views.total],
+                      ] as const).map(([label, value]) => (
+                        <div key={label}>
+                          <span className="block text-[8px] font-bold uppercase tracking-[.07em] text-[#999A95]">{label}</span>
+                          <b className="mt-0.5 block font-mono text-[11px] tabular-nums">{value === null ? "—" : formatCompact.format(value)}</b>
+                        </div>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
 
           {activeIsYouTube && (
             <p className="mt-3 min-w-0 break-words rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2 text-[10px] leading-4 text-[#476785] [overflow-wrap:anywhere]">
@@ -664,7 +742,7 @@ export function PerformancePageClient() {
                   ? csvDataset?.accountLabel
                   : activeSource === "all-connected"
                     ? "All connected non-YouTube accounts"
-                    : activeAccount ? connectedAccountName(activeAccount) : "Connected account"}
+                    : activeAccount ? connectedAccountName(activeAccount.account) : "Connected account"}
               </h2>
               <p className="mt-1 min-w-0 break-words text-[10px] text-[#858681] [overflow-wrap:anywhere]">
                 {activeSource === "csv"
@@ -681,7 +759,7 @@ export function PerformancePageClient() {
               {activeSource === "csv" ? (
                 <button type="button" onClick={() => inputRef.current?.click()} disabled={importing} className="pf-button-secondary"><Upload className="size-3.5" /> Replace CSV</button>
               ) : (
-                <button type="button" onClick={() => syncProviders(syncTargets)} disabled={syncTargets.length === 0 || busyProvider !== null} className="pf-button-secondary">
+                <button type="button" onClick={() => syncAccounts(syncTargets)} disabled={syncTargets.length === 0 || busyProvider !== null} className="pf-button-secondary">
                   {busyProvider ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />} Sync {activeSource === "all-connected" ? "all" : "account"}
                 </button>
               )}
@@ -783,13 +861,13 @@ function PerformanceSourcePanel({
   onImport,
   onClearCsv,
 }: {
-  providers: Array<PublicIntegrationStatus & { account: NonNullable<PublicIntegrationStatus["account"]> }>;
+  providers: ConnectedAccountView[];
   csvDataset: PerformanceDataset | null;
   selectedSource: string;
   busyProvider: SocialProvider | null;
   lastUpdatedAt: string | null;
   onSelect: (source: string) => void;
-  onSync: (provider: SocialProvider) => void;
+  onSync: (entry: ConnectedAccountView) => void;
   onImport: () => void;
   onClearCsv: () => void;
 }) {
@@ -799,27 +877,27 @@ function PerformanceSourcePanel({
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div><p className="pf-eyebrow">Data sources</p><h2 id="performance-sources-title" className="pf-section-title mt-1">Connected accounts and local reports</h2><p className="mt-1 text-[10px] text-[#858681]">Provider data last refreshed {formatSyncDate(lastUpdatedAt)}</p></div>
         <label className="block w-full sm:w-72"><span className="mb-1 block text-[10px] font-semibold text-[#666762]">Active performance source</span><select aria-label="Active performance source" value={selectedSource} onChange={(event) => onSelect(event.target.value)} className="h-9 w-full rounded-[8px] border border-[#D7D8D0] bg-white px-3 text-[11px] outline-none focus:border-[#FF4A20]">
-          {providers.length > 0 && <optgroup label="Connected accounts">{allowAllConnected && <option value="all-connected">All connected non-YouTube accounts</option>}{providers.map((status) => <option key={integrationAccountKey(status.provider, status.account.id)} value={integrationAccountKey(status.provider, status.account.id)}>{status.displayName} · {accountHandle(status.account.username)}</option>)}</optgroup>}
+          {providers.length > 0 && <optgroup label="Connected accounts">{allowAllConnected && <option value="all-connected">All connected non-YouTube accounts</option>}{providers.map((entry) => <option key={entry.sourceKey} value={entry.sourceKey}>{entry.status.displayName} · {accountHandle(entry.account.account.username)}</option>)}</optgroup>}
           {csvDataset && <optgroup label="Local reports"><option value="csv">CSV · {csvDataset.accountLabel}</option></optgroup>}
         </select></label>
       </div>
 
       <div className="mt-4 grid gap-2 min-[1180px]:grid-cols-2 min-[1500px]:grid-cols-3">
-        {providers.map((status) => {
-          const key = integrationAccountKey(status.provider, status.account.id);
+        {providers.map((entry) => {
+          const key = entry.sourceKey;
           const selected =
             selectedSource === key ||
             (allowAllConnected &&
-              status.provider !== "youtube" &&
+              entry.provider !== "youtube" &&
               selectedSource === "all-connected");
           return (
             <article key={key} data-performance-account={key} className={cn("grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-[9px] border p-2.5", selected ? "border-[#AFC8EB] bg-[#F7FAFF]" : "border-[#E0E1DA] bg-[#FAFAF8]") }>
-              <SocialProviderIcon provider={status.provider} label={`${status.displayName} logo`} className="size-8" />
-              <div className="min-w-0"><b className="block truncate text-[11px]">{connectedAccountName(status)}</b><p className="mt-0.5 truncate text-[9px] text-[#858681]">{accountHandle(status.account.username)} · {status.authorization.status !== "healthy" ? "Reconnect required" : status.sync.status === "error" ? "Sync error" : status.sync.status === "partial" ? "Partial metrics" : formatSyncDate(status.sync.lastSuccessfulAt)}</p></div>
-              {status.authorization.status !== "healthy" ? (
-                <Link href="/settings?tab=integrations" aria-label={`Reconnect ${status.displayName} account ${accountHandle(status.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#E4C0B8] bg-white text-[#B83F2D]"><ExternalLink className="size-3.5" /></Link>
+              <SocialProviderIcon provider={entry.provider} label={`${entry.status.displayName} logo`} className="size-8" />
+              <div className="min-w-0"><b className="block truncate text-[11px]">{connectedAccountName(entry.account)}</b><p className="mt-0.5 truncate text-[9px] text-[#858681]">{accountHandle(entry.account.account.username)} · {entry.account.authorization.status !== "healthy" ? "Reconnect required" : entry.account.sync.status === "error" ? "Sync error" : entry.account.sync.status === "partial" ? "Partial metrics" : formatSyncDate(entry.account.sync.lastSuccessfulAt)}</p></div>
+              {entry.account.authorization.status !== "healthy" ? (
+                <Link href="/settings?tab=integrations" aria-label={`Reconnect ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#E4C0B8] bg-white text-[#B83F2D]"><ExternalLink className="size-3.5" /></Link>
               ) : (
-                <button type="button" onClick={() => onSync(status.provider)} disabled={busyProvider !== null} aria-label={`Sync ${status.displayName} account ${accountHandle(status.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#D7D8D0] bg-white text-[#555651] disabled:opacity-50">{busyProvider === status.provider ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}</button>
+                <button type="button" onClick={() => onSync(entry)} disabled={busyProvider !== null} aria-label={`Sync ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#D7D8D0] bg-white text-[#555651] disabled:opacity-50">{busyProvider === entry.provider ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}</button>
               )}
             </article>
           );

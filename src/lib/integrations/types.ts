@@ -39,12 +39,8 @@ export type PublicYouTubeCompliance = {
   acceptedAt: string | null;
 };
 
-export type PublicIntegrationStatus = {
-  provider: IntegrationProvider;
-  displayName: string;
-  configuration: "ready" | "not_configured";
-  connected: boolean;
-  account: PublicIntegrationAccount | null;
+export type ConnectedIntegrationAccountStatus = {
+  account: PublicIntegrationAccount;
   grantedScopes: string[];
   capabilities: IntegrationCapabilities;
   connectedAt: string | null;
@@ -61,6 +57,16 @@ export type PublicIntegrationStatus = {
   };
   /** Server runtime blocker distinct from an OAuth scope omission. */
   publishingUnavailableReason: string | null;
+};
+
+export type PublicIntegrationStatus = {
+  provider: IntegrationProvider;
+  displayName: string;
+  configuration: "ready" | "not_configured";
+  /** True when at least one account is connected. */
+  connected: boolean;
+  accountCount: number;
+  accounts: ConnectedIntegrationAccountStatus[];
   youtubeCompliance: PublicYouTubeCompliance | null;
   connectUrl: string;
 };
@@ -100,6 +106,7 @@ export type IntegrationPerformanceResponse = IntegrationsResponse & {
 
 export type IntegrationSyncResponse = {
   provider: PublicIntegrationStatus;
+  accountId: string;
   posts: PublicOwnedPostMetric[];
   syncedAt: string;
 };
