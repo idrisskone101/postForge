@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { GenerateOutputActions } from "../src/components/generate-output-actions";
 import {
   buildCloneHandoffHref,
+  buildContinueVideoHref,
   buildEnhancementRequest,
   buildGenerateSimilarHref,
   clampPreviewZoom,
@@ -58,6 +59,28 @@ assert.equal(
   "/ugc-clone?referenceFileId=file%2Fid"
 );
 assert.equal(buildCloneHandoffHref(), "/ugc-clone");
+
+const continueVideoHref = buildContinueVideoHref(
+  {
+    type: "video",
+    prompt: "Month three progress",
+    model: "kling-3.0",
+  },
+  "output-1"
+);
+assert.match(continueVideoHref, /^\/generate\?/);
+assert.match(continueVideoHref, /prompt=Month%20three%20progress/);
+assert.match(continueVideoHref, /referenceFileId=output-1/);
+assert.match(continueVideoHref, /model=kling-3\.0-i2v/);
+assert.doesNotMatch(continueVideoHref, /model=kling-3\.0&/);
+assert.equal(
+  buildContinueVideoHref({ type: "video", prompt: "Next", model: "veo3" }),
+  "/generate?prompt=Next&model=kling-3.0-i2v"
+);
+assert.throws(
+  () => buildContinueVideoHref({ type: "image", prompt: "Shot", model: "nano-banana-2" }),
+  /Only video outputs/
+);
 
 assert.equal(getGenerationStatusCopy("queued").title, "Queued for generation");
 assert.equal(getGenerationStatusCopy("processing").label, "Processing");

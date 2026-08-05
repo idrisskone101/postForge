@@ -42,16 +42,20 @@ export function getHomeJobProductionMetadata(
   const referenceFileIds = asStringArray(input?.referenceFileIds);
   const collectionAssetIds = asStringArray(input?.collectionAssetIds);
   const singleCollectionAssetId = asString(input?.collectionAssetId);
+  const continuitySeedId = asString(input?.referenceFileId);
   const referenceCount =
     referenceFileIds.length +
     collectionAssetIds.length +
-    (singleCollectionAssetId ? 1 : 0);
+    (singleCollectionAssetId ? 1 : 0) +
+    (continuitySeedId ? 1 : 0);
 
   let sourceDetail: string | null = null;
   if (sourceLabel) {
     sourceDetail = sourceLabel;
   } else if (sourceId) {
     sourceDetail = "Source linked";
+  } else if (continuitySeedId) {
+    sourceDetail = "Continuity seed linked";
   } else if (referenceCount > 0) {
     sourceDetail = `${referenceCount} saved reference${referenceCount === 1 ? "" : "s"}`;
   } else if (asString(input?.inputImageUrl)) {

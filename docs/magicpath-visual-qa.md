@@ -13,7 +13,7 @@ MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/file
 | Clone output review | `/ugc-clone/[id]` | `435054738661343232` | `435054738661343233` |
 | Gallery | `/gallery` | `435057987107835904` | `435057987107835905` |
 | Spend | `/costs` | `435058034046300160` | `435058034046300161` |
-| Generate studio | `/generate` | `435054350382039040` | `435054350382039041` |
+| Generate studio | `/generate` | `435054350382039040` | `435547714965622784` |
 | Generation editor | `/generate/[id]` | `435054353376751616` | `435054353376751617` |
 | Automations | `/automations` | `435056674701717504` | `435438532786552832` |
 | Automation templates | `/automations/new` template modal | `435056693118922752` | `435056693118922753` |
@@ -45,6 +45,7 @@ For every width, assert `document.documentElement.scrollWidth === document.docum
 - Gallery preserves filters, grid/list, inspector, selection, status actions, downloads, handoffs, deletion, bulk actions, and visible feedback.
 - Spend preserves `period=7d|30d|90d`, KPIs, charts, logs, CSV, pagination, and loading/empty/error states.
 - Generate preserves prompt and model prefills, model-specific fields, avatar and advanced controls, estimates, validation, polling, variants, editor tabs, retry, download, Gallery/similar/discard actions, and mobile behavior.
+- Generate video continuity: a server-owned output (video or image) can seed the next video through the Character continuity step. Videos get their first frame extracted server-side; images are used directly. The i2v model (`kling-3.0-i2v`) is selected automatically when a seed is picked, `?referenceFileId=` deep links prefill it, the editor offers "Continue this video" for completed video jobs, and seeds are mutually exclusive with character identity and visual collection references. Provider URLs are never persisted inputs; only the owned file id is.
 - New Automation, Performance, Collection, Character, and Settings capabilities persist real local data.
 - Character Builder preserves all 36 appearance groups in its saved recipe and generated-photo prompt. A changed recipe cannot be saved against a stale portrait; legacy or edited recipes must be rendered again before save.
 - Manual Automation runs create real image-generation jobs in the Review queue. Local schedules are opt-in, timezone-aware, idempotent per slot, and require a continuously running PostForge server; they never publish to a social provider.

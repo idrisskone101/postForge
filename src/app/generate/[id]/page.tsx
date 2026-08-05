@@ -52,6 +52,7 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import {
   buildCloneHandoffHref,
+  buildContinueVideoHref,
   buildEnhancementRequest,
   buildGenerateSimilarHref,
   clampPreviewZoom,
@@ -303,7 +304,7 @@ export default function JobDetailPage() {
   const handleApplyEnhancement = async (output: JobOutput) => {
     if (!job || isApplying || !enhancementInstruction.trim()) return;
     if (job.type === "video") {
-      router.push(buildGenerateSimilarHref(job));
+      router.push(buildContinueVideoHref(job, output.id));
       return;
     }
 
@@ -814,7 +815,7 @@ export default function JobDetailPage() {
                 {isApplying
                   ? "Starting enhancement…"
                   : job.type === "video"
-                    ? "Remix video in Generate"
+                    ? "Continue this video"
                     : "Apply enhancement"}
                 {isCompleted && job.type === "image" && (
                   <span className="ml-auto opacity-75">{formatCost(job.estimatedCost)}</span>
@@ -917,10 +918,19 @@ export default function JobDetailPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(buildGenerateSimilarHref(job))}
+                onClick={() =>
+                  router.push(
+                    job.type === "video"
+                      ? buildContinueVideoHref(job, featured?.id)
+                      : buildGenerateSimilarHref(job)
+                  )
+                }
                 className="h-10 w-full rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
               >
-                <Redo2 className="size-3.5" /> Remix in Generate Studio
+                <Redo2 className="size-3.5" />{" "}
+                {job.type === "video"
+                  ? "Continue this video"
+                  : "Remix in Generate Studio"}
               </Button>
             </div>
           )}

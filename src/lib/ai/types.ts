@@ -8,6 +8,8 @@ export interface ModelCapabilities {
   imageToImage?: boolean;
   textToVideo?: boolean;
   imageToVideo?: boolean;
+  /** Accepts a generated video's first frame as a seed for character continuity */
+  videoToVideo?: boolean;
   multiShot?: boolean;
   nativeAudio?: boolean;
   referenceImages?: boolean;

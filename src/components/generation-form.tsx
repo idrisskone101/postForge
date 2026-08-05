@@ -10,6 +10,7 @@ import {
   Clock3,
   ImageIcon,
   Loader2,
+  RefreshCw,
   Search,
   Sparkles,
   Users,
@@ -19,6 +20,7 @@ import {
 import { AvatarPicker } from "@/components/avatar-picker";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
 import { ModelPicker } from "@/components/model-picker";
+import { VideoReferencePicker } from "@/components/video-reference-picker";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -28,7 +30,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { WorkspaceState } from "@/components/workspace-state";
-import { calculateEstimatedCost } from "@/lib/ai/models";
+import {
+  calculateEstimatedCost,
+  getContinuityVideoModel,
+} from "@/lib/ai/models";
 import type { ModelDefinition } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
@@ -73,6 +78,7 @@ interface GenerateFormViewProps {
   onAppendToPrompt: (text: string) => void;
   avatarSection?: ReactNode;
   referenceSection?: ReactNode;
+  continuitySection?: ReactNode;
   avatarName?: string | null;
 }
 
@@ -173,6 +179,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [collectionAssetIds, setCollectionAssetIds] = useState<string[]>([]);
+  const [videoReferenceFileId, setVideoReferenceFileId] = useState<string | null>(
+    searchParams.get("referenceFileId") ?? null
+  );
+  const [videoSeedMissing, setVideoSeedMissing] = useState(false);
   const [identityPack, setIdentityPack] =
     useState<AvatarIdentityPackSummary | null>(null);
   const [identityError, setIdentityError] = useState<string | null>(null);
@@ -210,6 +220,22 @@ export function GenerationForm({ models }: GenerationFormProps) {
     };
   }, [avatarId]);
 
+  useEffect(() => {
+    if (!videoReferenceFileId) return;
+
+    const continuityModel = getContinuityVideoModel();
+    if (!continuityModel) {
+      setVideoReferenceFileId(null);
+      setSubmitError("No configured video model supports a video seed reference.");
+      return;
+    }
+
+    if (selectedDefinition?.capabilities.videoToVideo !== true) {
+      handleModelSelect(continuityModel.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (models.length === 0) return <GenerateEmptyState />;
 
   const selectedDefinition = models.find((model) => model.id === selectedModel);
@@ -231,6 +257,16 @@ export function GenerationForm({ models }: GenerationFormProps) {
       setCollectionAssetIds([]);
       setNotice(
         "Collection references were cleared because the selected model does not accept them."
+      );
+    }
+
+    if (
+      videoReferenceFileId &&
+      nextModel.capabilities.videoToVideo !== true
+    ) {
+      setVideoReferenceFileId(null);
+      setNotice(
+        "The video seed was cleared because the selected model does not accept it. Kling 3.0 Image-to-Video supports continuity."
       );
     }
 
@@ -289,6 +325,12 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setNotice(null);
     if (avatarId) return;
     setCollectionAssetIds(assetIds);
+    if (assetIds.length > 0 && videoReferenceFileId) {
+      setVideoReferenceFileId(null);
+      setNotice(
+        "The video seed was cleared because visual collections cannot be combined with it yet."
+      );
+    }
     if (assetIds.length === 0) return;
 
     const selectedSupportsCollection =
@@ -316,6 +358,42 @@ export function GenerationForm({ models }: GenerationFormProps) {
     } else {
       setCollectionAssetIds([]);
       setSubmitError("No configured model supports collection references.");
+    }
+  };
+
+  const handleVideoReferenceChange = (fileId: string | null) => {
+    setSubmitError(null);
+    setNotice(null);
+    setVideoSeedMissing(false);
+    setVideoReferenceFileId(fileId);
+    if (fileId && collectionAssetIds.length > 0) {
+      setCollectionAssetIds([]);
+      setNotice(
+        "Collection references were cleared because a video seed cannot be combined with them yet."
+      );
+    }
+    if (avatarId) {
+      setAvatarId(null);
+      setIdentityPack(null);
+      setIdentityError(null);
+      setNotice(
+        "Character identity was cleared because video seeds do not accept it yet."
+      );
+    }
+    if (!fileId) return;
+
+    if (selectedDefinition?.capabilities.videoToVideo === true) return;
+
+    const continuityModel = getContinuityVideoModel();
+    if (continuityModel) {
+      handleModelSelect(continuityModel.id);
+      setVideoReferenceFileId(fileId);
+      setNotice(
+        `${continuityModel.name} selected because it supports video seed references.`
+      );
+    } else {
+      setVideoReferenceFileId(null);
+      setSubmitError("No configured video model supports a video seed reference.");
     }
   };
 
@@ -351,6 +429,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
           enableAudio: enableAudio && selectedDefinition.id === "veo3",
           collectionAssetIds:
             collectionAssetIds.length > 0 ? collectionAssetIds.slice(0, 1) : undefined,
+          referenceFileId: videoReferenceFileId ?? undefined,
         });
         router.push(`/generate/${result.id}`);
       }
@@ -466,11 +545,52 @@ export function GenerationForm({ models }: GenerationFormProps) {
         selectedAssetIds={collectionAssetIds}
         onChange={handleCollectionAssetChange}
         maxSelection={maximumCollectionReferences}
-        disabled={Boolean(avatarId)}
-        disabledMessage="Clear character identity to use visual collection references."
+        disabled={Boolean(avatarId) || Boolean(videoReferenceFileId)}
+        disabledMessage="Clear the character identity or video seed to use visual collection references."
       />
     </div>
   );
+
+  const continuitySection =
+    selectedDefinition?.type === "video" ? (
+      <div className="animate-content-enter rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="grid size-6 place-items-center rounded-[7px] bg-[#EEF5FF] text-[#378EFF]">
+                <RefreshCw className="size-3.5" />
+              </span>
+              <h2 className="text-[13px] font-semibold text-[#30312E]">
+                Character continuity
+              </h2>
+              <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+                Optional
+              </span>
+            </div>
+            <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+              Seed the next video with a previous output so the same character
+              carries across your series.
+            </p>
+          </div>
+          {videoReferenceFileId && !videoSeedMissing && (
+            <button
+              type="button"
+              onClick={() => handleVideoReferenceChange(null)}
+              className="text-[10px] font-semibold text-[#378EFF] hover:underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <VideoReferencePicker
+          selectedFileId={videoReferenceFileId}
+          onChange={handleVideoReferenceChange}
+          onSeedMissingChange={setVideoSeedMissing}
+          disabled={Boolean(avatarId) || collectionAssetIds.length > 0}
+          disabledMessage="Clear the character identity or visual collection references to use a video seed."
+        />
+      </div>
+    ) : undefined;
 
   return (
     <GenerateFormView
@@ -502,12 +622,15 @@ export function GenerationForm({ models }: GenerationFormProps) {
       }
       avatarSection={avatarSection}
       referenceSection={referenceSection}
+      continuitySection={continuitySection}
       avatarName={
         avatarId
           ? "Character identity"
-          : collectionAssetIds.length > 0
-            ? `${collectionAssetIds.length} collection reference${collectionAssetIds.length === 1 ? "" : "s"}`
-            : null
+          : videoReferenceFileId && !videoSeedMissing
+            ? "Continuity seed"
+            : collectionAssetIds.length > 0
+              ? `${collectionAssetIds.length} collection reference${collectionAssetIds.length === 1 ? "" : "s"}`
+              : null
       }
     />
   );
@@ -557,6 +680,7 @@ export function GenerateFormView({
   onAppendToPrompt,
   avatarSection,
   referenceSection,
+  continuitySection,
   avatarName,
 }: GenerateFormViewProps) {
   const model = models.find((item) => item.id === selectedModel);
@@ -853,6 +977,7 @@ export function GenerateFormView({
 
         {avatarSection}
         {referenceSection}
+        {continuitySection}
       </div>
 
       <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
