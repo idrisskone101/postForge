@@ -23,6 +23,8 @@ MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/file
 | Character library | `/characters` | `435056646067212288` | `435056646067212289` |
 | Character builder | `/characters/new` | `435057651588673536` | `435057651588673537` |
 | Settings and integrations | `/settings` | `435056692204552192` | `435056692204552193` |
+| Settings — available models and API keys | `/settings?tab=models` / `?tab=api-keys` | `435546352966057984` | latest revision |
+| Generate — subject swap studio | `/generate` with a swap model selected | `435546873634381824` | latest revision |
 
 ## Visual QA path
 
@@ -41,12 +43,13 @@ For every width, assert `document.documentElement.scrollWidth === document.docum
 
 - The sidebar, mobile sheet, theme control, route headers, and all existing deep links remain available.
 - Inspiration preserves creator tracking and refresh/delete, filters, source preview fallbacks, copy/open, and Clone handoff with `sourceId`.
-- Clone preserves all three steps, trimming, imported/saved sources, avatar modes and identity packs, references, model/audio/text settings, validation, errors, query cleanup, polling, retry, download, details, and review feedback.
+- Clone preserves all three steps, trimming, imported/saved sources, avatar modes and identity packs, references, model/audio/text settings, validation, errors, query cleanup, polling, retry, download, details, and review feedback. The Final video picker includes swap-capable models; choosing one routes the approved reference image through the shared swap pipeline.
 - Gallery preserves filters, grid/list, inspector, selection, status actions, downloads, handoffs, deletion, bulk actions, and visible feedback.
 - Spend preserves `period=7d|30d|90d`, KPIs, charts, logs, CSV, pagination, and loading/empty/error states.
-- Generate preserves prompt and model prefills, model-specific fields, avatar and advanced controls, estimates, validation, polling, variants, editor tabs, retry, download, Gallery/similar/discard actions, and mobile behavior.
-- Generate video continuity: a server-owned output (video or image) can seed the next video through the Character continuity step. Videos get their first frame extracted server-side; images are used directly. The i2v model (`kling-3.0-i2v`) is selected automatically when a seed is picked, `?referenceFileId=` deep links prefill it, the editor offers "Continue this video" for completed video jobs, and seeds are mutually exclusive with character identity and visual collection references. Provider URLs are never persisted inputs; only the owned file id is.
+- Generate preserves prompt and model prefills, model-specific fields, avatar and advanced controls, estimates, validation, polling, variants, editor tabs, retry, download, Gallery/similar/discard actions, and mobile behavior. Swap-capable models (PixVerse Swap, Gemini Omni Edit) show the shared Subject swap section and submit through `/api/generate/swap`.
+- Generate video continuity: a server-owned output (video or image) can seed the next video through the Character continuity step (non-swap video models). Videos get their first frame extracted server-side; images are used directly. The i2v model (`kling-3.0-i2v`) is selected automatically when a seed is picked, `?referenceFileId=` deep links prefill it, the editor offers "Continue this video" for completed video jobs, and seeds are mutually exclusive with character identity and visual collection references. Provider URLs are never persisted inputs; only the owned file id is.
 - New Automation, Performance, Collection, Character, and Settings capabilities persist real local data.
+- Settings exposes a centralized Available models panel (Workspace group) whose toggles and defaults drive every picker through `/api/models`; the API keys tab stores provider credentials (fal.ai, Gemini, Virlo) encrypted at rest with env fallback and never returns plaintext to the browser.
 - Character Builder preserves all 36 appearance groups in its saved recipe and generated-photo prompt. A changed recipe cannot be saved against a stale portrait; legacy or edited recipes must be rendered again before save.
 - Manual Automation runs create real image-generation jobs in the Review queue. Local schedules are opt-in, timezone-aware, idempotent per slot, and require a continuously running PostForge server; they never publish to a social provider.
 - TikTok, Instagram, and YouTube connection state is shared across Settings, Performance, and Automations. Missing configuration, missing scopes, token refresh errors, and sync errors remain explicit; provider data is never fabricated.

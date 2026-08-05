@@ -26,8 +26,13 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC, getModelsByType } from "@/lib/ai/models";
+import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC, getModel, getModelsByType } from "@/lib/ai/models";
+import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import type { ModelDefinition } from "@/lib/ai/types";
+
+function getModelCatalogFallback(): ModelDefinition[] {
+  return getModelsByType("video").concat(getModelsByType("image"));
+}
 import { apiGet, apiPost } from "@/lib/api/client";
 import {
   consumeCloneHandoffQuery,
@@ -896,7 +901,7 @@ export function UGCCloneForm() {
   // Step 3: Settings
   const [keepOriginalSound, setKeepOriginalSound] = useState(true);
   const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<"kling-3.0-motion" | "kling-3.0-pro-motion" | "kling-2.6-motion">("kling-3.0-motion");
+  const [selectedModel, setSelectedModel] = useState("kling-3.0-motion");
   const [selectedReferenceImageModel, setSelectedReferenceImageModel] = useState("nano-banana-2");
   const [referenceBatchSize, setReferenceBatchSize] = useState<(typeof REFERENCE_BATCH_OPTIONS)[number]>(1);
   const [cloneTip, setCloneTip] = useState<(typeof UGC_CLONE_TIPS)[number]>(UGC_CLONE_TIPS[0]);
@@ -911,8 +916,32 @@ export function UGCCloneForm() {
   const referenceBatchCost = calculateEstimatedCost(selectedReferenceImageModel, { numImages: referenceBatchSize });
   const textErasureCost = removeTextOverlays ? BRIA_ERASER_COST_PER_SEC * durationSec : 0;
   const canSubmit = !!videoInfo?.id && !!avatarId && !isSubmitting;
-  const cloneVideoModels = getModelsByType("video").filter((model) => model.capabilities.motionControl);
-  const referenceImageModels = getModelsByType("image");
+  const [catalogModels, setCatalogModels] = useState<ModelDefinition[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchModelsCatalog()
+      .then((catalog) => {
+        if (cancelled) return;
+        setCatalogModels(catalog.models as unknown as ModelDefinition[]);
+      })
+      .catch(() => {
+        if (!cancelled) setCatalogModels(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const cloneVideoModels: ModelDefinition[] = (catalogModels ?? getModelCatalogFallback()).filter(
+    (model) =>
+      (model.capabilities.motionControl || model.capabilities.subjectSwap) &&
+      model.type === "video"
+  );
+  const referenceImageModels: ModelDefinition[] = (catalogModels ?? getModelCatalogFallback()).filter(
+    (model) => model.type === "image"
+  );
+  const selectedModelDef = getModel(selectedModel);
 
   // Poll for any "generating" ref images
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1337,6 +1366,20 @@ export function UGCCloneForm() {
     setSubmitError(null);
 
     try {
+      if (selectedModelDef?.capabilities.subjectSwap) {
+        // Swap models reuse the generated reference image as the swap target:
+        // the subject in the source video is replaced by the reference subject.
+        const result = await apiPost<{ id: string }>("/api/generate/swap", {
+          prompt: "Replace the subject in the video with the reference subject. Keep the video, motion, camera, and everything else identical.",
+          model: selectedModel,
+          swapVideoId: videoInfo.id,
+          referenceFileId: selectedRefFileId,
+          keepOriginalSound,
+        });
+        setPhase("submitted");
+        router.push(`/generate/${result.id}`);
+        return;
+      }
       const result = await apiPost<{ id: string }>("/api/ugc-clone/generate", {
         tiktokSourceId: videoInfo.id,
         tiktokVideoPath: videoInfo.localPath,
@@ -1358,6 +1401,12 @@ export function UGCCloneForm() {
 
   const handleGenerateWithSavedReference = async () => {
     if (!videoInfo || !avatarId || !selectedSavedReferenceId) return;
+    if (selectedModelDef?.capabilities.subjectSwap) {
+      setSubmitError(
+        "Saved references are not used by swap models. Generate a fresh reference image instead."
+      );
+      return;
+    }
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -1383,6 +1432,12 @@ export function UGCCloneForm() {
 
   const handleGenerateWithCollectionReference = async () => {
     if (!videoInfo || !avatarId || !selectedCollectionAssetId) return;
+    if (selectedModelDef?.capabilities.subjectSwap) {
+      setSubmitError(
+        "Collection references are not used by swap models. Generate a fresh reference image instead."
+      );
+      return;
+    }
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -1423,11 +1478,7 @@ export function UGCCloneForm() {
     );
   };
 
-  const modelName = selectedModel === "kling-3.0-motion"
-    ? "Kling 3.0"
-    : selectedModel === "kling-3.0-pro-motion"
-      ? "Kling 3.0 Pro"
-      : "Kling 2.6";
+  const modelName = selectedModelDef?.name.replace(" Motion Control", "") ?? "Kling 3.0";
   const sourceReady = !!videoInfo?.id;
   const shouldShowSourceTools = !sourceReady || sourceToolsOpen;
   const avatarReady = !!avatarId;
@@ -2579,7 +2630,7 @@ export function UGCCloneForm() {
                 accentClassName="text-accent-blue"
                 models={cloneVideoModels}
                 selectedValue={selectedModel}
-                onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
+                onValueChange={(value) => setSelectedModel(value)}
                 getCost={(modelId) =>
                   formatCost(calculateEstimatedCost(modelId, { durationSec }))
                 }
@@ -2648,7 +2699,7 @@ export function UGCCloneForm() {
                 className="min-w-0"
                 models={cloneVideoModels}
                 selectedValue={selectedModel}
-                onValueChange={(value) => setSelectedModel(value as typeof selectedModel)}
+                onValueChange={(value) => setSelectedModel(value)}
                 getCost={(modelId) =>
                   formatCost(calculateEstimatedCost(modelId, { durationSec }))
                 }

@@ -91,6 +91,9 @@ export interface SlideshowEditorProps {
   ) => Promise<SlideshowImageGenerationResult | void>;
   collections: SlideshowCollection[];
   onPublish: (project: SlideshowProject) => void;
+  imageModels?: Array<{ id: string; name: string }>;
+  selectedImageModel?: string | null;
+  onSelectImageModel?: (modelId: string) => void;
 }
 
 const SECONDARY_BTN =
@@ -223,6 +226,9 @@ export function SlideshowEditor({
   onRegenerateImage,
   collections,
   onPublish,
+  imageModels = [],
+  selectedImageModel = null,
+  onSelectImageModel,
 }: SlideshowEditorProps) {
   const [draft, setDraft] = useState(project);
   const [selectedSlideId, setSelectedSlideId] = useState(
@@ -801,6 +807,28 @@ export function SlideshowEditor({
 
             {advanced ? (
               <div className="space-y-4 rounded-[11px] border border-[#E4E5DD] bg-[#F7F8F2] p-3.5">
+                <label className="block">
+                  <span className={FIELD_LABEL}>Image model</span>
+                  {imageModels.length > 0 ? (
+                    <select
+                      value={selectedImageModel ?? ""}
+                      onChange={(event) =>
+                        onSelectImageModel?.(event.target.value)
+                      }
+                      className={cn(INPUT, "h-8 text-[11px]")}
+                    >
+                      {imageModels.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {model.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="block rounded-[7px] border border-[#E1E2DC] bg-[#FCFCFA] px-3 py-2 text-[10px] text-[#92938E]">
+                      Using the workspace default image model.
+                    </span>
+                  )}
+                </label>
                 <label className="block">
                   <span className={FIELD_LABEL}>Language</span>
                   <input

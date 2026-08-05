@@ -2,7 +2,8 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { uploadToFalStorage } from "@/lib/ai/fal-client";
 import { generateImage } from "@/lib/ai/generate-image";
-import { calculateEstimatedCost } from "@/lib/ai/models";
+import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
+import { getDefaultEditCapableImageModel } from "@/lib/ai/model-availability";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { analyzeSceneAndBuildPrompt } from "@/lib/ai/analyze-scene";
 import {
@@ -22,7 +23,13 @@ export interface ReferenceImageRequest {
 export async function generateReferenceImage(
   request: ReferenceImageRequest
 ): Promise<{ jobId: string; estimatedCost: number; model: string }> {
-  const modelId = request.imageModel ?? "nano-banana-2";
+  const requestedModel =
+    request.imageModel ?? (await getDefaultEditCapableImageModel());
+  const modelDef = getModel(requestedModel);
+  const modelId =
+    modelDef?.type === "image" && modelDef.capabilities.referenceImages
+      ? requestedModel
+      : await getDefaultEditCapableImageModel();
   const estimatedCost = calculateEstimatedCost(modelId, { numImages: 1 });
 
   // Look up avatar

@@ -1,7 +1,7 @@
 import type { ImageGenerationRequest } from "./ai/types";
 import type { AutomationRecord } from "./automations";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 
-const REVIEW_MODEL = "nano-banana-2";
 const REVIEW_ASPECT_RATIO = "4:5";
 
 export class AutomationReviewValidationError extends Error {
@@ -30,7 +30,32 @@ export type AutomationReviewDraftSpec = {
   jobTags: string[];
 };
 
-export function buildAutomationReviewDraftSpec(
+// Synchronous validation of the review-draft settings. Used by the schedule
+// route before activating an automation; the async builder below shares it.
+export function validateAutomationReviewDraftSpec(
+  automation: AutomationRecord
+): void {
+  if (!/^[A-Za-z0-9_-]{1,160}$/.test(automation.id)) {
+    throw new AutomationReviewValidationError("Automation id is invalid");
+  }
+  requiredPromptText(automation.name, "Automation name", 120);
+  requiredPromptText(automation.hook.selected, "Selected hook", 300);
+  requiredPromptText(automation.content.structure, "Content structure", 300);
+  requiredPromptText(automation.content.guidance, "Content guidance", 1_000);
+  requiredPromptText(automation.cta.style, "CTA style", 160);
+  requiredPromptText(automation.cta.prompt, "CTA guidance", 500);
+  if (
+    !Number.isInteger(automation.content.slideCount) ||
+    automation.content.slideCount < 3 ||
+    automation.content.slideCount > 10
+  ) {
+    throw new AutomationReviewValidationError(
+      "Slide count must be between 3 and 10"
+    );
+  }
+}
+
+export async function buildAutomationReviewDraftSpec(
   automation: AutomationRecord,
   options: {
     scheduleSlot?: {
@@ -40,10 +65,8 @@ export function buildAutomationReviewDraftSpec(
       timezone: string;
     };
   } = {}
-): AutomationReviewDraftSpec {
-  if (!/^[A-Za-z0-9_-]{1,160}$/.test(automation.id)) {
-    throw new AutomationReviewValidationError("Automation id is invalid");
-  }
+): Promise<AutomationReviewDraftSpec> {
+  validateAutomationReviewDraftSpec(automation);
   const name = requiredPromptText(automation.name, "Automation name", 120);
   const hook = requiredPromptText(
     automation.hook.selected,
@@ -66,15 +89,6 @@ export function buildAutomationReviewDraftSpec(
     "CTA guidance",
     500
   );
-  if (
-    !Number.isInteger(automation.content.slideCount) ||
-    automation.content.slideCount < 3 ||
-    automation.content.slideCount > 10
-  ) {
-    throw new AutomationReviewValidationError(
-      "Slide count must be between 3 and 10"
-    );
-  }
 
   const prompt = [
     "Create one polished 4:5 social post cover image for human review.",
@@ -87,9 +101,11 @@ export function buildAutomationReviewDraftSpec(
     "This is a review draft only. Do not add platform logos, publish controls, engagement counters, watermarks, or extra copy.",
   ].join("\n");
 
+  const reviewModel = await getDefaultModel("image");
+
   const request: ImageGenerationRequest = {
     prompt,
-    model: REVIEW_MODEL,
+    model: reviewModel,
     aspectRatio: REVIEW_ASPECT_RATIO,
     numImages: 1,
     negativePrompt:
@@ -122,7 +138,7 @@ export function buildAutomationReviewDraftSpec(
     jobTags: ["automation-review"],
     jobInput: {
       prompt,
-      model: REVIEW_MODEL,
+      model: reviewModel,
       aspectRatio: REVIEW_ASPECT_RATIO,
       numImages: 1,
       negativePrompt: request.negativePrompt,
@@ -147,7 +163,7 @@ export async function runAutomationReviewDraft(
     now?: () => Date;
   }
 ) {
-  const spec = buildAutomationReviewDraftSpec(automation);
+  const spec = await buildAutomationReviewDraftSpec(automation);
   const jobId = await dependencies.generate(spec.request, {
     jobInput: spec.jobInput,
     jobTags: spec.jobTags,

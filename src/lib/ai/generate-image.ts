@@ -64,6 +64,13 @@ async function executeImageGeneration(
   // Edit endpoint uses aspect_ratio directly; text-to-image uses image_size mapped format
   if (request.editEndpoint) {
     input.aspect_ratio = aspectRatio;
+  } else if (request.model === "gpt-image-2") {
+    input.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
+    input.quality = "high";
+    input.output_format = "png";
+  } else if (request.model === "flux-2-flex") {
+    input.image_size = { width: 1024, height: 1024 };
+    input.output_format = "jpeg";
   } else {
     input.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
   }

@@ -2,10 +2,10 @@ import Link from "next/link";
 import { CircleHelp, History } from "lucide-react";
 import { GenerationForm } from "@/components/generation-form";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
-import { getAllModels } from "@/lib/ai/models";
+import { getAvailableModels } from "@/lib/ai/model-availability";
 
-export default function GeneratePage() {
-  const models = getAllModels();
+export default async function GeneratePage() {
+  const models = await getAvailableModels();
 
   return (
     <div className="min-w-0 animate-fade-in-up px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:pb-8">

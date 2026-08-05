@@ -1,0 +1,121 @@
+import assert from "node:assert/strict";
+import {
+  DEFAULT_IMAGE_MODEL,
+  DEFAULT_VIDEO_MODEL,
+  getAvailableModels,
+  getDefaultModel,
+  isModelEnabled,
+  readModelAvailability,
+  saveModelAvailability,
+} from "../src/lib/ai/model-availability";
+import { getAllModels } from "../src/lib/ai/models";
+
+async function testAvailabilityDefaults() {
+  const availability = await readModelAvailability();
+  assert.equal(availability.id, "model-availability");
+  const registryIds = new Set(getAllModels().map((model) => model.id));
+  for (const id of availability.enabledModelIds) {
+    assert.ok(registryIds.has(id), `enabled id ${id} must exist in the registry`);
+  }
+
+  const imageDefault = await getDefaultModel("image");
+  assert.equal(imageDefault, DEFAULT_IMAGE_MODEL);
+  const videoDefault = await getDefaultModel("video");
+  assert.equal(videoDefault, DEFAULT_VIDEO_MODEL);
+
+  const available = await getAvailableModels();
+  assert.ok(available.length >= getAllModels().length - 1);
+  for (const model of available) {
+    assert.equal(await isModelEnabled(model.id), true);
+  }
+}
+
+// In headless test runs there is no Postgres database. The availability store
+// applies writes optimistically to its in-process cache before persisting, so
+// reads must reflect the new state even when persistence is unavailable.
+async function trySave(state: {
+  enabledModelIds: string[];
+  defaultImageModelId: string | null;
+  defaultVideoModelId: string | null;
+}) {
+  try {
+    await saveModelAvailability(state);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    assert.match(
+      message,
+      /does not exist|connection|database|ECONNREFUSED/i,
+      `expected a database-unavailable error, got: ${message}`
+    );
+  }
+}
+
+async function testTogglePersistence() {
+  const target = getAllModels().find((model) => model.type === "image");
+  assert.ok(target, "registry must have an image model");
+
+  const before = await readModelAvailability();
+  assert.ok(before.enabledModelIds.includes(target.id));
+
+  await trySave({
+    enabledModelIds: before.enabledModelIds.filter((id) => id !== target.id),
+    defaultImageModelId: null,
+    defaultVideoModelId: null,
+  });
+
+  const after = await readModelAvailability();
+  assert.equal(after.enabledModelIds.includes(target.id), false);
+  assert.equal(await isModelEnabled(target.id), false);
+
+  const availableAfter = await getAvailableModels();
+  assert.equal(availableAfter.some((model) => model.id === target.id), false);
+
+  await trySave({
+    enabledModelIds: getAllModels().map((model) => model.id),
+    defaultImageModelId: DEFAULT_IMAGE_MODEL,
+    defaultVideoModelId: DEFAULT_VIDEO_MODEL,
+  });
+  const restored = await readModelAvailability();
+  assert.equal(restored.enabledModelIds.includes(target.id), true);
+}
+
+async function testDefaultSelection() {
+  const imageModels = getAllModels().filter((model) => model.type === "image");
+  const customDefault = imageModels[1];
+  assert.ok(customDefault);
+
+  await trySave({
+    enabledModelIds: getAllModels().map((model) => model.id),
+    defaultImageModelId: customDefault.id,
+    defaultVideoModelId: null,
+  });
+
+  assert.equal(await getDefaultModel("image"), customDefault.id);
+
+  // A disabled default must fall back to the first enabled model of that type.
+  await trySave({
+    enabledModelIds: getAllModels()
+      .map((model) => model.id)
+      .filter((id) => id !== customDefault.id),
+    defaultImageModelId: customDefault.id,
+    defaultVideoModelId: null,
+  });
+  const fallback = await getDefaultModel("image");
+  assert.notEqual(fallback, customDefault.id);
+  assert.equal(await isModelEnabled(fallback), true);
+
+  await trySave({
+    enabledModelIds: getAllModels().map((model) => model.id),
+    defaultImageModelId: DEFAULT_IMAGE_MODEL,
+    defaultVideoModelId: DEFAULT_VIDEO_MODEL,
+  });
+}
+
+testAvailabilityDefaults()
+  .then(testTogglePersistence)
+  .then(testDefaultSelection)
+  .then(() => console.log("model availability tests passed"))
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

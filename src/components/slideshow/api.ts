@@ -625,6 +625,7 @@ export async function requestSlideshowImageGeneration(
   slide: SlideshowSlide,
   apiBaseUrl = "/api/slideshows",
   onQueuedRevision?: (revision: number) => void,
+  model?: string,
 ) {
   if (isLocalSlideshowId(project.id) || slide.id.startsWith("local-slide-")) {
     throw new SlideshowApiError(
@@ -641,6 +642,7 @@ export async function requestSlideshowImageGeneration(
       body: JSON.stringify({
         revision: project.revision ?? 0,
         prompt: slide.prompt,
+        ...(model ? { model } : {}),
       }),
     },
   );

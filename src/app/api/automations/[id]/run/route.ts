@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateImage } from "@/lib/ai/generate-image";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 import {
   AutomationReviewValidationError,
   runAutomationReviewDraft,
@@ -75,7 +76,7 @@ export async function POST(
         id: result.jobId,
         status: "queued",
         type: "image",
-        model: "nano-banana-2",
+        model: await getDefaultModel("image"),
         createdAt: result.acceptedAt,
         automation: result.automation,
         reviewRequired: true,

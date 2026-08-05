@@ -1,6 +1,6 @@
 import {
   AutomationReviewValidationError,
-  buildAutomationReviewDraftSpec,
+  validateAutomationReviewDraftSpec,
 } from "@/lib/automation-review";
 import { validateAutomationSchedule } from "@/lib/automation-schedule";
 import {
@@ -74,7 +74,7 @@ export async function POST(
               return candidate;
             }
             try {
-              buildAutomationReviewDraftSpec(candidate);
+              validateAutomationReviewDraftSpec(candidate);
             } catch (error) {
               outcome.error =
                 error instanceof AutomationReviewValidationError

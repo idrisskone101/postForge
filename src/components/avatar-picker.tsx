@@ -659,7 +659,10 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
 
   // Generate state
   const [genPrompt, setGenPrompt] = useState("");
-  const [genModel, setGenModel] = useState("nano-banana");
+  const [genModel, setGenModel] = useState(() => {
+    const models = getModelsByType("image");
+    return models[0]?.id ?? "nano-banana";
+  });
   const [genJobId, setGenJobId] = useState<string | null>(null);
   const [genJob, setGenJob] = useState<JobResult | null>(null);
   const [isSavingGenerated, setIsSavingGenerated] = useState(false);

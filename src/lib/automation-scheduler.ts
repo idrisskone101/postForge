@@ -135,7 +135,7 @@ export async function runAutomationSchedulerWorkerTick() {
       ).filter(isAutomationRecord),
     claim: claimScheduleSlot,
     generateReviewDraft: async (automation, slot) => {
-      const spec = buildAutomationReviewDraftSpec(automation, {
+      const spec = await buildAutomationReviewDraftSpec(automation, {
         scheduleSlot: {
           key: slot.key,
           date: slot.date,

@@ -181,7 +181,9 @@ function extractInteractionText(interaction: GeminiInteraction) {
 async function generateWithGemini(
   input: ReturnType<typeof normalizedInput>,
 ): Promise<GeneratedSlideshowStory> {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  const { getProviderCredential } = await import("@/lib/providers/credentials");
+  const storedKey = await getProviderCredential("gemini");
+  const apiKey = storedKey?.trim() ?? process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
 
   const model = process.env.GEMINI_SLIDESHOW_MODEL?.trim() || DEFAULT_MODEL;

@@ -4,6 +4,7 @@ import {
   submitReservedSlideshowImage,
 } from "@/lib/ai/slideshow-image";
 import { getModel } from "@/lib/ai/models";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 import { badRequest } from "@/lib/slideshow/errors";
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
 import {
@@ -27,6 +28,7 @@ export async function POST(
         badRequest(`Unknown slideshow image model: ${model}`);
       }
     }
+    const resolvedModel = model ?? (await getDefaultModel("image"));
     const prepared = await prepareSlideImageGeneration(id, slideId, body);
     if (
       body.referenceImageUrls !== undefined &&
@@ -40,7 +42,7 @@ export async function POST(
       slideId,
       prompt: prepared.prompt,
       aspectRatio: prepared.aspectRatio,
-      ...(model ? { model } : {}),
+      model: resolvedModel,
       referenceImageUrls: body.referenceImageUrls as string[] | undefined,
     });
     const reservation = await reserveSlideGenerationJob(

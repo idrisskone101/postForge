@@ -6,6 +6,7 @@ export const WORKSPACE_FEATURES = [
   "characters",
   "collections",
   "connections",
+  "models",
 ] as const;
 
 export type WorkspaceFeature = (typeof WORKSPACE_FEATURES)[number];

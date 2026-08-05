@@ -1,5 +1,5 @@
 export interface ModelPricing {
-  unit: "per_image" | "per_second";
+  unit: "per_image" | "per_second" | "per_clip";
   amount: number;
 }
 
@@ -10,6 +10,8 @@ export interface ModelCapabilities {
   imageToVideo?: boolean;
   /** Accepts a generated video's first frame as a seed for character continuity */
   videoToVideo?: boolean;
+  subjectSwap?: boolean;
+  keepOriginalAudio?: boolean;
   multiShot?: boolean;
   nativeAudio?: boolean;
   referenceImages?: boolean;
@@ -38,6 +40,7 @@ export interface ModelDefinition {
   provider: "fal";
   endpoint: string;
   pricing: ModelPricing;
+  audioMultiplier?: number;
   capabilities: ModelCapabilities;
   defaults: ModelDefaults;
   limits: ModelLimits;
@@ -69,6 +72,19 @@ export interface VideoGenerationRequest {
       cameraMovement?: string;
     }[];
   };
+}
+
+export type SwapMode = "person" | "object" | "background";
+
+export interface VideoSwapGenerationRequest {
+  prompt: string;
+  model: string;
+  videoUrl: string;
+  referenceImageUrl?: string;
+  swapMode?: SwapMode;
+  keyframeId?: number;
+  resolution?: "360p" | "540p" | "720p";
+  keepOriginalSound?: boolean;
 }
 
 export interface GeneratedImage {

@@ -62,7 +62,9 @@ function parseProviderMessage(body: unknown): string | null {
 }
 
 async function requestVirlo<T>(path: string): Promise<T> {
-  const apiKey = process.env.VIRLO_API_KEY;
+  const { getProviderCredential } = await import("@/lib/providers/credentials");
+  const storedKey = await getProviderCredential("virlo");
+  const apiKey = storedKey ?? process.env.VIRLO_API_KEY;
   if (!apiKey) {
     throw new VirloApiError("VIRLO_API_KEY is not configured.", 500);
   }

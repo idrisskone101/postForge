@@ -6,6 +6,7 @@ import { Check, LoaderCircle, Plus } from "lucide-react";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { cn } from "@/lib/utils";
 import { fetchPlatformCollections } from "@/lib/collections-client";
+import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
 import {
   downloadSlideshowExport,
@@ -85,6 +86,27 @@ export function SlideshowStudio({
   );
   const [projectsError, setProjectsError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [imageModels, setImageModels] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
+  const [selectedImageModel, setSelectedImageModel] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let active = true;
+    void fetchModelsCatalog()
+      .then((catalog) => {
+        if (!active) return;
+        const models = catalog.models.filter((model) => model.type === "image");
+        setImageModels(models.map((model) => ({ id: model.id, name: model.name })));
+        setSelectedImageModel((current) => current ?? catalog.defaults.image ?? models[0]?.id ?? null);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (initialProjects !== undefined) return;
@@ -256,9 +278,10 @@ export function SlideshowStudio({
         slide,
         apiBaseUrl,
         onQueuedRevision,
+        selectedImageModel ?? undefined,
       );
     },
-    [apiBaseUrl, onRegenerateImage],
+    [apiBaseUrl, onRegenerateImage, selectedImageModel],
   );
 
   const handleExport = useCallback(
@@ -331,6 +354,9 @@ export function SlideshowStudio({
             onRegenerateSlide={handleRegenerateSlide}
             onRegenerateImage={handleRegenerateImage}
             onPublish={setPublishProject}
+            imageModels={imageModels}
+            selectedImageModel={selectedImageModel}
+            onSelectImageModel={setSelectedImageModel}
           />
         </div>
       ) : (

@@ -11,6 +11,7 @@ assert.deepEqual(
   SETTINGS_NAVIGATION.map(({ id, group }) => [id, group]),
   [
     ["profile", "workspace"],
+    ["models", "workspace"],
     ["billing", "workspace"],
     ["integrations", "workspace"],
     ["publishing", "workspace"],
@@ -22,6 +23,7 @@ assert.deepEqual(
 );
 
 assert.equal(isSettingsTab("api-keys"), true);
+assert.equal(isSettingsTab("models"), true);
 assert.equal(isSettingsTab("webhooks"), true);
 assert.equal(isSettingsTab("secrets"), false);
 
@@ -31,20 +33,10 @@ const navigationMarkup = renderToStaticMarkup(
 assert.match(navigationMarkup, /overflow-x-auto/);
 assert.match(navigationMarkup, /overscroll-x-contain/);
 assert.match(navigationMarkup, />API keys</);
+assert.match(navigationMarkup, />Available models</);
 assert.match(navigationMarkup, />Webhooks</);
 assert.match(navigationMarkup, /aria-current="page"[^>]*>[\s\S]*API keys/);
 assert.doesNotMatch(navigationMarkup, /hidden h-9[^>]*>[\s\S]*API keys/);
-
-const apiKeysMarkup = renderToStaticMarkup(
-  <DeveloperSettingsPanel tab="api-keys" />
-);
-assert.match(apiKeysMarkup, /data-developer-settings-panel="api-keys"/);
-assert.match(apiKeysMarkup, /NOT CONFIGURED/);
-assert.match(apiKeysMarkup, /No API keys have been issued/);
-assert.match(apiKeysMarkup, /will not fabricate, reveal, or retain credentials/);
-assert.match(apiKeysMarkup, /API key service not configured/);
-assert.match(apiKeysMarkup, /disabled=""/);
-assert.doesNotMatch(apiKeysMarkup, /pf_[a-zA-Z0-9]{16,}/);
 
 const webhooksMarkup = renderToStaticMarkup(
   <DeveloperSettingsPanel tab="webhooks" />

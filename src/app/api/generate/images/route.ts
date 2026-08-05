@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateImage } from "@/lib/ai/generate-image";
 import { generateAvatarImage } from "@/lib/ugc/generate-avatar-image";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 import type { ImageGenerationRequest } from "@/lib/ai/types";
 import {
   parseReferenceFileIds,
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = body.model ?? "nano-banana-2";
+    const model = body.model ?? (await getDefaultModel("image"));
 
     // Validate model exists and is an image model
     const modelDef = getModel(model);

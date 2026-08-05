@@ -603,9 +603,12 @@ async function processDueAutomation(
     // the deterministic local fallback when the external provider is unavailable.
     const storyPlan = storyPlanFor(automation, scheduledFor);
     const story = await generateSlideshowStory(storyPlan.input);
+    const { getDefaultModel } = await import("@/lib/ai/model-availability");
     const visualSettings = readSlideshowAutomationVisualSettings(
       automation.contentSettings,
     );
+    const resolvedVisualImageModel =
+      visualSettings.imageModel || (await getDefaultModel("image"));
     const collectionImages = await reusableCollectionImages(
       automation.contentSettings,
     );
@@ -666,7 +669,7 @@ async function processDueAutomation(
               slideId: slide.id,
               prompt: slide.imagePrompt,
               aspectRatio: draftAspectRatio,
-              model: visualSettings.imageModel,
+              model: resolvedVisualImageModel,
             });
             return [{ slideId: slide.id, jobId: randomUUID(), request }];
           })
