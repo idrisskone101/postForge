@@ -1,0 +1,119 @@
+{
+  "title": "Choose the new world for PostForge",
+  "question": "Re-roll: layout is fixed \u2014 left sidebar with its current behavior, routes stay put. You are choosing the world that skins it. The roll assigned The Exhibition Wall.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "The Exhibition Wall",
+      "kicker": "THE ROLL",
+      "lineage": "white-cube gallery & museum registrar back-of-house",
+      "thesis": "Generated media hangs as works with museum wall labels; the red dot means published; ops live in the registrar's ledger grammar.",
+      "palette": [
+        "#FBFAF7",
+        "#141412",
+        "#FF4A20",
+        "#76746E",
+        "#0C0C0B"
+      ],
+      "materials": [
+        "gallery white walls",
+        "wall labels in small caps",
+        "accession numbers",
+        "the red acquisition dot",
+        "black-box video room (dark mode)"
+      ],
+      "viewport": "Home as the current exhibition: this week's works hung with wall labels and red dots, a registrar strip below carrying jobs, spend, and the outgoing-loan schedule. Sidebar unchanged in place, re-read as the room directory.",
+      "risk": "Galleries resist density; queues, costs, and statuses must speak registrar (accession ledger, condition report) or the surface goes precious and the ops get lost.",
+      "sketch": ".impeccable/sketches/assigned.webp"
+    },
+    {
+      "id": "challenger-nixie",
+      "label": "Nixie Counter",
+      "lineage": "nixie-tube laboratory counters",
+      "thesis": "Quantities are the interface: every metric owns a bank of glowing tube digits; a count change is a visible shift of physical depth.",
+      "palette": [
+        "#0D0C0A",
+        "#FF6A1F",
+        "#3A3733",
+        "#C9C4BB"
+      ],
+      "materials": [
+        "glass tube digit banks",
+        "blackened steel chassis",
+        "engraved panel caps",
+        "anode mesh hairlines"
+      ],
+      "viewport": "Home as the counter wall: glowing tube banks for jobs, spend, and posts across the top, engraved labels beneath each bank, amber overflow events, media lists below on steel.",
+      "risk": "Wins hearts instantly and then starves the product: tubes display quantities only, and PostForge's center is media, not numbers.",
+      "case": "Wins audience identification; loses product clarity \u2014 a media-first tool cannot live inside digit banks.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter.webp",
+      "sketch": ".impeccable/sketches/challenger-nixie.webp"
+    },
+    {
+      "id": "challenger-manmachine",
+      "label": "Man-Machine",
+      "lineage": "Kraftwerk Man-Machine identity, 1978",
+      "thesis": "The pipeline drawn as a wiring diagram on a strict traffic grid: signal red, amber, and green on black and paper white, connectors lighting with current.",
+      "palette": [
+        "#000000",
+        "#FFFFFF",
+        "#E30613",
+        "#FFD500",
+        "#009846"
+      ],
+      "materials": [
+        "enamel-flat fills",
+        "neon line diagrams",
+        "visible modular grid",
+        "traffic-signal color law"
+      ],
+      "viewport": "Home as the schematic: generation, review, automation, and publishing as wired nodes on the grid, lines carrying current to whichever stage is live, media staged in paper-white frames.",
+      "risk": "The finest pipeline grammar in the hand, but flat signal colors compete with your actual outputs \u2014 in a media product the work must be the color.",
+      "case": "Wins the automation and pipeline surfaces; loses media review, where enamel red fights the artwork.",
+      "hero": "https://impeccable.style/worlds/cards/kraftwerk-man-machine-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/kraftwerk-man-machine.webp",
+      "sketch": ".impeccable/sketches/challenger-manmachine.webp"
+    },
+    {
+      "id": "challenger-quotes",
+      "label": "Quote Grammar",
+      "lineage": "industrial streetwear labeling, Off-White vernacular",
+      "thesis": "Every zone wears its literal name in straight quotes; hazard diagonals structure the surface; the active item keeps its orange zip-tie tag on.",
+      "palette": [
+        "#F4F2ED",
+        "#111111",
+        "#FF5A1F"
+      ],
+      "materials": [
+        "white cotton & black nylon flats",
+        "45-degree hazard diagonals",
+        "safety-orange zip-tie tags",
+        "stenciled label plates"
+      ],
+      "viewport": "Home as the stockroom wall: \"PIPELINE\", \"SPEND\", \"REVIEW\" label plates set square on the grid, the day's queue under a hazard stripe, published pieces tagged orange.",
+      "risk": "Highest cultural currency for a TikTok-marketing tool, and the shortest half-life: irony labeling in a daily-ops surface can read as gimmick within weeks.",
+      "case": "Wins cultural resonance with the audience's content scene; loses longevity and morning-scan seriousness.",
+      "hero": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar.webp",
+      "sketch": ".impeccable/sketches/challenger-quotes.webp"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "lineage": "Linear / Vercel-class SaaS dashboard",
+    "thesis": "The calm grey dashboard every dev tool ships: sidebar, stat cards, one indigo accent \u2014 executed impeccably.",
+    "palette": [
+      "#FFFFFF",
+      "#F4F4F5",
+      "#52525B",
+      "#5B5BF0"
+    ],
+    "viewport": "Your existing sidebar and routes exactly as they are, reskinned in quiet greys with tidy stat cards; nothing surprises, nothing offends.",
+    "risk": "Interchangeable with every other self-hosted tool; safe by construction, memorable never.",
+    "sketch": ".impeccable/sketches/canon.webp"
+  }
+}

@@ -97,12 +97,12 @@ export interface SlideshowEditorProps {
 }
 
 const SECONDARY_BTN =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded-[9px] border border-[#DADBD2] bg-white px-3 text-[11px] font-semibold text-[#666762] shadow-[var(--pf-shadow-2xs)] transition-all duration-150 hover:border-[#BFC0B9] hover:text-[#30312E] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-white px-3 text-[13px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)] transition-all duration-150 hover:border-[var(--pf-border-strong)] hover:text-foreground active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45";
 const ICON_BTN =
-  "grid size-8 shrink-0 place-items-center rounded-[8px] text-[#777873] transition-colors hover:bg-[#F0F1EB] hover:text-[#30312E] active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
+  "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
 const INPUT =
-  "w-full rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 text-[12px] text-[#30312E] outline-none transition placeholder:text-[#969792] focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10";
-const FIELD_LABEL = "mb-1.5 block text-[10px] font-semibold text-[#868686]";
+  "w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground outline-none transition placeholder:text-muted-foreground focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10";
+const FIELD_LABEL = "mb-1.5 block text-[12px] font-semibold text-muted-foreground";
 
 function NativeSelect<T extends string>({
   label,
@@ -124,7 +124,7 @@ function NativeSelect<T extends string>({
         <select
           value={value}
           onChange={(event) => onChange(event.target.value as T)}
-          className="h-9 w-full appearance-none rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-2.5 pr-7 text-[11px] font-medium capitalize text-[#30312E] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
+          className="h-9 w-full appearance-none rounded-lg border border-border bg-card px-2.5 pr-7 text-[11px] font-medium capitalize text-foreground outline-none transition focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10"
         >
           {options.map((option) => (
             <option key={option} value={option}>
@@ -132,7 +132,7 @@ function NativeSelect<T extends string>({
             </option>
           ))}
         </select>
-        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#969792]" />
+        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
       </span>
     </label>
   );
@@ -167,7 +167,7 @@ function AutosaveStatus({ state }: { state: SaveState }) {
     <span
       role="status"
       className={cn(
-        "inline-flex items-center gap-1.5 text-[10px] font-semibold",
+        "inline-flex items-center gap-1.5 text-[12px] font-semibold",
         contents.className,
       )}
     >
@@ -603,8 +603,8 @@ export function SlideshowEditor({
   if (!activeSlide) return null;
 
   return (
-    <div className="flex min-h-full flex-col bg-[#F3F4EF]">
-      <header className="flex flex-wrap items-center gap-2 border-b border-[#DEDFD8] px-4 py-3 sm:px-6">
+    <div className="flex min-h-full flex-col bg-[var(--pf-canvas)]">
+      <header className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
         <button
           type="button"
           onClick={() => void handleBack()}
@@ -614,7 +614,7 @@ export function SlideshowEditor({
           <ChevronLeft className="size-3.5" />
           Drafts
         </button>
-        <span className="hidden h-5 w-px bg-[#DEDFD8] sm:block" />
+        <span className="hidden h-5 w-px bg-border sm:block" />
         <input
           aria-label="Slideshow title"
           value={draft.title}
@@ -624,7 +624,7 @@ export function SlideshowEditor({
               title: event.target.value,
             }))
           }
-          className="h-8 min-w-0 flex-1 bg-transparent px-1 text-[14px] font-semibold tracking-[-0.01em] text-[#232323] outline-none placeholder:text-[#969792] sm:max-w-sm"
+          className="h-8 min-w-0 flex-1 bg-transparent px-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground outline-none placeholder:text-muted-foreground sm:max-w-sm"
           placeholder="Untitled slideshow"
         />
         <AutosaveStatus state={saveState} />
@@ -649,13 +649,15 @@ export function SlideshowEditor({
           role="alert"
           className="border-b border-destructive/20 bg-destructive/10 px-5 py-2 text-[11px] text-destructive"
         >
-          {saveError} Changes remain in this browser; edit again to retry autosave.
+          {saveError.includes("imagePrompt")
+            ? "AI direction is too long to save. Shorten it to 2,000 characters or fewer."
+            : saveError} Changes remain only in this browser until autosave succeeds; leaving now can lose them.
         </div>
       ) : null}
 
       <div className="grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(300px,1fr)_304px]">
-        <aside className="border-b border-[#E9EAE4] bg-white xl:border-b-0 xl:border-r">
-          <div className="grid grid-cols-3 border-b border-[#E9EAE4] p-2">
+        <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
+          <div className="grid grid-cols-3 border-b border-border p-2">
             {(["hook", "body", "cta"] as SlideshowPhase[]).map((phase) => {
               const exists = draft.slides.some((slide) => slide.role === phase);
               return (
@@ -664,10 +666,10 @@ export function SlideshowEditor({
                   type="button"
                   onClick={() => selectPhase(phase)}
                   className={cn(
-                    "relative flex h-9 items-center justify-center rounded-[8px] text-[11px] font-semibold capitalize transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#FF4A20]/30",
+                    "relative flex h-9 items-center justify-center rounded-[8px] text-[13px] font-semibold capitalize transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--pf-orange)]/30",
                     activePhase === phase
-                      ? "bg-[#F0F1EB] text-[#232323]"
-                      : "text-[#777873] hover:text-[#30312E]",
+                      ? "bg-[var(--pf-active)] text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {phase === "body" ? "Content" : phase}
@@ -681,16 +683,16 @@ export function SlideshowEditor({
             <button
               type="button"
               onClick={() => setPickerOpen(true)}
-              className="flex w-full items-center gap-3 rounded-[11px] border border-[#FF4A20]/25 bg-[#FF4A20]/[0.05] p-3 text-left transition hover:border-[#FF4A20]/45 hover:bg-[#FF4A20]/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A20]/30"
+              className="flex w-full items-center gap-3 rounded-[6px] border border-[var(--pf-orange)]/25 bg-[var(--pf-orange)]/[0.05] p-3 text-left transition hover:border-[var(--pf-orange)]/45 hover:bg-[var(--pf-orange)]/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-[#FF4A20]/10 text-[#FF4A20]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
                 <Images className="size-4" />
               </span>
               <span className="min-w-0">
-                <span className="block text-[12px] font-semibold text-[#30312E]">
+                <span className="block text-[12px] font-semibold text-foreground">
                   Select {activePhase === "body" ? "content" : activePhase} images
                 </span>
-                <span className="mt-0.5 block truncate text-[10px] text-[#777873]">
+                <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                   Pick from the shared Collections library
                 </span>
               </span>
@@ -706,7 +708,7 @@ export function SlideshowEditor({
                       applyCollection(event.target.value);
                       event.target.value = "";
                     }}
-                    className="h-9 w-full appearance-none rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-2.5 pr-7 text-[11px] font-medium text-[#30312E] outline-none focus:border-[#FF4A20]"
+                    className="h-9 w-full appearance-none rounded-lg border border-border bg-card px-2.5 pr-7 text-[11px] font-medium text-foreground outline-none focus:border-[var(--pf-orange)]"
                   >
                     <option value="" disabled>
                       Choose a collection...
@@ -717,7 +719,7 @@ export function SlideshowEditor({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#969792]" />
+                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
                 </span>
               </label>
             ) : null}
@@ -739,10 +741,10 @@ export function SlideshowEditor({
               />
             </div>
 
-            <div className="space-y-3 border-y border-[#E9EAE4] py-3.5">
+            <div className="space-y-3 border-y border-border py-3.5">
               <label className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-[12px] font-medium text-[#30312E]">
-                  <Grid2X2 className="size-4 text-[#969792]" />
+                <span className="flex items-center gap-2 text-[12px] font-medium text-foreground">
+                  <Grid2X2 className="size-4 text-muted-foreground" />
                   Dark overlay
                 </span>
                 <Switch
@@ -755,9 +757,9 @@ export function SlideshowEditor({
               </label>
               {phaseSettings.overlayEnabled ? (
                 <label className="block px-0.5 pb-1">
-                  <span className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-[#868686]">
+                  <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
                     <span>Overlay opacity</span>
-                    <span className="font-mono tabular-nums text-[#666762]">
+                    <span className="font-mono tabular-nums text-muted-foreground">
                       {phaseSettings.overlayOpacity}%
                     </span>
                   </span>
@@ -776,8 +778,8 @@ export function SlideshowEditor({
                 </label>
               ) : null}
               <label className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-[12px] font-medium text-[#30312E]">
-                  <TextCursorInput className="size-4 text-[#969792]" />
+                <span className="flex items-center gap-2 text-[12px] font-medium text-foreground">
+                  <TextCursorInput className="size-4 text-muted-foreground" />
                   Display text
                 </span>
                 <Switch
@@ -794,7 +796,7 @@ export function SlideshowEditor({
               type="button"
               onClick={() => setAdvanced((current) => !current)}
               aria-expanded={advanced}
-              className="flex h-9 w-full items-center justify-between text-[12px] font-semibold text-[#666762] transition hover:text-[#232323]"
+              className="flex h-9 w-full items-center justify-between text-[12px] font-semibold text-muted-foreground transition hover:text-foreground"
             >
               <span className="flex items-center gap-2">
                 <Settings2 className="size-4" />
@@ -806,7 +808,7 @@ export function SlideshowEditor({
             </button>
 
             {advanced ? (
-              <div className="space-y-4 rounded-[11px] border border-[#E4E5DD] bg-[#F7F8F2] p-3.5">
+              <div className="space-y-4 rounded-[6px] border border-border bg-[var(--pf-active)] p-3.5">
                 <label className="block">
                   <span className={FIELD_LABEL}>Image model</span>
                   {imageModels.length > 0 ? (
@@ -824,7 +826,7 @@ export function SlideshowEditor({
                       ))}
                     </select>
                   ) : (
-                    <span className="block rounded-[7px] border border-[#E1E2DC] bg-[#FCFCFA] px-3 py-2 text-[10px] text-[#92938E]">
+                    <span className="block rounded-lg border border-border bg-card px-3 py-2 text-[12px] text-muted-foreground">
                       Using the workspace default image model.
                     </span>
                   )}
@@ -842,7 +844,7 @@ export function SlideshowEditor({
                     className={cn(INPUT, "h-8 text-[11px]")}
                   />
                 </label>
-                <label className="flex items-center justify-between gap-3 text-[12px] font-medium text-[#30312E]">
+                <label className="flex items-center justify-between gap-3 text-[12px] font-medium text-foreground">
                   <span>Include CTA slide</span>
                   <Switch
                     checked={draft.includeCta}
@@ -853,7 +855,7 @@ export function SlideshowEditor({
                     aria-label="Include CTA slide"
                   />
                 </label>
-                <label className="flex items-center justify-between gap-3 text-[12px] font-medium text-[#30312E]">
+                <label className="flex items-center justify-between gap-3 text-[12px] font-medium text-foreground">
                   <span>Prevent repeated hooks</span>
                   <Switch
                     checked={draft.preventRepeats}
@@ -871,9 +873,9 @@ export function SlideshowEditor({
           </div>
         </aside>
 
-        <main className="flex min-w-0 flex-col">
+        <section aria-label="Slideshow preview" className="flex min-w-0 flex-col">
           <div
-            className="relative flex min-h-[420px] flex-1 items-center justify-center overflow-hidden bg-[#EFEFE9] bg-[linear-gradient(#E2E3DB_1px,transparent_1px),linear-gradient(90deg,#E2E3DB_1px,transparent_1px)] bg-[size:24px_24px] p-4 sm:p-6 dark:bg-[linear-gradient(#343531_1px,transparent_1px),linear-gradient(90deg,#343531_1px,transparent_1px)]"
+            className="relative flex min-h-[420px] flex-1 items-center justify-center overflow-hidden bg-[#09090B] p-4 sm:p-6"
           >
             <div className="flex h-full max-w-full items-center justify-center gap-5 overflow-hidden">
               {previewIndices.map((index) => {
@@ -886,7 +888,7 @@ export function SlideshowEditor({
                     onClick={() => selectSlide(slide)}
                     aria-label={`Select slide ${index + 1}`}
                     className={cn(
-                      "min-w-0 shrink-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A20]/40",
+                      "min-w-0 shrink-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/40",
                       active
                         ? "w-[min(58vw,300px)] opacity-100 sm:w-[min(38vh,318px)]"
                         : "hidden w-[168px] opacity-40 hover:opacity-70 xl:block",
@@ -906,8 +908,8 @@ export function SlideshowEditor({
                       className={cn(
                         "w-full",
                         active
-                          ? "rounded-[13px] border-[6px] border-white shadow-[0_24px_56px_rgba(35,35,35,0.22)]"
-                          : "rounded-[11px] border-4 border-white shadow-[0_10px_28px_rgba(35,35,35,0.14)]",
+                          ? "rounded-lg border-[6px] border-white shadow-[0_24px_56px_rgba(35,35,35,0.22)]"
+                          : "rounded-[6px] border-4 border-white shadow-[0_10px_28px_rgba(35,35,35,0.14)]",
                       )}
                     />
                   </button>
@@ -915,23 +917,23 @@ export function SlideshowEditor({
               })}
             </div>
             {regeneratingImage ? (
-              <div className="absolute inset-0 grid place-items-center bg-[#EFEFE9]/70 backdrop-blur-[1px]">
-                <span className="flex items-center gap-2 rounded-full border border-[#DADBD2] bg-white px-4 py-2 text-[11px] font-semibold text-[#30312E] shadow-lg">
-                  <LoaderCircle className="size-3.5 animate-spin text-[#FF4A20]" />
+              <div className="absolute inset-0 grid place-items-center bg-[var(--pf-active)]/70 backdrop-blur-[1px]">
+                <span className="flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-[13px] font-semibold text-foreground shadow-lg">
+                  <LoaderCircle className="size-3.5 animate-spin text-[var(--pf-orange)]" />
                   Rendering slide visual...
                 </span>
               </div>
             ) : null}
           </div>
 
-          <div className="shrink-0 border-t border-[#E9EAE4] bg-white px-3 py-2.5">
+          <div className="shrink-0 border-t border-border bg-white px-3 py-2.5">
             <div className="flex items-center gap-1.5 overflow-x-auto">
               <button
                 type="button"
                 onClick={addSlide}
                 disabled={draft.slides.length >= MAX_SLIDESHOW_SLIDES}
                 aria-label="Add slide"
-                className="grid h-14 w-11 shrink-0 place-items-center rounded-[9px] border border-dashed border-[#C6C7BE] text-[#969792] transition hover:border-[#FF4A20] hover:text-[#FF4A20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4A20]/30 disabled:cursor-not-allowed disabled:opacity-40"
+                className="grid h-14 w-11 shrink-0 place-items-center rounded-lg border border-dashed border-[var(--pf-border-strong)] text-muted-foreground transition hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Plus className="size-4" />
               </button>
@@ -944,7 +946,7 @@ export function SlideshowEditor({
                   className={cn(
                     "relative h-14 w-9 shrink-0 overflow-hidden rounded-[8px] border-2 transition",
                     index === activeIndex
-                      ? "border-[#232323]"
+                      ? "border-[var(--pf-ink)]"
                       : "border-transparent opacity-55 hover:opacity-100",
                   )}
                 >
@@ -952,12 +954,12 @@ export function SlideshowEditor({
                     visualKey={slide.visualKey}
                     className="absolute inset-0"
                   />
-                  <span className="absolute bottom-0 right-0 rounded-tl-[5px] bg-black/60 px-1 font-mono text-[8px] font-semibold tabular-nums text-white">
+                  <span className="absolute bottom-0 right-0 rounded-tl-md bg-black/60 px-1.5 py-0.5 pf-data text-[11px] font-semibold tabular-nums text-white">
                     {index + 1}
                   </span>
                 </button>
               ))}
-              <span className="mx-1.5 h-7 w-px shrink-0 bg-[#E9EAE4]" />
+              <span className="mx-1.5 h-7 w-px shrink-0 bg-[var(--pf-active)]" />
               <button
                 type="button"
                 onClick={() => moveSlide(-1)}
@@ -999,18 +1001,18 @@ export function SlideshowEditor({
               </span>
             </div>
           </div>
-        </main>
+        </section>
 
-        <aside className="border-t border-[#E9EAE4] bg-white xl:border-l xl:border-t-0">
+        <aside className="border-t border-border bg-white xl:border-l xl:border-t-0">
           <div className="max-h-[700px] space-y-5 overflow-y-auto p-4 xl:max-h-[calc(100vh-170px)]">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[13px] font-semibold text-[#30312E]">Text layers</p>
-                <p className="mt-0.5 text-[10px] capitalize text-[#969792]">
+                <p className="text-[13px] font-semibold text-foreground">Text layers</p>
+                <p className="mt-0.5 text-[12px] capitalize text-muted-foreground">
                   {activePhase === "body" ? "Content" : activePhase} · slide {activeIndex + 1}
                 </p>
               </div>
-              <span className="rounded-full bg-[#F0F1EB] px-2 py-[3px] text-[10px] font-bold text-[#777873]">
+              <span className="rounded-full bg-[var(--pf-active)] px-2 py-[3px] text-[12px] font-bold text-muted-foreground">
                 3 layers
               </span>
             </div>
@@ -1043,9 +1045,9 @@ export function SlideshowEditor({
             </div>
 
             <div>
-              <span className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-[#868686]">
+              <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
                 <span>Text size</span>
-                <span className="font-mono tabular-nums text-[#666762]">{draft.textSettings.size}px</span>
+                <span className="font-mono tabular-nums text-muted-foreground">{draft.textSettings.size}px</span>
               </span>
               <Slider
                 min={14}
@@ -1060,9 +1062,9 @@ export function SlideshowEditor({
             </div>
 
             <div>
-              <span className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-[#868686]">
+              <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
                 <span>Text width</span>
-                <span className="font-mono tabular-nums text-[#666762]">{draft.textSettings.width}%</span>
+                <span className="font-mono tabular-nums text-muted-foreground">{draft.textSettings.width}%</span>
               </span>
               <Slider
                 min={50}
@@ -1077,10 +1079,10 @@ export function SlideshowEditor({
             </div>
 
             {draft.textSettings.color === "custom" ? (
-              <label className="flex items-center justify-between gap-4 rounded-[11px] border border-[#DADBD2] bg-[#FCFCFA] p-3">
+              <label className="flex items-center justify-between gap-4 rounded-[6px] border border-border bg-card p-3">
                 <span>
-                  <span className="block text-[12px] font-semibold text-[#30312E]">Custom text color</span>
-                  <span className="mt-0.5 block text-[10px] text-[#777873]">
+                  <span className="block text-[12px] font-semibold text-foreground">Custom text color</span>
+                  <span className="mt-0.5 block text-[12px] text-muted-foreground">
                     Choose any brand color.
                   </span>
                 </span>
@@ -1091,14 +1093,14 @@ export function SlideshowEditor({
                     updateTextSettings({ customColor: event.target.value })
                   }
                   aria-label="Custom text color"
-                  className="size-10 cursor-pointer rounded-[9px] border border-[#DADBD2] bg-transparent p-1"
+                  className="size-10 cursor-pointer rounded-lg border border-border bg-transparent p-1"
                 />
               </label>
             ) : null}
 
             <div>
               <span className={FIELD_LABEL}>Alignment</span>
-              <div className="grid grid-cols-3 gap-1 rounded-[9px] bg-[#F0F1EB] p-1">
+              <div className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--pf-active)] p-1">
                 {(
                   [
                     ["left", AlignLeft],
@@ -1115,10 +1117,10 @@ export function SlideshowEditor({
                     aria-label={`Align text ${align}`}
                     aria-pressed={draft.textSettings.align === align}
                     className={cn(
-                      "flex h-7 items-center justify-center rounded-[7px] transition",
+                      "flex h-7 items-center justify-center rounded-lg transition",
                       draft.textSettings.align === align
-                        ? "bg-white text-[#232323] shadow-sm"
-                        : "text-[#777873] hover:text-[#30312E]",
+                        ? "bg-white text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     <Icon className="size-3.5" />
@@ -1138,7 +1140,7 @@ export function SlideshowEditor({
               />
             </label>
             <label className="block">
-              <span className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-[#868686]">
+              <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
                 <span>Headline</span>
                 <span className="font-mono tabular-nums">{activeSlide.headline.length}/180</span>
               </span>
@@ -1153,7 +1155,7 @@ export function SlideshowEditor({
               />
             </label>
             <label className="block">
-              <span className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-[#868686]">
+              <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
                 <span>Supporting copy</span>
                 <span className="font-mono tabular-nums">{activeSlide.body.length}/420</span>
               </span>
@@ -1177,12 +1179,12 @@ export function SlideshowEditor({
               />
             </label>
 
-            <div className="rounded-[11px] border border-accent-blue/20 bg-accent-blue/[0.05] p-3.5">
+            <div className="rounded-[6px] border border-accent-blue/20 bg-accent-blue/[0.05] p-3.5">
               <div className="flex items-start gap-2.5">
                 <WandSparkles className="mt-0.5 size-4 shrink-0 text-accent-blue" />
                 <div className="min-w-0">
-                  <p className="text-[12px] font-semibold text-[#30312E]">AI copy variation</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-[#777873]">
+                  <p className="text-[12px] font-semibold text-foreground">AI copy variation</p>
+                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Rewrite this slide without changing the visual layout.
                   </p>
                   <Button
@@ -1190,7 +1192,7 @@ export function SlideshowEditor({
                     size="sm"
                     onClick={() => void handleRegenerate()}
                     disabled={regenerating}
-                    className="mt-2.5 h-8 rounded-[9px] bg-accent-blue px-3 text-[11px] font-bold text-white hover:brightness-105 active:scale-[0.97]"
+                    className="mt-2.5 h-8 rounded-lg bg-accent-blue px-3 text-[13px] font-semibold text-white hover:brightness-105 active:scale-[0.97]"
                   >
                     {regenerating ? (
                       <LoaderCircle className="size-3.5 animate-spin" />
@@ -1203,12 +1205,12 @@ export function SlideshowEditor({
               </div>
             </div>
 
-            <div className="rounded-[11px] border border-[#FF4A20]/20 bg-[#FF4A20]/[0.04] p-3.5">
+            <div className="rounded-[6px] border border-[var(--pf-orange)]/20 bg-[var(--pf-orange)]/[0.04] p-3.5">
               <div className="flex items-start gap-2.5">
-                <Sparkles className="mt-0.5 size-4 shrink-0 text-[#FF4A20]" />
+                <Sparkles className="mt-0.5 size-4 shrink-0 text-[var(--pf-orange)]" />
                 <div className="min-w-0">
-                  <p className="text-[12px] font-semibold text-[#30312E]">AI image variation</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-[#777873]">
+                  <p className="text-[12px] font-semibold text-foreground">AI image variation</p>
+                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Queue a new visual from the AI direction. One image job at $0.08.
                   </p>
                   <button
@@ -1228,15 +1230,15 @@ export function SlideshowEditor({
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-[11px] border border-[#E4E5DD] bg-[#F7F8F2] p-3">
+            <div className="flex items-center justify-between rounded-[6px] border border-border bg-[var(--pf-active)] p-3">
               <div>
-                <p className="text-[12px] font-semibold text-[#30312E]">Slide count</p>
-                <p className="mt-0.5 text-[10px] text-[#969792]">
+                <p className="text-[12px] font-semibold text-foreground">Slide count</p>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   Reel-ready range: 1-{MAX_SLIDESHOW_SLIDES}
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-[#30312E] shadow-sm ring-1 ring-[#E4E5DD]">
-                <Layers className="size-3 text-[#FF4A20]" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[13px] font-semibold text-foreground shadow-sm ring-1 ring-border">
+                <Layers className="size-3 text-[var(--pf-orange)]" />
                 {draft.slides.length}/{MAX_SLIDESHOW_SLIDES}
               </span>
             </div>
@@ -1245,12 +1247,12 @@ export function SlideshowEditor({
       </div>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-[13px] border-[#DADBD2]">
+        <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
           <DialogHeader>
-            <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-[#232323]">
+            <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
               Select slide images
             </DialogTitle>
-            <DialogDescription className="text-[11px] text-[#777873]">
+            <DialogDescription className="text-[11px] text-muted-foreground">
               Pick images from the shared Collections library. The same collections feed Generate, Clone, and Automations.
             </DialogDescription>
           </DialogHeader>
@@ -1259,8 +1261,8 @@ export function SlideshowEditor({
             onChange={setPickerAssetIds}
             maxSelection={4}
           />
-          <div className="flex items-center justify-between border-t border-[#E9EAE4] pt-4">
-            <span className="text-[10px] text-[#969792]">
+          <div className="flex items-center justify-between border-t border-border pt-4">
+            <span className="text-[12px] text-muted-foreground">
               {pickerAssetIds.length} selected · applied to this slide
             </span>
             <div className="flex gap-2">

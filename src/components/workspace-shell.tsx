@@ -57,22 +57,18 @@ export function WorkspaceRouteHeader({
   hasAccessory?: boolean;
 }) {
   return (
-    <div className="border-b border-[#DEDFD8] bg-[#F3F4EF]">
+    <div className="border-b border-[var(--pf-border)] bg-[var(--pf-canvas)]">
       <div
         id="workspace-header-grid"
         className={cn(
-          "grid min-h-[104px] gap-4 px-5 py-5 sm:px-7 lg:items-center lg:px-8",
-          hasAccessory
-            ? "lg:grid-cols-[minmax(220px,360px)_minmax(0,1fr)]"
-            : "lg:grid-cols-[minmax(0,1fr)_auto]"
+          "grid min-h-[120px] gap-4 px-5 pb-6 pt-6 sm:px-7 lg:items-end lg:px-8 lg:grid-cols-[minmax(0,1fr)_auto]"
         )}
       >
         <div className="min-w-0">
-          <p className="pf-eyebrow">{activeItem.eyebrow}</p>
-          <h1 className="mt-1 text-[27px] font-semibold leading-none tracking-[-0.04em] text-[#232323] sm:text-[29px]">
+          <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)] sm:text-[30px]">
             {activeItem.label}
           </h1>
-          <p className="mt-1.5 max-w-2xl text-[11px] leading-[1.125rem] text-[#777873]">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-[var(--pf-muted)]">
             {activeItem.description}
           </p>
         </div>
@@ -110,7 +106,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   return (
     <main
       id="workspace-shell"
-      className="min-h-dvh min-w-0 overflow-x-hidden bg-[#F3F4EF] pt-[calc(58px+env(safe-area-inset-top))] md:ml-[72px] md:pt-0 xl:ml-64"
+      className="min-h-dvh min-w-0 overflow-x-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:ml-[72px] md:pt-0 xl:ml-64"
     >
       {!hideHeader && (
         <WorkspaceRouteHeader

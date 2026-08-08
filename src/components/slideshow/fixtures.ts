@@ -1,4 +1,5 @@
 import type {
+  SlideshowAspectRatio,
   SlideshowCollection,
   SlideshowPhase,
   SlideshowPhaseSettings,
@@ -275,6 +276,84 @@ export function createBlankSlideshowProject(): SlideshowProject {
       cta("Give the reader one simple next step.", "coral-wave"),
     ],
   });
+}
+
+/**
+ * Build a slideshow project directly from operator-supplied copy — a hook and
+ * one piece of text per slide. The copy is used verbatim (not rewritten): the
+ * Slideshow Creator only structures/validates it, then drives GPT Image 2
+ * visuals from it.
+ */
+export function createProjectFromCreatorCopy(input: {
+  hook: string;
+  /** Per-slide copy, in order. First line becomes the hook. */
+  slides: string[];
+  title?: string;
+  aspectRatio?: SlideshowAspectRatio;
+}): SlideshowProject {
+  const now = new Date().toISOString();
+  const nonce = `${Date.now()}`;
+  const visualKeys = [
+    "coral-glow",
+    "blue-studio",
+    "lime-paper",
+    "violet-dusk",
+    "mint-room",
+    "paper-stack",
+    "sunset-blocks",
+    "night-grid",
+  ];
+  const hookLine = input.hook.trim() || "";
+  const allLines = [hookLine, ...input.slides.map((line) => line.trim())].filter(
+    Boolean,
+  );
+  const slides: SlideshowSlide[] = allLines.map((line, index) => {
+    const isFirst = index === 0;
+    const isLast = !isFirst && index === allLines.length - 1 && allLines.length > 2;
+    const role: SlideshowPhase = isFirst
+      ? "hook"
+      : isLast
+        ? "cta"
+        : "body";
+    const id = `local-slide-${nonce}-${index + 1}`;
+    return {
+      id,
+      clientId: id,
+      order: index,
+      role,
+      eyebrow:
+        role === "hook" ? "START HERE" : role === "cta" ? "NEXT STEP" : `POINT ${index}`,
+      headline: line,
+      body: role === "cta" ? "Save this and try one simple next step." : "",
+      prompt: line,
+      visualKey: visualKeys[index % visualKeys.length],
+    };
+  });
+
+  return {
+    id: `local-${nonce}`,
+    clientId: `local-${nonce}`,
+    title: (input.title?.trim() || "Untitled slideshow").slice(0, 160),
+    status: "draft",
+    aspectRatio: input.aspectRatio ?? "9:16",
+    slides,
+    phaseSettings: defaultPhaseSettings(),
+    textSettings: {
+      font: "Poppins",
+      color: "white",
+      style: "outline",
+      size: 28,
+      position: "center",
+      width: 88,
+      align: "center",
+    },
+    includeCta: slides.some((slide) => slide.role === "cta"),
+    preventRepeats: true,
+    language: "English",
+    templateId: null,
+    createdAt: now,
+    updatedAt: now,
+  };
 }
 
 export function formatCompactNumber(value: number) {

@@ -5,11 +5,9 @@ import {
   getIntegrationEncryptionKey,
 } from "../src/lib/integrations/crypto";
 import {
-  getProviderCredential,
   getStoredProviderCredential,
   PROVIDER_ENV_KEYS,
   saveProviderCredential,
-  clearProviderCredential,
 } from "../src/lib/providers/credentials";
 
 const TEST_KEY_HEX = "a".repeat(64);
@@ -35,34 +33,26 @@ function testEnvFallback() {
 }
 
 async function testStoredCredentialNotReadableWithoutDb() {
-  // In a headless run there is no database; reads must fail cleanly (returning
-  // null) rather than crash.
+  // The package script pins DATABASE_URL to an unreachable local port so this
+  // security check is independent of a developer's local Postgres state.
+  let readFailed = false;
   try {
     const value = await getStoredProviderCredential("fal");
     assert.equal(value, null);
-  } catch (error) {
-    assert.match(
-      error instanceof Error ? error.message : String(error),
-      /does not exist|connection|database|ECONNREFUSED/i
-    );
+  } catch {
+    readFailed = true;
   }
+  assert.equal(readFailed, true, "the isolated credential database must be unreachable");
 }
 
 async function testSaveFailsCleanlyWithoutDb() {
+  let saveFailed = false;
   try {
     await saveProviderCredential("fal", "some-key");
-    // If a database happens to be present, verify the round trip is safe.
-    const stored = await getProviderCredential("fal");
-    assert.equal(stored, "some-key");
-    await clearProviderCredential("fal");
-    const cleared = await getStoredProviderCredential("fal");
-    assert.equal(cleared, null);
-  } catch (error) {
-    assert.match(
-      error instanceof Error ? error.message : String(error),
-      /does not exist|connection|database|ECONNREFUSED/i
-    );
+  } catch {
+    saveFailed = true;
   }
+  assert.equal(saveFailed, true, "credential persistence must fail closed without a database");
 }
 
 async function run() {

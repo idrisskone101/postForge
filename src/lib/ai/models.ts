@@ -62,10 +62,12 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     capabilities: {
       textToImage: true,
     },
-    defaults: { aspectRatio: "16:9", numImages: 1 },
+    defaults: { aspectRatio: "9:16", numImages: 1 },
     limits: {
       maxImages: 1,
-      aspectRatios: ["16:9", "1:1", "4:5", "3:2", "4:3"],
+      // 9:16 is supported via an explicit { width, height } image_size object;
+      // the rest map to presets.
+      aspectRatios: ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"],
     },
   },
   "seedream-5.0-pro": {
@@ -363,7 +365,9 @@ const ASPECT_RATIO_FAL_MAP: Record<string, string> = {
 };
 
 // GPT Image 2 has no portrait_9_16 preset; its closest portrait options
-// are portrait_16_9 (576x1024) and portrait_4_3 (768x1024).
+// are portrait_16_9 (576x1024) and portrait_4_3 (768x1024). A true 9:16
+// requires an explicit { width, height } object (multiples of 16, max edge
+// 3840px, aspect ratio <= 3:1, 655,360..8,294,400 total pixels).
 const GPT_IMAGE_2_SIZE_MAP: Record<string, string> = {
   "16:9": "landscape_16_9",
   "1:1": "square_hd",
@@ -371,6 +375,18 @@ const GPT_IMAGE_2_SIZE_MAP: Record<string, string> = {
   "3:2": "landscape_4_3",
   "4:3": "landscape_4_3",
 };
+
+// Explicit 9:16 portrait dimensions for GPT Image 2 (1080x1920 equivalents
+// that are multiples of 16): 1152x2048 is exactly 9:16 and within fal's
+// pixel budget.
+export const GPT_IMAGE_2_PORTRAIT_9_16 = { width: 1152, height: 2048 } as const;
+
+export type FalImageSize = string | { width: number; height: number };
+
+function gptImage2FalSize(aspectRatio: string): FalImageSize {
+  if (aspectRatio === "9:16") return GPT_IMAGE_2_PORTRAIT_9_16;
+  return GPT_IMAGE_2_SIZE_MAP[aspectRatio] ?? "landscape_4_3";
+}
 
 // Seedream 5.0 Pro accepts the same preset set as GPT Image 2; portrait_9_16
 // is not a valid preset, so 9:16 maps to portrait_16_9.
@@ -386,7 +402,7 @@ const SEEDREAM_5_SIZE_MAP: Record<string, string> = {
 export function mapAspectRatioToFalFormat(
   aspectRatio: string,
   modelId: string
-): string {
+): FalImageSize {
   const model = MODEL_REGISTRY[modelId];
   if (!model) {
     throw new Error(`Unknown model: ${modelId}`);
@@ -395,7 +411,7 @@ export function mapAspectRatioToFalFormat(
   // Image models use the mapped format, video models pass through
   if (model.type === "image") {
     if (modelId === "gpt-image-2") {
-      return GPT_IMAGE_2_SIZE_MAP[aspectRatio] ?? "landscape_4_3";
+      return gptImage2FalSize(aspectRatio);
     }
     if (modelId === "seedream-5.0-pro") {
       return SEEDREAM_5_SIZE_MAP[aspectRatio] ?? "landscape_4_3";

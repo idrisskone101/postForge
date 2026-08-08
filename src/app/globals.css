@@ -113,37 +113,37 @@
 }
 
 :root {
-  --background: #f3f4ef;
-  --foreground: #232323;
+  --background: #fafafa;
+  --foreground: #18181b;
   --card: #ffffff;
-  --card-foreground: #232323;
+  --card-foreground: #18181b;
   --popover: #ffffff;
-  --popover-foreground: #232323;
+  --popover-foreground: #18181b;
   --primary: #ff4a20;
   --primary-foreground: #ffffff;
-  --secondary: #eeefe8;
-  --secondary-foreground: #232323;
-  --muted: #eeefe8;
-  --muted-foreground: #747570;
-  --accent: #e6e6df;
-  --accent-foreground: #232323;
-  --destructive: #ef4444;
-  --border: #dadbd2;
-  --input: #dadbd2;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --destructive: #dc2626;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
   --ring: #ff4a20;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: #eeefe8;
-  --sidebar-foreground: #232323;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #18181b;
   --sidebar-primary: #ff4a20;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e1e2db;
-  --sidebar-accent-foreground: #232323;
-  --sidebar-border: #dadbd2;
+  --sidebar-accent: #fff1ec;
+  --sidebar-accent-foreground: #e9421c;
+  --sidebar-border: #e4e4e7;
   --sidebar-ring: #ff4a20;
 
   /* Accent colors - light */
@@ -153,35 +153,44 @@
   --glass-bg: rgba(255, 255, 255, 0.92);
   --glass-border: rgba(35, 35, 35, 0.08);
 
-  --pf-canvas: #f3f4ef;
-  --pf-rail: #eeefe8;
-  --pf-active: #e1e2db;
+  --pf-canvas: #fafafa;
+  --pf-rail: #ffffff;
+  --pf-rail-ink: #18181b;
+  --pf-rail-muted: #71717a;
+  --pf-rail-border: #e4e4e7;
+  --pf-active: #f4f4f5;
   --pf-surface: #ffffff;
-  --pf-ink: #232323;
-  --pf-muted: #868686;
-  --pf-border: #dadbd2;
+  --pf-ink: #18181b;
+  --pf-muted: #71717a;
+  --pf-border: #e4e4e7;
+  --pf-border-strong: #d4d4d8;
   --pf-orange: #ff4a20;
-  --pf-link: #378eff;
-  --pf-success: #22c55e;
-  --pf-danger: #ef4444;
+  --pf-link: #2563eb;
+  --pf-success: #16a34a;
+  --pf-danger: #dc2626;
+  --pf-lamp-amber: #d97706;
+  --pf-lamp-green: #16a34a;
+  --pf-masthead: #fafafa;
+  --pf-masthead-ink: #18181b;
+  --pf-masthead-muted: #71717a;
 
-  /* Elevation: warm-tinted layered shadows, single light source (top-left) */
-  --pf-shadow-2xs: 0 1px 2px rgba(67, 60, 42, 0.05);
+  /* Elevation: quiet neutral shadows, single light source (top) */
+  --pf-shadow-2xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --pf-shadow-xs:
-    0 1px 2px rgba(67, 60, 42, 0.05),
-    0 1px 1px rgba(67, 60, 42, 0.04);
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(0, 0, 0, 0.03);
   --pf-shadow-sm:
-    0 1px 2px rgba(67, 60, 42, 0.05),
-    0 4px 12px -2px rgba(67, 60, 42, 0.07);
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 4px 12px -2px rgba(0, 0, 0, 0.08);
   --pf-shadow-md:
-    0 1px 2px rgba(67, 60, 42, 0.05),
-    0 8px 24px -6px rgba(67, 60, 42, 0.1);
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 8px 24px -6px rgba(0, 0, 0, 0.12);
   --pf-shadow-lg:
-    0 2px 4px rgba(67, 60, 42, 0.05),
-    0 16px 40px -12px rgba(67, 60, 42, 0.16);
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 16px 40px -12px rgba(0, 0, 0, 0.16);
   --pf-shadow-orange:
-    0 1px 2px rgba(130, 25, 0, 0.2),
-    0 6px 16px -4px rgba(255, 74, 32, 0.35);
+    0 1px 2px rgba(130, 25, 0, 0.15),
+    0 4px 12px -4px rgba(255, 74, 32, 0.28);
 
   /* Motion: one shared ease, quick-but-weighty */
   --pf-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -190,36 +199,36 @@
 
 .dark {
   color-scheme: dark;
-  --background: #141613;
-  --foreground: #f3f4ef;
-  --card: #1d201c;
-  --card-foreground: #f3f4ef;
-  --popover: #22251f;
-  --popover-foreground: #f3f4ef;
+  --background: #0a0a0b;
+  --foreground: #fafafa;
+  --card: #131316;
+  --card-foreground: #fafafa;
+  --popover: #131316;
+  --popover-foreground: #fafafa;
   --primary: #ff6540;
   --primary-foreground: #ffffff;
-  --secondary: #252822;
-  --secondary-foreground: #f3f4ef;
-  --muted: #272a25;
-  --muted-foreground: #aeb1a9;
-  --accent: #31352e;
-  --accent-foreground: #f3f4ef;
-  --destructive: #f06a5e;
-  --border: #373b34;
-  --input: #41463e;
+  --secondary: #1c1c20;
+  --secondary-foreground: #fafafa;
+  --muted: #1c1c20;
+  --muted-foreground: #a1a1aa;
+  --accent: #1c1c20;
+  --accent-foreground: #fafafa;
+  --destructive: #f87171;
+  --border: #26262b;
+  --input: #2e2e33;
   --ring: #ff6540;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: #181a17;
-  --sidebar-foreground: #f3f4ef;
+  --sidebar: #0a0a0b;
+  --sidebar-foreground: #fafafa;
   --sidebar-primary: #ff6540;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #2b2e29;
-  --sidebar-accent-foreground: #f3f4ef;
-  --sidebar-border: #343832;
+  --sidebar-accent: #2a1710;
+  --sidebar-accent-foreground: #ff8a70;
+  --sidebar-border: #26262b;
   --sidebar-ring: #ff6540;
 
   /* Accent colors - dark */
@@ -229,17 +238,26 @@
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.08);
 
-  --pf-canvas: #141613;
-  --pf-rail: #181a17;
-  --pf-active: #2b2e29;
-  --pf-surface: #1d201c;
-  --pf-ink: #f3f4ef;
-  --pf-muted: #aeb1a9;
-  --pf-border: #373b34;
+  --pf-canvas: #0a0a0b;
+  --pf-rail: #0a0a0b;
+  --pf-rail-ink: #fafafa;
+  --pf-rail-muted: #a1a1aa;
+  --pf-rail-border: #26262b;
+  --pf-active: #1c1c20;
+  --pf-surface: #131316;
+  --pf-ink: #fafafa;
+  --pf-muted: #a1a1aa;
+  --pf-border: #26262b;
+  --pf-border-strong: #3a3a40;
   --pf-orange: #ff6540;
   --pf-link: #6aa7ff;
-  --pf-success: #69d583;
-  --pf-danger: #ff7667;
+  --pf-success: #4ade80;
+  --pf-danger: #f87171;
+  --pf-lamp-amber: #fbbf24;
+  --pf-lamp-green: #4ade80;
+  --pf-masthead: #0a0a0b;
+  --pf-masthead-ink: #fafafa;
+  --pf-masthead-muted: #a1a1aa;
 
   --pf-shadow-2xs: 0 1px 2px rgba(0, 0, 0, 0.3);
   --pf-shadow-xs:
@@ -273,11 +291,11 @@
   [class~="bg-[#F8F8F5]"],
   [class~="bg-[#F7F7F3]"]
 ) {
-  background-color: #1d201c !important;
+  background-color: #131316 !important;
 }
 
 .dark :where(
-  [class~="bg-[#F3F4EF]"],
+  [class~="bg-[#F1F0EA]"],
   [class~="bg-[#EFEFE9]"],
   [class~="bg-[#EEEFE8]"],
   [class~="bg-[#F0F1EB]"],
@@ -288,11 +306,11 @@
   [class~="bg-[#E5E6DF]"],
   [class~="bg-[#E1E2DB]"]
 ) {
-  background-color: #272a25 !important;
+  background-color: #1c1c20 !important;
 }
 
 .dark :where(
-  [class~="text-[#232323]"],
+  [class~="text-[#1C1B17]"],
   [class~="text-[#30312E]"],
   [class~="text-[#363733]"],
   [class~="text-[#3F403C]"],
@@ -308,7 +326,7 @@
   [class~="text-[#71726D]"],
   [class~="text-[#72736F]"]
 ) {
-  color: #f1f2ed !important;
+  color: #fafafa !important;
 }
 
 .dark :where(
@@ -329,7 +347,7 @@
   [class~="text-[#AAA]"],
   [class~="text-[#B0B1AC]"]
 ) {
-  color: #aeb1a9 !important;
+  color: #a1a1aa !important;
 }
 
 .dark :where(
@@ -346,7 +364,7 @@
   [class~="border-[#CFCFC7]"],
   [class~="border-[#D4D5CE]"]
 ) {
-  border-color: #373b34 !important;
+  border-color: #26262b !important;
 }
 
 .dark :where(
@@ -388,7 +406,7 @@
 }
 
 .dark :where(input:not([type="checkbox"]):not([type="range"]), select, textarea, .pf-input) {
-  color: #f3f4ef !important;
+  color: #f1f0ea !important;
   caret-color: #ff6540;
 }
 
@@ -397,9 +415,10 @@
    ReelFarm palette so the production stylesheet, not only this source file,
    carries the dark remap. */
 .dark #workspace-shell,
-.dark .bg-\[\#F3F4EF\] { background-color: var(--pf-canvas) !important; }
+.dark .bg-\[\#F1F0EA\] { background-color: var(--pf-canvas) !important; }
 
-.dark #workspace-sidebar,
+.dark #workspace-sidebar { background-color: var(--pf-rail) !important; }
+
 .dark .bg-\[\#EEEFE8\],
 .dark .bg-\[\#EFEFE9\],
 .dark .bg-\[\#F0F1EB\],
@@ -437,9 +456,16 @@
 .dark .bg-\[\#FCFCFA\],
 .dark .bg-\[\#F8F9F5\],
 .dark .bg-\[\#F8F8F5\],
+.dark .bg-\[\#F7F8F2\],
 .dark .bg-\[\#F7F7F3\] { background-color: var(--pf-surface) !important; }
 
-.dark .text-\[\#232323\],
+.dark .hover\:bg-\[\#F7F7F2\]:hover { background-color: var(--muted) !important; }
+
+.dark .group:hover .group-hover\:bg-\[\#FFE9E1\] { background-color: #2a1710 !important; }
+
+.dark .bg-\[\#FCEBEA\] { background-color: #2a1710 !important; }
+
+.dark .text-\[\#1C1B17\],
 .dark .text-\[\#30312E\],
 .dark .text-\[\#363733\],
 .dark .text-\[\#3F403C\],
@@ -511,7 +537,7 @@
 .dark .border-\[\#E1E2DB\],
 .dark .border-\[\#BFC0B8\] { border-color: var(--pf-border) !important; }
 
-.dark .border-\[\#232323\] { border-color: var(--pf-ink) !important; }
+.dark .border-\[\#1C1B17\] { border-color: var(--pf-ink) !important; }
 
 .dark .border-\[\#AFC8EB\],
 .dark .border-\[\#BED3EF\] { border-color: #35577a !important; }
@@ -586,9 +612,16 @@
 .dark .text-\[\#3A9B55\],
 .dark .text-\[\#69D583\] { color: #8fe3a2 !important; }
 
+.dark .text-\[\#4C4D48\] { color: var(--pf-muted) !important; }
+
 .dark .text-\[\#2A71C7\],
 .dark .text-\[\#347DCC\],
 .dark .text-\[\#378EFF\] { color: #83b8ff !important; }
+
+.dark .text-\[\#364C68\],
+.dark .text-\[\#246FC2\],
+.dark .text-\[\#52667D\],
+.dark .text-\[\#476785\] { color: #83b8ff !important; }
 
 .dark .text-\[\#9A6D63\],
 .dark .text-\[\#9B5043\],
@@ -621,6 +654,21 @@
 .dark .pf-input {
   color: var(--pf-ink) !important;
   caret-color: var(--pf-orange);
+}
+
+@keyframes pf-stamp-slam {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes blob {
@@ -711,6 +759,7 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-success-pulse,
   .animate-content-enter,
+  .pf-stamp-slam,
   .shimmer {
     animation: none;
   }
@@ -955,29 +1004,32 @@
 
   .pf-section-title {
     color: var(--pf-ink);
-    font-size: 1rem;
-    font-weight: 650;
-    letter-spacing: -0.025em;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .pf-card {
     border: 1px solid var(--pf-border);
-    border-radius: 0.875rem;
+    border-radius: 0.5rem;
     background: var(--pf-surface);
     box-shadow: var(--pf-shadow-xs);
   }
 
   .pf-empty-stage {
-    background-image:
-      radial-gradient(ellipse 62% 52% at 50% 42%, var(--pf-surface) 0%, transparent 72%),
-      radial-gradient(#e0e1da 0.75px, transparent 0.75px);
-    background-size: auto, 18px 18px;
+    background-image: radial-gradient(
+      ellipse 62% 52% at 50% 42%,
+      var(--pf-surface) 0%,
+      transparent 72%
+    );
   }
 
   .dark .pf-empty-stage {
-    background-image:
-      radial-gradient(ellipse 62% 52% at 50% 42%, var(--pf-surface) 0%, transparent 72%),
-      radial-gradient(rgba(255, 255, 255, 0.1) 0.75px, transparent 0.75px);
+    background-image: radial-gradient(
+      ellipse 62% 52% at 50% 42%,
+      var(--pf-surface) 0%,
+      transparent 72%
+    );
   }
 
   .pf-card-hover {
@@ -999,16 +1051,16 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 0.625rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
     background: var(--pf-orange);
     padding: 0 0.875rem;
     color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0;
     white-space: nowrap;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      var(--pf-shadow-orange);
+    box-shadow: var(--pf-shadow-orange);
     transition:
       transform var(--pf-duration) var(--pf-ease),
       box-shadow var(--pf-duration) var(--pf-ease),
@@ -1016,20 +1068,12 @@
   }
 
   .pf-button-primary:hover {
-    filter: brightness(1.04);
-    transform: translateY(-1px);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.2),
-      0 1px 2px rgba(130, 25, 0, 0.22),
-      0 10px 24px -6px rgba(255, 74, 32, 0.45);
+    filter: brightness(0.93);
   }
 
   .pf-button-primary:active {
-    transform: translateY(0) scale(0.98);
-    filter: brightness(0.95);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 1px 2px rgba(130, 25, 0, 0.24);
+    transform: scale(0.98);
+    filter: brightness(0.88);
   }
 
   .pf-button-primary:disabled,
@@ -1039,9 +1083,7 @@
     opacity: 0.45;
     transform: none;
     filter: none;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      var(--pf-shadow-2xs);
+    box-shadow: var(--pf-shadow-2xs);
   }
 
   .pf-button-secondary {
@@ -1051,65 +1093,162 @@
     justify-content: center;
     gap: 0.45rem;
     border: 1px solid var(--pf-border);
-    border-radius: 0.5625rem;
+    border-radius: 0.5rem;
     background: var(--pf-surface);
     padding: 0 0.75rem;
     color: var(--pf-ink);
-    font-size: 0.75rem;
-    font-weight: 650;
+    font-size: 0.8125rem;
+    font-weight: 600;
     white-space: nowrap;
     box-shadow: var(--pf-shadow-2xs);
     transition:
-      transform var(--pf-duration) var(--pf-ease),
-      box-shadow var(--pf-duration) var(--pf-ease),
       background var(--pf-duration) var(--pf-ease),
       border-color var(--pf-duration) var(--pf-ease);
   }
 
   .pf-button-secondary:hover {
-    background: #f8f8f5;
-    transform: translateY(-1px);
-    box-shadow: var(--pf-shadow-sm);
+    background: var(--pf-active);
   }
 
   .pf-button-secondary:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: var(--pf-shadow-2xs);
+    transform: scale(0.98);
   }
 
   .dark .pf-button-secondary:hover { background: var(--pf-active); }
 
+  /* Status badges: quiet pills with a state dot */
   .pf-status-success {
+    border: 1px solid color-mix(in oklch, #16a34a 30%, transparent);
     border-radius: 999px;
-    background: #e7f5e9;
-    color: #268b42;
+    background: color-mix(in oklch, #16a34a 8%, transparent);
+    color: #15803d;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   .pf-status-warning {
+    border: 1px solid color-mix(in oklch, #d97706 30%, transparent);
     border-radius: 999px;
-    background: #fff1de;
-    color: #a56613;
+    background: color-mix(in oklch, #d97706 9%, transparent);
+    color: #b45309;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   .pf-status-danger {
+    border: 1px solid color-mix(in oklch, #dc2626 30%, transparent);
     border-radius: 999px;
-    background: #fde9e5;
-    color: #d94a34;
+    background: color-mix(in oklch, #dc2626 8%, transparent);
+    color: #b91c1c;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   .dark .pf-status-success {
-    background: #193222;
-    color: #7ad88f;
+    background: color-mix(in oklch, #4ade80 12%, transparent);
+    color: #86efac;
+    border-color: color-mix(in oklch, #4ade80 30%, transparent);
   }
 
   .dark .pf-status-warning {
-    background: #342b17;
-    color: #f0c56e;
+    background: color-mix(in oklch, #fbbf24 12%, transparent);
+    color: #fcd34d;
+    border-color: color-mix(in oklch, #fbbf24 30%, transparent);
   }
 
   .dark .pf-status-danger {
-    background: #38201c;
-    color: #ff8a7d;
+    background: color-mix(in oklch, #f87171 12%, transparent);
+    color: #fca5a5;
+    border-color: color-mix(in oklch, #f87171 30%, transparent);
+  }
+
+  /* Canon world vocabulary (category standard, Linear/Resend craft bar) */
+
+  /* Status dot: small indicator for live/in-progress states */
+  .pf-lamp {
+    display: inline-block;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 5px color-mix(in oklch, currentColor 72%, transparent);
+    flex-shrink: 0;
+  }
+
+  /* Data voice: mono numerals for counts, ids, and money */
+  .pf-data {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Review state badge pressed onto media corners (canon pill) */
+  .pf-review-stamp {
+    position: absolute;
+    left: 0.625rem;
+    bottom: 0.625rem;
+    z-index: 10;
+    border: 1px solid color-mix(in oklch, currentColor 35%, transparent);
+    border-radius: 999px;
+    padding: 0.1875rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .pf-review-stamp--approved {
+    color: #dcfce7;
+    background: rgba(21, 128, 61, 0.85);
+  }
+
+  .pf-review-stamp--rejected {
+    color: #fee2e2;
+    background: rgba(185, 28, 28, 0.85);
+  }
+
+  /* Route header band: quiet canvas with a hairline bottom edge */
+  .pf-masthead {
+    position: relative;
+    background: var(--pf-masthead);
+    color: var(--pf-masthead-ink);
+    border-bottom: 1px solid var(--pf-border);
+  }
+
+  .pf-masthead-title {
+    color: var(--pf-masthead-ink);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .pf-masthead-muted {
+    color: var(--pf-masthead-muted);
+  }
+
+  .pf-masthead-plate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pf-masthead-muted);
+    white-space: nowrap;
+  }
+
+  /* Section divider inside cards (formerly the ticket tear) */
+  .pf-tear {
+    position: relative;
+    height: 0;
+    border-top: 1px solid var(--pf-border);
+  }
+
+  .pf-stamp-slam {
+    animation: pf-stamp-slam 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: center;
   }
 }
 

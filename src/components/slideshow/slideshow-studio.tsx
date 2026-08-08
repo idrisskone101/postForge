@@ -10,14 +10,18 @@ import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
 import {
   downloadSlideshowExport,
+  fetchSlideshowProject,
   fetchSlideshowProjects,
   persistSlideshowProject,
   requestSlideshowCopyVariation,
+  requestSlideshowCreatorVisuals,
   requestSlideshowImageGeneration,
   requestSlideshowStory,
+  waitForCreatorVisuals,
 } from "./api";
 import {
   createBlankSlideshowProject,
+  createProjectFromCreatorCopy,
   createProjectFromTemplate,
   DEFAULT_SLIDESHOW_TEMPLATES,
 } from "./fixtures";
@@ -211,18 +215,129 @@ export function SlideshowStudio({
       slideCount: number;
       language: string;
       includeCta: boolean;
+      model?: string;
     }) => {
       setGeneratingStory(true);
       try {
         const project = await requestSlideshowStory(input, apiBaseUrl);
         openEditor(project);
+        const providerLabel =
+          project.generationProvider === "ollama"
+            ? project.generationModel || "DeepSeek V4 Flash"
+            : "local fallback";
         showToast(
           project.generationWarning
             ? `Local story fallback used: ${project.generationWarning}`
-            : "Slideshow generated with Gemini.",
+            : `Slideshow written with ${providerLabel}.`,
         );
       } finally {
         setGeneratingStory(false);
+      }
+    },
+    [apiBaseUrl, openEditor, showToast],
+  );
+
+  const [generatingCreator, setGeneratingCreator] = useState(false);
+  const [creatorProgress, setCreatorProgress] = useState<{
+    title: string;
+    completed: number;
+    total: number;
+  } | null>(null);
+
+  const handleGenerateCreator = useCallback(
+    async (input: {
+      title: string;
+      hook: string;
+      slides: string[];
+      template: unknown;
+      collectionAssetIds: string[];
+      model?: string;
+      aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
+    }) => {
+      setGeneratingCreator(true);
+      try {
+        // 1. Build the deck from the operator's copy (verbatim), persist it to
+        // get real ids.
+        const local = createProjectFromCreatorCopy({
+          hook: input.hook,
+          slides: input.slides,
+          title: input.title,
+          aspectRatio: input.aspectRatio ?? "9:16",
+        });
+        const saved = await persistSlideshowProject(local, apiBaseUrl);
+
+        // 2. Queue GPT Image 2 visuals for every slide.
+        const visuals = await requestSlideshowCreatorVisuals(
+          saved,
+          saved.slides.map((slide) => ({
+            slideId: slide.id,
+            text: slide.headline || slide.prompt || "",
+          })),
+          input.template,
+          apiBaseUrl,
+          {
+            model: input.model ?? "gpt-image-2",
+            aspectRatio: input.aspectRatio ?? "9:16",
+          },
+        );
+
+        const generating: SlideshowProject = {
+          ...saved,
+          status: "generating",
+          revision: visuals.projectRevision,
+          creator: {
+            template: input.template,
+            updatedAt: new Date().toISOString(),
+          } as NonNullable<SlideshowProject["creator"]>,
+        };
+        setProjects((current) => upsertById(current, generating));
+
+        // 3. Show a loading screen while the visuals are generated, so the
+        // operator isn't dropped into an empty editor before their images
+        // exist. The overlay polls the queued jobs; failures are surfaced
+        // after so they can retry the affected slide in the editor.
+        if (visuals.jobs.length > 0) {
+          setCreatorProgress({
+            title: saved.title,
+            completed: 0,
+            total: visuals.jobs.length,
+          });
+          const { failed } = await waitForCreatorVisuals(
+            visuals.jobs,
+            (completed, total) =>
+              setCreatorProgress((current) =>
+                current && current.total === total
+                  ? { ...current, completed }
+                  : current,
+              ),
+          );
+
+          // Re-fetch so the editor opens with the freshly generated images.
+          const refreshed = await fetchSlideshowProject(saved.id, apiBaseUrl).catch(
+            () => generating,
+          );
+          setActiveProject(refreshed);
+          setProjects((current) => upsertById(current, refreshed));
+          openEditor(refreshed);
+
+          if (failed.length > 0) {
+            showToast(
+              `${failed.length} visual${failed.length === 1 ? "" : "s"} failed. Open the slide and tap Regenerate image to retry.`,
+            );
+          } else {
+            showToast(
+              `Generated ${visuals.jobs.length} visuals with GPT Image 2 (~$${visuals.estimatedCost.toFixed(2)}).`,
+            );
+          }
+        } else {
+          // No jobs were queued (provider rejected or zero slides) — open the
+          // editor anyway so the draft is never orphaned.
+          openEditor(generating);
+          showToast("The draft was saved, but no visuals were queued.");
+        }
+      } finally {
+        setGeneratingCreator(false);
+        setCreatorProgress(null);
       }
     },
     [apiBaseUrl, openEditor, showToast],
@@ -340,7 +455,7 @@ export function SlideshowStudio({
       </WorkspaceHeaderAccessory>
 
       {activeProject ? (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-[#F3F4EF] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
+        <div className="fixed inset-0 z-40 overflow-y-auto bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
           <SlideshowEditor
             key={editorSession}
             project={activeProject}
@@ -362,7 +477,7 @@ export function SlideshowStudio({
       ) : (
         <>
           <StudioSectionNav section={section} onChange={setSection} draftsCount={projects.length} />
-          <main className="mx-auto w-full max-w-[1240px] px-4 pb-16 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1240px] px-4 pb-16 sm:px-6 lg:px-8">
             {section === "create" ? (
               <CreateView
                 templates={templates}
@@ -371,6 +486,11 @@ export function SlideshowStudio({
                 onCustom={startCustom}
                 onUseTemplate={startTemplate}
                 onBrowseTemplates={() => setTemplateOpen(true)}
+                imageModels={imageModels}
+                selectedImageModel={selectedImageModel}
+                onSelectImageModel={setSelectedImageModel}
+                creatorGenerating={generatingCreator}
+                onGenerateCreator={handleGenerateCreator}
               />
             ) : null}
             {section === "drafts" ? (
@@ -382,7 +502,7 @@ export function SlideshowStudio({
                 onCreate={() => setTemplateOpen(true)}
               />
             ) : null}
-          </main>
+          </div>
         </>
       )}
 
@@ -407,7 +527,7 @@ export function SlideshowStudio({
       {toast ? (
         <div
           role="status"
-          className="fixed bottom-5 left-1/2 z-[100] flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2.5 rounded-[11px] border border-[#DADBD2] bg-white px-4 py-3 text-[11px] font-semibold text-[#30312E] shadow-[0_16px_40px_rgba(35,35,35,0.18)]"
+          className="fixed bottom-5 left-1/2 z-[100] flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2.5 rounded-[6px] border border-border bg-white px-4 py-3 text-[13px] font-semibold text-foreground shadow-[0_16px_40px_rgba(35,35,35,0.18)]"
         >
           <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-green/10 text-accent-green">
             <Check className="size-3.5" />
@@ -417,9 +537,41 @@ export function SlideshowStudio({
       ) : null}
 
       {loadingProjects && section === "create" && !activeProject ? (
-        <span className="fixed bottom-5 right-5 flex items-center gap-2 rounded-full border border-[#DADBD2] bg-white px-3 py-2 text-[10px] text-[#777873] shadow-lg">
+        <span className="fixed bottom-5 right-5 flex items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-[12px] text-muted-foreground shadow-lg">
           <LoaderCircle className="size-3 animate-spin" /> Loading drafts
         </span>
+      ) : null}
+
+      {creatorProgress ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-[var(--pf-canvas)] px-6"
+        >
+          <div className="flex w-full max-w-sm flex-col items-center text-center">
+            <span className="mb-6 grid size-14 place-items-center rounded-full bg-[var(--pf-active)] text-white">
+              <LoaderCircle className="size-6 animate-spin" />
+            </span>
+            <p className="text-[15px] font-bold text-foreground">Generating your slide visuals</p>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">
+              {creatorProgress.title}
+            </p>
+            <div className="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full rounded-full bg-[var(--pf-active)] transition-all duration-500"
+                style={{
+                  width: `${(creatorProgress.completed / creatorProgress.total) * 100}%`,
+                }}
+              />
+            </div>
+            <p className="mt-3 font-mono text-[12px] tabular-nums text-muted-foreground">
+              {creatorProgress.completed}/{creatorProgress.total} visuals ready
+            </p>
+            <p className="mt-6 text-[12px] leading-5 text-muted-foreground">
+              Keep this tab open. We open your slideshow the moment the images are ready.
+            </p>
+          </div>
+        </div>
       ) : null}
     </div>
   );

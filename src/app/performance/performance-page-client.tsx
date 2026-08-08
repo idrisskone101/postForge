@@ -627,7 +627,7 @@ export function PerformancePageClient() {
   if (loading) {
     return (
       <div className="grid min-h-[520px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-[#FF4A20]" />
+        <Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" />
       </div>
     );
   }
@@ -663,7 +663,7 @@ export function PerformancePageClient() {
       />
 
       {(providerError || localError) && (
-        <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D]">
+        <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]">
           <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]"><AlertCircle className="mt-0.5 size-3.5 shrink-0" />{[providerError, localError].filter(Boolean).join(" ")}</span>
           <button type="button" className="shrink-0" onClick={() => { setProviderError(null); setLocalError(null); }} aria-label="Dismiss performance error"><X className="size-3.5" /></button>
         </div>
@@ -692,22 +692,22 @@ export function PerformancePageClient() {
 
           {connectedAccounts.length > 0 && (
             <section className="mt-4" aria-label="Per account performance">
-              <p className="pf-eyebrow">Accounts</p>
+
               <h2 className="mt-1 text-[13px] font-semibold">Performance by account</h2>
               <div className="mt-2 grid gap-2 min-[1100px]:grid-cols-2 min-[1400px]:grid-cols-3">
                 {accountAggregates.map((entry) => (
-                  <article key={entry.sourceKey} className="rounded-[9px] border border-[#DEDFD8] p-2.5">
+                  <article key={entry.sourceKey} className="rounded-lg border border-border p-2.5">
                     <div className="flex items-center gap-2">
                       <SocialProviderIcon provider={entry.provider} className="size-6 shrink-0" />
                       <div className="min-w-0">
-                        <b className="block truncate text-[10px]">{connectedAccountName(entry.account)}</b>
-                        <span className="block truncate text-[9px] text-[#858681]">{entry.account.account.username ? accountHandle(entry.account.account.username) : entry.status.displayName}</span>
+                        <b className="block truncate text-[12px]">{connectedAccountName(entry.account)}</b>
+                        <span className="block truncate text-[11px] text-muted-foreground">{entry.account.account.username ? accountHandle(entry.account.account.username) : entry.status.displayName}</span>
                       </div>
                       {entry.account.authorization.status !== "healthy" && (
-                        <Link href="/settings?tab=integrations" className="ml-auto rounded-full border border-[#E4C0B8] bg-white px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[.05em] text-[#B83F2D]">Reconnect</Link>
+                        <Link href="/settings?tab=integrations" className="ml-auto rounded-full border border-[var(--pf-danger)]/40 bg-white px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-danger)]">Reconnect</Link>
                       )}
                     </div>
-                    <div className="mt-2 grid grid-cols-3 gap-x-2 gap-y-1.5 border-t border-[#E9EAE4] pt-2">
+                    <div className="mt-2 grid grid-cols-3 gap-x-2 gap-y-1.5 border-t border-border pt-2">
                       {([
                         ["Views", entry.aggregate.views.value],
                         ["Likes", entry.aggregate.likes.value],
@@ -717,7 +717,7 @@ export function PerformancePageClient() {
                         ["Posts", entry.aggregate.views.total],
                       ] as const).map(([label, value]) => (
                         <div key={label}>
-                          <span className="block text-[8px] font-bold uppercase tracking-[.07em] text-[#999A95]">{label}</span>
+                          <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</span>
                           <b className="mt-0.5 block font-mono text-[11px] tabular-nums">{value === null ? "—" : formatCompact.format(value)}</b>
                         </div>
                       ))}
@@ -729,31 +729,31 @@ export function PerformancePageClient() {
           )}
 
           {activeIsYouTube && (
-            <p className="mt-3 min-w-0 break-words rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2 text-[10px] leading-4 text-[#476785] [overflow-wrap:anywhere]">
+            <p className="mt-3 min-w-0 break-words rounded-[8px] border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-link)] [overflow-wrap:anywhere]">
               7/30/90 days selects videos published in that period. Views, likes, and comments are each video&apos;s current lifetime counters, not activity during the selected period. YouTube data is never mixed with another source or converted into a derived engagement rate.
             </p>
           )}
 
-          <section className="mt-4 flex flex-col justify-between gap-3 border-b border-[#DEDFD8] pb-4 sm:flex-row sm:items-center">
+          <section className="mt-4 flex flex-col justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
             <div className="min-w-0">
-              <p className="pf-eyebrow">Active data</p>
-              <h2 className="mt-1 min-w-0 break-words text-[14px] font-semibold [overflow-wrap:anywhere]">
+
+              <h2 className="mt-1 min-w-0 break-words text-[15px] font-semibold [overflow-wrap:anywhere]">
                 {activeSource === "csv"
                   ? csvDataset?.accountLabel
                   : activeSource === "all-connected"
                     ? "All connected non-YouTube accounts"
                     : activeAccount ? connectedAccountName(activeAccount.account) : "Connected account"}
               </h2>
-              <p className="mt-1 min-w-0 break-words text-[10px] text-[#858681] [overflow-wrap:anywhere]">
+              <p className="mt-1 min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
                 {activeSource === "csv"
                   ? `Local CSV · imported ${csvDataset ? formatSyncDate(csvDataset.importedAt) : ""}`
                   : `${activeIsYouTube ? "YouTube API data" : "Provider-owned data"} · ${sourcePosts.length} post${sourcePosts.length === 1 ? "" : "s"} · no estimated metrics`}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <div className="flex rounded-[8px] bg-[#E8E9E2] p-1" aria-label="Performance date range">
+              <div className="flex rounded-[8px] bg-[var(--pf-active)] p-1" aria-label="Performance date range">
                 {([7, 30, 90] as const).map((days) => (
-                  <button key={days} type="button" aria-pressed={range === days} onClick={() => setRange(days)} className={cn("h-7 rounded-[6px] px-2 text-[10px] text-[#777873]", range === days && "bg-white font-semibold text-[#232323] shadow-sm")}>{days} days</button>
+                  <button key={days} type="button" aria-pressed={range === days} onClick={() => setRange(days)} className={cn("h-7 rounded-[6px] px-2 text-[12px] text-muted-foreground", range === days && "bg-white font-semibold text-foreground shadow-sm")}>{days} days</button>
                 ))}
               </div>
               {activeSource === "csv" ? (
@@ -767,7 +767,7 @@ export function PerformancePageClient() {
           </section>
 
           {excludedUnknownDates > 0 && (
-            <p className="mt-3 rounded-[8px] border border-[#E6D39A] bg-[#FFF9E8] px-3 py-2 text-[10px] text-[#806620]">
+            <p className="mt-3 rounded-[8px] border border-[var(--pf-lamp-amber)]/40 bg-[var(--pf-lamp-amber)]/10 px-3 py-2 text-[12px] text-[var(--pf-lamp-amber)]">
               {excludedUnknownDates} provider-owned post{excludedUnknownDates === 1 ? " is" : "s are"} excluded from date ranges because the provider did not supply a publish date.
             </p>
           )}
@@ -781,22 +781,22 @@ export function PerformancePageClient() {
 
           {<section className="pf-card mt-3 p-4">
             <div className="flex items-start justify-between gap-3">
-              <div><p className="pf-eyebrow">{activeIsYouTube ? "By publish date" : "Daily trend"}</p><h2 className="pf-section-title mt-1">{activeIsYouTube ? "Lifetime views by video publish date" : "Views across published posts"}</h2></div>
-              <span className="flex items-center gap-1.5 text-[10px] text-[#858681]"><i className="size-2 rounded-full bg-[#FF4A20]" />{activeIsYouTube ? "Provider-reported lifetime views" : "Reported views"}</span>
+              <div><h2 className="pf-section-title mt-1">{activeIsYouTube ? "Lifetime views by video publish date" : "Views across published posts"}</h2></div>
+              <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground"><i className="size-2 rounded-full bg-[var(--pf-orange)]" />{activeIsYouTube ? "Provider-reported lifetime views" : "Reported views"}</span>
             </div>
             {chartPosts.length === 0 ? (
-              <div className="grid h-52 place-items-center text-center"><div><BarChart3 className="mx-auto size-7 text-[#B0B1AC]" /><p className="mt-2 text-[10px] text-[#858681]">No posts in this range report view counts.</p></div></div>
+              <div className="grid h-52 place-items-center text-center"><div><BarChart3 className="mx-auto size-7 text-muted-foreground" /><p className="mt-2 text-[12px] text-muted-foreground">No posts in this range report view counts.</p></div></div>
             ) : (
-              <div className="relative mt-3 h-56 overflow-hidden bg-[linear-gradient(#ECECE7_1px,transparent_1px)] bg-[size:100%_25%]">
+              <div className="relative mt-3 h-56 overflow-hidden bg-[linear-gradient(var(--pf-border)_1px,transparent_1px)] bg-[size:100%_25%]">
                 <svg viewBox="0 0 920 190" preserveAspectRatio="none" className="h-[190px] w-full overflow-visible" aria-label="Reported views trend">
-                  <polyline points={points} fill="none" stroke="#FF4A20" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+                  <polyline points={points} fill="none" stroke="var(--pf-orange)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
                   {chartPosts.map((post, index) => {
                     const x = chartPosts.length === 1 ? 50 : (index / (chartPosts.length - 1)) * 920;
                     const y = 180 - (post.metrics.views / maxViews) * 150;
-                    return <circle key={post.id} cx={x} cy={y} r="4" fill="#fff" stroke="#FF4A20" strokeWidth="3" />;
+                    return <circle key={post.id} cx={x} cy={y} r="4" fill="var(--pf-surface)" stroke="var(--pf-orange)" strokeWidth="3" />;
                   })}
                 </svg>
-                <div className="absolute inset-x-0 bottom-0 flex justify-between text-[9px] text-[#AAA]"><span>{formatDate(chartPosts[0]?.publishedAt ?? null)}</span><span>{formatDate(chartPosts[chartPosts.length - 1]?.publishedAt ?? null)}</span></div>
+                <div className="absolute inset-x-0 bottom-0 flex justify-between text-[11px] text-muted-foreground"><span>{formatDate(chartPosts[0]?.publishedAt ?? null)}</span><span>{formatDate(chartPosts[chartPosts.length - 1]?.publishedAt ?? null)}</span></div>
               </div>
             )}
           </section>}
@@ -812,15 +812,15 @@ export function PerformancePageClient() {
         </>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#DEDFD8] pt-4">
-        <button type="button" onClick={downloadTemplate} className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#378EFF]"><Download className="size-3" /> Download CSV template</button>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        <button type="button" onClick={downloadTemplate} className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--pf-link)]"><Download className="size-3" /> Download CSV template</button>
         <div className="flex gap-2">
           <button type="button" onClick={() => inputRef.current?.click()} disabled={importing} className="pf-button-secondary">{importing ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />} Import local CSV</button>
-          {csvDataset && <button type="button" onClick={clearCsvData} className="pf-button-secondary text-[#B83F2D]"><Trash2 className="size-3.5" /> Clear CSV</button>}
+          {csvDataset && <button type="button" onClick={clearCsvData} className="pf-button-secondary text-[var(--pf-danger)]"><Trash2 className="size-3.5" /> Clear CSV</button>}
         </div>
       </div>
 
-      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
+      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-background shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[var(--pf-success)]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
     </div>
   );
 }
@@ -838,14 +838,14 @@ function PerformanceEmptyState({
 }) {
   return (
     <section data-workspace-state="empty" className="pf-card pf-empty-stage flex min-h-[570px] flex-col items-center justify-center p-6 text-center">
-      <div className="grid size-14 place-items-center rounded-[14px] bg-[#232323] text-white"><BarChart3 className="size-6" /></div>
-      <p className="pf-eyebrow mt-5">No performance source</p>
-      <h2 className="mt-2 text-[23px] font-semibold tracking-[-0.04em]">Connect an account or import a local report</h2>
-      <p className="mt-2 max-w-[500px] text-[10px] leading-5 text-[#7F807B]">PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset.</p>
-      {providerUnavailable && <p className="mt-3 text-[11px] font-medium text-[#B83F2D]">Connected account status is currently unavailable. CSV import still works locally.</p>}
+      <div className="grid size-14 place-items-center rounded-[8px] bg-foreground text-background"><BarChart3 className="size-6" /></div>
+
+      <h2 className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Connect an account or import a local report</h2>
+      <p className="mt-2 max-w-[500px] text-[12px] leading-5 text-muted-foreground">PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset.</p>
+      {providerUnavailable && <p className="mt-3 text-[11px] font-medium text-[var(--pf-danger)]">Connected account status is currently unavailable. CSV import still works locally.</p>}
       <div className="mt-5 flex flex-wrap justify-center gap-2"><Link href="/settings?tab=integrations" className="pf-button-primary">Open integrations</Link><button type="button" onClick={onImport} disabled={importing} className="pf-button-secondary">{importing ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />} Import CSV</button></div>
-      <button type="button" onClick={onDownloadTemplate} className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#378EFF]"><Download className="size-3" /> Download CSV template</button>
-      <div className="mt-7 max-w-full rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] px-4 py-3 text-left text-[11px] text-[var(--pf-muted)]"><b className="text-[var(--pf-ink)]">Expected columns</b><p className="mt-1 break-words font-mono [overflow-wrap:anywhere]">title, views, likes, comments, shares, saves, publishedAt</p></div>
+      <button type="button" onClick={onDownloadTemplate} className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--pf-link)]"><Download className="size-3" /> Download CSV template</button>
+      <div className="mt-7 max-w-full rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-4 py-3 text-left text-[11px] text-[var(--pf-muted)]"><b className="text-[var(--pf-ink)]">Expected columns</b><p className="mt-1 break-words font-mono [overflow-wrap:anywhere]">title, views, likes, comments, shares, saves, publishedAt</p></div>
     </section>
   );
 }
@@ -875,8 +875,8 @@ function PerformanceSourcePanel({
   return (
     <section className="pf-card p-4" aria-labelledby="performance-sources-title">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-        <div><p className="pf-eyebrow">Data sources</p><h2 id="performance-sources-title" className="pf-section-title mt-1">Connected accounts and local reports</h2><p className="mt-1 text-[10px] text-[#858681]">Provider data last refreshed {formatSyncDate(lastUpdatedAt)}</p></div>
-        <label className="block w-full sm:w-72"><span className="mb-1 block text-[10px] font-semibold text-[#666762]">Active performance source</span><select aria-label="Active performance source" value={selectedSource} onChange={(event) => onSelect(event.target.value)} className="h-9 w-full rounded-[8px] border border-[#D7D8D0] bg-white px-3 text-[11px] outline-none focus:border-[#FF4A20]">
+        <div><h2 id="performance-sources-title" className="pf-section-title mt-1">Connected accounts and local reports</h2><p className="mt-1 text-[12px] text-muted-foreground">Provider data last refreshed {formatSyncDate(lastUpdatedAt)}</p></div>
+        <label className="block w-full sm:w-72"><span className="mb-1 block text-[12px] font-semibold text-muted-foreground">Active performance source</span><select aria-label="Active performance source" value={selectedSource} onChange={(event) => onSelect(event.target.value)} className="h-9 w-full rounded-[8px] border border-border bg-white px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]">
           {providers.length > 0 && <optgroup label="Connected accounts">{allowAllConnected && <option value="all-connected">All connected non-YouTube accounts</option>}{providers.map((entry) => <option key={entry.sourceKey} value={entry.sourceKey}>{entry.status.displayName} · {accountHandle(entry.account.account.username)}</option>)}</optgroup>}
           {csvDataset && <optgroup label="Local reports"><option value="csv">CSV · {csvDataset.accountLabel}</option></optgroup>}
         </select></label>
@@ -891,22 +891,22 @@ function PerformanceSourcePanel({
               entry.provider !== "youtube" &&
               selectedSource === "all-connected");
           return (
-            <article key={key} data-performance-account={key} className={cn("grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-[9px] border p-2.5", selected ? "border-[#AFC8EB] bg-[#F7FAFF]" : "border-[#E0E1DA] bg-[#FAFAF8]") }>
+            <article key={key} data-performance-account={key} className={cn("grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2.5", selected ? "border-[var(--pf-link)]/40 bg-[var(--pf-link)]/10" : "border-border bg-card") }>
               <SocialProviderIcon provider={entry.provider} label={`${entry.status.displayName} logo`} className="size-8" />
-              <div className="min-w-0"><b className="block truncate text-[11px]">{connectedAccountName(entry.account)}</b><p className="mt-0.5 truncate text-[9px] text-[#858681]">{accountHandle(entry.account.account.username)} · {entry.account.authorization.status !== "healthy" ? "Reconnect required" : entry.account.sync.status === "error" ? "Sync error" : entry.account.sync.status === "partial" ? "Partial metrics" : formatSyncDate(entry.account.sync.lastSuccessfulAt)}</p></div>
+              <div className="min-w-0"><b className="block truncate text-[11px]">{connectedAccountName(entry.account)}</b><p className="mt-0.5 truncate text-[11px] text-muted-foreground">{accountHandle(entry.account.account.username)} · {entry.account.authorization.status !== "healthy" ? "Reconnect required" : entry.account.sync.status === "error" ? "Sync error" : entry.account.sync.status === "partial" ? "Partial metrics" : formatSyncDate(entry.account.sync.lastSuccessfulAt)}</p></div>
               {entry.account.authorization.status !== "healthy" ? (
-                <Link href="/settings?tab=integrations" aria-label={`Reconnect ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#E4C0B8] bg-white text-[#B83F2D]"><ExternalLink className="size-3.5" /></Link>
+                <Link href="/settings?tab=integrations" aria-label={`Reconnect ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-lg border border-[var(--pf-danger)]/40 bg-white text-[var(--pf-danger)]"><ExternalLink className="size-3.5" /></Link>
               ) : (
-                <button type="button" onClick={() => onSync(entry)} disabled={busyProvider !== null} aria-label={`Sync ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-[7px] border border-[#D7D8D0] bg-white text-[#555651] disabled:opacity-50">{busyProvider === entry.provider ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}</button>
+                <button type="button" onClick={() => onSync(entry)} disabled={busyProvider !== null} aria-label={`Sync ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`} className="grid size-8 place-items-center rounded-lg border border-border bg-white text-foreground disabled:opacity-50">{busyProvider === entry.provider ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}</button>
               )}
             </article>
           );
         })}
         {csvDataset && (
-          <article data-performance-account="csv" className={cn("grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-[9px] border p-2.5", selectedSource === "csv" ? "border-[#AFC8EB] bg-[#F7FAFF]" : "border-[#E0E1DA] bg-[#FAFAF8]") }>
-            <span className="grid size-8 place-items-center rounded-[8px] bg-[#232323] text-white"><FileSpreadsheet className="size-3.5" /></span>
-            <div className="min-w-0"><b className="block truncate text-[11px]">{csvDataset.accountLabel}</b><p className="mt-0.5 truncate text-[9px] text-[#858681]">Local CSV · {csvDataset.posts.length} posts</p></div>
-            <div className="flex gap-1"><button type="button" onClick={onImport} aria-label="Replace local CSV" className="grid size-8 place-items-center rounded-[7px] border border-[#D7D8D0] bg-white"><Upload className="size-3.5" /></button><button type="button" onClick={onClearCsv} aria-label="Clear local CSV" className="grid size-8 place-items-center rounded-[7px] border border-[#E4C0B8] bg-white text-[#B83F2D]"><Trash2 className="size-3.5" /></button></div>
+          <article data-performance-account="csv" className={cn("grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg border p-2.5", selectedSource === "csv" ? "border-[var(--pf-link)]/40 bg-[var(--pf-link)]/10" : "border-border bg-card") }>
+            <span className="grid size-8 place-items-center rounded-[8px] bg-foreground text-background"><FileSpreadsheet className="size-3.5" /></span>
+            <div className="min-w-0"><b className="block truncate text-[11px]">{csvDataset.accountLabel}</b><p className="mt-0.5 truncate text-[11px] text-muted-foreground">Local CSV · {csvDataset.posts.length} posts</p></div>
+            <div className="flex gap-1"><button type="button" onClick={onImport} aria-label="Replace local CSV" className="grid size-8 place-items-center rounded-lg border border-border bg-white"><Upload className="size-3.5" /></button><button type="button" onClick={onClearCsv} aria-label="Clear local CSV" className="grid size-8 place-items-center rounded-lg border border-[var(--pf-danger)]/40 bg-white text-[var(--pf-danger)]"><Trash2 className="size-3.5" /></button></div>
           </article>
         )}
       </div>
@@ -932,20 +932,20 @@ function PerformancePosts({
   return (
     <section className="pf-card mt-3 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div><p className="pf-eyebrow">Content</p><h2 className="pf-section-title mt-1">What is working</h2></div>
+        <div><h2 className="pf-section-title mt-1">What is working</h2></div>
         <div className="flex flex-col gap-2 min-[420px]:flex-row">
-          <label className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[#D8D9D2] bg-white px-2"><Search className="size-3 text-[#92938E]" /><span className="sr-only">Search posts</span><input value={search} onChange={(event) => onSearch(event.target.value)} className="min-w-0 flex-1 bg-transparent text-[10px] outline-none sm:w-28" placeholder="Search posts" /></label>
-          <div className="hidden rounded-[8px] bg-[#EFF0EA] p-1 sm:flex"><button type="button" aria-label="Table view" aria-pressed={view === "table"} onClick={() => onView("table")} className={cn("grid size-6 place-items-center rounded-[5px]", view === "table" && "bg-white shadow-sm")}><List className="size-3" /></button><button type="button" aria-label="Grid view" aria-pressed={view === "grid"} onClick={() => onView("grid")} className={cn("grid size-6 place-items-center rounded-[5px]", view === "grid" && "bg-white shadow-sm")}><Grid2X2 className="size-3" /></button></div>
+          <label className="flex h-8 items-center gap-1.5 rounded-[8px] border border-border bg-white px-2"><Search className="size-3 text-muted-foreground" /><span className="sr-only">Search posts</span><input value={search} onChange={(event) => onSearch(event.target.value)} className="min-w-0 flex-1 bg-transparent text-[12px] outline-none sm:w-28" placeholder="Search posts" /></label>
+          <div className="hidden rounded-[8px] bg-[var(--pf-active)] p-1 sm:flex"><button type="button" aria-label="Table view" aria-pressed={view === "table"} onClick={() => onView("table")} className={cn("grid size-6 place-items-center rounded-lg", view === "table" && "bg-white shadow-sm")}><List className="size-3" /></button><button type="button" aria-label="Grid view" aria-pressed={view === "grid"} onClick={() => onView("grid")} className={cn("grid size-6 place-items-center rounded-lg", view === "grid" && "bg-white shadow-sm")}><Grid2X2 className="size-3" /></button></div>
         </div>
       </div>
 
       {posts.length === 0 ? (
-        <div className="grid min-h-52 place-items-center text-center"><div><Search className="mx-auto size-6 text-[#B0B1AC]" /><p className="mt-2 text-[10px] text-[#858681]">No posts match this source, date range, and search.</p></div></div>
+        <div className="grid min-h-52 place-items-center text-center"><div><Search className="mx-auto size-6 text-muted-foreground" /><p className="mt-2 text-[12px] text-muted-foreground">No posts match this source, date range, and search.</p></div></div>
       ) : (
         <>
           <div className="mt-3 grid gap-2 sm:hidden">{posts.map((post, index) => <PerformanceGridCard key={post.id} post={post} index={index} youtubeRawOnly={youtubeRawOnly} />)}</div>
           {view === "table" ? (
-            <div className="mt-3 hidden overflow-x-auto sm:block"><div className="min-w-[700px]"><div className="grid grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] gap-3 px-2 py-2 text-[9px] font-bold uppercase tracking-[.08em] text-[#999]"><span>Post</span><span>Published</span><span>Views</span><span>{youtubeRawOnly ? "Likes" : "Engagement"}</span><span>{youtubeRawOnly ? "Comments" : "Saves"}</span></div>{posts.map((post, index) => <PerformanceTableRow key={post.id} post={post} index={index} youtubeRawOnly={youtubeRawOnly} />)}</div></div>
+            <div className="mt-3 hidden overflow-x-auto sm:block"><div className="min-w-[700px]"><div className="grid grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] gap-3 px-2 py-2 text-[11px] font-bold uppercase tracking-[.08em] text-muted-foreground"><span>Post</span><span>Published</span><span>Views</span><span>{youtubeRawOnly ? "Likes" : "Engagement"}</span><span>{youtubeRawOnly ? "Comments" : "Saves"}</span></div>{posts.map((post, index) => <PerformanceTableRow key={post.id} post={post} index={index} youtubeRawOnly={youtubeRawOnly} />)}</div></div>
           ) : (
             <div className="mt-3 hidden gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-4">{posts.map((post, index) => <PerformanceGridCard key={post.id} post={post} index={index} youtubeRawOnly={youtubeRawOnly} />)}</div>
           )}
@@ -965,27 +965,27 @@ export function postEngagementRate(post: PerformancePostView) {
 function PerformanceTableRow({ post, index, youtubeRawOnly }: { post: PerformancePostView; index: number; youtubeRawOnly: boolean }) {
   const rate = youtubeRawOnly ? null : postEngagementRate(post);
   return (
-    <article className="grid min-h-16 grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] items-center gap-3 border-t border-[#E9EAE4] px-2 text-[11px] text-[var(--pf-muted)]">
+    <article className="grid min-h-16 grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] items-center gap-3 border-t border-border px-2 text-[11px] text-[var(--pf-muted)]">
       <div className="grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-2">
         <PostThumbnail post={post} index={index} compact />
-        <div className="min-w-0"><b className="block truncate text-[var(--pf-ink)]">{post.title}</b><span className="mt-0.5 flex items-center gap-1 text-[9px] text-[#92938E]">{post.provider && <SocialProviderIcon provider={post.provider} className="size-3" />}{post.provider ? accountHandle(post.accountUsername) : "Local CSV"}{post.permalink && <Link href={post.permalink} target="_blank" rel="noreferrer" aria-label={`Open ${post.title}`}><ExternalLink className="size-2.5" /></Link>}</span></div>
+        <div className="min-w-0"><b className="block truncate text-[var(--pf-ink)]">{post.title}</b><span className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">{post.provider && <SocialProviderIcon provider={post.provider} className="size-3" />}{post.provider ? accountHandle(post.accountUsername) : "Local CSV"}{post.permalink && <Link href={post.permalink} target="_blank" rel="noreferrer" aria-label={`Open ${post.title}`}><ExternalLink className="size-2.5" /></Link>}</span></div>
       </div>
       <span>{formatDate(post.publishedAt)}</span>
-      <b className={cn("text-[var(--pf-ink)]", post.metrics.views === null && "font-normal text-[#AAA]")}>{formatMetric(post.metrics.views)}</b>
-      <span className={cn((youtubeRawOnly ? post.metrics.likes : rate) === null && "text-[#AAA]")}>{youtubeRawOnly ? formatMetric(post.metrics.likes) : rate === null ? "—" : `${rate.toFixed(1)}%`}</span>
-      <span className={cn((youtubeRawOnly ? post.metrics.comments : post.metrics.saves) === null && "text-[#AAA]")}>{formatMetric(youtubeRawOnly ? post.metrics.comments : post.metrics.saves)}</span>
+      <b className={cn("text-[var(--pf-ink)]", post.metrics.views === null && "font-normal text-muted-foreground")}>{formatMetric(post.metrics.views)}</b>
+      <span className={cn((youtubeRawOnly ? post.metrics.likes : rate) === null && "text-muted-foreground")}>{youtubeRawOnly ? formatMetric(post.metrics.likes) : rate === null ? "—" : `${rate.toFixed(1)}%`}</span>
+      <span className={cn((youtubeRawOnly ? post.metrics.comments : post.metrics.saves) === null && "text-muted-foreground")}>{formatMetric(youtubeRawOnly ? post.metrics.comments : post.metrics.saves)}</span>
     </article>
   );
 }
 
 function PerformanceGridCard({ post, index, youtubeRawOnly }: { post: PerformancePostView; index: number; youtubeRawOnly: boolean }) {
   return (
-    <article className="rounded-[9px] border border-[#DEDFD8] p-2">
+    <article className="rounded-lg border border-border p-2">
       <PostThumbnail post={post} index={index} />
-      <div className="mt-2 flex items-center gap-1">{post.provider && <SocialProviderIcon provider={post.provider} className="size-3.5" />}<span className="truncate text-[9px] text-[#858681]">{post.provider ? accountHandle(post.accountUsername) : "Local CSV"}</span></div>
-      <h3 className="mt-1.5 truncate text-[11px] font-semibold">{post.title}</h3>
-      <p className="mt-1 text-[9px] text-[#858681]">{youtubeRawOnly ? `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.likes)} likes · ${formatMetric(post.metrics.comments)} comments` : `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.saves)} saves`}</p>
-      {post.permalink && <Link href={post.permalink} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-semibold text-[#378EFF]">Open post <ExternalLink className="size-2.5" /></Link>}
+      <div className="mt-2 flex items-center gap-1">{post.provider && <SocialProviderIcon provider={post.provider} className="size-3.5" />}<span className="truncate text-[11px] text-muted-foreground">{post.provider ? accountHandle(post.accountUsername) : "Local CSV"}</span></div>
+      <h3 className="mt-1.5 truncate text-[13px] font-semibold">{post.title}</h3>
+      <p className="mt-1 text-[11px] text-muted-foreground">{youtubeRawOnly ? `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.likes)} likes · ${formatMetric(post.metrics.comments)} comments` : `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.saves)} saves`}</p>
+      {post.permalink && <Link href={post.permalink} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-link)]">Open post <ExternalLink className="size-2.5" /></Link>}
     </article>
   );
 }
@@ -1002,7 +1002,7 @@ function PostThumbnail({
   const [thumbnailFailed, setThumbnailFailed] = useState(false);
   const showThumbnail = Boolean(post.thumbnailUrl) && !thumbnailFailed;
   return (
-    <span className={cn("relative grid shrink-0 place-items-center overflow-hidden text-white", compact ? "h-11 w-9 rounded-[6px]" : "h-32 w-full rounded-[7px]", ["bg-[#FF6846]", "bg-[#4A83C7]", "bg-[#43885F]", "bg-[#C99535]"][index % 4])}>
+    <span className={cn("relative grid shrink-0 place-items-center overflow-hidden bg-[var(--pf-active)] text-muted-foreground", compact ? "h-11 w-9 rounded-md" : "h-32 w-full rounded-lg")}>
       {showThumbnail ? (
         // Provider thumbnails can expire; falling back keeps the post usable.
         // eslint-disable-next-line @next/next/no-img-element
@@ -1025,9 +1025,9 @@ function Metric({
 }) {
   return (
     <article className="pf-card p-3">
-      <span className="pf-eyebrow !text-[9px]">{label}</span>
-      <b className={cn("mt-2 block text-[23px] tracking-[-.04em]", unavailable && "text-[#9A9B96]")}>{value}</b>
-      <small className="mt-1 block text-[10px] text-[#8D8E89]">{detail}</small>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</span>
+      <b className={cn("mt-2 block text-[20px] font-semibold tracking-[-0.02em] tabular-nums", unavailable && "text-muted-foreground")}>{value}</b>
+      <small className="mt-1 block text-[12px] text-muted-foreground">{detail}</small>
     </article>
   );
 }

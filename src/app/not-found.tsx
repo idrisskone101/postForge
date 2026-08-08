@@ -11,7 +11,7 @@ export default function NotFound() {
             <FileQuestion className="size-7 text-[#FF4A20]" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-[#232323]">
+            <h2 className="text-lg font-semibold text-[#1C1B17]">
               Page Not Found
             </h2>
             <p className="text-sm leading-relaxed text-[#777873]">

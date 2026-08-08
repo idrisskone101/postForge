@@ -162,10 +162,10 @@ export function PinterestImportDialog({
         if (!importing) onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-hidden rounded-[13px] border-[#DADBD2] p-0">
+      <DialogContent className="max-h-[92vh] max-w-4xl! overflow-hidden rounded-[7px] border-[#DADBD2] p-0">
         <DialogHeader className="border-b border-[#E9EAE4] px-6 py-5 pr-14">
-          <DialogTitle className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-[#232323]">
-            <span className="flex size-9 items-center justify-center rounded-[9px] bg-[#FF4A20]/10 text-[#FF4A20]">
+          <DialogTitle className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-[#1C1B17]">
+            <span className="flex size-9 items-center justify-center rounded-[5px] bg-[#FF4A20]/10 text-[#FF4A20]">
               <Images className="size-4" />
             </span>
             Import from Pinterest
@@ -179,14 +179,14 @@ export function PinterestImportDialog({
 
         <div className="border-b border-[#E9EAE4] p-4 sm:p-5">
           <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
-            <div className="inline-flex h-10 rounded-[9px] bg-[#F0F1EB] p-1">
+            <div className="inline-flex h-10 rounded-[5px] bg-[#F0F1EB] p-1">
               <button
                 type="button"
                 onClick={() => changeSource("search")}
                 className={cn(
                   "rounded-[7px] px-3 text-[11px] font-semibold transition",
                   source === "search"
-                    ? "bg-white text-[#232323] shadow-sm"
+                    ? "bg-white text-[#1C1B17] shadow-sm"
                     : "text-[#777873] hover:text-[#30312E]",
                 )}
               >
@@ -198,7 +198,7 @@ export function PinterestImportDialog({
                 className={cn(
                   "rounded-[7px] px-3 text-[11px] font-semibold transition",
                   source === "board"
-                    ? "bg-white text-[#232323] shadow-sm"
+                    ? "bg-white text-[#1C1B17] shadow-sm"
                     : "text-[#777873] hover:text-[#30312E]",
                 )}
               >
@@ -223,7 +223,7 @@ export function PinterestImportDialog({
                     : "https://pinterest.com/creator/board"
                 }
                 aria-label={source === "search" ? "Pinterest search" : "Pinterest board URL"}
-                className="h-10 w-full rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] pl-9 pr-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
+                className="h-10 w-full rounded-[5px] border border-[#D7D8D0] bg-[#FCFCFA] pl-9 pr-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
               />
             </label>
             <button
@@ -272,7 +272,7 @@ export function PinterestImportDialog({
             </div>
           ) : error && !candidates.length ? (
             <div className="grid min-h-64 place-items-center text-center" role="alert">
-              <div className="max-w-md rounded-[11px] border border-destructive/25 bg-destructive/5 p-5">
+              <div className="max-w-md rounded-[6px] border border-destructive/25 bg-destructive/5 p-5">
                 <p className="text-[12px] font-semibold text-destructive">
                   Pinterest import unavailable
                 </p>
@@ -314,7 +314,7 @@ export function PinterestImportDialog({
                       }
                       aria-pressed={isSelected}
                       className={cn(
-                        "group relative mb-2 block w-full break-inside-avoid overflow-hidden rounded-[9px] border-2 bg-[#F0F1EB] outline-none transition focus-visible:ring-2 focus-visible:ring-accent-blue",
+                        "group relative mb-2 block w-full break-inside-avoid overflow-hidden rounded-[5px] border-2 bg-[#F0F1EB] outline-none transition focus-visible:ring-2 focus-visible:ring-accent-blue",
                         isSelected
                           ? "border-accent-green"
                           : "border-transparent hover:border-[#BFC0B9]",
@@ -385,7 +385,7 @@ export function PinterestImportDialog({
             </div>
           )}
           {error && candidates.length ? (
-            <p role="alert" className="mt-3 rounded-[9px] bg-destructive/10 p-3 text-[11px] text-destructive">
+            <p role="alert" className="mt-3 rounded-[5px] bg-destructive/10 p-3 text-[11px] text-destructive">
               {error}
             </p>
           ) : null}
@@ -399,7 +399,7 @@ export function PinterestImportDialog({
               onChange={(event) => setCollectionName(event.target.value)}
               placeholder="Collection name"
               maxLength={160}
-              className="h-10 w-full rounded-[9px] border border-[#D7D8D0] bg-white px-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
+              className="h-10 w-full rounded-[5px] border border-[#D7D8D0] bg-white px-3 text-[12px] outline-none transition focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10"
             />
           </label>
           <div className="flex flex-wrap items-center gap-1">

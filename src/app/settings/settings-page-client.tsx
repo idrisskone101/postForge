@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -15,7 +14,6 @@ import {
   ExternalLink,
   KeyRound,
   Loader2,
-  MessageSquare,
   Plug,
   RefreshCw,
   Save,
@@ -84,8 +82,8 @@ export function SettingsNavigation({
   connectedIntegrations?: number;
 }) {
   return (
-    <aside className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-[#DEDFD8] bg-[#F0F1EB] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
-      <p className="pf-eyebrow mb-2 hidden px-2 lg:block">Workspace</p>
+    <aside className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
+      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Workspace</p>
       {SETTINGS_NAVIGATION.filter((item) => item.group === "workspace").map(
         ({ id, label, icon: Icon }) => (
           <button
@@ -94,22 +92,22 @@ export function SettingsNavigation({
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
             className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[10px] text-[#71726D] lg:w-full",
-              tab === id && "bg-white font-semibold text-[#232323] shadow-sm"
+              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
+              tab === id && "bg-white font-semibold text-foreground shadow-sm"
             )}
           >
-            <Icon className={cn("size-3.5", tab === id && "text-[#FF4A20]")} />
+            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
             {label}
             {id === "integrations" && connectedIntegrations > 0 && (
-              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[#FF4A20] text-[9px] text-white">
+              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[var(--pf-orange)] text-[11px] text-white">
                 {connectedIntegrations}
               </span>
             )}
           </button>
         )
       )}
-      <div className="my-4 hidden h-px bg-[#DADBD3] lg:block" />
-      <p className="pf-eyebrow mb-2 hidden px-2 lg:block">Developer</p>
+      <div className="my-4 hidden h-px bg-[var(--pf-border)] lg:block" />
+      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Developer</p>
       {SETTINGS_NAVIGATION.filter((item) => item.group === "developer").map(
         ({ id, label, icon: Icon }) => (
           <button
@@ -118,11 +116,11 @@ export function SettingsNavigation({
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
             className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-[7px] px-3 text-[10px] text-[#71726D] lg:w-full",
-              tab === id && "bg-white font-semibold text-[#232323] shadow-sm"
+              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
+              tab === id && "bg-white font-semibold text-foreground shadow-sm"
             )}
           >
-            <Icon className={cn("size-3.5", tab === id && "text-[#FF4A20]")} />
+            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
             {label}
           </button>
         )
@@ -469,7 +467,7 @@ export function SettingsPageClient() {
     }
   }
 
-  if (loading) return <div className="grid min-h-[540px] place-items-center"><Loader2 className="size-6 animate-spin text-[#FF4A20]" /></div>;
+  if (loading) return <div className="grid min-h-[540px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
   return (
     <div className="grid min-h-[calc(100dvh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]">
@@ -482,12 +480,12 @@ export function SettingsPageClient() {
         )}
       />
 
-      <main className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
-        {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
+      <section aria-label="Settings panel" className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
+        {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
         {tab === "integrations" ? <IntegrationsPanel providers={providers} loading={integrationsLoading} error={integrationsError} busyProvider={busyProvider} onRefresh={() => refreshIntegrations(true)} onConnect={connectProvider} onSync={syncProvider} onDisconnect={disconnectProvider} onOpenWebhooks={() => selectTab("webhooks")} /> : tab === "billing" ? <Billing /> : tab === "team" ? <Team /> : tab === "models" ? <ModelsPanel /> : tab === "api-keys" ? <ProviderCredentialsPanel /> : tab === "webhooks" ? <DeveloperSettingsPanel tab="webhooks" /> : <SettingsForm tab={tab} settings={settings} setSettings={setSettings} saving={saving} onSave={save} />}
-      </main>
+      </section>
 
-      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
+      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[var(--pf-success)]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
     </div>
   );
 }
@@ -572,9 +570,9 @@ export function IntegrationsPanel({
     <>
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div>
-          <p className="pf-eyebrow">Connections</p>
-          <h2 className="mt-1 text-[23px] font-semibold tracking-[-0.035em]">Integrations</h2>
-          <p className="mt-1 text-[10px] text-[#858681]">Connect every account you publish or measure. Each account keeps its own scope and sync state.</p>
+
+          <h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">Integrations</h2>
+          <p className="mt-1 text-[12px] text-muted-foreground">Connect every account you publish or measure. Each account keeps its own scope and sync state.</p>
         </div>
         <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0">
           <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
@@ -582,28 +580,28 @@ export function IntegrationsPanel({
         </button>
       </div>
 
-      <div className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] p-3">
-        <span className="grid size-7 place-items-center rounded-full bg-[#378EFF] text-[10px] text-white">i</span>
+      <div className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3">
+        <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-white">i</span>
         <div className="min-w-0">
           <b className="block text-[11px]">Connections are server-owned</b>
-          <p className="mt-1 text-[10px] leading-3 text-[#6F7D8F]">PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported.</p>
+          <p className="mt-1 text-[12px] leading-4 text-muted-foreground">PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported.</p>
         </div>
-        <ShieldCheck className="size-4 text-[#378EFF]" />
+        <ShieldCheck className="size-4 text-[var(--pf-link)]" />
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 flex flex-col items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-3 text-[10px] text-[#B83F2D] sm:flex-row sm:items-center">
+        <div role="alert" className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-3 text-[12px] text-[var(--pf-danger)] sm:flex-row sm:items-center">
           <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]"><AlertCircle className="size-4 shrink-0" />{error}</span>
-          <button type="button" onClick={onRefresh} className="rounded-[6px] border border-[#E3A99E] bg-white px-2.5 py-1.5 text-[10px] font-semibold">Try again</button>
+          <button type="button" onClick={onRefresh} className="rounded-lg border border-[var(--pf-danger)]/40 bg-white px-2.5 py-1.5 text-[12px] font-semibold">Try again</button>
         </div>
       )}
 
       <div className="mt-5 flex items-end justify-between gap-3">
         <div>
           <h3 className="text-[13px] font-semibold">Social accounts</h3>
-          <p className="mt-1 text-[10px] text-[#858681]">Multiple accounts per platform share the same server-owned connection state in Performance and Automations.</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">Multiple accounts per platform share the same server-owned connection state in Performance and Automations.</p>
         </div>
-        <span className="shrink-0 text-[10px] text-[#999A95]">{connectedCount} connected</span>
+        <span className="shrink-0 text-[12px] text-muted-foreground">{connectedCount} connected</span>
       </div>
       <div className="mt-3 grid gap-3" aria-busy={loading}>
         {SOCIAL_PROVIDERS.map((provider) => (
@@ -620,10 +618,8 @@ export function IntegrationsPanel({
         ))}
       </div>
 
-      <SectionHeading title="Asset sources" description="Move visual assets into Collections without downloading first." />
-      <div className="grid gap-2 xl:grid-cols-2"><ServiceRow icon={<BrandAsset src="/brands/google-drive.svg" label="Google Drive" />} name="Google Drive" description="Import files and folders into image collections." action="Not configured" /><ServiceRow icon={<BrandAsset src="/brands/dropbox.svg" label="Dropbox" />} name="Dropbox" description="Choose a folder to watch for new creative assets." action="Not configured" /></div>
-      <SectionHeading title="Automation handoffs" description="Send review events to tools your team already uses." />
-      <div className="grid gap-2 xl:grid-cols-2"><ServiceRow icon={<MessageSquare className="size-4" />} name="Slack" description="Send approval requests and failure alerts to a channel." action="Not configured" /><ServiceRow icon={<Webhook className="size-4" />} name="Custom webhook" description="POST signed job and review events to your endpoint." action="Configure" onAction={onOpenWebhooks} /></div>
+      <SectionHeading title="Automation handoffs" description="Register server-owned delivery before sending review events outside PostForge." />
+      <div className="grid gap-2 xl:grid-cols-2"><ServiceRow icon={<Webhook className="size-4" />} name="Custom webhook" description="No endpoint is registered. Open the delivery requirements and current status." action="View status" onAction={onOpenWebhooks} /></div>
     </>
   );
 }
@@ -669,26 +665,26 @@ export function SocialIntegrationCard({
         <div className="flex min-w-0 items-center gap-3">
           <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
           <div className="min-w-0">
-            <h3 className="text-[13px] font-semibold">{displayName}</h3>
-            <p className="mt-0.5 text-[10px] text-[#858681]">{status?.connected ? `${status.accounts.length} connected` : "No account connected"}</p>
+            <h3 className="text-[15px] font-semibold tracking-[-0.01em]">{displayName}</h3>
+            <p className="mt-0.5 whitespace-nowrap text-[12px] text-muted-foreground">{status?.connected ? `${status.accounts.length} connected` : "No account connected"}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {loading && !status ? (
-            <span className="h-5 w-20 animate-pulse rounded-full bg-[#ECEDE7]" />
+            <span className="h-5 w-20 animate-pulse rounded-full bg-[var(--pf-active)]" />
           ) : (
-            <span className={cn("rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[.06em]", unavailable ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]" : connected ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]" : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]")}>
+            <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]", unavailable ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]" : connected ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "border-border bg-[var(--pf-active)] text-muted-foreground")}>
               {unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"}
             </span>
           )}
           {status?.configuration === "ready" && !loading && status.connected && (
-            <button type="button" onClick={() => onConnect(status, youtubePolicyConsent)} disabled={busy || !canStartOAuth} className="pf-button-secondary h-8 px-2.5 text-[10px]" title={`Connect another ${displayName} account`}>
+            <button type="button" onClick={() => onConnect(status, youtubePolicyConsent)} disabled={busy || !canStartOAuth} className="pf-button-secondary h-8 px-2.5 text-[12px]" title={`Connect another ${displayName} account`}>
               <Plug className="size-3" /> Connect another
             </button>
           )}
         </div>
       </div>
-      <p className="mt-2 max-w-[560px] text-[10px] leading-4 text-[#858681]">{content.description}</p>
+      <p className="mt-2 max-w-[560px] text-[12px] leading-4 text-muted-foreground">{content.description}</p>
 
       {status?.connected && status.accounts.length > 0 ? (
         <div className="mt-3 grid gap-2">
@@ -717,14 +713,14 @@ export function SocialIntegrationCard({
           ))}
         </div>
       ) : notConfigured ? (
-        <div className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5">
-          <b className="block text-[10px] text-[#61625E]">Server setup required</b>
-          <p className="mt-1 min-w-0 break-words text-[9px] leading-3.5 text-[#858681] [overflow-wrap:anywhere]">{content.setup}</p>
-          <Link href={content.documentation} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-semibold text-[#378EFF]">Setup documentation <ExternalLink className="size-2.5" /></Link>
+        <div className="mt-3 rounded-lg border border-dashed border-border bg-card p-2.5">
+          <b className="block text-[12px] text-muted-foreground">Server setup required</b>
+          <p className="mt-1 min-w-0 break-words text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere]">{content.setup}</p>
+          <Link href={content.documentation} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-link)]">Setup documentation <ExternalLink className="size-2.5" /></Link>
           {content.policyLinks && (
             <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
               {content.policyLinks.map((link) => (
-                <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]">
+                <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]">
                   {link.label} <ExternalLink className="size-2.5 shrink-0" />
                 </Link>
               ))}
@@ -732,15 +728,15 @@ export function SocialIntegrationCard({
           )}
         </div>
       ) : unavailable ? (
-        <p className="mt-3 min-w-0 break-words rounded-[8px] border border-dashed border-[#E1B7AF] bg-[#FFF8F6] p-2.5 text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere]">The integration service did not return this provider. Refresh status before attempting a connection.</p>
+        <p className="mt-3 min-w-0 break-words rounded-lg border border-dashed border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 p-2.5 text-[11px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]">The integration service did not return this provider. Refresh status before attempting a connection.</p>
       ) : (
-        <p className="mt-3 rounded-[8px] border border-dashed border-[#D4D5CE] bg-[#FAFAF8] p-2.5 text-[9px] leading-3.5 text-[#858681]">OAuth is configured, but no account is connected to this workspace.</p>
+        <p className="mt-3 rounded-lg border border-dashed border-border bg-card p-2.5 text-[11px] leading-4 text-muted-foreground">OAuth is configured, but no account is connected to this workspace.</p>
       )}
 
       {content.policyLinks && !notConfigured && (
         <div className="mt-3 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
           {content.policyLinks.map((link) => (
-            <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#378EFF] [overflow-wrap:anywhere]">
+            <Link key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]">
               {link.label} <ExternalLink className="size-2.5 shrink-0" />
             </Link>
           ))}
@@ -748,8 +744,8 @@ export function SocialIntegrationCard({
       )}
 
       {provider === "youtube" && youtubeCompliance && (
-        <div data-youtube-owner-policies className="mt-3 rounded-[8px] border border-[#BED3EF] bg-[#F4F8FE] p-2.5">
-          <b className="block text-[10px] text-[#364C68]">
+        <div data-youtube-owner-policies className="mt-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-2.5">
+          <b className="block text-[12px] text-[var(--pf-link)]">
             PostForge policies for YouTube API Services
           </b>
           <div className="mt-1.5 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
@@ -758,13 +754,13 @@ export function SocialIntegrationCard({
               ["Terms", youtubeCompliance.termsUrl],
               ["Data deletion", youtubeCompliance.dataDeletionUrl],
             ].map(([label, href]) => (
-              <Link key={label} href={href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[9px] font-semibold text-[#246FC2] [overflow-wrap:anywhere]">
+              <Link key={label} href={href} target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]">
                 {label} <ExternalLink className="size-2.5 shrink-0" />
               </Link>
             ))}
           </div>
           {youtubeOAuthNeedsConsent && (
-            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-[#D6E3F2] pt-2 text-[9px] leading-3.5 text-[#52667D]">
+            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-[var(--pf-link)]/30 pt-2 text-[11px] leading-4 text-[var(--pf-link)]">
               <input
                 type="checkbox"
                 aria-label="Accept policies before connecting YouTube"
@@ -773,7 +769,7 @@ export function SocialIntegrationCard({
                 onChange={(event) =>
                   setYouTubePolicyConsent(event.currentTarget.checked)
                 }
-                className="mt-0.5 size-3 shrink-0 accent-[#232323]"
+                className="mt-0.5 size-3 shrink-0 accent-[var(--pf-orange)]"
               />
               <span>
                 I have reviewed and accept PostForge&apos;s Privacy Policy and
@@ -787,7 +783,7 @@ export function SocialIntegrationCard({
 
       {!status?.connected && (
         <div className="mt-3 flex">
-          <button type="button" onClick={() => status && onConnect(status, youtubePolicyConsent)} disabled={!status || status.configuration !== "ready" || !status.connectUrl || loading || busy || !canStartOAuth} className={cn("h-9 w-full rounded-[8px] text-[11px] font-semibold", status?.configuration === "ready" && status.connectUrl && canStartOAuth ? "bg-[#232323] text-white hover:bg-black" : "cursor-not-allowed bg-[#E5E6DF] text-[#999A95]")}>
+          <button type="button" onClick={() => status && onConnect(status, youtubePolicyConsent)} disabled={!status || status.configuration !== "ready" || !status.connectUrl || loading || busy || !canStartOAuth} className={cn("h-9 w-full rounded-lg text-[13px] font-semibold", status?.configuration === "ready" && status.connectUrl && canStartOAuth ? "bg-foreground text-white hover:bg-black" : "cursor-not-allowed bg-[var(--pf-active)] text-muted-foreground")}>
             {loading && !status ? "Checking configuration…" : notConfigured ? "Setup required" : unavailable ? "Status unavailable" : status?.connectUrl ? `Connect ${displayName}` : "Connect endpoint unavailable"}
           </button>
         </div>
@@ -824,12 +820,12 @@ function AccountRow({
     : "Username unavailable";
   const authorizationRequired = account.authorization.status !== "healthy";
   const syncTone = authorizationRequired || account.sync.status === "error"
-    ? "border-[#F0B5AA] bg-[#FFF2EF] text-[#B83F2D]"
+    ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
     : account.sync.status === "partial"
-      ? "border-[#E7C990] bg-[#FFFAEC] text-[#806126]"
+      ? "border-[var(--pf-lamp-amber)]/40 bg-[var(--pf-lamp-amber)]/10 text-[var(--pf-lamp-amber)]"
       : account.sync.status === "ready"
-        ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]"
-        : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]";
+        ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
+        : "border-border bg-[var(--pf-active)] text-muted-foreground";
   const syncLabel = authorizationRequired
     ? "Reconnect required"
     : account.sync.status === "error"
@@ -840,44 +836,44 @@ function AccountRow({
           ? "Ready"
           : "Not synced";
   return (
-    <div className="grid min-w-0 gap-2 rounded-[10px] border border-[#E0E1DA] bg-[#FAFAF8] p-2.5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-3">
+    <div className="grid min-w-0 gap-2 rounded-lg border border-border bg-card p-2.5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-3">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">
+        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-foreground text-[12px] font-bold text-white">
           {accountName.slice(0, 2).toUpperCase()}
         </span>
         <span className="min-w-0 flex-1">
           <b className="block truncate text-[11px]">{accountName}</b>
-          <small className="mt-0.5 block truncate text-[9px] text-[#858681]">{accountUsername}</small>
+          <small className="mt-0.5 block truncate text-[11px] text-muted-foreground">{accountUsername}</small>
         </span>
-        {info.profileUrl && <Link href={info.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${displayName} profile`} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#DADBD2] bg-white"><ExternalLink className="size-3" /></Link>}
+        {info.profileUrl && <Link href={info.profileUrl} target="_blank" rel="noreferrer" aria-label={`Open ${displayName} profile`} className="grid size-7 shrink-0 place-items-center rounded-lg border border-border bg-white"><ExternalLink className="size-3" /></Link>}
       </div>
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
         <div className="flex flex-wrap gap-1">
           {(["metrics", "publish"] as const).map((capability) => (
-            <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", account.capabilities[capability] ? "border-[#C8DDCE] bg-[#F0F8F2] text-[#347646]" : "border-[#DEDFD8] bg-white text-[#999A95]")}>
+            <span key={capability} className={cn("rounded-full border px-1.5 py-0.5 text-[11px] font-semibold", account.capabilities[capability] ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "border-border bg-white text-muted-foreground")}>
               {capability === "metrics" ? "Metrics" : account.publishingUnavailableReason ? "Upload runtime" : "Upload scope"} {account.capabilities[capability] ? "verified" : capability === "publish" && account.publishingUnavailableReason ? "unavailable" : "not granted"}
             </span>
           ))}
         </div>
-        <span className={cn("rounded-full border px-1.5 py-0.5 text-[9px] font-semibold", syncTone)}>{syncLabel}</span>
-        {authorizationRequired && <span className="rounded-full border border-[#F0B5AA] bg-[#FFF2EF] px-1.5 py-0.5 text-[9px] font-semibold text-[#B83F2D]">Authorization required</span>}
+        <span className={cn("rounded-full border px-1.5 py-0.5 text-[11px] font-semibold", syncTone)}>{syncLabel}</span>
+        {authorizationRequired && <span className="rounded-full border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[var(--pf-danger)]">Authorization required</span>}
       </div>
       {account.sync.status === "ready" && account.sync.lastSuccessfulAt && (
-        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#777873] [overflow-wrap:anywhere] lg:col-span-2">
+        <p className="min-w-0 break-words text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere] lg:col-span-2">
           Last synced <time dateTime={account.sync.lastSuccessfulAt}>{formatConnectionDate(account.sync.lastSuccessfulAt)}</time>
         </p>
       )}
       {account.publishingUnavailableReason && (
-        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#9B5043] [overflow-wrap:anywhere] lg:col-span-2">{account.publishingUnavailableReason}</p>
+        <p className="min-w-0 break-words text-[11px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere] lg:col-span-2">{account.publishingUnavailableReason}</p>
       )}
       {account.sync.status === "error" && account.sync.warnings[0] && (
-        <p className="min-w-0 break-words text-[9px] leading-3.5 text-[#B83F2D] [overflow-wrap:anywhere] lg:col-span-2">{account.sync.warnings[0]}</p>
+        <p className="min-w-0 break-words text-[11px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere] lg:col-span-2">{account.sync.warnings[0]}</p>
       )}
       <div className="flex flex-wrap gap-1.5 lg:col-span-2">
-        <button type="button" onClick={() => authorizationRequired ? onReconnect() : onSync(providerStatus, account.account.id)} disabled={busy || (authorizationRequired && !canStartOAuth)} className="pf-button-secondary h-7 px-2.5 text-[10px]">
+        <button type="button" onClick={() => authorizationRequired ? onReconnect() : onSync(providerStatus, account.account.id)} disabled={busy || (authorizationRequired && !canStartOAuth)} className="pf-button-secondary h-7 px-2.5 text-[12px]">
           {busy ? <Loader2 className="size-3 animate-spin" /> : <RefreshCw className="size-3" />} {authorizationRequired ? "Reconnect" : "Sync"}
         </button>
-        <button type="button" onClick={() => onDisconnect(providerStatus, account.account.id)} disabled={busy} className="pf-button-secondary h-7 px-2.5 text-[10px] text-[#B83F2D]">
+        <button type="button" onClick={() => onDisconnect(providerStatus, account.account.id)} disabled={busy} className="pf-button-secondary h-7 px-2.5 text-[12px] text-[var(--pf-danger)]">
           <Unplug className="size-3" /> Disconnect
         </button>
       </div>
@@ -1022,8 +1018,8 @@ function ModelsPanel() {
           key={model.id}
           data-model-availability-row={model.id}
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-[9px] border px-3 py-2.5 transition-colors",
-            enabled ? "border-[#D7D8D0] bg-white" : "border-[#E5E6DF] bg-[#FAFAF8] opacity-60"
+            "flex min-w-0 items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors",
+            enabled ? "border-border bg-white" : "border-border bg-card opacity-60"
           )}
         >
           <input
@@ -1031,11 +1027,11 @@ function ModelsPanel() {
             checked={enabled}
             onChange={() => toggleModel(model.id)}
             aria-label={`Enable ${model.name}`}
-            className="size-4 shrink-0 accent-[#FF4A20]"
+            className="size-4 shrink-0 accent-[var(--pf-orange)]"
           />
           <span className="min-w-0 flex-1">
-            <b className="block truncate text-[11px] text-[#30312E]">{model.name}</b>
-            <small className="mt-0.5 block truncate text-[10px] text-[#92938E]">
+            <b className="block truncate text-[11px] text-foreground">{model.name}</b>
+            <small className="mt-0.5 block truncate text-[12px] text-muted-foreground">
               {model.pricing.unit === "per_image"
                 ? `$${model.pricing.amount.toFixed(3)}/image`
                 : model.pricing.unit === "per_clip"
@@ -1044,7 +1040,7 @@ function ModelsPanel() {
             </small>
           </span>
           {isDefault && (
-            <span className="rounded-full bg-[#EEF5FF] px-2 py-1 text-[9px] font-bold text-[#2A71C7]">
+            <span className="rounded-full bg-[var(--pf-link)]/10 px-2 py-1 text-[11px] font-bold text-[var(--pf-link)]">
               DEFAULT
             </span>
           )}
@@ -1055,28 +1051,28 @@ function ModelsPanel() {
   if (loading) {
     return (
       <div className="grid min-h-[420px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-[#FF4A20]" />
+        <Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" />
       </div>
     );
   }
 
   return (
     <div data-settings-models-panel>
-      <span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]">
+      <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <Settings2 className="size-4" />
       </span>
-      <h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Available models</h2>
-      <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">
+      <h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Available models</h2>
+      <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
         One central catalog powers the Generate, Clone, Slideshow, and automation surfaces. Disabled models disappear from every picker; the default model is used when a surface does not expose a picker.
       </p>
 
       {error && (
-        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2.5 text-[10px] leading-4 text-[#B83F2D]">
+        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]">
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
         </div>
       )}
       {notice && (
-        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2.5 text-[10px] leading-4 text-[#2A71C7]">
+        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-link)]">
           <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
         </div>
       )}
@@ -1085,8 +1081,8 @@ function ModelsPanel() {
         <div>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-[11px] font-semibold">Image models</h3>
-              <p className="mt-1 text-[10px] text-[#92938E]">
+              <h3 className="text-[13px] font-semibold">Image models</h3>
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 {imageModels.length} in catalog · {imageModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
               </p>
             </div>
@@ -1094,7 +1090,7 @@ function ModelsPanel() {
               aria-label="Default image model"
               value={defaultImageModelId}
               onChange={(event) => setDefaultImageModelId(event.target.value)}
-              className="h-9 max-w-[220px] rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
             >
               <option value="">No default</option>
               {imageModels
@@ -1109,11 +1105,11 @@ function ModelsPanel() {
           <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(imageModels)}</div>
         </div>
 
-        <div className="border-t border-[#E3E4DD] pt-5">
+        <div className="border-t border-border pt-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-[11px] font-semibold">Video models</h3>
-              <p className="mt-1 text-[10px] text-[#92938E]">
+              <h3 className="text-[13px] font-semibold">Video models</h3>
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 {videoModels.length} in catalog · {videoModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
               </p>
             </div>
@@ -1121,7 +1117,7 @@ function ModelsPanel() {
               aria-label="Default video model"
               value={defaultVideoModelId}
               onChange={(event) => setDefaultVideoModelId(event.target.value)}
-              className="h-9 max-w-[220px] rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
             >
               <option value="">No default</option>
               {videoModels
@@ -1136,7 +1132,7 @@ function ModelsPanel() {
           <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(videoModels)}</div>
         </div>
 
-        <div className="flex justify-end border-t border-[#E3E4DD] pt-4">
+        <div className="flex justify-end border-t border-border pt-4">
           <button onClick={() => void handleSave()} disabled={saving} className="pf-button-primary">
             {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save model settings
           </button>
@@ -1147,7 +1143,7 @@ function ModelsPanel() {
 }
 
 type ProviderCredentialStatus = {
-  provider: "fal" | "gemini" | "virlo";
+  provider: "fal" | "gemini" | "virlo" | "ollama";
   configured: boolean;
   source: "stored" | "env" | "none";
   envKey: string;
@@ -1157,6 +1153,7 @@ const PROVIDER_LABELS: Record<string, string> = {
   fal: "fal.ai",
   gemini: "Google Gemini",
   virlo: "Virlo",
+  ollama: "Ollama",
 };
 
 function ProviderCredentialsPanel() {
@@ -1244,26 +1241,26 @@ function ProviderCredentialsPanel() {
 
   return (
     <div data-provider-credentials-panel>
-      <span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]">
+      <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <KeyRound className="size-4" />
       </span>
       <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="pf-eyebrow">Developer</p>
-          <h2 className="mt-1 text-[22px] font-semibold tracking-[-0.035em]">API keys</h2>
-          <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">
+
+          <h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">API keys</h2>
+          <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
             Manage the provider credentials this workspace uses for generation. Keys are encrypted at rest on the server and are never sent back to this browser.
           </p>
         </div>
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2.5 text-[10px] leading-4 text-[#B83F2D]">
+        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]">
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
         </div>
       )}
       {notice && (
-        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-[9px] border border-[#BED3EF] bg-[#F4F8FE] px-3 py-2.5 text-[10px] leading-4 text-[#2A71C7]">
+        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-link)]">
           <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
         </div>
       )}
@@ -1271,16 +1268,16 @@ function ProviderCredentialsPanel() {
       <div className="mt-6 max-w-[760px] space-y-3">
         {!statuses && (
           <div className="pf-card grid min-h-[200px] place-items-center p-5">
-            <Loader2 className="size-5 animate-spin text-[#FF4A20]" />
+            <Loader2 className="size-5 animate-spin text-[var(--pf-orange)]" />
           </div>
         )}
         {(statuses ?? []).map((status) => {
           const tone =
             status.source === "stored"
-              ? "border-[#B9DFC3] bg-[#EEF8F0] text-[#268B42]"
+              ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
               : status.source === "env"
-                ? "border-[#BED3EF] bg-[#F4F8FE] text-[#2A71C7]"
-                : "border-[#D7D8D0] bg-[#F0F1EB] text-[#777873]";
+                ? "border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 text-[var(--pf-link)]"
+                : "border-border bg-[var(--pf-active)] text-muted-foreground";
           return (
             <article
               key={status.provider}
@@ -1289,10 +1286,10 @@ function ProviderCredentialsPanel() {
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-[11px] font-semibold">
+                  <h3 className="text-[13px] font-semibold">
                     {PROVIDER_LABELS[status.provider] ?? status.provider}
                   </h3>
-                  <span className={cn("rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.06em]", tone)}>
+                  <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.06em]", tone)}>
                     {status.source === "stored"
                       ? "Configured"
                       : status.source === "env"
@@ -1300,7 +1297,7 @@ function ProviderCredentialsPanel() {
                         : "Not configured"}
                   </span>
                 </div>
-                <p className="mt-1 text-[10px] leading-3.5 text-[#92938E]">
+                <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
                   Environment fallback: {status.envKey}
                 </p>
               </div>
@@ -1308,6 +1305,7 @@ function ProviderCredentialsPanel() {
                 <div className="flex min-w-0 gap-2">
                   <input
                     type="password"
+                    aria-label={`${PROVIDER_LABELS[status.provider] ?? status.provider} API key`}
                     value={values[status.provider] ?? ""}
                     onChange={(event) =>
                       setValues((current) => ({
@@ -1318,13 +1316,13 @@ function ProviderCredentialsPanel() {
                     placeholder={
                       status.configured ? "Rotate with a new key…" : `Paste ${PROVIDER_LABELS[status.provider]} key…`
                     }
-                    className="h-9 min-w-0 flex-1 rounded-[7px] border border-[#D7D8D0] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+                    className="h-9 min-w-0 flex-1 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
                   />
                   <button
                     type="button"
                     onClick={() => void handleSave(status.provider)}
                     disabled={busy !== null || !(values[status.provider] ?? "").trim()}
-                    className="h-9 shrink-0 rounded-[7px] bg-[#232323] px-3 text-[10px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-[#E5E6DF] disabled:text-[#999A95]"
+                    className="h-9 shrink-0 rounded-lg bg-foreground px-3 text-[12px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-[var(--pf-active)] disabled:text-muted-foreground"
                   >
                     {busy === status.provider ? <Loader2 className="size-3.5 animate-spin" /> : "Save"}
                   </button>
@@ -1334,7 +1332,7 @@ function ProviderCredentialsPanel() {
                     type="button"
                     onClick={() => void handleClear(status.provider)}
                     disabled={busy !== null}
-                    className="self-end text-[9px] font-semibold text-[#B83F2D] hover:underline disabled:opacity-50"
+                    className="self-end text-[11px] font-semibold text-[var(--pf-danger)] hover:underline disabled:opacity-50"
                   >
                     {busy === status.provider ? "Clearing…" : "Clear stored key"}
                   </button>
@@ -1352,25 +1350,24 @@ export function DeveloperSettingsPanel({ tab }: { tab: "api-keys" | "webhooks" }
   const isApiKeys = tab === "api-keys";
   const Icon = isApiKeys ? KeyRound : Webhook;
 
-  return <div data-developer-settings-panel={tab}><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><div className="mt-4 flex flex-wrap items-start justify-between gap-3"><div><p className="pf-eyebrow">Developer</p><h2 className="mt-1 text-[22px] font-semibold tracking-[-0.035em]">{isApiKeys ? "API keys" : "Webhooks"}</h2><p className="mt-1 max-w-[620px] text-[11px] leading-4 text-[#858681]">{isApiKeys ? "Create scoped credentials only after server-side identity, hashing, revocation, and audit ownership exist." : "Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist."}</p></div><span className="rounded-full border border-[#D7D8D0] bg-[#F0F1EB] px-2.5 py-1 text-[10px] font-bold text-[#777873]">NOT CONFIGURED</span></div><div className="pf-card mt-6 max-w-[720px] p-5"><div className="rounded-[10px] border border-dashed border-[#CFCFC7] bg-[#FAFAF8] px-5 py-8 text-center"><Icon className="mx-auto size-6 text-[#999A95]" /><h3 className="mt-3 text-[11px] font-semibold">{isApiKeys ? "No API keys have been issued" : "No webhook endpoints are registered"}</h3><p className="mx-auto mt-2 max-w-[480px] text-[11px] leading-4 text-[#858681]">{isApiKeys ? "PostForge will not fabricate, reveal, or retain credentials in this browser. A server-owned key service must be configured before keys can be created." : "No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."}</p><button type="button" disabled className="mt-4 h-9 rounded-[8px] bg-[#E5E6DF] px-4 text-[11px] font-semibold text-[#999A95] disabled:cursor-not-allowed">{isApiKeys ? "API key service not configured" : "Webhook delivery not configured"}</button></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{(isApiKeys ? [["Scoped access", "Per-key permissions and expiry"], ["Secure storage", "Hashed secrets, never plaintext"], ["Audit trail", "Creation, use, and revocation logs"]] : [["Signed events", "Server-owned signing secret"], ["Reliable delivery", "Retries and failure handling"], ["Delivery history", "Status and response audit log"]]).map(([title, detail]) => <div key={title} className="rounded-[8px] border border-[#E1E2DB] bg-[#FAFAF8] p-3"><b className="block text-[11px]">{title}</b><span className="mt-1 block text-[10px] leading-3 text-[#92938E]">{detail}</span></div>)}</div></div></div>;
+  return <div data-developer-settings-panel={tab}><span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground"><Icon className="size-4" /></span><div className="mt-4 flex flex-wrap items-start justify-between gap-3"><div><h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">{isApiKeys ? "API keys" : "Webhooks"}</h2><p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">{isApiKeys ? "Create scoped credentials only after server-side identity, hashing, revocation, and audit ownership exist." : "Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist."}</p></div><span className="rounded-full border border-border bg-[var(--pf-active)] px-2.5 py-1 text-[12px] font-bold text-muted-foreground">NOT CONFIGURED</span></div><div className="pf-card mt-6 max-w-[720px] p-5"><div className="rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-card px-5 py-8 text-center"><Icon className="mx-auto size-6 text-muted-foreground" /><h3 className="mt-3 text-[13px] font-semibold">{isApiKeys ? "No API keys have been issued" : "No webhook endpoints are registered"}</h3><p className="mx-auto mt-2 max-w-[480px] text-[11px] leading-4 text-muted-foreground">{isApiKeys ? "PostForge will not fabricate, reveal, or retain credentials in this browser. A server-owned key service must be configured before keys can be created." : "No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."}</p><button type="button" disabled className="mt-4 h-9 rounded-lg bg-[var(--pf-active)] px-4 text-[13px] font-semibold text-muted-foreground disabled:cursor-not-allowed">{isApiKeys ? "API key service not configured" : "Webhook delivery not configured"}</button></div><div className="mt-4 grid gap-2 sm:grid-cols-3">{(isApiKeys ? [["Scoped access", "Per-key permissions and expiry"], ["Secure storage", "Hashed secrets, never plaintext"], ["Audit trail", "Creation, use, and revocation logs"]] : [["Signed events", "Server-owned signing secret"], ["Reliable delivery", "Retries and failure handling"], ["Delivery history", "Status and response audit log"]]).map(([title, detail]) => <div key={title} className="rounded-lg border border-border bg-card p-3"><b className="block text-[11px]">{title}</b><span className="mt-1 block text-[12px] leading-4 text-muted-foreground">{detail}</span></div>)}</div></div></div>;
 }
 
 function SettingsForm({ tab, settings, setSettings, saving, onSave }: { tab: string; settings: SettingsRecord; setSettings: React.Dispatch<React.SetStateAction<SettingsRecord>>; saving: boolean; onSave: () => void }) {
   const info = tab === "profile" ? ["Profile", "Workspace identity and timezone.", UserRound] as const : tab === "publishing" ? ["Publishing defaults", "Set safe defaults for new automations.", Settings2] as const : ["Notifications", "Choose which live workspace events appear in the navigation rail.", Bell] as const;
   const Icon = info[2];
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Icon className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">{info[0]}</h2><p className="mt-1 text-[11px] text-[#858681]">{info[1]}</p><div className="pf-card mt-6 max-w-[620px] space-y-5 p-5">{tab === "profile" && <><Field label="Workspace name"><input value={settings.workspaceName} onChange={(event) => setSettings((current) => ({ ...current, workspaceName: event.target.value }))} /></Field><Field label="Default timezone"><select value={settings.timezone} onChange={(event) => setSettings((current) => ({ ...current, timezone: event.target.value }))}><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></Field></>}{tab === "publishing" && <Toggle label="Require approval by default" detail="New automations begin with a human review gate" checked={settings.approvalDefault} onChange={(checked) => setSettings((current) => ({ ...current, approvalDefault: checked }))} />}{tab === "notifications" && <><Toggle label="Generation failures" detail="Show failed generation counts in the workspace navigation" checked={settings.emailFailures} onChange={(checked) => setSettings((current) => ({ ...current, emailFailures: checked }))} /><Toggle label="Approval requests" detail="Show outputs awaiting review in the workspace navigation" checked={settings.emailApprovals} onChange={(checked) => setSettings((current) => ({ ...current, emailApprovals: checked }))} /></>}<div className="flex justify-end border-t border-[#E3E4DD] pt-4"><button onClick={onSave} disabled={saving} className="pf-button-primary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save changes</button></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground"><Icon className="size-4" /></span><h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">{info[0]}</h2><p className="mt-1 text-[11px] text-muted-foreground">{info[1]}</p><div className="pf-card mt-6 max-w-[620px] space-y-5 p-5">{tab === "profile" && <><Field label="Workspace name"><input value={settings.workspaceName} onChange={(event) => setSettings((current) => ({ ...current, workspaceName: event.target.value }))} /></Field><Field label="Default timezone"><select value={settings.timezone} onChange={(event) => setSettings((current) => ({ ...current, timezone: event.target.value }))}><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></Field></>}{tab === "publishing" && <Toggle label="Require approval by default" detail="New automations begin with a human review gate" checked={settings.approvalDefault} onChange={(checked) => setSettings((current) => ({ ...current, approvalDefault: checked }))} />}{tab === "notifications" && <><Toggle label="Generation failures" detail="Show failed generation counts in the workspace navigation" checked={settings.emailFailures} onChange={(checked) => setSettings((current) => ({ ...current, emailFailures: checked }))} /><Toggle label="Approval requests" detail="Show outputs awaiting review in the workspace navigation" checked={settings.emailApprovals} onChange={(checked) => setSettings((current) => ({ ...current, emailApprovals: checked }))} /></>}<div className="flex justify-end border-t border-border pt-4"><button onClick={onSave} disabled={saving} className="pf-button-primary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save changes</button></div></div></div>;
 }
 
 function Billing() {
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><CircleDollarSign className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Billing & usage</h2><p className="mt-1 text-[11px] text-[#858681]">This self-hosted workspace tracks provider spend rather than charging a PostForge subscription.</p><div className="mt-6 grid max-w-[720px] gap-3 sm:grid-cols-2"><div className="pf-card p-4"><p className="pf-eyebrow">Plan</p><b className="mt-2 block text-lg">Self-hosted</b><p className="mt-1 text-[11px] text-[#858681]">No PostForge subscription configured.</p></div><div className="pf-card p-4"><p className="pf-eyebrow">Provider costs</p><b className="mt-2 block text-lg">Tracked live</b><Link href="/costs" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#378EFF]">Open Spend <ChevronRight className="size-3" /></Link></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground"><CircleDollarSign className="size-4" /></span><h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Billing & usage</h2><p className="mt-1 text-[11px] text-muted-foreground">This self-hosted workspace tracks provider spend rather than charging a PostForge subscription.</p><div className="mt-6 grid max-w-[720px] gap-3 sm:grid-cols-2"><div className="pf-card p-4"><p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Plan</p><b className="mt-2 block text-[15px]">Self-hosted</b><p className="mt-1 text-[11px] text-muted-foreground">No PostForge subscription configured.</p></div><div className="pf-card p-4"><p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Provider costs</p><b className="mt-2 block text-[15px]">Tracked live</b><Link href="/costs" className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-[var(--pf-link)]">Open Spend <ChevronRight className="size-3" /></Link></div></div></div>;
 }
 
 function Team() {
-  return <div><span className="grid size-10 place-items-center rounded-[10px] bg-[#ECECE6] text-[#777]"><Users className="size-4" /></span><h2 className="mt-4 text-[22px] font-semibold tracking-[-0.035em]">Team</h2><p className="mt-1 text-[11px] text-[#858681]">PostForge is currently running as one local workspace.</p><div className="pf-card mt-6 max-w-[620px] p-5"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-[#232323] text-[10px] font-bold text-white">PF</span><div><b className="block text-[10px]">Local administrator</b><p className="mt-1 text-[10px] text-[#858681]">Full access · local runtime</p></div><span className="ml-auto rounded-full bg-[#E7F5E9] px-2 py-1 text-[9px] font-bold text-[#268B42]">ACTIVE</span></div><div className="mt-5 rounded-[9px] border border-dashed border-[#CFCFC7] p-4 text-center"><Code2 className="mx-auto size-5 text-[#999]" /><p className="mt-2 text-[11px] text-[#777]">User accounts and workspace permissions need an authentication owner before invitations can be enabled.</p></div></div></div>;
+  return <div><span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground"><Users className="size-4" /></span><h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Team</h2><p className="mt-1 text-[11px] text-muted-foreground">PostForge is currently running as one local workspace.</p><div className="pf-card mt-6 max-w-[620px] p-5"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-full bg-foreground text-[12px] font-bold text-white">PF</span><div><b className="block text-[12px]">Local administrator</b><p className="mt-1 text-[12px] text-muted-foreground">Full access · local runtime</p></div><span className="ml-auto rounded-full bg-[var(--pf-success)]/10 px-2 py-1 text-[11px] font-bold text-[var(--pf-success)]">ACTIVE</span></div><div className="mt-5 rounded-lg border border-dashed border-[var(--pf-border-strong)] p-4 text-center"><Code2 className="mx-auto size-5 text-muted-foreground" /><p className="mt-2 text-[11px] text-muted-foreground">User accounts and workspace permissions need an authentication owner before invitations can be enabled.</p></div></div></div>;
 }
 
-function SectionHeading({ title, description }: { title: string; description: string }) { return <div className="mb-2 mt-6"><h3 className="text-[11px] font-semibold">{title}</h3><p className="mt-1 text-[10px] text-[#8A8B86]">{description}</p></div>; }
-function BrandAsset({ src, label }: { src: string; label: string }) { return <Image src={src} alt={label} width={18} height={18} unoptimized className="size-[18px]" />; }
-function ServiceRow({ icon, name, description, action, onAction }: { icon: React.ReactNode; name: string; description: string; action: string; onAction?: () => void }) { return <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]"><span className="grid size-9 place-items-center rounded-[9px] bg-[#F0F1EB] text-[#555651]">{icon}</span><div className="min-w-0"><h3 className="truncate text-[10px] font-semibold">{name}</h3><p className="mt-1 break-words text-[10px] leading-3 text-[#888984]">{description}</p></div>{onAction ? <button type="button" onClick={onAction} className="col-span-2 w-full rounded-[6px] border border-[#D7D8D0] bg-white px-2 py-1.5 text-[10px] font-semibold text-[#555651] hover:bg-[#F0F1EB] sm:col-span-1 sm:w-auto">{action}</button> : <span className="col-span-2 text-[10px] text-[#777] sm:col-span-1">{action}</span>}</article>; }
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="grid min-w-0 gap-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center"><span className="text-[11px] font-semibold text-[#666]">{label}</span><span className="min-w-0 [&_input]:h-9 [&_input]:w-full [&_input]:min-w-0 [&_input]:rounded-[7px] [&_input]:border [&_input]:border-[#D7D8D0] [&_input]:bg-[var(--pf-surface)] [&_input]:px-3 [&_input]:text-[11px] [&_input]:text-[var(--pf-ink)] [&_select]:h-9 [&_select]:w-full [&_select]:min-w-0 [&_select]:rounded-[7px] [&_select]:border [&_select]:border-[#D7D8D0] [&_select]:bg-[var(--pf-surface)] [&_select]:px-3 [&_select]:text-[11px] [&_select]:text-[var(--pf-ink)]">{children}</span></label>; }
-function Toggle({ label, detail, checked, onChange }: { label: string; detail: string; checked: boolean; onChange: (checked: boolean) => void }) { return <label className="flex min-w-0 items-center justify-between gap-3"><span className="min-w-0"><b className="block text-[11px]">{label}</b><small className="mt-1 block break-words text-[10px] text-[#999]">{detail}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 shrink-0 accent-[#FF4A20]" /></label>; }
+function SectionHeading({ title, description }: { title: string; description: string }) { return <div className="mb-2 mt-6"><h3 className="text-[13px] font-semibold">{title}</h3><p className="mt-1 text-[12px] text-muted-foreground">{description}</p></div>; }
+function ServiceRow({ icon, name, description, action, onAction }: { icon: React.ReactNode; name: string; description: string; action: string; onAction?: () => void }) { return <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]"><span className="grid size-9 place-items-center rounded-lg bg-[var(--pf-active)] text-foreground">{icon}</span><div className="min-w-0"><h3 className="truncate text-[12px] font-semibold">{name}</h3><p className="mt-1 break-words text-[12px] leading-4 text-muted-foreground">{description}</p></div>{onAction ? <button type="button" onClick={onAction} className="col-span-2 w-full rounded-lg border border-border bg-white px-2 py-1.5 text-[12px] font-semibold text-foreground hover:bg-[var(--pf-active)] sm:col-span-1 sm:w-auto">{action}</button> : <span className="col-span-2 text-[12px] text-muted-foreground sm:col-span-1">{action}</span>}</article>; }
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="grid min-w-0 gap-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center"><span className="text-[13px] font-semibold text-muted-foreground">{label}</span><span className="min-w-0 [&_input]:h-9 [&_input]:w-full [&_input]:min-w-0 [&_input]:rounded-lg [&_input]:border [&_input]:border-border [&_input]:bg-[var(--pf-surface)] [&_input]:px-3 [&_input]:text-[11px] [&_input]:text-[var(--pf-ink)] [&_select]:h-9 [&_select]:w-full [&_select]:min-w-0 [&_select]:rounded-lg [&_select]:border [&_select]:border-border [&_select]:bg-[var(--pf-surface)] [&_select]:px-3 [&_select]:text-[11px] [&_select]:text-[var(--pf-ink)]">{children}</span></label>; }
+function Toggle({ label, detail, checked, onChange }: { label: string; detail: string; checked: boolean; onChange: (checked: boolean) => void }) { return <label className="flex min-w-0 items-center justify-between gap-3"><span className="min-w-0"><b className="block text-[11px]">{label}</b><small className="mt-1 block break-words text-[12px] text-muted-foreground">{detail}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 shrink-0 accent-[var(--pf-orange)]" /></label>; }

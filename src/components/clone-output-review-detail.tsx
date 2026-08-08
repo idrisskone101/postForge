@@ -134,9 +134,9 @@ function DetailSection({
   children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="border-b border-border bg-muted/25 px-4 py-3">
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
           {title}
         </h2>
       </div>
@@ -237,16 +237,15 @@ export function CloneOutputReviewDetail({
               <ArrowLeft className="size-4 shrink-0" />
             </button>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <Users className="size-4 shrink-0 text-accent-green" />
-                <h1 className="text-xl font-semibold tracking-tight">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-xl font-semibold tracking-[-0.02em]">
                   Clone Output
                 </h1>
-                <span className="shrink-0 rounded-md bg-muted px-2.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
+                <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 pf-data text-[12px] font-medium text-muted-foreground">
                   {job.id.slice(0, 8)}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-[13px] text-muted-foreground">
                 Review and approve your generated media asset.
               </p>
             </div>
@@ -282,7 +281,7 @@ export function CloneOutputReviewDetail({
               type="button"
               onClick={() => featured && onHandoff?.(featured)}
               disabled={!featured || handoffState === "pending"}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-accent-coral px-4 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {handoffState === "pending" ? (
                 <Loader2 className="size-4 shrink-0 animate-spin" />
@@ -303,7 +302,7 @@ export function CloneOutputReviewDetail({
 
       <div className="mx-auto grid min-w-0 max-w-[1280px] gap-5 px-5 py-6 sm:px-6 lg:grid-cols-[minmax(0,64fr)_minmax(340px,36fr)] lg:px-8">
         <div className="min-w-0 space-y-4">
-          <div className="rounded-xl border border-border bg-[#edeee8] p-4 sm:p-6">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
             <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>
             <div className="relative min-w-0">
               {isActive && (
@@ -350,7 +349,7 @@ export function CloneOutputReviewDetail({
                     <button
                       type="button"
                       onClick={() => onDownload(featured)}
-                      className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
+                      className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
                     >
                       <Download className="size-3.5 shrink-0" />
                       Download
@@ -366,7 +365,7 @@ export function CloneOutputReviewDetail({
 
             {job.outputs.length > 1 && (
               <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
-                <p className="hidden text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:block">
+                <p className="hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
                   Variants
                 </p>
                 {job.outputs.map((output, index) => (
@@ -398,7 +397,7 @@ export function CloneOutputReviewDetail({
                         className="size-full rounded-md object-cover"
                       />
                     )}
-                    <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[11px] font-bold text-white">
+                    <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[13px] font-semibold text-white">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </button>
@@ -408,7 +407,7 @@ export function CloneOutputReviewDetail({
             </div>
 
             {featured && (
-              <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-white px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-card px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-foreground">
                     {featured.filename}
@@ -427,7 +426,7 @@ export function CloneOutputReviewDetail({
               className={cn(
                 "flex min-w-0 items-start gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium",
                 actionFeedback.tone === "success"
-                  ? "border-accent-green/30 bg-accent-green/10 text-green-700"
+                  ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
                   : "border-destructive/30 bg-destructive/10 text-destructive"
               )}
             >
@@ -449,7 +448,7 @@ export function CloneOutputReviewDetail({
               disabled={!featured || pendingReviewStatus !== null}
               aria-pressed={featured?.reviewStatus.value === "approved_output"}
               className={cn(
-                "flex items-center justify-between rounded-xl border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
+                "flex items-center justify-between rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
                 featured?.reviewStatus.value === "approved_output"
                   ? "border-accent-green bg-accent-green/10"
                   : "border-border"
@@ -475,7 +474,7 @@ export function CloneOutputReviewDetail({
               disabled={!featured || pendingReviewStatus !== null}
               aria-pressed={featured?.reviewStatus.value === "rejected_output"}
               className={cn(
-                "flex items-center justify-between rounded-xl border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
+                "flex items-center justify-between rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
                 featured?.reviewStatus.value === "rejected_output"
                   ? "border-destructive bg-destructive/10"
                   : "border-border"
@@ -498,7 +497,7 @@ export function CloneOutputReviewDetail({
             <button
               type="button"
               onClick={onNewClone}
-              className="flex items-center justify-between rounded-xl border border-dashed border-accent-coral/40 bg-card p-4 text-left text-accent-coral transition-colors hover:border-accent-coral hover:bg-accent-coral/5"
+              className="flex items-center justify-between rounded-lg border border-dashed border-accent-coral/40 bg-card p-4 text-left text-accent-coral transition-colors hover:border-accent-coral hover:bg-accent-coral/5"
             >
               <span>
                 <span className="block text-sm font-semibold">New Clone</span>
@@ -527,7 +526,7 @@ export function CloneOutputReviewDetail({
                       href={sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-w-0 items-center gap-1 text-[11px] font-semibold text-accent-blue hover:underline"
+                      className="inline-flex min-w-0 items-center gap-1 text-[13px] font-semibold text-accent-blue hover:underline"
                     >
                       View original
                       <ExternalLink className="size-3 shrink-0" />
@@ -536,13 +535,13 @@ export function CloneOutputReviewDetail({
                 </div>
               </div>
               {sourcePreviewUrl && sourceVideo && (
-                <details className="rounded-xl border border-border bg-black/40 p-2">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-2 py-1 text-[11px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
+                <details className="rounded-lg border border-border bg-black/40 p-2">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-2 py-1 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
                     <span className="inline-flex items-center gap-2">
                       <PlayCircle className="size-3.5 text-accent-green" />
                       View source video
                     </span>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[12px] uppercase tracking-wider text-muted-foreground">
                       {formatDuration(sourceVideo.durationSec)}
                     </span>
                   </summary>
@@ -587,7 +586,7 @@ export function CloneOutputReviewDetail({
           <DetailSection title="Production State">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">
+                <p className="mb-1 text-[12px] font-bold uppercase text-muted-foreground">
                   Spend
                 </p>
                 <p className="text-lg font-semibold tracking-tight">
@@ -595,7 +594,7 @@ export function CloneOutputReviewDetail({
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">
+                <p className="mb-1 text-[12px] font-bold uppercase text-muted-foreground">
                   Generation Time
                 </p>
                 <p className="text-lg font-semibold tracking-tight">
@@ -643,8 +642,8 @@ export function CloneOutputReviewDetail({
                   ) : (
                     <AlertCircle className="mx-auto size-4 shrink-0 text-muted-foreground" />
                   )}
-                  <p className="mt-1.5 text-[10px] font-semibold">{signal.label}</p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground">
+                  <p className="mt-1.5 text-[12px] font-semibold">{signal.label}</p>
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">
                     {signal.ready ? "Ready" : "Unavailable"}
                   </p>
                 </div>
@@ -656,7 +655,7 @@ export function CloneOutputReviewDetail({
             <DetailSection title="Reference">
               <div className="mb-3 min-w-0">
                 <p className="min-w-0 break-words text-sm font-medium [overflow-wrap:anywhere]">{reference.label}</p>
-                <p className="mt-1 break-all font-mono text-[10px] text-muted-foreground">
+                <p className="mt-1 break-all font-mono text-[12px] text-muted-foreground">
                   {reference.id}
                 </p>
               </div>

@@ -8,6 +8,7 @@ cd "$REPO_ROOT"
 
 corepack enable 2>/dev/null || true
 
+pnpm test:api-client
 pnpm test:workspace-shell
 pnpm test:responsive-layout
 pnpm test:character-attributes
@@ -42,6 +43,9 @@ pnpm test:spend-page
 pnpm test:home-active-jobs
 pnpm test:home-review-jobs
 pnpm test:slideshow-story
+pnpm test:slideshow-creator
+pnpm test:prompt-presentation
+pnpm test:story-models
 pnpm test:slideshow-model
 pnpm test:slideshow-image
 pnpm test:slideshow-image-recovery
@@ -52,5 +56,9 @@ pnpm test:slideshow-management
 pnpm test:home-cockpit
 pnpm test:home-loading
 pnpm test:generate-empty-state
+pnpm test:model-availability
+pnpm test:model-registry
+pnpm test:settings-credentials
+pnpm typecheck
 pnpm lint
 pnpm build

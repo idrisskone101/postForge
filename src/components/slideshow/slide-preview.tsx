@@ -140,7 +140,7 @@ export function SlidePreview({
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden rounded-2xl bg-zinc-900 text-white",
+        "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white",
         aspectClasses[aspectRatio],
         className,
       )}
@@ -173,9 +173,9 @@ export function SlidePreview({
               "flex flex-col",
               alignClasses[textSettings.align],
               textSettings.style === "solid" &&
-                "rounded-xl bg-black px-4 py-3 text-white",
+                "rounded-lg bg-black px-4 py-3 text-white",
               textSettings.style === "translucent" &&
-                "rounded-xl bg-black/55 px-4 py-3 text-white backdrop-blur-sm",
+                "rounded-lg bg-black/55 px-4 py-3 text-white backdrop-blur-sm",
             )}
             style={textStyle}
           >
@@ -217,7 +217,7 @@ export function SlidePreview({
         </div>
       ) : null}
       {showCounter && counter ? (
-        <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/55 px-2 py-1 text-[9px] font-semibold text-white backdrop-blur">
+        <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
           {counter}
         </span>
       ) : null}

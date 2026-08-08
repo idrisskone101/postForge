@@ -616,7 +616,7 @@ export function AutomationBuilderClient() {
     }
   }
 
-  if (loading) return <div className="pf-content-viewport grid place-items-center"><Loader2 className="size-7 animate-spin text-[#FF4A20]" /></div>;
+  if (loading) return <div className="pf-content-viewport grid place-items-center"><Loader2 className="size-7 animate-spin text-[var(--pf-orange)]" /></div>;
 
   const phaseIndex = PHASES.indexOf(phase);
   const slideCopy = [record.hook.selected, record.content.structure, "One concrete point per slide", record.content.guidance, record.cta.style];
@@ -625,24 +625,24 @@ export function AutomationBuilderClient() {
     !record.approvalRequired;
 
   return (
-    <div className="pf-content-viewport flex flex-col bg-[#F3F4EF]">
-      <header className="flex min-h-[82px] flex-wrap items-center justify-between gap-3 border-b border-[#DADBD2] bg-[#F7F7F3] px-4 py-3 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3"><Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-[9px] border border-[#D5D6CF] bg-white"><ArrowLeft className="size-4" /></Link><div className="min-w-0"><p className="pf-eyebrow">Automations / {editId ? "Edit" : "New"}</p><input value={record.name} onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))} className="mt-1 w-full min-w-0 bg-transparent text-[18px] font-semibold tracking-[-0.025em] outline-none" aria-label="Automation name" /></div><span className="rounded-full bg-[#ECECE6] px-2 py-1 text-[10px] font-bold text-[#777873]">{record.status.replace("_", " ").toUpperCase()}</span></div>
-        <div className="flex flex-wrap items-center justify-end gap-2"><span role="status" aria-live="polite" className={cn("mr-1 text-[10px] font-medium",saveFailed ? "text-[#D94A34]" : savedRecordSignature === recordSignature ? "text-[#268B42]" : "text-[#858681]")}>{saveStatus}</span><button onClick={openTemplatePicker} className="pf-button-secondary"><LayoutTemplate className="size-3.5" /> Playbook</button><button onClick={() => persist("draft")} disabled={saving} className="pf-button-secondary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save draft</button><button onClick={() => setValidationOpen(true)} className="pf-button-primary">Review automation <ArrowRight className="size-3.5" /></button></div>
+    <div className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]">
+      <header className="flex min-h-[82px] flex-wrap items-center justify-between gap-3 border-b border-border bg-[var(--pf-active)] px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3"><Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-lg border border-border bg-white"><ArrowLeft className="size-4" /></Link><div className="min-w-0"><input value={record.name} onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))} className="mt-1 w-full min-w-0 bg-transparent text-[15px] font-semibold tracking-[-0.01em] outline-none" aria-label="Automation name" /></div><span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[12px] font-bold text-muted-foreground">{record.status.replace("_", " ").toUpperCase()}</span></div>
+        <div className="flex flex-wrap items-center justify-end gap-2"><span role="status" aria-live="polite" className={cn("mr-1 text-[12px] font-medium",saveFailed ? "text-[var(--pf-danger)]" : savedRecordSignature === recordSignature ? "text-[var(--pf-success)]" : "text-muted-foreground")}>{saveStatus}</span><button onClick={openTemplatePicker} className="pf-button-secondary"><LayoutTemplate className="size-3.5" /> Playbook</button><button onClick={() => persist("draft")} disabled={saving} className="pf-button-secondary">{saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save draft</button><button onClick={() => setValidationOpen(true)} className="pf-button-primary">Review automation <ArrowRight className="size-3.5" /></button></div>
       </header>
 
-      <div className="flex min-h-[59px] items-center justify-between gap-4 overflow-x-auto border-b border-[#D9DAD3] bg-white px-3 sm:px-6">
-        <div className="flex h-[59px]">{PHASES.map((item, index) => <button key={item} onClick={() => setPhase(item)} className={cn("relative grid min-w-[118px] grid-cols-[24px_1fr] items-center gap-2 px-3 text-left text-[10px] font-semibold text-[#777873]",phase === item && "text-[#232323] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#FF4A20]")}><span className={cn("grid size-5 place-items-center rounded-full bg-[#EFF0EA] text-[10px]",phase === item && "bg-[#FF4A20] text-white")}>0{index + 1}</span><span>{item}<small className="mt-0.5 block text-[9px] font-normal text-[#AAA]">{phase === item ? "Editing" : index < phaseIndex ? "Complete" : ""}</small></span></button>)}</div>
-        <span className="hidden rounded-full bg-[#F0F1EB] px-2.5 py-1 text-[10px] text-[#777873] sm:block">{record.template.replaceAll("-", " ")}</span>
+      <div className="flex min-h-[59px] items-center justify-between gap-4 overflow-x-auto border-b border-[var(--pf-border)] bg-white px-3 sm:px-6">
+        <div className="flex h-[59px]">{PHASES.map((item, index) => <button key={item} onClick={() => setPhase(item)} className={cn("relative grid min-w-[118px] grid-cols-[24px_1fr] items-center gap-2 px-3 text-left text-[12px] font-semibold text-muted-foreground",phase === item && "text-foreground after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[var(--pf-orange)]")}><span className={cn("grid size-5 place-items-center rounded-full bg-[var(--pf-active)] text-[12px]",phase === item && "bg-[var(--pf-orange)] text-white")}>0{index + 1}</span><span>{item}<small className="mt-0.5 block text-[11px] font-normal text-muted-foreground">{phase === item ? "Editing" : index < phaseIndex ? "Complete" : ""}</small></span></button>)}</div>
+        <span className="hidden rounded-full bg-[var(--pf-active)] px-2.5 py-1 text-[12px] text-muted-foreground sm:block">{record.template.replaceAll("-", " ")}</span>
       </div>
 
-      {error && <div role="alert" className="mx-4 mt-3 flex min-w-0 items-start justify-between gap-3 rounded-[9px] border border-[#F0B5AA] bg-[#FFF6F4] px-3 py-2 text-[10px] text-[#B83F2D] sm:mx-6"><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5 shrink-0" /></button></div>}
+      {error && <div role="alert" className="mx-4 mt-3 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)] sm:mx-6"><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5 shrink-0" /></button></div>}
 
       <section className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className="relative border-b border-[#D9DAD3] bg-[#F8F8F5] p-5 lg:border-b-0 lg:border-r">
-          <div className="flex gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-[#ECECE6] text-[11px] font-bold text-[#777873]">0{phaseIndex + 1}</span><div><p className="pf-eyebrow">{phase}</p><h2 className="mt-1 text-[17px] font-semibold tracking-[-0.025em]">{phase === "Hook" ? "Stop the scroll" : phase === "Content" ? "Deliver the value" : "Close with intent"}</h2><p className="mt-1 text-[11px] leading-4 text-[#858681]">{phase === "Hook" ? "Choose how the first slide earns attention." : phase === "Content" ? "Shape the repeatable middle of every post." : "Decide what the final slide asks viewers to do."}</p></div></div>
+        <aside className="relative border-b border-[var(--pf-border)] bg-card p-5 lg:border-b-0 lg:border-r">
+          <div className="flex gap-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--pf-active)] text-[13px] font-semibold text-muted-foreground">0{phaseIndex + 1}</span><div><h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em]">{phase === "Hook" ? "Stop the scroll" : phase === "Content" ? "Deliver the value" : "Close with intent"}</h2><p className="mt-1 text-[11px] leading-4 text-muted-foreground">{phase === "Hook" ? "Choose how the first slide earns attention." : phase === "Content" ? "Shape the repeatable middle of every post." : "Decide what the final slide asks viewers to do."}</p></div></div>
           <div className="mt-5 space-y-4">
-            {phase === "Hook" && <><Field label="Hook strategy"><Select value={record.hook.strategy} onChange={(value) => updateHook({ strategy: value })} options={["Curiosity gap","Unexpected result","Contrarian truth","Specific transformation","Concrete promise"]} /></Field><Field label="Hook prompt"><textarea value={record.hook.prompt} onChange={(event) => updateHook({ prompt: event.target.value })} className="pf-input h-24" /></Field><div><button type="button" disabled={!record.hook.prompt.trim()} onClick={() => updateHook({ selected: composeAutomationHook(record.hook.strategy, record.hook.prompt) })} className="flex h-9 w-full items-center justify-center gap-2 rounded-[8px] border border-[#FFB5A4] bg-[#FFF7F5] text-[11px] font-semibold text-[#E44B2F] disabled:cursor-not-allowed disabled:opacity-45"><Sparkles className="size-3.5" /> Compose from prompt</button><p className="mt-1.5 text-[9px] leading-3 text-[#8A8B85]">Composed locally from your prompt and strategy. No network request.</p></div><Field label="Selected hook"><input value={record.hook.selected} onChange={(event) => updateHook({ selected: event.target.value })} className="pf-input h-10" /></Field></>}
+            {phase === "Hook" && <><Field label="Hook strategy"><Select value={record.hook.strategy} onChange={(value) => updateHook({ strategy: value })} options={["Curiosity gap","Unexpected result","Contrarian truth","Specific transformation","Concrete promise"]} /></Field><Field label="Hook prompt"><textarea value={record.hook.prompt} onChange={(event) => updateHook({ prompt: event.target.value })} className="pf-input h-24" /></Field><div><button type="button" disabled={!record.hook.prompt.trim()} onClick={() => updateHook({ selected: composeAutomationHook(record.hook.strategy, record.hook.prompt) })} className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[13px] font-semibold text-[var(--pf-danger)] disabled:cursor-not-allowed disabled:opacity-45"><Sparkles className="size-3.5" /> Compose from prompt</button><p className="mt-1.5 text-[11px] leading-3 text-muted-foreground">Composed locally from your prompt and strategy. No network request.</p></div><Field label="Selected hook"><input value={record.hook.selected} onChange={(event) => updateHook({ selected: event.target.value })} className="pf-input h-10" /></Field></>}
             {phase === "Content" && (
               <>
                 <Field label="Story structure">
@@ -653,24 +653,24 @@ export function AutomationBuilderClient() {
                   />
                 </Field>
                 <Field label={`Slides per post · ${record.content.slideCount}`}>
-                  <input type="range" min="3" max="9" value={record.content.slideCount} onChange={(event) => updateContent({ slideCount: Number(event.target.value) })} className="w-full accent-[#FF4A20]" />
+                  <input type="range" min="3" max="9" value={record.content.slideCount} onChange={(event) => updateContent({ slideCount: Number(event.target.value) })} className="w-full accent-[var(--pf-orange)]" />
                 </Field>
                 {record.content.sourceFileId && (
                   <Field label="Attached generated asset">
-                    <div className="flex min-h-14 items-center gap-2 rounded-[8px] border border-[#D8D9D2] bg-white p-2">
-                      <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-[7px] bg-[#F0F1EB]">
+                    <div className="flex min-h-14 items-center gap-2 rounded-lg border border-border bg-white p-2">
+                      <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-[var(--pf-active)]">
                         {sourceFile?.type === "image" ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={sourceFile.previewUrl} alt="" className="size-full object-cover" />
                         ) : (
-                          <ImageIcon className="size-4 text-[#777873]" />
+                          <ImageIcon className="size-4 text-muted-foreground" />
                         )}
                       </span>
                       <span className="min-w-0 flex-1">
                         <b className="block truncate text-[11px]">{sourceFileLoading ? "Checking source asset…" : sourceFile?.filename ?? "Source asset unavailable"}</b>
-                        <small className="mt-0.5 block text-[9px] text-[#999]">Persisted with this plan for the creative handoff</small>
+                        <small className="mt-0.5 block text-[11px] text-muted-foreground">Persisted with this plan for the creative handoff</small>
                       </span>
-                      <button type="button" onClick={() => updateContent({ sourceFileId: null })} className="grid size-7 shrink-0 place-items-center rounded-[7px] border border-[#D8D9D2]" aria-label="Remove source asset"><X className="size-3" /></button>
+                      <button type="button" onClick={() => updateContent({ sourceFileId: null })} className="grid size-7 shrink-0 place-items-center rounded-lg border border-border" aria-label="Remove source asset"><X className="size-3" /></button>
                     </div>
                   </Field>
                 )}
@@ -686,41 +686,41 @@ export function AutomationBuilderClient() {
                       <option key={collection.id} value={collection.id}>{collection.name} · {collection.assetIds.length} assets</option>
                     ))}
                   </select>
-                  <Link href="/collections" className="mt-1.5 inline-flex text-[9px] font-semibold text-[#D44B34]">Manage collections →</Link>
+                  <Link href="/collections" className="mt-1.5 inline-flex text-[11px] font-semibold text-[var(--pf-danger)]">Manage collections →</Link>
                 </Field>
                 <Field label="Writing guidance">
                   <textarea value={record.content.guidance} onChange={(event) => updateContent({ guidance: event.target.value })} className="pf-input h-24" />
                 </Field>
               </>
             )}
-            {phase === "CTA" && <><Field label="CTA style"><Select value={record.cta.style} onChange={(value) => updateCta({ style: value })} options={["Save this post","Follow for part two","Comment a keyword","Visit profile link","No CTA"]} /></Field><Field label="CTA prompt"><textarea value={record.cta.prompt} onChange={(event) => updateCta({ prompt: event.target.value })} className="pf-input h-24" /></Field><DestinationSelector destination={record.destination} accountId={record.accountId ?? null} providers={integrationStatuses} loading={integrationsLoading} error={integrationsError} onSelect={selectDestination} onAccountSelect={(accountId, accountLabel) => setRecord((current) => ({ ...current, accountId, accountLabel }))} onRetry={() => setIntegrationRefreshKey((current) => current + 1)} /><label className="flex items-center justify-between gap-3 border-t border-[#E1E2DC] pt-4"><span><b className="block text-[10px]">Require approval</b><small className="mt-1 block text-[10px] leading-3 text-[#999]">{isAutomationSocialDestination(record.destination) ? "Required for every social publishing destination" : "Keep a review decision in the local workflow"}</small></span><input type="checkbox" checked={record.approvalRequired} disabled={isAutomationSocialDestination(record.destination)} onChange={(event) => setRecord((current) => ({ ...current, approvalRequired: event.target.checked }))} aria-describedby="automation-approval-rule" className="size-4 shrink-0 accent-[#FF4A20] disabled:cursor-not-allowed disabled:opacity-70" /><span id="automation-approval-rule" className="sr-only">Social publishing destinations always require approval.</span></label></>}
-            <fieldset><legend className="mb-2 text-[11px] font-semibold text-[#666762]">Schedule</legend><div className="grid grid-cols-7 gap-1">{DAYS.map((day) => <button key={day} onClick={() => toggleDay(day)} className={cn("h-8 rounded-[7px] border text-[10px]",record.schedule.days.includes(day) ? "border-[#232323] bg-[#232323] text-white" : "border-[#D8D9D2] bg-white text-[#777873]")}>{day[0]}</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><input type="time" value={record.schedule.time} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, time: event.target.value } }))} className="pf-input h-9" /><select value={record.schedule.timezone} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, timezone: event.target.value } }))} className="pf-input h-9"><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></div></fieldset>
+            {phase === "CTA" && <><Field label="CTA style"><Select value={record.cta.style} onChange={(value) => updateCta({ style: value })} options={["Save this post","Follow for part two","Comment a keyword","Visit profile link","No CTA"]} /></Field><Field label="CTA prompt"><textarea value={record.cta.prompt} onChange={(event) => updateCta({ prompt: event.target.value })} className="pf-input h-24" /></Field><DestinationSelector destination={record.destination} accountId={record.accountId ?? null} providers={integrationStatuses} loading={integrationsLoading} error={integrationsError} onSelect={selectDestination} onAccountSelect={(accountId, accountLabel) => setRecord((current) => ({ ...current, accountId, accountLabel }))} onRetry={() => setIntegrationRefreshKey((current) => current + 1)} /><label className="flex items-center justify-between gap-3 border-t border-border pt-4"><span><b className="block text-[12px]">Require approval</b><small className="mt-1 block text-[12px] leading-3 text-muted-foreground">{isAutomationSocialDestination(record.destination) ? "Required for every social publishing destination" : "Keep a review decision in the local workflow"}</small></span><input type="checkbox" checked={record.approvalRequired} disabled={isAutomationSocialDestination(record.destination)} onChange={(event) => setRecord((current) => ({ ...current, approvalRequired: event.target.checked }))} aria-describedby="automation-approval-rule" className="size-4 shrink-0 accent-[var(--pf-orange)] disabled:cursor-not-allowed disabled:opacity-70" /><span id="automation-approval-rule" className="sr-only">Social publishing destinations always require approval.</span></label></>}
+            <fieldset><legend className="mb-2 text-[13px] font-semibold text-muted-foreground">Schedule</legend><div className="grid grid-cols-7 gap-1">{DAYS.map((day) => <button type="button" key={day} onClick={() => toggleDay(day)} aria-label={`Toggle ${day}`} aria-pressed={record.schedule.days.includes(day)} className={cn("h-8 rounded-lg border text-[12px]",record.schedule.days.includes(day) ? "border-[var(--pf-ink)] bg-foreground text-background" : "border-border bg-white text-muted-foreground")}>{day[0]}</button>)}</div><div className="mt-2 grid grid-cols-2 gap-2"><input type="time" aria-label="Publish time" value={record.schedule.time} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, time: event.target.value } }))} className="pf-input h-9" /><select aria-label="Schedule timezone" value={record.schedule.timezone} onChange={(event) => setRecord((current) => ({ ...current, schedule: { ...current.schedule, timezone: event.target.value } }))} className="pf-input h-9"><option>America/Toronto</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option></select></div></fieldset>
           </div>
-          <div className="mt-7 flex justify-between border-t border-[#E1E2DC] pt-4"><button onClick={() => setPhase(PHASES[Math.max(0, phaseIndex - 1)])} disabled={phaseIndex === 0} className="pf-button-secondary disabled:opacity-40"><ArrowLeft className="size-3" /> Back</button><button onClick={() => phaseIndex === 2 ? setValidationOpen(true) : setPhase(PHASES[phaseIndex + 1])} className="inline-flex h-9 items-center gap-2 rounded-[8px] bg-[#232323] px-3 text-[11px] font-semibold text-white">{phaseIndex === 2 ? "Review" : "Next"}<ArrowRight className="size-3" /></button></div>
+          <div className="mt-7 flex justify-between border-t border-border pt-4"><button onClick={() => setPhase(PHASES[Math.max(0, phaseIndex - 1)])} disabled={phaseIndex === 0} className="pf-button-secondary disabled:opacity-40"><ArrowLeft className="size-3" /> Back</button><button onClick={() => phaseIndex === 2 ? setValidationOpen(true) : setPhase(PHASES[phaseIndex + 1])} className="inline-flex h-9 items-center gap-2 rounded-lg bg-foreground px-3 text-[13px] font-semibold text-white">{phaseIndex === 2 ? "Review" : "Next"}<ArrowRight className="size-3" /></button></div>
         </aside>
 
-        <div className="flex min-w-0 flex-col bg-[#EFEFE9]">
-          <div className="flex h-12 items-center justify-between border-b border-[#D9DAD3] bg-white px-4"><div><p className="pf-eyebrow">Live preview</p><b className="mt-0.5 block text-[11px]">Slide {previewSlide + 1} of {record.content.slideCount}</b></div><div className="flex items-center gap-1 text-[10px] text-[#888]" aria-label="Preview zoom controls"><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MIN} aria-label="Zoom preview out" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Minus className="size-3" /></button><output aria-live="polite" className="w-9 text-center tabular-nums">{previewZoom}%</output><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MAX} aria-label="Zoom preview in" className="grid size-6 place-items-center rounded-[6px] border border-[#D8D9D2] bg-white disabled:cursor-not-allowed disabled:opacity-35"><Plus className="size-3" /></button></div></div>
-          <div className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[linear-gradient(#E6E7E0_1px,transparent_1px),linear-gradient(90deg,#E6E7E0_1px,transparent_1px)] bg-[size:24px_24px] p-5">
-            <div style={{ width: `${Math.round((320 * previewZoom) / 58)}px` }} className="relative aspect-[9/16] shrink-0 overflow-hidden rounded-[13px] border-[6px] border-white bg-[#20211D] shadow-[0_22px_52px_rgba(34,35,31,.19)] transition-[width] duration-150 motion-reduce:transition-none">
-              <div className="absolute inset-0 grid place-items-center bg-[#E9EAE4] p-8 text-center text-[#696A65]">
+        <div className="flex min-w-0 flex-col bg-[var(--pf-active)]">
+          <div className="flex h-12 items-center justify-between border-b border-[var(--pf-border)] bg-white px-4"><div><b className="mt-0.5 block text-[11px]">Slide {previewSlide + 1} of {record.content.slideCount}</b></div><div className="flex items-center gap-1 text-[12px] text-muted-foreground" aria-label="Preview zoom controls"><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MIN} aria-label="Zoom preview out" className="grid size-6 place-items-center rounded-lg border border-border bg-white disabled:cursor-not-allowed disabled:opacity-35"><Minus className="size-3" /></button><output aria-live="polite" className="w-9 text-center tabular-nums">{previewZoom}%</output><button type="button" onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))} disabled={previewZoom === PREVIEW_ZOOM_MAX} aria-label="Zoom preview in" className="grid size-6 place-items-center rounded-lg border border-border bg-white disabled:cursor-not-allowed disabled:opacity-35"><Plus className="size-3" /></button></div></div>
+          <div className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[#09090B] p-5">
+            <div style={{ width: `${Math.round((320 * previewZoom) / 58)}px` }} className="relative aspect-[9/16] shrink-0 overflow-hidden rounded-lg border-[6px] border-white bg-[#09090B] shadow-[0_22px_52px_rgba(34,35,31,.19)] transition-[width] duration-150 motion-reduce:transition-none">
+              <div className="absolute inset-0 grid place-items-center bg-[var(--pf-active)] p-8 text-center text-muted-foreground">
                 <div>
-                  <span className="mx-auto grid size-12 place-items-center rounded-full border border-[#D2D3CB] bg-white"><ImageIcon className="size-5" /></span>
-                  <b className="mt-3 block text-[10px] text-[#31322E]">No real media preview</b>
-                  <p className="mt-1 text-[10px] leading-3">{previewEmptyCopy}</p>
+                  <span className="mx-auto grid size-12 place-items-center rounded-full border border-border bg-white"><ImageIcon className="size-5" /></span>
+                  <b className="mt-3 block text-[12px] text-foreground">No real media preview</b>
+                  <p className="mt-1 text-[12px] leading-3">{previewEmptyCopy}</p>
                 </div>
               </div>
               {previewAsset && <AutomationPreviewMedia asset={previewAsset} className="absolute inset-0 size-full object-cover" />}
               {previewAsset && <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/55" />}
-              {previewAsset && <span className="absolute left-3 top-3 z-20 max-w-[calc(100%-24px)] truncate rounded-full bg-black/65 px-2 py-1 text-[9px] font-semibold text-white">{previewAsset.origin} · {previewAsset.name}</span>}
-              <div className={cn("absolute inset-x-5 z-20 min-w-0 break-words text-center [overflow-wrap:anywhere]", previewAsset ? "text-white drop-shadow-md" : "bottom-8 rounded-[9px] bg-white/95 p-3 text-[#2A2621] shadow-sm", previewAsset && (previewSlide === record.content.slideCount - 1 ? "bottom-10 rounded-[9px] bg-black/55 p-3" : previewSlide === 0 ? "top-14" : "top-[44%]") )}>
-                <span className="block text-[11px] font-bold uppercase tracking-[.09em]">{previewSlide === 0 ? record.hook.strategy : previewSlide === record.content.slideCount - 1 ? "Keep this for later" : `Point ${previewSlide}`}</span>
-                <b className="mt-1 block min-w-0 break-words font-serif text-[21px] italic leading-tight [overflow-wrap:anywhere]">{slideCopy[Math.min(previewSlide, slideCopy.length - 1)]}</b>
+              {previewAsset && <span className="absolute left-3 top-3 z-20 max-w-[calc(100%-24px)] truncate rounded-full bg-black/65 px-2 py-1 text-[11px] font-semibold text-white">{previewAsset.origin} · {previewAsset.name}</span>}
+              <div className={cn("absolute inset-x-5 z-20 min-w-0 break-words text-center [overflow-wrap:anywhere]", previewAsset ? "text-white drop-shadow-md" : "bottom-8 rounded-lg bg-white/95 p-3 text-foreground shadow-sm", previewAsset && (previewSlide === record.content.slideCount - 1 ? "bottom-10 rounded-lg bg-black/55 p-3" : previewSlide === 0 ? "top-14" : "top-[44%]") )}>
+                <span className="block text-[13px] font-semibold uppercase tracking-[.09em]">{previewSlide === 0 ? record.hook.strategy : previewSlide === record.content.slideCount - 1 ? "Keep this for later" : `Point ${previewSlide}`}</span>
+                <b className="mt-1 block min-w-0 break-words font-serif text-[20px] italic leading-tight [overflow-wrap:anywhere]">{slideCopy[Math.min(previewSlide, slideCopy.length - 1)]}</b>
               </div>
-              <span className="absolute bottom-2 right-2 z-20 rounded-full bg-black/70 px-2 py-1 text-[10px] text-white">{previewSlide + 1} / {record.content.slideCount}</span>
+              <span className="absolute bottom-2 right-2 z-20 rounded-full bg-black/70 px-2 py-1 text-[12px] text-white">{previewSlide + 1} / {record.content.slideCount}</span>
             </div>
           </div>
-          <div className="flex h-24 gap-2 overflow-x-auto border-t border-[#D9DAD3] bg-white p-3">{Array.from({ length: record.content.slideCount }, (_, index) => <button key={index} type="button" onClick={() => setPreviewSlide(index)} aria-label={`Preview slide ${index + 1}`} aria-pressed={previewSlide === index} className={cn("relative aspect-[9/16] h-16 shrink-0 overflow-hidden rounded-[7px] border-2 bg-[#E7E8E1]",previewSlide === index ? "border-[#FF4A20]" : "border-transparent")}>{previewAsset?.kind === "image" ? <AutomationPreviewMedia asset={previewAsset} className="size-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-[#888984]"><ImageIcon className="size-3" /></span>}<span className="absolute bottom-1 right-1 grid size-3 place-items-center rounded-full bg-black/70 text-[9px] text-white">{index + 1}</span></button>)}<button type="button" onClick={() => setRecord((current) => ({ ...current, content: { ...current.content, slideCount: Math.min(9, current.content.slideCount + 1) } }))} className="flex aspect-[9/16] h-16 shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#CFCFC7] text-[#777873]"><Plus className="size-3" /><span className="text-[9px]">Add</span></button></div>
+          <div className="flex h-24 gap-2 overflow-x-auto border-t border-[var(--pf-border)] bg-white p-3">{Array.from({ length: record.content.slideCount }, (_, index) => <button key={index} type="button" onClick={() => setPreviewSlide(index)} aria-label={`Preview slide ${index + 1}`} aria-pressed={previewSlide === index} className={cn("relative aspect-[9/16] h-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)]",previewSlide === index ? "border-[var(--pf-orange)]" : "border-transparent")}>{previewAsset?.kind === "image" ? <AutomationPreviewMedia asset={previewAsset} className="size-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-muted-foreground"><ImageIcon className="size-3" /></span>}<span className="absolute bottom-1 right-1 grid size-3 place-items-center rounded-full bg-black/70 text-[11px] text-white">{index + 1}</span></button>)}<button type="button" onClick={() => setRecord((current) => ({ ...current, content: { ...current.content, slideCount: Math.min(9, current.content.slideCount + 1) } }))} className="flex aspect-[9/16] h-16 shrink-0 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-[var(--pf-border-strong)] text-muted-foreground"><Plus className="size-3" /><span className="text-[11px]">Add</span></button></div>
         </div>
       </section>
 
@@ -750,9 +750,9 @@ export function AutomationBuilderClient() {
         />
       )}
 
-      {validationOpen && <div className="pf-safe-overlay fixed inset-0 z-[85] grid min-w-0 place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[16px] bg-white p-6 text-center shadow-2xl"><span className={cn("mx-auto grid size-11 shrink-0 place-items-center rounded-full",socialApprovalMissing ? "bg-[#FDE9E5] text-[#D94A34]" : "bg-[#E7F5E9] text-[#268B42]")}>{socialApprovalMissing ? <X className="size-5 shrink-0" /> : <Check className="size-5 shrink-0" />}</span><h2 className="mt-4 text-[19px] font-semibold tracking-[-0.03em]">{socialApprovalMissing ? "Approval is required" : "Creative setup looks good"}</h2><p className="mt-1 min-w-0 break-words text-[11px] leading-4 text-[#81827D] [overflow-wrap:anywhere]">Saving creates a paused plan. Manual Review queue schedules can create local drafts. Social publishing stays separate and requires an approved Gallery video, a live provider check, and explicit confirmation for every post.</p><div className="my-5 min-w-0 space-y-2 text-left text-[11px]"><ValidationRow ok text="Hook, content, and CTA configured" /><ValidationRow ok={record.destination === "manual" || record.approvalRequired} text={record.destination === "manual" ? "Local review plan" : record.approvalRequired ? "Approval required before any provider handoff" : "Social handoffs require approval"} /><ValidationRow ok={record.destination === "manual" || (!integrationsLoading && destinationReadiness.ready)} text={record.destination !== "manual" && integrationsLoading ? `Checking ${automationDestinationLabel(record.destination)} connection readiness` : destinationReadiness.message} /></div><div className="flex min-w-0 flex-col-reverse justify-center gap-2 min-[420px]:flex-row"><button onClick={() => setValidationOpen(false)} className="pf-button-secondary shrink-0">Return to setup</button><button onClick={() => { setValidationOpen(false); persist("create"); }} disabled={saving || socialApprovalMissing} className="pf-button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-45">{saving ? <Loader2 className="size-3.5 shrink-0 animate-spin" /> : <Save className="size-3.5 shrink-0" />} {record.destination !== "manual" && !destinationReadiness.ready ? "Save for connection" : "Save reviewed plan"}</button></div></div></div>}
-      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-[9px] bg-[#232323] px-3 py-2.5 text-[10px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[#69D583]" /><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
-      <style jsx>{`.pf-input{width:100%;border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface);color:var(--pf-ink);padding:0 10px;font-size:8px;outline:none;resize:none}.pf-input:focus{border-color:#ff4a20;box-shadow:0 0 0 3px rgba(255,74,32,.08)}`}</style>
+      {validationOpen && <div className="pf-safe-overlay fixed inset-0 z-[85] grid min-w-0 place-items-center bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true"><div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[12px] bg-white p-6 text-center shadow-2xl"><span className={cn("mx-auto grid size-11 shrink-0 place-items-center rounded-full",socialApprovalMissing ? "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]" : "bg-[var(--pf-success)]/10 text-[var(--pf-success)]")}>{socialApprovalMissing ? <X className="size-5 shrink-0" /> : <Check className="size-5 shrink-0" />}</span><h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">{socialApprovalMissing ? "Approval is required" : "Creative setup looks good"}</h2><p className="mt-1 min-w-0 break-words text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere]">Saving creates a paused plan. Manual Review queue schedules can create local drafts. Social publishing stays separate and requires an approved Gallery video, a live provider check, and explicit confirmation for every post.</p><div className="my-5 min-w-0 space-y-2 text-left text-[11px]"><ValidationRow ok text="Hook, content, and CTA configured" /><ValidationRow ok={record.destination === "manual" || record.approvalRequired} text={record.destination === "manual" ? "Local review plan" : record.approvalRequired ? "Approval required before any provider handoff" : "Social handoffs require approval"} /><ValidationRow ok={record.destination === "manual" || (!integrationsLoading && destinationReadiness.ready)} text={record.destination !== "manual" && integrationsLoading ? `Checking ${automationDestinationLabel(record.destination)} connection readiness` : destinationReadiness.message} /></div><div className="flex min-w-0 flex-col-reverse justify-center gap-2 min-[420px]:flex-row"><button onClick={() => setValidationOpen(false)} className="pf-button-secondary shrink-0">Return to setup</button><button onClick={() => { setValidationOpen(false); persist("create"); }} disabled={saving || socialApprovalMissing} className="pf-button-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-45">{saving ? <Loader2 className="size-3.5 shrink-0 animate-spin" /> : <Save className="size-3.5 shrink-0" />} {record.destination !== "manual" && !destinationReadiness.ready ? "Save for connection" : "Save reviewed plan"}</button></div></div></div>}
+      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[var(--pf-success)]" /><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
+      <style jsx>{`.pf-input{width:100%;border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface);color:var(--pf-ink);padding:0 10px;font-size:13px;outline:none;resize:none}.pf-input:focus{border-color:var(--pf-orange);box-shadow:0 0 0 3px color-mix(in oklch, var(--pf-orange) 12%, transparent)}`}</style>
     </div>
   );
 }
@@ -823,7 +823,7 @@ function DestinationSelector({
 
   return (
     <fieldset>
-      <legend className="mb-1.5 text-[11px] font-semibold text-[#666762]">
+      <legend className="mb-1.5 text-[13px] font-semibold text-muted-foreground">
         Destination
       </legend>
       <div className="grid grid-cols-2 gap-1.5">
@@ -854,15 +854,15 @@ function DestinationSelector({
               onClick={() => onSelect(option.id)}
               aria-pressed={selected}
               className={cn(
-                "flex min-h-14 items-center gap-2 rounded-[9px] border bg-white px-2.5 text-left transition-colors",
+                "flex min-h-14 items-center gap-2 rounded-lg border bg-white px-2.5 text-left transition-colors",
                 selected
-                  ? "border-[#232323] ring-2 ring-[#232323]/8"
-                  : "border-[#D8D9D2] hover:border-[#AEB0A8]"
+                  ? "border-[var(--pf-ink)] ring-2 ring-[var(--pf-ink)]/10"
+                  : "border-border hover:border-[var(--pf-border-strong)]"
               )}
             >
               <span className="grid size-7 shrink-0 place-items-center">
                 {option.id === "manual" ? (
-                  <span className="grid size-6 place-items-center rounded-[6px] bg-[#E8E9E3] text-[#565752]">
+                  <span className="grid size-6 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
                     <Inbox className="size-3.5" />
                   </span>
                 ) : (
@@ -878,10 +878,10 @@ function DestinationSelector({
                 <b className="block truncate text-[11px]">{option.label}</b>
                 <small
                   className={cn(
-                    "mt-0.5 block truncate text-[9px]",
+                    "mt-0.5 block truncate text-[11px]",
                     optionReadiness.ready || option.id === "manual"
-                      ? "text-[#268B42]"
-                      : "text-[#9A6D63]"
+                      ? "text-[var(--pf-success)]"
+                      : "text-[var(--pf-danger)]"
                   )}
                 >
                   {statusLabel}
@@ -895,29 +895,29 @@ function DestinationSelector({
       {destination !== "manual" && (
         <div
           className={cn(
-            "mt-2 rounded-[9px] border p-3 text-[11px]",
+            "mt-2 rounded-lg border p-3 text-[11px]",
             readiness.ready
-              ? "border-[#B9DCC2] bg-[#F3FBF5]"
-              : "border-[#EFB1A5] bg-[#FFF7F5]"
+              ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10"
+              : "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10"
           )}
         >
           {loading ? (
-            <div className="flex items-center gap-2 text-[#777873]">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="size-3.5 animate-spin" />
               Checking the live {automationDestinationLabel(destination)} connection…
             </div>
           ) : error ? (
             <div>
-              <b className="flex items-center gap-1.5 text-[#B83F2D]">
+              <b className="flex items-center gap-1.5 text-[var(--pf-danger)]">
                 <X className="size-3" /> Connection check failed
               </b>
-              <p className="mt-1 min-w-0 break-words leading-4 text-[#9A6D63] [overflow-wrap:anywhere]">
+              <p className="mt-1 min-w-0 break-words leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]">
                 {error}. This destination will remain gated.
               </p>
               <button
                 type="button"
                 onClick={onRetry}
-                className="mt-2 font-semibold text-[#D44B34]"
+                className="mt-2 font-semibold text-[var(--pf-danger)]"
               >
                 Check again →
               </button>
@@ -926,10 +926,10 @@ function DestinationSelector({
             <>
               <div className="flex items-start justify-between gap-2">
                 <span className="min-w-0">
-                  <b className={readiness.ready ? "text-[#207B38]" : "text-[#B83F2D]"}>
+                  <b className={readiness.ready ? "text-[var(--pf-success)]" : "text-[var(--pf-danger)]"}>
                     {readiness.ready ? "Connection verified" : "Connection required"}
                   </b>
-                  <p className="mt-1 min-w-0 break-words leading-4 text-[#7F6964] [overflow-wrap:anywhere]">
+                  <p className="mt-1 min-w-0 break-words leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]">
                     {readiness.message}
                   </p>
                 </span>
@@ -945,7 +945,7 @@ function DestinationSelector({
 
               {providerStatus?.connected && providerStatus.accounts.length > 0 && (
                 <label className="mt-3 block border-t border-black/8 pt-3">
-                  <span className="mb-1.5 block text-[10px] font-semibold text-[#666762]">
+                  <span className="mb-1.5 block text-[12px] font-semibold text-muted-foreground">
                     Connected account
                   </span>
                   <select
@@ -963,7 +963,7 @@ function DestinationSelector({
                           : "Connected account"
                       );
                     }}
-                    className="h-9 w-full rounded-[8px] border border-[#D8D9D2] bg-white px-2 text-[11px] outline-none focus:border-[#FF4A20]"
+                    className="h-9 w-full rounded-lg border border-border bg-white px-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                     aria-label="Connected social account"
                   >
                     <option value="" disabled>
@@ -984,16 +984,16 @@ function DestinationSelector({
               )}
 
               {providerStatus && (
-                <div className="mt-2 flex items-center justify-between rounded-[7px] bg-[var(--pf-surface)] px-2 py-2">
+                <div className="mt-2 flex items-center justify-between rounded-lg bg-[var(--pf-surface)] px-2 py-2">
                   <span className="flex items-center gap-1.5 font-medium">
                     <ShieldCheck className="size-3.5" /> Upload capability
                   </span>
                   <span
                     className={cn(
-                      "rounded-full px-2 py-1 text-[9px] font-bold",
+                      "rounded-full px-2 py-1 text-[11px] font-bold",
                       readiness.ready
-                        ? "bg-[#E7F5E9] text-[#268B42]"
-                        : "bg-[#FDE9E5] text-[#D94A34]"
+                        ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
+                        : "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
                     )}
                   >
                     {readiness.ready ? "Granted" : "Missing"}
@@ -1010,7 +1010,7 @@ function DestinationSelector({
                       ? providerStatus.connectUrl
                       : "/settings?tab=integrations"
                   }
-                  className="mt-2 inline-block font-semibold text-[#D44B34]"
+                  className="mt-2 inline-block font-semibold text-[var(--pf-danger)]"
                 >
                   {providerStatus?.configuration === "ready"
                     ? `Connect ${providerStatus.displayName}`
@@ -1088,17 +1088,17 @@ function PlaybookPicker({
         if (event.currentTarget === event.target) onClose();
       }}
     >
-      <div className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden rounded-[16px] bg-[#F8F8F5] shadow-2xl sm:rounded-[20px]">
-        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-[#DEDFD8] bg-white px-4 py-4 sm:px-5">
+      <div className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden rounded-[12px] bg-card shadow-2xl sm:rounded-[20px]">
+        <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-white px-4 py-4 sm:px-5">
           <div>
-            <p className="pf-eyebrow">Automation starter</p>
+
             <h2
               id="template-title"
-              className="mt-1 text-[22px] font-semibold tracking-[-0.04em] sm:text-[25px]"
+              className="mt-1 text-[20px] font-semibold tracking-[-0.02em]"
             >
               Choose a playbook
             </h2>
-            <p className="mt-1 max-w-[560px] text-[11px] leading-4 text-[#858681] sm:text-[10px]">
+            <p className="mt-1 max-w-[560px] text-[11px] leading-4 text-muted-foreground sm:text-[12px]">
               Start with a proven Hook, Content, and CTA structure. Preview it,
               select it, then apply when you are ready.
             </p>
@@ -1107,15 +1107,15 @@ function PlaybookPicker({
             type="button"
             onClick={onClose}
             aria-label="Close playbook picker"
-            className="grid size-9 shrink-0 place-items-center rounded-full border border-[#D6D7CF] bg-white hover:bg-[#F3F4EF]"
+            className="grid size-9 shrink-0 place-items-center rounded-full border border-border bg-white hover:bg-[var(--pf-active)]"
           >
             <X className="size-4" />
           </button>
         </header>
 
         <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] overflow-y-auto lg:grid-cols-[170px_minmax(0,1fr)] lg:overflow-hidden">
-          <aside className="border-b border-[#DEDFD8] bg-[#F2F2ED] p-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-4">
-            <div className="mb-2 flex items-center gap-2 px-1 text-[10px] font-bold uppercase tracking-[0.11em] text-[#90918C]">
+          <aside className="border-b border-border bg-[var(--pf-active)] p-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-4">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[12px] font-bold uppercase tracking-[0.11em] text-muted-foreground">
               <SlidersHorizontal className="size-3" /> Categories
             </div>
             <div className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
@@ -1126,10 +1126,10 @@ function PlaybookPicker({
                   onClick={() => onCategoryChange(item)}
                   aria-pressed={category === item}
                   className={cn(
-                    "flex h-9 shrink-0 items-center justify-between gap-4 rounded-[8px] px-2.5 text-left text-[11px] font-medium transition-colors",
+                    "flex h-9 shrink-0 items-center justify-between gap-4 rounded-lg px-2.5 text-left text-[11px] font-medium transition-colors",
                     category === item
-                      ? "bg-[#232323] text-white"
-                      : "text-[#666762] hover:bg-[#E4E5DE]"
+                      ? "bg-foreground text-white"
+                      : "text-muted-foreground hover:bg-[var(--pf-active)]"
                   )}
                 >
                   <span className="flex items-center gap-2">
@@ -1140,8 +1140,8 @@ function PlaybookPicker({
                   </span>
                   <span
                     className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[9px] tabular-nums",
-                      category === item ? "bg-white/15" : "bg-[#E3E4DD] text-[#858681]"
+                      "rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
+                      category === item ? "bg-white/15" : "bg-[var(--pf-active)] text-muted-foreground"
                     )}
                   >
                     {categoryCounts[item] ?? 0}
@@ -1152,27 +1152,27 @@ function PlaybookPicker({
             <button
               type="button"
               onClick={onBuildFromScratch}
-              className="mt-3 flex min-h-14 w-full shrink-0 items-center gap-2 rounded-[9px] border border-dashed border-[#C9CAC2] bg-white px-3 text-left hover:border-[#FF4A20] lg:mt-5"
+              className="mt-3 flex min-h-14 w-full shrink-0 items-center gap-2 rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-white px-3 text-left hover:border-[var(--pf-orange)] lg:mt-5"
             >
-              <span className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[#232323] text-white">
+              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-foreground text-white">
                 <Plus className="size-3.5" />
               </span>
               <span>
                 <b className="block text-[11px]">Build from scratch</b>
-                <small className="mt-0.5 block text-[9px] text-[#8D8E89]">Blank three-phase workflow</small>
+                <small className="mt-0.5 block text-[11px] text-muted-foreground">Blank three-phase workflow</small>
               </span>
             </button>
           </aside>
 
-          <section className="min-w-0 bg-[#F8F8F5] lg:overflow-y-auto">
-            <div className="sticky top-0 z-10 border-b border-[#DEDFD8] bg-[var(--pf-surface)] p-3 backdrop-blur sm:p-4">
+          <section className="min-w-0 bg-card lg:overflow-y-auto">
+            <div className="sticky top-0 z-10 border-b border-border bg-[var(--pf-surface)] p-3 backdrop-blur sm:p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-[9px] border border-[#D6D7CF] bg-[#FAFBF7] px-3 focus-within:border-[#FF4A20] focus-within:ring-2 focus-within:ring-[#FF4A20]/10">
-                  <Search className="size-3.5 shrink-0 text-[#92938E]" />
+                <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-[var(--pf-active)] px-3 focus-within:border-[var(--pf-orange)] focus-within:ring-2 focus-within:ring-[var(--pf-orange)]/10">
+                  <Search className="size-3.5 shrink-0 text-muted-foreground" />
                   <input
                     value={search}
                     onChange={(event) => onSearchChange(event.target.value)}
-                    className="min-w-0 flex-1 bg-transparent text-[10px] outline-none"
+                    className="min-w-0 flex-1 bg-transparent text-[12px] outline-none"
                     placeholder="Search playbooks, formats, or outcomes…"
                     aria-label="Search playbooks"
                   />
@@ -1181,18 +1181,18 @@ function PlaybookPicker({
                       type="button"
                       onClick={() => onSearchChange("")}
                       aria-label="Clear playbook search"
-                      className="grid size-5 place-items-center rounded-full hover:bg-[#ECEDE7]"
+                      className="grid size-5 place-items-center rounded-full hover:bg-[var(--pf-active)]"
                     >
                       <X className="size-3" />
                     </button>
                   )}
                 </label>
-                <label className="flex h-9 items-center gap-1.5 rounded-[9px] border border-[#D6D7CF] bg-white px-2 text-[10px] text-[#777873]">
+                <label className="flex h-9 items-center gap-1.5 rounded-lg border border-border bg-white px-2 text-[12px] text-muted-foreground">
                   Sort
                   <select
                     value={sort}
                     onChange={(event) => onSortChange(event.target.value as TemplateSort)}
-                    className="bg-transparent text-[11px] font-semibold text-[#363733] outline-none"
+                    className="bg-transparent text-[13px] font-semibold text-foreground outline-none"
                     aria-label="Sort playbooks"
                   >
                     <option value="recommended">Recommended</option>
@@ -1200,13 +1200,13 @@ function PlaybookPicker({
                     <option value="slides">Slides</option>
                   </select>
                 </label>
-                <div className="flex h-9 rounded-[9px] border border-[#D6D7CF] bg-white p-1" aria-label="Playbook view">
+                <div className="flex h-9 rounded-lg border border-border bg-white p-1" aria-label="Playbook view">
                   <button
                     type="button"
                     onClick={() => onViewChange("grid")}
                     aria-label="Grid view"
                     aria-pressed={view === "grid"}
-                    className={cn("grid w-7 place-items-center rounded-[6px]", view === "grid" && "bg-[#E9EAE3]")}
+                    className={cn("grid w-7 place-items-center rounded-lg", view === "grid" && "bg-[var(--pf-active)]")}
                   >
                     <Grid2X2 className="size-3.5" />
                   </button>
@@ -1215,13 +1215,13 @@ function PlaybookPicker({
                     onClick={() => onViewChange("list")}
                     aria-label="List view"
                     aria-pressed={view === "list"}
-                    className={cn("grid w-7 place-items-center rounded-[6px]", view === "list" && "bg-[#E9EAE3]")}
+                    className={cn("grid w-7 place-items-center rounded-lg", view === "list" && "bg-[var(--pf-active)]")}
                   >
                     <List className="size-3.5" />
                   </button>
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between text-[10px] text-[#8A8B86]">
+              <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
                 <span>{templates.length} {templates.length === 1 ? "playbook" : "playbooks"}</span>
                 <span>{category === "All" ? "All categories" : category}</span>
               </div>
@@ -1230,9 +1230,9 @@ function PlaybookPicker({
             {templates.length === 0 ? (
               <div className="grid min-h-[330px] place-items-center p-8 text-center">
                 <div>
-                  <Search className="mx-auto size-6 text-[#A6A7A1]" />
-                  <h3 className="mt-3 text-[11px] font-semibold">No matching playbooks</h3>
-                  <p className="mt-1 text-[11px] text-[#858681]">Try another search or category.</p>
+                  <Search className="mx-auto size-6 text-muted-foreground" />
+                  <h3 className="mt-3 text-[13px] font-semibold">No matching playbooks</h3>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Try another search or category.</p>
                   <button
                     type="button"
                     onClick={() => {
@@ -1266,14 +1266,14 @@ function PlaybookPicker({
 
         </div>
 
-        <footer className="flex shrink-0 flex-col gap-3 border-t border-[#D7D8D0] bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(35,35,35,.06)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <footer className="flex shrink-0 flex-col gap-3 border-t border-border bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(35,35,35,.06)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div className="flex min-w-0 items-center gap-3">
-            <span className={cn("grid size-9 shrink-0 place-items-center rounded-[8px] font-serif text-[13px] font-bold italic text-white", TEMPLATE_VISUALS[selectedTemplate.id])}>
+            <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg font-serif text-[13px] font-bold italic text-white", TEMPLATE_VISUALS[selectedTemplate.id])}>
               {templateNumber(selectedTemplate)}
             </span>
             <span className="min-w-0">
-              <small className="block text-[9px] font-bold uppercase tracking-[.1em] text-[#8A8B86]">Selected playbook</small>
-              <b className="mt-0.5 block truncate text-[10px]">{selectedTemplate.name}</b>
+              <small className="block text-[11px] font-bold uppercase tracking-[.1em] text-muted-foreground">Selected playbook</small>
+              <b className="mt-0.5 block truncate text-[12px]">{selectedTemplate.name}</b>
             </span>
           </div>
           <div className="flex gap-2">
@@ -1310,39 +1310,39 @@ function PlaybookCard({
   return (
     <article
       className={cn(
-        "relative overflow-hidden rounded-[12px] border bg-white transition-colors",
-        selected ? "border-[#FF4A20] ring-2 ring-[#FF4A20]/10" : previewing ? "border-[#8B8C86]" : "border-[#DEDFD8] hover:border-[#C4C5BE]",
+        "relative overflow-hidden rounded-lg border bg-white transition-colors",
+        selected ? "border-[var(--pf-orange)] ring-2 ring-[var(--pf-orange)]/10" : previewing ? "border-[var(--pf-border-strong)]" : "border-border hover:border-[var(--pf-border-strong)]",
         view === "list" && "grid sm:grid-cols-[124px_minmax(0,1fr)]"
       )}
     >
       <div className={cn("relative overflow-hidden", TEMPLATE_VISUALS[template.id], view === "grid" ? "h-28" : "h-28 sm:h-full sm:min-h-[138px]")}>
         <span className="absolute left-4 top-4 font-serif text-2xl font-bold italic text-white">{templateNumber(template)}</span>
-        <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[9px] text-white">{template.slides} slides</span>
+        <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[11px] text-white">{template.slides} slides</span>
         <button
           type="button"
           onClick={onToggleFavorite}
           aria-label={favorite ? `Remove ${template.name} from favorites` : `Add ${template.name} to favorites`}
           aria-pressed={favorite}
-          className="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-white/90 text-[#32332F] shadow-sm hover:bg-white"
+          className="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-white/90 text-foreground shadow-sm hover:bg-white"
         >
-          <Heart className={cn("size-3.5", favorite && "fill-[#FF4A20] text-[#FF4A20]")} />
+          <Heart className={cn("size-3.5", favorite && "fill-[var(--pf-orange)] text-[var(--pf-orange)]")} />
         </button>
       </div>
       <div className="flex min-w-0 flex-col p-3">
-        <span className="text-[9px] font-bold uppercase tracking-[.09em] text-[#FF4A20]">{template.category}</span>
+        <span className="text-[11px] font-bold uppercase tracking-[.09em] text-[var(--pf-orange)]">{template.category}</span>
         <div className="mt-1 flex items-start justify-between gap-2">
-          <h3 className="text-[11px] font-semibold">{template.name}</h3>
-          {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[#268B42]" aria-label="Selected" />}
+          <h3 className="text-[13px] font-semibold">{template.name}</h3>
+          {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[var(--pf-success)]" aria-label="Selected" />}
         </div>
-        <p className="mt-1 min-h-8 text-[10px] leading-4 text-[#81827D]">{template.description}</p>
-        <div className="mt-3 flex items-center gap-2 border-t border-[#ECECE7] pt-2">
-          <button type="button" onClick={onPreview} className="h-7 flex-1 rounded-[7px] border border-[#D8D9D2] text-[10px] font-semibold hover:bg-[#F2F3ED]">
+        <p className="mt-1 min-h-8 text-[12px] leading-4 text-muted-foreground">{template.description}</p>
+        <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
+          <button type="button" onClick={onPreview} className="h-7 flex-1 rounded-lg border border-border text-[12px] font-semibold hover:bg-[var(--pf-active)]">
             Preview
           </button>
           <button
             type="button"
             onClick={onSelect}
-            className={cn("flex h-7 flex-1 items-center justify-center gap-1 rounded-[7px] text-[10px] font-semibold", selected ? "bg-[#E7F5E9] text-[#268B42]" : "bg-[#232323] text-white")}
+            className={cn("flex h-7 flex-1 items-center justify-center gap-1 rounded-lg text-[12px] font-semibold", selected ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "bg-foreground text-white")}
           >
             {selected && <Check className="size-2.5" />}
             {selected ? "Selected" : "Select"}
@@ -1360,13 +1360,13 @@ function templateNumber(template: AutomationTemplate) {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="block"><span className="mb-1.5 block text-[11px] font-semibold text-[#666762]">{label}</span>{children}</label>;
+  return <label className="block"><span className="mb-1.5 block text-[13px] font-semibold text-muted-foreground">{label}</span>{children}</label>;
 }
 
 function Select({ value, onChange, options, labels }: { value: string; onChange: (value: string) => void; options: readonly string[]; labels?: Record<string, string> }) {
-  return <select value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-[8px] border border-[#D8D9D2] bg-[var(--pf-surface)] px-2 text-[11px] text-[var(--pf-ink)] outline-none focus:border-[#FF4A20]">{options.map((option) => <option key={option} value={option}>{labels?.[option] ?? option}</option>)}</select>;
+  return <select value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-lg border border-border bg-[var(--pf-surface)] px-2 text-[11px] text-[var(--pf-ink)] outline-none focus:border-[var(--pf-orange)]">{options.map((option) => <option key={option} value={option}>{labels?.[option] ?? option}</option>)}</select>;
 }
 
 function ValidationRow({ ok, text }: { ok: boolean; text: string }) {
-  return <div className="flex min-w-0 items-start gap-2"><span className={cn("grid size-5 shrink-0 place-items-center rounded-full",ok ? "bg-[#E7F5E9] text-[#268B42]" : "bg-[#FDE9E5] text-[#D94A34]")}>{ok ? <Check className="size-3 shrink-0" /> : <X className="size-3 shrink-0" />}</span><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{text}</span></div>;
+  return <div className="flex min-w-0 items-start gap-2"><span className={cn("grid size-5 shrink-0 place-items-center rounded-full",ok ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]")}>{ok ? <Check className="size-3 shrink-0" /> : <X className="size-3 shrink-0" />}</span><span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{text}</span></div>;
 }

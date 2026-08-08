@@ -62,6 +62,12 @@ function authenticationNotConfigured() {
 }
 
 export function middleware(request: NextRequest) {
+  // Railway health checks cannot send the operator API key. Keep this endpoint
+  // narrow and independently limited to a minimal database-readiness response.
+  if (request.nextUrl.pathname === "/api/health") {
+    return NextResponse.next();
+  }
+
   // Provider crawlers cannot send the operator API key. This one media route
   // is independently protected by a short-lived, asset/provider-bound HMAC
   // and still verifies that the asset is an approved generated video.
@@ -86,6 +92,7 @@ export function middleware(request: NextRequest) {
     const isLocalhost =
       hostname === "localhost" ||
       hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
       hostname === "::1";
     return process.env.NODE_ENV !== "production" || isLocalhost
       ? NextResponse.next()

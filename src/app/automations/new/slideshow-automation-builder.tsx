@@ -31,8 +31,8 @@ import {
 import { cn } from "@/lib/utils";
 
 const INPUT =
-  "w-full rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 text-[12px] text-[#30312E] outline-none transition placeholder:text-[#969792] focus:border-[#FF4A20] focus:ring-2 focus:ring-[#FF4A20]/10";
-const FIELD_LABEL = "mb-1.5 block text-[10px] font-semibold text-[#868686]";
+  "w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground outline-none transition placeholder:text-muted-foreground focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10";
+const FIELD_LABEL = "mb-1.5 block text-[12px] font-semibold text-muted-foreground";
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export function SlideshowAutomationBuilder() {
@@ -160,7 +160,7 @@ export function SlideshowAutomationBuilder() {
   if (loading) {
     return (
       <div className="grid min-h-[480px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-[#FF4A20]" />
+        <Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" />
       </div>
     );
   }
@@ -169,21 +169,21 @@ export function SlideshowAutomationBuilder() {
     <div className="mx-auto max-w-[720px] px-5 py-6 sm:px-7 lg:px-8">
       <Link
         href="/automations"
-        className="inline-flex h-8 items-center gap-1.5 rounded-[8px] text-[11px] font-semibold text-[#666762] transition hover:text-[#232323]"
+        className="inline-flex h-8 items-center gap-1.5 rounded-lg text-[13px] font-semibold text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
         Automations
       </Link>
 
       <div className="mt-3 flex items-center gap-3">
-        <span className="grid size-10 place-items-center rounded-[10px] bg-[#FF4A20]/10 text-[#FF4A20]">
+        <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
           <Layers className="size-4.5" />
         </span>
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-[#232323]">
+          <h1 className="text-[20px] font-semibold tracking-[-0.02em] text-foreground">
             {existing ? "Edit slideshow automation" : "New slideshow automation"}
           </h1>
-          <p className="mt-0.5 text-[11px] text-[#777873]">
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
             {existing
               ? "Update the source, hook pool, visuals, and schedule for future runs."
               : "Define the hook pool and schedule. Generated runs stay in Slideshow Drafts for review."}
@@ -192,12 +192,12 @@ export function SlideshowAutomationBuilder() {
       </div>
 
       {loadError ? (
-        <p role="alert" className="mt-4 rounded-[9px] bg-destructive/10 p-3 text-[11px] text-destructive">
+        <p role="alert" className="mt-4 rounded-lg bg-destructive/10 p-3 text-[11px] text-destructive">
           {loadError}
         </p>
       ) : null}
 
-      <div className="mt-5 space-y-4 rounded-[13px] border border-[#DADBD2] bg-white p-5 shadow-[var(--pf-shadow-xs)]">
+      <div className="mt-5 space-y-4 rounded-lg border border-border bg-white p-5 shadow-[var(--pf-shadow-2xs)]">
         <label className="block">
           <span className={FIELD_LABEL}>Name</span>
           <input value={name} onChange={(event) => setName(event.target.value)} className={cn(INPUT, "h-9")} />
@@ -212,7 +212,7 @@ export function SlideshowAutomationBuilder() {
                 setProjectId(event.target.value);
                 if (event.target.value) setImageCollectionId("");
               }}
-              className="h-9 w-full appearance-none rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 pr-8 text-[12px] text-[#30312E] outline-none focus:border-[#FF4A20]"
+              className="h-9 w-full appearance-none rounded-lg border border-border bg-card px-3 pr-8 text-[12px] text-foreground outline-none focus:border-[var(--pf-orange)]"
             >
               <option value="">Generate from hook pool</option>
               {projects.map((project) => (
@@ -221,7 +221,7 @@ export function SlideshowAutomationBuilder() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#969792]" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
           </span>
         </label>
 
@@ -233,23 +233,23 @@ export function SlideshowAutomationBuilder() {
               onClick={() => setVisualPolicy("reuse")}
               aria-pressed={visualPolicy === "reuse"}
               className={cn(
-                "flex items-start gap-3 rounded-[11px] border p-3 text-left transition",
+                "flex items-start gap-3 rounded-lg border p-3 text-left transition",
                 visualPolicy === "reuse"
-                  ? "border-[#232323] bg-[#F3F4EF]"
-                  : "border-[#DADBD2] bg-white hover:border-[#BFC0B9]",
+                  ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)]"
+                  : "border-border bg-white hover:border-[var(--pf-border-strong)]",
               )}
             >
               <span
                 className={cn(
                   "mt-0.5 grid size-4 place-items-center rounded-full border",
-                  visualPolicy === "reuse" ? "border-[#232323] bg-[#232323]" : "border-[#C6C7BE]",
+                  visualPolicy === "reuse" ? "border-[var(--pf-ink)] bg-foreground" : "border-[var(--pf-border-strong)]",
                 )}
               >
                 {visualPolicy === "reuse" ? <Check className="size-2.5 text-white" /> : null}
               </span>
               <span>
-                <span className="block text-[12px] font-semibold text-[#30312E]">Reuse starting visuals</span>
-                <span className="mt-0.5 block text-[10px] leading-4 text-[#777873]">
+                <span className="block text-[12px] font-semibold text-foreground">Reuse starting visuals</span>
+                <span className="mt-0.5 block text-[12px] leading-4 text-muted-foreground">
                   Safe default. Copies the starting slideshow or a saved collection with no image charge.
                 </span>
               </span>
@@ -259,26 +259,26 @@ export function SlideshowAutomationBuilder() {
               onClick={() => setVisualPolicy("fresh-ai")}
               aria-pressed={visualPolicy === "fresh-ai"}
               className={cn(
-                "flex items-start gap-3 rounded-[11px] border p-3 text-left transition",
+                "flex items-start gap-3 rounded-lg border p-3 text-left transition",
                 visualPolicy === "fresh-ai"
-                  ? "border-[#FF4A20] bg-[#FF4A20]/[0.04]"
-                  : "border-[#DADBD2] bg-white hover:border-[#BFC0B9]",
+                  ? "border-[var(--pf-orange)] bg-[var(--pf-orange)]/[0.04]"
+                  : "border-border bg-white hover:border-[var(--pf-border-strong)]",
               )}
             >
               <span
                 className={cn(
                   "mt-0.5 grid size-4 place-items-center rounded-full border",
-                  visualPolicy === "fresh-ai" ? "border-[#FF4A20] bg-[#FF4A20]" : "border-[#C6C7BE]",
+                  visualPolicy === "fresh-ai" ? "border-[var(--pf-orange)] bg-[var(--pf-orange)]" : "border-[var(--pf-border-strong)]",
                 )}
               >
                 {visualPolicy === "fresh-ai" ? <Check className="size-2.5 text-white" /> : null}
               </span>
               <span>
-                <span className="flex items-center gap-1.5 text-[12px] font-semibold text-[#30312E]">
-                  <Sparkles className="size-3 text-[#FF4A20]" />
+                <span className="flex items-center gap-1.5 text-[12px] font-semibold text-foreground">
+                  <Sparkles className="size-3 text-[var(--pf-orange)]" />
                   Generate fresh AI images
                 </span>
-                <span className="mt-0.5 block text-[10px] leading-4 text-[#777873]">
+                <span className="mt-0.5 block text-[12px] leading-4 text-muted-foreground">
                   One Nano Banana 2 image per slide at $0.08. About ${estimatedImageCost} per {expectedSlideCount}-slide run.
                 </span>
               </span>
@@ -289,13 +289,13 @@ export function SlideshowAutomationBuilder() {
         {!projectId && visualPolicy === "reuse" ? (
           <label className="block">
             <span className={FIELD_LABEL}>
-              Shared image collection <span className="font-normal text-[#969792]">(optional)</span>
+              Shared image collection <span className="font-normal text-muted-foreground">(optional)</span>
             </span>
             <span className="relative block">
               <select
                 value={imageCollectionId}
                 onChange={(event) => setImageCollectionId(event.target.value)}
-                className="h-9 w-full appearance-none rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 pr-8 text-[12px] text-[#30312E] outline-none focus:border-[#FF4A20]"
+                className="h-9 w-full appearance-none rounded-lg border border-border bg-card px-3 pr-8 text-[12px] text-foreground outline-none focus:border-[var(--pf-orange)]"
               >
                 <option value="">No collection · use text backgrounds</option>
                 {collections.map((collection) => (
@@ -308,9 +308,9 @@ export function SlideshowAutomationBuilder() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#969792]" />
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             </span>
-            <span className="mt-1 block text-[10px] text-[#969792]">
+            <span className="mt-1 block text-[12px] text-muted-foreground">
               Hook-pool runs cycle through this collection from the shared library without creating paid jobs.
             </span>
           </label>
@@ -324,7 +324,7 @@ export function SlideshowAutomationBuilder() {
             rows={3}
             className={cn(INPUT, "resize-none py-2 leading-5")}
           />
-          <span className="mt-1 block text-[10px] text-[#969792]">
+          <span className="mt-1 block text-[12px] text-muted-foreground">
             One hook per line. Runs avoid previously used hooks.
           </span>
         </label>
@@ -339,10 +339,10 @@ export function SlideshowAutomationBuilder() {
                 onClick={() => toggleDay(day)}
                 aria-pressed={days.includes(day)}
                 className={cn(
-                  "grid size-8 place-items-center rounded-[8px] border text-[10px] font-bold transition",
+                  "grid size-8 place-items-center rounded-lg border text-[12px] font-bold transition",
                   days.includes(day)
-                    ? "border-[#232323] bg-[#232323] text-white"
-                    : "border-[#DADBD2] bg-white text-[#777873] hover:border-[#BFC0B9] hover:text-[#30312E]",
+                    ? "border-[var(--pf-ink)] bg-foreground text-background"
+                    : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)] hover:text-foreground",
                 )}
               >
                 {day.slice(0, 1)}
@@ -358,10 +358,10 @@ export function SlideshowAutomationBuilder() {
           </div>
         </fieldset>
 
-        <label className="flex items-center justify-between rounded-[11px] border border-[#DADBD2] p-3">
+        <label className="flex items-center justify-between rounded-lg border border-border p-3">
           <span>
-            <span className="block text-[12px] font-semibold text-[#30312E]">Start active</span>
-            <span className="mt-0.5 block text-[10px] text-[#777873]">
+            <span className="block text-[12px] font-semibold text-foreground">Start active</span>
+            <span className="mt-0.5 block text-[12px] text-muted-foreground">
               Pause any time without deleting the setup.
             </span>
           </span>

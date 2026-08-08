@@ -263,7 +263,7 @@ export function AvatarCreationCard({
         <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
           New Avatar
         </p>
-        <p className="mt-1 text-[10px] leading-4 text-muted-foreground/70">
+        <p className="mt-1 text-[12px] leading-4 text-muted-foreground/70">
           Upload, generate, import, or choose from gallery.
         </p>
       </div>
@@ -277,7 +277,7 @@ export function AvatarCreationCard({
           className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97] disabled:opacity-50"
         >
           {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          <span className="text-[11px] font-semibold">Upload</span>
+          <span className="text-[13px] font-semibold">Upload</span>
         </button>
 
         <button
@@ -287,7 +287,7 @@ export function AvatarCreationCard({
           className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-blue hover:text-accent-blue active:scale-[0.97]"
         >
           <Sparkles className="size-4" />
-          <span className="text-[11px] font-semibold">Generate</span>
+          <span className="text-[13px] font-semibold">Generate</span>
         </button>
 
         <button
@@ -297,7 +297,7 @@ export function AvatarCreationCard({
           className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97]"
         >
           <FileJson className="size-4" />
-          <span className="text-[11px] font-semibold">Import</span>
+          <span className="text-[13px] font-semibold">Import</span>
         </button>
 
         <button
@@ -307,7 +307,7 @@ export function AvatarCreationCard({
           className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-coral hover:text-accent-coral active:scale-[0.97]"
         >
           <ImageIcon className="size-4" />
-          <span className="text-[11px] font-semibold">Gallery</span>
+          <span className="text-[13px] font-semibold">Gallery</span>
         </button>
       </div>
     </div>
@@ -337,7 +337,7 @@ export function AvatarOptionCard({
       className={cn(
         "group relative overflow-hidden rounded-xl border bg-muted/35 p-2.5 shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
         isSelected
-          ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.16),var(--pf-shadow-sm)]"
+          ? "border-accent-green shadow-[0_0_0_2px_rgba(22,163,74,0.16),var(--pf-shadow-sm)]"
           : "border-border hover:-translate-y-0.5 hover:border-accent-green/45 hover:bg-muted/55 hover:shadow-[var(--pf-shadow-md)]"
       )}
     >
@@ -361,7 +361,7 @@ export function AvatarOptionCard({
           </p>
           <span
             className={cn(
-              "shrink-0 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-widest",
+              "shrink-0 rounded-full px-2 py-1 text-[12px] font-bold uppercase tracking-widest",
               isSelected
                 ? "bg-accent-green/15 text-accent-green"
                 : "bg-muted/40 text-muted-foreground"
@@ -373,13 +373,13 @@ export function AvatarOptionCard({
 
         <div className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5">
           {originLabel && (
-            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
               {originLabel}
             </span>
           )}
           <span
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+              "rounded-full border px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
               avatar.identityPack?.status === "completed"
                 ? "border-accent-green/25 bg-accent-green/10 text-accent-green"
                 : avatar.identityPack?.status === "failed"
@@ -488,7 +488,7 @@ export function AvatarImportPanel({
           <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Avatar Profile JSON
           </label>
-          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
+          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
             Upload JSON
             <input
               type="file"
@@ -516,7 +516,7 @@ export function AvatarImportPanel({
           <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Seed Reference Images
           </label>
-          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
+          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
             Upload Images
             <input
               type="file"
@@ -537,7 +537,7 @@ export function AvatarImportPanel({
               >
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold text-foreground/90">{file.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
+                  <p className="text-[12px] text-muted-foreground">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
                 </div>
                 <button
                   type="button"
@@ -580,7 +580,7 @@ export function AvatarImportPanel({
               type="button"
               onClick={onGenerateCandidates}
               disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-              className="shrink-0 rounded-lg border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 rounded-lg border border-border px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
             >
               Regenerate Candidates
             </button>
@@ -607,13 +607,13 @@ export function AvatarImportPanel({
                   />
                 </div>
                 <div className="space-y-2 p-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
                     Candidate {index + 1}
                   </p>
                   <button
                     type="button"
                     onClick={() => onAcceptCandidate?.(candidate.fileId)}
-                    className="w-full rounded-md bg-accent-coral px-2 py-1.5 text-[10px] font-semibold text-white transition-colors hover:bg-[#e9421c]"
+                    className="w-full rounded-md bg-accent-coral px-2 py-1.5 text-[12px] font-semibold text-white transition-colors hover:brightness-[0.93]"
                   >
                     Use Candidate
                   </button>
@@ -628,7 +628,7 @@ export function AvatarImportPanel({
         type="button"
         onClick={onGenerateCandidates}
         disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isGeneratingCandidates ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
         Generate candidates
@@ -1043,7 +1043,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
               maxLength={500}
               className="min-h-[100px] resize-none bg-muted border-2 border-transparent focus:border-accent-green/30 focus:bg-card rounded-2xl p-4 text-sm transition-all"
             />
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[12px] text-muted-foreground">
               Quality modifiers (studio lighting, clean background, etc.) are added automatically.
             </p>
 
@@ -1075,7 +1075,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
               type="button"
               onClick={handleGenerate}
               disabled={!genPrompt.trim()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:opacity-50"
             >
               <Sparkles className="size-4" />
               Generate Avatar
@@ -1129,7 +1129,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
                 type="button"
                 onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
                 disabled={isSavingGenerated}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e9421c] disabled:opacity-50"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:opacity-50"
               >
                 {isSavingGenerated ? (
                   <Loader2 className="size-4 animate-spin" />

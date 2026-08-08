@@ -163,9 +163,9 @@ export function VideoReferencePicker({
 
   if (loading) {
     return (
-      <div className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-[#E1E2DC] bg-[#FAFBF7] text-[#858681]">
+      <div className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-border bg-[var(--pf-active)] text-muted-foreground">
         <Loader2 className="size-3.5 animate-spin" />
-        <span className="text-[10px]">Loading recent outputs…</span>
+        <span className="text-[12px]">Loading recent outputs…</span>
       </div>
     );
   }
@@ -174,7 +174,7 @@ export function VideoReferencePicker({
     return (
       <p
         role="alert"
-        className="min-w-0 break-words rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] text-[#C53A32] [overflow-wrap:anywhere]"
+        className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)] [overflow-wrap:anywhere]"
       >
         {error}
       </p>
@@ -184,7 +184,7 @@ export function VideoReferencePicker({
   if (seedMissing) {
     return (
       <div role="alert" className="space-y-3">
-        <div className="flex min-w-0 items-start gap-2 rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] leading-4 text-[#C53A32]">
+        <div className="flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)]">
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
             This output is no longer available. Clear the seed to continue.
@@ -192,7 +192,7 @@ export function VideoReferencePicker({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="shrink-0 text-[10px] font-semibold text-[#C53A32] hover:underline"
+            className="shrink-0 text-[12px] font-semibold text-[var(--pf-danger)] hover:underline"
           >
             Clear
           </button>
@@ -206,7 +206,7 @@ export function VideoReferencePicker({
                 disabled={disabled}
                 aria-label={`Use ${file.filename}`}
                 onClick={() => onChange(file.id)}
-                className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 border-transparent bg-[#ECEDE7] transition hover:border-[#C7C8C0]"
+                className="relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 border-transparent bg-[var(--pf-active)] transition hover:border-[var(--pf-border-strong)]"
               >
                 {file.kind === "video" ? (
                   <video
@@ -230,7 +230,7 @@ export function VideoReferencePicker({
                     <Play className="size-4 text-white drop-shadow" />
                   </span>
                 )}
-                <span className="absolute bottom-1 left-1 rounded-[4px] bg-[#232323]/75 px-1 py-0.5 text-[8px] font-bold uppercase tracking-[0.06em] text-white">
+                <span className="absolute bottom-1 left-1 rounded-full bg-black/55 px-1 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
                   {file.kind}
                 </span>
               </button>
@@ -245,7 +245,7 @@ export function VideoReferencePicker({
     return (
       <a
         href="/gallery"
-        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] bg-[#FAFBF7] px-3 text-center text-[10px] font-semibold text-[#686965]"
+        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-center text-[12px] font-semibold text-muted-foreground"
       >
         <Video className="size-4 shrink-0" /> Generate a video first, then continue
         it here
@@ -255,23 +255,23 @@ export function VideoReferencePicker({
 
   return (
     <div className={cn("space-y-3", disabled && "opacity-60")}>
-      <p className="text-[10px] leading-4 text-[#858681]">
+      <p className="text-[12px] leading-4 text-muted-foreground">
         Pick one recent output. The first frame of a video becomes the seed for
         the next one.
       </p>
 
       {disabledMessage && disabled ? (
-        <p className="rounded-lg bg-[#F1F2EC] px-3 py-2 text-[10px] leading-4 text-[#777873]">
+        <p className="rounded-lg bg-[var(--pf-active)] px-3 py-2 text-[12px] leading-4 text-muted-foreground">
           {disabledMessage}
         </p>
       ) : selected || seedFallback ? (
-        <div className="flex min-w-0 items-center gap-2.5 rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 py-2.5">
+        <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5">
           <span
             className={cn(
               "grid size-8 shrink-0 place-items-center rounded-[8px]",
               selectedKind === "video"
-                ? "bg-[#EEF5FF] text-[#378EFF]"
-                : "bg-[#E9F7EC] text-[#22A887]"
+                ? "bg-[var(--pf-link)]/10 text-[var(--pf-link)]"
+                : "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
             )}
           >
             {selectedKind === "video" ? (
@@ -281,23 +281,23 @@ export function VideoReferencePicker({
             )}
           </span>
           <span className="min-w-0 flex-1">
-            <strong className="block truncate text-[10px] font-semibold text-[#30312E]">
+            <strong className="block truncate text-[12px] font-semibold text-foreground">
               {selectedFilename}
             </strong>
-            <small className="mt-0.5 block truncate text-[9px] uppercase tracking-[0.08em] text-[#898A85]">
+            <small className="mt-0.5 block truncate text-[11px] uppercase tracking-[0.08em] text-[var(--pf-muted)]">
               {selectedKind === "video" ? "Video seed" : "Image seed"}
               {selectedDetail ? ` · ${selectedDetail}` : ""}
             </small>
           </span>
           {!selected && (
-            <span className="shrink-0 rounded-full bg-[#F1F2EC] px-2 py-1 text-[9px] font-semibold text-[#777873]">
+            <span className="shrink-0 rounded-full bg-[var(--pf-active)] px-2 py-1 text-[11px] font-semibold text-muted-foreground">
               Linked
             </span>
           )}
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="shrink-0 text-[10px] font-semibold text-[#378EFF] hover:underline"
+            className="shrink-0 text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
           >
             Clear
           </button>
@@ -316,10 +316,10 @@ export function VideoReferencePicker({
               aria-pressed={isSelected}
               onClick={() => onChange(isSelected ? null : file.id)}
               className={cn(
-                "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[#ECEDE7] transition",
+                "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition",
                 isSelected
-                  ? "border-[#FF4A20]"
-                  : "border-transparent hover:border-[#C7C8C0]"
+                  ? "border-[var(--pf-orange)]"
+                  : "border-transparent hover:border-[var(--pf-border-strong)]"
               )}
             >
               {file.kind === "video" ? (
@@ -344,7 +344,7 @@ export function VideoReferencePicker({
                   <Play className="size-4 text-white drop-shadow" />
                 </span>
               )}
-              <span className="absolute bottom-1 left-1 rounded-[4px] bg-[#232323]/75 px-1 py-0.5 text-[8px] font-bold uppercase tracking-[0.06em] text-white">
+              <span className="absolute bottom-1 left-1 rounded-full bg-black/55 px-1 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
                 {file.kind}
               </span>
             </button>

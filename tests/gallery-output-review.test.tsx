@@ -125,7 +125,7 @@ assert.match(markup, /aria-label="Grid view"/);
 assert.match(markup, /aria-label="List view"/);
 assert.ok(markup.indexOf("Needs Review") < markup.indexOf("Media type"));
 assert.match(markup, /bg-muted text-foreground[^>]*>Videos/);
-assert.match(markup, /1 Output needs review/);
+assert.match(markup, /Showing 1 of 17 outputs needing review/);
 assert.match(markup, />17</);
 assert.match(markup, />8</);
 assert.match(markup, />3</);
@@ -148,7 +148,7 @@ assert.match(markup, /aria-label="Delete Output file-needs-review"/);
 assert.doesNotMatch(markup, /clone-output\.mp4/);
 assert.doesNotMatch(markup, /Match the source energy/);
 assert.doesNotMatch(markup, /Approved creator still/);
-assert.match(approvedMarkup, /1 Output in Approved Output/);
+assert.match(approvedMarkup, /Showing 1 of 8 outputs in approved output/);
 assert.match(approvedMarkup, /\/api\/files\/file-approved/);
 assert.doesNotMatch(approvedMarkup, /\/api\/files\/file-needs-review/);
 

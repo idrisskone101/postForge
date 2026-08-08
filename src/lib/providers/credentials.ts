@@ -9,13 +9,14 @@ import {
 export const PROVIDER_CREDENTIAL_STORE_KEY =
   "workspace-features/provider-credentials.json";
 
-export const PROVIDER_CREDENTIALS = ["fal", "gemini", "virlo"] as const;
+export const PROVIDER_CREDENTIALS = ["fal", "gemini", "virlo", "ollama"] as const;
 export type ProviderCredentialId = (typeof PROVIDER_CREDENTIALS)[number];
 
 export const PROVIDER_ENV_KEYS: Record<ProviderCredentialId, string> = {
   fal: "FAL_KEY",
   gemini: "GEMINI_API_KEY",
   virlo: "VIRLO_API_KEY",
+  ollama: "OLLAMA_API_KEY",
 };
 
 type ProviderCredentialsRecord = {

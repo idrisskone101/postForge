@@ -104,7 +104,7 @@ export function UGCCloneQueue() {
   }, [fetchJobs, hasActiveJobs]);
 
   return (
-    <section className="rounded-xl border border-border bg-card shadow-[var(--pf-shadow-xs)]">
+    <section className="rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]">
       <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
@@ -165,7 +165,7 @@ export function UGCCloneQueue() {
               key={job.id}
               href={`/ugc-clone/${job.id}`}
               className={cn(
-                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-xs)]",
+                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-2xs)]",
                 isActive && "border-accent-blue/30 bg-accent-blue/5"
               )}
             >
@@ -191,11 +191,11 @@ export function UGCCloneQueue() {
                       ? job.prompt.slice(0, 40) + "..."
                       : job.prompt}
                   </p>
-                  <span className={cn("shrink-0 text-[10px] font-bold uppercase tracking-wider", config.className)}>
+                  <span className={cn("shrink-0 text-[12px] font-bold uppercase tracking-wider", config.className)}>
                     {config.label}
                   </span>
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-muted-foreground font-mono">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-muted-foreground font-mono">
                   <span>{job.model}</span>
                   <span className="text-border">|</span>
                   <span>{formatCost(job.estimatedCost)}</span>

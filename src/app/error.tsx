@@ -24,7 +24,7 @@ export default function GlobalError({
             <AlertTriangle className="size-7 shrink-0 text-red-500" />
           </div>
           <div className="w-full min-w-0 space-y-2">
-            <h2 className="text-lg font-semibold text-[#232323]">
+            <h2 className="text-lg font-semibold text-[#1C1B17]">
               Something went wrong
             </h2>
             <p className="min-w-0 break-words text-sm leading-relaxed text-[#777873] [overflow-wrap:anywhere]">

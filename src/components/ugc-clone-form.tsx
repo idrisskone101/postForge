@@ -158,15 +158,15 @@ function CloneModelSelect({
             {() => (
               <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
                 <span className="min-w-0 flex-1 overflow-hidden text-left">
-                  <span className={cn("block text-[10px] font-bold uppercase tracking-wider", accentClassName)}>
+                  <span className={cn("block text-[12px] font-bold uppercase tracking-wider", accentClassName)}>
                     {compactLabel}
                   </span>
-                  <span className="block truncate text-[11px] font-semibold leading-4">
+                  <span className="block truncate text-[13px] font-semibold leading-4">
                     {selectedModelLabel ?? "Select model"}
                   </span>
                 </span>
                 {selectedModel ? (
-                  <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
                     {getCost(selectedModel.id)}
                   </span>
                 ) : null}
@@ -183,11 +183,11 @@ function CloneModelSelect({
                     <span className="block truncate text-xs font-bold">
                       {model.name}
                     </span>
-                    <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                    <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                       {description}
                     </span>
                   </span>
-                  <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
                     {getCost(model.id)}
                   </span>
                 </span>
@@ -480,7 +480,7 @@ function ProductionStateRow({
         </div>
         <span
           className={cn(
-            "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+            "shrink-0 rounded-full border px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
             statusClassName
           )}
         >
@@ -507,11 +507,11 @@ export function CloneProductionStatePanel({
   return (
     <aside
       data-clone-production-state="true"
-      className="h-fit rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24"
+      className="h-fit rounded-lg border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
             Production State
           </p>
           <h2 className="mt-1 text-lg font-semibold">Clone readiness</h2>
@@ -566,7 +566,7 @@ export function CloneProductionStatePanel({
         />
       ) : (
         <div className="mt-4 rounded-lg border border-border bg-muted/25 p-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
             Next action
           </p>
           <p className="mt-1 text-sm font-semibold">{nextAction.label}</p>
@@ -627,7 +627,7 @@ export function CloneIdentityStatusPanel({
             type="button"
             onClick={onGenerateHairstyles}
             disabled={!canGenerateHairstyles}
-            className="rounded-lg border border-accent-green/30 bg-accent-green/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-accent-green transition-colors hover:bg-accent-green/15 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isBackfillingHairstyles ? "Generating hairstyles..." : "Generate hairstyles"}
           </button>
@@ -637,7 +637,7 @@ export function CloneIdentityStatusPanel({
             type="button"
             onClick={onRetry}
             disabled={isStartingIdentityPack}
-            className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-destructive transition-colors hover:bg-destructive/15 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-1.5 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isStartingIdentityPack ? "Retrying..." : "Retry identity prep"}
           </button>
@@ -704,7 +704,7 @@ function CloneLiveComposition({
       label: "Source",
       ready: sourceReady,
       thumb: (
-        <span className="grid size-full place-items-center bg-accent-blue/10 text-accent-blue">
+        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
           <Video className="size-3.5" />
         </span>
       ),
@@ -717,7 +717,7 @@ function CloneLiveComposition({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={avatarPreview} alt="" className="size-full object-cover" />
       ) : (
-        <span className="grid size-full place-items-center bg-accent-green/10 text-accent-green">
+        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
           <Users className="size-3.5" />
         </span>
       ),
@@ -730,7 +730,7 @@ function CloneLiveComposition({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={referencePreview} alt="" className="size-full object-cover" />
       ) : (
-        <span className="grid size-full place-items-center bg-accent-coral/10 text-accent-coral">
+        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
           <Layers className="size-3.5" />
         </span>
       ),
@@ -740,21 +740,21 @@ function CloneLiveComposition({
   return (
     <aside
       data-clone-live-composition="true"
-      className="min-w-0 overflow-hidden rounded-xl border border-border bg-[#edeee8] shadow-[var(--pf-shadow-xs)] lg:sticky lg:top-4"
+      className="min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] lg:sticky lg:top-4"
     >
       <div className="flex h-12 items-center justify-between border-b border-border px-4">
-        <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
           {hasComposition && <span className="size-1.5 rounded-full bg-accent-green" />}
           {stageLabel}
         </span>
-        <span className="rounded-md border border-border bg-white px-2 py-1 text-[10px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
+        <span className="rounded-md border border-border bg-white px-2 py-1 text-[12px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
           9:16 · Fit
         </span>
       </div>
 
-      <div className="bg-[radial-gradient(#d3d4cd_0.75px,transparent_0.75px)] bg-[length:16px_16px] p-5 dark:bg-[radial-gradient(rgba(255,255,255,0.09)_0.75px,transparent_0.75px)] sm:p-7">
+      <div className={hasComposition ? "bg-[#09090B] p-5 sm:p-7" : "bg-[var(--pf-active)] p-5 sm:p-7"}>
         {hasComposition ? (
-          <div className="mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-[20px] border-[6px] border-white bg-[#242522] shadow-[var(--pf-shadow-lg)]">
+          <div className="mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-lg border border-white/10 bg-[#09090B] shadow-[var(--pf-shadow-lg)]">
             {referencePreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -783,8 +783,8 @@ function CloneLiveComposition({
             ) : null}
           </div>
         ) : (
-          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-[#C7C8C0] bg-[#F7F7F3] px-8 text-center shadow-[inset_0_1px_2px_rgba(67,60,42,0.04)]">
-            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-white text-muted-foreground shadow-[var(--pf-shadow-xs)]">
+          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] px-8 text-center ">
+            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-white text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
               <Eye className="size-5" />
             </span>
             <p className="mt-4 text-sm font-semibold text-foreground">Your clone takes shape here</p>
@@ -797,14 +797,14 @@ function CloneLiveComposition({
                   key={slot.id}
                   type="button"
                   onClick={() => onJumpToStep(slot.id)}
-                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-white px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
+                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-white px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
                 >
                   <span className="size-6 shrink-0 overflow-hidden rounded-md">{slot.thumb}</span>
-                  <span className="min-w-0 flex-1 truncate text-[11px] font-semibold text-foreground">
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-foreground">
                     {slot.label}
                   </span>
                   <span className={cn(
-                    "shrink-0 text-[10px] font-bold uppercase tracking-wider",
+                    "shrink-0 text-[12px] font-bold uppercase tracking-wider",
                     slot.ready ? "text-accent-green" : "text-accent-coral"
                   )}>
                     {slot.ready ? "Ready" : "Add"}
@@ -823,20 +823,20 @@ function CloneLiveComposition({
             type="button"
             onClick={() => onJumpToStep(slot.id)}
             aria-label={`${slot.label}: ${slot.ready ? "ready" : "required"}. Edit ${slot.label}.`}
-            className="group flex items-center gap-2 bg-white px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[#F8F9F5]"
+            className="group flex items-center gap-2 bg-white px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[var(--pf-active)]"
           >
             <span className="size-7 shrink-0 overflow-hidden rounded-md border border-border shadow-[var(--pf-shadow-2xs)]">
               {slot.thumb}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <span className="block truncate text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
                 {slot.label}
               </span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold">
+              <span className="mt-0.5 flex items-center gap-1.5 text-[13px] font-semibold">
                 <span
                   className={cn(
                     "size-1.5 shrink-0 rounded-full",
-                    slot.ready ? "bg-accent-green" : "bg-[#D9DAD3]"
+                    slot.ready ? "bg-accent-green" : "bg-[var(--pf-border-strong)]"
                   )}
                 />
                 <span className={cn("truncate", !slot.ready && "text-muted-foreground")}>
@@ -847,7 +847,7 @@ function CloneLiveComposition({
           </button>
         ))}
       </div>
-      <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3 text-[10px] text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3 text-[12px] text-muted-foreground">
         <span className="capitalize">Editing {activeStep}</span>
         <span>{referenceReady && identityReady && sourceReady ? "All inputs ready" : "Setup in progress"}</span>
       </div>
@@ -1587,7 +1587,7 @@ export function UGCCloneForm() {
             <div className="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
             {videoInfo && sourcePreviewSrc && (
               <div className="rounded-lg border border-border bg-muted/20 p-3">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                   Source
                 </p>
                 <MediaPreviewFrame
@@ -1603,7 +1603,7 @@ export function UGCCloneForm() {
                   <p className="truncate font-medium text-foreground">
                     {videoInfo.label || "Selected TikTok source"}
                   </p>
-                  <p className="mt-1 font-mono text-[10px]">
+                  <p className="mt-1 font-mono text-[12px]">
                     {durationSec}s · {videoInfo.width}x{videoInfo.height}
                   </p>
                 </div>
@@ -1658,7 +1658,7 @@ export function UGCCloneForm() {
 
             {refImages.length > 1 && (
               <div>
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                   Variants
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-2">
@@ -1687,10 +1687,10 @@ export function UGCCloneForm() {
                         </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-destructive/10">
-                          <span className="text-[10px] text-destructive">Failed</span>
+                          <span className="text-[12px] text-destructive">Failed</span>
                         </div>
                       )}
-                      <span className="absolute bottom-0.5 right-1 text-[10px] font-bold text-white drop-shadow-md">
+                      <span className="absolute bottom-0.5 right-1 text-[12px] font-bold text-white drop-shadow-md">
                         #{i + 1}
                       </span>
                     </button>
@@ -1703,11 +1703,11 @@ export function UGCCloneForm() {
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <PenLine className="size-3.5 text-muted-foreground" />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                     Reference Image Prompt
                   </p>
                 </div>
-                <span className="font-mono text-[10px] text-muted-foreground">
+                <span className="font-mono text-[12px] text-muted-foreground">
                   {refPrompt.length}/500
                 </span>
               </div>
@@ -1749,7 +1749,7 @@ export function UGCCloneForm() {
 
             {selectedRef && selectedRef.prompt && (
               <div className="rounded-lg border border-border bg-muted/50 p-4">
-                <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                <p className="mb-1 text-[12px] uppercase tracking-widest text-muted-foreground">
                   Prompt used for #{selectedRefIndex + 1}
                 </p>
                 <p className="min-w-0 break-words text-xs italic leading-relaxed text-foreground/80 [overflow-wrap:anywhere] line-clamp-3">
@@ -1772,7 +1772,7 @@ export function UGCCloneForm() {
               <Button
                 onClick={handleApproveAndGenerate}
                 disabled={!hasAnyCompleted || !selectedRefFileId || isSubmitting}
-                className="gap-2 bg-accent-coral font-semibold text-white hover:bg-[#ff6540]"
+                className="gap-2 bg-accent-coral font-semibold text-white hover:brightness-[0.93]"
               >
                 {isSubmitting ? (
                   <>
@@ -1805,7 +1805,7 @@ export function UGCCloneForm() {
       >
         <nav
           aria-label="Clone setup progress"
-          className="grid grid-cols-3 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-[var(--pf-shadow-xs)]"
+          className="grid grid-cols-3 overflow-hidden rounded-lg border border-border bg-[var(--pf-active)] p-1 shadow-[var(--pf-shadow-2xs)]"
         >
           {CLONE_SETUP_STEPS.map((step) => {
             const isActive = activeSetupStep === step.id;
@@ -1819,29 +1819,29 @@ export function UGCCloneForm() {
                 aria-label={`${step.number}. ${step.label}`}
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "group flex min-w-0 items-center gap-1.5 rounded-[10px] px-2 py-2.5 text-left transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-3 sm:px-4",
+                  "group flex min-w-0 items-center gap-1.5 rounded-md px-2 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-3 sm:px-4",
                   isActive
-                    ? "bg-muted/70 text-foreground shadow-[var(--pf-shadow-xs)] ring-1 ring-border"
-                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground/80 active:scale-[0.98]"
+                    ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-7 shrink-0 items-center justify-center rounded-lg border font-mono text-[10px] font-bold transition-colors duration-[180ms] sm:size-8",
+                    "flex size-7 shrink-0 items-center justify-center rounded-lg border pf-data text-[12px] font-semibold transition-colors duration-[180ms] sm:size-8",
                     isComplete
-                      ? "border-accent-green/30 bg-accent-green/12 text-accent-green"
+                      ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
                       : isActive
                         ? "border-transparent bg-accent-coral text-white shadow-[var(--pf-shadow-2xs)]"
-                        : "border-border bg-muted/50"
+                        : "border-border bg-card text-muted-foreground"
                   )}
                 >
                   {isComplete ? <CheckCircle2 className="size-3.5" /> : step.number}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-[11px] font-semibold sm:text-sm">
+                  <span className="block truncate text-[13px] font-semibold sm:text-sm">
                     {step.shortLabel}
                   </span>
-                  <span className="mt-0.5 hidden truncate text-[10px] text-muted-foreground sm:block">
+                  <span className="mt-0.5 hidden truncate text-[12px] text-muted-foreground sm:block">
                     {step.description}
                   </span>
                 </span>
@@ -1854,18 +1854,15 @@ export function UGCCloneForm() {
           <section
             data-clone-source-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
+              "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
               activeSetupStep !== "source" && "hidden"
             )}
           >
             <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-accent-blue/10 text-accent-blue">
-                  <Video className="size-5" />
-                </div>
                 <div>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">
-                    01. Source &amp; Trim
+                  <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+                    Source &amp; trim
                   </h2>
                   <p className="text-xs text-muted-foreground">
                     Choose the clip and trim the part to clone.
@@ -1946,7 +1943,7 @@ export function UGCCloneForm() {
               )}
 
               {shouldShowSourceTools && (
-                <div className="rounded-xl border border-dashed border-border bg-muted/25 p-4">
+                <div className="rounded-lg border border-dashed border-border bg-muted/25 p-4">
                   <TikTokInput
                     onDownloaded={handleVideoDownloaded}
                     videoInfo={videoInfo}
@@ -1962,17 +1959,14 @@ export function UGCCloneForm() {
           <section
             data-clone-identity-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
+              "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
               activeSetupStep !== "identity" && "hidden"
             )}
           >
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-accent-green/10 text-accent-green">
-                <Users className="size-5" />
-              </div>
               <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">
-                  02. Identity
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+                  Identity
                 </h2>
                 <p className="text-xs text-muted-foreground">Choose who appears in the clone.</p>
               </div>
@@ -2009,17 +2003,14 @@ export function UGCCloneForm() {
           <section
             data-clone-reference-section="true"
             className={cn(
-              "rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5",
+              "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
               activeSetupStep !== "reference" && "hidden"
             )}
           >
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-accent-coral/10 text-accent-coral">
-                <Layers className="size-5" />
-              </div>
               <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">
-                  03. Reference
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+                  Reference
                 </h2>
                 <p className="text-xs text-muted-foreground">Set the look before generating video.</p>
               </div>
@@ -2028,16 +2019,16 @@ export function UGCCloneForm() {
             <div className="grid items-start gap-4">
               <div
                 data-reference-comparison-stage="true"
-                className="rounded-xl border border-border bg-muted/40 p-3 sm:p-4"
+                className="rounded-lg border border-border bg-muted/40 p-3 sm:p-4"
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-semibold text-foreground">Inputs</p>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    <p className="mt-0.5 text-[12px] text-muted-foreground">
                       Source motion and selected identity
                     </p>
                   </div>
-                  <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
                     Side by side
                   </span>
                 </div>
@@ -2045,7 +2036,7 @@ export function UGCCloneForm() {
                 <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
               <div
                 data-reference-source-preview="true"
-                className="h-full min-w-0 rounded-xl border border-border bg-[#edeee8] p-2.5 sm:p-3"
+                className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3"
               >
                 {sourceReady && videoInfo && sourcePreviewSrc ? (
                   <>
@@ -2064,19 +2055,19 @@ export function UGCCloneForm() {
                     </ReferencePortraitFrame>
                     <div className="mt-3 min-w-0">
                       <span className="block text-[11px] font-medium">Selected source</span>
-                      <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                         {durationSec.toFixed(1)}s • {videoInfo.width}x{videoInfo.height}
                       </span>
                     </div>
                   </>
                 ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[#C7C8C0] bg-[#F7F7F3] p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
                     <CloneSourceEmptyState />
                   </ReferencePortraitFrame>
                 )}
               </div>
 
-              <div className="h-full min-w-0 rounded-xl border border-border bg-[#edeee8] p-2.5 sm:p-3">
+              <div className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3">
                 {selectedCollectionAssetId ? (
                   <>
                     <ReferencePortraitFrame>
@@ -2092,7 +2083,7 @@ export function UGCCloneForm() {
                       <button
                         type="button"
                         onClick={() => setSelectedCollectionAssetId(null)}
-                        className="text-[10px] font-bold text-accent-coral"
+                        className="text-[12px] font-bold text-accent-coral"
                       >
                         Change
                       </button>
@@ -2113,19 +2104,19 @@ export function UGCCloneForm() {
                       <button
                         type="button"
                         onClick={() => setSelectedSavedReferenceId(null)}
-                        className="text-[10px] font-bold text-accent-coral"
+                        className="text-[12px] font-bold text-accent-coral"
                       >
                         Change
                       </button>
                     </div>
                   </>
                 ) : selectedRef?.status === "generating" ? (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-[#F7F7F3] p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-[var(--pf-active)] p-4 text-center">
                     <Loader2 className="size-7 animate-spin text-accent-coral" />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Generating reference
                     </span>
-                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-muted-foreground/70">
+                    <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/70">
                       Creating a still from the selected source and identity.
                     </span>
                   </ReferencePortraitFrame>
@@ -2135,7 +2126,7 @@ export function UGCCloneForm() {
                       Reference failed
                     </span>
                     {selectedRef.error && (
-                      <span className="mt-2 min-w-0 max-w-[220px] break-words text-[10px] leading-4 text-destructive/80 [overflow-wrap:anywhere]">
+                      <span className="mt-2 min-w-0 max-w-[220px] break-words text-[12px] leading-4 text-destructive/80 [overflow-wrap:anywhere]">
                         {selectedRef.error}
                       </span>
                     )}
@@ -2153,7 +2144,7 @@ export function UGCCloneForm() {
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <span className="block text-[11px] font-medium">Generated reference</span>
-                        <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                           Variant #{selectedRefIndex + 1}
                         </span>
                       </div>
@@ -2175,7 +2166,7 @@ export function UGCCloneForm() {
                     <div className="mt-3 flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <span className="block text-[11px] font-medium">Identity preview</span>
-                        <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                           {primaryAvatarReference.label} • {primaryAvatarReference.detail}
                         </span>
                       </div>
@@ -2187,12 +2178,12 @@ export function UGCCloneForm() {
                     </div>
                   </>
                 ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[#C7C8C0] bg-[#F7F7F3] p-4 text-center">
+                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
                     <Users className="size-6 text-muted-foreground/60" />
                     <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Choose identity
                     </span>
-                    <span className="mt-1 max-w-[180px] text-[10px] leading-4 text-muted-foreground/60">
+                    <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/60">
                       Identity preview appears here.
                     </span>
                   </ReferencePortraitFrame>
@@ -2201,17 +2192,17 @@ export function UGCCloneForm() {
                 </div>
               </div>
 
-              <div className="flex min-w-0 flex-col gap-3 self-start rounded-xl border border-border bg-muted/40 p-3 sm:p-4">
+              <div className="flex min-w-0 flex-col gap-3 self-start rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
                 <div className="mb-1">
                   <p className="text-xs font-semibold text-foreground">Reference options</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">
+                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Choose the look for your next reference.
                   </p>
                 </div>
                 {hairstyleOptions.length > 0 && (
-                  <div className="w-full rounded-xl border border-border bg-muted/30 p-2.5">
+                  <div className="w-full rounded-lg border border-border bg-muted/30 p-2.5">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <span className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                         Hairstyle
                       </span>
                     </div>
@@ -2221,7 +2212,7 @@ export function UGCCloneForm() {
                         onClick={() => setSelectedHairstyleRole(null)}
                         disabled={isSubmitting || isGenerating}
                         className={cn(
-                          "rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                          "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                           selectedHairstyleRole === null
                             ? "border-accent-green bg-accent-green/20 text-accent-green"
                             : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
@@ -2237,7 +2228,7 @@ export function UGCCloneForm() {
                           onClick={() => setSelectedHairstyleRole(option.role)}
                           disabled={isSubmitting || isGenerating}
                           className={cn(
-                            "rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                            "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                             selectedHairstyleRole === option.role
                               ? "border-accent-green bg-accent-green/20 text-accent-green"
                               : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
@@ -2252,13 +2243,13 @@ export function UGCCloneForm() {
                 )}
                 <div
                   data-reference-batch-size={referenceBatchSize}
-                  className="w-full rounded-xl border border-border bg-muted/30 p-2.5"
+                  className="w-full rounded-lg border border-border bg-muted/30 p-2.5"
                 >
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <span className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                       References
                     </span>
-                    <span className="font-mono text-[10px] text-muted-foreground/80">
+                    <span className="font-mono text-[12px] text-muted-foreground/80">
                       {formatCost(referenceBatchCost)}
                     </span>
                   </div>
@@ -2271,7 +2262,7 @@ export function UGCCloneForm() {
                         onClick={() => setReferenceBatchSize(count)}
                         disabled={isSubmitting || isGenerating}
                         className={cn(
-                          "h-8 rounded-lg border text-[11px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                          "h-8 rounded-lg border text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                           referenceBatchSize === count
                             ? "border-accent-green bg-accent-green/20 text-accent-green"
                             : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
@@ -2287,7 +2278,7 @@ export function UGCCloneForm() {
                 <div
                   data-reference-generation-summary="true"
                   className={cn(
-                    "rounded-xl border p-3",
+                    "rounded-lg border p-3",
                     isGenerating
                       ? "border-accent-blue/25 bg-accent-blue/[0.06]"
                       : referenceReady
@@ -2314,18 +2305,18 @@ export function UGCCloneForm() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-[11px] font-semibold text-foreground/90">
+                        <p className="text-[13px] font-semibold text-foreground/90">
                           {isGenerating
                             ? "Generating references"
                             : referenceReady
                               ? "Reference ready"
                               : `Ready for ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
                         </p>
-                        <span className="shrink-0 font-mono text-[10px] text-muted-foreground/80">
+                        <span className="shrink-0 font-mono text-[12px] text-muted-foreground/80">
                           {formatCost(referenceBatchCost)}
                         </span>
                       </div>
-                      <p className="mt-1 text-[10px] leading-4 text-muted-foreground/80">
+                      <p className="mt-1 text-[12px] leading-4 text-muted-foreground/80">
                         {isGenerating
                           ? "You can keep reviewing the inputs while this finishes."
                           : referenceReady
@@ -2343,10 +2334,10 @@ export function UGCCloneForm() {
                 )}
               </div>
 
-              <div className="space-y-3 rounded-xl border border-border bg-muted/40 p-3 sm:p-4">
+              <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
                 <div>
                   <p className="text-xs font-semibold text-foreground">Visual collections</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">
+                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Use one owned collection image directly, or keep generating a new reference below.
                   </p>
                 </div>
@@ -2370,10 +2361,10 @@ export function UGCCloneForm() {
               </div>
 
                 {refImages.length > 0 && (
-                  <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-3 sm:p-4">
+                  <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs font-semibold text-foreground">This run</p>
-                      <span className="font-mono text-[10px] text-muted-foreground/80">
+                      <span className="font-mono text-[12px] text-muted-foreground/80">
                         {refImages.length} generated
                       </span>
                     </div>
@@ -2408,11 +2399,11 @@ export function UGCCloneForm() {
                               <Loader2 className="size-4 animate-spin" />
                             </span>
                           ) : (
-                            <span className="grid size-full place-items-center bg-destructive/10 text-[10px] font-semibold uppercase text-destructive">
+                            <span className="grid size-full place-items-center bg-destructive/10 text-[12px] font-semibold uppercase text-destructive">
                               Failed
                             </span>
                           )}
-                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[12px] font-bold text-white">
                             #{index + 1}
                           </span>
                         </button>
@@ -2434,7 +2425,7 @@ export function UGCCloneForm() {
                 )}
 
                 {savedReferences.length > 0 && (
-                  <div className="rounded-xl border border-border bg-muted/40">
+                  <div className="rounded-lg border border-border bg-muted/40">
                     <button
                       type="button"
                       onClick={() => {
@@ -2449,12 +2440,12 @@ export function UGCCloneForm() {
                     >
                       <div>
                         <p className="text-xs font-semibold text-foreground">Reference library</p>
-                        <p className="mt-0.5 text-[10px] text-muted-foreground">
+                        <p className="mt-0.5 text-[12px] text-muted-foreground">
                           Browse a saved look only when you need one.
                         </p>
                       </div>
                       <span className="flex shrink-0 items-center gap-2">
-                        <span className="font-mono text-[10px] text-muted-foreground/80">
+                        <span className="font-mono text-[12px] text-muted-foreground/80">
                           {savedReferences.length} saved
                         </span>
                         <span className="rounded-lg border border-border bg-muted/50 p-1.5 text-muted-foreground">
@@ -2500,7 +2491,7 @@ export function UGCCloneForm() {
                     )}
                     {referenceLibraryOpen && savedReferences.length > visibleSavedReferenceCount && (
                       <div className="flex flex-col gap-2 border-t border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[12px] text-muted-foreground">
                           Showing {visibleSavedReferenceCount} of {savedReferences.length} saved references
                         </p>
                         <button
@@ -2508,7 +2499,7 @@ export function UGCCloneForm() {
                           onClick={() => setVisibleSavedReferenceCount((count) =>
                             Math.min(count + REFERENCE_LIBRARY_PAGE_SIZE, savedReferences.length)
                           )}
-                          className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         >
                           Show {Math.min(
                             REFERENCE_LIBRARY_PAGE_SIZE,
@@ -2529,16 +2520,16 @@ export function UGCCloneForm() {
                     className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-left transition-colors hover:bg-muted/60 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <span className="min-w-0">
-                      <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <span className="block text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                         Identity references
                       </span>
-                      <span className="mt-0.5 block truncate text-[10px] text-muted-foreground/70">
+                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground/70">
                         {avatarReferencePreviews.length > 0
                           ? `${avatarReferencePreviews.length} available to inspect`
                           : "Choose an identity to view references"}
                       </span>
                     </span>
-                    <span className="shrink-0 rounded-full border border-border px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <span className="shrink-0 rounded-full border border-border px-2 py-1 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
                       {showAvatarReferences ? "Hide" : "Show"}
                     </span>
                   </button>
@@ -2560,7 +2551,7 @@ export function UGCCloneForm() {
                             alt={reference.label}
                             className="size-full object-cover"
                           />
-                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[10px] font-medium text-white">
+                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[12px] font-medium text-white">
                             <span className="block truncate">{reference.label}</span>
                           </span>
                         </div>
@@ -2613,12 +2604,12 @@ export function UGCCloneForm() {
               <div className="mb-1 flex items-center justify-between gap-3 px-1">
                 <div>
                   <p className="text-xs font-semibold text-foreground">Generation settings</p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground">Models, sound, and cleanup</p>
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">Models, sound, and cleanup</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMobileSettingsOpen(false)}
-                  className="rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 hover:text-foreground/80"
+                  className="rounded-lg px-2 py-1 text-[12px] font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 hover:text-foreground/80"
                 >
                   Done
                 </button>
@@ -2648,11 +2639,11 @@ export function UGCCloneForm() {
               />
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                  <span className="truncate text-[11px] font-semibold text-foreground">Sound</span>
+                  <span className="truncate text-[13px] font-semibold text-foreground">Sound</span>
                   <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
                 </div>
                 <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                  <span className="truncate text-[11px] font-semibold text-foreground">Remove text</span>
+                  <span className="truncate text-[13px] font-semibold text-foreground">Remove text</span>
                   <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
                 </div>
               </div>
@@ -2664,7 +2655,7 @@ export function UGCCloneForm() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={primaryActionDisabled}
-              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:bg-[#e9421c] active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
+              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
             >
               <Zap className="size-3.5 shrink-0" />
               <span className="truncate">
@@ -2681,7 +2672,7 @@ export function UGCCloneForm() {
               aria-label="Generation settings"
               aria-expanded={mobileSettingsOpen}
               className={cn(
-                "flex size-11 items-center justify-center rounded-xl border transition-colors",
+                "flex size-11 items-center justify-center rounded-lg border transition-colors",
                 mobileSettingsOpen
                   ? "border-accent-blue/40 bg-accent-blue/12 text-accent-blue"
                   : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -2721,7 +2712,7 @@ export function UGCCloneForm() {
               <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
                 <div className="flex min-w-0 items-center gap-2">
                   <Volume2 className="size-4 shrink-0 text-muted-foreground" />
-                  <p className="truncate text-[11px] font-semibold text-foreground">
+                  <p className="truncate text-[13px] font-semibold text-foreground">
                     Sound
                   </p>
                 </div>
@@ -2729,10 +2720,10 @@ export function UGCCloneForm() {
               </div>
 
               <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                <p className="truncate text-[11px] font-semibold text-foreground">
+                <p className="truncate text-[13px] font-semibold text-foreground">
                   Text
                   {removeTextOverlays && (
-                    <span className="ml-1 font-mono text-[10px] text-accent-green">+{formatCost(textErasureCost)}</span>
+                    <span className="ml-1 font-mono text-[12px] text-accent-green">+{formatCost(textErasureCost)}</span>
                   )}
                 </p>
                 <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
@@ -2742,7 +2733,7 @@ export function UGCCloneForm() {
                 type="button"
                 onClick={handlePrimaryAction}
                 disabled={primaryActionDisabled}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 text-[11px] font-bold uppercase tracking-widest text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),var(--pf-shadow-orange)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px hover:bg-[#e9421c] active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
               >
                 <Zap className="size-3.5 shrink-0" />
                 <span className="truncate">
@@ -2753,7 +2744,7 @@ export function UGCCloneForm() {
                       : compactActionLabel}
                 </span>
                 {!isSubmitting && !isGenerating && (
-                  <span className="shrink-0 rounded-md bg-white/15 px-1.5 py-0.5 font-mono text-[10px] font-bold normal-case tracking-normal">
+                  <span className="shrink-0 rounded-md bg-white/15 px-1.5 py-0.5 pf-data text-[12px] font-semibold">
                     {formatCost((totalRefCost || referenceBatchCost) + videoCost + textErasureCost)}
                   </span>
                 )}

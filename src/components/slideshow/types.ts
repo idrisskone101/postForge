@@ -1,7 +1,8 @@
 export type SlideshowSection = "create" | "drafts";
 
-export type SlideshowPhase = "hook" | "body" | "cta";
+type SlideshowAestheticTemplate = import("@/lib/ai/slideshow-creator-types").SlideshowAestheticTemplate;
 
+export type SlideshowPhase = "hook" | "body" | "cta";
 export type SlideshowAspectRatio = "9:16" | "4:5" | "1:1" | "16:9";
 
 export type SlideshowGrid = "none" | "1:2" | "1:3" | "2:1" | "2:2";
@@ -75,7 +76,8 @@ export interface SlideshowProject {
   description?: string;
   /** Ready-to-post social caption, kept separate from the internal project brief. */
   caption?: string;
-  generationProvider?: "gemini" | "local-fallback";
+  generationProvider?: "ollama" | "local-fallback";
+  generationModel?: string | null;
   generationWarning?: string;
   status: SlideshowProjectStatus;
   revision?: number;
@@ -87,6 +89,11 @@ export interface SlideshowProject {
   preventRepeats: boolean;
   language: string;
   templateId?: string | null;
+  /** Slideshow Creator visual direction persisted on the project settings. */
+  creator?: {
+    template?: SlideshowAestheticTemplate | null;
+    updatedAt?: string;
+  } | null;
   /** Server-recorded successful render/download attempts. */
   successfulExportCount?: number;
   lastExportedAt?: string | null;

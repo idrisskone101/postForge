@@ -1,8 +1,8 @@
 const MIN_SLIDES = 1;
 const MAX_SLIDES = 20;
-const DEFAULT_MODEL = "gemini-3.6-flash";
-const GEMINI_INTERACTIONS_URL =
-  "https://generativelanguage.googleapis.com/v1beta/interactions";
+const OLLAMA_CHAT_URL = "https://ollama.com/v1/chat/completions";
+
+import { DEFAULT_MODEL } from "./story-models";
 
 export type SlideshowStoryRole = "hook" | "body" | "cta";
 
@@ -26,16 +26,9 @@ export type GeneratedSlideshowStory = {
   title: string;
   caption: string;
   slides: SlideshowStorySlide[];
-  provider: "gemini" | "local-fallback";
+  provider: "ollama" | "local-fallback";
   model: string | null;
   warning?: string;
-};
-
-type GeminiInteraction = {
-  steps?: Array<{
-    type?: string;
-    content?: Array<{ type?: string; text?: string }>;
-  }>;
 };
 
 type StoryPayload = Omit<GeneratedSlideshowStory, "provider" | "model" | "warning">;
@@ -75,13 +68,13 @@ function validatePayload(
   input: ReturnType<typeof normalizedInput>,
 ): StoryPayload {
   if (!payload || typeof payload !== "object") {
-    throw new Error("Gemini returned an invalid slideshow payload.");
+    throw new Error("Ollama returned an invalid slideshow payload.");
   }
 
   const candidate = payload as Partial<StoryPayload>;
   if (!Array.isArray(candidate.slides) || candidate.slides.length !== input.slideCount) {
     throw new Error(
-      `Gemini returned ${candidate.slides?.length ?? 0} slides; ${input.slideCount} were requested.`,
+      `Ollama returned ${candidate.slides?.length ?? 0} slides; ${input.slideCount} were requested.`,
     );
   }
 
@@ -166,60 +159,69 @@ function promptFor(input: ReturnType<typeof normalizedInput>) {
   ].join("\n");
 }
 
-function extractInteractionText(interaction: GeminiInteraction) {
-  const textBlocks = (interaction.steps ?? [])
-    .filter((step) => step.type === "model_output")
-    .flatMap((step) => step.content ?? [])
-    .filter((content) => content.type === "text" && typeof content.text === "string")
-    .map((content) => content.text as string);
-
-  const output = textBlocks.at(-1);
-  if (!output) throw new Error("Gemini returned no text output.");
-  return output;
+function extractJsonObject(text: string): unknown {
+  const trimmed = text.trim();
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const candidate = fenced ? fenced[1] : trimmed;
+  const start = candidate.indexOf("{");
+  const end = candidate.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error("Ollama returned no JSON object.");
+  }
+  return JSON.parse(candidate.slice(start, end + 1));
 }
 
-async function generateWithGemini(
+async function generateWithOllama(
   input: ReturnType<typeof normalizedInput>,
+  modelId?: string,
 ): Promise<GeneratedSlideshowStory> {
   const { getProviderCredential } = await import("@/lib/providers/credentials");
-  const storedKey = await getProviderCredential("gemini");
-  const apiKey = storedKey?.trim() ?? process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
+  const storedKey = await getProviderCredential("ollama");
+  const apiKey = storedKey?.trim() ?? process.env.OLLAMA_API_KEY?.trim();
+  if (!apiKey) throw new Error("OLLAMA_API_KEY is not configured.");
 
-  const model = process.env.GEMINI_SLIDESHOW_MODEL?.trim() || DEFAULT_MODEL;
-  const response = await fetch(GEMINI_INTERACTIONS_URL, {
+  const model = modelId?.trim() || process.env.OLLAMA_SLIDESHOW_MODEL?.trim() || DEFAULT_MODEL;
+  const response = await fetch(OLLAMA_CHAT_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-goog-api-key": apiKey,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model,
-      store: false,
-      system_instruction:
-        "You are PostForge's slideshow story editor. Produce structured, high-retention social carousel copy while preserving factual humility and the user's intended voice.",
-      input: promptFor(input),
-      generation_config: {
-        thinking_level: "medium",
-      },
-      response_format: {
-        type: "text",
-        mime_type: "application/json",
-        schema: responseSchema(input.slideCount),
-      },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are PostForge's slideshow story editor. Produce structured, high-retention social carousel copy while preserving factual humility and the user's intended voice. Respond with a single JSON object and nothing else.",
+        },
+        {
+          role: "user",
+          content: `${promptFor(input)}\n\nReturn your answer as JSON matching this exact shape:\n${JSON.stringify(
+            responseSchema(input.slideCount),
+          )}`,
+        },
+      ],
+      temperature: 0.7,
+      stream: false,
     }),
-    signal: AbortSignal.timeout(30_000),
+    signal: AbortSignal.timeout(45_000),
   });
 
   if (!response.ok) {
-    throw new Error(`Gemini story generation failed with HTTP ${response.status}.`);
+    throw new Error(`Ollama story generation failed with HTTP ${response.status}.`);
   }
 
-  const interaction = (await response.json()) as GeminiInteraction;
-  const payload = JSON.parse(extractInteractionText(interaction));
+  const completion = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const content = completion.choices?.[0]?.message?.content;
+  if (!content) throw new Error("Ollama returned no text output.");
+
+  const payload = extractJsonObject(content);
   return {
     ...validatePayload(payload, input),
-    provider: "gemini",
+    provider: "ollama",
     model,
   };
 }
@@ -290,10 +292,11 @@ function localFallback(input: ReturnType<typeof normalizedInput>): StoryPayload 
 
 export async function generateSlideshowStory(
   rawInput: SlideshowStoryInput,
+  modelId?: string,
 ): Promise<GeneratedSlideshowStory> {
   const input = normalizedInput(rawInput);
   try {
-    return await generateWithGemini(input);
+    return await generateWithOllama(input, modelId);
   } catch (error) {
     return {
       ...localFallback(input),
@@ -302,7 +305,7 @@ export async function generateSlideshowStory(
       warning:
         error instanceof Error
           ? error.message
-          : "Gemini was unavailable; PostForge used its local story fallback.",
+          : "Ollama was unavailable; PostForge used its local story fallback.",
     };
   }
 }

@@ -121,7 +121,7 @@ export function InspirationHeaderControls({
           type="button"
           onClick={onTrackAccount}
           disabled={isAddingAccount || !handleInput.trim()}
-          className="h-10 min-w-0 shrink-0 rounded-lg bg-[#ff4a20] px-0 text-xs font-semibold text-white hover:bg-[#e9411b] sm:px-4"
+          className="h-10 min-w-0 shrink-0 rounded-lg bg-[var(--pf-orange)] px-0 text-xs font-semibold text-white hover:brightness-[0.93] sm:px-4"
         >
           {isAddingAccount ? (
             <>
@@ -200,7 +200,7 @@ function getCreatorSyncMeta(
       : "Not synced yet",
     className:
       account.syncStatus === "ready" && !account.isStale
-        ? "text-emerald-600"
+        ? "text-[var(--pf-success)]"
         : "text-muted-foreground",
   };
 }
@@ -269,7 +269,7 @@ function CreatorSyncAvatar({
   const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
 
   return (
-    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-[10px] font-medium text-muted-foreground">
+    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-[11px] font-medium text-muted-foreground">
       {avatarSrc ? (
         <Image
           src={avatarSrc}
@@ -649,7 +649,7 @@ export function InspirationPageClient({
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-border bg-card px-4 py-3 shadow-[var(--pf-shadow-xs)]">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-border bg-card px-4 py-3 shadow-[var(--pf-shadow-2xs)]">
               <button
                 type="button"
                 onClick={() => {
@@ -657,9 +657,9 @@ export function InspirationPageClient({
                   document.getElementById("tracked-creators-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Show all tracked creators"
-                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
               >
-                <strong className="text-lg font-semibold tabular-nums">{accounts.length}</strong>
+                <strong className="text-[15px] font-semibold tabular-nums">{accounts.length}</strong>
                 <span className="ml-2 text-xs text-muted-foreground underline-offset-2">tracked creators</span>
               </button>
               <span className="hidden h-6 w-px bg-border sm:block" />
@@ -670,9 +670,9 @@ export function InspirationPageClient({
                   document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Show every saved source"
-                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
               >
-                <strong className="text-lg font-semibold tabular-nums">{trackedVideoCount}</strong>
+                <strong className="text-[15px] font-semibold tabular-nums">{trackedVideoCount}</strong>
                 <span className="ml-2 text-xs text-muted-foreground">saved sources</span>
               </button>
               <span className="hidden h-6 w-px bg-border sm:block" />
@@ -683,14 +683,14 @@ export function InspirationPageClient({
                   document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Filter the library to fresh sources"
-                className="rounded-md text-left transition-colors hover:text-[#ff4a20]"
+                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
               >
-                <strong className="text-lg font-semibold tabular-nums">{sourceUsageCounts.unused}</strong>
+                <strong className="text-[15px] font-semibold tabular-nums">{sourceUsageCounts.unused}</strong>
                 <span className="ml-2 text-xs text-muted-foreground">ready to use</span>
               </button>
               <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
-                <span className="inline-flex min-w-0 items-center gap-1.5 text-xs font-medium text-[#ff4a20]">
-                  <Sparkles className="size-3.5 shrink-0" /> <span className="min-w-0 break-words [overflow-wrap:anywhere]">Fresh posts stay at the front</span>
+                <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
+                  <Sparkles className="size-3.5 shrink-0 text-[var(--pf-orange)]" /> <span className="min-w-0 break-words [overflow-wrap:anywhere]">Fresh posts stay at the front</span>
                 </span>
                 <Button
                   type="button"
@@ -728,23 +728,19 @@ export function InspirationPageClient({
                 <button
                   type="button"
                   onClick={() => setActiveFilter("all")}
+                  title="All tracked creator videos"
                   className={cn(
-                    "flex w-44 max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+                    "flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                     activeFilter === "all"
-                      ? "border-foreground/20 bg-foreground text-background shadow-[var(--pf-shadow-sm)]"
-                      : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:bg-muted/60 hover:shadow-[var(--pf-shadow-xs)]"
+                      ? "border-foreground/20 bg-foreground text-background shadow-[var(--pf-shadow-2xs)]"
+                      : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:bg-muted/60"
                   )}
                 >
-                  <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-full", activeFilter === "all" ? "bg-background/15" : "bg-muted text-muted-foreground")}>
+                  <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", activeFilter === "all" ? "bg-background/15" : "bg-muted text-muted-foreground")}>
                     <Compass className="size-4" />
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-xs font-semibold">Creator Feed</span>
-                    <span className={cn("mt-0.5 block text-[10px]", activeFilter === "all" ? "text-background/65" : "text-muted-foreground")}>
-                      All tracked creator videos
-                    </span>
-                  </span>
-                  <span className={cn("text-[10px] font-semibold", activeFilter === "all" ? "text-background/70" : "text-muted-foreground")}>{trackedVideoCount}</span>
+                  <span className="whitespace-nowrap text-[13px] font-semibold">Creator Feed</span>
+                  <span className={cn("text-[11px] font-semibold tabular-nums", activeFilter === "all" ? "text-background/70" : "text-muted-foreground")}>{trackedVideoCount}</span>
                 </button>
 
                 {accounts.map((account) => {
@@ -760,7 +756,7 @@ export function InspirationPageClient({
                         "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-lg border pr-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                         isActive
                           ? "border-foreground/20 bg-card shadow-[var(--pf-shadow-sm)]"
-                          : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:-translate-y-px hover:bg-muted/40 hover:shadow-[var(--pf-shadow-xs)]"
+                          : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:bg-muted/40 hover:shadow-[var(--pf-shadow-2xs)]"
                       )}
                     >
                       <button
@@ -772,9 +768,9 @@ export function InspirationPageClient({
                         <CreatorSyncAvatar account={account} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-xs font-semibold">{account.handleDisplay}</span>
-                          <span className={cn("mt-0.5 block truncate text-[10px]", syncMeta.className)}>{syncMeta.label}</span>
+                          <span className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}>{syncMeta.label}</span>
                         </span>
-                        <span className="text-[10px] font-semibold text-muted-foreground">{account.videos.length}</span>
+                        <span className="text-[11px] font-semibold text-muted-foreground">{account.videos.length}</span>
                       </button>
                       <span className="flex shrink-0 flex-col gap-0.5">
                         <button
@@ -807,7 +803,7 @@ export function InspirationPageClient({
 
             <div className="flex flex-wrap items-end justify-between gap-3 border-t border-border pt-5">
               <div className="min-w-0">
-                <h3 id="source-library-heading" className="text-lg font-semibold tracking-tight">Source library</h3>
+                <h3 id="source-library-heading" className="text-[15px] font-semibold tracking-[-0.01em]">Source library</h3>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {activeSourceLabel} · {visibleFeedVideos.length} of {feedVideos.length} {activeFeedFilterLabel.toLowerCase()}
                 </p>
@@ -817,7 +813,7 @@ export function InspirationPageClient({
                 data-source-feed-tabs="true"
                 role="tablist"
                 aria-label="Source usage filter"
-                className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-[var(--pf-shadow-xs)] sm:w-auto"
+                className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-[var(--pf-shadow-2xs)] sm:w-auto"
               >
                 {SOURCE_FEED_FILTERS.map((filter) => {
                   const isActive = sourceFeedFilter === filter.value;
@@ -841,7 +837,7 @@ export function InspirationPageClient({
                       <span className="sr-only">{filter.description}</span>
                       <span
                         className={cn(
-                          "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
+                          "shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-semibold",
                           isActive
                             ? "bg-background/15 text-background"
                             : "bg-muted text-muted-foreground"
@@ -855,7 +851,7 @@ export function InspirationPageClient({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-xs)] sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-2xs)] sm:flex-row sm:items-center">
               <label className="relative min-w-0 flex-1">
                 <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -914,10 +910,10 @@ export function InspirationPageClient({
               />
             ) : sourceVideos.length === 0 ? (
               <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/40 px-6 py-14 text-center">
-                <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-[var(--pf-success)]/10 text-[var(--pf-success)]">
                   <CheckCircle2 className="size-6" />
                 </div>
-                <h2 className="text-lg font-bold tracking-tight">
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em]">
                   No cached videos yet
                 </h2>
                 <p className="mt-2 min-w-0 max-w-md break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
@@ -942,7 +938,7 @@ export function InspirationPageClient({
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <CheckCircle2 className="size-6" />
                 </div>
-                <h2 className="text-lg font-bold tracking-tight">
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em]">
                   {sourceSearch.trim()
                     ? "No sources match your search"
                     : sourceFeedFilter === "used"
@@ -962,7 +958,14 @@ export function InspirationPageClient({
                 </p>
               </div>
             ) : (
-              <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2", compactGrid ? "lg:grid-cols-4 2xl:grid-cols-5" : "lg:grid-cols-3 2xl:grid-cols-4")}>
+              <div
+                className={cn(
+                  "grid max-h-[440px] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2",
+                  compactGrid
+                    ? "lg:grid-cols-4 2xl:grid-cols-5"
+                    : "lg:grid-cols-3 2xl:grid-cols-4",
+                )}
+              >
                 {renderedFeedVideos.map((video) => {
                   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
                   const isRejected = video.sourceDecision.status === "rejected";
@@ -973,7 +976,7 @@ export function InspirationPageClient({
                       key={video.id}
                       data-inspiration-video-id={video.id}
                       data-source-decision={video.sourceDecision.status}
-                      className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-[var(--pf-shadow-md)]"
+                      className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-foreground/20 hover:shadow-[var(--pf-shadow-md)]"
                     >
                       <button
                         type="button"
@@ -983,7 +986,7 @@ export function InspirationPageClient({
                       >
                         <div
                           data-source-preview-frame="portrait"
-                          className={cn("aspect-[9/16] bg-zinc-950", compactGrid ? "max-h-[360px]" : "max-h-[440px]")}
+                          className="aspect-[9/16] bg-zinc-950"
                         >
                           {!thumbnailFailed ? (
                             <>
@@ -991,7 +994,7 @@ export function InspirationPageClient({
                               <img
                                 src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
                                 alt={video.caption || `${video.creatorHandle} TikTok`}
-                                className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
+                                className="size-full object-contain"
                                 loading="lazy"
                                 onError={() => markThumbnailError(video.id)}
                                 onLoad={() => clearThumbnailError(video.id)}
@@ -1008,11 +1011,11 @@ export function InspirationPageClient({
                           <span className="flex max-w-[70%] flex-wrap gap-1.5">
                             <span
                               className={cn(
-                                "rounded-full border px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm",
+                                "rounded-full border px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm",
                                 isRejected
-                                  ? "border-red-300/30 bg-red-600/90"
+                                  ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/90"
                                   : video.sourceUsage.status === "used"
-                                    ? "border-emerald-400/30 bg-emerald-600/90"
+                                    ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/85"
                                     : "border-white/15 bg-black/65"
                               )}
                             >
@@ -1023,13 +1026,13 @@ export function InspirationPageClient({
                                   : "Fresh source"}
                             </span>
                           </span>
-                          <span className="rounded-full bg-black/65 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                          <span className="rounded-full bg-black/65 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
                             {formatRelativeDate(video.publishedAt ?? video.createdAt)}
                           </span>
                         </div>
 
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent px-3 pb-3 pt-14 text-white">
-                          <div className="grid grid-cols-2 gap-2 text-[10px] text-white/85">
+                          <div className="grid grid-cols-2 gap-2 text-[11px] text-white/85">
                             <div className="flex items-center gap-1.5">
                               <Play className="size-3" />
                               <span>{formatDuration(video.durationSec)}</span>
@@ -1058,21 +1061,21 @@ export function InspirationPageClient({
                           </Avatar>
                           <span className="min-w-0 flex-1">
                             <span className="block truncate text-xs font-semibold">{video.creatorHandle}</span>
-                            <span className="mt-0.5 block text-[10px] text-muted-foreground">{formatRelativeDate(video.publishedAt ?? video.createdAt)}</span>
+                            <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatRelativeDate(video.publishedAt ?? video.createdAt)}</span>
                           </span>
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatMetric(video.viewCount)} views</span>
+                          <span className="text-[11px] font-medium text-muted-foreground">{formatMetric(video.viewCount)} views</span>
                         </div>
                         <p className="line-clamp-2 min-h-10 text-xs leading-5 text-foreground/80">
                           {video.caption || "No caption provided."}
                         </p>
                         {video.sourceUsage.status === "used" && video.sourceUsage.usedAt && (
-                          <p className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-medium text-emerald-700">
+                          <p className="rounded-md border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--pf-success)]">
                             Used as a source {formatRelativeDate(video.sourceUsage.usedAt)}
                           </p>
                         )}
 
                         {isRejected && video.sourceDecision.rejectedAt && (
-                          <p className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-medium text-red-700">
+                          <p className="rounded-md border border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--pf-danger)]">
                             Rejected as a source {formatRelativeDate(video.sourceDecision.rejectedAt)}
                           </p>
                         )}
@@ -1103,7 +1106,7 @@ export function InspirationPageClient({
                             type="button"
                             onClick={() => void handleUseInClone(video)}
                             disabled={usingVideoId === video.id}
-                            className="mt-auto h-9 w-full rounded-md bg-[#ff4a20] text-xs font-semibold text-white hover:bg-[#e9411b]"
+                            className="mt-auto h-9 w-full rounded-md bg-[var(--pf-orange)] text-xs font-semibold text-white hover:brightness-[0.93]"
                           >
                             {usingVideoId === video.id ? (
                               <>
@@ -1131,7 +1134,7 @@ export function InspirationPageClient({
                             type="button"
                             variant="outline"
                             onClick={() => setSelectedVideoId(video.id)}
-                            className="h-8 min-w-0 rounded-md px-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground"
+                            className="h-8 min-w-0 rounded-md px-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
                           >
                             <Eye className="size-3.5" />
                             Preview
@@ -1146,7 +1149,7 @@ export function InspirationPageClient({
                               disabled={isUpdatingRejection}
                               aria-label={`Reject source from ${video.creatorHandle}`}
                               size="icon-sm"
-                              className="size-8 rounded-md border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+                              className="size-8 rounded-md border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {isUpdatingRejection ? (
                                 <Loader2 className="size-3.5 animate-spin" />
@@ -1222,18 +1225,19 @@ export function InspirationPageClient({
         <DialogContent
           showCloseButton
           data-source-preview-drawer="true"
-          className="!top-0 !right-0 !left-auto !h-dvh !max-h-none !w-full !max-w-[560px] !translate-x-0 !translate-y-0 !gap-0 !overflow-y-auto !rounded-none border-y-0 border-r-0 border-l border-border bg-card p-0 [&_[data-slot=dialog-close]]:z-20 [&_[data-slot=dialog-close]]:bg-black/60 [&_[data-slot=dialog-close]]:text-white [&_[data-slot=dialog-close]]:hover:bg-black/80"
+          className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[12px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20"
         >
+          <DialogTitle className="sr-only">Source preview</DialogTitle>
           {selectedVideo && (
-            <div className="flex min-h-full flex-col">
-              <div className="relative h-[42dvh] min-h-[300px] shrink-0 border-b border-border bg-black">
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="relative flex min-h-[300px] items-center justify-center bg-[#09090B] lg:min-h-[560px]">
                 {embedState !== "failed" && (
                   <iframe
                     key={selectedVideo.id}
                     src={selectedVideo.embedUrl ?? `https://www.tiktok.com/embed/v3/${selectedVideo.externalVideoId}`}
                     title={`TikTok preview for ${selectedVideo.creatorHandle}`}
                     className={cn(
-                      "size-full min-h-[300px]",
+                      "size-full min-h-[300px] lg:min-h-[560px]",
                       embedState === "loading" && "opacity-0"
                     )}
                     allow="encrypted-media; picture-in-picture"
@@ -1244,14 +1248,14 @@ export function InspirationPageClient({
                 )}
 
                 {embedState === "loading" && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/70 text-white">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white">
                     <Loader2 className="size-6 animate-spin" />
-                    <p className="text-sm font-medium">Loading TikTok preview...</p>
+                    <p className="text-[13px] font-medium">Loading TikTok preview...</p>
                   </div>
                 )}
 
                 {embedState === "failed" && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-black px-6 text-center text-white">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center text-white">
                     {!thumbnailErrorIds.includes(selectedVideo.id) ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1261,7 +1265,7 @@ export function InspirationPageClient({
                             selectedVideo.updatedAt
                           )}
                           alt={selectedVideo.caption || `${selectedVideo.creatorHandle} TikTok`}
-                          className="max-h-[38dvh] rounded-lg object-contain shadow-2xl"
+                          className="max-h-[42dvh] max-w-full object-contain lg:max-h-[calc(100dvh-8rem)]"
                           onError={() => markThumbnailError(selectedVideo.id)}
                           onLoad={() => clearThumbnailError(selectedVideo.id)}
                         />
@@ -1272,10 +1276,10 @@ export function InspirationPageClient({
                       </div>
                     )}
                     <div>
-                      <p className="text-base font-semibold">
+                      <p className="text-[15px] font-semibold">
                         TikTok preview unavailable
                       </p>
-                      <p className="mt-2 max-w-md text-sm text-white/70">
+                      <p className="mt-1.5 max-w-md text-[13px] text-white/60">
                         The embed could not load for this post. You can still
                         open it on TikTok or send it directly into Clone.
                       </p>
@@ -1284,215 +1288,199 @@ export function InspirationPageClient({
                 )}
               </div>
 
-              <div className="flex flex-1 flex-col bg-card">
-                <div className="border-b border-border px-5 py-4 sm:px-6">
-                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Source details</p>
-                  <div className="flex items-start gap-3">
-                    <Avatar size="lg">
-                      <AvatarImage
-                        src={selectedVideo.creatorAvatarUrl ?? undefined}
-                        alt={selectedVideo.creatorHandle}
-                      />
-                      <AvatarFallback>
-                        {selectedVideo.creatorHandle.slice(1, 3).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+              <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-border bg-card p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium",
+                      selectedVideo.sourceDecision.status === "rejected"
+                        ? "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
+                        : selectedVideo.sourceUsage.status === "used"
+                          ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
+                          : "border-[var(--pf-border)] bg-[var(--pf-active)] text-muted-foreground"
+                    )}
+                  >
+                    {selectedVideo.sourceDecision.status === "rejected"
+                      ? "Rejected"
+                      : selectedVideo.sourceUsage.status === "used"
+                        ? "Used in Clone"
+                        : "Fresh source"}
+                  </span>
+                  <span className="text-[12px] text-muted-foreground">
+                    {formatDuration(selectedVideo.durationSec)} · {formatRelativeDate(selectedVideo.publishedAt ?? selectedVideo.createdAt)}
+                  </span>
+                </div>
 
-                    <div className="min-w-0 flex-1">
-                      <DialogTitle className="truncate text-lg font-semibold tracking-tight">
-                        {selectedVideo.creatorDisplayName || selectedVideo.creatorHandle}
-                      </DialogTitle>
-                      <DialogDescription className="mt-1 truncate">
-                        {selectedVideo.creatorHandle}
-                      </DialogDescription>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Avatar size="lg">
+                    <AvatarImage
+                      src={selectedVideo.creatorAvatarUrl ?? undefined}
+                      alt={selectedVideo.creatorHandle}
+                    />
+                    <AvatarFallback>
+                      {selectedVideo.creatorHandle.slice(1, 3).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-semibold tracking-[-0.01em]">
+                      {selectedVideo.creatorDisplayName || selectedVideo.creatorHandle}
+                    </p>
+                    <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                      {selectedVideo.creatorHandle}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex-1 space-y-4 px-5 py-4 sm:px-6">
-                  <div className="rounded-lg border border-border bg-muted/35 p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                {selectedVideo.caption && (
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                       Caption
                     </p>
-                    <p className="mt-2 min-w-0 break-words text-sm leading-6 text-foreground/85 [overflow-wrap:anywhere]">
-                      {selectedVideo.caption || "No caption available for this post."}
+                    <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-foreground/80 [overflow-wrap:anywhere] line-clamp-5">
+                      {selectedVideo.caption}
                     </p>
                   </div>
+                )}
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        Views
-                      </p>
-                      <p className="mt-1.5 text-lg font-semibold">
-                        {formatMetric(selectedVideo.viewCount)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        Likes
-                      </p>
-                      <p className="mt-1.5 text-lg font-semibold">
-                        {formatMetric(selectedVideo.likeCount)}
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    ["Views", selectedVideo.viewCount],
+                    ["Likes", selectedVideo.likeCount],
+                    ["Comments", selectedVideo.commentCount],
+                    ["Shares", selectedVideo.shareCount],
+                  ] as const).map(([label, value]) => (
+                    <div key={label} className="flex items-baseline justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-[var(--pf-shadow-2xs)]">
+                      <p className="truncate text-[11px] text-muted-foreground">{label}</p>
+                      <p className="text-[13px] font-semibold tabular-nums">
+                        {formatMetric(value)}
                       </p>
                     </div>
-                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        Comments
-                      </p>
-                      <p className="mt-1.5 text-lg font-semibold">
-                        {formatMetric(selectedVideo.commentCount)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border border-border bg-card p-3 shadow-[var(--pf-shadow-2xs)]">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        Shares
-                      </p>
-                      <p className="mt-1.5 text-lg font-semibold">
-                        {formatMetric(selectedVideo.shareCount)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      Post Details
-                    </p>
-                    <div className="mt-3 space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center justify-between gap-4">
-                        <span>Published</span>
-                        <span className="text-right text-foreground/90">
-                          {formatPublishedDate(selectedVideo.publishedAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span>Runtime</span>
-                        <span className="text-right text-foreground/90">
-                          {formatDuration(selectedVideo.durationSec)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span>Source use</span>
-                        <span className="text-right text-foreground/90">
-                          {selectedVideo.sourceUsage.status === "used" &&
-                          selectedVideo.sourceUsage.usedAt
-                            ? `Used ${formatRelativeDate(selectedVideo.sourceUsage.usedAt)}`
-                            : "Not used yet"}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span>Decision</span>
-                        <span className="text-right text-foreground/90">
-                          {selectedVideo.sourceDecision.status === "rejected" &&
-                          selectedVideo.sourceDecision.rejectedAt
-                            ? `Rejected ${formatRelativeDate(selectedVideo.sourceDecision.rejectedAt)}`
-                            : "Approved"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
-                <div className="sticky bottom-0 border-t border-border bg-card/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur-sm sm:px-6">
-                  <div className="grid min-w-0 grid-cols-2 gap-2 [&_a]:min-w-0 [&_button]:min-w-0 [&_svg]:shrink-0">
-                    {selectedVideo.sourceDecision.status === "rejected" ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => void handleSetVideoRejection(selectedVideo, false)}
-                        disabled={updatingRejectionIds.includes(selectedVideo.id)}
-                        className="col-span-2 h-10 rounded-lg border-border disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {updatingRejectionIds.includes(selectedVideo.id) ? (
-                          <>
-                            <Loader2 className="size-4 animate-spin" />
-                            Restoring source...
-                          </>
-                        ) : (
-                          <>
-                            Restore Source
-                            <Undo2 className="size-4" />
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          type="button"
-                          onClick={() => void handleUseInClone(selectedVideo)}
-                          disabled={usingVideoId === selectedVideo.id}
-                          className="col-span-2 h-10 rounded-lg bg-[#ff4a20] text-white hover:bg-[#e9411b]"
-                        >
-                          {usingVideoId === selectedVideo.id ? (
-                            <>
-                              <Loader2 className="size-4 animate-spin" />
-                              Sending to Clone...
-                            </>
-                          ) : (
-                            <>
-                              Use in Clone
-                              <Sparkles className="size-4" />
-                            </>
-                          )}
-                        </Button>
+                <dl className="divide-y divide-border border-y border-border">
+                  <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
+                    <dt className="text-muted-foreground">Published</dt>
+                    <dd>{formatPublishedDate(selectedVideo.publishedAt)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
+                    <dt className="text-muted-foreground">Source use</dt>
+                    <dd>
+                      {selectedVideo.sourceUsage.status === "used" &&
+                      selectedVideo.sourceUsage.usedAt
+                        ? `Used ${formatRelativeDate(selectedVideo.sourceUsage.usedAt)}`
+                        : "Not used yet"}
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
+                    <dt className="text-muted-foreground">Decision</dt>
+                    <dd>
+                      {selectedVideo.sourceDecision.status === "rejected" &&
+                      selectedVideo.sourceDecision.rejectedAt
+                        ? `Rejected ${formatRelativeDate(selectedVideo.sourceDecision.rejectedAt)}`
+                        : "Approved"}
+                    </dd>
+                  </div>
+                </dl>
 
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => void handleSetVideoRejection(selectedVideo, true)}
-                          disabled={updatingRejectionIds.includes(selectedVideo.id)}
-                          className="col-span-2 h-10 rounded-lg border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {updatingRejectionIds.includes(selectedVideo.id) ? (
-                            <>
-                              <Loader2 className="size-4 animate-spin" />
-                              Rejecting source...
-                            </>
-                          ) : (
-                            <>
-                              Reject Source
-                              <Ban className="size-4" />
-                            </>
-                          )}
-                        </Button>
-                      </>
-                    )}
-
+                <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
+                  {selectedVideo.sourceDecision.status === "rejected" ? (
                     <Button
                       type="button"
                       variant="outline"
-                      size="lg"
+                      onClick={() => void handleSetVideoRejection(selectedVideo, false)}
+                      disabled={updatingRejectionIds.includes(selectedVideo.id)}
+                      className="h-10 rounded-lg border-border text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {updatingRejectionIds.includes(selectedVideo.id) ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          Restoring source...
+                        </>
+                      ) : (
+                        <>
+                          Restore Source
+                          <Undo2 className="size-4" />
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      onClick={() => void handleUseInClone(selectedVideo)}
+                      disabled={usingVideoId === selectedVideo.id}
+                      className="pf-button-primary h-10"
+                    >
+                      {usingVideoId === selectedVideo.id ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          Sending to Clone...
+                        </>
+                      ) : (
+                        <>
+                          Use in Clone
+                          <Sparkles className="size-4" />
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => void handleCopySourceUrl(selectedVideo)}
-                      className="h-9 rounded-lg text-xs"
+                      className="h-10 rounded-lg text-[13px] font-semibold"
                     >
                       {copiedVideoId === selectedVideo.id ? (
                         <>
-                          URL Copied
+                          Copied
                           <CheckCircle2 className="size-4" />
                         </>
                       ) : (
                         <>
-                          Copy TikTok URL
+                          Copy URL
                           <Copy className="size-4" />
                         </>
                       )}
                     </Button>
-
                     <a
                       href={selectedVideo.originalUrl}
                       target="_blank"
                       rel="noreferrer"
                       className={cn(
-                        buttonVariants({ variant: "outline", size: "lg" }),
-                        "h-9 min-w-0 rounded-lg text-xs"
+                        buttonVariants({ variant: "outline" }),
+                        "h-10 rounded-lg text-[13px] font-semibold"
                       )}
                     >
-                      Open on TikTok
+                      Open
                       <ExternalLink className="size-4" />
                     </a>
                   </div>
+
+                  {selectedVideo.sourceDecision.status !== "rejected" && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => void handleSetVideoRejection(selectedVideo, true)}
+                      disabled={updatingRejectionIds.includes(selectedVideo.id)}
+                      className="h-9 rounded-lg border-transparent text-[12px] font-medium text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {updatingRejectionIds.includes(selectedVideo.id) ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          Rejecting source...
+                        </>
+                      ) : (
+                        <>
+                          Reject Source
+                          <Ban className="size-4" />
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
-              </div>
+              </aside>
             </div>
           )}
         </DialogContent>

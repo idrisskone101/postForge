@@ -124,21 +124,21 @@ export function SwapInputSection({
     const isUploading = uploading === uploadingState;
     return (
       <div className="min-w-0">
-        <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.09em] text-[#777873]">
+        <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
           {label}
         </span>
         {asset ? (
-          <div className="flex min-w-0 items-center gap-2 rounded-[9px] border border-[#D7D8D0] bg-[#FCFCFA] px-3 py-2.5">
+          <div className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5">
             {field === "video" ? (
-              <Film className="size-3.5 shrink-0 text-[#378EFF]" />
+              <Film className="size-3.5 shrink-0 text-[var(--pf-link)]" />
             ) : (
-              <ImageIcon className="size-3.5 shrink-0 text-[#22A887]" />
+              <ImageIcon className="size-3.5 shrink-0 text-[var(--pf-success)]" />
             )}
             <span className="min-w-0 flex-1">
-              <b className="block truncate text-[10px] font-semibold text-[#30312E]">
+              <b className="block truncate text-[12px] font-semibold text-foreground">
                 {asset.filename}
               </b>
-              <small className="mt-0.5 block text-[10px] text-[#92938E]">
+              <small className="mt-0.5 block text-[12px] text-muted-foreground">
                 {formatBytes(asset.fileSizeBytes)}
                 {asset.durationSec ? ` · ${Math.round(asset.durationSec)}s` : ""}
                 {asset.width ? ` · ${asset.width}×${asset.height}` : ""}
@@ -149,7 +149,7 @@ export function SwapInputSection({
               aria-label={`Clear ${label.toLowerCase()}`}
               onClick={() => clear(field)}
               disabled={disabled}
-              className="grid size-6 shrink-0 place-items-center rounded-md text-[#92938E] hover:bg-[#F1F2EC] hover:text-[#C53A32] disabled:opacity-40"
+              className="grid size-6 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-[var(--pf-active)] hover:text-[var(--pf-danger)] disabled:opacity-40"
             >
               <X className="size-3" />
             </button>
@@ -157,7 +157,7 @@ export function SwapInputSection({
         ) : (
           <label
             className={cn(
-              "flex min-h-16 cursor-pointer items-center justify-center gap-2 rounded-[9px] border border-dashed border-[#CFD0C8] bg-[#FAFBF7] px-3 text-[10px] font-semibold text-[#686965] transition-colors hover:border-[#FF4A20] hover:text-[#FF4A20]",
+              "flex min-h-16 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-[12px] font-semibold text-muted-foreground transition-colors hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]",
               disabled && "cursor-not-allowed opacity-50"
             )}
           >
@@ -204,13 +204,13 @@ export function SwapInputSection({
       </div>
 
       {requireReference && !value.reference && !value.video && (
-        <p className="text-[10px] leading-4 text-[#858681]">
+        <p className="text-[12px] leading-4 text-muted-foreground">
           Upload a video and a reference image of the subject that should replace it.
         </p>
       )}
 
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.09em] text-[#777873]">
+        <span className="mr-1 text-[12px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
           Swap mode
         </span>
         {SWAP_MODES.map((mode) => (
@@ -221,10 +221,10 @@ export function SwapInputSection({
             disabled={disabled}
             onClick={() => onChange({ ...value, swapMode: mode.id })}
             className={cn(
-              "h-7 rounded-lg border px-2.5 text-[10px] font-medium transition-colors",
+              "h-7 rounded-lg border px-2.5 text-[12px] font-medium transition-colors",
               value.swapMode === mode.id
-                ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
-                : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]",
+                ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)]",
               disabled && "opacity-50"
             )}
           >
@@ -236,7 +236,7 @@ export function SwapInputSection({
       {error && (
         <p
           role="alert"
-          className="min-w-0 break-words rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] leading-4 text-[#C53A32] [overflow-wrap:anywhere]"
+          className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]"
         >
           {error}
         </p>

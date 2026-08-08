@@ -5,8 +5,8 @@ import {
 } from "../src/lib/ai/slideshow-story";
 
 async function main() {
-  const previousKey = process.env.GEMINI_API_KEY;
-  delete process.env.GEMINI_API_KEY;
+  const previousKey = process.env.OLLAMA_API_KEY;
+  delete process.env.OLLAMA_API_KEY;
 
   try {
     const story = await generateSlideshowStory({
@@ -41,8 +41,8 @@ async function main() {
       /idea is required/i,
     );
   } finally {
-    if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
-    else process.env.GEMINI_API_KEY = previousKey;
+    if (previousKey === undefined) delete process.env.OLLAMA_API_KEY;
+    else process.env.OLLAMA_API_KEY = previousKey;
   }
 
   console.log("slideshow story tests passed");

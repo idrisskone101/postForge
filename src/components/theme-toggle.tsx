@@ -1,34 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle() {
-  const [dark, setDark] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    const stored = localStorage.getItem("postforge-theme");
-    return stored === "dark";
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-
   const toggle = () => {
-    const next = !dark;
-    setDark(next);
+    const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("postforge-theme", next ? "dark" : "light");
+    try {
+      localStorage.setItem("postforge-theme", next ? "dark" : "light");
+    } catch {
+      // Theme still toggles for the session when storage is unavailable.
+    }
   };
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggle} className="size-9">
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-      <span className="sr-only">Toggle theme</span>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggle}
+      aria-label="Toggle theme"
+      className="size-9 rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+    >
+      <Moon className="size-4 dark:hidden" />
+      <Sun className="hidden size-4 dark:block" />
     </Button>
   );
 }

@@ -152,7 +152,7 @@ export default function UGCCloneJobPage() {
               <Skeleton className="h-4 w-64 max-w-full" />
             </div>
           </div>
-          <Skeleton className="min-h-[520px] rounded-xl" />
+          <Skeleton className="min-h-[520px] rounded-lg" />
         </div>
       </div>
     );

@@ -41,6 +41,20 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <div
+          id="pf-direction-contract"
+          hidden
+          dangerouslySetInnerHTML={{
+            __html: `<!--
+THESIS: PostForge is a calm professional instrument: the category-standard SaaS dashboard executed at Linear and Resend craft level, where restraint is the identity and the operator's media, pipeline state, and spend carry all the color. Refuses ornamental metaphor skins; clarity is the brand.
+OWN-WORLD: token-driven zinc-neutral light + dark themes; hairline-bordered cards with quiet elevation and 6-8px radii; Geist carries UI type, Geist Mono is the data voice for counts, costs, and dates; one coral #FF4A20 accent reserved for primary actions and active states.
+STORY: the operator opens the app, scans what is running, reviews finished media, approves publishing, and checks spend; nothing competes for attention.
+FIRST VIEWPORT: the existing left sidebar with its expand/collapse behavior; home is a quiet header, a compact stat strip, then the review queue and recent media.
+FORM: canon — category standard played straight, user-chosen from direction roll c509faa7; craft bar Linear + Resend.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->`,
+          }}
+        />
         <TooltipProvider>
           <div className="min-h-dvh">
             <Sidebar />

@@ -47,8 +47,8 @@ export function GenerateOutputActions({
           role={actionError ? "alert" : "status"}
           className={
             actionError
-              ? "flex min-w-0 items-start gap-2 rounded-lg bg-[#FEF0EF] px-3 py-2.5 text-[10px] leading-4 text-[#C53A32]"
-              : "flex min-w-0 items-start gap-2 rounded-lg bg-[#EAF8ED] px-3 py-2.5 text-[10px] leading-4 text-[#238A40]"
+              ? "flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]"
+              : "flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-success)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-success)]"
           }
         >
           {actionError ? (
@@ -66,7 +66,7 @@ export function GenerateOutputActions({
         type="button"
         onClick={onDownload}
         disabled={!canDownload || isDownloading}
-        className="h-10 justify-center gap-2 rounded-[9px] bg-[#FF4A20] text-[11px] font-semibold text-white hover:bg-[#E9421C]"
+        className="h-10 justify-center gap-2 rounded-lg bg-[var(--pf-orange)] text-[13px] font-semibold text-white hover:brightness-[0.93]"
       >
         {isDownloading ? (
           <Loader2 className="size-3.5 animate-spin" />
@@ -83,7 +83,7 @@ export function GenerateOutputActions({
             variant="outline"
             onClick={onRetry}
             disabled={isRetrying}
-            className="h-10 justify-center gap-2 rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
+            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
           >
             {isRetrying ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -98,7 +98,7 @@ export function GenerateOutputActions({
           variant="outline"
           aria-label="Save to Gallery"
           onClick={onSaveToGallery}
-          className="h-10 justify-center gap-2 rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
+          className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
         >
           <GalleryHorizontal className="size-3.5" />
           View in Gallery
@@ -108,7 +108,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onGenerateSimilar}
-            className="h-10 justify-center gap-2 rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
+            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
           >
             <Sparkles className="size-3.5" />
             Generate similar
@@ -122,7 +122,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onUseInClone}
-            className="h-10 justify-center gap-2 rounded-[9px] border-[#B9DEC2] bg-[#EFF8F1] text-[10px] font-semibold text-[#238A40] hover:bg-[#E6F4E9] hover:text-[#1D7535]"
+            className="h-10 justify-center gap-2 rounded-lg border-border bg-card text-[12px]"
           >
             <Users className="size-3.5" />
             Use in Clone
@@ -133,7 +133,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onAddToAutomation}
-            className="h-10 justify-center gap-2 rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
+            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
           >
             <Workflow className="size-3.5" />
             Add to automation

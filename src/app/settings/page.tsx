@@ -3,7 +3,7 @@ import { SettingsPageClient } from "./settings-page-client";
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div className="min-h-[600px] animate-pulse bg-[#F3F4EF]" />}>
+    <Suspense fallback={<div className="min-h-[600px] animate-pulse bg-[var(--pf-canvas)]" />}>
       <SettingsPageClient />
     </Suspense>
   );

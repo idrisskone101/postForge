@@ -323,7 +323,7 @@ export function VideoTrimmer({
   return (
     <div className="space-y-4 animate-fade-in-up">
       {/* Header */}
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent-green">
+      <div className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
         <Scissors className="size-3.5" />
         Trim Video
       </div>
@@ -348,7 +348,7 @@ export function VideoTrimmer({
             style={{ maxHeight: 300 }}
           />
           {/* Duration badge */}
-          <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-0.5 text-[12px] font-bold text-white backdrop-blur-sm">
             {formatTrimTime(trimmedDuration)}
           </div>
         </div>
@@ -356,7 +356,7 @@ export function VideoTrimmer({
 
       {/* Timeline Scrubber */}
       <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
           <Film className="size-3" />
           Drag handles to select range
         </div>
@@ -364,7 +364,7 @@ export function VideoTrimmer({
         <div
           ref={trackRef}
           data-trim-timeline="true"
-          className="relative h-20 w-full select-none overflow-hidden rounded-xl border border-border bg-muted"
+          className="relative h-20 w-full select-none overflow-hidden rounded-lg border border-border bg-muted"
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
@@ -406,7 +406,7 @@ export function VideoTrimmer({
           <div
             className={cn(
               "absolute inset-y-0 border-y-2 border-accent-green bg-accent-green/10 transition-[left,width] duration-75",
-              dragging && "shadow-[0_0_12px_rgba(123,165,67,0.3)]"
+              dragging && "shadow-[0_0_12px_rgba(22,163,74,0.3)]"
             )}
             style={{
               left: `${startPct}%`,
@@ -419,7 +419,7 @@ export function VideoTrimmer({
             className={cn(
               "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
               "rounded-l-lg bg-accent-green transition-shadow",
-              dragging === "start" && "shadow-[0_0_16px_rgba(123,165,67,0.5)]"
+              dragging === "start" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
             )}
             style={{ left: `calc(${startPct}% - 12px)` }}
             onPointerDown={handlePointerDown("start")}
@@ -433,7 +433,7 @@ export function VideoTrimmer({
             className={cn(
               "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
               "rounded-r-lg bg-accent-green transition-shadow",
-              dragging === "end" && "shadow-[0_0_16px_rgba(123,165,67,0.5)]"
+              dragging === "end" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
             )}
             style={{ left: `calc(${endPct}% - 12px)` }}
             onPointerDown={handlePointerDown("end")}
@@ -445,14 +445,14 @@ export function VideoTrimmer({
       </div>
 
       {/* Precise Range */}
-      <div className="space-y-3 rounded-xl border border-border bg-muted/25 p-3">
+      <div className="space-y-3 rounded-lg border border-border bg-muted/25 p-3">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          <div className="text-[12px] font-medium text-muted-foreground">
             Precise range
           </div>
           <div
             className={cn(
-              "rounded-full px-2.5 py-1 text-[10px] font-bold tabular-nums",
+              "rounded-full px-2.5 py-1 text-[12px] font-bold tabular-nums",
               trimRange.hasTrim
                 ? "bg-accent-green/10 text-accent-green"
                 : "bg-white/5 text-muted-foreground"
@@ -464,7 +464,7 @@ export function VideoTrimmer({
 
         <div className="grid grid-cols-3 gap-2">
           <label className="space-y-1">
-            <span className="text-[10px] font-semibold text-muted-foreground">Start</span>
+            <span className="text-[12px] font-semibold text-muted-foreground">Start</span>
             <Input
               type="number"
               min={0}
@@ -482,7 +482,7 @@ export function VideoTrimmer({
             />
           </label>
           <label className="space-y-1">
-            <span className="text-[10px] font-semibold text-muted-foreground">End</span>
+            <span className="text-[12px] font-semibold text-muted-foreground">End</span>
             <Input
               type="number"
               min={MIN_TRIM_DURATION_SEC}
@@ -500,7 +500,7 @@ export function VideoTrimmer({
             />
           </label>
           <div className="space-y-1">
-            <span className="block text-[10px] font-semibold text-muted-foreground">
+            <span className="block text-[12px] font-semibold text-muted-foreground">
               Selected
             </span>
             <div className="flex h-9 items-center rounded-lg border border-border bg-black/20 px-2.5 font-mono text-xs font-semibold text-foreground tabular-nums">
@@ -509,7 +509,7 @@ export function VideoTrimmer({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-[10px]">
+        <div className="grid grid-cols-2 gap-2 text-[12px]">
           <div className="rounded-lg border border-border/80 bg-black/20 px-2.5 py-2">
             <div className="font-semibold text-muted-foreground">Removed from start</div>
             <div className="mt-0.5 font-mono text-xs font-bold text-foreground tabular-nums">
@@ -536,7 +536,7 @@ export function VideoTrimmer({
 
       {/* Error */}
       {trimError && (
-        <div className="min-w-0 break-words rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive [overflow-wrap:anywhere]">
+        <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive [overflow-wrap:anywhere]">
           {trimError}
         </div>
       )}
@@ -561,7 +561,7 @@ export function VideoTrimmer({
               ? "bg-accent-green/60"
               : !trimRange.hasTrim
                 ? "cursor-not-allowed bg-muted text-muted-foreground"
-              : "bg-accent-green shadow-[0_4px_16px_rgba(123,165,67,0.25)] hover:shadow-[0_4px_24px_rgba(123,165,67,0.35)] hover:brightness-110"
+              : "bg-accent-green shadow-[0_4px_16px_rgba(22,163,74,0.25)] hover:shadow-[0_4px_24px_rgba(22,163,74,0.35)] hover:brightness-110"
           )}
         >
           {isTrimming ? (

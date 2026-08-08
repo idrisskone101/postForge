@@ -12,6 +12,9 @@ import type {
   SlideshowTextSettings,
 } from "./types";
 import { isLocalSlideshowId } from "./types";
+import { formatGenerationPromptForEditing } from "@/lib/ai/prompt-presentation";
+
+type SlideshowAestheticTemplate = import("@/lib/ai/slideshow-creator-types").SlideshowAestheticTemplate;
 
 type JsonRecord = Record<string, unknown>;
 
@@ -152,7 +155,9 @@ function deserializeSlide(slide: ApiSlide, index: number): SlideshowSlide {
     eyebrow: asString(content.eyebrow, byRole("eyebrow", 0)),
     headline: asString(content.headline, byRole("headline", 1)),
     body: asString(content.body, byRole("body", 2)),
-    prompt: asString(slide.imagePrompt ?? content.prompt),
+    prompt: formatGenerationPromptForEditing(
+      asString(slide.imagePrompt ?? content.prompt),
+    ),
     visualKey: asString(content.visualKey, "coral-glow"),
     visualKeys: Array.isArray(content.visualKeys)
       ? content.visualKeys.filter((value): value is string => typeof value === "string")
@@ -272,7 +277,7 @@ export function deserializeSlideshowProject(input: unknown): SlideshowProject {
     description: project.description ?? undefined,
     caption: asString(settings.caption) || undefined,
     generationProvider:
-      settings.generationProvider === "gemini" ||
+      settings.generationProvider === "ollama" ||
       settings.generationProvider === "local-fallback"
         ? settings.generationProvider
         : undefined,
@@ -289,6 +294,17 @@ export function deserializeSlideshowProject(input: unknown): SlideshowProject {
     preventRepeats: asBoolean(settings.preventRepeats, true),
     language: asString(settings.language, "English"),
     templateId: asString(settings.templateId) || null,
+    creator:
+      isRecord(settings.creator) && isRecord(settings.creator.template)
+        ? {
+            template:
+              settings.creator.template as unknown as SlideshowAestheticTemplate,
+            updatedAt:
+              typeof settings.creator.updatedAt === "string"
+                ? settings.creator.updatedAt
+                : undefined,
+          }
+        : null,
     successfulExportCount: asNonNegativeInteger(
       settings.successfulExportCount,
       exportHistory.length,
@@ -343,6 +359,7 @@ export function serializeSlideshowProject(project: SlideshowProject) {
       generationProvider: project.generationProvider ?? null,
       generationWarning: project.generationWarning ?? null,
       templateId: project.templateId ?? null,
+      creator: project.creator?.template ? project.creator : null,
       clientId: project.clientId ?? project.id,
     },
     layout: {
@@ -476,6 +493,23 @@ export async function fetchSlideshowProjects(apiBaseUrl = "/api/slideshows") {
   return rawProjects.map(deserializeSlideshowProject);
 }
 
+export async function fetchSlideshowProject(
+  id: string,
+  apiBaseUrl = "/api/slideshows",
+): Promise<SlideshowProject> {
+  if (isLocalSlideshowId(id)) {
+    throw new SlideshowApiError(
+      "Wait for the draft to finish saving before fetching it.",
+      409,
+    );
+  }
+  const response = await fetch(
+    `${apiBaseUrl}/${encodeURIComponent(id)}`,
+    { cache: "no-store" },
+  );
+  return deserializeSlideshowProject(unwrapProject(await readJsonResponse(response)));
+}
+
 export async function persistSlideshowProject(
   project: SlideshowProject,
   apiBaseUrl = "/api/slideshows",
@@ -524,7 +558,9 @@ export async function requestSlideshowCopyVariation(
       textItems[1]?.text ?? slide.headline,
     ),
     body: asString(content.body, textItems[2]?.text ?? slide.body),
-    prompt: asString(generated.imagePrompt, slide.prompt),
+    prompt: formatGenerationPromptForEditing(
+      asString(generated.imagePrompt, slide.prompt),
+    ),
   };
 }
 
@@ -534,6 +570,7 @@ export async function requestSlideshowStory(
     slideCount: number;
     language: string;
     includeCta: boolean;
+    model?: string;
   },
   apiBaseUrl = "/api/slideshows",
 ): Promise<SlideshowProject> {
@@ -594,7 +631,11 @@ export async function requestSlideshowStory(
     description: input.idea,
     caption: asString(story.caption) || undefined,
     generationProvider:
-      responseRecord.provider === "gemini" ? "gemini" : "local-fallback",
+      responseRecord.provider === "ollama" ? "ollama" : "local-fallback",
+    generationModel:
+      responseRecord.model && typeof responseRecord.model === "string"
+        ? responseRecord.model
+        : null,
     generationWarning: asString(responseRecord.warning) || undefined,
     slides: normalizeSlideshowSlides(slides, includeCta),
     includeCta,
@@ -704,6 +745,133 @@ export async function requestSlideshowImageGeneration(
 function fileNameFromDisposition(value: string | null, fallback: string) {
   const match = value?.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)/i);
   return match?.[1] ? decodeURIComponent(match[1]) : fallback;
+}
+
+export async function requestSlideshowCreatorDerive(
+  apiBaseUrl = "/api/slideshows",
+  options: { collectionAssetIds?: string[]; referenceImageUrls?: string[] } = {},
+) {
+  const response = await fetch(`${apiBaseUrl}/creator/derive`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      collectionAssetIds: options.collectionAssetIds ?? [],
+      referenceImageUrls: options.referenceImageUrls ?? [],
+    }),
+  });
+  const data = await readJsonResponse(response);
+  const record = isRecord(data) ? data : {};
+  return {
+    template: isRecord(record.template) ? record.template : null,
+    model: asString(record.model),
+    referenceCount: asNumber(record.referenceCount, 0),
+    error: asString(record.error),
+  };
+}
+
+export async function requestSlideshowCreatorVisuals(
+  project: SlideshowProject,
+  slides: Array<{
+    slideId: string;
+    text: string;
+    scene?: { location?: string; activity?: string; subject?: string };
+  }>,
+  template: unknown,
+  apiBaseUrl = "/api/slideshows",
+  options: { model?: string; aspectRatio?: SlideshowAspectRatio } = {},
+) {
+  if (isLocalSlideshowId(project.id)) {
+    throw new SlideshowApiError(
+      "Wait for the draft to finish saving before generating visuals.",
+      409,
+    );
+  }
+  const response = await fetch(
+    `${apiBaseUrl}/${encodeURIComponent(project.id)}/generate-visuals`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        template,
+        slides,
+        aspectRatio: options.aspectRatio ?? project.aspectRatio ?? "9:16",
+        model: options.model ?? "gpt-image-2",
+      }),
+    },
+  );
+  const data = await readJsonResponse(response);
+  const record = isRecord(data) ? data : {};
+  return {
+    jobs: Array.isArray(record.jobs) ? record.jobs : [],
+    model: asString(record.model, "gpt-image-2"),
+    estimatedCost: asNumber(record.estimatedCost, 0),
+    projectRevision: asNumber(record.projectRevision, project.revision ?? 0),
+    error: asString(record.error),
+  };
+}
+
+export type CreatorJobStatus = {
+  status: "queued" | "processing" | "completed" | "failed";
+  error?: string | null;
+  imageUrl?: string | null;
+};
+
+/**
+ * Wait until every queued creator job reaches a terminal state, returning the
+ * number completed and a list of failures. Polls each job's status endpoint.
+ * Never throws for provider failures; failures are surfaced to the caller so
+ * the operator can retry individual slides inside the editor.
+ */
+export async function waitForCreatorVisuals(
+  jobs: Array<{ jobId: string }>,
+  onProgress?: (completed: number, total: number) => void,
+): Promise<{ completed: number; failed: Array<{ jobId: string; error: string }> }> {
+  const results = new Map<string, { status: string; error?: string }>();
+  const deadline = Date.now() + 4 * 60 * 1000; // generous 4 min cap
+
+  while (Date.now() < deadline) {
+    const pending = jobs.filter((job) => {
+      const current = results.get(job.jobId);
+      return !current || (current.status !== "completed" && current.status !== "failed");
+    });
+    if (pending.length === 0) break;
+
+    await Promise.all(
+      pending.map(async (job) => {
+        try {
+          const response = await fetch(`/api/jobs/${encodeURIComponent(job.jobId)}`, {
+            cache: "no-store",
+          });
+          const data = (await response.json()) as { status?: string; error?: string | null };
+          results.set(job.jobId, {
+            status: data.status ?? "processing",
+            error: data.error ?? undefined,
+          });
+        } catch {
+          // transient network error — retry on the next tick
+        }
+      }),
+    );
+
+    const completed = [...results.values()].filter((r) => r.status === "completed").length;
+    onProgress?.(completed, jobs.length);
+
+    const allSettled = jobs.every((job) => {
+      const current = results.get(job.jobId);
+      return current && (current.status === "completed" || current.status === "failed");
+    });
+    if (allSettled) break;
+    await delay(1800);
+  }
+
+  const completed = [...results.values()].filter((r) => r.status === "completed").length;
+  const failed = jobs
+    .filter((job) => results.get(job.jobId)?.status === "failed")
+    .map((job) => ({
+      jobId: job.jobId,
+      error: results.get(job.jobId)?.error ?? "Generation failed.",
+    }));
+  return { completed, failed };
 }
 
 export async function downloadSlideshowExport(

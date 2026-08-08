@@ -20,17 +20,17 @@ export default function HomeLoading() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <p className="pf-eyebrow">Home</p>
-          <h2 className="mt-1 text-[27px] font-semibold leading-none tracking-[-0.045em] text-[#232323] sm:text-[30px]">
+          <h2 className="mt-1 text-[27px] font-semibold leading-none tracking-[-0.045em] text-[#1C1B17] sm:text-[30px]">
             Daily production cockpit
           </h2>
           <Skeleton className="mt-2.5 h-3.5 w-72 max-w-full" />
         </div>
-        <Skeleton className="h-9 w-32 shrink-0 rounded-[10px]" />
+        <Skeleton className="h-9 w-32 shrink-0 rounded-[6px]" />
       </div>
 
       <section
         aria-label="Today at a glance"
-        className="grid grid-cols-2 gap-px overflow-hidden rounded-[13px] border border-border bg-border shadow-[var(--pf-shadow-xs)] min-[860px]:grid-cols-4"
+        className="grid grid-cols-2 gap-px overflow-hidden rounded-[7px] border border-border bg-border shadow-[var(--pf-shadow-xs)] min-[860px]:grid-cols-4"
       >
         {["In progress", "Awaiting review", "Started today", "Spend today"].map((label) => (
           <div key={label} className="flex min-w-0 flex-col gap-1 bg-white px-4 py-3">
@@ -45,7 +45,7 @@ export default function HomeLoading() {
 
       <div className="grid items-start gap-3.5 min-[1080px]:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex min-w-0 flex-col gap-3.5">
-          <section className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+          <section className="min-w-0 rounded-[7px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
             <h3 className="text-sm font-semibold tracking-tight">In progress</h3>
             <div className="mt-1">
               {Array.from({ length: 3 }).map((_, index) => (
@@ -54,17 +54,17 @@ export default function HomeLoading() {
             </div>
           </section>
 
-          <section className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+          <section className="min-w-0 rounded-[7px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
             <h3 className="text-sm font-semibold tracking-tight">Needs review</h3>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
               {Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton key={index} className="aspect-[4/5] rounded-[10px]" />
+                <Skeleton key={index} className="aspect-[4/5] rounded-[6px]" />
               ))}
             </div>
           </section>
         </div>
 
-        <aside className="min-w-0 rounded-[13px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
+        <aside className="min-w-0 rounded-[7px] border border-border bg-card p-3.5 shadow-[var(--pf-shadow-xs)] sm:p-4">
           <h3 className="text-sm font-semibold tracking-tight">Start new work</h3>
           <div className="mt-1">
             {Array.from({ length: 3 }).map((_, index) => (

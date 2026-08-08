@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
-import { getAllModels, getModel, calculateEstimatedCost } from "../src/lib/ai/models";
+import {
+  GPT_IMAGE_2_PORTRAIT_9_16,
+  calculateEstimatedCost,
+  getAllModels,
+  getModel,
+  mapAspectRatioToFalFormat,
+} from "../src/lib/ai/models";
 import { MODEL_REGISTRY } from "../src/lib/ai/models";
 
 const models = getAllModels();
@@ -34,9 +40,14 @@ assert.equal(getModel("minimax-h3")?.limits.minDuration, 5);
 assert.equal(getModel("gpt-image-2")?.capabilities.textToImage, true);
 assert.equal(
   getModel("gpt-image-2")?.limits.aspectRatios.includes("9:16"),
-  false,
-  "GPT Image 2 has no true 9:16 preset"
+  true,
+  "GPT Image 2 exposes its explicit true 9:16 size"
 );
+assert.deepEqual(
+  mapAspectRatioToFalFormat("9:16", "gpt-image-2"),
+  GPT_IMAGE_2_PORTRAIT_9_16,
+);
+assert.deepEqual(GPT_IMAGE_2_PORTRAIT_9_16, { width: 1152, height: 2048 });
 assert.equal(getModel("seedream-5.0-pro")?.pricing.amount, 0.0675);
 assert.equal(getModel("flux-2-flex")?.capabilities.textToImage, true);
 assert.equal(getModel("pixverse-swap")?.capabilities.subjectSwap, true);

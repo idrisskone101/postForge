@@ -1,5 +1,9 @@
 # MagicPath production parity map
 
+> **Status note (Aug 2026, canon redesign):** PostForge's visual world was replaced again — this time by the **canon redesign** (category-standard SaaS dashboard at the Linear/Resend craft bar; see `PRODUCT.md` brand commitments and the direction contract in `src/app/layout.tsx`, seed key `c509faa7`). The shell (sidebar, route header, mobile bar) and Home (`/`) are rebuilt in the canon world; remaining routes migrate one per goal-loop iteration. **All MagicPath frames below are now stale anti-references, including for routes not yet migrated — do not run parity against them.** Visual QA runs against `DESIGN.md` (rewritten at this redesign's finish) and the approved comp `.impeccable/mocks/comp-a.png` for shell + Home. Regenerate or retire these frames when a new MagicPath project is created for the canon world.
+>
+> History: the frames predate both the Forge Floor redesign (seed `3c4a7d9c`) and this canon redesign.
+
 MagicPath project: [PostForge - ReelFarm Redesign](https://www.magicpath.ai/files/435052398810132480)
 
 | Production surface | Route | MagicPath component | Revision |

@@ -223,7 +223,7 @@ export function SpendPageContent({
 
   return (
     <div className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
-      <section className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] lg:flex-row lg:items-center lg:justify-between">
+      <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Spend controls
@@ -288,13 +288,13 @@ export function SpendPageContent({
         </div>
       )}
 
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-semibold text-muted-foreground">Period Spend</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Period Spend</span>
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold",
+                "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
                 changePercent === 0 && "bg-muted text-muted-foreground",
                 changeIsUp && "bg-destructive/10 text-destructive",
                 changePercent < 0 && "bg-accent-green/10 text-accent-green"
@@ -309,7 +309,7 @@ export function SpendPageContent({
               )}
             </span>
           </div>
-          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+          <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
             {formatCost(currentPeriodCost)}
           </strong>
           <p className="mt-1 text-[11px] text-muted-foreground">
@@ -317,29 +317,29 @@ export function SpendPageContent({
           </p>
         </article>
 
-        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+        <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-semibold text-muted-foreground">Forge Cycles</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Generations</span>
             <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
               <Sparkles className="size-3.5" />
             </span>
           </div>
-          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+          <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
             {totalJobs}
           </strong>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            Avg Cost {formatCost(avgCycleCost)} per cycle
+            Avg cost {formatCost(avgCycleCost)} per generation
           </p>
         </article>
 
-        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+        <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-semibold text-muted-foreground">Top Model</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Top Model</span>
             <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
               <Gauge className="size-3.5" />
             </span>
           </div>
-          <strong className="mt-3 block truncate text-lg font-semibold tracking-tight">
+          <strong className="mt-3 block truncate text-[20px] font-semibold tracking-[-0.02em]">
             {topModel ? topModel.name : "No data yet"}
           </strong>
           <p className="mt-1 text-[11px] text-muted-foreground">
@@ -349,14 +349,14 @@ export function SpendPageContent({
           </p>
         </article>
 
-        <article className="rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)]">
+        <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-semibold text-muted-foreground">Budget remaining</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Budget remaining</span>
             <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
               <WalletCards className="size-3.5" />
             </span>
           </div>
-          <strong className="mt-3 block text-2xl font-semibold tracking-[-0.035em] tabular-nums">
+          <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
             {formatCost(budgetRemaining)}
           </strong>
           <p className="mt-1 text-[11px] text-muted-foreground">
@@ -367,10 +367,10 @@ export function SpendPageContent({
 
       <section
         className={cn(
-          "flex flex-col gap-4 rounded-xl border p-4 lg:flex-row lg:items-center",
+          "flex flex-col gap-4 rounded-lg border p-4 lg:flex-row lg:items-center",
           budgetPercent >= 90
             ? "border-destructive/30 bg-destructive/5"
-            : "border-amber-300/70 bg-amber-50/70 dark:border-amber-500/30 dark:bg-amber-500/10"
+            : "border-[var(--pf-lamp-amber)]/40 bg-[var(--pf-lamp-amber)]/10"
         )}
       >
         <div
@@ -378,7 +378,7 @@ export function SpendPageContent({
             "flex size-9 shrink-0 items-center justify-center rounded-lg",
             budgetPercent >= 90
               ? "bg-destructive/10 text-destructive"
-              : "bg-amber-200/70 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300"
+              : "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]"
           )}
         >
           <AlertTriangle className="size-4" />
@@ -396,7 +396,7 @@ export function SpendPageContent({
             <div
               className={cn(
                 "h-full rounded-full",
-                budgetPercent >= 90 ? "bg-destructive" : "bg-amber-500"
+                budgetPercent >= 90 ? "bg-destructive" : "bg-[var(--pf-lamp-amber)]"
               )}
               style={{ width: `${budgetPercent}%` }}
             />
@@ -419,7 +419,7 @@ export function SpendPageContent({
         data-spend-analysis-grid="true"
         className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
       >
-        <article className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5">
+        <article className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
           <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-sm font-semibold">Spend Over Time</h2>
@@ -427,7 +427,7 @@ export function SpendPageContent({
                 Daily image and video cost · {period.toUpperCase()}
               </p>
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <span className="inline-block size-2 rounded-sm bg-accent-blue" />
                 Image
@@ -441,7 +441,7 @@ export function SpendPageContent({
           <CostChart data={chartData} />
         </article>
 
-        <aside className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-[var(--pf-shadow-xs)] sm:p-5">
+        <aside className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
           <header className="border-b border-border pb-3">
             <h2 className="text-sm font-semibold">Spend breakdown</h2>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -452,7 +452,7 @@ export function SpendPageContent({
           {workflowPieData.length > 0 ? (
             <>
               <div className="pt-4">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
                   Spend by Format
                 </h3>
                 <div className="mt-2 grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3">
@@ -461,26 +461,26 @@ export function SpendPageContent({
                   </div>
                   <div className="min-w-0 space-y-3">
                     <div className="min-w-0">
-                      <div className="flex items-center justify-between gap-2 text-[10px]">
+                      <div className="flex items-center justify-between gap-2 text-[11px]">
                         <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
                           <span className="size-2 shrink-0 rounded-sm bg-accent-blue" />
                           <span className="truncate">Image</span>
                         </span>
                         <strong className="shrink-0 text-foreground">{imagePct.toFixed(0)}%</strong>
                       </div>
-                      <p className="mt-1 truncate text-[10px] text-muted-foreground">
+                      <p className="mt-1 truncate text-[11px] text-muted-foreground">
                         {formatCost(breakdown.image.cost)} · {breakdown.image.count} {breakdown.image.count === 1 ? "job" : "jobs"}
                       </p>
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center justify-between gap-2 text-[10px]">
+                      <div className="flex items-center justify-between gap-2 text-[11px]">
                         <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
                           <span className="size-2 shrink-0 rounded-sm bg-primary" />
                           <span className="truncate">Video</span>
                         </span>
                         <strong className="shrink-0 text-foreground">{videoPct.toFixed(0)}%</strong>
                       </div>
-                      <p className="mt-1 truncate text-[10px] text-muted-foreground">
+                      <p className="mt-1 truncate text-[11px] text-muted-foreground">
                         {formatCost(breakdown.video.cost)} · {breakdown.video.count} {breakdown.video.count === 1 ? "job" : "jobs"}
                       </p>
                     </div>
@@ -490,10 +490,10 @@ export function SpendPageContent({
 
               <div className="mt-4 border-t border-border pt-4">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
                     Spend by Model
                   </h3>
-                  <span className="text-[10px] text-muted-foreground">Highest first</span>
+                  <span className="text-[11px] text-muted-foreground">Highest first</span>
                 </div>
                 <div className="mt-2 space-y-1.5">
                   {modelEntries.slice(0, 5).map(([name, data], index) => (
@@ -501,15 +501,15 @@ export function SpendPageContent({
                       key={name}
                       className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-muted/55 px-2.5 py-2"
                     >
-                      <span className="flex min-w-0 items-center gap-2 text-[10px] font-medium">
+                      <span className="flex min-w-0 items-center gap-2 text-[11px] font-medium">
                         <span
                           className="inline-block size-2 shrink-0 rounded-sm"
                           style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                         />
                         <span className="truncate">{name}</span>
                       </span>
-                      <span className="shrink-0 text-right text-[10px] text-muted-foreground">
-                        <strong className="block font-mono text-[10px] text-foreground">
+                      <span className="shrink-0 text-right text-[11px] text-muted-foreground">
+                        <strong className="block font-mono text-[11px] text-foreground">
                           {formatCost(data.cost)}
                         </strong>
                         {totalModelCost > 0
@@ -536,11 +536,11 @@ export function SpendPageContent({
         </aside>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--pf-shadow-xs)]">
+      <section className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]">
         <header className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">Generation Log</h2>
-            <span className="rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">
+            <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">
               {filteredLogs.length} {filteredLogs.length === 1 ? "entry" : "entries"}
             </span>
           </div>
@@ -582,19 +582,19 @@ export function SpendPageContent({
           <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow className="bg-muted/50 hover:bg-muted/50">
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Generation
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Model
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Type
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Created
                 </TableHead>
-                <TableHead className="text-right text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <TableHead className="text-right text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Cost
                 </TableHead>
               </TableRow>
@@ -633,15 +633,12 @@ export function SpendPageContent({
                       <strong className="block max-w-52 truncate text-xs font-semibold">
                         {log.jobId}
                       </strong>
-                      <span className="mt-1 block text-[10px] text-muted-foreground">
-                        {log.id.slice(0, 12)}
-                      </span>
                     </TableCell>
                     <TableCell className="text-xs font-medium">{log.model}</TableCell>
                     <TableCell>
                       <span
                         className={cn(
-                          "inline-flex rounded-full px-2 py-1 text-[10px] font-semibold capitalize",
+                          "inline-flex rounded-full px-2 py-1 text-[11px] font-semibold capitalize",
                           log.type === "image"
                             ? "bg-accent-blue/10 text-accent-blue"
                             : "bg-primary/10 text-primary"
@@ -668,7 +665,7 @@ export function SpendPageContent({
 
         {filteredLogs.length > LOGS_PAGE_SIZE && (
           <footer className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               Page <strong className="text-foreground">{safeLogPage + 1}</strong> of {totalPages}
             </span>
             <div className="flex gap-1">

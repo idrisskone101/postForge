@@ -25,30 +25,24 @@ interface ModelPickerProps {
   recommendedModelId?: string;
 }
 
-const MODEL_ICON_MAP: Record<
-  string,
-  {
-    icon: ComponentType<{ className?: string; strokeWidth?: number }>;
-    accent: string;
-  }
-> = {
-  "nano-banana-2": { icon: Zap, accent: "from-[#FFB49F] to-[#FF4A20]" },
-  "nano-banana-pro": { icon: Palette, accent: "from-[#B9EEE4] to-[#22A887]" },
-  "nano-banana": { icon: Sparkles, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
-  "kling-3.0": { icon: Film, accent: "from-[#B7DDFF] to-[#378EFF]" },
-  "kling-3.0-pro": { icon: Film, accent: "from-[#B9EEE4] to-[#22A887]" },
-  "kling-3.0-i2v": { icon: Layers, accent: "from-[#FFB49F] to-[#FF4A20]" },
-  veo3: { icon: Video, accent: "from-[#B7DDFF] to-[#378EFF]" },
-  "veo3-fast": { icon: Zap, accent: "from-[#FFB49F] to-[#FF4A20]" },
-  "veo3.1": { icon: Video, accent: "from-[#B9EEE4] to-[#22A887]" },
-  "seedance-2.0": { icon: Film, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
-  "gemini-omni-flash": { icon: Sparkles, accent: "from-[#B7DDFF] to-[#378EFF]" },
-  "minimax-h3": { icon: Film, accent: "from-[#FFB49F] to-[#FF4A20]" },
-  "pixverse-swap": { icon: Layers, accent: "from-[#B9EEE4] to-[#22A887]" },
-  "gemini-omni-edit": { icon: Video, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
-  "gpt-image-2": { icon: ImageIcon, accent: "from-[#B7DDFF] to-[#378EFF]" },
-  "seedream-5.0-pro": { icon: ImageIcon, accent: "from-[#FFB49F] to-[#FF4A20]" },
-  "flux-2-flex": { icon: Palette, accent: "from-[#E2D3FF] to-[#8B5CF6]" },
+const MODEL_ICON_MAP: Record<string, ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  "nano-banana-2": Zap,
+  "nano-banana-pro": Palette,
+  "nano-banana": Sparkles,
+  "kling-3.0": Film,
+  "kling-3.0-pro": Film,
+  "kling-3.0-i2v": Layers,
+  veo3: Video,
+  "veo3-fast": Zap,
+  "veo3.1": Video,
+  "seedance-2.0": Film,
+  "gemini-omni-flash": Sparkles,
+  "minimax-h3": Film,
+  "pixverse-swap": Layers,
+  "gemini-omni-edit": Video,
+  "gpt-image-2": ImageIcon,
+  "seedream-5.0-pro": ImageIcon,
+  "flux-2-flex": Palette,
 };
 
 function capabilityItems(model: ModelDefinition): Array<{
@@ -95,11 +89,7 @@ function ModelCard({
         ? `${formatCost(model.pricing.amount)}/clip`
         : `${formatCost(model.pricing.amount)}/second`;
   const capabilityList = capabilityItems(model);
-  const iconConfig = MODEL_ICON_MAP[model.id] ?? {
-    icon: Sparkles,
-    accent: "from-[#B7DDFF] to-[#378EFF]",
-  };
-  const Icon = iconConfig.icon;
+  const Icon = MODEL_ICON_MAP[model.id] ?? Sparkles;
 
   return (
     <button
@@ -107,38 +97,40 @@ function ModelCard({
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        "group relative min-w-0 rounded-[9px] border bg-white p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+        "group relative min-w-0 rounded-lg border bg-card p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
         selected
-          ? "border-[#FF4A20] shadow-[0_0_0_2px_rgba(255,74,32,0.09),var(--pf-shadow-sm)]"
-          : "border-[#DEDFD8] hover:-translate-y-px hover:border-[#BFC0B9] hover:bg-[#FCFCFA] hover:shadow-[var(--pf-shadow-xs)]"
+          ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25 shadow-[var(--pf-shadow-2xs)]"
+          : "border-border hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-2xs)]"
       )}
     >
       {recommended && (
-        <span className="absolute -top-2 left-2.5 rounded-md bg-[#22C55E] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+        <span className="mb-2 inline-flex w-fit rounded-full border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-success)]">
           Recommended
         </span>
       )}
       <span className="flex items-center gap-2.5">
         <span
           className={cn(
-            "grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br text-white",
-            iconConfig.accent
+            "grid size-9 shrink-0 place-items-center rounded-lg",
+            selected
+              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
+              : "bg-[var(--pf-active)] text-muted-foreground"
           )}
         >
           <Icon className="size-4" strokeWidth={1.9} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="flex items-start justify-between gap-2">
-            <strong className="block truncate text-[11px] font-semibold text-[#30312E]">
+          <span className="flex items-center justify-between gap-2">
+            <strong className="min-w-0 text-[13px] font-semibold leading-[1.25] text-foreground line-clamp-2">
               {model.name}
             </strong>
             {selected ? (
-              <Check className="mt-0.5 size-3.5 shrink-0 text-[#FF4A20]" />
+              <Check className="size-3.5 shrink-0 text-[var(--pf-orange)]" />
             ) : (
-              <Circle className="mt-0.5 size-3.5 shrink-0 text-[#C5C6BF]" />
+              <Circle className="size-3.5 shrink-0 text-muted-foreground" />
             )}
           </span>
-          <span className="mt-1 block truncate text-[10px] text-[#91928E]">
+          <span className="mt-1 block truncate text-[12px] text-muted-foreground">
             {priceLabel}
           </span>
         </span>
@@ -149,7 +141,7 @@ function ModelCard({
             <span
               key={item.label}
               title={item.label}
-              className="inline-flex items-center gap-1 rounded-md bg-[#F1F2EC] px-1.5 py-1 text-[10px] font-medium text-[#72736F]"
+              className="inline-flex items-center gap-1 rounded-md bg-[var(--pf-active)] px-1.5 py-1 text-[12px] font-medium text-muted-foreground"
             >
               {item.icon}
               {item.label}
@@ -188,7 +180,7 @@ export function ModelPicker({
       <div
         role="tablist"
         aria-label="Generation type"
-        className="grid grid-cols-2 rounded-[11px] bg-[#E8E9E2] p-1"
+        className="grid grid-cols-2 rounded-[6px] bg-[var(--pf-active)] p-1"
       >
         {(["image", "video"] as const).map((type) => {
           const active = activeType === type;
@@ -203,8 +195,8 @@ export function ModelPicker({
               className={cn(
                 "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
                 active
-                  ? "bg-white text-[#232323] shadow-[0_1px_4px_rgba(36,37,32,0.07)]"
-                  : "text-[#777873] hover:text-[#3F403C]"
+                  ? "bg-white text-foreground shadow-[var(--pf-shadow-2xs)]"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Icon className="size-3.5" />
@@ -216,7 +208,7 @@ export function ModelPicker({
 
       <div
         key={activeType}
-        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3"
+        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2"
       >
         {visibleModels.map((model) => (
           <ModelCard
@@ -230,7 +222,7 @@ export function ModelPicker({
       </div>
 
       {visibleModels.length === 0 && (
-        <div className="mt-3 rounded-[9px] border border-dashed border-[#DADBD2] px-4 py-8 text-center text-[11px] text-[#868686]">
+        <div className="mt-3 rounded-lg border border-dashed border-border px-4 py-8 text-center text-[12px] text-muted-foreground">
           No {activeType} models are configured.
         </div>
       )}

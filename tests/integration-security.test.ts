@@ -39,6 +39,15 @@ async function run() {
     })
   );
   assert.equal(ordinaryApiResponse.status, 401);
+  delete process.env.POSTFORGE_API_KEY;
+  const localProductionResponse = middleware(
+    new NextRequest("http://0.0.0.0:3100/")
+  );
+  assert.equal(localProductionResponse.headers.get("x-middleware-next"), "1");
+  const unconfiguredPublicResponse = middleware(
+    new NextRequest("https://postforge.example/")
+  );
+  assert.equal(unconfiguredPublicResponse.status, 503);
   if (previousNodeEnv === undefined) Reflect.deleteProperty(process.env, "NODE_ENV");
   else Reflect.set(process.env, "NODE_ENV", previousNodeEnv);
   if (previousApiKey === undefined) delete process.env.POSTFORGE_API_KEY;

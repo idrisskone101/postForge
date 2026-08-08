@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const now = new Date();
   const activeJobCutoff = getHomeActiveJobCutoff(now);
-  const [todaySummary, monthSummary, recentJobs, activeJobs] =
+  const weekCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const [todaySummary, monthSummary, recentJobs, activeJobs, completedThisWeek, pendingReviewCount, recentMediaFiles] =
     await Promise.all([
       getCostSummary({ period: "today" }),
       getCostSummary({ period: "month" }),
@@ -26,6 +27,29 @@ export default async function HomePage() {
         },
         orderBy: { createdAt: "desc" },
         take: 5,
+      }),
+      prisma.generationJob.count({
+        where: { status: "completed", completedAt: { gte: weekCutoff } },
+      }),
+      prisma.generatedFile.count({
+        where: { reviewStatus: "needs_review" },
+      }),
+      prisma.generatedFile.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 6,
+        select: {
+          id: true,
+          jobId: true,
+          type: true,
+          width: true,
+          height: true,
+          durationSec: true,
+          reviewStatus: true,
+          createdAt: true,
+          job: {
+            select: { prompt: true, model: true, type: true, tags: true },
+          },
+        },
       }),
     ]);
 
@@ -104,12 +128,27 @@ export default async function HomePage() {
     productionContext: productionContextFor(job.id),
   })) satisfies HomeJob[];
 
+  const recentMedia = recentMediaFiles.map((file) => ({
+    id: file.id,
+    jobId: file.jobId,
+    type: file.type,
+    jobType: file.job.type,
+    durationSec: file.durationSec,
+    reviewStatus: file.reviewStatus,
+    model: file.job.model,
+    prompt: file.job.prompt,
+    isClone: file.job.type === "video" && file.job.tags?.includes("ugc-clone") === true,
+  }));
+
   return (
     <HomeCockpit
       todaySummary={todaySummary}
       monthSummary={monthSummary}
       activeJobs={activeHomeJobs}
       recentJobs={visibleRecentJobs}
+      completedThisWeek={completedThisWeek}
+      pendingReviewCount={pendingReviewCount}
+      recentMedia={recentMedia}
       now={now}
     />
   );

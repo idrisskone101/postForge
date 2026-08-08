@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-06T00:00:00.000Z",
+  "title": "Design System: PostForge",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Coral",
+        "canonical": "#FF4A20",
+        "purpose": "Single brand accent, reserved for primary actions and active navigation.",
+        "tonalRamp": ["#7a1603", "#a02205", "#c22e07", "#e13a0e", "#ff4a20", "#ff6a3c", "#ff8a5f", "#ffb89c"]
+      },
+      "primary-bright": {
+        "role": "primary",
+        "displayName": "Coral Bright",
+        "canonical": "#FF6540",
+        "purpose": "Dark-theme coral; also the primary-button hover lightening.",
+        "tonalRamp": ["#8a1a06", "#ab2408", "#cc2e0a", "#ed3d12", "#ff6540", "#ff815f", "#ff9d84", "#ffc4b4"]
+      },
+      "primary-deep": {
+        "role": "primary",
+        "displayName": "Coral Deep",
+        "canonical": "#E9421C",
+        "purpose": "Primary hover / active-foreground tint.",
+        "tonalRamp": ["#6e1504", "#8f1c07", "#b0240a", "#d12d0e", "#e9421c", "#ee5b37", "#f37758", "#f7a892"]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "canonical": "#FAFAFA",
+        "purpose": "Page floor and route-header background (light theme).",
+        "tonalRamp": ["#1b1b1d", "#38383c", "#55555c", "#71717a", "#a1a1aa", "#c4c4ca", "#dedee2", "#fafafa"]
+      },
+      "canvas-dark": {
+        "role": "neutral",
+        "displayName": "Canvas Dark",
+        "canonical": "#0A0A0B",
+        "purpose": "Page floor and rail in the dark theme.",
+        "tonalRamp": ["#000000", "#050506", "#0a0a0b", "#16161a", "#26262b", "#3a3a40", "#55555c", "#71717a"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#FFFFFF",
+        "purpose": "Cards, panels, secondary buttons, popovers.",
+        "tonalRamp": ["#1b1b1d", "#2e2e33", "#4b4b52", "#6b6b73", "#8f8f97", "#b8b8be", "#dcdce0", "#ffffff"]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Surface Dark",
+        "canonical": "#131316",
+        "purpose": "Card surface in the dark theme.",
+        "tonalRamp": ["#000000", "#070708", "#131316", "#1c1c20", "#26262b", "#3a3a40", "#55555c", "#71717a"]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Foreground",
+        "canonical": "#18181B",
+        "purpose": "Primary text (light theme).",
+        "tonalRamp": ["#18181b", "#3f3f46", "#52525b", "#71717a", "#a1a1aa", "#c4c4cc", "#e4e4e7", "#fafafa"]
+      },
+      "foreground-dark": {
+        "role": "neutral",
+        "displayName": "Foreground Dark",
+        "canonical": "#FAFAFA",
+        "purpose": "Primary text (dark theme).",
+        "tonalRamp": ["#18181b", "#3f3f46", "#52525b", "#71717a", "#a1a1aa", "#c4c4cc", "#e4e4e7", "#fafafa"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#71717A",
+        "purpose": "Secondary text, labels, meta, inactive icons.",
+        "tonalRamp": ["#2e2e34", "#3f3f46", "#52525b", "#63636b", "#71717a", "#a1a1aa", "#c4c4cc", "#e4e4e7"]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Muted Dark",
+        "canonical": "#A1A1AA",
+        "purpose": "Secondary text (dark theme).",
+        "tonalRamp": ["#2e2e34", "#3f3f46", "#52525b", "#63636b", "#71717a", "#a1a1aa", "#c4c4cc", "#e4e4e7"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "#E4E4E7",
+        "purpose": "Hairlines around cards, rows, controls.",
+        "tonalRamp": ["#26262b", "#3a3a40", "#55555c", "#71717a", "#a1a1aa", "#c4c4cc", "#e4e4e7", "#f4f4f5"]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Border Dark",
+        "canonical": "#26262B",
+        "purpose": "Hairlines in the dark theme.",
+        "tonalRamp": ["#131316", "#1c1c20", "#26262b", "#3a3a40", "#4b4b52", "#55555c", "#71717a", "#a1a1aa"]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Border Strong",
+        "canonical": "#D4D4D8",
+        "purpose": "Card hover stroke.",
+        "tonalRamp": ["#3a3a40", "#4b4b52", "#55555c", "#71717a", "#a1a1aa", "#c4c4cc", "#d4d4d8", "#e4e4e7"]
+      },
+      "rail-accent": {
+        "role": "neutral",
+        "displayName": "Rail Accent",
+        "canonical": "#FFF1EC",
+        "purpose": "Active nav row bed (pale coral wash).",
+        "tonalRamp": ["#2a1710", "#4a2418", "#6e2f1e", "#934025", "#b85a30", "#d97a4e", "#f2b393", "#fff1ec"]
+      },
+      "rail-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Rail Accent Foreground",
+        "canonical": "#E9421C",
+        "purpose": "Text/icon of the active nav row.",
+        "tonalRamp": ["#6e1504", "#8f1c07", "#b0240a", "#d12d0e", "#e9421c", "#ee5b37", "#f37758", "#f7a892"]
+      },
+      "rail-accent-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Rail Accent Foreground Dark",
+        "canonical": "#FF8A70",
+        "purpose": "Text/icon of the active nav row (dark theme).",
+        "tonalRamp": ["#6e1504", "#8f1c07", "#b0240a", "#d12d0e", "#e9421c", "#f05a35", "#ff8a70", "#ffc0ad"]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Success",
+        "canonical": "#16A34A",
+        "purpose": "Approved / ready pipeline state.",
+        "tonalRamp": ["#052e16", "#14532d", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#dcfce7"]
+      },
+      "success-dark": {
+        "role": "tertiary",
+        "displayName": "Success Dark",
+        "canonical": "#4ADE80",
+        "purpose": "Approved state in the dark theme.",
+        "tonalRamp": ["#052e16", "#14532d", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#dcfce7"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger",
+        "canonical": "#DC2626",
+        "purpose": "Rejected / failed pipeline state.",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fee2e2"]
+      },
+      "danger-dark": {
+        "role": "tertiary",
+        "displayName": "Danger Dark",
+        "canonical": "#F87171",
+        "purpose": "Rejected state in the dark theme.",
+        "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fee2e2"]
+      },
+      "lamp-amber": {
+        "role": "tertiary",
+        "displayName": "Lamp Amber",
+        "canonical": "#D97706",
+        "purpose": "In-progress pipeline state.",
+        "tonalRamp": ["#451a03", "#713f12", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fef3c7"]
+      },
+      "lamp-amber-dark": {
+        "role": "tertiary",
+        "displayName": "Lamp Amber Dark",
+        "canonical": "#FBBF24",
+        "purpose": "In-progress state in the dark theme.",
+        "tonalRamp": ["#451a03", "#713f12", "#92400e", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fef3c7"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home page title only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Route header title in WorkspaceRouteHeader."
+      },
+      "headline-sm": {
+        "displayName": "Headline-sm",
+        "purpose": "Secondary page titles (24px)."
+      },
+      "headline-xs": {
+        "displayName": "Headline-xs",
+        "purpose": "Card-level emphasis, top-model stat (20px)."
+      },
+      "stat-value": {
+        "displayName": "Stat Value",
+        "purpose": "Big tabular numerals on home stat cards."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card headers and section titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Row titles and list content."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase tracked micro-labels for stat cards, group labels, footer meta."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Secondary lines under titles, table cells, meta rows (12px)."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Geist Mono voice for true data: ids, counts in badges, costs, dates."
+      }
+    },
+    "shadows": [
+      { "name": "pf-shadow-2xs", "value": "0 1px 2px rgba(0, 0, 0, 0.04)", "purpose": "Resting elevation for stat cards, secondary buttons, hairline cards." },
+      { "name": "pf-shadow-xs", "value": "0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.03)", "purpose": "Quiet card resting shadow." },
+      { "name": "pf-shadow-sm", "value": "0 1px 2px rgba(0,0,0,0.05), 0 4px 12px -2px rgba(0,0,0,0.08)", "purpose": "Quiet raised elements." },
+      { "name": "pf-shadow-md", "value": "0 1px 2px rgba(0,0,0,0.06), 0 8px 24px -6px rgba(0,0,0,0.12)", "purpose": "Card hover and media tile hover." },
+      { "name": "pf-shadow-lg", "value": "0 2px 4px rgba(0,0,0,0.06), 0 16px 40px -12px rgba(0,0,0,0.16)", "purpose": "Tallest float." },
+      { "name": "pf-shadow-orange", "value": "0 1px 2px rgba(130,25,0,0.15), 0 4px 12px -4px rgba(255,74,32,0.28)", "purpose": "Reserved for the primary button and the sidebar brand mark." }
+    ],
+    "motion": [
+      { "name": "pf-ease", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The one shared easing for all state transitions." },
+      { "name": "pf-duration", "value": "180ms", "purpose": "The single transition duration for hover/active states." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "320px", "purpose": "Minimum body width; below this the app does not attempt to lay out." },
+      { "name": "sm", "value": "390px", "purpose": "Mobile portrait; slide-in sidebar sheet and 58px top bar." },
+      { "name": "md", "value": "768px", "purpose": "Sidebar becomes a fixed rail (72px, collapses at xl); content margin-offsets it." },
+      { "name": "lg", "value": "1024px", "purpose": "Review queue / recent media split side by side; wider gutters." },
+      { "name": "xl", "value": "1280px", "purpose": "Sidebar expands to 240px; nav rows left-align." },
+      { "name": "xxl", "value": "1440px", "purpose": "Full desktop canvas; content caps at max-w-[1280px]." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single coral-filled action; the only element that may carry solid coral. Reserved for one primary call-to-action per surface.",
+      "html": "<button class=\"ds-btn-primary\">New Clone<svg class=\"ds-arrow\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 0 14px; border: 1px solid transparent; border-radius: 8px; background: #FF4A20; color: #fff; font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0; white-space: nowrap; box-shadow: 0 1px 2px rgba(130,25,0,0.15), 0 4px 12px -4px rgba(255,74,32,0.28); transition: transform 180ms cubic-bezier(0.22,1,0.36,1), box-shadow 180ms cubic-bezier(0.22,1,0.36,1), filter 180ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary:hover { filter: brightness(0.93); } .ds-btn-primary:active { transform: scale(0.98); filter: brightness(0.88); } .ds-btn-primary:focus-visible { outline: 2px solid #FF4A20; outline-offset: 2px; } .ds-arrow { transition: transform 180ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-primary:hover .ds-arrow { transform: translateX(2px); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet alternative action: surface fill, hairline border, ink text. Tints with the muted-surface bed on hover.",
+      "html": "<button class=\"ds-btn-secondary\">View all</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 600; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: background 180ms cubic-bezier(0.22,1,0.36,1), border-color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-btn-secondary:hover { background: #F4F4F5; } .ds-btn-secondary:active { transform: scale(0.98); } .ds-btn-secondary:focus-visible { outline: 2px solid #FF4A20; outline-offset: 2px; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Hairline card with an uppercase tracked label and a 28px tabular numeral; the home at-a-glance strip.",
+      "html": "<a class=\"ds-stat\"><span class=\"ds-stat-label\">Spend today</span><span class=\"ds-stat-value\">$12.40</span></a>",
+      "css": ".ds-stat { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.04); text-decoration: none; transition: border-color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-stat:hover { border-color: #D4D4D8; } .ds-stat-label { color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-stat-value { color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 28px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar row. Default is muted text/icon; active uses the pale coral wash bed with coral text and icon. Shown here in the active state.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-active\" href=\"#\"><svg class=\"ds-nav-icon\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><polyline points=\"9 22 9 12 15 12 15 22\"/></svg><span>Home</span></a><a class=\"ds-nav-item\" href=\"#\"><svg class=\"ds-nav-icon\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><polyline points=\"9 22 9 12 15 12 15 22\"/></svg><span>Gallery</span></a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; } .ds-nav-item { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 8px; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 500; text-decoration: none; transition: background 180ms cubic-bezier(0.22,1,0.36,1), color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-nav-icon { color: #71717A; transition: color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-nav-item:hover { background: #F4F4F5; color: #18181B; } .ds-nav-item:hover .ds-nav-icon { color: #18181B; } .ds-nav-active { background: #FFF1EC; color: #E9421C; } .ds-nav-active .ds-nav-icon { color: #FF4A20; } .ds-nav-item:focus-visible { outline: 2px solid #FF4A20; outline-offset: -2px; }"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "status-pill",
+      "description": "Fully-round quiet pill for pipeline state, with a status lamp for in-progress. Shown here as processing.",
+      "html": "<span class=\"ds-pill\"><span class=\"ds-lamp\"></span>processing</span>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 1px solid rgba(217,119,6,0.3); border-radius: 999px; background: rgba(217,119,6,0.1); padding: 2px 10px; color: #D97706; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 500; text-transform: capitalize; } .ds-lamp { width: 7px; height: 7px; border-radius: 999px; background: currentColor; box-shadow: 0 0 5px color-mix(in oklch, currentColor 72%, transparent); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The canonical hairline-bordered surface panel with a quiet resting shadow and a 15px card header plus right-aligned link.",
+      "html": "<section class=\"ds-card\"><header class=\"ds-card-head\"><h3 class=\"ds-card-title\">Review queue</h3><a class=\"ds-card-link\" href=\"#\">Review all<svg class=\"ds-arrow\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></a></header></section>",
+      "css": ".ds-card { border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; padding: 16px 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); } .ds-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; } .ds-card-title { margin: 0; color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-card-link { display: inline-flex; align-items: center; gap: 4px; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; text-decoration: none; transition: color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-card-link:hover { color: #18181B; } .ds-arrow { transition: transform 180ms cubic-bezier(0.22,1,0.36,1); } .ds-card-link:hover .ds-arrow { transform: translateX(2px); }"
+    },
+    {
+      "name": "Review Queue Row",
+      "kind": "custom",
+      "refersTo": "nav-item-active",
+      "description": "A hairline-divided review row: 56px media thumb, prompt, meta, and inline approve/reject ghost buttons that tint toward their semantic color on hover.",
+      "html": "<ul class=\"ds-queue\"><li class=\"ds-queue-row\"><span class=\"ds-thumb\"></span><span class=\"ds-meta\"><span class=\"ds-prompt\">A UGC hook for a productivity app</span><span class=\"ds-sub\">Kling · Video</span></span><span class=\"ds-actions\"><button class=\"ds-approve\" aria-label=\"Approve\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 6 9 17l-5-5\"/></svg></button><button class=\"ds-reject\" aria-label=\"Reject\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></button></span></li></ul>",
+      "css": ".ds-queue { list-style: none; margin: 0; padding: 0; } .ds-queue-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #E4E4E7; } .ds-queue-row:first-child { border-top: none; padding-top: 0; } .ds-thumb { width: 56px; height: 56px; flex-shrink: 0; border-radius: 8px; border: 1px solid #E4E4E7; background: #F4F4F5; } .ds-meta { flex: 1; min-width: 0; } .ds-prompt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.35; } .ds-sub { display: block; margin-top: 2px; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-actions { display: flex; gap: 6px; flex-shrink: 0; } .ds-approve, .ds-reject { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; color: #71717A; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1), border-color 180ms cubic-bezier(0.22,1,0.36,1), color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-approve:hover { border-color: #16A34A; background: rgba(22,163,74,0.1); color: #16A34A; } .ds-reject:hover { border-color: #DC2626; background: rgba(220,38,38,0.1); color: #DC2626; } .ds-approve:focus-visible, .ds-reject:focus-visible { outline: 2px solid #FF4A20; outline-offset: 2px; }"
+    },
+    {
+      "name": "Docked Bulk Action Bar",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Contextual bulk-action bar docked directly under the filter controls when items are selected: coral count chip, quiet text actions, and the destructive action pushed far right. Never a floating overlay.",
+      "html": "<div class=\"ds-bulk\"><span class=\"ds-bulk-count\">3</span><strong class=\"ds-bulk-label\">3 selected</strong><button class=\"ds-bulk-text\">Select all</button><button class=\"ds-bulk-text\">Clear</button><span class=\"ds-bulk-divider\"></span><button class=\"ds-bulk-action\">Approve</button><button class=\"ds-bulk-action\">Reject</button><button class=\"ds-bulk-action\">Download</button><span class=\"ds-bulk-spacer\"></span><button class=\"ds-bulk-danger\">Delete</button></div>",
+      "css": ".ds-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.04); } .ds-bulk-count { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #FF4A20; color: #fff; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 700; } .ds-bulk-label { font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 500; color: #18181B; } .ds-bulk-text { background: none; border: none; padding: 0; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-bulk-text:hover { color: #18181B; } .ds-bulk-divider { width: 1px; height: 16px; background: #E4E4E7; } .ds-bulk-action { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: none; border-radius: 6px; background: none; color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1), color 180ms cubic-bezier(0.22,1,0.36,1); } .ds-bulk-action:hover { background: #F4F4F5; } .ds-bulk-spacer { flex: 1; } .ds-bulk-danger { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: none; border-radius: 6px; background: none; color: #DC2626; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1); } .ds-bulk-danger:hover { background: rgba(220,38,38,0.1); }"
+    },
+    {
+      "name": "Media Corner Badge",
+      "kind": "chip",
+      "refersTo": "status-pill",
+      "description": "Fully-round black/55 pill on a media tile corner with a colored status dot: green approved, red rejected, amber needs-review. A duration chip uses the same pill on the opposite corner.",
+      "html": "<span class=\"ds-media-badge\"><span class=\"ds-media-dot ds-media-dot-approved\"></span>Approved</span>",
+      "css": ".ds-media-badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: rgba(0,0,0,0.55); padding: 2px 8px; color: #fff; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 500; } .ds-media-dot { width: 6px; height: 6px; border-radius: 999px; } .ds-media-dot-approved { background: #4ADE80; } .ds-media-dot-rejected { background: #F87171; } .ds-media-dot-review { background: #FBBF24; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Muted-surface bed with equal segments; the active segment is a surface pill with the tiny shadow. Used for gallery review filters, model type tabs, and clone step navigation.",
+      "html": "<div class=\"ds-seg\"><button class=\"ds-seg-item ds-seg-active\">All</button><button class=\"ds-seg-item\">Images</button><button class=\"ds-seg-item\">Videos</button></div>",
+      "css": ".ds-seg { display: flex; gap: 4px; padding: 4px; border-radius: 8px; background: #F4F4F5; } .ds-seg-item { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 12px; border: none; border-radius: 6px; background: none; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 180ms cubic-bezier(0.22,1,0.36,1), color 180ms cubic-bezier(0.22,1,0.36,1), box-shadow 180ms cubic-bezier(0.22,1,0.36,1); } .ds-seg-item:hover { color: #18181B; } .ds-seg-active { background: #FFFFFF; color: #18181B; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }"
+    },
+    {
+      "name": "Gallery List Table Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The canon list pattern: a real table with a hidden-below-md header, hairline row dividers, hover on the muted bed, 40px media thumb, status pill, and right-aligned row actions.",
+      "html": "<div class=\"ds-table\"><div class=\"ds-table-head\"><span></span><span></span><span>Output</span><span>Status</span><span>Details</span><span>Created</span><span></span></div><div class=\"ds-table-row\"><span class=\"ds-check\"></span><span class=\"ds-thumb\"></span><span class=\"ds-cell\"><strong class=\"ds-cell-title\">Kling 3.0</strong><span class=\"ds-cell-sub\">A UGC hook for a productivity app</span></span><span class=\"ds-pill\">Approved</span><span class=\"ds-cell\">1080 x 1920</span><span class=\"ds-cell\">2d ago</span><span class=\"ds-actions\"><button>OK</button><button>X</button></span></div></div>",
+      "css": ".ds-table { border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; } .ds-table-head { display: grid; grid-template-columns: 2rem 3rem minmax(0,1.6fr) minmax(7.5rem,0.6fr) minmax(6.5rem,0.5fr) 5.5rem 10rem; gap: 12px; align-items: center; padding: 8px 12px; border-bottom: 1px solid #E4E4E7; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; } .ds-table-row { display: grid; grid-template-columns: 2rem 3rem minmax(0,1.6fr) minmax(7.5rem,0.6fr) minmax(6.5rem,0.5fr) 5.5rem 10rem; gap: 12px; align-items: center; padding: 10px 12px; border-top: 1px solid #E4E4E7; transition: background 180ms cubic-bezier(0.22,1,0.36,1); } .ds-table-row:hover { background: #F4F4F5; } .ds-thumb { width: 40px; height: 40px; border-radius: 6px; border: 1px solid #E4E4E7; background: #F4F4F5; } .ds-cell-title { display: block; color: #18181B; font-family: 'Geist', system-ui, sans-serif; font-size: 13px; font-weight: 600; } .ds-cell-sub { display: block; margin-top: 2px; color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; } .ds-cell { color: #71717A; font-family: 'Geist', system-ui, sans-serif; font-size: 12px; } .ds-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; border: 1px solid rgba(22,163,74,0.3); background: rgba(22,163,74,0.1); padding: 2px 10px; color: #16A34A; font-family: 'Geist', system-ui, sans-serif; font-size: 11px; font-weight: 500; } .ds-actions { display: flex; justify-content: flex-end; gap: 2px; }"
+    },
+    {
+      "name": "Dark Media Stage",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The shared #09090B media-focus stage across the gallery lightbox, generate studio, generation editor, clone composition, slideshow canvas, automation builder, and character builder. Media renders object-contain/full-frame on it.",
+      "html": "<div class=\"ds-stage\"><img class=\"ds-stage-media\" src=\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%2326262b'/%3E%3C/svg%3E\" alt=\"\"/></div>",
+      "css": ".ds-stage { display: flex; align-items: center; justify-content: center; min-height: 280px; background: #09090B; } .ds-stage-media { max-width: 100%; max-height: 100%; object-fit: contain; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Category Standard, Owned",
+    "overview": "PostForge is a calm professional instrument: the category-standard SaaS dashboard executed at the Linear and Resend craft bar. Restraint and clarity are the identity. There is no creative metaphor to invent \u2014 the canon is the choice, made deliberately by the user over the metaphor worlds (print shop, rack, nixie). The operator's media, pipeline state, and spend carry all the color; the chrome around them stays quiet zinc. This surface should read as belonging next to Linear and Resend, not as a theme.\n\nDensity is comfortable-professional: hairline-bordered cards, a compact sidebar, a quiet route header, and a stat strip that reads at a glance. Every decision favors legibility and low noise over decoration. Corners are gently curved (8px), shadows are quiet and offset, and motion is one quick-but-weighty ease shared across the whole system. Nothing competes for attention with the work.",
+    "keyCharacteristics": [
+      "Token-driven zinc-neutral light + dark themes; no per-route color invention.",
+      "One coral accent (#FF4A20 light / #FF6540 dark) reserved for primary actions and active navigation \u2014 nothing else.",
+      "Hairline-bordered cards (8px radius) with quiet, top-lit elevation.",
+      "Geist carries all UI type; Geist Mono is reserved for true data (counts, costs, job ids, dates).",
+      "A single shared motion ease (cubic-bezier(0.22,1,0.36,1) at 180ms) \u2014 no bounce."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Coral appears only on primary actions and active navigation. It is never used as a decorative flourish, a chart series, an idle icon, or a text highlight. When a surface needs more color, the operator's media and status provide it \u2014 the chrome does not.", "section": "colors" },
+      { "name": "The Content Carries Color Rule", "body": "The interface stays zinc. All chromatic meaning beyond the single coral accent is delegated to pipeline state (green/amber/red) and to the media itself. If a panel looks colorless, that is correct; the work supplies the color.", "section": "colors" },
+      { "name": "The No-Literal-Hex Rule", "body": "Every route is token-driven in both themes. No literal hex color appears in component code; the only accepted literals are the #09090B media stage, the slide-theme palettes in the slideshow, and the TEMPLATE_VISUALS gradient maps (content, not chrome). The legacy dark hex-remap tables in globals.css remain only as a transition safety net.", "section": "colors" },
+      { "name": "The Data Voice Rule", "body": "Geist Mono is reserved for true data: identifiers, counts in badges, costs in logs, dates. It is never used as costume or for labels \u2014 mono carries meaning only where the value is the content.", "section": "typography" },
+      { "name": "The Sans Stat Rule", "body": "Stat numerals are 28px semibold tabular-nums in the sans face \u2014 never mono. Geist Mono is reserved for true data (job ids, cost logs), not for headline figures.", "section": "typography" },
+      { "name": "The No-Eyebrow Rule", "body": "Eyebrow/kicker text above page titles is banned everywhere. The route header carries the title, a one-line description, and the primary action only \u2014 no pf-masthead-plate remains in use.", "section": "typography" },
+      { "name": "The Docked Bulk Bar Rule", "body": "The contextual bulk-action bar is a hairline card docked directly under the filter controls \u2014 never a floating overlay or a detached toolbar. It leads with a coral count chip, keeps actions as quiet text, and pushes the destructive action to the far right.", "section": "layout" },
+      { "name": "The Quiet-Shadow Rule", "body": "All elevation is neutral, offset from the top light source, and softly blurred. Never a zero-offset block shadow and never a colored halo. The only colored shadow is the coral one on the primary action.", "section": "elevation" },
+      { "name": "The Dark Stage Rule", "body": "Focused media always renders on the #09090B dark stage with object-contain/full-frame \u2014 the gallery lightbox, generate studio, generation editor, clone composition, slideshow canvas, automation builder, and character builder share this one treatment.", "section": "components" }
+    ],
+    "dos": [
+      "Do use semantic tokens (--pf-*, shadcn tokens) for all new work; the token layer is the only source of truth for colors, radii, shadows, and motion.",
+      "Do reserve coral (--pf-orange) for primary actions and active navigation \u2014 apply The One Accent Rule on every surface.",
+      "Do render focused media on the #09090B dark stage with object-contain/full-frame (The Dark Stage Rule).",
+      "Do use the black/55 corner badge with a status dot for media state, and the .pf-review-stamp + .pf-stamp-slam for reviewed cards.",
+      "Do mark selected grid cards with the coral ring (border-primary + ring-1 ring-primary/25) and selected rows with the coral tint (--sidebar-accent bed + accent-foreground text).",
+      "Do dock the contextual bulk-action bar directly under the filter controls \u2014 never a floating overlay (The Docked Bulk Bar Rule).",
+      "Do use the segmented-control grammar (muted bed, surface active pill + tiny shadow) for filters and step navigation.",
+      "Do use the real table grammar for list views: hidden-below-md header, hairline dividers, hover bed, 40px thumbs, status pills, row actions.",
+      "Do use Geist Mono + tabular-nums for true data only (counts, ids, costs, dates) \u2014 The Data Voice Rule; keep stat numerals in the sans face (The Sans Stat Rule).",
+      "Do keep corners at the 8px canon radius and elevation within the --pf-shadow-2xs..lg + --pf-shadow-orange scale.",
+      "Do use the one shared ease (--pf-ease) at 180ms for all state transitions.",
+      "Do use hairline borders and muted-surface beds for dividers and hovers rather than heavy fills or shadows."
+    ],
+    "donts": [
+      "Don't reintroduce the legacy Forge Floor vocabulary \u2014 kraft/steel surfaces, ticket tears, rotated stamps, stamped-status squares, dark machine-panel rails. That world is discarded; the canon is the category standard played straight.",
+      "Don't place a new literal hex color into a component without also adding it to the dark-mode remap tables in globals.css in the same edit. This is the system's known sharp edge: literal hexes still rely on the remap tables; semantic tokens do not. The only accepted literals are the #09090B stage and content palettes.",
+      "Don't use coral as decoration, chart series, idle icon, or text highlight \u2014 it is reserved for intent.",
+      "Don't use Geist Mono as costume, for labels, or for anything that is not genuine data \u2014 and don't set stat numerals in mono.",
+      "Don't use zero-offset colored shadows, bounce easings, or glass-as-decoration.",
+      "Don't fabricate a new accent or per-route color palette; one coral accent and zinc neutrals are the system.",
+      "Don't add eyebrow/kicker text above page titles; the route header carries title, one-line description, and primary action only.",
+      "Don't float the bulk-action bar over content; it docks under the filter controls.",
+      "Don't use the forge metaphor in copy \u2014 \"Forge Cycles\" is \"Generations\"; the brand name PostForge stays."
+    ]
+  }
+}

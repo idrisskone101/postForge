@@ -6,6 +6,7 @@ import {
   AlertCircle,
   ArrowLeft,
   Check,
+  Clock3,
   Copy,
   Crop,
   Download,
@@ -27,6 +28,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { humanizeGenerationFailure } from "@/lib/ai/prompt-presentation";
 import { GenerateOutputActions } from "@/components/generate-output-actions";
 import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
 import {
@@ -129,11 +131,11 @@ function StatusBadge({ status }: { status: JobDetail["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[10px] font-semibold",
-        completed && "bg-[#E9F7EC] text-[#238A40]",
-        failed && "bg-[#FEF0EF] text-[#C53A32]",
-        status === "processing" && "bg-[#EEF5FF] text-[#2A71C7]",
-        status === "queued" && "bg-[#F1F2EC] text-[#686965]"
+        "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold",
+        completed && "bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
+        failed && "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]",
+        status === "processing" && "bg-[var(--pf-link)]/10 text-[var(--pf-link)]",
+        status === "queued" && "bg-[var(--pf-active)] text-muted-foreground"
       )}
     >
       {completed ? (
@@ -156,25 +158,25 @@ function StatusBadge({ status }: { status: JobDetail["status"] }) {
 function EditorLoadingState() {
   return (
     <div className="pf-content-viewport animate-fade-in-up">
-      <div className="flex min-h-[92px] flex-col gap-4 border-b border-[#DEDFD8] px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-8">
+      <div className="flex min-h-[92px] flex-col gap-4 border-b border-border px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-8">
         <div className="flex flex-1 items-center gap-3">
-          <Skeleton className="size-9 rounded-[9px]" />
+          <Skeleton className="size-9 rounded-lg" />
           <div>
             <Skeleton className="h-3 w-28" />
             <Skeleton className="mt-2 h-6 w-72 max-w-[60vw]" />
           </div>
         </div>
-        <Skeleton className="h-9 w-64 rounded-[9px]" />
+        <Skeleton className="h-9 w-64 rounded-lg" />
       </div>
       <div className="grid gap-4 p-3 sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white">
+        <div className="overflow-hidden rounded-[8px] border border-border bg-white">
           <Skeleton className="h-12 w-full rounded-none" />
-          <div className="grid min-h-[620px] place-items-center bg-[#EFEFE9] p-8">
-            <Skeleton className="h-[560px] w-[315px] max-w-full rounded-[13px]" />
+          <div className="grid min-h-[620px] place-items-center bg-[var(--pf-active)] p-8">
+            <Skeleton className="h-[560px] w-[315px] max-w-full rounded-lg" />
           </div>
           <Skeleton className="h-24 w-full rounded-none" />
         </div>
-        <Skeleton className="h-[760px] w-full rounded-[14px]" />
+        <Skeleton className="h-[760px] w-full rounded-[8px]" />
       </div>
     </div>
   );
@@ -363,12 +365,12 @@ export default function JobDetailPage() {
   if (error && !job) {
     return (
       <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="w-full min-w-0 max-w-md rounded-[13px] border border-[#F2C5C1] bg-white p-6 text-center">
-          <span className="mx-auto grid size-10 shrink-0 place-items-center rounded-full bg-[#FEF0EF] text-[#C53A32]">
+        <div className="w-full min-w-0 max-w-md rounded-lg border border-[var(--pf-danger)]/40 bg-white p-6 text-center">
+          <span className="mx-auto grid size-10 shrink-0 place-items-center rounded-full bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]">
             <AlertCircle className="size-5 shrink-0" />
           </span>
-          <h1 className="mt-4 text-[16px] font-semibold">Generation could not load</h1>
-          <p className="mt-2 min-w-0 break-words text-[11px] leading-5 text-[#777873] [overflow-wrap:anywhere]">
+          <h1 className="mt-4 text-[15px] font-semibold">Generation could not load</h1>
+          <p className="mt-2 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
             {error.message}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -407,27 +409,27 @@ export default function JobDetailPage() {
       data-magicpath-frame="generation-editor-435054353376751616"
       className="pf-content-viewport min-w-0 animate-fade-in-up"
     >
-      <header className="border-b border-[#DEDFD8] bg-[#F3F4EF] px-4 py-4 sm:px-6 lg:px-8">
+      <header className="border-b border-border bg-[var(--pf-canvas)] px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             <button
               type="button"
               aria-label="Back"
               onClick={() => router.back()}
-              className="grid size-9 shrink-0 place-items-center rounded-[9px] border border-[#D6D7CF] bg-white text-[#62635F] transition-colors hover:bg-[#F8F9F5] hover:text-[#232323]"
+              className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-white text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground"
             >
               <ArrowLeft className="size-3.5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#92938F]">
-                Generate / {job.id.slice(0, 8)}
-              </p>
-              <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-2.5">
-                <h1 className="max-w-2xl truncate text-[20px] font-semibold tracking-[-0.03em] text-[#232323] sm:text-[24px]">
+              <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                <h1 className="max-w-2xl truncate text-[20px] font-semibold tracking-[-0.02em] text-foreground sm:text-[24px]">
                   {getEditorTitle(job.prompt)}
                 </h1>
                 <StatusBadge status={job.status} />
               </div>
+              <p className="mt-1 truncate text-[12px] text-muted-foreground">
+                {job.model} · Job {job.id.slice(0, 8)}
+              </p>
             </div>
           </div>
 
@@ -436,7 +438,7 @@ export default function JobDetailPage() {
               type="button"
               variant="outline"
               onClick={() => void handleShare(featured)}
-              className="h-9 shrink-0 rounded-[9px] border-[#D6D7CF] bg-white px-3 text-[10px]"
+              className="h-9 shrink-0 rounded-lg border-border bg-white px-3 text-[12px]"
             >
               <Share2 className="size-3.5 shrink-0" /> Share
             </Button>
@@ -445,7 +447,7 @@ export default function JobDetailPage() {
                 type="button"
                 variant="outline"
                 onClick={() => router.push(`/gallery?type=${job.type}`)}
-                className="h-9 shrink-0 rounded-[9px] border-[#D6D7CF] bg-white px-3 text-[10px]"
+                className="h-9 shrink-0 rounded-lg border-border bg-white px-3 text-[12px]"
               >
                 <GalleryHorizontal className="size-3.5 shrink-0" /> Gallery
               </Button>
@@ -455,7 +457,7 @@ export default function JobDetailPage() {
                 type="button"
                 disabled={isDownloading}
                 onClick={() => void handleDownload(featured)}
-                className="h-9 shrink-0 rounded-[9px] bg-[#FF4A20] px-3.5 text-[10px] text-white hover:bg-[#E9421C]"
+                className="h-9 shrink-0 rounded-lg bg-[var(--pf-orange)] px-3.5 text-[12px] text-white hover:brightness-[0.93]"
               >
                 {isDownloading ? (
                   <Loader2 className="size-3.5 shrink-0 animate-spin" />
@@ -471,7 +473,7 @@ export default function JobDetailPage() {
         {error && job && (
           <div
             role="alert"
-            className="mt-3 flex min-w-0 items-start gap-2 rounded-lg bg-[#FEF0EF] px-3 py-2.5 text-[10px] leading-4 text-[#C53A32]"
+            className="mt-3 flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]"
           >
             <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
             <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
@@ -482,19 +484,19 @@ export default function JobDetailPage() {
       </header>
 
       <section className="grid items-start gap-4 p-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white">
-          <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-[#E1E2DC] px-3 py-2">
+        <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white">
+          <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 aria-label="Zoom out"
                 onClick={() => setPreviewZoom((zoom) => clampPreviewZoom(zoom - 10))}
                 disabled={previewZoom <= 50}
-                className="grid size-7 place-items-center rounded-lg border border-[#DADBD2] bg-white text-[#686965] hover:bg-[#F8F9F5] disabled:opacity-35"
+                className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
               >
                 <ZoomOut className="size-3.5" />
               </button>
-              <span className="w-12 text-center text-[10px] font-semibold text-[#777873]">
+              <span className="w-12 text-center text-[12px] font-semibold text-muted-foreground">
                 {previewZoom}%
               </span>
               <button
@@ -502,7 +504,7 @@ export default function JobDetailPage() {
                 aria-label="Zoom in"
                 onClick={() => setPreviewZoom((zoom) => clampPreviewZoom(zoom + 10))}
                 disabled={previewZoom >= 150}
-                className="grid size-7 place-items-center rounded-lg border border-[#DADBD2] bg-white text-[#686965] hover:bg-[#F8F9F5] disabled:opacity-35"
+                className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
               >
                 <ZoomIn className="size-3.5" />
               </button>
@@ -517,10 +519,10 @@ export default function JobDetailPage() {
                     showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
                   }}
                   className={cn(
-                    "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[10px] font-semibold transition-colors",
+                    "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
                     cropMode
-                      ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
-                      : "border-[#DADBD2] bg-white text-[#686965] hover:bg-[#F8F9F5]"
+                      ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                      : "border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)]"
                   )}
                 >
                   <Crop className="size-3.5" /> {cropMode ? "Fit" : "Crop"}
@@ -529,7 +531,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => void handleFullscreen()}
-                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[#DADBD2] bg-white px-2 text-[10px] font-semibold text-[#686965] hover:bg-[#F8F9F5]"
+                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-border bg-white px-2 text-[12px] font-semibold text-muted-foreground hover:bg-[var(--pf-active)]"
               >
                 <Maximize2 className="size-3.5" />
                 {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
@@ -539,27 +541,30 @@ export default function JobDetailPage() {
 
           <div
             ref={previewStageRef}
-            className="relative grid min-h-[460px] place-items-center overflow-auto bg-[#EFEFE9] bg-[linear-gradient(#E7E8E1_1px,transparent_1px),linear-gradient(90deg,#E7E8E1_1px,transparent_1px)] bg-[size:24px_24px] p-4 dark:bg-[linear-gradient(#343531_1px,transparent_1px),linear-gradient(90deg,#343531_1px,transparent_1px)] sm:min-h-[620px] sm:p-8 fullscreen:min-h-dvh"
+            className={cn(
+              "relative grid min-h-[460px] place-items-center overflow-auto p-4 sm:min-h-[620px] sm:p-8 fullscreen:min-h-dvh",
+              isCompleted && featured ? "bg-[#09090B]" : "bg-[var(--pf-active)]"
+            )}
           >
             {isActive && (
               <div className="flex max-w-sm flex-col items-center px-5 text-center">
                 {job.status === "processing" ? (
-                  <Loader2 className="size-8 animate-spin text-[#FF4A20]" />
+                  <Loader2 className="size-8 animate-spin text-[var(--pf-orange)]" />
                 ) : (
-                  <span className="grid size-10 place-items-center rounded-full bg-white text-[11px] font-bold text-[#62635F] shadow-sm">
-                    02
+                  <span className="grid size-10 place-items-center rounded-full bg-card text-muted-foreground shadow-sm">
+                    <Clock3 className="size-5" />
                   </span>
                 )}
-                <h2 className="mt-4 text-[14px] font-semibold text-[#30312E]">
+                <h2 className="mt-4 text-[15px] font-semibold text-foreground">
                   {statusCopy.title}
                 </h2>
-                <p className="mt-1.5 text-[10px] leading-5 text-[#777873]">
+                <p className="mt-1.5 text-[12px] leading-5 text-muted-foreground">
                   {statusCopy.description}
                 </p>
-                <div className="mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-[#DADBD2]">
+                <div className="mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-[var(--pf-border)]">
                   <span
                     className={cn(
-                      "block h-full rounded-full bg-[#FF4A20]",
+                      "block h-full rounded-full bg-[var(--pf-orange)]",
                       job.status === "queued" ? "w-[18%]" : "w-[64%] animate-pulse"
                     )}
                   />
@@ -569,20 +574,20 @@ export default function JobDetailPage() {
 
             {isFailed && (
               <div className="flex w-full min-w-0 max-w-sm flex-col items-center px-5 text-center">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#FEF0EF] text-[#C53A32]">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]">
                   <AlertCircle className="size-5 shrink-0" />
                 </span>
-                <h2 className="mt-4 text-[14px] font-semibold text-[#30312E]">
+                <h2 className="mt-4 text-[15px] font-semibold text-foreground">
                   {statusCopy.title}
                 </h2>
-                <p className="mt-1.5 min-w-0 break-words text-[10px] leading-5 text-[#777873] [overflow-wrap:anywhere]">
-                  {job.error ?? statusCopy.description}
+                <p className="mt-1.5 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
+                  {humanizeGenerationFailure(job.error, statusCopy.description)}
                 </p>
                 <Button
                   type="button"
                   onClick={() => void handleRetry()}
                   disabled={isRetrying}
-                  className="mt-4 h-9 shrink-0 rounded-[9px] bg-[#FF4A20] px-4 text-[10px] text-white hover:bg-[#E9421C]"
+                  className="mt-4 h-9 shrink-0 rounded-lg bg-[var(--pf-orange)] px-4 text-[12px] text-white hover:brightness-[0.93]"
                 >
                   {isRetrying ? (
                     <Loader2 className="size-3.5 shrink-0 animate-spin" />
@@ -608,22 +613,22 @@ export default function JobDetailPage() {
                   variant="detail"
                   fill={cropMode}
                   showMetadata
-                  className="w-full rounded-[13px] border-[6px] border-white shadow-[0_20px_50px_rgba(37,38,33,0.18)]"
+                  className="w-full rounded-lg shadow-[var(--pf-shadow-lg)]"
                 />
               </div>
             )}
 
             {isCompleted && !featured && (
               <div className="flex max-w-sm flex-col items-center text-center">
-                <AlertCircle className="size-7 text-[#C53A32]" />
+                <AlertCircle className="size-7 text-[var(--pf-danger)]" />
                 <h2 className="mt-3 text-[13px] font-semibold">No output was returned</h2>
-                <p className="mt-1 text-[10px] leading-5 text-[#777873]">
+                <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
                   The job completed without a media file. Recreate it from the saved prompt.
                 </p>
                 <Button
                   type="button"
                   onClick={() => router.push(buildGenerateSimilarHref(job))}
-                  className="mt-4 h-9 rounded-[9px]"
+                  className="mt-4 h-9 rounded-lg"
                 >
                   <Redo2 className="size-3.5" /> Generate similar
                 </Button>
@@ -632,12 +637,12 @@ export default function JobDetailPage() {
           </div>
 
           {isCompleted && (
-            <div className="flex min-h-[92px] items-center gap-2 overflow-x-auto border-t border-[#E1E2DC] px-3 py-2.5">
+            <div className="flex min-h-[92px] items-center gap-2 overflow-x-auto border-t border-border px-3 py-2.5">
               <div className="mr-1 w-20 shrink-0">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                <span className="block text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   Variations
                 </span>
-                <strong className="mt-1 block text-[10px] font-semibold text-[#3F403C]">
+                <strong className="mt-1 block text-[12px] font-semibold text-foreground">
                   {job.outputs.length} output{job.outputs.length === 1 ? "" : "s"}
                 </strong>
               </div>
@@ -649,10 +654,10 @@ export default function JobDetailPage() {
                   aria-pressed={featured?.id === output.id}
                   onClick={() => setFeaturedIdx(index)}
                   className={cn(
-                    "relative h-[68px] w-[54px] shrink-0 overflow-hidden rounded-[7px] border-2 bg-[#E8E9E2] transition-colors",
+                    "relative h-[68px] w-[54px] shrink-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition-colors",
                     featured?.id === output.id
-                      ? "border-[#FF4A20]"
-                      : "border-transparent hover:border-[#BFC0B9]"
+                      ? "border-[var(--pf-orange)]"
+                      : "border-transparent hover:border-[var(--pf-border-strong)]"
                   )}
                 >
                   <MediaPreview
@@ -661,9 +666,9 @@ export default function JobDetailPage() {
                     width={output.width ?? undefined}
                     height={output.height ?? undefined}
                     fill
-                    className="size-full rounded-[5px]"
+                    className="size-full rounded-lg"
                   />
-                  <span className="absolute bottom-1 right-1 rounded bg-[#232323]/80 px-1 py-0.5 text-[10px] font-semibold text-white">
+                  <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[12px] font-semibold text-white">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </button>
@@ -671,7 +676,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => router.push(buildGenerateSimilarHref(job))}
-                className="flex h-[68px] w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-[7px] border border-dashed border-[#C7C8C1] text-[11px] font-semibold text-[#777873] hover:border-[#FF4A20] hover:text-[#FF4A20]"
+                className="flex h-[68px] w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-[var(--pf-border-strong)] text-[13px] font-semibold text-muted-foreground hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]"
               >
                 <Plus className="size-4" /> New variation
               </button>
@@ -679,11 +684,11 @@ export default function JobDetailPage() {
           )}
         </div>
 
-        <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white xl:sticky xl:top-4">
+        <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white xl:sticky xl:top-4">
           <div
             role="tablist"
             aria-label="Generation editor panels"
-            className="grid grid-cols-3 border-b border-[#E1E2DC] px-3 pt-2"
+            className="grid grid-cols-3 border-b border-border px-3 pt-2"
           >
             {(["enhance", "details", "prompts"] as const).map((tab) => (
               <button
@@ -693,9 +698,9 @@ export default function JobDetailPage() {
                 aria-selected={activeTab === tab}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "relative h-10 text-[10px] font-semibold capitalize text-[#777873] transition-colors hover:text-[#232323]",
+                  "relative h-10 text-[12px] font-semibold capitalize text-muted-foreground transition-colors hover:text-foreground",
                   activeTab === tab &&
-                    "text-[#232323] after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-[#FF4A20]"
+                    "text-foreground after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-[var(--pf-orange)]"
                 )}
               >
                 {tab}
@@ -707,14 +712,14 @@ export default function JobDetailPage() {
             <div className="space-y-4 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                     Quick actions
                   </p>
-                  <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
+                  <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                     Refine this output
                   </h2>
                 </div>
-                <span className="rounded-full bg-[#EEF5FF] px-2 py-1 text-[11px] font-bold text-[#2A71C7]">
+                <span className="rounded-full bg-[var(--pf-link)]/10 px-2 py-1 text-[13px] font-semibold text-[var(--pf-link)]">
                   AI
                 </span>
               </div>
@@ -733,21 +738,21 @@ export default function JobDetailPage() {
                         setEnhancementInstruction(tool.instruction);
                       }}
                       className={cn(
-                        "min-w-0 rounded-[9px] border p-2.5 text-left transition-colors",
+                        "min-w-0 rounded-lg border p-2.5 text-left transition-colors",
                         active
-                          ? "border-[#FF4A20] bg-[#FFF8F5]"
-                          : "border-[#DEDFD8] bg-white hover:bg-[#FAFBF7]"
+                          ? "border-[var(--pf-orange)] bg-[var(--sidebar-accent)]"
+                          : "border-border bg-white hover:bg-[var(--pf-active)]"
                       )}
                     >
                       <span className="flex items-start gap-2">
-                        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#F1F2EC] text-[#62635F]">
+                        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
                           <Icon className="size-3.5" />
                         </span>
                         <span className="min-w-0">
-                          <strong className="block truncate text-[10px] font-semibold text-[#30312E]">
+                          <strong className="block truncate text-[12px] font-semibold text-foreground">
                             {tool.title}
                           </strong>
-                          <small className="mt-1 block text-[11px] leading-3.5 text-[#858681]">
+                          <small className="mt-1 block text-[12px] leading-3.5 text-muted-foreground">
                             {tool.detail}
                           </small>
                         </span>
@@ -757,10 +762,10 @@ export default function JobDetailPage() {
                 })}
               </div>
 
-              <div className="border-t border-[#ECECE7] pt-4">
+              <div className="border-t border-border pt-4">
                 <label
                   htmlFor="enhancement-instruction"
-                  className="mb-1.5 block text-[10px] font-semibold text-[#686965]"
+                  className="mb-1.5 block text-[12px] font-semibold text-muted-foreground"
                 >
                   Instruction · {selectedTool.title}
                 </label>
@@ -768,13 +773,13 @@ export default function JobDetailPage() {
                   id="enhancement-instruction"
                   value={enhancementInstruction}
                   onChange={(event) => setEnhancementInstruction(event.target.value)}
-                  className="min-h-[104px] resize-none rounded-[9px] border-[#D7D8D0] bg-[#FCFCFA] text-[10px] leading-4 shadow-none"
+                  className="min-h-[104px] resize-none rounded-lg border-border bg-card text-[12px] leading-4 shadow-none"
                 />
               </div>
 
               <label className="block">
-                <span className="mb-2 flex items-center justify-between text-[10px] font-semibold text-[#686965]">
-                  Edit strength <strong className="text-[#232323]">{editStrength}%</strong>
+                <span className="mb-2 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
+                  Edit strength <strong className="text-foreground">{editStrength}%</strong>
                 </span>
                 <input
                   type="range"
@@ -783,16 +788,16 @@ export default function JobDetailPage() {
                   step={1}
                   value={editStrength}
                   onChange={(event) => setEditStrength(Number(event.target.value))}
-                  className="h-1.5 w-full cursor-pointer accent-[#FF4A20]"
+                  className="h-1.5 w-full cursor-pointer accent-[var(--pf-orange)]"
                 />
               </label>
 
-              <div className="flex items-center justify-between gap-3 rounded-[9px] border border-[#E1E2DC] bg-[#FAFBF7] px-3 py-2.5">
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-[var(--pf-active)] px-3 py-2.5">
                 <span>
-                  <strong className="block text-[10px] font-semibold text-[#363733]">
+                  <strong className="block text-[12px] font-semibold text-foreground">
                     Preserve subject
                   </strong>
-                  <small className="mt-0.5 block text-[11px] text-[#92938E]">
+                  <small className="mt-0.5 block text-[12px] text-muted-foreground">
                     Lock identity and camera geometry
                   </small>
                 </span>
@@ -807,7 +812,7 @@ export default function JobDetailPage() {
                 type="button"
                 disabled={!featured || !isCompleted || isApplying || !enhancementInstruction.trim()}
                 onClick={() => featured && void handleApplyEnhancement(featured)}
-                className="h-11 w-full rounded-[9px] bg-[#FF4A20] text-[10px] font-semibold text-white hover:bg-[#E9421C]"
+                className="h-11 w-full rounded-lg bg-[var(--pf-orange)] text-[12px] font-semibold text-white hover:brightness-[0.93]"
               >
                 {isApplying ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -832,13 +837,13 @@ export default function JobDetailPage() {
 
           {activeTab === "details" && (
             <div className="p-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 Output details
               </p>
-              <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
+              <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                 Generation record
               </h2>
-              <dl className="mt-4 divide-y divide-[#ECECE7] rounded-[9px] border border-[#E1E2DC] px-3">
+              <dl className="mt-4 divide-y divide-border rounded-lg border border-border px-3">
                 {[
                   ["Status", statusCopy.label],
                   ["Type", job.type],
@@ -864,23 +869,23 @@ export default function JobDetailPage() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="grid grid-cols-[110px_minmax(0,1fr)] gap-3 py-2.5 text-[10px]"
+                    className="grid grid-cols-[110px_minmax(0,1fr)] gap-3 py-2.5 text-[12px]"
                   >
-                    <dt className="text-[#858681]">{label}</dt>
-                    <dd className="truncate text-right font-semibold capitalize text-[#3F403C]">
+                    <dt className="text-muted-foreground">{label}</dt>
+                    <dd className="truncate text-right font-semibold capitalize text-foreground">
                       {value}
                     </dd>
                   </div>
                 ))}
               </dl>
-              <div className="mt-3 rounded-[9px] bg-[#F3F4EF] p-3">
-                <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+              <div className="mt-3 rounded-lg bg-[var(--pf-canvas)] p-3">
+                <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   Source
                 </span>
-                <strong className="mt-1 block text-[10px] font-semibold text-[#30312E]">
+                <strong className="mt-1 block text-[12px] font-semibold text-foreground">
                   Generate Studio
                 </strong>
-                <small className="mt-1 block min-w-0 break-words text-[11px] text-[#858681] [overflow-wrap:anywhere]">
+                <small className="mt-1 block min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
                   Job {job.id}
                 </small>
               </div>
@@ -891,10 +896,10 @@ export default function JobDetailPage() {
             <div className="space-y-4 p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#92938F]">
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                     Prompt record
                   </p>
-                  <h2 className="mt-1 text-[14px] font-semibold tracking-[-0.02em] text-[#30312E]">
+                  <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                     Recreate or remix
                   </h2>
                 </div>
@@ -902,22 +907,22 @@ export default function JobDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={() => void handleCopyPrompt()}
-                  className="h-7 rounded-lg border-[#DADBD2] bg-white px-2 text-[10px]"
+                  className="h-7 rounded-lg border-border bg-white px-2 text-[12px]"
                 >
                   <Copy className="size-3" /> Copy
                 </Button>
               </div>
               <div>
-                <p className="mb-1.5 text-[10px] font-semibold text-[#686965]">Main prompt</p>
-                <div className="min-w-0 break-words rounded-[9px] border border-[#E1E2DC] bg-[#FAFBF7] p-3 text-[10px] leading-5 text-[#4F504C] [overflow-wrap:anywhere]">
+                <p className="mb-1.5 text-[12px] font-semibold text-muted-foreground">Main prompt</p>
+                <div className="min-w-0 break-words rounded-lg border border-border bg-[var(--pf-active)] p-3 text-[12px] leading-5 text-foreground [overflow-wrap:anywhere]">
                   {job.prompt}
                 </div>
               </div>
               <div>
-                <p className="mb-1.5 text-[10px] font-semibold text-[#686965]">
+                <p className="mb-1.5 text-[12px] font-semibold text-muted-foreground">
                   Negative prompt
                 </p>
-                <div className="min-w-0 break-words rounded-[9px] border border-[#E1E2DC] bg-[#F3F4EF] p-3 text-[10px] leading-5 text-[#777873] [overflow-wrap:anywhere]">
+                <div className="min-w-0 break-words rounded-lg border border-border bg-[var(--pf-canvas)] p-3 text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
                   {negativePrompt ?? "No negative prompt was used."}
                 </div>
               </div>
@@ -932,7 +937,7 @@ export default function JobDetailPage() {
                       : buildGenerateSimilarHref(job)
                   )
                 }
-                className="h-10 w-full rounded-[9px] border-[#DADBD2] bg-white text-[10px]"
+                className="h-10 w-full rounded-lg border-border bg-white text-[12px]"
               >
                 <Redo2 className="size-3.5" />{" "}
                 {job.type === "video"
@@ -944,7 +949,7 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          <div className="min-w-0 border-t border-[#E1E2DC] p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
+          <div className="min-w-0 border-t border-border p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
             {isCompleted && featured ? (
               <GenerateOutputActions
                 canDownload
@@ -971,10 +976,10 @@ export default function JobDetailPage() {
                 <div
                   role={feedback.tone === "error" ? "alert" : "status"}
                   className={cn(
-                    "flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[10px] leading-4",
+                    "flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[12px] leading-4",
                     feedback.tone === "error"
-                      ? "bg-[#FEF0EF] text-[#C53A32]"
-                      : "bg-[#EAF8ED] text-[#238A40]"
+                      ? "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
+                      : "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
                   )}
                 >
                   {feedback.tone === "error" ? (
@@ -995,7 +1000,7 @@ export default function JobDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={() => router.push(buildCloneHandoffHref(featured.id))}
-                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[10px] xl:hidden"
+                  className="h-9 rounded-lg border-border bg-white text-[12px] xl:hidden"
                 >
                   <Users className="size-3.5 shrink-0" /> Use in Clone
                 </Button>
@@ -1009,7 +1014,7 @@ export default function JobDetailPage() {
                       `/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`
                     )
                   }
-                  className="h-9 rounded-[9px] border-[#DADBD2] bg-white text-[10px] xl:hidden"
+                  className="h-9 rounded-lg border-border bg-white text-[12px] xl:hidden"
                 >
                   <Workflow className="size-3.5 shrink-0" /> Automate
                 </Button>
@@ -1022,7 +1027,7 @@ export default function JobDetailPage() {
                 render={
                   <button
                     type="button"
-                    className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-dashed border-[#E5AAA3] text-[10px] font-semibold text-[#C53A32] transition-colors hover:bg-[#FEF0EF] disabled:opacity-50"
+                    className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-danger)]/40 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
                   />
                 }
               >
@@ -1054,7 +1059,7 @@ export default function JobDetailPage() {
               <button
                 type="button"
                 onClick={() => router.push("/generate")}
-                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-[9px] border border-[#DADBD2] text-[10px] font-semibold text-[#686965] transition-colors hover:bg-[#F3F4EF]"
+                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-border text-[12px] font-semibold text-muted-foreground transition-colors hover:bg-[var(--pf-active)]"
               >
                 <ArrowLeft className="size-3.5" /> Leave editor
               </button>

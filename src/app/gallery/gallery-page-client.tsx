@@ -579,10 +579,15 @@ export function GalleryPageClient({
   const isGalleryEmpty = reviewCounts.all === 0;
   const activeReviewLabel =
     reviewFilters.find((filter) => filter.value === reviewFilter)?.label ?? "All";
+  const activeTotal = reviewCounts[reviewFilter] ?? totalCount;
+  const countCopy =
+    totalCount < activeTotal
+      ? `Showing ${totalCount} of ${activeTotal}`
+      : `${activeTotal}`;
   const reviewSummary =
     reviewFilter === "needs_review"
-      ? `${totalCount} Output${totalCount === 1 ? "" : "s"} needs review`
-      : `${totalCount} Output${totalCount === 1 ? "" : "s"} in ${activeReviewLabel}`;
+      ? `${countCopy} output${activeTotal === 1 ? "" : "s"} needing review`
+      : `${countCopy} output${activeTotal === 1 ? "" : "s"} in ${activeReviewLabel.toLowerCase()}`;
 
   return (
     <>
@@ -624,10 +629,10 @@ export function GalleryPageClient({
         </div>
       )}
 
-      <section className="rounded-xl border border-border bg-card p-2 shadow-[var(--pf-shadow-xs)]">
+      <section className="rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <div
-            className="grid grid-cols-2 gap-1 sm:flex sm:items-center"
+            className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--pf-active)] p-1 sm:flex sm:w-fit sm:items-center"
             aria-label="Output review status filters"
           >
             {reviewFilters.map((filter) => (
@@ -640,17 +645,17 @@ export function GalleryPageClient({
                   replaceRouteFilters({ reviewStatus: filter.value });
                 }}
                 className={cn(
-                  "flex h-10 items-center justify-between gap-2 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-colors",
+                  "flex h-9 items-center justify-between gap-2 rounded-md px-3 text-[12px] font-medium whitespace-nowrap transition-colors",
                   reviewFilter === filter.value
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                    : "text-[#52525B] hover:text-foreground dark:text-[var(--pf-muted)]"
                 )}
               >
                 <span>{filter.label}</span>
                 <span
                   className={cn(
-                    "rounded-full px-1.5 py-0.5 text-[10px]",
-                    reviewFilter === filter.value ? "bg-card" : "bg-muted"
+                    "rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
+                    reviewFilter === filter.value ? "bg-[var(--pf-active)]" : "bg-[var(--pf-surface)]"
                   )}
                 >
                   {reviewCounts[filter.value]}
@@ -660,7 +665,7 @@ export function GalleryPageClient({
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="flex h-10 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-56">
+            <label className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-56">
               <Search className="size-4 shrink-0" />
               <span className="sr-only">Search gallery</span>
               <input
@@ -671,7 +676,7 @@ export function GalleryPageClient({
                   setSelectedIds(new Set());
                 }}
                 placeholder="Search gallery"
-                className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground"
               />
             </label>
 
@@ -686,7 +691,7 @@ export function GalleryPageClient({
                     replaceRouteFilters({ type: option.value });
                   }}
                   className={cn(
-                    "h-9 shrink-0 rounded-lg px-3 text-xs font-medium transition-colors",
+                    "h-9 shrink-0 rounded-md px-3 text-[12px] font-medium transition-colors",
                     typeFilter === option.value
                       ? "bg-muted text-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -702,7 +707,7 @@ export function GalleryPageClient({
                   setSortOrder(nextSort);
                   replaceRouteFilters({ sort: nextSort });
                 }}
-                className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-muted"
+                className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-[12px] font-medium transition-colors hover:bg-muted"
               >
                 <ArrowUpDown className="size-3.5" />
                 {sortOrder === "newest" ? "Newest" : "Oldest"}
@@ -741,78 +746,79 @@ export function GalleryPageClient({
       {selectionCount > 0 && (
         <section
           data-gallery-bulk-bar
-          className="workspace-sidebar-offset-left pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 md:left-[72px] lg:px-8 xl:left-64"
+          className="rounded-lg border border-border bg-card px-3 py-2 shadow-[var(--pf-shadow-2xs)]"
         >
-          <div className="pointer-events-auto mx-auto flex min-w-0 max-w-[1120px] flex-col gap-3 rounded-2xl bg-foreground px-3 py-3 text-background shadow-[var(--pf-shadow-lg)] md:flex-row md:items-center md:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="inline-flex size-6 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
               {selectionCount}
             </span>
-            <strong className="min-w-0 truncate text-xs">
-              {selectionCount} asset{selectionCount === 1 ? "" : "s"} selected
+            <strong className="shrink-0 text-[13px] font-medium">
+              {selectionCount} selected
             </strong>
             <button
               type="button"
               onClick={() => setSelectedIds(new Set(filtered.map((item) => item.id)))}
-              className="text-xs text-background/60 underline underline-offset-2 hover:text-background"
+              className="text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Select all {filtered.length}
             </button>
             <button
               type="button"
               onClick={() => setSelectedIds(new Set())}
-              className="text-xs text-background/60 underline underline-offset-2 hover:text-background"
+              className="text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Clear
             </button>
-          </div>
-          <div className="flex min-w-0 flex-wrap items-center gap-1 md:justify-end">
-            <button
-              type="button"
-              disabled={isBulkUpdating}
-              onClick={() => void updateSelectedReviewStatus("approved_output")}
-              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md px-2.5 text-xs font-medium text-background/80 hover:bg-background/10 hover:text-background disabled:opacity-50"
-            >
-              <CheckCircle2 className="size-3.5 text-accent-green" />
-              Approve
-            </button>
-            <button
-              type="button"
-              disabled={isBulkUpdating}
-              onClick={() => void updateSelectedReviewStatus("rejected_output")}
-              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md px-2.5 text-xs font-medium text-background/80 hover:bg-background/10 hover:text-background disabled:opacity-50"
-            >
-              <XCircle className="size-3.5 text-red-400" />
-              Reject
-            </button>
-            <button
-              type="button"
-              disabled={isBulkDownloading}
-              onClick={() => void handleBulkDownload()}
-              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md px-2.5 text-xs font-medium text-background/80 hover:bg-background/10 hover:text-background disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isBulkDownloading ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Download className="size-3.5" />
-              )}
-              {isBulkDownloading ? "Downloading" : "Download"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleBulkHandoff()}
-              className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md px-2.5 text-xs font-medium text-background/80 hover:bg-background/10 hover:text-background"
-            >
-              <Send className="size-3.5" />
-              Handoff
-            </button>
+            <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
+            <div className="flex min-w-0 flex-wrap items-center gap-0.5">
+              <button
+                type="button"
+                disabled={isBulkUpdating}
+                onClick={() => void updateSelectedReviewStatus("approved_output")}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)] disabled:opacity-50"
+              >
+                <CheckCircle2 className="size-3.5" />
+                Approve
+              </button>
+              <button
+                type="button"
+                disabled={isBulkUpdating}
+                onClick={() => void updateSelectedReviewStatus("rejected_output")}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
+              >
+                <XCircle className="size-3.5" />
+                Reject
+              </button>
+              <button
+                type="button"
+                disabled={isBulkDownloading}
+                onClick={() => void handleBulkDownload()}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isBulkDownloading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Download className="size-3.5" />
+                )}
+                {isBulkDownloading ? "Downloading" : "Download"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleBulkHandoff()}
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                <Send className="size-3.5" />
+                Handoff
+              </button>
+            </div>
+            <span className="flex-1" />
             <AlertDialog>
               <AlertDialogTrigger
                 disabled={isDeleting}
                 render={
                   <button
                     type="button"
-                    className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md px-2.5 text-xs font-medium text-red-300 hover:bg-red-500/15 hover:text-red-200 disabled:opacity-50"
+                    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
                   />
                 }
               >
@@ -836,7 +842,6 @@ export function GalleryPageClient({
                 </AlertDialogFooter>
                </AlertDialogContent>
              </AlertDialog>
-          </div>
           </div>
         </section>
       )}
@@ -887,7 +892,7 @@ export function GalleryPageClient({
       ) : (
         <>
           <div className="flex items-center justify-between gap-4 px-1">
-            <p className="text-[11px] font-semibold text-muted-foreground">
+            <p className="text-[12px] font-medium text-muted-foreground">
               {reviewSummary}
             </p>
           </div>
@@ -913,14 +918,13 @@ export function GalleryPageClient({
                 type="button"
                 onClick={() => void handleLoadMore()}
                 disabled={isLoadingMore}
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-xs font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoadingMore && <Loader2 className="size-3.5 animate-spin" />}
                 {isLoadingMore ? "Loading..." : "Load more"}
               </button>
             </div>
           )}
-          {selectionCount > 0 && <div className="h-24" aria-hidden="true" />}
         </>
       )}
       </div>

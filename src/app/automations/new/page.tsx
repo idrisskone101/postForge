@@ -11,7 +11,7 @@ export default async function AutomationBuilderPage({
   const workflow = typeof params.workflow === "string" ? params.workflow : null;
 
   return (
-    <Suspense fallback={<div className="pf-content-viewport animate-pulse bg-[#F3F4EF]" />}>
+    <Suspense fallback={<div className="pf-content-viewport animate-pulse bg-[var(--pf-canvas)]" />}>
       {workflow === "slideshow" ? (
         <SlideshowAutomationBuilder />
       ) : (

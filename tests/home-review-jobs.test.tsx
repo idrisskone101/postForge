@@ -46,11 +46,18 @@ const markup = renderToStaticMarkup(
         },
       },
     ]}
+    completedThisWeek={1}
+    pendingReviewCount={1}
+    recentMedia={[]}
     now={now}
   />
 );
 
-assert.match(markup, /Needs review/);
-assert.match(markup, /Clone output ready/);
+// Completed clone outputs surface in the review queue with clone deep links
+assert.match(markup, /Review queue/);
 assert.match(markup, /completed-clone-video/);
-assert.doesNotMatch(markup, /Generated asset ready/);
+assert.match(markup, /href="\/ugc-clone\/completed-clone-video"/);
+assert.match(markup, /Person performing the actions from the reference video/);
+assert.match(markup, /aria-label="Approve output"/);
+assert.match(markup, /aria-label="Reject output"/);
+assert.doesNotMatch(markup, /href="\/generate\/completed-clone-video"/);

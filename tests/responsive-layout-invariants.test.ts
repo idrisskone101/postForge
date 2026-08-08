@@ -205,8 +205,8 @@ assert.match(globalStyles, /\.dark \.bg-\\\[\\#FFF8F5\\\]/);
 assert.match(globalStyles, /\.dark \.bg-\\\[\\#E9EAE4\\\]/);
 assert.match(globalStyles, /\.dark \.bg-\\\[\\#E6F4E9\\\]/);
 assert.match(globalStyles, /\.dark \.border-\\\[\\#F0B5AA\\\]/);
-assert.match(generationStudio, /dark:bg-\[linear-gradient\(#343531_1px/);
-assert.match(generationEditor, /dark:bg-\[linear-gradient\(#343531_1px/);
+assert.match(generationStudio, /bg-\[#09090B\]/);
+assert.match(generationEditor, /bg-\[#09090B\]/);
 assert.match(generationEditor, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 

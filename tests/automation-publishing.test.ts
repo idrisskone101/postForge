@@ -933,8 +933,8 @@ async function run() {
   );
   assert.match(automationUi, /pf-safe-overlay/);
   assert.match(automationUi, /max-h-full/);
-  assert.match(automationUi, /dark:bg-\[#2C2C29\] dark:text-\[#D4D4CE\]/);
-  assert.match(automationUi, /dark:text-\[#FF9A7F\]/);
+  assert.match(automationUi, /dark:bg-\[var\(--pf-active\)\] dark:text-\[var\(--pf-muted\)\]/);
+  assert.match(automationUi, /dark:text-\[var\(--pf-orange\)\]/);
   assert.match(
     automationUi,
     /By posting, you agree to TikTok's Music Usage Confirmation/

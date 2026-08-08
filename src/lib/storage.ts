@@ -211,7 +211,13 @@ class LocalStorageDriver implements StorageProvider {
   }
 
   async exists(localPath: string): Promise<boolean> {
-    return fileExists(this.getFullPath(localPath));
+    if (!localPath) return false;
+    try {
+      return await fileExists(this.getFullPath(localPath));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "EINVAL") return false;
+      throw error;
+    }
   }
 
   async ensureLocalFile(localPath: string): Promise<string> {
@@ -346,7 +352,13 @@ class DatabaseStorageDriver implements StorageProvider {
   }
 
   async exists(localPath: string): Promise<boolean> {
-    const safeLocalPath = normalizeStoragePath(localPath);
+    if (!localPath) return false;
+    let safeLocalPath: string;
+    try {
+      safeLocalPath = normalizeStoragePath(localPath);
+    } catch {
+      return false;
+    }
     const asset = await prisma.storedAsset.findUnique({
       where: { key: safeLocalPath },
       select: { key: true },

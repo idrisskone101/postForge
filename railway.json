@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "pnpm build"
+  },
+  "deploy": {
+    "preDeployCommand": "pnpm exec prisma migrate deploy",
+    "startCommand": "pnpm exec next start --hostname 0.0.0.0 --port $PORT",
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 300
+  }
+}

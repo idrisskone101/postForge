@@ -465,21 +465,18 @@ export function GenerationForm({ models }: GenerationFormProps) {
   };
   const identityStatus = describeIdentityStatus(identityPack);
   const avatarSection = selectedDefinition?.type !== "video" ? (
-    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+    <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[#777873]">
-              <Users className="size-3.5" />
-            </span>
-            <h2 className="text-[13px] font-semibold text-[#30312E]">
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
               Character identity
             </h2>
-            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+            <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Optional
             </span>
           </div>
-          <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+          <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
             Reuse a saved identity. A compatible image model is selected automatically.
           </p>
         </div>
@@ -487,7 +484,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
           <button
             type="button"
             onClick={() => handleAvatarSelect("")}
-            className="text-[10px] font-semibold text-[#378EFF] hover:underline"
+            className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
           >
             Clear
           </button>
@@ -498,10 +495,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
         <div
           role={identityStatus.tone === "failed" ? "alert" : "status"}
           className={cn(
-            "mb-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2 text-[10px] leading-4",
-            identityStatus.tone === "ready" && "bg-[#EAF8ED] text-[#238A40]",
-            identityStatus.tone === "working" && "bg-[#EEF5FF] text-[#2A71C7]",
-            identityStatus.tone === "failed" && "bg-[#FEF0EF] text-[#C53A32]"
+            "mb-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2 text-[12px] leading-4",
+            identityStatus.tone === "ready" && "bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
+            identityStatus.tone === "working" && "bg-[var(--pf-link)]/10 text-[var(--pf-link)]",
+            identityStatus.tone === "failed" && "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
           )}
         >
           {identityStatus.tone === "ready" ? (
@@ -520,7 +517,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       {identityError && (
         <div
           role="alert"
-          className="mb-3 flex min-w-0 items-start gap-2 rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] leading-4 text-[#C53A32]"
+          className="mb-3 flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)]"
         >
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
@@ -537,21 +534,18 @@ export function GenerationForm({ models }: GenerationFormProps) {
       ? 1
       : selectedDefinition?.capabilities.maxReferenceImages ?? 14;
   const referenceSection = (
-    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+    <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid size-6 place-items-center rounded-[7px] bg-[#FFF0EC] text-[#FF4A20]">
-              <ImageIcon className="size-3.5" />
-            </span>
-            <h2 className="text-[13px] font-semibold text-[#30312E]">
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
               Visual collection
             </h2>
-            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+            <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Optional
             </span>
           </div>
-          <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+          <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
             Reuse server-owned product, location, or style images from Collections.
           </p>
         </div>
@@ -559,7 +553,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
           <button
             type="button"
             onClick={() => setCollectionAssetIds([])}
-            className="text-[10px] font-semibold text-[#378EFF] hover:underline"
+            className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
           >
             Clear
           </button>
@@ -577,21 +571,18 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
   const continuitySection =
     selectedDefinition?.type === "video" && !isSwapSelected ? (
-      <div className="animate-content-enter rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+      <div className="animate-content-enter rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#EEF5FF] text-[#378EFF]">
-                <RefreshCw className="size-3.5" />
-              </span>
-              <h2 className="text-[13px] font-semibold text-[#30312E]">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                 Character continuity
               </h2>
-              <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+              <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                 Optional
               </span>
             </div>
-            <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+            <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
               Seed the next video with a previous output so the same character
               carries across your series.
             </p>
@@ -600,7 +591,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
             <button
               type="button"
               onClick={() => handleVideoReferenceChange(null)}
-              className="text-[10px] font-semibold text-[#378EFF] hover:underline"
+              className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
             >
               Clear
             </button>
@@ -617,21 +608,18 @@ export function GenerationForm({ models }: GenerationFormProps) {
     ) : undefined;
 
   const swapSection = isSwapSelected ? (
-    <div className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+    <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid size-6 place-items-center rounded-[7px] bg-[#FFF0EC] text-[#FF4A20]">
-              <ImageIcon className="size-3.5" />
-            </span>
-            <h2 className="text-[13px] font-semibold text-[#30312E]">
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
               Subject swap
             </h2>
-            <span className="rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#777873]">
+            <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               {selectedDefinition?.id === "pixverse-swap" ? "Reference required" : "Prompt-driven"}
             </span>
           </div>
-          <p className="mt-2 max-w-lg text-[10px] leading-4 text-[#858681]">
+          <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
             {selectedDefinition?.id === "pixverse-swap"
               ? "Upload a video and a reference image. The referenced subject replaces the matching subject while the rest of the video stays the same."
               : "Upload a video and describe the swap in your prompt. Gemini Omni Edit keeps everything else in the frame consistent."}
@@ -803,13 +791,10 @@ export function GenerateFormView({
       </span>
 
       <div className="min-w-0 space-y-3">
-        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+        <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
-                01
-              </span>
-              <h2 className="text-[13px] font-semibold text-[#30312E]">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                 Describe your {isVideo ? "video" : "image"}
               </h2>
             </div>
@@ -820,7 +805,7 @@ export function GenerateFormView({
                   "natural composition, clear focal point, production-ready detail"
                 )
               }
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#378EFF] hover:underline"
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
             >
               <Sparkles className="size-3" /> Improve prompt
             </button>
@@ -832,9 +817,9 @@ export function GenerateFormView({
             value={prompt}
             maxLength={1500}
             onChange={(event) => onPromptChange(event.target.value.slice(0, 1500))}
-            className="min-h-[118px] resize-none rounded-[9px] border-[#D7D8D0] bg-[#FCFCFA] px-3 py-3 text-[12px] leading-5 text-[#30312E] shadow-none focus-visible:border-[#FF4A20] focus-visible:ring-[#FF4A20]/10"
+            className="min-h-[118px] resize-none rounded-lg border-border bg-card px-3 py-3 text-[12px] leading-5 text-foreground shadow-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
           />
-          <div className="mt-2 flex items-center justify-between text-[10px] text-[#969792]">
+          <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
             <span>{prompt.length}/1,500</span>
             <span>Be specific about the opening frame</span>
           </div>
@@ -845,7 +830,7 @@ export function GenerateFormView({
                 key={spark}
                 type="button"
                 onClick={() => onAppendToPrompt(spark)}
-                className="rounded-md border border-[#DEDFD8] bg-[#F8F9F5] px-2.5 py-1.5 text-[10px] font-medium text-[#686965] transition-colors hover:border-[#BFC0B9] hover:text-[#30312E]"
+                className="rounded-md border border-border bg-[var(--pf-active)] px-2.5 py-1.5 text-[12px] font-medium text-muted-foreground transition-colors hover:border-[var(--pf-border-strong)] hover:text-foreground"
               >
                 {spark}
               </button>
@@ -853,17 +838,14 @@ export function GenerateFormView({
           </div>
         </section>
 
-        <section className="rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]">
+        <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
-                02
-              </span>
-              <h2 className="text-[13px] font-semibold text-[#30312E]">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                 Choose a model
               </h2>
             </div>
-            <span className="rounded-full bg-[#E9F7EC] px-2 py-1 text-[11px] font-bold text-[#238A40]">
+            <span className="rounded-full bg-[var(--pf-success)]/10 px-2 py-1 text-[13px] font-semibold text-[var(--pf-success)]">
               Live pricing
             </span>
           </div>
@@ -878,20 +860,17 @@ export function GenerateFormView({
         {model && (
           <section
             key={model.id}
-            className="animate-content-enter rounded-[13px] border border-[#DADBD2] bg-white p-4 shadow-[var(--pf-shadow-xs)]"
+            className="animate-content-enter rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className="grid size-6 place-items-center rounded-[7px] bg-[#F0F1EB] text-[10px] font-bold text-[#777873]">
-                03
-              </span>
-              <h2 className="text-[13px] font-semibold text-[#30312E]">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
                 Format and output
               </h2>
             </div>
 
             <div className="grid gap-4">
               <div className="grid gap-2 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-center">
-                <label className="text-[10px] text-[#72736F]">Aspect Ratio</label>
+                <label className="text-[12px] text-muted-foreground">Aspect Ratio</label>
                 <div className="flex flex-wrap gap-1.5">
                   {availableRatios.map((ratio) => (
                     <button
@@ -900,10 +879,10 @@ export function GenerateFormView({
                       aria-pressed={aspectRatio === ratio}
                       onClick={() => onAspectRatioChange(ratio)}
                       className={cn(
-                        "flex h-8 min-w-[64px] items-center justify-center gap-1.5 rounded-lg border px-2 text-[10px] font-medium transition-colors",
+                        "flex h-8 min-w-[64px] items-center justify-center gap-1.5 rounded-lg border px-2 text-[12px] font-medium transition-colors",
                         aspectRatio === ratio
-                          ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
-                          : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
+                          ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                          : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)]"
                       )}
                       title={RATIO_LABELS[ratio] ?? ratio}
                     >
@@ -916,7 +895,7 @@ export function GenerateFormView({
 
               {isImage && (
                 <div className="grid gap-2 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-center">
-                  <label className="text-[10px] text-[#72736F]">Outputs</label>
+                  <label className="text-[12px] text-muted-foreground">Outputs</label>
                   <div className="flex gap-1.5">
                     {outputOptions.map((count) => (
                       <button
@@ -925,10 +904,10 @@ export function GenerateFormView({
                         aria-pressed={numImages === count}
                         onClick={() => onNumImagesChange(count)}
                         className={cn(
-                          "grid size-8 place-items-center rounded-lg border text-[10px] font-semibold transition-colors",
+                          "grid size-8 place-items-center rounded-lg border text-[12px] font-semibold transition-colors",
                           numImages === count
-                            ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
-                            : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
+                            ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                            : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)]"
                         )}
                       >
                         {count}
@@ -940,7 +919,7 @@ export function GenerateFormView({
 
               {isVideo && (
                 <div className="grid gap-2 sm:grid-cols-[88px_minmax(0,1fr)] sm:items-center">
-                  <label className="text-[10px] text-[#72736F]">Duration</label>
+                  <label className="text-[12px] text-muted-foreground">Duration</label>
                   <div className="flex flex-wrap gap-1.5">
                     {durationOptions.map((seconds) => (
                       <button
@@ -949,10 +928,10 @@ export function GenerateFormView({
                         aria-pressed={duration === seconds}
                         onClick={() => onDurationChange(seconds)}
                         className={cn(
-                          "flex h-8 min-w-12 items-center justify-center gap-1 rounded-lg border px-2 text-[10px] font-semibold transition-colors",
+                          "flex h-8 min-w-12 items-center justify-center gap-1 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
                           duration === seconds
-                            ? "border-[#232323] bg-[#F3F4EF] text-[#232323]"
-                            : "border-[#DCDED6] bg-white text-[#6F706C] hover:border-[#BFC0B9]"
+                            ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                            : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)]"
                         )}
                       >
                         <Clock3 className="size-3" /> {seconds}s
@@ -968,7 +947,7 @@ export function GenerateFormView({
                 render={
                   <button
                     type="button"
-                    className="mt-4 flex w-full items-center justify-between border-t border-[#ECECE7] pt-3 text-[10px] font-semibold text-[#666762] hover:text-[#30312E]"
+                    className="mt-4 flex w-full items-center justify-between border-t border-border pt-3 text-[12px] font-semibold text-muted-foreground hover:text-foreground"
                   />
                 }
               >
@@ -983,27 +962,27 @@ export function GenerateFormView({
               <CollapsibleContent className="space-y-3 pt-3">
                 {isImage && (
                   <label className="block">
-                    <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.09em] text-[#777873]">
+                    <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
                       Negative prompt
                     </span>
                     <Textarea
                       value={negativePrompt}
                       onChange={(event) => onNegativePromptChange(event.target.value)}
                       placeholder="Logos, distorted hands, extra fingers..."
-                      className="min-h-20 resize-none rounded-lg border-[#D7D8D0] bg-[#FCFCFA] text-[11px] shadow-none"
+                      className="min-h-20 resize-none rounded-lg border-border bg-card text-[12px] shadow-none"
                     />
                   </label>
                 )}
 
                 {isImage && model.capabilities.webSearch && (
-                  <div className="flex items-center justify-between gap-4 rounded-lg border border-[#E1E2DC] bg-[#FAFBF7] px-3 py-2.5">
+                  <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[var(--pf-active)] px-3 py-2.5">
                     <span className="flex items-center gap-2.5">
-                      <Search className="size-3.5 text-[#777873]" />
+                      <Search className="size-3.5 text-muted-foreground" />
                       <span>
-                        <strong className="block text-[10px] font-semibold text-[#363733]">
+                        <strong className="block text-[12px] font-semibold text-foreground">
                           Web grounding
                         </strong>
-                        <small className="mt-0.5 block text-[11px] text-[#92938E]">
+                        <small className="mt-0.5 block text-[12px] text-muted-foreground">
                           Use current context to enrich the prompt
                         </small>
                       </span>
@@ -1017,14 +996,14 @@ export function GenerateFormView({
                 )}
 
                 {isVideo && model.id === "veo3" && (
-                  <div className="flex items-center justify-between gap-4 rounded-lg border border-[#E1E2DC] bg-[#FAFBF7] px-3 py-2.5">
+                  <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[var(--pf-active)] px-3 py-2.5">
                     <span className="flex items-center gap-2.5">
-                      <Volume2 className="size-3.5 text-[#777873]" />
+                      <Volume2 className="size-3.5 text-muted-foreground" />
                       <span>
-                        <strong className="block text-[10px] font-semibold text-[#363733]">
+                        <strong className="block text-[12px] font-semibold text-foreground">
                           Native audio
                         </strong>
-                        <small className="mt-0.5 block text-[11px] text-[#92938E]">
+                        <small className="mt-0.5 block text-[12px] text-muted-foreground">
                           Generate ambient sound and dialogue
                         </small>
                       </span>
@@ -1047,57 +1026,56 @@ export function GenerateFormView({
         {swapSection}
       </div>
 
-      <aside className="min-w-0 overflow-hidden rounded-[14px] border border-[#DADBD2] bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
-        <div className="flex h-12 items-center justify-between border-b border-[#E1E2DC] px-4">
-          <span className="text-[11px] font-semibold text-[#3F403C]">Preview</span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F1F2EC] px-2 py-1 text-[11px] font-semibold text-[#777873]">
+      <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
+        <div className="flex h-12 items-center justify-between border-b border-border px-4">
+          <span className="text-[13px] font-semibold text-foreground">Preview</span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold text-muted-foreground">
             {isVideo ? <Video className="size-3" /> : <ImageIcon className="size-3" />}
             {RATIO_LABELS[aspectRatio] ?? aspectRatio}
           </span>
         </div>
 
-        <div className="grid min-h-[470px] place-items-center bg-[#EFEFE9] bg-[linear-gradient(#E7E8E1_1px,transparent_1px),linear-gradient(90deg,#E7E8E1_1px,transparent_1px)] bg-[size:24px_24px] p-5 dark:bg-[linear-gradient(#343531_1px,transparent_1px),linear-gradient(90deg,#343531_1px,transparent_1px)] sm:min-h-[560px] sm:p-8 xl:min-h-[590px]">
+        <div className="grid min-h-[470px] place-items-center bg-[#09090B] p-5 sm:min-h-[560px] sm:p-8 xl:min-h-[590px]">
           <div
             aria-label={`${aspectRatio} output preview`}
             className={cn(
-              "relative grid max-h-[520px] min-h-[220px] place-items-center overflow-hidden rounded-[13px] border-[6px] border-white bg-[#F8F0E8] shadow-[var(--pf-shadow-lg)]",
+              "relative grid max-h-[520px] min-h-[220px] place-items-center overflow-hidden rounded-lg border border-white/10",
               previewWidthClass
             )}
             style={{ aspectRatio: aspectRatio.replace(":", " / ") }}
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_18%,rgba(255,246,208,0.95),transparent_25%),linear-gradient(155deg,#F6D9AD_0%,#E6B58D_48%,#B97862_48%,#765044_70%,#3F312C_100%)] opacity-45" />
-            <div className="relative mx-6 min-w-0 max-w-full rounded-xl border border-white/70 bg-card/90 px-5 py-4 text-center shadow-sm backdrop-blur-sm">
-              <Sparkles className="mx-auto size-5 text-[#FF4A20]" />
-              <strong className="mt-2 block text-[11px] font-semibold text-[#30312E]">
+            <div className="relative mx-6 min-w-0 max-w-full text-center">
+              <Sparkles className="mx-auto size-5 text-[var(--pf-orange)]" />
+              <strong className="mt-3 block text-[13px] font-semibold text-white">
                 {model ? "Ready to generate" : "Choose a model"}
               </strong>
-              <span className="mt-1 block min-w-0 max-w-52 break-words text-[10px] leading-4 text-[#777873] [overflow-wrap:anywhere]">
+              <span className="mt-1.5 block min-w-0 max-w-52 break-words text-[12px] leading-4 text-white/50 [overflow-wrap:anywhere]">
                 {prompt.trim()
                   ? prompt.trim().slice(0, 112)
                   : "Your prompt and output settings will appear here before submission."}
               </span>
             </div>
             {model && (
-              <span className="absolute bottom-3 left-3 rounded-full bg-[#232323] px-2.5 py-1 text-[11px] font-semibold text-white">
+              <span className="absolute bottom-3 left-3 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/80">
                 {model.name}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex min-h-[72px] items-center gap-2 overflow-x-auto border-t border-[#E1E2DC] px-3 py-2.5">
+        <div className="flex min-h-[72px] items-center gap-2 overflow-x-auto border-t border-border px-3 py-2.5">
           {Array.from({ length: Math.max(1, variationCount) }, (_, index) => (
             <div
               key={index}
               className={cn(
-                "relative grid h-12 w-10 shrink-0 place-items-center rounded-[7px] border bg-[#F3F4EF] text-[11px] font-semibold text-[#8A8B86]",
-                index === 0 ? "border-[#FF4A20]" : "border-[#DADBD2]"
+                "relative grid h-12 w-10 shrink-0 place-items-center rounded-lg border bg-[var(--pf-canvas)] text-[13px] font-semibold text-muted-foreground",
+                index === 0 ? "border-[var(--pf-orange)]" : "border-border"
               )}
             >
               {String(index + 1).padStart(2, "0")}
             </div>
           ))}
-          <span className="ml-1 text-[10px] leading-4 text-[#858681]">
+          <span className="ml-1 text-[12px] leading-4 text-muted-foreground">
             {variationCount} output{variationCount === 1 ? "" : "s"} will be added to
             the editor.
           </span>
@@ -1107,11 +1085,11 @@ export function GenerateFormView({
           <div
             role={submitError ? "alert" : "status"}
             className={cn(
-              "mx-3 mt-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[10px] leading-4",
+              "mx-3 mt-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[12px] leading-4",
               !submitError && "animate-success-pulse",
               submitError
-                ? "bg-[#FEF0EF] text-[#C53A32]"
-                : "bg-[#EEF5FF] text-[#2A71C7]"
+                ? "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
+                : "bg-[var(--pf-link)]/10 text-[var(--pf-link)]"
             )}
           >
             {submitError ? (
@@ -1125,20 +1103,20 @@ export function GenerateFormView({
           </div>
         )}
 
-        <div className="sticky bottom-0 hidden gap-3 border-t border-[#E1E2DC] bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+        <div className="sticky bottom-0 hidden gap-3 border-t border-border bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
           <div className="min-w-0">
-            <span className="block truncate text-[10px] text-[#858681]">
+            <span className="block truncate text-[12px] text-muted-foreground">
               {model
                 ? isSwap
                   ? `${model.name} · subject swap · ${swapSourceDurationSec ? `${Math.round(swapSourceDurationSec)}s source` : "source video"}`
                   : `${model.name} · ${aspectRatio} · ${isImage ? `${numImages} output${numImages === 1 ? "" : "s"}` : `${duration}s video`}${avatarName ? ` · ${avatarName}` : ""}`
                 : "Select a model and describe your asset"}
             </span>
-            <strong className="mt-1 block text-[11px] font-semibold text-[#30312E]">
+            <strong className="mt-1 block text-[13px] font-semibold text-foreground">
               Cost Estimate · {model ? formatCost(estimatedCost) : "—"}
             </strong>
             {missing.length > 0 && (
-              <span className="mt-0.5 block text-[10px] text-[#B08A00]">
+              <span className="mt-0.5 block text-[12px] text-[var(--pf-lamp-amber)]">
                 {isSwap && !swapReady
                   ? model?.id === "pixverse-swap"
                     ? "Add a source video and a swap reference to continue"
@@ -1151,7 +1129,7 @@ export function GenerateFormView({
             type="submit"
             aria-label="Generate Now"
             disabled={!canSubmit}
-            className="h-11 min-w-[174px] rounded-[10px] bg-[#FF4A20] px-5 text-[11px] font-bold text-white shadow-[0_2px_0_rgba(130,25,0,0.14)] hover:bg-[#E9421C]"
+            className="h-11 min-w-[174px] rounded-lg bg-[var(--pf-orange)] px-5 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] hover:brightness-[0.93]"
           >
             {isSubmitting ? (
               <>
@@ -1167,20 +1145,20 @@ export function GenerateFormView({
         </div>
       </aside>
 
-      <div className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 flex items-center gap-3 rounded-[12px] border border-border bg-card/95 p-2.5 shadow-[0_12px_36px_rgba(35,35,35,0.18)] backdrop-blur-md md:hidden">
+      <div className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 flex items-center gap-3 rounded-lg border border-border bg-card/95 p-2.5 shadow-[var(--pf-shadow-lg)] backdrop-blur-md md:hidden">
         <div className="min-w-0 flex-1 pl-1">
-          <span className="block truncate text-[11px] text-[#858681]">
+          <span className="block truncate text-[12px] text-muted-foreground">
             {model
               ? isSwap
                 ? `${model.name} · subject swap${swapSourceDurationSec ? ` · ${Math.round(swapSourceDurationSec)}s source` : ""}`
                 : `${model.name} · ${aspectRatio}`
               : "Choose a model"}
           </span>
-          <strong className="mt-0.5 block text-[10px] text-[#30312E]">
+          <strong className="mt-0.5 block text-[12px] text-foreground">
             {model ? formatCost(estimatedCost) : "—"}
           </strong>
           {missing.length > 0 && (
-            <span className="mt-0.5 block truncate text-[10px] text-[#B08A00]">
+            <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-lamp-amber)]">
               {isSwap && !swapReady
                 ? model?.id === "pixverse-swap"
                   ? "Add a source video and a swap reference"
@@ -1193,7 +1171,7 @@ export function GenerateFormView({
           type="submit"
           aria-label="Generate Now on mobile"
           disabled={!canSubmit}
-          className="h-10 rounded-[9px] bg-[#FF4A20] px-4 text-[10px] font-bold text-white hover:bg-[#E9421C]"
+          className="h-10 rounded-lg bg-[var(--pf-orange)] px-4 text-[12px] font-bold text-white hover:brightness-[0.93]"
         >
           {isSubmitting ? (
             <Loader2 className="size-3.5 animate-spin" />

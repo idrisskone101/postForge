@@ -4,20 +4,19 @@ import { UGCCloneQueue } from "@/components/ugc-clone-queue";
 export default function UGCClonePage() {
   return (
     <div className="pf-content-viewport overflow-x-hidden bg-background">
-      <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-        <header className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-[10px] font-semibold text-muted-foreground">
-              Clone Studio <span className="px-1.5 text-border">/</span> New clone
-            </p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-[-0.035em] sm:text-[28px]">
-              Build a new clone
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+      <div className="border-b border-border bg-[var(--pf-canvas)]">
+        <div className="mx-auto min-w-0 max-w-[1280px] px-4 pb-6 pt-7 sm:px-6 lg:px-8">
+          <header>
+            <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground sm:text-[30px]">
+              Clone
+            </h1>
+            <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
               Turn a proven source into an on-brand creator video.
             </p>
-          </div>
-        </header>
+          </header>
+        </div>
+      </div>
+      <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <UGCCloneForm />
         <div className="mt-6 pb-24">
           <UGCCloneQueue />

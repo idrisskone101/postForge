@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlideshowStory } from "@/lib/ai/slideshow-story";
+import { resolveStoryModelOllamaId } from "@/lib/ai/story-models";
 import { badRequest } from "@/lib/slideshow/errors";
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
 import {
@@ -16,14 +17,17 @@ export async function POST(request: NextRequest) {
     if (includeCta !== undefined && typeof includeCta !== "boolean") {
       badRequest("includeCta must be a boolean");
     }
-    const result = await generateSlideshowStory({
-      idea: requiredString(body, "idea", { max: 2_000 }),
-      slideCount: optionalInteger(body, "slideCount", { min: 1, max: 20 }),
-      language: optionalString(body, "language", { max: 80 }),
-      tone: optionalString(body, "tone", { max: 160 }),
-      audience: optionalString(body, "audience", { max: 300 }),
-      includeCta: includeCta as boolean | undefined,
-    });
+    const result = await generateSlideshowStory(
+      {
+        idea: requiredString(body, "idea", { max: 2_000 }),
+        slideCount: optionalInteger(body, "slideCount", { min: 1, max: 20 }),
+        language: optionalString(body, "language", { max: 80 }),
+        tone: optionalString(body, "tone", { max: 160 }),
+        audience: optionalString(body, "audience", { max: 300 }),
+        includeCta: includeCta as boolean | undefined,
+      },
+      resolveStoryModelOllamaId(optionalString(body, "model", { max: 80 })),
+    );
     const slides = result.slides.map((slide, position) => ({
       position,
       kind: slide.role === "body" ? "content" : slide.role,

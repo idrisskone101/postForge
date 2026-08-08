@@ -77,16 +77,16 @@ export function CollectionReferencePicker({
 
   if (loading) {
     return (
-      <div className="flex min-h-24 items-center justify-center rounded-lg border border-[#E1E2DC] bg-[#FAFBF7] text-[#858681]">
+      <div className="flex min-h-24 items-center justify-center rounded-lg border border-border bg-[var(--pf-active)] text-muted-foreground">
         <Loader2 className="mr-2 size-3.5 animate-spin" />
-        <span className="text-[10px]">Loading collections…</span>
+        <span className="text-[12px]">Loading collections…</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <p role="alert" className="min-w-0 break-words rounded-lg bg-[#FEF0EF] px-3 py-2 text-[10px] text-[#C53A32] [overflow-wrap:anywhere]">
+      <p role="alert" className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)] [overflow-wrap:anywhere]">
         {error}
       </p>
     );
@@ -96,7 +96,7 @@ export function CollectionReferencePicker({
     return (
       <a
         href="/collections"
-        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] bg-[#FAFBF7] px-3 text-[10px] font-semibold text-[#686965]"
+        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-[12px] font-semibold text-muted-foreground"
       >
         <FolderOpen className="size-4" /> Create a collection to reuse its images
       </a>
@@ -113,7 +113,7 @@ export function CollectionReferencePicker({
             value={selectedCollectionId}
             onChange={(event) => setSelectedCollectionId(event.target.value)}
             disabled={disabled}
-            className="h-9 w-full rounded-lg border border-[#D7D8D0] bg-[#FCFCFA] px-3 text-[10px] font-medium outline-none focus:border-[#FF4A20]"
+            className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[12px] font-medium outline-none focus:border-[var(--pf-orange)]"
           >
             {collections.map((collection) => (
               <option key={collection.id} value={collection.id}>
@@ -122,17 +122,17 @@ export function CollectionReferencePicker({
             ))}
           </select>
         </label>
-        <span className="shrink-0 text-[11px] text-[#858681]">
+        <span className="shrink-0 text-[11px] text-muted-foreground">
           {selectedAssetIds.length}/{maxSelection} selected
         </span>
       </div>
 
       {disabledMessage && disabled ? (
-        <p className="rounded-lg bg-[#F1F2EC] px-3 py-2 text-[10px] leading-4 text-[#777873]">
+        <p className="rounded-lg bg-[var(--pf-active)] px-3 py-2 text-[12px] leading-4 text-muted-foreground">
           {disabledMessage}
         </p>
       ) : collectionAssets.length === 0 ? (
-        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[#CFD0C8] text-[10px] text-[#858681]">
+        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] text-[12px] text-muted-foreground">
           <ImageIcon className="size-4" /> This collection has no images yet.
         </p>
       ) : (
@@ -148,8 +148,8 @@ export function CollectionReferencePicker({
                 aria-pressed={selected}
                 onClick={() => toggle(asset.id)}
                 className={cn(
-                  "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[#ECEDE7] transition",
-                  selected ? "border-[#FF4A20]" : "border-transparent hover:border-[#C7C8C0]"
+                  "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition",
+                  selected ? "border-[var(--pf-orange)]" : "border-transparent hover:border-[var(--pf-border-strong)]"
                 )}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -159,7 +159,7 @@ export function CollectionReferencePicker({
                   className="size-full object-cover"
                 />
                 {selected && (
-                  <span className="absolute right-1 top-1 grid size-5 place-items-center rounded-full bg-[#FF4A20] text-white shadow-sm">
+                  <span className="absolute right-1 top-1 grid size-5 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-sm">
                     <Check className="size-3" />
                   </span>
                 )}

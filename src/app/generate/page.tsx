@@ -13,14 +13,14 @@ export default async function GeneratePage() {
         <div className="flex items-center gap-2">
           <Link
             href="/gallery"
-            className="inline-flex h-9 items-center gap-2 rounded-[9px] border border-[#D6D7CF] bg-white px-3 text-[11px] font-semibold text-[#3F403C] transition-colors hover:bg-[#F8F9F5]"
+            className="pf-button-secondary h-9"
           >
             <History className="size-3.5" /> History
           </Link>
           <Link
             href="/settings"
             aria-label="Generation help"
-            className="grid size-9 place-items-center rounded-[9px] border border-[#D6D7CF] bg-white text-[#686965] transition-colors hover:bg-[#F8F9F5] hover:text-[#232323]"
+            className="pf-button-secondary size-9 px-0"
           >
             <CircleHelp className="size-3.5" />
           </Link>

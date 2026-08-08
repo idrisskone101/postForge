@@ -1,9 +1,16 @@
 # PostForge agent instructions
 
+## Skill precedence
+
+- User-scope skills (`~/.agents/skills/`) take priority over project-scope skills (`.agents/skills/`) whenever names or directives conflict.
+- Do not install a project-scope copy of a skill that already exists at user scope; the user-scope copy is the canonical one.
+- **Design work is owned by the Impeccable skill** (`.pi/skills/impeccable`, invoked as `/impeccable`). It is the only design/direction skill loaded for frontend work. The legacy taste skills (`design-taste-frontend`, `minimalist-ui`, `high-end-visual-design`, `industrial-brutalist-ui`, `gpt-taste`, `brandkit`, `imagegen-*`, etc.) are archived at `.agents/skills-archive/taste-skills/`, intentionally outside the active discovery path so they cannot collide with Impeccable. Never blend Impeccable with another design vocabulary on the same surface.
+- Follow the Impeccable setup: run `node .pi/skills/impeccable/scripts/context.mjs` once per session, load the one playbook that owns the request, and load `reference/craft-floor.md` immediately before editing UI.
+
 ## Design source of truth
 
-- MagicPath is the source of truth for PostForge product design.
-- Keep the route-to-frame map in `docs/magicpath-visual-qa.md` current whenever a MagicPath frame or production route changes.
+- **Impeccable owns the design engine.** `DESIGN.md` is the canonical design-language authority for PostForge; keep it current with `/impeccable init` (one-time) and `/impeccable document` as the system drifts. `PRODUCT.md` holds the product context Impeccable reads on every command.
+- MagicPath is the visual reference layer for parity QA, not a competing design generator. Keep the route-to-frame map in `docs/magicpath-visual-qa.md` current whenever a MagicPath frame or production route changes, and compare running UI against MagicPath frames during review.
 - Reuse the shared PostForge design tokens and shell before introducing route-specific visual primitives.
 
 ## Required adversarial review
@@ -11,6 +18,8 @@
 Every user-visible UI change must end with an independent **Adversarial Review** sub-agent. The reviewer must not be the agent that authored the implementation.
 
 Run the review against an optimized production build (`pnpm build`, followed by `pnpm start`), not only the development server.
+
+Run Impeccable's pre-ship gauntlet (`/impeccable score`, `copy`, and `stress-test`) on the affected surface and pipe its P0/P1 findings into this review. The review agent still stays independent and remains the mandatory gate.
 
 The reviewer must:
 

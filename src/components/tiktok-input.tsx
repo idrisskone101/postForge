@@ -223,6 +223,7 @@ export function TikTokInput({
         <div className="flex-1 relative">
           <input
             type="url"
+            aria-label="TikTok video URL"
             placeholder="https://www.tiktok.com/@user/video/..."
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -238,7 +239,7 @@ export function TikTokInput({
             "flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all",
             isDownloading
               ? "bg-muted text-muted-foreground"
-              : "bg-accent-coral text-white hover:bg-[#e9421c]"
+              : "bg-accent-coral text-white hover:brightness-[0.93]"
           )}
         >
           {isDownloading ? (
@@ -333,7 +334,7 @@ export function TikTokInput({
                     className={cn(
                       "group relative overflow-hidden rounded-lg border-2 transition-all",
                       isSelected
-                        ? "border-accent-green shadow-[0_0_0_2px_rgba(123,165,67,0.2)]"
+                        ? "border-accent-green shadow-[0_0_0_2px_rgba(22,163,74,0.2)]"
                         : "border-border hover:border-accent-green/50"
                     )}
                   >
@@ -357,17 +358,17 @@ export function TikTokInput({
                       </div>
 
                       {/* Duration badge */}
-                      <div className="absolute top-1.5 right-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                      <div className="absolute top-1.5 right-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-white">
                         {formatDuration(source.durationSec)}
                       </div>
 
                       {/* Label + metadata */}
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
-                        <p className="text-[10px] font-medium text-white truncate">
+                        <p className="text-[11px] font-medium text-white truncate">
                           {source.label}
                         </p>
                         {source.fileSizeBytes && (
-                          <p className="text-[10px] text-white/60">
+                          <p className="text-[11px] text-white/60">
                             {formatSize(source.fileSizeBytes)}
                           </p>
                         )}

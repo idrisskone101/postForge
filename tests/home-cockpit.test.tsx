@@ -1,12 +1,29 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import {
-  getHomeProductionSteps,
-  HomeCockpit,
-} from "../src/app/home-cockpit";
+import { HomeCockpit } from "../src/app/home-cockpit";
 import { getHomeJobProductionMetadata } from "../src/lib/jobs/home-production-context";
 
 const now = new Date("2026-06-12T15:00:00Z");
+
+const emptyCosts = {
+  period: "today",
+  totalCost: 0,
+  breakdown: {
+    image: { count: 0, cost: 0 },
+    video: { count: 0, cost: 0 },
+  },
+  byModel: {},
+};
+
+const emptyMonth = {
+  period: "month",
+  totalCost: 0,
+  breakdown: {
+    image: { count: 0, cost: 0 },
+    video: { count: 0, cost: 0 },
+  },
+  byModel: {},
+};
 
 const markup = renderToStaticMarkup(
   <HomeCockpit
@@ -86,32 +103,54 @@ const markup = renderToStaticMarkup(
         tags: ["ugc-clone"],
         createdAt: now,
       },
+      {
+        id: "job-completed-5",
+        prompt: "Fifth creator reaction clip",
+        type: "video",
+        model: "kling-3.0-motion",
+        status: "completed",
+        tags: ["ugc-clone"],
+        createdAt: now,
+      },
+    ]}
+    completedThisWeek={7}
+    pendingReviewCount={1286}
+    recentMedia={[
+      {
+        id: "media-1",
+        jobId: "job-completed",
+        type: "image",
+        jobType: "image",
+        reviewStatus: "approved_output",
+        model: "nano-banana-2",
+        prompt: "Gradient landscape study",
+        isClone: false,
+      },
+      {
+        id: "media-2",
+        jobId: "job-completed-2",
+        type: "video",
+        jobType: "video",
+        durationSec: 12,
+        reviewStatus: "needs_review",
+        model: "kling-3.0-motion",
+        prompt: "Creator reaction take two",
+        isClone: true,
+      },
     ]}
     now={now}
   />
 );
+
 const emptyMarkup = renderToStaticMarkup(
   <HomeCockpit
-    todaySummary={{
-      period: "today",
-      totalCost: 0,
-      breakdown: {
-        image: { count: 0, cost: 0 },
-        video: { count: 0, cost: 0 },
-      },
-      byModel: {},
-    }}
-    monthSummary={{
-      period: "month",
-      totalCost: 0,
-      breakdown: {
-        image: { count: 0, cost: 0 },
-        video: { count: 0, cost: 0 },
-      },
-      byModel: {},
-    }}
+    todaySummary={emptyCosts}
+    monthSummary={emptyMonth}
     activeJobs={[]}
     recentJobs={[]}
+    completedThisWeek={0}
+    pendingReviewCount={0}
+    recentMedia={[]}
     now={now}
   />
 );
@@ -127,65 +166,70 @@ const ordinaryGenerateJob = {
 };
 const ordinaryMarkup = renderToStaticMarkup(
   <HomeCockpit
-    todaySummary={{
-      period: "today",
-      totalCost: 0,
-      breakdown: {
-        image: { count: 0, cost: 0 },
-        video: { count: 0, cost: 0 },
-      },
-      byModel: {},
-    }}
-    monthSummary={{
-      period: "month",
-      totalCost: 0,
-      breakdown: {
-        image: { count: 0, cost: 0 },
-        video: { count: 0, cost: 0 },
-      },
-      byModel: {},
-    }}
+    todaySummary={emptyCosts}
+    monthSummary={emptyMonth}
     activeJobs={[ordinaryGenerateJob]}
     recentJobs={[]}
+    completedThisWeek={0}
+    pendingReviewCount={0}
+    recentMedia={[]}
     now={now}
   />
 );
 
-assert.match(markup, /Daily production cockpit/);
-assert.match(markup, /data-home-production-status="true"/);
-assert.match(markup, /1 in progress/);
-assert.match(markup, /4 to review/);
-assert.match(markup, /In progress/);
-assert.match(markup, /Needs review/);
-assert.match(markup, /Start new work/);
+// Header and primary action
+assert.match(markup, />Home</);
+assert.match(markup, /New Clone/);
+assert.match(markup, /pf-button-primary/);
+
+// Stat strip: four canon stat cards with real values
 assert.match(markup, /Spend today/);
+assert.match(markup, /Jobs running/);
 assert.match(markup, /Awaiting review/);
-assert.match(markup, /Started today/);
-assert.match(markup, /href="\/ugc-clone\/job-processing"/);
-assert.match(markup, /href="\/ugc-clone\/job-completed"/);
+assert.match(markup, /Completed this week/);
+assert.match(markup, /\$1\.28/);
+assert.match(markup, />7</);
+
+// Section structure
+assert.match(markup, /Review queue/);
+assert.match(markup, /Recent media/);
+assert.match(markup, /In progress/);
+assert.match(markup, /Start new work/);
 assert.match(markup, /Review all/);
 assert.match(markup, /View all/);
-assert.match(markup, /data-home-pending-review-grid="true"/);
-assert.doesNotMatch(markup, /job-completed-4/);
+
+// Clone-aware deep links preserved
+assert.match(markup, /href="\/ugc-clone\/job-processing"/);
+assert.match(markup, /href="\/ugc-clone\/job-completed"/);
+
+// Review queue caps at four rows
+assert.match(markup, /job-completed-4/);
+assert.doesNotMatch(markup, /job-completed-5/);
+
+// Inline review controls are real buttons wired to outputs
+assert.match(markup, /aria-label="Approve output"/);
+assert.match(markup, /aria-label="Reject output"/);
+
+// Production context still surfaces in active job rows
 assert.match(markup, /Avery Chen/);
-assert.match(markup, /Today&#x27;s spend mix by generation type/);
-assert.match(markup, /jobs started since midnight/);
-assert.match(markup, /4 visible outputs awaiting a decision/);
-assert.match(markup, /1 job moving through the queue/);
+
+// Recent media badges map real review states
+assert.match(markup, /Approved/);
+assert.match(markup, /In review/);
+assert.match(markup, /href="\/generate\/job-completed"/);
+assert.match(markup, /href="\/ugc-clone\/job-completed-2"/);
+assert.match(markup, /Gradient landscape study/);
+
+// Start actions preserved
 assert.match(markup, /Browse inspiration/);
 assert.match(markup, /Start a clone/);
 assert.match(markup, /Generate an asset/);
-assert.doesNotMatch(markup, /Inspiration ready/);
-assert.doesNotMatch(markup, /active or complete/);
 
-assert.equal(getHomeProductionSteps(ordinaryGenerateJob)[0].complete, false);
-assert.equal(getHomeProductionSteps(ordinaryGenerateJob)[1].complete, false);
-assert.doesNotMatch(ordinaryMarkup, /Current identity/);
-assert.doesNotMatch(ordinaryMarkup, />Selected</);
-assert.doesNotMatch(ordinaryMarkup, /source and production setup are saved/i);
-assert.match(ordinaryMarkup, /No tracked generation spend today/);
+// Ordinary generate jobs deep-link to the generate route
+assert.match(ordinaryMarkup, /href="\/generate\/ordinary-generate"/);
 assert.match(ordinaryMarkup, /Create a product still/);
 
+// Production metadata helper contract unchanged
 assert.deepEqual(getHomeJobProductionMetadata({}), {
   sourceId: null,
   sourceDetail: null,
@@ -211,10 +255,13 @@ assert.equal(
   "2 saved references"
 );
 
+// Empty workspace: stats render and the empty stage invites the loop
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
-assert.match(emptyMarkup, /Start today&#x27;s Daily Production Loop/);
+assert.match(emptyMarkup, /Start today&#x27;s production loop/);
 assert.match(emptyMarkup, /Return to Inspiration/);
 assert.match(emptyMarkup, /Start Clone/);
-assert.match(emptyMarkup, /No tracked generation spend today/);
-assert.match(emptyMarkup, /queue is clear/);
-assert.match(emptyMarkup, /nothing to decide/);
+assert.match(emptyMarkup, /Completed this week/);
+
+// The Awaiting review stat is the true pending count, never the capped row count
+assert.match(markup, /Awaiting review/);
+assert.match(markup, />1286</);

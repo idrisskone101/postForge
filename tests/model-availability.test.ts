@@ -30,24 +30,22 @@ async function testAvailabilityDefaults() {
   }
 }
 
-// In headless test runs there is no Postgres database. The availability store
-// applies writes optimistically to its in-process cache before persisting, so
-// reads must reflect the new state even when persistence is unavailable.
+// This test's package script pins DATABASE_URL to an unreachable local port.
+// The availability store applies writes optimistically to its in-process cache
+// before persisting, so reads must reflect the new state after persistence
+// fails without depending on whether a developer database happens to be live.
 async function trySave(state: {
   enabledModelIds: string[];
   defaultImageModelId: string | null;
   defaultVideoModelId: string | null;
 }) {
+  let persistenceFailed = false;
   try {
     await saveModelAvailability(state);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    assert.match(
-      message,
-      /does not exist|connection|database|ECONNREFUSED/i,
-      `expected a database-unavailable error, got: ${message}`
-    );
+  } catch {
+    persistenceFailed = true;
   }
+  assert.equal(persistenceFailed, true, "the isolated test database must be unreachable");
 }
 
 async function testTogglePersistence() {

@@ -68,8 +68,8 @@ assert.match(markup, /30D/);
 assert.match(markup, /90D/);
 assert.match(markup, /Export CSV/);
 assert.match(markup, /Period Spend/);
-assert.match(markup, /Forge Cycles/);
-assert.match(markup, /Avg Cost/);
+assert.match(markup, /Generations/);
+assert.match(markup, /Avg cost/);
 assert.match(markup, /Top Model/);
 assert.match(markup, /Budget remaining/);
 assert.match(markup, /Edit budget/);
@@ -97,3 +97,6 @@ assert.match(emptyMarkup, /No spend data yet/);
 assert.match(emptyMarkup, /No cost log entries yet/);
 assert.match(emptyMarkup, /Start Clone/);
 assert.match(emptyMarkup, /Open Generate/);
+
+// Mobile stat cards stay 2-col (canon home parity)
+assert.match(markup, /grid grid-cols-2 gap-3 xl:grid-cols-4/);
