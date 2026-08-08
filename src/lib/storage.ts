@@ -1,5 +1,12 @@
 import * as fs from "fs/promises";
 import * as path from "path";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/db";
 
 const STORAGE_SEGMENT_PATTERN = /^[A-Za-z0-9._-]+$/;
@@ -10,7 +17,7 @@ function invalidStoragePath(localPath: string): NodeJS.ErrnoException {
   return err;
 }
 
-function normalizeStoragePath(localPath: string): string {
+export function normalizeStoragePath(localPath: string): string {
   if (!localPath || path.isAbsolute(localPath) || localPath.includes("\\")) {
     throw invalidStoragePath(localPath);
   }
@@ -382,6 +389,251 @@ class DatabaseStorageDriver implements StorageProvider {
   }
 }
 
+type RailwayS3Environment = Record<string, string | undefined>;
+
+export type RailwayS3StorageConfig = {
+  bucket: string;
+  endpoint: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  forcePathStyle: boolean;
+};
+
+function requiredS3EnvironmentValue(
+  environment: RailwayS3Environment,
+  key: keyof RailwayS3Environment
+): string {
+  const value = environment[key]?.trim();
+  if (!value) {
+    throw new Error(`${key} is required when STORAGE_DRIVER=s3`);
+  }
+  return value;
+}
+
+export function railwayS3StorageConfigFromEnvironment(
+  environment: RailwayS3Environment = process.env
+): RailwayS3StorageConfig {
+  const urlStyle = environment.STORAGE_S3_URL_STYLE?.trim() || "virtual";
+  if (!new Set(["virtual", "virtual-host", "path", "path-style"]).has(urlStyle)) {
+    throw new Error(
+      "STORAGE_S3_URL_STYLE must be virtual, virtual-host, path, or path-style"
+    );
+  }
+
+  return {
+    bucket: requiredS3EnvironmentValue(environment, "STORAGE_S3_BUCKET"),
+    endpoint: requiredS3EnvironmentValue(environment, "STORAGE_S3_ENDPOINT"),
+    region: requiredS3EnvironmentValue(environment, "STORAGE_S3_REGION"),
+    accessKeyId: requiredS3EnvironmentValue(
+      environment,
+      "STORAGE_S3_ACCESS_KEY_ID"
+    ),
+    secretAccessKey: requiredS3EnvironmentValue(
+      environment,
+      "STORAGE_S3_SECRET_ACCESS_KEY"
+    ),
+    forcePathStyle: urlStyle === "path" || urlStyle === "path-style",
+  };
+}
+
+function storageNotFound(localPath: string): NodeJS.ErrnoException {
+  const error = new Error(`File not found: ${localPath}`) as NodeJS.ErrnoException;
+  error.code = "ENOENT";
+  return error;
+}
+
+function isS3NotFound(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as {
+    name?: string;
+    $metadata?: { httpStatusCode?: number };
+  };
+  return (
+    candidate.name === "NoSuchKey" ||
+    candidate.name === "NotFound" ||
+    candidate.$metadata?.httpStatusCode === 404
+  );
+}
+
+async function s3BodyToBuffer(body: unknown): Promise<Buffer> {
+  const transformable = body as {
+    transformToByteArray?: () => Promise<Uint8Array>;
+  };
+  if (typeof transformable.transformToByteArray === "function") {
+    return Buffer.from(await transformable.transformToByteArray());
+  }
+
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !(Symbol.asyncIterator in body)
+  ) {
+    throw new Error("S3 returned an unsupported response body");
+  }
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of body as AsyncIterable<Uint8Array>) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
+
+export class RailwayS3StorageDriver implements StorageProvider {
+  private readonly client: S3Client;
+  private readonly cacheBasePath: string;
+
+  constructor(
+    private readonly config: RailwayS3StorageConfig,
+    options: { client?: S3Client; cacheBasePath?: string } = {}
+  ) {
+    this.client =
+      options.client ??
+      new S3Client({
+        region: config.region,
+        endpoint: config.endpoint,
+        forcePathStyle: config.forcePathStyle,
+        credentials: {
+          accessKeyId: config.accessKeyId,
+          secretAccessKey: config.secretAccessKey,
+        },
+      });
+    this.cacheBasePath =
+      options.cacheBasePath ?? path.resolve(".cache/postforge-storage");
+  }
+
+  private getCachePath(localPath: string): string {
+    return resolveWithinBase(this.cacheBasePath, localPath);
+  }
+
+  private async removeCached(localPath: string): Promise<void> {
+    await unlinkIfExists(this.getCachePath(localPath));
+  }
+
+  async save(type: string, filename: string, data: Buffer): Promise<string> {
+    const relativePath = buildRelativePath(type, filename);
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.config.bucket,
+        Key: relativePath,
+        Body: data,
+        ContentLength: data.length,
+      })
+    );
+    await this.removeCached(relativePath);
+    return relativePath;
+  }
+
+  async saveFromFile(
+    type: string,
+    filename: string,
+    sourcePath: string
+  ): Promise<string> {
+    return this.save(type, filename, await fs.readFile(sourcePath));
+  }
+
+  async read(localPath: string): Promise<Buffer> {
+    const safeLocalPath = normalizeStoragePath(localPath);
+    try {
+      const response = await this.client.send(
+        new GetObjectCommand({
+          Bucket: this.config.bucket,
+          Key: safeLocalPath,
+        })
+      );
+      if (!response.Body) throw storageNotFound(safeLocalPath);
+      return s3BodyToBuffer(response.Body);
+    } catch (error) {
+      if (isS3NotFound(error)) throw storageNotFound(safeLocalPath);
+      throw error;
+    }
+  }
+
+  async readRange(localPath: string, start: number, end: number): Promise<Buffer> {
+    validateReadRange(start, end);
+    const safeLocalPath = normalizeStoragePath(localPath);
+    try {
+      const response = await this.client.send(
+        new GetObjectCommand({
+          Bucket: this.config.bucket,
+          Key: safeLocalPath,
+          Range: `bytes=${start}-${end}`,
+        })
+      );
+      if (!response.Body) throw storageNotFound(safeLocalPath);
+      return s3BodyToBuffer(response.Body);
+    } catch (error) {
+      if (isS3NotFound(error)) throw storageNotFound(safeLocalPath);
+      throw error;
+    }
+  }
+
+  async size(localPath: string): Promise<number> {
+    const safeLocalPath = normalizeStoragePath(localPath);
+    try {
+      const response = await this.client.send(
+        new HeadObjectCommand({
+          Bucket: this.config.bucket,
+          Key: safeLocalPath,
+        })
+      );
+      const size = response.ContentLength;
+      if (!Number.isSafeInteger(size) || (size ?? -1) < 0) {
+        throw new Error(`Stored asset has an invalid size: ${safeLocalPath}`);
+      }
+      return size!;
+    } catch (error) {
+      if (isS3NotFound(error)) throw storageNotFound(safeLocalPath);
+      throw error;
+    }
+  }
+
+  async delete(localPath: string): Promise<void> {
+    const safeLocalPath = normalizeStoragePath(localPath);
+    await this.client.send(
+      new DeleteObjectCommand({
+        Bucket: this.config.bucket,
+        Key: safeLocalPath,
+      })
+    );
+    await this.removeCached(safeLocalPath);
+  }
+
+  async exists(localPath: string): Promise<boolean> {
+    if (!localPath) return false;
+    let safeLocalPath: string;
+    try {
+      safeLocalPath = normalizeStoragePath(localPath);
+    } catch {
+      return false;
+    }
+
+    try {
+      await this.client.send(
+        new HeadObjectCommand({
+          Bucket: this.config.bucket,
+          Key: safeLocalPath,
+        })
+      );
+      return true;
+    } catch (error) {
+      if (isS3NotFound(error)) return false;
+      throw error;
+    }
+  }
+
+  async ensureLocalFile(localPath: string): Promise<string> {
+    const safeLocalPath = normalizeStoragePath(localPath);
+    const cachePath = this.getCachePath(safeLocalPath);
+    if (await fileExists(cachePath)) return cachePath;
+
+    const data = await this.read(safeLocalPath);
+    await fs.mkdir(path.dirname(cachePath), { recursive: true });
+    await fs.writeFile(cachePath, data);
+    return cachePath;
+  }
+}
+
 export async function downloadFromUrl(
   url: string
 ): Promise<{ buffer: Buffer; contentType: string }> {
@@ -400,7 +652,21 @@ export async function downloadFromUrl(
   return { buffer, contentType };
 }
 
-export const storage: StorageProvider =
-  process.env.STORAGE_DRIVER === "local"
-    ? new LocalStorageDriver()
-    : new DatabaseStorageDriver();
+function createStorageProvider(): StorageProvider {
+  switch (process.env.STORAGE_DRIVER) {
+    case "local":
+      return new LocalStorageDriver();
+    case "s3":
+      return new RailwayS3StorageDriver(
+        railwayS3StorageConfigFromEnvironment()
+      );
+    case "database":
+    case undefined:
+    case "":
+      return new DatabaseStorageDriver();
+    default:
+      throw new Error(`Unsupported STORAGE_DRIVER: ${process.env.STORAGE_DRIVER}`);
+  }
+}
+
+export const storage: StorageProvider = createStorageProvider();

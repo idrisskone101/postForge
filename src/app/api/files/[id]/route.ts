@@ -11,6 +11,7 @@ import {
   isSameOriginMutation,
   rejectCrossOriginMutation,
 } from "@/lib/integrations/routes";
+import { parseSingleByteRange, type ByteRange } from "@/lib/http-byte-range";
 
 export async function GET(
   request: NextRequest,
@@ -32,14 +33,27 @@ export async function GET(
     const mimeType = file?.mimeType ?? collectionAsset!.mimeType;
 
     let data: Buffer;
+    let size: number;
+    let range: ByteRange | null;
     try {
-      data = await storage.read(localPath);
+      size = await storage.size(localPath);
+      range = parseSingleByteRange(request.headers.get("range"), size);
+      data = range
+        ? await storage.readRange(localPath, range.start, range.end)
+        : await storage.read(localPath);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === "ENOENT") {
         return NextResponse.json(
           { error: "File not found on disk" },
           { status: 404 }
         );
+      }
+      if (err instanceof RangeError) {
+        const knownSize = await storage.size(localPath).catch(() => 0);
+        return new Response(null, {
+          status: 416,
+          headers: { "Content-Range": `bytes */${knownSize}` },
+        });
       }
       throw err;
     }
@@ -52,10 +66,14 @@ export async function GET(
     }
 
     return new Response(new Uint8Array(data), {
-      status: 200,
+      status: range ? 206 : 200,
       headers: {
         "Content-Type": mimeType,
         "Content-Length": String(data.length),
+        "Accept-Ranges": "bytes",
+        ...(range
+          ? { "Content-Range": `bytes ${range.start}-${range.end}/${size}` }
+          : {}),
         "Cache-Control": file
           ? "public, max-age=31536000, immutable"
           : "private, max-age=3600",

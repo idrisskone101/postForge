@@ -6,7 +6,7 @@ const globalForBackfill = globalThis as unknown as {
 };
 
 export async function backfillLegacyAssets(): Promise<void> {
-  if (process.env.STORAGE_DRIVER === "local") {
+  if (process.env.STORAGE_DRIVER !== "database") {
     return;
   }
 
