@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Compass, RefreshCw } from "lucide-react";
 import {
   WorkspaceState,
   WorkspaceStateSkeleton,
 } from "../src/components/workspace-state";
+
+const workspaceStateSource = readFileSync(
+  new URL("../src/components/workspace-state.tsx", import.meta.url),
+  "utf8"
+);
+
+// Home renders this shared empty state from a Server Component. Keeping this
+// module server-compatible prevents icon components from crossing the RSC
+// serialization boundary; client importers still include it in their client graph.
+assert.doesNotMatch(workspaceStateSource, /^\s*["']use client["'];/);
 
 const emptyMarkup = renderToStaticMarkup(
   <WorkspaceState

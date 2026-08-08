@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { ArrowRight } from "lucide-react";
