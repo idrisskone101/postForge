@@ -214,11 +214,18 @@ function readTextSettings(
     "center",
   );
   const alignValue = asString(stored.align ?? slideSettings.textAlign, "center");
+  const paddingValue = asString(
+    stored.padding,
+    "padded",
+  );
 
   return {
     font:
       font === "Inter" ||
       font === "Serif" ||
+      font === "SerifItalic" ||
+      font === "Editorial" ||
+      font === "Condensed" ||
       font === "Mono" ||
       font === "Rounded"
         ? font
@@ -238,6 +245,7 @@ function readTextSettings(
     customColor: isCustomColor ? customColorValue : undefined,
     style:
       styleValue === "solid" ||
+      styleValue === "light" ||
       styleValue === "translucent" ||
       styleValue === "plain"
         ? styleValue
@@ -250,6 +258,11 @@ function readTextSettings(
     width: asNumber(stored.width ?? slideSettings.textWidth, 88),
     align:
       alignValue === "left" || alignValue === "right" ? alignValue : "center",
+    padding: paddingValue === "flush" ? "flush" : "padded",
+    backgroundRadius: Math.max(
+      0,
+      Math.min(20, asNumber(stored.backgroundRadius, 4)),
+    ),
   };
 }
 
@@ -400,9 +413,9 @@ export function serializeSlideshowProject(project: SlideshowProject) {
         textAlign: project.textSettings.align,
         verticalPosition: project.textSettings.position,
         textWidth: project.textSettings.width,
+        backgroundRadius: project.textSettings.backgroundRadius,
         padded:
-          project.textSettings.style === "solid" ||
-          project.textSettings.style === "translucent",
+          project.textSettings.padding === "padded",
       },
       layout: {
         text: {

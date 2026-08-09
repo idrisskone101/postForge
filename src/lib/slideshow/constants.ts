@@ -56,6 +56,8 @@ export const DEFAULT_PROJECT_SETTINGS = Object.freeze({
     position: "center",
     width: 88,
     align: "center",
+    padding: "padded",
+    backgroundRadius: 4,
   },
   includeCta: true,
   preventRepeats: true,
