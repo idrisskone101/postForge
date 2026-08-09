@@ -8,6 +8,8 @@
 
 /** Per-slide mutable scene. Kept separate so the core aesthetic stays fixed. */
 export interface SlideshowCreatorScene {
+  /** Automatically assigned deck-level variety lane. */
+  archetype?: string;
   /** Location / environment for this specific slide (e.g. "a dark boxing gym"). */
   location?: string;
   /** Activity / subject behaviour for this slide. */

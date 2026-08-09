@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   buildSlideshowCreatorPrompt,
   parseSlideshowAestheticTemplate,
+  planSlideshowCreatorScenes,
   slideshowCreatorLimits,
 } from "../src/lib/ai/slideshow-creator";
 
@@ -97,6 +98,111 @@ const variantAesthetic = variantParsed.aesthetic.join("\n");
 assert.match(variantAesthetic, /LOCATION: a quiet boxing gym/);
 assert.match(variantAesthetic, /ACTIVITY: wrapping hands/);
 assert.match(variantAesthetic, /quiet luxury, understated confidence/);
+assert.equal(variantParsed.assigned_scene.mandatory, true);
+assert.match(variantParsed.assigned_scene.environment_brief, /boxing gym/);
+assert.match(variantParsed.assigned_scene.direction, /Make the creative decisions/i);
+
+// A deck-level plan deliberately spans lifestyle categories instead of relying
+// on the image model to interpret a loose list of environment examples.
+const planned = planSlideshowCreatorScenes(
+  template,
+  Array.from({ length: 6 }, (_, index) => ({
+    slideId: `planned-${index + 1}`,
+    text: `Slide ${index + 1}`,
+  })),
+);
+assert.equal(planned.length, 6);
+assert.equal(
+  new Set(planned.map((slide) => slide.scene?.archetype)).size,
+  planned.length,
+  "normal six-slide decks should not repeat a scene archetype",
+);
+assert.ok(
+  planned.every(
+    (slide) => /^(Invent|Choose)\b/.test(slide.scene?.location ?? "") &&
+      /^(Choose|Show)\b/.test(slide.scene?.activity ?? ""),
+  ),
+  "the planner should delegate concrete scene invention instead of hard-coding examples",
+);
+assert.doesNotMatch(
+  planned.map((slide) => slide.scene?.location).join(" "),
+  /Porsche|airplane cabin/i,
+);
+
+// Scene diversity is intrinsic: a valid aesthetic with zero environment
+// examples still receives a complete, non-repeating creative portfolio.
+const exampleFreeTemplate = parseSlideshowAestheticTemplate({
+  aesthetic: {
+    core_vibe: "dark masculine discipline with understated confidence",
+    mood: ["moody", "focused"],
+  },
+  visual_style: {
+    genre: "editorial lifestyle photography",
+    realism: "natural photographic realism",
+  },
+});
+const exampleFreePlan = planSlideshowCreatorScenes(
+  exampleFreeTemplate,
+  Array.from({ length: 8 }, (_, index) => ({
+    slideId: `example-free-${index + 1}`,
+    text: `Example-free slide ${index + 1}`,
+  })),
+);
+assert.equal(
+  new Set(exampleFreePlan.map((slide) => slide.scene?.archetype)).size,
+  8,
+);
+assert.ok(
+  exampleFreePlan.every(
+    (slide) => slide.scene?.location?.length && slide.scene.activity?.length,
+  ),
+);
+
+// Manual slide direction remains authoritative even when the planner fills the
+// rest of the deck.
+const manual = planSlideshowCreatorScenes(template, [
+  {
+    slideId: "manual",
+    text: "Keep moving",
+    scene: {
+      location: "a rain-soaked basketball court",
+      activity: "tying his shoes courtside",
+      subject: "the same male protagonist",
+    },
+  },
+]);
+assert.equal(manual[0].scene?.location, "a rain-soaked basketball court");
+assert.equal(manual[0].scene?.activity, "tying his shoes courtside");
+assert.equal(manual[0].scene?.subject, "the same male protagonist");
+assert.equal(manual[0].scene?.archetype, "operator-directed");
+
+// A grounded, non-aspirational template still gets broader environments, but
+// should not invent luxury-status props that clash with its visual direction.
+const groundedTemplate = parseSlideshowAestheticTemplate({
+  aesthetic: {
+    core_vibe: "warm neighborhood craft and everyday usefulness",
+    mood: ["grounded", "friendly"],
+  },
+  visual_style: {
+    genre: "candid documentary photography",
+    realism: "natural photographic realism",
+  },
+  environment: {
+    feel: "local and lived-in",
+    examples: ["community workshop", "neighborhood market"],
+  },
+});
+const grounded = planSlideshowCreatorScenes(
+  groundedTemplate,
+  Array.from({ length: 4 }, (_, index) => ({
+    slideId: `grounded-${index + 1}`,
+    text: `Grounded slide ${index + 1}`,
+  })),
+);
+assert.doesNotMatch(
+  grounded.map((slide) => slide.scene?.location).join(" "),
+  /Porsche/i,
+);
 
 // 4:5 and 16:9 pass through to the aspect_ratio field.
 const square = buildSlideshowCreatorPrompt(
