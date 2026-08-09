@@ -129,10 +129,13 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     type: "video",
     provider: "fal",
     endpoint: "fal-ai/kling-video/v3/standard/image-to-video",
-    pricing: { unit: "per_second", amount: 0.029 },
+    pricing: { unit: "per_second", amount: 0.084 },
+    audioMultiplier: 1.5,
     capabilities: {
       imageToVideo: true,
       videoToVideo: true,
+      nativeAudio: true,
+      characterReference: "kling-element",
     },
     defaults: { aspectRatio: "9:16", duration: 5 },
     limits: { maxDuration: 15, aspectRatios: VIDEO_ASPECT_RATIOS },
@@ -229,6 +232,7 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     capabilities: {
       textToVideo: true,
       nativeAudio: true,
+      characterReference: "seedance-images",
     },
     defaults: { aspectRatio: "16:9", duration: 8 },
     limits: { minDuration: 4, maxDuration: 15, aspectRatios: ["16:9", "9:16", "1:1", "21:9"] },
@@ -243,6 +247,7 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     capabilities: {
       textToVideo: true,
       nativeAudio: true,
+      characterReference: "gemini-images",
     },
     defaults: { aspectRatio: "16:9", duration: 8 },
     limits: { minDuration: 3, maxDuration: 10, aspectRatios: ["16:9", "9:16"] },

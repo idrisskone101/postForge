@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import { ensureCloneWorkerRunning } from "@/lib/ugc/clone-worker";
+import { ensureCharacterVideoWorkerRunning } from "@/lib/ai/generate-character-video";
 import { prisma } from "@/lib/db";
 import { serializeOutputReviewStatus } from "@/lib/output-review-status";
 import { storage } from "@/lib/storage";
@@ -53,6 +54,14 @@ export async function GET(
       (job.status === "queued" || job.status === "processing")
     ) {
       ensureCloneWorkerRunning();
+    }
+    if (
+      job.type === "video" &&
+      job.tags.includes("character-video") &&
+      (job.status === "queued" || job.status === "processing") &&
+      !job.falRequestId
+    ) {
+      ensureCharacterVideoWorkerRunning();
     }
 
     const outputs = job.outputs.map((file: { id: string; type: string; filename: string; mimeType: string; width: number | null; height: number | null; durationSec: number | null; fileSizeBytes: number | null; reviewStatus: string | null; createdAt: Date }) => ({
@@ -107,6 +116,7 @@ export async function GET(
       type: job.type,
       model: job.model,
       status: job.status,
+      queueStage: job.queueStage,
       prompt: job.prompt,
       input: job.input,
       output: job.output,

@@ -6,6 +6,7 @@ import {
   buildHairstyleDirective,
   resolveIdentityReferenceUrlsForAvatar,
 } from "@/lib/ugc/avatar-identity-pack";
+import type { ImageGenerationRequest } from "@/lib/ai/types";
 
 export interface AvatarImageRequest {
   avatarId: string;
@@ -69,9 +70,14 @@ export function buildAvatarScenePrompt(
     .trim();
 }
 
-export async function generateAvatarImage(
+export async function buildAvatarImageGenerationRequest(
   request: AvatarImageRequest
-): Promise<{ jobId: string; estimatedCost: number; model: string }> {
+): Promise<{
+  request: ImageGenerationRequest;
+  jobInput: Record<string, unknown>;
+  estimatedCost: number;
+  model: string;
+}> {
   const requestedModel =
     request.imageModel ?? (await getDefaultEditCapableImageModel());
   const modelDef = getModel(requestedModel);
@@ -113,8 +119,8 @@ export async function generateAvatarImage(
     ? `${AVATAR_IMAGE_NEGATIVE_PROMPT}, ${request.negativePrompt.trim()}`
     : AVATAR_IMAGE_NEGATIVE_PROMPT;
 
-  const jobId = await generateImage(
-    {
+  return {
+    request: {
       prompt: promptString,
       negativePrompt,
       model: modelId,
@@ -124,27 +130,35 @@ export async function generateAvatarImage(
       editEndpoint: true,
       thinkingLevel: "high" as const,
     },
-    undefined,
-    {
-      jobTags: ["generate-avatar"],
-      jobInput: {
-        model: modelId,
-        aspectRatio,
-        numImages,
-        negativePrompt,
-        imageUrls: identityReferences.identityReferenceUrls,
-        editEndpoint: true,
-        thinkingLevel: "high",
-        avatarId: request.avatarId,
-        identityPackId: identityReferences.identityPackId,
-        identityReferenceRoles: identityReferences.identityReferenceRoles,
-        appliedHairstyleRole: identityReferences.appliedHairstyleRole,
-        requestedHairstyleRole: request.hairstyleRole ?? null,
-        usedAvatarFallback: identityReferences.usedAvatarFallback,
-        prompt: request.prompt,
-      },
-    }
-  );
+    jobInput: {
+      model: modelId,
+      aspectRatio,
+      numImages,
+      negativePrompt,
+      imageUrls: identityReferences.identityReferenceUrls,
+      editEndpoint: true,
+      thinkingLevel: "high",
+      avatarId: request.avatarId,
+      identityPackId: identityReferences.identityPackId,
+      identityReferenceRoles: identityReferences.identityReferenceRoles,
+      appliedHairstyleRole: identityReferences.appliedHairstyleRole,
+      requestedHairstyleRole: request.hairstyleRole ?? null,
+      usedAvatarFallback: identityReferences.usedAvatarFallback,
+      prompt: request.prompt,
+    },
+    estimatedCost,
+    model: modelId,
+  };
+}
 
-  return { jobId, estimatedCost, model: modelId };
+export async function generateAvatarImage(
+  request: AvatarImageRequest
+): Promise<{ jobId: string; estimatedCost: number; model: string }> {
+  const built = await buildAvatarImageGenerationRequest(request);
+  const jobId = await generateImage(built.request, undefined, {
+    jobTags: ["generate-avatar"],
+    jobInput: built.jobInput,
+  });
+
+  return { jobId, estimatedCost: built.estimatedCost, model: built.model };
 }

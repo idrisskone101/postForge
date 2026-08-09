@@ -123,8 +123,14 @@ function getEditorTitle(prompt: string) {
   return clean.length > 52 ? `${clean.slice(0, 52).trim()}…` : clean;
 }
 
-function StatusBadge({ status }: { status: JobDetail["status"] }) {
-  const copy = getGenerationStatusCopy(status);
+function StatusBadge({
+  status,
+  queueStage,
+}: {
+  status: JobDetail["status"];
+  queueStage: JobDetail["queueStage"];
+}) {
+  const copy = getGenerationStatusCopy(status, queueStage);
   const completed = status === "completed";
   const failed = status === "failed";
 
@@ -397,7 +403,7 @@ export default function JobDetailPage() {
   const canDiscard = job.status === "completed" || job.status === "failed";
   const isFailed = job.status === "failed";
   const featured = job.outputs[featuredIdx] ?? job.outputs[0];
-  const statusCopy = getGenerationStatusCopy(job.status);
+  const statusCopy = getGenerationStatusCopy(job.status, job.queueStage);
   const input = job.input ?? {};
   const negativePrompt = asString(input.negativePrompt);
   const selectedTool =
@@ -425,7 +431,7 @@ export default function JobDetailPage() {
                 <h1 className="max-w-2xl truncate text-[20px] font-semibold tracking-[-0.02em] text-foreground sm:text-[24px]">
                   {getEditorTitle(job.prompt)}
                 </h1>
-                <StatusBadge status={job.status} />
+                <StatusBadge status={job.status} queueStage={job.queueStage} />
               </div>
               <p className="mt-1 truncate text-[12px] text-muted-foreground">
                 {job.model} · Job {job.id.slice(0, 8)}

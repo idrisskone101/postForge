@@ -18,6 +18,8 @@ export interface ModelCapabilities {
   maxReferenceImages?: number;
   webSearch?: boolean;
   motionControl?: boolean;
+  /** Provider-specific strategy for binding a saved character to generated video. */
+  characterReference?: "kling-element" | "seedance-images" | "gemini-images";
 }
 
 export interface ModelDefaults {

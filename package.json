@@ -67,6 +67,8 @@
     "test:slideshow-management": "node --import tsx tests/slideshow-management.test.ts",
     "test:model-availability": "DATABASE_URL=postgresql://postforge:postforge@127.0.0.1:1/postforge?connect_timeout=1 node --import tsx tests/model-availability.test.ts",
     "test:model-registry": "node --import tsx tests/generate-model-registry.test.ts",
+    "test:character-video": "DATABASE_URL=postgresql://postforge:postforge@127.0.0.1:1/postforge?connect_timeout=1 node --import tsx tests/character-video.test.ts",
+    "test:prompt-improvement": "DATABASE_URL=postgresql://postforge:postforge@127.0.0.1:1/postforge?connect_timeout=1 node --import tsx tests/prompt-improvement.test.ts",
     "test:storage-s3": "node --import tsx tests/storage-s3.test.ts",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",

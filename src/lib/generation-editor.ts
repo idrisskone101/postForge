@@ -18,6 +18,7 @@ export interface JobDetail {
   type: "image" | "video";
   model: string;
   status: "queued" | "processing" | "completed" | "failed";
+  queueStage: string | null;
   prompt: string;
   input: Record<string, unknown>;
   output: unknown;
@@ -110,7 +111,30 @@ export function buildEnhancementRequest({
   };
 }
 
-export function getGenerationStatusCopy(status: JobDetail["status"]) {
+export function getGenerationStatusCopy(
+  status: JobDetail["status"],
+  queueStage?: string | null
+) {
+  if (
+    status === "processing" &&
+    (queueStage === "creating-anchor" || queueStage === "submitting-anchor")
+  ) {
+    return {
+      label: "Opening frame",
+      title: "Creating the identity-locked opening frame",
+      description: "Composing the selected character inside your requested scene before animation.",
+    };
+  }
+  if (
+    status === "processing" &&
+    (queueStage === "submitting-video" || queueStage === "submitted")
+  ) {
+    return {
+      label: "Animating",
+      title: "Animating your character",
+      description: "The opening frame and identity references are bound to the selected video model.",
+    };
+  }
   if (status === "queued") {
     return {
       label: "Queued",

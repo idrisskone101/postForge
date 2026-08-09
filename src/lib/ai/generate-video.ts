@@ -20,7 +20,12 @@ function buildVideoInput(
       aspect_ratio: aspectRatio,
     };
     if (request.inputImageUrl && model.capabilities.imageToVideo) {
-      input.image_url = request.inputImageUrl;
+      if (modelId === "kling-3.0-i2v") {
+        input.start_image_url = request.inputImageUrl;
+        input.generate_audio = request.enableAudio === true;
+      } else {
+        input.image_url = request.inputImageUrl;
+      }
     }
     if (request.multiShot && model.capabilities.multiShot) {
       input.multi_shot = request.multiShot;
@@ -44,7 +49,7 @@ function buildVideoInput(
       duration: String(duration),
       resolution: "720p",
       aspect_ratio: aspectRatio,
-      generate_audio: true,
+      generate_audio: request.enableAudio === true,
     };
   }
 
