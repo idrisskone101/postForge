@@ -39,6 +39,7 @@ import {
   type WorkspaceNavigationItem,
   type WorkspaceNavigationLabel,
 } from "@/lib/workspace-navigation";
+import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
   Home: House,
@@ -81,6 +82,7 @@ function PostForgeBrand({ name }: { name: string }) {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const publicPolicyPage = isPublicPolicyPath(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const [desktopPreferenceReady, setDesktopPreferenceReady] = useState(false);
@@ -129,6 +131,7 @@ export function Sidebar() {
   }, [desktopCollapsed, desktopPreferenceReady]);
 
   useEffect(() => {
+    if (publicPolicyPage) return;
     let cancelled = false;
 
     async function refreshWorkspaceStatus() {
@@ -168,7 +171,9 @@ export function Sidebar() {
       window.clearInterval(interval);
       window.removeEventListener("focus", refreshWorkspaceStatus);
     };
-  }, []);
+  }, [publicPolicyPage]);
+
+  if (publicPolicyPage) return null;
 
   const renderItem = (item: WorkspaceNavigationItem, mobile = false) => {
     const Icon = NAV_ICONS[item.label];

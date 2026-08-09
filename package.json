@@ -47,6 +47,7 @@
     "test:home-loading": "node --import tsx tests/home-loading.test.tsx",
     "test:generate-empty-state": "node --import tsx tests/generate-empty-state.test.tsx",
     "test:integration-security": "node --import tsx tests/integration-security.test.ts",
+    "test:public-policies": "node --import tsx tests/public-policy-pages.test.tsx",
     "test:integration-providers": "node --import tsx tests/integration-providers.test.ts",
     "test:integration-service": "node --import tsx tests/integration-service.test.ts",
     "test:integration-publishing": "node --import tsx tests/integration-publishing.test.ts",

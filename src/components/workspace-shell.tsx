@@ -11,6 +11,7 @@ import {
   workspaceNavigationGroups,
   type WorkspaceNavigationItem,
 } from "@/lib/workspace-navigation";
+import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 export function WorkspaceHeaderAccessory({ children }: { children: ReactNode }) {
   const [target, setTarget] = useState<HTMLElement | null>(null);
@@ -98,6 +99,14 @@ export function WorkspaceRouteHeader({
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  if (isPublicPolicyPath(pathname)) {
+    return (
+      <div id="workspace-shell" className="min-h-dvh min-w-0 bg-[var(--pf-canvas)]">
+        {children}
+      </div>
+    );
+  }
+
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
   const hideHeader = routeOwnsHeader(pathname);
