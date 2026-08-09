@@ -26,6 +26,16 @@ async function run() {
   const previousApiKey = process.env.POSTFORGE_API_KEY;
   Reflect.set(process.env, "NODE_ENV", "production");
   process.env.POSTFORGE_API_KEY = "operator-api-key";
+  for (const pathname of ["/privacy", "/terms", "/data-deletion"]) {
+    const publicPolicyResponse = middleware(
+      new NextRequest(`https://postforge.example${pathname}`)
+    );
+    assert.equal(
+      publicPolicyResponse.headers.get("x-middleware-next"),
+      "1",
+      `${pathname} must remain public for provider review and deletion requests`
+    );
+  }
   const cronPassThrough = middleware(
     new NextRequest(
       "https://postforge.example/api/integrations/retention",

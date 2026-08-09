@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 const AUTH_CHALLENGE = 'Basic realm="postForge"';
 
@@ -62,6 +63,12 @@ function authenticationNotConfigured() {
 }
 
 export function middleware(request: NextRequest) {
+  // Provider review and account-deletion crawlers cannot supply the private
+  // workspace key. Keep only the published legal disclosures public.
+  if (isPublicPolicyPath(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   // Railway health checks cannot send the operator API key. Keep this endpoint
   // narrow and independently limited to a minimal database-readiness response.
   if (request.nextUrl.pathname === "/api/health") {

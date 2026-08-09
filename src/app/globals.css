@@ -948,6 +948,24 @@
 
 /* PostForge / MagicPath production primitives */
 @layer components {
+  .policy-copy p,
+  .policy-copy li {
+    text-wrap: pretty;
+  }
+
+  .policy-copy strong {
+    color: var(--pf-ink);
+    font-weight: 600;
+  }
+
+  .policy-copy a {
+    color: var(--pf-link);
+    font-weight: 600;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
   .pf-content-viewport {
     min-width: 0;
     min-height: calc(100dvh - 58px - env(safe-area-inset-top));
