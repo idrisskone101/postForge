@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { deriveTemplateFromReferences } from "@/lib/ai/slideshow-creator";
@@ -6,6 +7,8 @@ import {
   parseCollectionAssetIds,
   resolveCollectionImageReferences,
 } from "@/lib/collection-assets-server";
+import { deriveTemplateIdempotently } from "@/lib/slideshow/derive-idempotency";
+import { SlideshowApiError } from "@/lib/slideshow/errors";
 
 /**
  * POST /api/slideshows/creator/derive
@@ -32,6 +35,14 @@ export async function POST(request: NextRequest) {
       );
     }
     const record = body as Record<string, unknown>;
+    const idempotencyKey =
+      typeof record.idempotencyKey === "string" ? record.idempotencyKey.trim() : "";
+    if (idempotencyKey && !/^[A-Za-z0-9_-]{16,100}$/.test(idempotencyKey)) {
+      return NextResponse.json(
+        { error: "idempotencyKey must be 16-100 URL-safe characters" },
+        { status: 400 },
+      );
+    }
 
     let collectionAssetIds: string[] = [];
     try {
@@ -71,7 +82,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await deriveTemplateFromReferences(referenceUrls);
+    const fingerprint = createHash("sha256")
+      .update(JSON.stringify({ collectionAssetIds, requestedUrls }))
+      .digest("hex");
+    const result = idempotencyKey
+      ? await deriveTemplateIdempotently({
+          id: idempotencyKey,
+          fingerprint,
+          run: () => deriveTemplateFromReferences(referenceUrls),
+        })
+      : await deriveTemplateFromReferences(referenceUrls);
     return NextResponse.json({
       template: result.template,
       model: result.model,
@@ -80,11 +100,18 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to derive visual template";
-    const status =
-      error instanceof Error &&
-      /Gemini|template|reference|credential|API key/i.test(message)
+    const status = error instanceof SlideshowApiError
+      ? error.status
+      : error instanceof Error &&
+          /Gemini|template|reference|credential|API key/i.test(message)
         ? 400
         : 500;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json(
+      {
+        error: message,
+        ...(error instanceof SlideshowApiError ? { code: error.code } : {}),
+      },
+      { status },
+    );
   }
 }

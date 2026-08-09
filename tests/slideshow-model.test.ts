@@ -7,12 +7,34 @@ import {
 import {
   MAX_SLIDESHOW_SLIDES,
   addSlideshowSlide,
+  applyDirectSlideshowImages,
   deleteSlideshowSlide,
   duplicateSlideshowSlide,
   moveSlideshowSlide,
   reorderSlideshowSlides,
   setSlideshowCta,
 } from "../src/components/slideshow/model";
+
+const withDirectImages = applyDirectSlideshowImages(
+  createBlankSlideshowProject(),
+  ["/api/collection-assets/pinterest-1", "/api/collection-assets/pinterest-2"],
+);
+assert.equal(
+  withDirectImages.slides[0].imageUrl,
+  "/api/collection-assets/pinterest-1",
+);
+assert.equal(
+  withDirectImages.slides[1].imageUrl,
+  "/api/collection-assets/pinterest-2",
+);
+assert.equal(withDirectImages.slides[2].imageUrl, null);
+assert.equal(withDirectImages.status, "draft");
+
+const directReady = applyDirectSlideshowImages(
+  createBlankSlideshowProject(),
+  Array.from({ length: 4 }, (_, index) => `/api/collection-assets/pin-${index + 1}`),
+);
+assert.equal(directReady.status, "ready");
 
 let project = createBlankSlideshowProject();
 assert.equal(project.slides[0].role, "hook");

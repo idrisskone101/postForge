@@ -19,6 +19,10 @@ export type PinterestImageCandidate = {
   id: string;
   imageUrl: string;
   sourceUrl: string;
+  title?: string;
+  altText?: string;
+  width?: number;
+  height?: number;
 };
 
 export type PinterestCandidateResult = {
@@ -162,6 +166,78 @@ function imageIdentity(url: string) {
   return parts.slice(1).join("/").toLowerCase();
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function optionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function optionalPositiveNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : undefined;
+}
+
+/**
+ * Parse the narrow pin fields PostForge needs from Pinterest's anonymous
+ * BaseSearchResource response. Everything else in the response is ignored so
+ * a Pinterest payload can never become persisted application state by accident.
+ */
+export function extractPinterestSearchCandidates(
+  payload: unknown,
+  sourceUrl: string,
+  limit = MAX_CANDIDATES,
+): PinterestImageCandidate[] {
+  const root = isRecord(payload) ? payload : {};
+  const resourceResponse = isRecord(root.resource_response)
+    ? root.resource_response
+    : {};
+  const data = isRecord(resourceResponse.data) ? resourceResponse.data : {};
+  const results = Array.isArray(data.results) ? data.results : [];
+  const boundedLimit = Math.min(MAX_CANDIDATES, Math.max(1, Math.floor(limit)));
+  const candidates: PinterestImageCandidate[] = [];
+  const seenImages = new Set<string>();
+
+  for (const value of results) {
+    if (!isRecord(value) || value.type !== "pin") continue;
+    const images = isRecord(value.images) ? value.images : {};
+    const preferredImage = ["736x", "474x", "236x"]
+      .map((key) => (isRecord(images[key]) ? images[key] : null))
+      .find((image) => image && optionalString(image.url));
+    const normalizedImageUrl = preferredImage
+      ? normalizePinImageUrl(optionalString(preferredImage.url) ?? "")
+      : null;
+    const pinId = optionalString(value.id);
+    if (!normalizedImageUrl || !pinId) continue;
+    const identity = imageIdentity(normalizedImageUrl);
+    if (seenImages.has(identity)) continue;
+    seenImages.add(identity);
+
+    const title =
+      optionalString(value.grid_title) ??
+      optionalString(value.title) ??
+      optionalString(value.description);
+    const altText =
+      optionalString(value.seo_alt_text) ??
+      optionalString(value.auto_alt_text) ??
+      title;
+    candidates.push({
+      id: `pinterest-${pinId}`,
+      imageUrl: normalizedImageUrl,
+      sourceUrl: `https://www.pinterest.com/pin/${encodeURIComponent(pinId)}/`,
+      title,
+      altText,
+      width: optionalPositiveNumber(preferredImage?.width),
+      height: optionalPositiveNumber(preferredImage?.height),
+    });
+    if (candidates.length >= boundedLimit) break;
+  }
+
+  return candidates;
+}
+
 export function extractPinterestImageUrls(markup: string, limit = MAX_CANDIDATES) {
   const boundedLimit = Math.min(MAX_CANDIDATES, Math.max(1, Math.floor(limit)));
   const decoded = decodePinterestMarkup(markup);
@@ -187,13 +263,20 @@ export function extractPinterestImageUrls(markup: string, limit = MAX_CANDIDATES
     .map(({ url }) => url);
 }
 
-async function readBoundedHtml(response: Response) {
+async function readBoundedBody(response: Response, expectedType: "html" | "json") {
   const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
-  if (!contentType.startsWith("text/html") && !contentType.startsWith("application/xhtml+xml")) {
+  const validContentType =
+    expectedType === "html"
+      ? contentType.startsWith("text/html") ||
+        contentType.startsWith("application/xhtml+xml")
+      : contentType.startsWith("application/json");
+  if (!validContentType) {
     throw new SlideshowApiError(
       502,
       "pinterest_invalid_response",
-      "Pinterest returned a non-HTML response. Try another public board URL.",
+      expectedType === "html"
+        ? "Pinterest returned a non-HTML response. Try another public board URL."
+        : "Pinterest returned an invalid search response. Try the search again.",
     );
   }
 
@@ -232,6 +315,23 @@ async function readBoundedHtml(response: Response) {
   }
 
   return Buffer.concat(chunks.map((chunk) => Buffer.from(chunk)), total).toString("utf8");
+}
+
+async function readBoundedHtml(response: Response) {
+  return readBoundedBody(response, "html");
+}
+
+async function readBoundedJson(response: Response) {
+  const text = await readBoundedBody(response, "json");
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new SlideshowApiError(
+      502,
+      "pinterest_invalid_response",
+      "Pinterest returned malformed search data. Try the search again.",
+    );
+  }
 }
 
 async function fetchPinterestHtml(sourceUrl: URL, fetchImpl: FetchLike) {
@@ -280,13 +380,117 @@ async function fetchPinterestHtml(sourceUrl: URL, fetchImpl: FetchLike) {
       throw new SlideshowApiError(502, "pinterest_unavailable", message);
     }
 
-    return { markup: await readBoundedHtml(response), finalUrl: currentUrl };
+    return {
+      markup: await readBoundedHtml(response),
+      finalUrl: currentUrl,
+      headers: response.headers,
+    };
   }
 
   throw new SlideshowApiError(
     502,
     "pinterest_redirect_limit",
     "Pinterest redirected too many times.",
+  );
+}
+
+function sessionCookieHeader(headers: Headers) {
+  const cookieHeaders =
+    (headers as Headers & { getSetCookie?: () => string[] }).getSetCookie?.() ??
+    (headers.get("set-cookie")?.split(/,(?=\s*[^=;,\s]+=)/) ?? []);
+  return cookieHeaders
+    .map((value) => value.split(";", 1)[0]?.trim())
+    .filter(
+      (value): value is string =>
+        Boolean(value) && !/[\r\n]/.test(value) && /^[^=;\s]+=[^;]*$/.test(value),
+    )
+    .join("; ");
+}
+
+function pinterestSearchResourceUrl(sourceUrl: URL, query: string) {
+  const visibleUrl = `${sourceUrl.pathname}?${sourceUrl.searchParams.toString()}`;
+  const options = {
+    query,
+    scope: "pins",
+    appliedProductFilters: "---",
+    domains: null,
+    user: null,
+    seoDrawerEnabled: false,
+    applied_unified_filters: null,
+    auto_correction_disabled: false,
+    filter_genai: false,
+    journey_depth: null,
+    source_id: null,
+    source_module_id: null,
+    source_url: visibleUrl,
+    static_feed: false,
+    selected_one_bar_modules: null,
+    query_pin_sigs: null,
+    page_size: null,
+    gated: null,
+    price_max: null,
+    price_min: null,
+    query_image_pins: null,
+    request_params: null,
+    top_pin_ids: null,
+    article: null,
+    corpus: null,
+    filters: null,
+    rs: "direct_navigation",
+  };
+  const resourceUrl = new URL(
+    "/resource/BaseSearchResource/get/",
+    "https://www.pinterest.com",
+  );
+  resourceUrl.searchParams.set("source_url", visibleUrl);
+  resourceUrl.searchParams.set("data", JSON.stringify({ options, context: {} }));
+  resourceUrl.searchParams.set("_", String(Date.now()));
+  return { resourceUrl, visibleUrl };
+}
+
+async function fetchPinterestSearchCandidates(
+  query: string,
+  sourceUrl: URL,
+  session: Awaited<ReturnType<typeof fetchPinterestHtml>>,
+  fetchImpl: FetchLike,
+) {
+  const { resourceUrl, visibleUrl } = pinterestSearchResourceUrl(sourceUrl, query);
+  const cookie = sessionCookieHeader(session.headers);
+  const appVersion = session.headers.get("pinterest-version")?.trim();
+  const headers = new Headers({
+    Accept: "application/json, text/javascript, */*, q=0.01",
+    "Accept-Language": "en-US,en;q=0.8",
+    Referer: "https://www.pinterest.com/",
+    "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "X-Pinterest-Appstate": "active",
+    "X-Pinterest-PWS-Handler": "www/search/[scope].js",
+    "X-Pinterest-Source-Url": visibleUrl,
+    "X-Requested-With": "XMLHttpRequest",
+  });
+  if (cookie) headers.set("Cookie", cookie);
+  if (appVersion && !/[\r\n]/.test(appVersion)) {
+    headers.set("X-App-Version", appVersion);
+  }
+
+  const response = await fetchImpl(resourceUrl, {
+    method: "GET",
+    redirect: "manual",
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    headers,
+  });
+  if (!response.ok) {
+    throw new SlideshowApiError(
+      502,
+      "pinterest_unavailable",
+      response.status === 401 || response.status === 403 || response.status === 429
+        ? "Pinterest blocked or rate-limited the search request. Try again or paste a public board URL."
+        : `Pinterest search failed with HTTP ${response.status}. Try again or paste a public board URL.`,
+    );
+  }
+  return extractPinterestSearchCandidates(
+    await readBoundedJson(response),
+    sourceUrl.href,
   );
 }
 
@@ -320,27 +524,47 @@ export async function findPinterestCandidates(
       502,
       isTimeout ? "pinterest_timeout" : "pinterest_unavailable",
       isTimeout
-        ? "Pinterest took too long to respond. Try again or paste a public board URL."
-        : "Pinterest could not be reached. Try again or upload the images directly.",
+        ? "Pinterest took too long to respond. Try again or switch to Board URL."
+        : "Pinterest could not be reached. Try again or add images in Collections.",
     );
   }
 
-  const imageUrls = extractPinterestImageUrls(page.markup);
-  if (!imageUrls.length) {
+  let candidates: PinterestImageCandidate[];
+  if (source === "search") {
+    try {
+      candidates = await fetchPinterestSearchCandidates(
+        query.trim(),
+        sourceUrl,
+        page,
+        options.fetchImpl ?? fetch,
+      );
+    } catch (error) {
+      const fallbackUrls = extractPinterestImageUrls(page.markup);
+      if (!fallbackUrls.length) throw error;
+      candidates = fallbackUrls.map((imageUrl, index) => ({
+        id: `pinterest-${index + 1}`,
+        imageUrl,
+        sourceUrl: page.finalUrl.href,
+      }));
+    }
+  } else {
+    candidates = extractPinterestImageUrls(page.markup).map((imageUrl, index) => ({
+      id: `pinterest-${index + 1}`,
+      imageUrl,
+      sourceUrl: page.finalUrl.href,
+    }));
+  }
+  if (!candidates.length) {
     throw new SlideshowApiError(
       422,
       "pinterest_no_images",
-      "No public Pinterest images were found. Check that the board is public, try another search, or upload images directly.",
+      "No public Pinterest images were found. Check that the board is public, try another search, or add images in Collections.",
     );
   }
 
   return {
     source,
     sourceUrl: page.finalUrl.href,
-    candidates: imageUrls.map((imageUrl, index) => ({
-      id: `pinterest-${index + 1}`,
-      imageUrl,
-      sourceUrl: page.finalUrl.href,
-    })),
+    candidates,
   };
 }

@@ -3,39 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
 import { SlideshowApiError } from "@/lib/slideshow/errors";
-import { storage, downloadFromUrl } from "@/lib/storage";
+import { downloadPinterestImage, assertPinImageUrl } from "@/lib/pinterest-import";
+import { storage } from "@/lib/storage";
 import type { CollectionAssetRecord, CollectionRecord } from "@/lib/collections";
 import { transactWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
 
 export const runtime = "nodejs";
 
 const MAX_IMPORT_IMAGES = 40;
-
-function assertPinImageUrl(value: unknown): string {
-  if (typeof value !== "string") {
-    throw new SlideshowApiError(400, "invalid_url", "Image URLs must be strings");
-  }
-  let url: URL;
-  try {
-    url = new URL(value);
-  } catch {
-    throw new SlideshowApiError(400, "invalid_url", "Image URLs must be valid URLs");
-  }
-  const host = url.hostname.toLowerCase().replace(/\.$/, "");
-  if (
-    url.protocol !== "https:" ||
-    url.username ||
-    url.password ||
-    (host !== "i.pinimg.com" && !host.endsWith(".i.pinimg.com"))
-  ) {
-    throw new SlideshowApiError(
-      400,
-      "invalid_url",
-      "Only https i.pinimg.com image URLs returned by the candidates endpoint can be imported",
-    );
-  }
-  return url.toString();
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,11 +42,7 @@ export async function POST(request: NextRequest) {
     const skipped: Array<{ url: string; reason: string }> = [];
     for (const url of urls) {
       try {
-        const { buffer, contentType } = await downloadFromUrl(url);
-        if (!contentType.startsWith("image/")) {
-          skipped.push({ url, reason: "The remote file is not an image" });
-          continue;
-        }
+        const { buffer, contentType } = await downloadPinterestImage(url);
         const id = randomUUID();
         const extension = contentType.includes("png")
           ? "png"

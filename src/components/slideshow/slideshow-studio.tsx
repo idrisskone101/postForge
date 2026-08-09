@@ -5,7 +5,10 @@ import { Check, LoaderCircle, Plus } from "lucide-react";
 
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { cn } from "@/lib/utils";
-import { fetchPlatformCollections } from "@/lib/collections-client";
+import {
+  fetchPlatformCollections,
+  platformCollectionAssetUrl,
+} from "@/lib/collections-client";
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
 import {
@@ -27,6 +30,7 @@ import {
 } from "./fixtures";
 import { PublishDialog } from "./publish-dialog";
 import { SlideshowEditor } from "./slideshow-editor";
+import { applyDirectSlideshowImages } from "./model";
 import {
   CreateView,
   DraftsView,
@@ -251,6 +255,7 @@ export function SlideshowStudio({
       slides: string[];
       template: unknown;
       collectionAssetIds: string[];
+      directImageAssetIds: string[];
       model?: string;
       aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
     }) => {
@@ -258,18 +263,37 @@ export function SlideshowStudio({
       try {
         // 1. Build the deck from the operator's copy (verbatim), persist it to
         // get real ids.
-        const local = createProjectFromCreatorCopy({
+        const creatorDraft = createProjectFromCreatorCopy({
           hook: input.hook,
           slides: input.slides,
           title: input.title,
           aspectRatio: input.aspectRatio ?? "9:16",
         });
+        const directImageUrls = input.directImageAssetIds.map(
+          platformCollectionAssetUrl,
+        );
+        const local: SlideshowProject = applyDirectSlideshowImages({
+          ...creatorDraft,
+          creator: {
+            template: input.template,
+            updatedAt: new Date().toISOString(),
+          } as NonNullable<SlideshowProject["creator"]>,
+        }, directImageUrls);
         const saved = await persistSlideshowProject(local, apiBaseUrl);
 
-        // 2. Queue GPT Image 2 visuals for every slide.
+        // 2. Keep explicitly selected Pinterest images untouched and queue
+        // visuals only for slides that still need an image.
+        const slidesToGenerate = saved.slides.filter((slide) => !slide.imageUrl);
+        if (!slidesToGenerate.length) {
+          openEditor(saved);
+          showToast(
+            `${saved.slides.length} Pinterest image${saved.slides.length === 1 ? "" : "s"} added directly to the slideshow.`,
+          );
+          return;
+        }
         const visuals = await requestSlideshowCreatorVisuals(
           saved,
-          saved.slides.map((slide) => ({
+          slidesToGenerate.map((slide) => ({
             slideId: slide.id,
             text: slide.headline || slide.prompt || "",
           })),
@@ -326,7 +350,7 @@ export function SlideshowStudio({
             );
           } else {
             showToast(
-              `Generated ${visuals.jobs.length} visuals with GPT Image 2 (~$${visuals.estimatedCost.toFixed(2)}).`,
+              `Generated ${visuals.jobs.length} visual${visuals.jobs.length === 1 ? "" : "s"} with ${visuals.model} (~$${visuals.estimatedCost.toFixed(2)}).`,
             );
           }
         } else {

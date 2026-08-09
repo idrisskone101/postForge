@@ -215,6 +215,25 @@ export function updateSlideshowSlide(
   };
 }
 
+export function applyDirectSlideshowImages(
+  project: SlideshowProject,
+  imageUrls: readonly string[],
+): SlideshowProject {
+  const usableUrls = imageUrls.filter((url) => url.trim().length > 0);
+  if (!usableUrls.length) return project;
+  const slides = project.slides.map((slide, index) => ({
+    ...slide,
+    imageUrl: usableUrls[index] ?? slide.imageUrl ?? null,
+  }));
+  return {
+    ...project,
+    status: slides.every((slide) => Boolean(slide.imageUrl))
+      ? "ready"
+      : project.status,
+    slides,
+  };
+}
+
 export function setSlideshowCta(
   project: SlideshowProject,
   includeCta: boolean,

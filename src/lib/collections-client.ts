@@ -16,10 +16,34 @@ export type PinterestCandidate = {
   id: string;
   imageUrl: string;
   sourceUrl: string;
+  title?: string;
+  altText?: string;
+  width?: number;
+  height?: number;
+};
+
+export type PinterestImportResult = {
+  imported: number;
+  skipped: number;
+  collectionId: string | null;
+  assetIds: string[];
+  assets: Array<{ id: string; imageUrl: string }>;
 };
 
 export function platformCollectionAssetUrl(assetId: string) {
   return `/api/collection-assets/${encodeURIComponent(assetId)}`;
+}
+
+export function pinterestImageUrlsInSelectionOrder(
+  candidates: PinterestCandidate[],
+  selectedIds: string[],
+) {
+  const candidatesById = new Map(
+    candidates.map((candidate) => [candidate.id, candidate]),
+  );
+  return selectedIds
+    .map((id) => candidatesById.get(id)?.imageUrl)
+    .filter((url): url is string => Boolean(url));
 }
 
 export async function fetchPlatformCollections(): Promise<
@@ -75,6 +99,11 @@ export async function fetchPinterestCandidates(input: {
         typeof candidate.imageUrl === "string" ? candidate.imageUrl : "",
       sourceUrl:
         typeof candidate.sourceUrl === "string" ? candidate.sourceUrl : "",
+      title: typeof candidate.title === "string" ? candidate.title : undefined,
+      altText:
+        typeof candidate.altText === "string" ? candidate.altText : undefined,
+      width: typeof candidate.width === "number" ? candidate.width : undefined,
+      height: typeof candidate.height === "number" ? candidate.height : undefined,
     }))
     .filter((candidate) => candidate.id && candidate.imageUrl);
   if (!mapped.length) {
@@ -86,7 +115,7 @@ export async function fetchPinterestCandidates(input: {
 export async function importPinterestImages(input: {
   urls: string[];
   name?: string;
-}): Promise<{ imported: number; skipped: number }> {
+}): Promise<PinterestImportResult> {
   const response = await fetch("/api/collection-assets/pinterest-import", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -94,8 +123,15 @@ export async function importPinterestImages(input: {
   });
   const data = await readJsonResponse(response);
   const record = isRecord(data) ? data : {};
+  const collection = isRecord(record.collection) ? record.collection : {};
+  const assetIds = Array.isArray(collection.assetIds)
+    ? collection.assetIds.filter((value): value is string => typeof value === "string")
+    : [];
   return {
     imported: typeof record.imported === "number" ? record.imported : 0,
     skipped: Array.isArray(record.skipped) ? record.skipped.length : 0,
+    collectionId: typeof collection.id === "string" ? collection.id : null,
+    assetIds,
+    assets: assetIds.map((id) => ({ id, imageUrl: platformCollectionAssetUrl(id) })),
   };
 }

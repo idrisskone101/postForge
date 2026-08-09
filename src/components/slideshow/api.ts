@@ -762,7 +762,11 @@ function fileNameFromDisposition(value: string | null, fallback: string) {
 
 export async function requestSlideshowCreatorDerive(
   apiBaseUrl = "/api/slideshows",
-  options: { collectionAssetIds?: string[]; referenceImageUrls?: string[] } = {},
+  options: {
+    collectionAssetIds?: string[];
+    referenceImageUrls?: string[];
+    idempotencyKey?: string;
+  } = {},
 ) {
   const response = await fetch(`${apiBaseUrl}/creator/derive`, {
     method: "POST",
@@ -770,6 +774,7 @@ export async function requestSlideshowCreatorDerive(
     body: JSON.stringify({
       collectionAssetIds: options.collectionAssetIds ?? [],
       referenceImageUrls: options.referenceImageUrls ?? [],
+      idempotencyKey: options.idempotencyKey,
     }),
   });
   const data = await readJsonResponse(response);
