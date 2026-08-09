@@ -4,13 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
 import { SlideshowApiError } from "@/lib/slideshow/errors";
 import { downloadPinterestImage, assertPinImageUrl } from "@/lib/pinterest-import";
+import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 import { storage } from "@/lib/storage";
 import type { CollectionAssetRecord, CollectionRecord } from "@/lib/collections";
 import { transactWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
 
 export const runtime = "nodejs";
-
-const MAX_IMPORT_IMAGES = 40;
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,11 +24,11 @@ export async function POST(request: NextRequest) {
         "urls must be a non-empty array of Pinterest image URLs",
       );
     }
-    if (body.urls.length > MAX_IMPORT_IMAGES) {
+    if (body.urls.length > MAX_PINTEREST_IMPORT_IMAGES) {
       throw new SlideshowApiError(
         400,
         "invalid_request",
-        `A single import accepts at most ${MAX_IMPORT_IMAGES} images`,
+        `A single import accepts at most ${MAX_PINTEREST_IMPORT_IMAGES} images`,
       );
     }
     const collectionName =

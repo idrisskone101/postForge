@@ -4,6 +4,7 @@ import {
   type CollectionFeatureRecord,
 } from "@/lib/collections";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
+import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 
 export type PlatformCollectionSummary = {
   id: string;
@@ -20,6 +21,12 @@ export type PinterestCandidate = {
   altText?: string;
   width?: number;
   height?: number;
+};
+
+export type PinterestCandidatePage = {
+  candidates: PinterestCandidate[];
+  cursor: string | null;
+  hasMore: boolean;
 };
 
 export type PinterestImportResult = {
@@ -82,7 +89,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export async function fetchPinterestCandidates(input: {
   source: "search" | "board";
   query: string;
-}): Promise<PinterestCandidate[]> {
+  cursor?: string;
+}): Promise<PinterestCandidatePage> {
   const response = await fetch("/api/collection-assets/pinterest/candidates", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,16 +114,23 @@ export async function fetchPinterestCandidates(input: {
       height: typeof candidate.height === "number" ? candidate.height : undefined,
     }))
     .filter((candidate) => candidate.id && candidate.imageUrl);
-  if (!mapped.length) {
-    throw new Error("Pinterest returned no usable images.");
-  }
-  return mapped;
+  return {
+    candidates: mapped,
+    cursor:
+      isRecord(data) && typeof data.cursor === "string" ? data.cursor : null,
+    hasMore: isRecord(data) && data.hasMore === true,
+  };
 }
 
 export async function importPinterestImages(input: {
   urls: string[];
   name?: string;
 }): Promise<PinterestImportResult> {
+  if (input.urls.length > MAX_PINTEREST_IMPORT_IMAGES) {
+    throw new Error(
+      `Select up to ${MAX_PINTEREST_IMPORT_IMAGES} images per import.`,
+    );
+  }
   const response = await fetch("/api/collection-assets/pinterest-import", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

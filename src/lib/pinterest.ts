@@ -6,7 +6,8 @@ const MAX_BOARD_URL_LENGTH = 2_048;
 const MAX_REDIRECTS = 3;
 const MAX_PAGE_BYTES = 5 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 10_000;
-const MAX_CANDIDATES = 40;
+const MAX_CANDIDATES = 50;
+const MAX_CURSOR_LENGTH = 8_192;
 
 type FetchLike = (
   input: string | URL | Request,
@@ -29,6 +30,13 @@ export type PinterestCandidateResult = {
   source: PinterestCandidateSource;
   sourceUrl: string;
   candidates: PinterestImageCandidate[];
+  cursor: string | null;
+  hasMore: boolean;
+};
+
+type PinterestSearchPage = {
+  candidates: PinterestImageCandidate[];
+  cursor: string | null;
 };
 
 function isPinterestPageHost(hostname: string) {
@@ -190,6 +198,14 @@ export function extractPinterestSearchCandidates(
   sourceUrl: string,
   limit = MAX_CANDIDATES,
 ): PinterestImageCandidate[] {
+  return extractPinterestSearchPage(payload, sourceUrl, limit).candidates;
+}
+
+function extractPinterestSearchPage(
+  payload: unknown,
+  sourceUrl: string,
+  limit = MAX_CANDIDATES,
+): PinterestSearchPage {
   const root = isRecord(payload) ? payload : {};
   const resourceResponse = isRecord(root.resource_response)
     ? root.resource_response
@@ -235,7 +251,16 @@ export function extractPinterestSearchCandidates(
     if (candidates.length >= boundedLimit) break;
   }
 
-  return candidates;
+  const bookmark = optionalString(resourceResponse.bookmark);
+  const cursor =
+    bookmark &&
+    bookmark !== "-end-" &&
+    bookmark.length <= MAX_CURSOR_LENGTH &&
+    !/[\u0000-\u001f\u007f]/.test(bookmark)
+      ? bookmark
+      : null;
+
+  return { candidates, cursor };
 }
 
 export function extractPinterestImageUrls(markup: string, limit = MAX_CANDIDATES) {
@@ -407,9 +432,13 @@ function sessionCookieHeader(headers: Headers) {
     .join("; ");
 }
 
-function pinterestSearchResourceUrl(sourceUrl: URL, query: string) {
+function pinterestSearchResourceUrl(
+  sourceUrl: URL,
+  query: string,
+  cursor: string | null,
+) {
   const visibleUrl = `${sourceUrl.pathname}?${sourceUrl.searchParams.toString()}`;
-  const options = {
+  const options: Record<string, unknown> = {
     query,
     scope: "pins",
     appliedProductFilters: "---",
@@ -426,7 +455,7 @@ function pinterestSearchResourceUrl(sourceUrl: URL, query: string) {
     static_feed: false,
     selected_one_bar_modules: null,
     query_pin_sigs: null,
-    page_size: null,
+    page_size: MAX_CANDIDATES,
     gated: null,
     price_max: null,
     price_min: null,
@@ -438,6 +467,7 @@ function pinterestSearchResourceUrl(sourceUrl: URL, query: string) {
     filters: null,
     rs: "direct_navigation",
   };
+  if (cursor) options.bookmarks = [cursor];
   const resourceUrl = new URL(
     "/resource/BaseSearchResource/get/",
     "https://www.pinterest.com",
@@ -451,10 +481,15 @@ function pinterestSearchResourceUrl(sourceUrl: URL, query: string) {
 async function fetchPinterestSearchCandidates(
   query: string,
   sourceUrl: URL,
+  cursor: string | null,
   session: Awaited<ReturnType<typeof fetchPinterestHtml>>,
   fetchImpl: FetchLike,
 ) {
-  const { resourceUrl, visibleUrl } = pinterestSearchResourceUrl(sourceUrl, query);
+  const { resourceUrl, visibleUrl } = pinterestSearchResourceUrl(
+    sourceUrl,
+    query,
+    cursor,
+  );
   const cookie = sessionCookieHeader(session.headers);
   const appVersion = session.headers.get("pinterest-version")?.trim();
   const headers = new Headers({
@@ -488,7 +523,7 @@ async function fetchPinterestSearchCandidates(
         : `Pinterest search failed with HTTP ${response.status}. Try again or paste a public board URL.`,
     );
   }
-  return extractPinterestSearchCandidates(
+  return extractPinterestSearchPage(
     await readBoundedJson(response),
     sourceUrl.href,
   );
@@ -504,12 +539,28 @@ export async function findPinterestCandidates(
   const body = input as Record<string, unknown>;
   const source = body.source;
   const query = body.query;
+  const rawCursor = body.cursor;
   if (source !== "search" && source !== "board") {
     badRequest("source must be search or board", "invalid_pinterest_source");
   }
   if (typeof query !== "string") {
     badRequest("query must be a string", "invalid_pinterest_query");
   }
+  if (
+    rawCursor !== undefined &&
+    rawCursor !== null &&
+    (source !== "search" ||
+      typeof rawCursor !== "string" ||
+      !rawCursor ||
+      rawCursor.length > MAX_CURSOR_LENGTH ||
+      /[\u0000-\u001f\u007f]/.test(rawCursor))
+  ) {
+    badRequest(
+      "Pinterest cursor is invalid or expired. Start a new search.",
+      "invalid_pinterest_cursor",
+    );
+  }
+  const cursor = typeof rawCursor === "string" ? rawCursor : null;
 
   const sourceUrl = buildPinterestSourceUrl(source, query);
   let page: Awaited<ReturnType<typeof fetchPinterestHtml>>;
@@ -530,15 +581,20 @@ export async function findPinterestCandidates(
   }
 
   let candidates: PinterestImageCandidate[];
+  let nextCursor: string | null = null;
   if (source === "search") {
     try {
-      candidates = await fetchPinterestSearchCandidates(
+      const searchPage = await fetchPinterestSearchCandidates(
         query.trim(),
         sourceUrl,
+        cursor,
         page,
         options.fetchImpl ?? fetch,
       );
+      candidates = searchPage.candidates;
+      nextCursor = searchPage.cursor === cursor ? null : searchPage.cursor;
     } catch (error) {
+      if (cursor) throw error;
       const fallbackUrls = extractPinterestImageUrls(page.markup);
       if (!fallbackUrls.length) throw error;
       candidates = fallbackUrls.map((imageUrl, index) => ({
@@ -554,7 +610,7 @@ export async function findPinterestCandidates(
       sourceUrl: page.finalUrl.href,
     }));
   }
-  if (!candidates.length) {
+  if (!candidates.length && !cursor) {
     throw new SlideshowApiError(
       422,
       "pinterest_no_images",
@@ -566,5 +622,7 @@ export async function findPinterestCandidates(
     source,
     sourceUrl: page.finalUrl.href,
     candidates,
+    cursor: nextCursor,
+    hasMore: Boolean(nextCursor),
   };
 }

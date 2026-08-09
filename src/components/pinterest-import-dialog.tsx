@@ -28,6 +28,7 @@ import {
   type PinterestImportResult,
 } from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
+import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 
 const suggestions = [
   "clean desk",
@@ -97,6 +98,9 @@ export function PinterestImportDialog({
   const [selected, setSelected] = useState<string[]>([]);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [searching, setSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
   const [pendingAction, setPendingAction] = useState<
     "import" | "direct" | "vibe" | null
   >(null);
@@ -125,6 +129,9 @@ export function PinterestImportDialog({
     setHasSearched(false);
     setError(null);
     setSearching(false);
+    setLoadingMore(false);
+    setCursor(null);
+    setHasMore(false);
     importedSelection.current = null;
   };
 
@@ -162,10 +169,12 @@ export function PinterestImportDialog({
         query: query.trim(),
       });
       if (requestVersion.current !== version) return;
-      setCandidates(results);
+      setCandidates(results.candidates);
+      setCursor(results.cursor);
+      setHasMore(results.hasMore);
       setSelected(
         workflow === "collection"
-          ? results.slice(0, 5).map((candidate) => candidate.id)
+          ? results.candidates.slice(0, 5).map((candidate) => candidate.id)
           : [],
       );
     } catch (searchError) {
@@ -180,12 +189,53 @@ export function PinterestImportDialog({
     }
   };
 
+  const loadMore = async () => {
+    if (!cursor || loadingMore || searching || pendingAction) return;
+    const version = requestVersion.current;
+    setLoadingMore(true);
+    setError(null);
+
+    try {
+      const results = await fetchPinterestCandidates({
+        source,
+        query: query.trim(),
+        cursor,
+      });
+      if (requestVersion.current !== version) return;
+      setCandidates((current) => {
+        const candidateIds = new Set(current.map((candidate) => candidate.id));
+        const imageUrls = new Set(
+          current.map((candidate) => candidate.imageUrl),
+        );
+        const additions = results.candidates.filter(
+          (candidate) =>
+            !candidateIds.has(candidate.id) &&
+            !imageUrls.has(candidate.imageUrl),
+        );
+        return [...current, ...additions];
+      });
+      setCursor(results.cursor);
+      setHasMore(results.hasMore);
+    } catch (loadError) {
+      if (requestVersion.current !== version) return;
+      setError(
+        loadError instanceof Error
+          ? `More Pinterest results could not be loaded. ${loadError.message}`
+          : "More Pinterest results could not be loaded. Try again.",
+      );
+    } finally {
+      if (requestVersion.current === version) setLoadingMore(false);
+    }
+  };
+
   const toggleSelected = (id: string) => {
     if (failedImages.includes(id) || pendingAction) return;
     setSelected((current) =>
       current.includes(id)
         ? current.filter((candidateId) => candidateId !== id)
-        : [...current, id],
+        : current.length >= MAX_PINTEREST_IMPORT_IMAGES
+          ? current
+          : [...current, id],
     );
   };
 
@@ -239,7 +289,7 @@ export function PinterestImportDialog({
         if (!importing) onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col overflow-hidden rounded-none border-border p-0 sm:h-auto sm:max-h-[92vh] sm:max-w-4xl! sm:rounded-lg">
+      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col overflow-hidden rounded-none border-border p-0 sm:h-auto sm:max-h-[92vh] sm:w-[calc(100vw-2rem)] sm:max-w-4xl! sm:rounded-lg">
         <DialogHeader className="shrink-0 border-b border-border px-6 py-5 pr-14">
           <DialogTitle className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-foreground">
             <span className="flex size-9 items-center justify-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
@@ -309,7 +359,7 @@ export function PinterestImportDialog({
             <button
               type="button"
               onClick={() => void runSearch()}
-              disabled={!sourceIsValid || searching || importing}
+              disabled={!sourceIsValid || searching || loadingMore || importing}
               className={cn(candidates.length ? "pf-button-secondary" : "pf-button-primary", "h-10")}
             >
               {searching ? <LoaderCircle className="size-3.5 animate-spin" /> : <Search className="size-3.5" />}
@@ -379,7 +429,7 @@ export function PinterestImportDialog({
                   </p>
                 </div>
                 <span aria-live="polite" className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
-                  {selected.length} selected
+                  {candidates.length} options · {selected.length}/{MAX_PINTEREST_IMPORT_IMAGES} selected
                 </span>
               </div>
               <div className="columns-2 gap-2 sm:columns-3 md:columns-4">
@@ -462,6 +512,35 @@ export function PinterestImportDialog({
                   );
                 })}
               </div>
+              {source === "search" ? (
+                <div className="mt-4 flex flex-col items-center border-t border-border pt-4 text-center">
+                  {hasMore ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => void loadMore()}
+                        disabled={loadingMore || importing}
+                        className="pf-button-secondary h-11 min-w-36 sm:h-10"
+                      >
+                        {loadingMore ? (
+                          <LoaderCircle className="size-3.5 animate-spin" />
+                        ) : null}
+                        {loadingMore ? "Loading more..." : "Load more"}
+                      </button>
+                      <p className="mt-2 text-[11px] text-muted-foreground">
+                        Keep loading until Pinterest has no more public results. Select up to {MAX_PINTEREST_IMPORT_IMAGES} per import.
+                      </p>
+                    </>
+                  ) : (
+                    <p
+                      aria-live="polite"
+                      className="text-[11px] text-muted-foreground"
+                    >
+                      All available public results are loaded.
+                    </p>
+                  )}
+                </div>
+              ) : null}
             </>
           ) : (
             <div className="grid min-h-64 place-items-center text-center">
@@ -517,12 +596,15 @@ export function PinterestImportDialog({
                 setSelected(
                   candidates
                     .filter((candidate) => !failedImages.includes(candidate.id))
+                    .slice(0, MAX_PINTEREST_IMPORT_IMAGES)
                     .map((candidate) => candidate.id),
                 )
               }
               disabled={!candidates.length || importing}
             >
-              Select all
+              {candidates.length > MAX_PINTEREST_IMPORT_IMAGES
+                ? `Select first ${MAX_PINTEREST_IMPORT_IMAGES}`
+                : "Select all"}
             </Button>
             <Button
               type="button"

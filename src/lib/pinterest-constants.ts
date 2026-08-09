@@ -1,0 +1,1 @@
+export const MAX_PINTEREST_IMPORT_IMAGES = 40;

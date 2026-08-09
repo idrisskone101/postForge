@@ -12,7 +12,11 @@ import {
   assertPinImageUrl,
   downloadPinterestImage,
 } from "../src/lib/pinterest-import";
-import { pinterestImageUrlsInSelectionOrder } from "../src/lib/collections-client";
+import {
+  importPinterestImages,
+  pinterestImageUrlsInSelectionOrder,
+} from "../src/lib/collections-client";
+import { MAX_PINTEREST_IMPORT_IMAGES } from "../src/lib/pinterest-constants";
 
 async function main() {
 const searchUrl = buildPinterestSourceUrl("search", " calm desk ");
@@ -82,6 +86,15 @@ assert.deepEqual(
     ["second", "first"],
   ),
   ["https://i.pinimg.com/second.jpg", "https://i.pinimg.com/first.jpg"],
+);
+await assert.rejects(
+  importPinterestImages({
+    urls: Array.from(
+      { length: MAX_PINTEREST_IMPORT_IMAGES + 1 },
+      (_, index) => `https://i.pinimg.com/736x/test-${index}.jpg`,
+    ),
+  }),
+  new RegExp(`Select up to ${MAX_PINTEREST_IMPORT_IMAGES} images`),
 );
 await assert.rejects(
   downloadPinterestImage(`https://i.pinimg.com/736x/${imageA}`, async () =>
@@ -164,6 +177,7 @@ const successful = await findPinterestCandidates(
       assert.match(headers.get("cookie") ?? "", /_pinterest_sess=session-value/);
       return Response.json({
         resource_response: {
+          bookmark: "cursor-page-2",
           data: {
             results: [
               {
@@ -189,6 +203,65 @@ assert.match(requestedUrl, /^https:\/\/www\.pinterest\.com\/resource\/BaseSearch
 assert.equal(successful.candidates.length, 1);
 assert.equal(successful.candidates[0].imageUrl, `https://i.pinimg.com/736x/${imageA}`);
 assert.equal(successful.candidates[0].sourceUrl, "https://www.pinterest.com/pin/67890/");
+assert.equal(successful.cursor, "cursor-page-2");
+assert.equal(successful.hasMore, true);
+
+let paginatedRequestCount = 0;
+const paginated = await findPinterestCandidates(
+  {
+    source: "search",
+    query: "wellness routine",
+    cursor: "cursor-page-2",
+  },
+  {
+    fetchImpl: async (input) => {
+      paginatedRequestCount += 1;
+      if (paginatedRequestCount === 1) {
+        return new Response("<html><body>Application shell</body></html>", {
+          headers: { "content-type": "text/html" },
+        });
+      }
+      const resourceUrl = new URL(String(input));
+      const resourceData = JSON.parse(resourceUrl.searchParams.get("data") ?? "{}");
+      assert.deepEqual(resourceData.options.bookmarks, ["cursor-page-2"]);
+      return Response.json({
+        resource_response: {
+          bookmark: "-end-",
+          data: {
+            results: [
+              {
+                type: "pin",
+                id: "67891",
+                images: {
+                  "736x": {
+                    url: `https://i.pinimg.com/736x/${imageB}`,
+                    width: 736,
+                    height: 920,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+    },
+  },
+);
+assert.equal(paginatedRequestCount, 2);
+assert.equal(paginated.candidates[0]?.id, "pinterest-67891");
+assert.equal(paginated.cursor, null);
+assert.equal(paginated.hasMore, false);
+
+await assert.rejects(
+  findPinterestCandidates({
+    source: "search",
+    query: "wellness routine",
+    cursor: "x".repeat(8_193),
+  }),
+  (error: unknown) =>
+    error instanceof SlideshowApiError &&
+    error.code === "invalid_pinterest_cursor",
+);
 
 let redirectCalls = 0;
 const redirected = await findPinterestCandidates(
@@ -312,6 +385,14 @@ assert.match(pinterestDialogSource, /Use .* as slide image/);
 assert.match(pinterestDialogSource, /Create style JSON from/);
 assert.match(pinterestDialogSource, /importedSelection/);
 assert.match(pinterestDialogSource, /idempotencyKey/);
+assert.match(pinterestDialogSource, /Load more/);
+assert.match(pinterestDialogSource, /loadingMore/);
+assert.match(pinterestDialogSource, /MAX_PINTEREST_IMPORT_IMAGES/);
+assert.match(
+  pinterestDialogSource,
+  /\.slice\(0, MAX_PINTEREST_IMPORT_IMAGES\)/,
+);
+assert.equal(MAX_PINTEREST_IMPORT_IMAGES, 40);
 assert.match(creatorViewSource, /Search Pinterest/);
 assert.match(creatorViewSource, /Copy JSON/);
 assert.match(creatorViewSource, /directImageAssetIds/);
