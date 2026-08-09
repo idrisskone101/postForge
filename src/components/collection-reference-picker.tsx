@@ -16,6 +16,8 @@ interface CollectionReferencePickerProps {
   maxSelection?: number;
   disabled?: boolean;
   disabledMessage?: string;
+  refreshKey?: number;
+  preferredAssetIds?: string[];
 }
 
 export function CollectionReferencePicker({
@@ -24,6 +26,8 @@ export function CollectionReferencePicker({
   maxSelection = 14,
   disabled = false,
   disabledMessage,
+  refreshKey = 0,
+  preferredAssetIds,
 }: CollectionReferencePickerProps) {
   const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState("");
@@ -35,9 +39,14 @@ export function CollectionReferencePicker({
     fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
       .then(({ records: next }) => {
         if (cancelled) return;
+        setError(null);
         setRecords(next);
-        const firstCollection = next.find(isCollectionRecord);
-        if (firstCollection) setSelectedCollectionId(firstCollection.id);
+        const collections = next.filter(isCollectionRecord);
+        const selectedCollection = collections.find((collection) =>
+          collection.assetIds.some((id) => preferredAssetIds?.includes(id)),
+        );
+        const nextCollection = selectedCollection ?? collections[0];
+        if (nextCollection) setSelectedCollectionId(nextCollection.id);
       })
       .catch((cause) => {
         if (!cancelled) {
@@ -52,7 +61,7 @@ export function CollectionReferencePicker({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [preferredAssetIds, refreshKey]);
 
   const assets = useMemo(() => records.filter(isCollectionAssetRecord), [records]);
   const collections = useMemo(() => records.filter(isCollectionRecord), [records]);

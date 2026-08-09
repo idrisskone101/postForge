@@ -4,8 +4,11 @@ import { useMemo, useState } from "react";
 import {
   Archive,
   ArrowRight,
+  Check,
   ChevronDown,
+  Copy,
   FileImage,
+  Link2,
   LoaderCircle,
   Plus,
   ScanSearch,
@@ -24,6 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
+import { PinterestImportDialog } from "@/components/pinterest-import-dialog";
+import type { PinterestImportResult } from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
 
 import { SlidePreview, VisualTile } from "./slide-preview";
@@ -239,6 +244,7 @@ export function CreateView({
     slides: string[];
     template: unknown;
     collectionAssetIds: string[];
+    directImageAssetIds: string[];
     model?: string;
     aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
   }) => Promise<void>;
@@ -602,6 +608,7 @@ function CreatorView({
     slides: string[];
     template: unknown;
     collectionAssetIds: string[];
+    directImageAssetIds: string[];
     model?: string;
     aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
   }) => Promise<void>;
@@ -612,7 +619,14 @@ function CreatorView({
   const [templateText, setTemplateText] = useState(SAMPLE_CREATOR_TEMPLATE);
   const [templateError, setTemplateError] = useState<string | null>(null);
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+  const [referenceRefreshKey, setReferenceRefreshKey] = useState(0);
+  const [preferredReferenceAssetIds, setPreferredReferenceAssetIds] = useState<string[]>([]);
+  const [directPinterestAssets, setDirectPinterestAssets] = useState<
+    PinterestImportResult["assets"]
+  >([]);
+  const [pinterestOpen, setPinterestOpen] = useState(false);
   const [deriving, setDeriving] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
   const [aspectRatio, setAspectRatio] = useState<"9:16" | "4:5" | "1:1" | "16:9">("9:16");
   const [error, setError] = useState<string | null>(null);
 
@@ -635,23 +649,30 @@ function CreatorView({
     }
   }, [templateText]);
 
+  const requestTemplateFromReferences = async (
+    assetIds: string[],
+    idempotencyKey?: string,
+  ) => {
+    const { requestSlideshowCreatorDerive } = await import("./api");
+    const result = await requestSlideshowCreatorDerive("/api/slideshows", {
+      collectionAssetIds: assetIds,
+      idempotencyKey,
+    });
+    if (!result.template) {
+      throw new Error(
+        result.error || "Could not derive a template from those reference images.",
+      );
+    }
+    setTemplateText(JSON.stringify(result.template, null, 2));
+  };
+
   const deriveFromReferences = async () => {
     if (!referenceAssetIds.length || deriving) return;
     setDeriving(true);
     setError(null);
     setTemplateError(null);
     try {
-      const { requestSlideshowCreatorDerive } = await import("./api");
-      const result = await requestSlideshowCreatorDerive("/api/slideshows", {
-        collectionAssetIds: referenceAssetIds,
-      });
-      if (result.template) {
-        setTemplateText(JSON.stringify(result.template, null, 2));
-      } else {
-        setTemplateError(
-          result.error || "Could not derive a template from those reference images.",
-        );
-      }
+      await requestTemplateFromReferences(referenceAssetIds);
     } catch (deriveError) {
       setTemplateError(
         deriveError instanceof Error
@@ -660,6 +681,39 @@ function CreatorView({
       );
     } finally {
       setDeriving(false);
+    }
+  };
+
+  const createPinterestVibe = async (
+    result: PinterestImportResult,
+    idempotencyKey: string,
+  ) => {
+    if (!result.assetIds.length) {
+      throw new Error("Pinterest imported no usable reference images.");
+    }
+    setReferenceAssetIds(result.assetIds);
+    setPreferredReferenceAssetIds(result.assetIds);
+    setReferenceRefreshKey((current) => current + 1);
+    setTemplateError(null);
+    try {
+      await requestTemplateFromReferences(result.assetIds, idempotencyKey);
+    } catch (deriveError) {
+      const message =
+        deriveError instanceof Error
+          ? deriveError.message
+          : "Could not create aesthetic JSON from those Pinterest images.";
+      setTemplateError(message);
+      throw new Error(message);
+    }
+  };
+
+  const copyTemplateJson = async () => {
+    try {
+      await navigator.clipboard.writeText(templateText);
+      setCopiedJson(true);
+      window.setTimeout(() => setCopiedJson(false), 1600);
+    } catch {
+      setTemplateError("Your browser blocked clipboard access. Select the JSON and copy it manually.");
     }
   };
 
@@ -689,6 +743,7 @@ function CreatorView({
         slides,
         template: parsedTemplate,
         collectionAssetIds: referenceAssetIds,
+        directImageAssetIds: directPinterestAssets.map((asset) => asset.id),
         model: selectedImageModel ?? "gpt-image-2",
         aspectRatio,
       });
@@ -702,6 +757,7 @@ function CreatorView({
   };
 
   return (
+    <>
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
       <section className={cn(CARD, "p-5")} aria-label="Bring your own copy">
         <div className="flex items-center gap-2.5">
@@ -877,13 +933,67 @@ function CreatorView({
             </div>
           </div>
 
-          <label className="mt-3 block">
-            <span className={cn(FIELD_LABEL)}>Reference images (optional)</span>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[12px] font-semibold text-foreground">Pinterest references</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                Use images directly on slides or turn them into visual style JSON.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPinterestOpen(true)}
+              className={cn(SECONDARY_BTN, "shrink-0")}
+            >
+              <Link2 className="size-3.5" /> Search Pinterest
+            </button>
+          </div>
+
+          {directPinterestAssets.length ? (
+            <div className="mt-3 rounded-lg border border-border bg-[var(--pf-active)] p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[12px] font-semibold text-foreground">
+                    {directPinterestAssets.length} direct slide image{directPinterestAssets.length === 1 ? "" : "s"}
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                    Assigned from slide 1 in selection order. Remaining slides are generated; extra images stay saved in Collections.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDirectPinterestAssets([])}
+                  className="text-[11px] font-semibold text-muted-foreground transition hover:text-foreground"
+                >
+                  Remove from slides
+                </button>
+              </div>
+              <div className="mt-2 grid grid-cols-6 gap-1.5">
+                {directPinterestAssets.slice(0, 12).map((asset, index) => (
+                  <span
+                    key={asset.id}
+                    className="relative aspect-[4/5] overflow-hidden rounded-lg bg-card"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={asset.imageUrl} alt="" className="size-full object-cover" />
+                    <span className="absolute bottom-1 left-1 grid size-4 place-items-center rounded-full bg-black/70 font-mono text-[11px] text-white">
+                      {index + 1}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mt-3 block">
+            <span className={cn(FIELD_LABEL)}>Saved reference images (optional)</span>
             <div className="mt-1">
               <CollectionReferencePicker
                 selectedAssetIds={referenceAssetIds}
                 onChange={setReferenceAssetIds}
                 maxSelection={14}
+                refreshKey={referenceRefreshKey}
+                preferredAssetIds={preferredReferenceAssetIds}
               />
             </div>
             <button
@@ -903,10 +1013,21 @@ function CreatorView({
               )}
               {deriving ? "Deriving template..." : "Derive template from references"}
             </button>
-          </label>
+          </div>
 
-          <label className="mt-3 block">
-            <span className={cn(FIELD_LABEL)}>Aesthetic JSON</span>
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <span className={cn(FIELD_LABEL, "mb-0")}>Aesthetic JSON</span>
+            <button
+              type="button"
+              onClick={() => void copyTemplateJson()}
+              className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-semibold text-muted-foreground transition hover:bg-[var(--pf-active)] hover:text-foreground"
+            >
+              {copiedJson ? <Check className="size-3" /> : <Copy className="size-3" />}
+              {copiedJson ? "Copied" : "Copy JSON"}
+            </button>
+          </div>
+          <label className="block">
+            <span className="sr-only">Aesthetic JSON</span>
             <textarea
               value={templateText}
               onChange={(event) => setTemplateText(event.target.value)}
@@ -924,6 +1045,18 @@ function CreatorView({
         </section>
       </div>
     </div>
+    <PinterestImportDialog
+      open={pinterestOpen}
+      onOpenChange={setPinterestOpen}
+      workflow="slideshow"
+      onUseDirect={(result) => {
+        setDirectPinterestAssets(result.assets);
+        setPreferredReferenceAssetIds(result.assetIds);
+        setReferenceRefreshKey((current) => current + 1);
+      }}
+      onCreateVibe={createPinterestVibe}
+    />
+    </>
   );
 }
 

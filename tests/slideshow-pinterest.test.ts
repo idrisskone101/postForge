@@ -1,11 +1,18 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { SlideshowApiError } from "../src/lib/slideshow/errors";
 import {
   buildPinterestSourceUrl,
   extractPinterestImageUrls,
+  extractPinterestSearchCandidates,
   findPinterestCandidates,
 } from "../src/lib/pinterest";
+import {
+  assertPinImageUrl,
+  downloadPinterestImage,
+} from "../src/lib/pinterest-import";
+import { pinterestImageUrlsInSelectionOrder } from "../src/lib/collections-client";
 
 async function main() {
 const searchUrl = buildPinterestSourceUrl("search", " calm desk ");
@@ -50,24 +57,138 @@ assert.deepEqual(extracted, [
   `https://i.pinimg.com/474x/${imageB}`,
 ]);
 
+assert.equal(
+  assertPinImageUrl(`https://i.pinimg.com/736x/${imageA}`),
+  `https://i.pinimg.com/736x/${imageA}`,
+);
+assert.throws(() => assertPinImageUrl("https://example.com/image.jpg"));
+await assert.rejects(
+  downloadPinterestImage(`https://i.pinimg.com/736x/${imageA}`, async () =>
+    new Response(null, {
+      status: 302,
+      headers: { location: "http://127.0.0.1/private.jpg" },
+    }),
+  ),
+  (error: unknown) =>
+    error instanceof SlideshowApiError && error.code === "invalid_url",
+);
+
+assert.deepEqual(
+  pinterestImageUrlsInSelectionOrder(
+    [
+      { id: "first", imageUrl: "https://i.pinimg.com/first.jpg", sourceUrl: "https://pinterest.com/pin/1" },
+      { id: "second", imageUrl: "https://i.pinimg.com/second.jpg", sourceUrl: "https://pinterest.com/pin/2" },
+    ],
+    ["second", "first"],
+  ),
+  ["https://i.pinimg.com/second.jpg", "https://i.pinimg.com/first.jpg"],
+);
+await assert.rejects(
+  downloadPinterestImage(`https://i.pinimg.com/736x/${imageA}`, async () =>
+    new Response(new Uint8Array([1]), {
+      headers: {
+        "content-type": "image/jpeg",
+        "content-length": String(16 * 1024 * 1024),
+      },
+    }),
+  ),
+  (error: unknown) =>
+    error instanceof SlideshowApiError &&
+    error.code === "pinterest_image_too_large",
+);
+
+const searchCandidates = extractPinterestSearchCandidates(
+  {
+    resource_response: {
+      data: {
+        results: [
+          {
+            type: "pin",
+            id: "12345",
+            title: "Quiet morning ritual",
+            seo_alt_text: "A ceramic cup beside an open journal",
+            images: {
+              "236x": {
+                url: `https://i.pinimg.com/236x/${imageA}`,
+                width: 236,
+                height: 300,
+              },
+              "736x": {
+                url: `https://i.pinimg.com/736x/${imageA}`,
+                width: 736,
+                height: 936,
+              },
+            },
+          },
+          { type: "board", id: "not-a-pin", images: {} },
+        ],
+      },
+    },
+  },
+  "https://www.pinterest.com/search/pins/?q=quiet",
+);
+assert.deepEqual(searchCandidates, [
+  {
+    id: "pinterest-12345",
+    imageUrl: `https://i.pinimg.com/736x/${imageA}`,
+    sourceUrl: "https://www.pinterest.com/pin/12345/",
+    title: "Quiet morning ritual",
+    altText: "A ceramic cup beside an open journal",
+    width: 736,
+    height: 936,
+  },
+]);
+
 let requestedUrl = "";
+let searchRequestCount = 0;
 const successful = await findPinterestCandidates(
   { source: "search", query: "wellness routine" },
   {
     fetchImpl: async (input, init) => {
+      searchRequestCount += 1;
       requestedUrl = String(input);
       assert.equal(init?.redirect, "manual");
-      return new Response(
-        `<img src="https://i.pinimg.com/736x/${imageA}">`,
-        { headers: { "content-type": "text/html; charset=utf-8" } },
-      );
+      if (searchRequestCount === 1) {
+        return new Response("<html><body>Application shell</body></html>", {
+          headers: {
+            "content-type": "text/html; charset=utf-8",
+            "pinterest-version": "test-version",
+            "set-cookie": "_pinterest_sess=session-value; Path=/; Secure; HttpOnly",
+          },
+        });
+      }
+      assert.match(requestedUrl, /BaseSearchResource\/get/);
+      const headers = new Headers(init?.headers);
+      assert.equal(headers.get("x-app-version"), "test-version");
+      assert.equal(headers.get("x-requested-with"), "XMLHttpRequest");
+      assert.match(headers.get("cookie") ?? "", /_pinterest_sess=session-value/);
+      return Response.json({
+        resource_response: {
+          data: {
+            results: [
+              {
+                type: "pin",
+                id: "67890",
+                images: {
+                  "736x": {
+                    url: `https://i.pinimg.com/736x/${imageA}`,
+                    width: 736,
+                    height: 920,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
     },
   },
 );
-assert.match(requestedUrl, /^https:\/\/www\.pinterest\.com\/search\/pins\//);
+assert.equal(searchRequestCount, 2);
+assert.match(requestedUrl, /^https:\/\/www\.pinterest\.com\/resource\/BaseSearchResource\/get\//);
 assert.equal(successful.candidates.length, 1);
 assert.equal(successful.candidates[0].imageUrl, `https://i.pinimg.com/736x/${imageA}`);
-assert.equal(successful.candidates[0].sourceUrl, requestedUrl);
+assert.equal(successful.candidates[0].sourceUrl, "https://www.pinterest.com/pin/67890/");
 
 let redirectCalls = 0;
 const redirected = await findPinterestCandidates(
@@ -174,6 +295,28 @@ await assert.rejects(
     error instanceof SlideshowApiError &&
     error.code === "pinterest_response_too_large",
 );
+
+const pinterestDialogSource = readFileSync(
+  new URL("../src/components/pinterest-import-dialog.tsx", import.meta.url),
+  "utf8",
+);
+const creatorViewSource = readFileSync(
+  new URL("../src/components/slideshow/studio-views.tsx", import.meta.url),
+  "utf8",
+);
+const slideshowStudioSource = readFileSync(
+  new URL("../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
+  "utf8",
+);
+assert.match(pinterestDialogSource, /Use .* as slide image/);
+assert.match(pinterestDialogSource, /Create style JSON from/);
+assert.match(pinterestDialogSource, /importedSelection/);
+assert.match(pinterestDialogSource, /idempotencyKey/);
+assert.match(creatorViewSource, /Search Pinterest/);
+assert.match(creatorViewSource, /Copy JSON/);
+assert.match(creatorViewSource, /directImageAssetIds/);
+assert.match(slideshowStudioSource, /slidesToGenerate = saved\.slides\.filter/);
+assert.match(slideshowStudioSource, /applyDirectSlideshowImages/);
 
   console.log("slideshow Pinterest tests passed");
 }
