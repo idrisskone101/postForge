@@ -10,6 +10,7 @@ export type SlideshowGrid = "none" | "1:2" | "1:3" | "2:1" | "2:2";
 export type SlideshowTextStyle =
   | "outline"
   | "solid"
+  | "light"
   | "translucent"
   | "plain";
 
@@ -58,7 +59,15 @@ export interface SlideshowPhaseSettings {
 }
 
 export interface SlideshowTextSettings {
-  font: "Poppins" | "Inter" | "Serif" | "Mono" | "Rounded";
+  font:
+    | "Poppins"
+    | "Inter"
+    | "Serif"
+    | "SerifItalic"
+    | "Editorial"
+    | "Condensed"
+    | "Mono"
+    | "Rounded";
   color: "white" | "black" | "coral" | "blue" | "yellow" | "custom";
   customColor?: string;
   style: SlideshowTextStyle;
@@ -66,6 +75,8 @@ export interface SlideshowTextSettings {
   position: SlideshowTextPosition;
   width: number;
   align: SlideshowTextAlign;
+  padding: "padded" | "flush";
+  backgroundRadius: number;
 }
 
 export interface SlideshowProject {

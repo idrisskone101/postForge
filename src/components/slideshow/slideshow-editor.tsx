@@ -110,12 +110,14 @@ function NativeSelect<T extends string>({
   options,
   onChange,
   className,
+  optionLabel,
 }: {
   label: string;
   value: T;
   options: readonly T[];
   onChange: (value: T) => void;
   className?: string;
+  optionLabel?: (value: T) => string;
 }) {
   return (
     <label className={cn("block min-w-0", className)}>
@@ -128,7 +130,7 @@ function NativeSelect<T extends string>({
         >
           {options.map((option) => (
             <option key={option} value={option}>
-              {option === "none" ? "None" : option}
+              {optionLabel?.(option) ?? (option === "none" ? "None" : option)}
             </option>
           ))}
         </select>
@@ -1021,7 +1023,28 @@ export function SlideshowEditor({
               <NativeSelect<SlideshowTextSettings["font"]>
                 label="Font"
                 value={draft.textSettings.font}
-                options={["Poppins", "Inter", "Serif", "Mono", "Rounded"]}
+                options={[
+                  "Poppins",
+                  "Serif",
+                  "SerifItalic",
+                  "Editorial",
+                  "Condensed",
+                  "Inter",
+                  "Mono",
+                  "Rounded",
+                ]}
+                optionLabel={(font) =>
+                  ({
+                    Poppins: "Default",
+                    Serif: "Serif",
+                    SerifItalic: "Serif italic",
+                    Editorial: "Serif italic 2",
+                    Condensed: "Condensed bold",
+                    Inter: "Inter",
+                    Mono: "Mono",
+                    Rounded: "Rounded",
+                  })[font]
+                }
                 onChange={(font) => updateTextSettings({ font })}
               />
               <NativeSelect<SlideshowTextSettings["color"]>
@@ -1033,7 +1056,16 @@ export function SlideshowEditor({
               <NativeSelect<SlideshowTextStyle>
                 label="Style"
                 value={draft.textSettings.style}
-                options={["plain", "outline", "solid", "translucent"]}
+                options={["plain", "outline", "solid", "light", "translucent"]}
+                optionLabel={(style) =>
+                  ({
+                    plain: "Text shadow",
+                    outline: "Outline",
+                    solid: "Background",
+                    light: "Light BG",
+                    translucent: "Translucent",
+                  })[style]
+                }
                 onChange={(style) => updateTextSettings({ style })}
               />
               <NativeSelect<SlideshowTextPosition>
@@ -1041,6 +1073,12 @@ export function SlideshowEditor({
                 value={draft.textSettings.position}
                 options={["top", "center", "bottom"]}
                 onChange={(position) => updateTextSettings({ position })}
+              />
+              <NativeSelect<SlideshowTextSettings["padding"]>
+                label="Top / bottom padding"
+                value={draft.textSettings.padding}
+                options={["padded", "flush"]}
+                onChange={(padding) => updateTextSettings({ padding })}
               />
             </div>
 
@@ -1077,6 +1115,30 @@ export function SlideshowEditor({
                 aria-label="Text width"
               />
             </div>
+
+            {draft.textSettings.style === "solid" ||
+            draft.textSettings.style === "light" ? (
+              <div>
+                <span className="mb-1.5 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
+                  <span>Background radius</span>
+                  <span className="font-mono tabular-nums text-muted-foreground">
+                    {draft.textSettings.backgroundRadius}px
+                  </span>
+                </span>
+                <Slider
+                  min={0}
+                  max={20}
+                  step={1}
+                  value={[draft.textSettings.backgroundRadius]}
+                  onValueChange={(value) =>
+                    updateTextSettings({
+                      backgroundRadius: sliderNumber(value, 4),
+                    })
+                  }
+                  aria-label="Background radius"
+                />
+              </div>
+            ) : null}
 
             {draft.textSettings.color === "custom" ? (
               <label className="flex items-center justify-between gap-4 rounded-[6px] border border-border bg-card p-3">

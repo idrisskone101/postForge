@@ -1258,6 +1258,7 @@ export async function getSlideshowRenderProject(
   const style = readString(rawTextSettings.style, "outline");
   const position = readString(rawTextSettings.position, "center");
   const align = readString(rawTextSettings.align, "center");
+  const padding = readString(rawTextSettings.padding, "padded");
   const color = readString(rawTextSettings.color, "white");
   const textSettings: NonNullable<SlideshowRenderProject["textSettings"]> = {
     font: readString(rawTextSettings.font, "Poppins"),
@@ -1266,7 +1267,10 @@ export async function getSlideshowRenderProject(
         ? readString(rawTextSettings.customColor, "#ffffff")
         : color,
     style:
-      style === "solid" || style === "translucent" || style === "plain"
+      style === "solid" ||
+      style === "light" ||
+      style === "translucent" ||
+      style === "plain"
         ? style
         : ("outline" as const),
     size:
@@ -1279,6 +1283,11 @@ export async function getSlideshowRenderProject(
       typeof rawTextSettings.width === "number" ? rawTextSettings.width : 88,
     align:
       align === "left" || align === "right" ? align : ("center" as const),
+    padding: padding === "flush" ? "flush" : ("padded" as const),
+    backgroundRadius:
+      typeof rawTextSettings.backgroundRadius === "number"
+        ? rawTextSettings.backgroundRadius
+        : 4,
   };
 
   const generatedFileIds = project.slides

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { createBlankSlideshowProject } from "../src/components/slideshow/fixtures";
 import {
+  deserializeSlideshowProject,
+  serializeSlideshowProject,
+} from "../src/components/slideshow/api";
+import {
   MAX_SLIDESHOW_SLIDES,
   addSlideshowSlide,
   deleteSlideshowSlide,
@@ -61,5 +65,31 @@ while (project.slides.length > 1) {
 const protectedLastSlide = deleteSlideshowSlide(project, 0);
 assert.strictEqual(protectedLastSlide, project);
 assert.equal(project.slides.length, 1);
+
+const styledProject = createBlankSlideshowProject();
+styledProject.textSettings = {
+  ...styledProject.textSettings,
+  font: "Editorial",
+  style: "light",
+  padding: "flush",
+  backgroundRadius: 12,
+};
+const serialized = serializeSlideshowProject(styledProject);
+assert.equal(serialized.settings.textSettings.font, "Editorial");
+assert.equal(serialized.settings.textSettings.style, "light");
+assert.equal(serialized.settings.textSettings.padding, "flush");
+assert.equal(serialized.settings.textSettings.backgroundRadius, 12);
+assert.equal(serialized.slides[0].settings.padded, false);
+
+const roundTripped = deserializeSlideshowProject({
+  id: "persisted-slideshow",
+  ...serialized,
+  revision: 1,
+  updatedAt: new Date().toISOString(),
+});
+assert.equal(roundTripped.textSettings.font, "Editorial");
+assert.equal(roundTripped.textSettings.style, "light");
+assert.equal(roundTripped.textSettings.padding, "flush");
+assert.equal(roundTripped.textSettings.backgroundRadius, 12);
 
 console.log("slideshow model tests passed");

@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 import {
   canRenderSlideshowVideo,
+  createSlideshowTextOverlaySvg,
   createZipArchive,
   getSlideshowDimensions,
   isSlideshowRemoteImageUrlAllowed,
@@ -54,6 +55,88 @@ async function main() {
   assert.equal(metadata.width, 1080);
   assert.equal(metadata.height, 1350);
   assert.equal(metadata.format, "jpeg");
+
+  const shadowSvg = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+    style: "plain",
+    font: "SerifItalic",
+    padding: "flush",
+  }).toString("utf8");
+  assert.match(shadowSvg, /id="text-shadow"/);
+  assert.match(shadowSvg, /<feGaussianBlur/);
+  assert.match(shadowSvg, /text-rendering="geometricPrecision"/);
+  assert.match(shadowSvg, /font-style="italic"/);
+
+  const lightBackgroundSvg = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+    style: "light",
+    align: "center",
+  }).toString("utf8");
+  assert.match(lightBackgroundSvg, /fill="#ffffff" opacity="0.96"/);
+  assert.match(lightBackgroundSvg, /fill="#111111"/);
+
+  const wrappedBackgroundSvg = createSlideshowTextOverlaySvg(
+    {
+      ...slide,
+      eyebrow: "",
+      headline: "A longer headline tiny",
+      body: "",
+    },
+    1080,
+    1920,
+    {
+      style: "light",
+      align: "center",
+      width: 50,
+      backgroundRadius: 12,
+    },
+  ).toString("utf8");
+  const wrappedLineBoxes = [
+    ...wrappedBackgroundSvg.matchAll(
+      /data-line-box="true" data-y="([\d.]+)" data-height="([\d.]+)" data-width="([\d.]+)" data-radius="([\d.]+)" data-top-radius="([\d.]+)" data-bottom-radius="([\d.]+)"/g,
+    ),
+  ].map((match) => ({
+    y: Number(match[1]),
+    height: Number(match[2]),
+    width: Number(match[3]),
+    radius: Number(match[4]),
+    topRadius: Number(match[5]),
+    bottomRadius: Number(match[6]),
+  }));
+  const wrappedLineWidths = wrappedLineBoxes.map((box) => box.width);
+  assert.ok(wrappedLineWidths.length >= 2);
+  assert.ok(new Set(wrappedLineWidths.map(Math.round)).size >= 2);
+  assert.ok(wrappedLineBoxes.length >= 2);
+  assert.ok(
+    Math.abs(
+      wrappedLineBoxes[0].y +
+        wrappedLineBoxes[0].height -
+        wrappedLineBoxes[1].y,
+    ) < 0.01,
+  );
+  assert.ok(wrappedLineBoxes.every((box) => box.radius > 0));
+  assert.equal(wrappedLineBoxes[0].topRadius, wrappedLineBoxes[0].radius);
+  assert.equal(wrappedLineBoxes[0].bottomRadius, 0);
+  assert.equal(wrappedLineBoxes.at(-1)?.topRadius, 0);
+  assert.equal(
+    wrappedLineBoxes.at(-1)?.bottomRadius,
+    wrappedLineBoxes.at(-1)?.radius,
+  );
+  assert.ok(
+    wrappedLineBoxes.slice(1, -1).every(
+      (box) => box.topRadius === 0 && box.bottomRadius === 0,
+    ),
+  );
+
+  const backgroundImage = await renderSlideshowSlide(slide, {
+    aspectRatio: "9:16",
+    format: "png",
+    textSettings: { style: "solid", font: "Condensed" },
+  });
+  const lightBackgroundImage = await renderSlideshowSlide(slide, {
+    aspectRatio: "9:16",
+    format: "png",
+    textSettings: { style: "light", font: "Editorial" },
+  });
+  assert.notDeepEqual(backgroundImage, lightBackgroundImage);
 
   const gridImage = await renderSlideshowSlide(
     {
