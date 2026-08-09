@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
@@ -10,10 +11,9 @@ import {
   Clock3,
   ImageIcon,
   Loader2,
-  RefreshCw,
   Search,
   Sparkles,
-  Users,
+  Undo2,
   Video,
   Volume2,
 } from "lucide-react";
@@ -35,6 +35,12 @@ import {
   calculateEstimatedCost,
   getContinuityVideoModel,
 } from "@/lib/ai/models";
+import {
+  canRunPromptImprovement,
+  createPromptImprovementRequestGate,
+  invalidatePromptImprovementUndo,
+  restorePromptImprovementUndo,
+} from "@/lib/ai/prompt-improvement-ui";
 import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
@@ -63,9 +69,14 @@ interface GenerateFormViewProps {
   enableWebSearch: boolean;
   enableAudio: boolean;
   isSubmitting: boolean;
+  isImprovingPrompt?: boolean;
   advancedOpen: boolean;
   submitError?: string | null;
   notice?: string | null;
+  promptImprovementError?: string | null;
+  promptImprovementNotice?: string | null;
+  promptEnhancerConfigured?: boolean | null;
+  canUndoPromptImprovement?: boolean;
   onModelSelect: (modelId: string) => void;
   onPromptChange: (prompt: string) => void;
   onAspectRatioChange: (ratio: string) => void;
@@ -76,6 +87,8 @@ interface GenerateFormViewProps {
   onEnableAudioChange: (enabled: boolean) => void;
   onAdvancedOpenChange: (open: boolean) => void;
   onSubmit: () => void;
+  onImprovePrompt?: () => void;
+  onUndoPromptImprovement?: () => void;
   onAppendToPrompt: (text: string) => void;
   avatarSection?: ReactNode;
   referenceSection?: ReactNode;
@@ -116,8 +129,8 @@ function describeIdentityStatus(pack: AvatarIdentityPackSummary | null): {
 } {
   if (!pack) {
     return {
-      label: "The original avatar image is ready while identity references prepare.",
-      tone: "working",
+      label: "No prepared identity pack yet. The original avatar image will be used.",
+      tone: "ready",
     };
   }
 
@@ -178,6 +191,19 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [enableWebSearch, setEnableWebSearch] = useState(false);
   const [enableAudio, setEnableAudio] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isImprovingPrompt, setIsImprovingPrompt] = useState(false);
+  const [promptBeforeImprovement, setPromptBeforeImprovement] = useState<string | null>(
+    null
+  );
+  const [promptImprovementError, setPromptImprovementError] = useState<string | null>(
+    null
+  );
+  const [promptImprovementNotice, setPromptImprovementNotice] = useState<string | null>(
+    null
+  );
+  const [promptEnhancerConfigured, setPromptEnhancerConfigured] = useState<
+    boolean | null
+  >(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -193,6 +219,45 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [swapVideo, setSwapVideo] = useState<SwapUploadedAsset | null>(null);
   const [swapReference, setSwapReference] = useState<SwapUploadedAsset | null>(null);
   const [swapMode, setSwapMode] = useState<SwapMode>("person");
+  const promptImprovementContext = JSON.stringify({
+    prompt,
+    selectedModel,
+    aspectRatio,
+    duration,
+    enableAudio,
+    avatarId,
+    collectionAssetIds,
+    videoReferenceFileId,
+    swapVideoId: swapVideo?.id ?? null,
+    swapReferenceId: swapReference?.id ?? null,
+    swapMode,
+  });
+  const promptImprovementContextRef = useRef(promptImprovementContext);
+  const promptImprovementRequestGateRef = useRef(
+    createPromptImprovementRequestGate()
+  );
+
+  useEffect(() => {
+    promptImprovementContextRef.current = promptImprovementContext;
+  }, [promptImprovementContext]);
+
+  useEffect(() => {
+    let active = true;
+    void apiGet<{
+      providers: Array<{ provider: string; configured: boolean }>;
+    }>("/api/settings/provider-credentials")
+      .then((result) => {
+        if (!active) return;
+        const gemini = result.providers.find((provider) => provider.provider === "gemini");
+        setPromptEnhancerConfigured(gemini?.configured ?? false);
+      })
+      .catch(() => {
+        if (active) setPromptEnhancerConfigured(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!avatarId) return;
@@ -250,10 +315,13 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const handleModelSelect = (modelId: string) => {
     const nextModel = models.find((model) => model.id === modelId);
     if (!nextModel) return;
+    promptImprovementRequestGateRef.current.invalidateInputs();
 
     setSelectedModel(nextModel.id);
     setAspectRatio(nextModel.defaults.aspectRatio);
     setSubmitError(null);
+    setPromptImprovementError(null);
+    setPromptImprovementNotice(null);
     setNotice(null);
 
     const acceptsCollectionReference =
@@ -284,16 +352,17 @@ export function GenerationForm({ models }: GenerationFormProps) {
     } else {
       setDuration(nextModel.defaults.duration ?? 5);
       setEnableWebSearch(false);
-      if (avatarId) {
+      if (avatarId && !nextModel.capabilities.characterReference) {
         setAvatarId(null);
         setIdentityPack(null);
         setIdentityError(null);
-        setNotice("Avatar identity was cleared because video models do not accept it yet.");
+        setNotice(`${nextModel.name} does not accept a saved character identity.`);
       }
     }
   };
 
   const handleAvatarSelect = (id: string) => {
+    promptImprovementRequestGateRef.current.invalidateInputs();
     const nextAvatarId = id || null;
     setSubmitError(null);
     setIdentityError(null);
@@ -304,27 +373,41 @@ export function GenerationForm({ models }: GenerationFormProps) {
         "Collection references were cleared because character identity and visual collections cannot be combined yet."
       );
     }
+    if (nextAvatarId && videoReferenceFileId) {
+      setVideoReferenceFileId(null);
+      setNotice(
+        "The video seed was cleared because character identity and continuity seeds cannot be combined yet."
+      );
+    }
     if (!nextAvatarId) {
       setIdentityPack(null);
       return;
     }
 
     const selectedSupportsIdentity =
-      selectedDefinition?.type === "image" &&
-      selectedDefinition.capabilities.referenceImages === true;
+      (selectedDefinition?.type === "image" &&
+        selectedDefinition.capabilities.referenceImages === true) ||
+      (selectedDefinition?.type === "video" &&
+        Boolean(selectedDefinition.capabilities.characterReference));
     if (selectedSupportsIdentity) return;
 
-    const fallback = models.find(
-      (model) =>
-        model.type === "image" && model.capabilities.referenceImages === true
-    );
+    const fallback =
+      selectedDefinition?.type === "video"
+        ? models.find(
+            (model) =>
+              model.type === "video" && Boolean(model.capabilities.characterReference)
+          )
+        : models.find(
+            (model) =>
+              model.type === "image" && model.capabilities.referenceImages === true
+          );
     if (fallback) {
       handleModelSelect(fallback.id);
       setAvatarId(nextAvatarId);
       setNotice(`${fallback.name} selected because it supports avatar identity.`);
     } else {
       setAvatarId(null);
-      setIdentityError("No configured image model supports avatar identity.");
+      setIdentityError("No configured model supports character identity for this output type.");
     }
   };
 
@@ -332,6 +415,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setSubmitError(null);
     setNotice(null);
     if (avatarId) return;
+    promptImprovementRequestGateRef.current.invalidateInputs();
     setCollectionAssetIds(assetIds);
     if (assetIds.length > 0 && videoReferenceFileId) {
       setVideoReferenceFileId(null);
@@ -370,6 +454,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
   };
 
   const handleVideoReferenceChange = (fileId: string | null) => {
+    promptImprovementRequestGateRef.current.invalidateInputs();
     setSubmitError(null);
     setNotice(null);
     setVideoSeedMissing(false);
@@ -406,13 +491,93 @@ export function GenerationForm({ models }: GenerationFormProps) {
   };
 
   const canSubmit =
-    Boolean(selectedDefinition) && prompt.trim().length > 0 && !isSubmitting;
+    Boolean(selectedDefinition) &&
+    prompt.trim().length > 0 &&
+    !isSubmitting &&
+    !isImprovingPrompt;
 
   const isSwapSelected = selectedDefinition?.capabilities.subjectSwap === true;
   const swapCanSubmit =
     !isSwapSelected ||
     (Boolean(swapVideo) &&
       (selectedDefinition?.id !== "pixverse-swap" || Boolean(swapReference)));
+
+  const handleImprovePrompt = async () => {
+    if (!selectedDefinition) {
+      setPromptImprovementError("Choose a model before improving the prompt.");
+      return;
+    }
+    const originalPromptValue = prompt;
+    const originalPrompt = originalPromptValue.trim();
+    if (!originalPrompt) {
+      setPromptImprovementError("Write a rough prompt first. A short sentence is enough.");
+      return;
+    }
+
+    const requestToken = promptImprovementRequestGateRef.current.begin();
+    if (!requestToken) return;
+    const requestContext = promptImprovementContextRef.current;
+    setIsImprovingPrompt(true);
+    setPromptImprovementError(null);
+    setPromptImprovementNotice(null);
+    setNotice(null);
+    try {
+      const result = await apiPost<{ prompt: string; model: string }>(
+        "/api/prompts/improve",
+        {
+          prompt: originalPrompt,
+          model: selectedDefinition.id,
+          aspectRatio,
+          duration:
+            selectedDefinition.type === "video" ? duration : undefined,
+          enableAudio:
+            selectedDefinition.type === "video" &&
+            enableAudio &&
+            selectedDefinition.capabilities.nativeAudio === true,
+          hasCharacterReference: Boolean(avatarId),
+          hasVisualReference:
+            collectionAssetIds.length > 0 ||
+            Boolean(videoReferenceFileId) ||
+            Boolean(swapVideo) ||
+            Boolean(swapReference),
+        }
+      );
+      if (
+        !promptImprovementRequestGateRef.current.isCurrent(requestToken) ||
+        promptImprovementContextRef.current !== requestContext
+      ) {
+        setPromptImprovementError(
+          "Your prompt or generation settings changed while the improved version was being prepared. Run Improve prompt again when you are ready."
+        );
+        return;
+      }
+      setPromptBeforeImprovement(originalPromptValue);
+      setPrompt(result.prompt);
+      setPromptImprovementNotice(
+        `Prompt improved for ${selectedDefinition.name}. Review it before generating.`
+      );
+    } catch (error) {
+      setPromptImprovementError(
+        errorMessage(error, "Prompt improvement failed. Your original prompt is unchanged.")
+      );
+    } finally {
+      promptImprovementRequestGateRef.current.finish(requestToken);
+      setIsImprovingPrompt(false);
+    }
+  };
+
+  const handleUndoPromptImprovement = () => {
+    const restored = restorePromptImprovementUndo({
+      promptBeforeImprovement,
+      promptImprovementNotice,
+    });
+    if (!restored) return;
+    promptImprovementRequestGateRef.current.invalidateInputs();
+    setPrompt(restored.prompt);
+    setPromptBeforeImprovement(restored.state.promptBeforeImprovement);
+    setPromptImprovementError(null);
+    setPromptImprovementNotice(restored.state.promptImprovementNotice);
+  };
 
   const handleSubmit = async () => {
     if (!canSubmit || !selectedDefinition || !swapCanSubmit) return;
@@ -451,7 +616,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
           model: selectedDefinition.id,
           aspectRatio,
           duration,
-          enableAudio: enableAudio && selectedDefinition.id === "veo3",
+          enableAudio:
+            enableAudio && selectedDefinition.capabilities.nativeAudio === true,
+          avatarId: avatarId ?? undefined,
+          negativePrompt: negativePrompt.trim() || undefined,
           collectionAssetIds:
             collectionAssetIds.length > 0 ? collectionAssetIds.slice(0, 1) : undefined,
           referenceFileId: videoReferenceFileId ?? undefined,
@@ -464,7 +632,9 @@ export function GenerationForm({ models }: GenerationFormProps) {
     }
   };
   const identityStatus = describeIdentityStatus(identityPack);
-  const avatarSection = selectedDefinition?.type !== "video" ? (
+  const avatarSection =
+    selectedDefinition?.type !== "video" ||
+    Boolean(selectedDefinition.capabilities.characterReference) ? (
     <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
@@ -477,7 +647,9 @@ export function GenerationForm({ models }: GenerationFormProps) {
             </span>
           </div>
           <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
-            Reuse a saved identity. A compatible image model is selected automatically.
+            {selectedDefinition?.type === "video"
+              ? "Create an identity-locked opening frame, then bind the same character through the video."
+              : "Reuse a saved identity. A compatible image model is selected automatically."}
           </p>
         </div>
         {avatarId && (
@@ -528,7 +700,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
       <AvatarPicker selectedId={avatarId} onSelect={handleAvatarSelect} />
     </div>
-  ) : undefined;
+    ) : undefined;
   const maximumCollectionReferences =
     selectedDefinition?.type === "video"
       ? 1
@@ -552,7 +724,10 @@ export function GenerationForm({ models }: GenerationFormProps) {
         {collectionAssetIds.length > 0 && (
           <button
             type="button"
-            onClick={() => setCollectionAssetIds([])}
+            onClick={() => {
+              promptImprovementRequestGateRef.current.invalidateInputs();
+              setCollectionAssetIds([]);
+            }}
             className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
           >
             Clear
@@ -629,6 +804,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       <SwapInputSection
         value={{ video: swapVideo, reference: swapReference, swapMode }}
         onChange={({ video, reference, swapMode: nextSwapMode }) => {
+          promptImprovementRequestGateRef.current.invalidateInputs();
           setSwapVideo(video);
           setSwapReference(reference);
           setSwapMode(nextSwapMode);
@@ -650,22 +826,50 @@ export function GenerationForm({ models }: GenerationFormProps) {
       enableWebSearch={enableWebSearch}
       enableAudio={enableAudio}
       isSubmitting={isSubmitting}
+      isImprovingPrompt={isImprovingPrompt}
       advancedOpen={advancedOpen}
       submitError={submitError}
       notice={notice}
+      promptImprovementError={promptImprovementError}
+      promptImprovementNotice={promptImprovementNotice}
+      promptEnhancerConfigured={promptEnhancerConfigured}
+      canUndoPromptImprovement={promptBeforeImprovement !== null}
       onModelSelect={handleModelSelect}
-      onPromptChange={setPrompt}
-      onAspectRatioChange={setAspectRatio}
+      onPromptChange={(nextPrompt) => {
+        promptImprovementRequestGateRef.current.invalidateInputs();
+        const invalidated = invalidatePromptImprovementUndo();
+        setPrompt(nextPrompt);
+        setPromptBeforeImprovement(invalidated.promptBeforeImprovement);
+        setPromptImprovementError(null);
+        setPromptImprovementNotice(invalidated.promptImprovementNotice);
+      }}
+      onAspectRatioChange={(nextAspectRatio) => {
+        promptImprovementRequestGateRef.current.invalidateInputs();
+        setAspectRatio(nextAspectRatio);
+      }}
       onNumImagesChange={setNumImages}
-      onDurationChange={setDuration}
+      onDurationChange={(nextDuration) => {
+        promptImprovementRequestGateRef.current.invalidateInputs();
+        setDuration(nextDuration);
+      }}
       onNegativePromptChange={setNegativePrompt}
       onEnableWebSearchChange={setEnableWebSearch}
-      onEnableAudioChange={setEnableAudio}
+      onEnableAudioChange={(enabled) => {
+        promptImprovementRequestGateRef.current.invalidateInputs();
+        setEnableAudio(enabled);
+      }}
       onAdvancedOpenChange={setAdvancedOpen}
       onSubmit={handleSubmit}
-      onAppendToPrompt={(text) =>
-        setPrompt((current) => (current ? `${current}, ${text}` : text))
-      }
+      onImprovePrompt={handleImprovePrompt}
+      onUndoPromptImprovement={handleUndoPromptImprovement}
+      onAppendToPrompt={(text) => {
+        promptImprovementRequestGateRef.current.invalidateInputs();
+        const invalidated = invalidatePromptImprovementUndo();
+        setPrompt((current) => (current ? `${current}, ${text}` : text));
+        setPromptBeforeImprovement(invalidated.promptBeforeImprovement);
+        setPromptImprovementError(null);
+        setPromptImprovementNotice(invalidated.promptImprovementNotice);
+      }}
       avatarSection={isSwapSelected ? undefined : avatarSection}
       referenceSection={isSwapSelected ? undefined : referenceSection}
       continuitySection={continuitySection}
@@ -713,9 +917,14 @@ export function GenerateFormView({
   enableWebSearch,
   enableAudio,
   isSubmitting,
+  isImprovingPrompt = false,
   advancedOpen,
   submitError = null,
   notice = null,
+  promptImprovementError = null,
+  promptImprovementNotice = null,
+  promptEnhancerConfigured = null,
+  canUndoPromptImprovement = false,
   onModelSelect,
   onPromptChange,
   onAspectRatioChange,
@@ -726,6 +935,8 @@ export function GenerateFormView({
   onEnableAudioChange,
   onAdvancedOpenChange,
   onSubmit,
+  onImprovePrompt = () => {},
+  onUndoPromptImprovement = () => {},
   onAppendToPrompt,
   avatarSection,
   referenceSection,
@@ -739,19 +950,33 @@ export function GenerateFormView({
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";
   const isSwap = model?.capabilities.subjectSwap === true;
+  const requiresVideoSeed = model?.id === "kling-3.0-i2v" && !avatarName;
   const canSubmit =
-    Boolean(model) && prompt.trim().length > 0 && !isSubmitting && swapReady;
+    Boolean(model) &&
+    prompt.trim().length > 0 &&
+    !requiresVideoSeed &&
+    !isSubmitting &&
+    !isImprovingPrompt &&
+    swapReady;
   const missing: string[] = [];
   if (!model) missing.push("a model");
   if (!prompt.trim()) missing.push("a prompt");
+  if (requiresVideoSeed) missing.push("a character or seed image");
   const activeType = model?.type ?? "image";
   const recommendedModelId =
     models.find((item) => item.type === activeType)?.id ?? undefined;
+  const characterVideoAnchorModel = models.find(
+    (item) => item.type === "image" && item.capabilities.referenceImages === true
+  );
+  const characterVideoAnchorCost =
+    isVideo && avatarName === "Character identity" && characterVideoAnchorModel
+      ? calculateEstimatedCost(characterVideoAnchorModel.id, { numImages: 1 })
+      : 0;
   const estimatedCost = model
-    ? calculateEstimatedCost(model.id, {
+    ? characterVideoAnchorCost + calculateEstimatedCost(model.id, {
         numImages: isImage ? numImages : undefined,
         durationSec: isSwap ? swapSourceDurationSec : isVideo ? duration : undefined,
-        enableAudio: enableAudio && model.id === "veo3",
+        enableAudio: enableAudio && model.capabilities.nativeAudio === true,
       })
     : 0;
   const availableRatios = model?.limits.aspectRatios ?? ["9:16", "1:1", "16:9"];
@@ -798,17 +1023,38 @@ export function GenerateFormView({
                 Describe your {isVideo ? "video" : "image"}
               </h2>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                onAppendToPrompt(
-                  "natural composition, clear focal point, production-ready detail"
-                )
-              }
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
-            >
-              <Sparkles className="size-3" /> Improve prompt
-            </button>
+            <div className="flex items-center gap-2">
+              {canUndoPromptImprovement && (
+                <button
+                  type="button"
+                  onClick={onUndoPromptImprovement}
+                  className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-muted-foreground hover:bg-[var(--pf-active)] hover:text-foreground"
+                >
+                  <Undo2 className="size-3" /> Undo
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onImprovePrompt}
+                disabled={
+                  !canRunPromptImprovement({
+                    hasModel: Boolean(model),
+                    hasPrompt: Boolean(prompt.trim()),
+                    isRunning: isImprovingPrompt,
+                    configured: promptEnhancerConfigured,
+                  })
+                }
+                aria-busy={isImprovingPrompt}
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2 text-[12px] font-semibold text-[var(--pf-link)] hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                {isImprovingPrompt ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : (
+                  <Sparkles className="size-3" />
+                )}
+                {isImprovingPrompt ? "Improving…" : "Improve prompt"}
+              </button>
+            </div>
           </div>
 
           <Textarea
@@ -823,6 +1069,38 @@ export function GenerateFormView({
             <span>{prompt.length}/1,500</span>
             <span>Be specific about the opening frame</span>
           </div>
+
+          {promptImprovementError && (
+            <div
+              role="alert"
+              className="mt-2 flex items-start gap-1.5 text-[12px] leading-4 text-[var(--pf-danger)]"
+            >
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              <span>{promptImprovementError}</span>
+            </div>
+          )}
+
+          {promptEnhancerConfigured === false && !promptImprovementError && (
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] leading-4 text-muted-foreground">
+              <span>Prompt improvement needs a Gemini API key.</span>
+              <Link
+                href="/settings?tab=api-keys"
+                className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"
+              >
+                Add key in Settings
+              </Link>
+            </div>
+          )}
+
+          {promptImprovementNotice && (
+            <div
+              role="status"
+              className="mt-2 flex items-start gap-1.5 text-[12px] leading-4 text-[var(--pf-link)]"
+            >
+              <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
+              <span>{promptImprovementNotice}</span>
+            </div>
+          )}
 
           <div className="mt-3 flex flex-wrap gap-1.5">
             {CREATIVE_SPARKS.map((spark) => (
@@ -995,7 +1273,9 @@ export function GenerateFormView({
                   </div>
                 )}
 
-                {isVideo && model.id === "veo3" && (
+                {isVideo &&
+                  model.capabilities.nativeAudio === true &&
+                  model.id !== "gemini-omni-flash" && (
                   <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[var(--pf-active)] px-3 py-2.5">
                     <span className="flex items-center gap-2.5">
                       <Volume2 className="size-3.5 text-muted-foreground" />
@@ -1115,6 +1395,11 @@ export function GenerateFormView({
             <strong className="mt-1 block text-[13px] font-semibold text-foreground">
               Cost Estimate · {model ? formatCost(estimatedCost) : "—"}
             </strong>
+            {isVideo && avatarName === "Character identity" && (
+              <span className="mt-0.5 block text-[12px] text-muted-foreground">
+                Includes one identity-locked opening frame
+              </span>
+            )}
             {missing.length > 0 && (
               <span className="mt-0.5 block text-[12px] text-[var(--pf-lamp-amber)]">
                 {isSwap && !swapReady

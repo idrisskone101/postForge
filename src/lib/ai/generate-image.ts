@@ -6,6 +6,47 @@ import { logCost } from "@/lib/costs/tracker";
 import { storage, downloadFromUrl } from "@/lib/storage";
 import { persistUgcReferenceImageFromJob } from "@/lib/ugc/reference-library";
 
+export function buildImageProviderRequest(request: ImageGenerationRequest): {
+  endpoint: string;
+  payload: Record<string, unknown>;
+} {
+  const model = getModel(request.model);
+  if (!model || model.type !== "image") {
+    throw new Error(`Unknown image model: ${request.model}`);
+  }
+
+  const aspectRatio = request.aspectRatio ?? model.defaults.aspectRatio;
+  const numImages = request.numImages ?? model.defaults.numImages ?? 1;
+  const payload: Record<string, unknown> = {
+    prompt: request.prompt,
+    num_images: numImages,
+    safety_tolerance: "6",
+  };
+
+  if (request.editEndpoint) {
+    payload.aspect_ratio = aspectRatio;
+  } else if (request.model === "gpt-image-2") {
+    payload.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
+    payload.quality = "high";
+    payload.output_format = "png";
+  } else if (request.model === "flux-2-flex") {
+    payload.image_size = { width: 1024, height: 1024 };
+    payload.output_format = "jpeg";
+  } else {
+    payload.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
+  }
+
+  if (request.negativePrompt) payload.negative_prompt = request.negativePrompt;
+  if (request.imageUrls?.length) payload.image_urls = request.imageUrls;
+  if (request.enableWebSearch) payload.enable_web_search = true;
+  if (request.thinkingLevel) payload.thinking_level = request.thinkingLevel;
+
+  return {
+    endpoint: request.editEndpoint ? `${model.endpoint}/edit` : model.endpoint,
+    payload,
+  };
+}
+
 export async function generateImage(
   request: ImageGenerationRequest,
   postProcess?: (buffer: Buffer) => Promise<Buffer>,
@@ -47,58 +88,15 @@ async function executeImageGeneration(
   request: ImageGenerationRequest,
   postProcess?: (buffer: Buffer) => Promise<Buffer>,
 ): Promise<void> {
-  const model = getModel(request.model)!;
   const startTime = Date.now();
 
   await startJob(jobId);
 
-  const aspectRatio = request.aspectRatio ?? model.defaults.aspectRatio;
-  const numImages = request.numImages ?? model.defaults.numImages ?? 1;
-
-  const input: Record<string, unknown> = {
-    prompt: request.prompt,
-    num_images: numImages,
-    safety_tolerance: "6",
-  };
-
-  // Edit endpoint uses aspect_ratio directly; text-to-image uses image_size mapped format
-  if (request.editEndpoint) {
-    input.aspect_ratio = aspectRatio;
-  } else if (request.model === "gpt-image-2") {
-    input.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
-    input.quality = "high";
-    input.output_format = "png";
-  } else if (request.model === "flux-2-flex") {
-    input.image_size = { width: 1024, height: 1024 };
-    input.output_format = "jpeg";
-  } else {
-    input.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
-  }
-
-  if (request.negativePrompt) {
-    input.negative_prompt = request.negativePrompt;
-  }
-
-  // image_urls: identity + scene references (up to 14 for nano-banana-2 edit)
-  if (request.imageUrls && request.imageUrls.length > 0) {
-    input.image_urls = request.imageUrls;
-  }
-
-  if (request.enableWebSearch) {
-    input.enable_web_search = true;
-  }
-
-  // Enable high thinking for complex compositing tasks
-  if (request.thinkingLevel) {
-    input.thinking_level = request.thinkingLevel;
-  }
-
-  // Use edit endpoint variant if requested
-  const endpoint = request.editEndpoint
-    ? `${model.endpoint}/edit`
-    : model.endpoint;
-
-  const result = await subscribeToGeneration(endpoint, input);
+  const providerRequest = buildImageProviderRequest(request);
+  const result = await subscribeToGeneration(
+    providerRequest.endpoint,
+    providerRequest.payload
+  );
 
   const data = result.data as {
     images?: {

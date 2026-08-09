@@ -58,6 +58,8 @@ pnpm test:home-loading
 pnpm test:generate-empty-state
 pnpm test:model-availability
 pnpm test:model-registry
+pnpm test:character-video
+pnpm test:prompt-improvement
 pnpm test:storage-s3
 pnpm test:settings-credentials
 pnpm typecheck

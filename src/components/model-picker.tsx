@@ -10,6 +10,7 @@ import {
   Layers,
   Palette,
   Sparkles,
+  UserRound,
   Video,
   Volume2,
   Zap,
@@ -60,6 +61,9 @@ function capabilityItems(model: ModelDefinition): Array<{
   }
   if (capabilities.imageToVideo) {
     items.push({ icon: <Layers className="size-3" />, label: "Image to video" });
+  }
+  if (capabilities.characterReference) {
+    items.push({ icon: <UserRound className="size-3" />, label: "Character identity" });
   }
   if (capabilities.nativeAudio) {
     items.push({ icon: <Volume2 className="size-3" />, label: "Native audio" });

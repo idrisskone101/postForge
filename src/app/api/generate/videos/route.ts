@@ -12,6 +12,7 @@ import {
   parseCollectionAssetIds,
   resolveCollectionImageReferences,
 } from "@/lib/collection-assets-server";
+import { generateCharacterVideo } from "@/lib/ai/generate-character-video";
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,6 +42,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: `Model ${model} is not a video model` },
         { status: 400 }
+      );
+    }
+
+    if (body.avatarId !== undefined && body.avatarId !== null) {
+      if (typeof body.avatarId !== "string" || !body.avatarId.trim()) {
+        return NextResponse.json(
+          { error: "avatarId must be a non-empty string" },
+          { status: 400 }
+        );
+      }
+      if (!modelDef.capabilities.characterReference) {
+        return NextResponse.json(
+          { error: `Model ${model} does not support character video` },
+          { status: 400 }
+        );
+      }
+      if (referenceFileId || collectionAssetIds.length > 0) {
+        return NextResponse.json(
+          {
+            error:
+              "Character video creates its own identity-locked opening frame and cannot be combined with another seed reference.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const result = await generateCharacterVideo({
+        avatarId: body.avatarId,
+        prompt: body.prompt,
+        model,
+        duration: body.duration,
+        aspectRatio: body.aspectRatio,
+        enableAudio: body.enableAudio,
+        negativePrompt: body.negativePrompt,
+      });
+      return NextResponse.json(
+        {
+          id: result.jobId,
+          status: "queued",
+          model: result.model,
+          estimatedCost: result.estimatedCost,
+          createdAt: new Date().toISOString(),
+        },
+        { status: 202 }
       );
     }
 

@@ -32,6 +32,7 @@ import {
   resolveImageRetryReferences,
   resolveVideoRetryReference,
 } from "@/lib/jobs/retry-reference-resolution";
+import { generateCharacterVideo } from "@/lib/ai/generate-character-video";
 
 export async function POST(
   request: NextRequest,
@@ -52,6 +53,7 @@ export async function POST(
     const input = originalJob.input as Record<string, unknown>;
     const isUgcClone = originalJob.tags.includes("ugc-clone");
     const isVideoSwap = originalJob.tags.includes("video-swap");
+    const isCharacterVideo = originalJob.tags.includes("character-video");
     const isTerminal =
       originalJob.status === "completed" || originalJob.status === "failed";
 
@@ -151,6 +153,54 @@ export async function POST(
           type: "video",
           model: modelId,
           estimatedCost,
+          createdAt: new Date().toISOString(),
+        },
+        { status: 202 }
+      );
+    }
+
+    if (isCharacterVideo) {
+      if (originalJob.status !== "failed") {
+        return NextResponse.json(
+          { error: `Can only retry failed character video jobs. Current status: ${originalJob.status}` },
+          { status: 400 }
+        );
+      }
+      const avatarId = asRetryString(input.avatarId);
+      const prompt = asRetryString(input.prompt) ?? originalJob.prompt;
+      if (!avatarId) {
+        return NextResponse.json(
+          { error: "This character video is missing its saved avatar identity." },
+          { status: 400 }
+        );
+      }
+      const savedAnchorJobId = asRetryString(input.anchorJobId);
+      const savedAnchorJob = savedAnchorJobId
+        ? await getJob(savedAnchorJobId)
+        : null;
+      const reusableAnchorJobId =
+        savedAnchorJob?.status === "completed" &&
+        savedAnchorJob.outputs.some((output) => output.type === "image")
+          ? savedAnchorJob.id
+          : undefined;
+      const result = await generateCharacterVideo({
+        avatarId,
+        prompt,
+        model: originalJob.model,
+        duration: asRetryNumber(input.duration),
+        aspectRatio: asRetryString(input.aspectRatio),
+        enableAudio: asRetryBoolean(input.enableAudio),
+        negativePrompt: asRetryString(input.negativePrompt),
+        anchorJobId: reusableAnchorJobId,
+      });
+      return NextResponse.json(
+        {
+          id: result.jobId,
+          originalJobId: id,
+          status: "queued",
+          type: "video",
+          model: result.model,
+          estimatedCost: result.estimatedCost,
           createdAt: new Date().toISOString(),
         },
         { status: 202 }
