@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHmac } from "node:crypto";
 import {
   decodeIntegrationEncryptionKey,
   decryptIntegrationSecret,
@@ -20,6 +21,21 @@ import {
 import type { DecryptedIntegrationConnection } from "../src/lib/integrations/types";
 import { NextRequest } from "next/server";
 import { middleware } from "../src/middleware";
+import {
+  handleInstagramDeauthorize,
+  verifyMetaSignedRequest,
+} from "../src/lib/integrations/meta-deauthorize";
+
+function metaSignedRequest(
+  payload: Record<string, unknown>,
+  secret = "instagram-app-secret-value"
+) {
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const signature = createHmac("sha256", secret)
+    .update(encodedPayload)
+    .digest("base64url");
+  return `${signature}.${encodedPayload}`;
+}
 
 async function run() {
   const previousNodeEnv = process.env.NODE_ENV;
@@ -43,6 +59,16 @@ async function run() {
     )
   );
   assert.equal(cronPassThrough.headers.get("x-middleware-next"), "1");
+  const instagramDeauthorizePassThrough = middleware(
+    new NextRequest(
+      "https://postforge.example/api/integrations/instagram/deauthorize",
+      { method: "POST" }
+    )
+  );
+  assert.equal(
+    instagramDeauthorizePassThrough.headers.get("x-middleware-next"),
+    "1"
+  );
   const ordinaryApiResponse = middleware(
     new NextRequest("https://postforge.example/api/integrations/youtube/sync", {
       headers: { Authorization: "Bearer retention-secret-value" },
@@ -62,6 +88,63 @@ async function run() {
   else Reflect.set(process.env, "NODE_ENV", previousNodeEnv);
   if (previousApiKey === undefined) delete process.env.POSTFORGE_API_KEY;
   else process.env.POSTFORGE_API_KEY = previousApiKey;
+
+  const signedRequest = metaSignedRequest({
+    algorithm: "HMAC-SHA256",
+    issued_at: 1786290000,
+    user_id: "instagram-user-123",
+  });
+  assert.deepEqual(
+    verifyMetaSignedRequest(signedRequest, "instagram-app-secret-value"),
+    { userId: "instagram-user-123", issuedAt: 1786290000 }
+  );
+  assert.throws(
+    () => verifyMetaSignedRequest(`${signedRequest}tampered`, "instagram-app-secret-value"),
+    /signed request/
+  );
+  assert.throws(
+    () =>
+      verifyMetaSignedRequest(
+        metaSignedRequest({ algorithm: "none", user_id: "instagram-user-123" }),
+        "instagram-app-secret-value"
+      ),
+    /algorithm/
+  );
+
+  let deletedInstagramAccount: string | null = null;
+  const deauthorizeForm = new FormData();
+  deauthorizeForm.set("signed_request", signedRequest);
+  const deauthorizeResponse = await handleInstagramDeauthorize(
+    new Request("https://postforge.example/api/integrations/instagram/deauthorize", {
+      method: "POST",
+      body: deauthorizeForm,
+    }),
+    {
+      appSecret: "instagram-app-secret-value",
+      deleteAccount: async (accountId) => {
+        deletedInstagramAccount = accountId;
+      },
+    }
+  );
+  assert.equal(deauthorizeResponse.status, 200);
+  assert.equal(deauthorizeResponse.headers.get("cache-control"), "no-store");
+  assert.equal(deletedInstagramAccount, "instagram-user-123");
+
+  const invalidDeauthorizeForm = new FormData();
+  invalidDeauthorizeForm.set("signed_request", `${signedRequest}tampered`);
+  const invalidDeauthorizeResponse = await handleInstagramDeauthorize(
+    new Request("https://postforge.example/api/integrations/instagram/deauthorize", {
+      method: "POST",
+      body: invalidDeauthorizeForm,
+    }),
+    {
+      appSecret: "instagram-app-secret-value",
+      deleteAccount: async () => {
+        assert.fail("Invalid signed requests must not delete provider data");
+      },
+    }
+  );
+  assert.equal(invalidDeauthorizeResponse.status, 400);
 
   assert.equal(
     isSameOriginMutation(

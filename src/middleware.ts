@@ -82,6 +82,9 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(
       "/api/integrations/publish-media/"
     ) ||
+    // Meta sends a signed, server-to-server POST when an Instagram account
+    // deauthorizes the app. The route verifies that HMAC before deleting data.
+    request.nextUrl.pathname === "/api/integrations/instagram/deauthorize" ||
     // Vercel Cron cannot send the operator key. Both cron routes perform
     // their own fail-closed CRON_SECRET bearer validation.
     request.nextUrl.pathname === "/api/integrations/retention" ||
