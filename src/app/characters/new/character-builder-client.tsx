@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -187,12 +187,12 @@ export function CharacterBuilderClient() {
   const [previewSeed, setPreviewSeed] = useState(0);
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [previewFileId, setPreviewFileId] = useState<string | null>(null);
-  const [previewFingerprint, setPreviewFingerprint] = useState<string | null>(
-    () => characterRecipeFingerprint(DEFAULT_CHARACTER_ATTRIBUTES)
-  );
+  const [previewFingerprint, setPreviewFingerprint] = useState<string | null>(null);
   const [previewIsPhotographic, setPreviewIsPhotographic] = useState(false);
   const [rendering, setRendering] = useState(false);
+  const renderingRef = useRef(false);
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const [loading, setLoading] = useState(Boolean(editId));
   const [missingEditRecord, setMissingEditRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -209,6 +209,15 @@ export function CharacterBuilderClient() {
     [attributes]
   );
   const previewDirty = currentPreviewFingerprint !== previewFingerprint;
+  const previewRequiresRender = previewIsPhotographic || Boolean(previewFileId);
+  const previewHasSource = Boolean(
+    previewFileId || (previewIsPhotographic && avatarId)
+  );
+  const readyPreviewFingerprint =
+    !previewDirty && previewHasSource && previewFingerprint
+      ? previewFingerprint
+      : null;
+  const previewSaveBlocked = previewRequiresRender && !readyPreviewFingerprint;
   const previewSourceUrl = previewFileId
     ? `/api/files/${encodeURIComponent(previewFileId)}`
     : previewIsPhotographic && avatarId
@@ -260,23 +269,22 @@ export function CharacterBuilderClient() {
     setError(null);
   }
 
-  function randomize() {
-    setAttributes(randomCharacterAttributes());
-    setPreviewSeed(Math.floor(Math.random() * 1000));
-    notify("Character randomized");
-  }
-
-  async function rerender() {
-    const requestedFingerprint = characterRecipeFingerprint(attributes);
+  async function renderPreview(
+    requestedAttributes: CharacterAttributes,
+    successMessage = "Photographic preview updated"
+  ) {
+    if (renderingRef.current) return;
+    renderingRef.current = true;
+    const requestedFingerprint = characterRecipeFingerprint(requestedAttributes);
     setRendering(true);
     setError(null);
     try {
       const job = await apiPost<{ id: string }>("/api/generate/images", {
-        prompt: buildCharacterImagePrompt(attributes),
+        prompt: buildCharacterImagePrompt(requestedAttributes),
         aspectRatio: "3:4",
         numImages: 1,
         negativePrompt:
-          "text, caption, logo, watermark, collage, extra people, duplicate face, cropped head, plastic skin",
+          "video game character, CGI, 3D render, digital art, illustration, synthetic person, plastic skin, beauty filter, uncanny symmetry, colored rim light, text, caption, logo, watermark, collage, extra people, duplicate face, cropped head, conflicting identity traits",
         characterPreview: true,
         characterRecipeFingerprint: requestedFingerprint,
       });
@@ -284,14 +292,29 @@ export function CharacterBuilderClient() {
       setPreviewFileId(generatedFileId);
       setPreviewFingerprint(requestedFingerprint);
       setPreviewSeed((value) => value + 1);
-      notify("Photographic preview updated");
+      notify(successMessage);
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : "Unable to generate character preview"
       );
     } finally {
+      renderingRef.current = false;
       setRendering(false);
     }
+  }
+
+  async function randomizeAndRender() {
+    if (renderingRef.current) return;
+    const randomizedAttributes = randomCharacterAttributes();
+    setAttributes(randomizedAttributes);
+    await renderPreview(
+      randomizedAttributes,
+      "Character randomized and preview updated"
+    );
+  }
+
+  async function rerender() {
+    await renderPreview(attributes);
   }
 
   async function copyAttributes() {
@@ -319,6 +342,7 @@ export function CharacterBuilderClient() {
   }
 
   async function saveCharacter() {
+    if (savingRef.current || renderingRef.current) return;
     if (missingEditRecord) {
       setError("This edit link no longer points to a saved character.");
       return;
@@ -328,10 +352,11 @@ export function CharacterBuilderClient() {
       setError("Add a character name before saving.");
       return;
     }
-    if (previewDirty || !previewFingerprint) {
+    if (previewSaveBlocked) {
       setError("Re-render preview so the saved photo matches the current recipe.");
       return;
     }
+    savingRef.current = true;
     setSaving(true);
     setError(null);
     const now = new Date().toISOString();
@@ -341,8 +366,8 @@ export function CharacterBuilderClient() {
       attributes,
       previewSeed,
       avatarId,
-      previewKind: "photographic",
-      previewFingerprint,
+      previewKind: readyPreviewFingerprint ? "photographic" : undefined,
+      previewFingerprint: readyPreviewFingerprint,
       createdAt: now,
       updatedAt: now,
     };
@@ -350,23 +375,34 @@ export function CharacterBuilderClient() {
       const existing = await fetchWorkspaceFeature<CharacterRecord>("characters");
       const previous = existing.records.find((candidate) => candidate.id === recordId);
       if (previous?.createdAt) record.createdAt = previous.createdAt;
-      record.avatarId = await saveCharacterAvatar({
-        currentAvatarId: avatarId ?? previous?.avatarId ?? null,
-        characterId: recordId,
-        name: cleanName,
-        attributes,
-        previewSeed,
-        previewFingerprint,
-        previewSourceUrl,
-      });
-      setAvatarId(record.avatarId);
-      setPreviewIsPhotographic(true);
+      if (readyPreviewFingerprint) {
+        record.avatarId = await saveCharacterAvatar({
+          currentAvatarId: avatarId ?? previous?.avatarId ?? null,
+          characterId: recordId,
+          name: cleanName,
+          attributes,
+          previewSeed,
+          previewFingerprint: readyPreviewFingerprint,
+          previewSourceUrl,
+        });
+        setAvatarId(record.avatarId);
+        setPreviewIsPhotographic(true);
+      } else {
+        record.avatarId = null;
+        setAvatarId(null);
+        setPreviewIsPhotographic(false);
+      }
       await saveWorkspaceFeature("characters", record);
-      notify("Character saved and added to reusable avatars");
+      notify(
+        readyPreviewFingerprint
+          ? "Character saved and added to reusable avatars"
+          : "Character saved as a draft"
+      );
       window.setTimeout(() => router.push("/characters"), 350);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to save character");
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -409,10 +445,19 @@ export function CharacterBuilderClient() {
         </label>
 
         <div className="flex min-w-0 flex-wrap gap-2 min-[1280px]:ml-auto min-[1280px]:flex-nowrap">
-          <button onClick={randomize} className="pf-button-secondary h-9"><Dices className="size-3.5" /> Randomize</button>
+          <button
+            onClick={randomizeAndRender}
+            disabled={saving || rendering}
+            aria-describedby="character-preview-generation-cost"
+            title="Uses one paid image generation"
+            className="pf-button-secondary h-9 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />}
+            {rendering ? "Rendering…" : "Randomize & render"}
+          </button>
           <button onClick={() => setImportOpen(true)} aria-label="Import prompt or JSON" className="pf-button-secondary h-9"><Upload className="size-3.5" /> Import</button>
           <button onClick={copyAttributes} aria-label="Copy attributes JSON" className="pf-button-secondary h-9"><Clipboard className="size-3.5" /> Copy JSON</button>
-          <button onClick={saveCharacter} disabled={saving || missingEditRecord || previewDirty} aria-label="Save character" title={previewDirty ? "Re-render the photographic preview before saving" : undefined} className="pf-button-primary h-9 shrink-0 px-4 disabled:cursor-not-allowed disabled:opacity-45"><Save className="size-3.5" /> {saving ? "Saving…" : missingEditRecord ? "Unavailable" : previewDirty ? "Preview changed" : "Save"}</button>
+          <button onClick={saveCharacter} disabled={saving || rendering || missingEditRecord || previewSaveBlocked} aria-label="Save character" title={rendering ? "Wait for the preview render to finish" : previewSaveBlocked ? "Re-render the photographic preview before saving" : undefined} className="pf-button-primary h-9 shrink-0 px-4 disabled:cursor-not-allowed disabled:opacity-45"><Save className="size-3.5" /> {saving ? "Saving…" : rendering ? "Rendering…" : missingEditRecord ? "Unavailable" : previewSaveBlocked ? "Preview changed" : readyPreviewFingerprint ? "Save" : "Save draft"}</button>
         </div>
       </header>
 
@@ -455,25 +500,41 @@ export function CharacterBuilderClient() {
       <section
         data-character-preview-stage="true"
         aria-label="Live character portrait"
+        aria-busy={rendering}
         className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-border bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
       >
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-[12px] text-muted-foreground">Photographic recipe preview</p>
-            <p className="mt-1 max-w-[310px] text-[12px] leading-4 text-white/60">Every attribute becomes part of the generation recipe. Changes apply to the photo when you re-render.</p>
+            <p id="character-preview-generation-cost" className="mt-1 max-w-[310px] text-[12px] leading-4 text-white/60">{previewRequiresRender ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe." : "Save as a draft without generating. Render a preview when you want to make this identity reusable."}</p>
           </div>
-          <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",rendering ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]" : previewDirty ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]" : "bg-[var(--pf-success)]/15 text-[var(--pf-success)]")}>{rendering ? <Loader2 className="size-3 animate-spin" /> : previewDirty ? <RefreshCw className="size-3" /> : <Check className="size-3" />}{rendering ? "Rendering" : previewDirty ? "Changes pending" : "Preview ready"}</span>
+          <span role="status" aria-live="polite" className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",rendering ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]" : previewSaveBlocked ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]" : previewRequiresRender ? "bg-[var(--pf-success)]/15 text-[var(--pf-success)]" : "bg-[var(--pf-active)] text-muted-foreground")}>{rendering ? <Loader2 aria-hidden="true" className="size-3 animate-spin" /> : previewSaveBlocked ? <RefreshCw aria-hidden="true" className="size-3" /> : <Check aria-hidden="true" className="size-3" />}{rendering ? "Rendering" : previewSaveBlocked ? "Changes pending" : previewRequiresRender ? "Preview ready" : "Draft — preview optional"}</span>
         </div>
 
         <div className="relative z-10 grid min-h-0 flex-1 place-items-center py-4 min-[1280px]:py-3">
           <div className="aspect-[3/4] h-auto max-h-full w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]">
-            <CharacterPhoto generatedFileId={previewFileId} avatarId={!previewFileId && previewIsPhotographic ? avatarId : null} alt={`${name || "Untitled character"} photographic preview`} className={cn("transition duration-300 motion-reduce:transition-none", rendering && "scale-[1.01] blur-[2px] grayscale-[.2]")} />
+            <CharacterPhoto
+              generatedFileId={previewFileId}
+              avatarId={!previewFileId && previewIsPhotographic ? avatarId : null}
+              alt={`${name || "Untitled character"} photographic preview`}
+              className={cn("transition duration-300 motion-reduce:transition-none", rendering && "scale-[1.01] blur-[2px] grayscale-[.2]")}
+              onLoadError={() => {
+                if (!previewFileId) return;
+                setPreviewFileId(null);
+                setPreviewFingerprint(null);
+                setError(
+                  previewIsPhotographic
+                    ? "The generated preview image could not be loaded. Re-render the preview before saving."
+                    : "The generated preview image could not be loaded. Re-render it or save this character as a draft."
+                );
+              }}
+            />
           </div>
         </div>
 
         <div className="relative z-10 grid gap-2 rounded-lg border border-white/35 bg-white/20 p-2.5 backdrop-blur-sm sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1420px]:grid-cols-2">
-          <button onClick={rerender} disabled={rendering} className="pf-button-secondary !border-white/70 !bg-[var(--pf-surface)]"><RefreshCw className={cn("size-3.5",rendering && "animate-spin")} /> Re-render preview</button>
-          <button onClick={randomize} className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)]"><Dices className="size-3.5" /> Randomize identity</button>
+          <button onClick={rerender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" className="pf-button-secondary !border-white/70 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45"><RefreshCw className={cn("size-3.5",rendering && "animate-spin")} /> Re-render preview</button>
+          <button onClick={randomizeAndRender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" title="Uses one paid image generation" className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45">{rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />} {rendering ? "Rendering…" : "Randomize & render"}</button>
           <div className="flex min-w-0 items-center gap-2 px-1 py-1 sm:col-span-2 min-[1280px]:col-span-1 min-[1420px]:col-span-2">
             <span className="size-1.5 shrink-0 rounded-full bg-[var(--pf-success)]" />
             <p className="min-w-0 break-words text-[12px] font-medium text-white/60">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</p>
