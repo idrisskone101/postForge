@@ -189,13 +189,43 @@ export const DEFAULT_CHARACTER_ATTRIBUTES: CharacterAttributes = {
   teeth: "None",
 };
 
+const OPTIONAL_CHARACTER_TRAITS = new Set([
+  "freckles",
+  "moles",
+  "dimples",
+  "hairHighlights",
+  "glasses",
+  "jewelry",
+  "headwear",
+  "piercings",
+  "tattoos",
+  "beard",
+  "scars",
+  "birthmarks",
+  "teeth",
+]);
+
+function randomCharacterOption(group: CharacterAttributeGroup) {
+  const noneIndex = group.options.indexOf("None");
+  if (
+    OPTIONAL_CHARACTER_TRAITS.has(group.key) &&
+    noneIndex >= 0 &&
+    Math.random() < 0.55
+  ) {
+    return group.options[noneIndex];
+  }
+
+  const candidates =
+    OPTIONAL_CHARACTER_TRAITS.has(group.key) && noneIndex >= 0
+      ? group.options.filter((_, index) => index !== noneIndex)
+      : group.options;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
 export function randomCharacterAttributes(): CharacterAttributes {
   return Object.fromEntries(
     CHARACTER_ATTRIBUTE_SECTIONS.flatMap((section) =>
-      section.groups.map((group) => [
-        group.key,
-        group.options[Math.floor(Math.random() * group.options.length)],
-      ])
+      section.groups.map((group) => [group.key, randomCharacterOption(group)])
     )
   );
 }
@@ -219,18 +249,126 @@ export function characterRecipeFingerprint(attributes: CharacterAttributes) {
 }
 
 export function buildCharacterImagePrompt(attributes: CharacterAttributes) {
-  const sections = CHARACTER_ATTRIBUTE_SECTIONS.map((section) =>
-    `${section.label}: ${section.groups
-      .map((group) => `${group.label} ${attributes[group.key] ?? group.options[0]}`)
-      .join("; ")}`
-  ).join(". ");
+  const value = (key: string) => attributes[key] ?? "unspecified";
+  const attributeRecipe = Object.fromEntries(
+    CHARACTER_ATTRIBUTE_SECTIONS.map((section) => [
+      section.id,
+      Object.fromEntries(
+        section.groups.map((group) => [
+          group.key,
+          attributes[group.key] ?? group.options[0],
+        ])
+      ),
+    ])
+  );
 
-  return [
-    "Create one photorealistic 3:4 studio character portrait of a fictional adult person.",
-    "Head-and-upper-torso framing, centered eye contact, calm neutral expression, realistic skin texture, coherent anatomy, simple crew-neck clothing, and a clean muted lavender-gray background.",
-    "Use soft frontal key light with a subtle cool blue edge light, premium editorial photography, natural color, and no beauty-filter plastic skin.",
-    sections,
-    "Represent every listed attribute consistently while keeping the result plausible and respectful.",
-    "No text, captions, interface chrome, logos, watermark, collage, extra people, duplicate face, or cropped head.",
-  ].join(" ");
+  const prompt = {
+    schema: "postforge.character-image.v2",
+    objective: {
+      task: "Generate exactly one photograph of a fictional adult human.",
+      intended_use:
+        "Reusable identity anchor for vertical short-form UGC, TikTok-style ads, product testimonials, and creator-led social videos.",
+      realism_target:
+        "The result must be immediately believable as a camera photo of a real person, not a designed character or rendered asset.",
+    },
+    character: {
+      identity_anchors: {
+        gender_presentation: value("gender"),
+        apparent_age: value("age"),
+        ethnicity: value("ethnicity"),
+        skin: value("skinClarity"),
+        face_shape: value("faceShape"),
+        jawline: value("jawline"),
+        cheekbones: value("cheekbones"),
+        chin: value("chin"),
+        lips: value("lips"),
+        lip_fullness_percent: value("lipFullness"),
+        hair_color: value("hairColor"),
+        hair_style: value("hairStyle"),
+        hair_highlights: value("hairHighlights"),
+        eye_shape: value("eyeShape"),
+        eye_color: value("eyeColor"),
+        eyebrows: value("eyebrows"),
+        nose_shape: value("noseShape"),
+        nose_height: value("noseHeight"),
+      },
+      visible_details: {
+        freckles: value("freckles"),
+        moles: value("moles"),
+        under_eyes: value("underEyes"),
+        dimples: value("dimples"),
+        ears: value("ears"),
+        glasses: value("glasses"),
+        jewelry: value("jewelry"),
+        headwear: value("headwear"),
+        piercings: value("piercings"),
+        beard: value("beard"),
+        facial_scars: value("scars"),
+        birthmarks: value("birthmarks"),
+        distinctive_teeth: value("teeth"),
+      },
+      supporting_cues: {
+        build: value("build"),
+        height: value("height"),
+        shoulders: value("shoulders"),
+        aesthetic: value("aesthetic"),
+        tattoos: value("tattoos"),
+      },
+      attribute_recipe: attributeRecipe,
+    },
+    photographic_direction: {
+      composition:
+        "3:4 vertical head-and-upper-torso creator casting photo, one person only, full head visible, eye-level framing, centered eye contact, calm natural expression.",
+      capture:
+        "Modern smartphone main-camera photograph with natural perspective, modest depth of field, slight sensor grain, ordinary camera-roll sharpness, and no artificial portrait-mode cutout.",
+      lighting:
+        "Soft daylight from a nearby window with gentle natural falloff, believable catchlights, mild real-world shadow variation, and no colored rim light.",
+      setting:
+        "Simple real interior in front of a lightly textured warm neutral wall, clean enough for identity reference use but not a studio set or virtual backdrop.",
+      wardrobe:
+        "Plausible everyday creator clothing guided by the selected aesthetic; use a simple crew-neck top when no stronger styling cue is visible.",
+      color:
+        "Natural smartphone white balance, moderate dynamic range, restrained contrast, realistic saturation, and no cinematic color grade.",
+    },
+    human_realism: [
+      "Preserve natural skin pores, fine facial hair, tiny blemishes, subtle under-eye texture, and believable variation in skin tone.",
+      "Keep mild facial asymmetry, individually resolved hair strands, physically plausible anatomy, and natural fabric texture.",
+      "Use real optical and sensor behavior: slightly imperfect focus, restrained detail, soft highlight rolloff, and faint image noise.",
+      "The person should feel approachable and camera-ready for a creator ad without looking beauty-filtered, airbrushed, synthetic, or impossibly perfect.",
+    ],
+    attribute_rules: [
+      "Match every identity anchor exactly without averaging, substituting, or adding conflicting visible traits.",
+      "Show visible details exactly when the framing can honestly reveal them.",
+      "A value of None means omit that optional feature; it never means missing normal human anatomy.",
+      "Use body, height, tattoos, and accessories only as supporting cues where this crop can show them naturally.",
+    ],
+    exclusions: [
+      "video game character",
+      "CGI",
+      "3D render",
+      "digital human",
+      "illustration",
+      "anime",
+      "concept art",
+      "plastic or waxy skin",
+      "beauty-filter smoothing",
+      "uncanny symmetry",
+      "over-sharpened pores",
+      "HDR glow",
+      "cinematic colored rim light",
+      "premium studio polish",
+      "virtual background",
+      "text",
+      "captions",
+      "interface chrome",
+      "logo",
+      "watermark",
+      "collage",
+      "extra people",
+      "duplicate face",
+      "cropped head",
+    ],
+  };
+
+  return JSON.stringify(prompt, null, 2);
 }

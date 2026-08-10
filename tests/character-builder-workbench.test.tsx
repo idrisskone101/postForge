@@ -51,14 +51,41 @@ assert.match(builderSource, /Save character/);
 assert.match(builderSource, /Import prompt or JSON/);
 assert.match(builderSource, /Copy attributes JSON/);
 assert.match(builderSource, /Copy prompt/);
-assert.match(builderSource, /Randomize identity/);
+assert.match(builderSource, /Randomize & render/);
 assert.match(builderSource, /Re-render preview/);
+assert.match(builderSource, /async function randomizeAndRender\(\)/);
+assert.match(
+  builderSource,
+  /const randomizedAttributes = randomCharacterAttributes\(\);[\s\S]*setAttributes\(randomizedAttributes\);[\s\S]*await renderPreview\(\s*randomizedAttributes/
+);
+assert.doesNotMatch(builderSource, /onClick=\{randomize\}/);
+assert.match(
+  builderSource,
+  /onClick=\{randomizeAndRender\}[\s\S]*disabled=\{saving \|\| rendering\}/
+);
 assert.match(builderSource, /saveCharacterAvatar/);
 assert.match(builderSource, /\/api\/avatars/);
 assert.match(builderSource, /\/api\/generate\/images/);
 assert.match(builderSource, /\/api\/jobs\//);
 assert.match(builderSource, /characterPreview: true/);
 assert.match(builderSource, /previewDirty/);
+assert.match(builderSource, /previewRequiresRender = previewIsPhotographic \|\| Boolean\(previewFileId\)/);
+assert.match(builderSource, /previewHasSource = Boolean\(/);
+assert.match(builderSource, /previewSaveBlocked = previewRequiresRender && !readyPreviewFingerprint/);
+assert.match(builderSource, /previewKind: readyPreviewFingerprint \? "photographic" : undefined/);
+assert.match(builderSource, /readyPreviewFingerprint\s*\? "Character saved and added to reusable avatars"/);
+assert.match(builderSource, /: "Character saved as a draft"/);
+assert.match(builderSource, /if \(readyPreviewFingerprint\)/);
+assert.match(builderSource, /Save as a draft without generating/);
+assert.match(builderSource, /useState<string \| null>\(null\)/);
+assert.match(builderSource, /savingRef\.current/);
+assert.match(builderSource, /Uses one paid image generation per click/);
+assert.match(builderSource, /aria-describedby="character-preview-generation-cost"/);
+assert.match(builderSource, /aria-busy=\{rendering\}/);
+assert.match(builderSource, /disabled=\{saving \|\| rendering \|\| missingEditRecord \|\| previewSaveBlocked\}/);
+assert.match(builderSource, /if \(!previewFileId\) return/);
+assert.match(builderSource, /onLoadError/);
+assert.match(builderSource, /video game character, CGI, 3D render/);
 assert.match(builderSource, /previewKind: "photographic"/);
 assert.match(builderSource, /Re-render preview so the saved photo matches/);
 assert.match(builderSource, /avatarProfile/);
@@ -106,8 +133,53 @@ assert.throws(
 
 const baselineFingerprint = characterRecipeFingerprint(DEFAULT_CHARACTER_ATTRIBUTES);
 const baselinePrompt = buildCharacterImagePrompt(DEFAULT_CHARACTER_ATTRIBUTES);
-assert.match(baselinePrompt, /photorealistic 3:4 studio character portrait/i);
-assert.match(baselinePrompt, /No text, captions, interface chrome, logos, watermark/i);
+const baselinePromptJson = JSON.parse(baselinePrompt);
+assert.equal(baselinePromptJson.schema, "postforge.character-image.v2");
+assert.match(
+  baselinePromptJson.objective.intended_use,
+  /short-form UGC, TikTok-style ads/i
+);
+assert.match(baselinePromptJson.objective.realism_target, /real person/i);
+assert.equal(
+  baselinePromptJson.character.identity_anchors.gender_presentation,
+  "Female"
+);
+assert.equal(baselinePromptJson.character.identity_anchors.hair_color, "Black");
+assert.equal(baselinePromptJson.character.identity_anchors.hair_style, "Low Bun");
+assert.equal(baselinePromptJson.character.identity_anchors.hair_highlights, "None");
+assert.match(baselinePromptJson.photographic_direction.capture, /smartphone/i);
+assert.match(baselinePromptJson.photographic_direction.lighting, /daylight/i);
+assert.ok(
+  baselinePromptJson.human_realism.some((rule: string) =>
+    /skin pores.*tiny blemishes/i.test(rule)
+  )
+);
+assert.ok(
+  baselinePromptJson.attribute_rules.some((rule: string) =>
+    /value of None means omit/i.test(rule)
+  )
+);
+for (const exclusion of [
+  "video game character",
+  "CGI",
+  "3D render",
+  "digital human",
+  "plastic or waxy skin",
+]) {
+  assert.ok(
+    baselinePromptJson.exclusions.includes(exclusion),
+    `structured prompt should exclude ${exclusion}`
+  );
+}
+for (const section of CHARACTER_ATTRIBUTE_SECTIONS) {
+  for (const group of section.groups) {
+    assert.equal(
+      baselinePromptJson.character.attribute_recipe[section.id][group.key],
+      DEFAULT_CHARACTER_ATTRIBUTES[group.key],
+      `${group.label} must keep its exact value in the structured JSON recipe`
+    );
+  }
+}
 
 for (const group of CHARACTER_ATTRIBUTE_SECTIONS.flatMap(
   (section) => section.groups

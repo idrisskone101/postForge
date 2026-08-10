@@ -27,11 +27,13 @@ export function CharacterPhoto({
   generatedFileId,
   alt = "Character portrait",
   className,
+  onLoadError,
 }: {
   avatarId?: string | null;
   generatedFileId?: string | null;
   alt?: string;
   className?: string;
+  onLoadError?: () => void;
 }) {
   const requestedSource = characterPhotoSource({ avatarId, generatedFileId });
   const [source, setSource] = useState(requestedSource);
@@ -53,7 +55,10 @@ export function CharacterPhoto({
         className="object-cover"
         unoptimized
         onError={() => {
-          if (source !== DEFAULT_CHARACTER_PHOTO) setSource(DEFAULT_CHARACTER_PHOTO);
+          if (source !== DEFAULT_CHARACTER_PHOTO) {
+            onLoadError?.();
+            setSource(DEFAULT_CHARACTER_PHOTO);
+          }
         }}
       />
     </span>

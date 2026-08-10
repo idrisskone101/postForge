@@ -179,3 +179,32 @@ try {
 } finally {
   Math.random = originalRandom;
 }
+
+const optionalTraitKeys = [
+  "freckles",
+  "moles",
+  "dimples",
+  "hairHighlights",
+  "glasses",
+  "jewelry",
+  "headwear",
+  "piercings",
+  "tattoos",
+  "beard",
+  "scars",
+  "birthmarks",
+  "teeth",
+];
+try {
+  Math.random = () => 0.1;
+  const uncluttered = randomCharacterAttributes();
+  for (const key of optionalTraitKeys) {
+    assert.equal(
+      uncluttered[key],
+      "None",
+      `${key} should support a weighted no-feature result`
+    );
+  }
+} finally {
+  Math.random = originalRandom;
+}
