@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import {
+  getDefaultVisionStoryModel,
+  getStoryModel,
   getStoryModelName,
   getStoryModelIdForOllamaId,
   resolveStoryModelOllamaId,
+  storyModelSupportsVision,
   STORY_MODELS,
   DEFAULT_MODEL,
 } from "../src/lib/ai/story-models";
@@ -30,6 +33,15 @@ function run() {
   // Display name fallback.
   assert.equal(getStoryModelName(undefined), "DeepSeek V4 Flash");
   assert.equal(getStoryModelName("glm-5.2"), "GLM 5.2");
+
+  // Vision capability flags drive reference-image analysis routing.
+  assert.equal(storyModelSupportsVision("deepseek-v4-flash"), false);
+  assert.equal(storyModelSupportsVision("qwen3.5-vl"), true);
+  assert.equal(storyModelSupportsVision(undefined), false);
+  assert.equal(getStoryModel("qwen3.5-vl")?.vision, true);
+  const visionDefault = getDefaultVisionStoryModel();
+  assert.ok(visionDefault, "catalog must include a vision-capable model");
+  assert.equal(visionDefault.vision, true);
 
   console.log("story models tests passed");
 }

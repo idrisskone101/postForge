@@ -5,6 +5,7 @@ import {
   readModelAvailability,
   saveModelAvailability,
 } from "@/lib/ai/model-availability";
+import { getStoryModel } from "@/lib/ai/story-models";
 import {
   isSameOriginMutation,
   rejectCrossOriginMutation,
@@ -43,6 +44,9 @@ export async function PUT(request: NextRequest) {
       enabledModelIds: candidate.enabledModelIds,
       defaultImageModelId: candidate.defaultImageModelId,
       defaultVideoModelId: candidate.defaultVideoModelId,
+      defaultIntelligenceModelId: getStoryModel(candidate.defaultIntelligenceModelId)
+        ? candidate.defaultIntelligenceModelId
+        : null,
     });
     return NextResponse.json({ availability: saved });
   } catch (error) {

@@ -42,6 +42,11 @@ import {
   fetchWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
+import {
+  getDefaultVisionStoryModel,
+  getStoryModel,
+  STORY_MODELS,
+} from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
 
 type SettingsRecord = {
@@ -906,6 +911,7 @@ type ModelsCatalogResponse = {
     enabledModelIds: string[];
     defaultImageModelId: string | null;
     defaultVideoModelId: string | null;
+    defaultIntelligenceModelId: string | null;
   } | null;
 };
 
@@ -914,6 +920,7 @@ function ModelsPanel() {
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
   const [defaultImageModelId, setDefaultImageModelId] = useState("");
   const [defaultVideoModelId, setDefaultVideoModelId] = useState("");
+  const [defaultIntelligenceModelId, setDefaultIntelligenceModelId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -938,6 +945,11 @@ function ModelsPanel() {
         setDefaultVideoModelId(
           data.availability?.defaultVideoModelId ?? data.defaults.video
         );
+        setDefaultIntelligenceModelId(
+          data.availability?.defaultIntelligenceModelId ??
+            STORY_MODELS[0]?.id ??
+            ""
+        );
       } catch (cause) {
         if (!cancelled)
           setError(
@@ -955,6 +967,9 @@ function ModelsPanel() {
 
   const imageModels = catalog?.models.filter((model) => model.type === "image") ?? [];
   const videoModels = catalog?.models.filter((model) => model.type === "video") ?? [];
+  const selectedIntelligenceModel =
+    getStoryModel(defaultIntelligenceModelId) ?? STORY_MODELS[0];
+  const visionFallbackModel = getDefaultVisionStoryModel();
 
   const toggleModel = (modelId: string) => {
     setEnabledModelIds((current) => {
@@ -989,6 +1004,7 @@ function ModelsPanel() {
             enabledModelIds,
             defaultImageModelId: nextImageDefault,
             defaultVideoModelId: nextVideoDefault,
+            defaultIntelligenceModelId: defaultIntelligenceModelId || null,
           },
         }),
       });
@@ -1079,6 +1095,37 @@ function ModelsPanel() {
 
       <div className="pf-card mt-6 max-w-[760px] space-y-5 p-5">
         <div>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-[13px] font-semibold">Intelligence model</h3>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                One Ollama Cloud model runs every reasoning feature: slideshow stories, prompt improvement, and reference analysis.
+              </p>
+            </div>
+            <select
+              aria-label="Default intelligence model"
+              value={defaultIntelligenceModelId}
+              onChange={(event) => setDefaultIntelligenceModelId(event.target.value)}
+              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+            >
+              {STORY_MODELS.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.vision ? `${model.name} · Vision` : model.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedIntelligenceModel && (
+            <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
+              {selectedIntelligenceModel.description}
+              {selectedIntelligenceModel.vision !== true && visionFallbackModel
+                ? ` Reference image analysis will use ${visionFallbackModel.name} because ${selectedIntelligenceModel.name} cannot read images.`
+                : ""}
+            </p>
+          )}
+        </div>
+
+        <div className="border-t border-border pt-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-[13px] font-semibold">Image models</h3>

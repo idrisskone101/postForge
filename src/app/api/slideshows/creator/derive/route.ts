@@ -15,9 +15,10 @@ import { SlideshowApiError } from "@/lib/slideshow/errors";
  *
  * Derive a Slideshow Creator aesthetic JSON template from reference images.
  * Reference images may be raw https URLs or PostForge Collection assets.
- * Requires a configured Gemini credential (vision). Never falls back to a
- * generic template — if the vision credential is missing, the caller sees an
- * explicit error so no synthetic/demo direction is ever produced.
+ * Requires a configured Ollama credential and a vision-capable intelligence
+ * model. Never falls back to a generic template — if the credential is
+ * missing, the caller sees an explicit error so no synthetic/demo direction
+ * is ever produced.
  */
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
     const status = error instanceof SlideshowApiError
       ? error.status
       : error instanceof Error &&
-          /Gemini|template|reference|credential|API key/i.test(message)
+          /Ollama|Gemini|template|reference|credential|API key|Connect/i.test(message)
         ? 400
         : 500;
     return NextResponse.json(

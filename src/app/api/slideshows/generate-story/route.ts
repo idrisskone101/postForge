@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlideshowStory } from "@/lib/ai/slideshow-story";
-import { resolveStoryModelOllamaId } from "@/lib/ai/story-models";
+import { getStoryModel, resolveStoryModelOllamaId } from "@/lib/ai/story-models";
 import { badRequest } from "@/lib/slideshow/errors";
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
 import {
@@ -17,6 +17,11 @@ export async function POST(request: NextRequest) {
     if (includeCta !== undefined && typeof includeCta !== "boolean") {
       badRequest("includeCta must be a boolean");
     }
+    const requestedModel = optionalString(body, "model", { max: 80 });
+    const modelOverride =
+      requestedModel && getStoryModel(requestedModel)
+        ? resolveStoryModelOllamaId(requestedModel)
+        : undefined;
     const result = await generateSlideshowStory(
       {
         idea: requiredString(body, "idea", { max: 2_000 }),
@@ -26,7 +31,7 @@ export async function POST(request: NextRequest) {
         audience: optionalString(body, "audience", { max: 300 }),
         includeCta: includeCta as boolean | undefined,
       },
-      resolveStoryModelOllamaId(optionalString(body, "model", { max: 80 })),
+      modelOverride,
     );
     const slides = result.slides.map((slide, position) => ({
       position,

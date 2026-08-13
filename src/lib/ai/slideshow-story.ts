@@ -2,7 +2,7 @@ const MIN_SLIDES = 1;
 const MAX_SLIDES = 20;
 const OLLAMA_CHAT_URL = "https://ollama.com/v1/chat/completions";
 
-import { DEFAULT_MODEL } from "./story-models";
+import { getDefaultIntelligenceModel } from "./model-availability";
 
 export type SlideshowStoryRole = "hook" | "body" | "cta";
 
@@ -178,9 +178,11 @@ async function generateWithOllama(
   const { getProviderCredential } = await import("@/lib/providers/credentials");
   const storedKey = await getProviderCredential("ollama");
   const apiKey = storedKey?.trim() ?? process.env.OLLAMA_API_KEY?.trim();
-  if (!apiKey) throw new Error("OLLAMA_API_KEY is not configured.");
+  if (!apiKey) {
+    throw new Error("Connect Ollama in Settings to generate stories with your intelligence model.");
+  }
 
-  const model = modelId?.trim() || process.env.OLLAMA_SLIDESHOW_MODEL?.trim() || DEFAULT_MODEL;
+  const model = modelId?.trim() || (await getDefaultIntelligenceModel()).ollamaId;
   const response = await fetch(OLLAMA_CHAT_URL, {
     method: "POST",
     headers: {

@@ -10,6 +10,8 @@ export interface StoryModel {
   ollamaId: string;
   /** Short description shown in the picker. */
   description: string;
+  /** Whether the model accepts image inputs (reference analysis). */
+  vision?: boolean;
 }
 
 /**
@@ -55,9 +57,37 @@ export const STORY_MODELS: StoryModel[] = [
     ollamaId: "gpt-oss:120b",
     description: "Balanced quality and speed.",
   },
+  {
+    id: "qwen3.5-vl",
+    name: "Qwen 3.5 VL",
+    ollamaId: "qwen3.5-vl",
+    description: "Vision-capable; analyzes reference images.",
+    vision: true,
+  },
+  {
+    id: "gemma4",
+    name: "Gemma 4",
+    ollamaId: "gemma4",
+    description: "Lightweight multimodal generalist.",
+    vision: true,
+  },
 ];
 
 const STORY_MODEL_BY_ID = new Map(STORY_MODELS.map((m) => [m.id, m]));
+
+export function getStoryModel(pickerId: string | null | undefined): StoryModel | undefined {
+  return pickerId ? STORY_MODEL_BY_ID.get(pickerId) : undefined;
+}
+
+export function storyModelSupportsVision(pickerId: string | null | undefined): boolean {
+  return getStoryModel(pickerId)?.vision === true;
+}
+
+/** First vision-capable model in the catalog; used for reference-image analysis
+ *  when the workspace's chosen intelligence model cannot accept image inputs. */
+export function getDefaultVisionStoryModel(): StoryModel | undefined {
+  return STORY_MODELS.find((model) => model.vision === true);
+}
 
 /** Resolve a picker id to its Ollama model id, falling back to the default. */
 export function resolveStoryModelOllamaId(pickerId: string | null | undefined): string {

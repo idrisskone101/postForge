@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Prompt improvement failed. Your original prompt is unchanged.";
-    const status = /Connect Gemini/i.test(message)
+    const status = /Connect Ollama/i.test(message)
       ? 503
       : /rough prompt|1,500/i.test(message)
         ? 400

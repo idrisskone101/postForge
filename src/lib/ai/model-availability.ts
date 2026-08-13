@@ -1,5 +1,6 @@
 import { readWorkspaceFeatureRecords, upsertWorkspaceFeatureRecord } from "@/lib/workspace-feature-store";
 import { getAllModels, getModel } from "./models";
+import { getDefaultVisionStoryModel, getStoryModel, STORY_MODELS, type StoryModel } from "./story-models";
 import type { ModelDefinition } from "./types";
 
 export const MODEL_AVAILABILITY_RECORD_ID = "model-availability";
@@ -9,6 +10,7 @@ export interface ModelAvailabilityState {
   enabledModelIds: string[];
   defaultImageModelId: string | null;
   defaultVideoModelId: string | null;
+  defaultIntelligenceModelId: string | null;
   updatedAt: string;
 }
 
@@ -49,6 +51,7 @@ function defaultAvailabilityState(): ModelAvailabilityState {
     enabledModelIds: getAllModels().map((model) => model.id),
     defaultImageModelId: DEFAULT_IMAGE_MODEL,
     defaultVideoModelId: DEFAULT_VIDEO_MODEL,
+    defaultIntelligenceModelId: STORY_MODELS[0]?.id ?? null,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -66,6 +69,9 @@ export function isModelAvailabilityState(
       typeof record.defaultImageModelId === "string") &&
     (record.defaultVideoModelId === null ||
       typeof record.defaultVideoModelId === "string") &&
+    (record.defaultIntelligenceModelId === undefined ||
+      record.defaultIntelligenceModelId === null ||
+      typeof record.defaultIntelligenceModelId === "string") &&
     (record.updatedAt === undefined || typeof record.updatedAt === "string")
   );
 }
@@ -96,12 +102,16 @@ export async function readModelAvailability(): Promise<ModelAvailabilityState> {
       saved.defaultVideoModelId && validIds.has(saved.defaultVideoModelId)
         ? saved.defaultVideoModelId
         : null;
+    const defaultIntelligenceModelId = getStoryModel(saved.defaultIntelligenceModelId)
+      ? saved.defaultIntelligenceModelId
+      : null;
 
     const resolved: ModelAvailabilityState = {
       ...saved,
       enabledModelIds,
       defaultImageModelId,
       defaultVideoModelId,
+      defaultIntelligenceModelId,
     };
     cacheAvailability(resolved);
     return resolved;
@@ -182,4 +192,27 @@ export async function isModelEnabled(modelId: string): Promise<boolean> {
   if (!getModel(modelId)) return false;
   const availability = await readModelAvailability();
   return availability.enabledModelIds.includes(modelId);
+}
+
+/**
+ * The workspace's chosen reasoning model (Ollama Cloud). Powers every
+ * intelligence surface: slideshow stories, prompt improvement, and any
+ * per-request override that was left unset.
+ */
+export async function getDefaultIntelligenceModel(): Promise<StoryModel> {
+  const availability = await readModelAvailability();
+  const preferred = getStoryModel(availability.defaultIntelligenceModelId);
+  return preferred ?? STORY_MODELS[0];
+}
+
+/**
+ * Vision variant of the intelligence default. Reference-image analysis needs
+ * image inputs, so a text-only workspace default falls back to the first
+ * vision-capable catalog model.
+ */
+export async function getDefaultVisionIntelligenceModel(): Promise<StoryModel | undefined> {
+  const availability = await readModelAvailability();
+  const preferred = getStoryModel(availability.defaultIntelligenceModelId);
+  if (preferred?.vision === true) return preferred;
+  return getDefaultVisionStoryModel();
 }

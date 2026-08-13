@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Archive,
   ArrowRight,
@@ -32,7 +32,7 @@ import type { PinterestImportResult } from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
 
 import { SlidePreview, VisualTile } from "./slide-preview";
-import { STORY_MODELS } from "@/lib/ai/story-models";
+import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import type {
   SlideshowProject,
   SlideshowSection,
@@ -257,9 +257,32 @@ export function CreateView({
   const [idea, setIdea] = useState("");
   const [slideCount, setSlideCount] = useState(7);
   const [language, setLanguage] = useState("English");
-  const [model, setModel] = useState(STORY_MODELS[0]?.id ?? "");
+  const [model, setModel] = useState("");
+  const [workspaceModelName, setWorkspaceModelName] = useState<string | null>(null);
   const [includeCta, setIncludeCta] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const response = await fetch("/api/settings/models");
+        if (!response.ok) return;
+        const data = (await response.json()) as {
+          availability?: { defaultIntelligenceModelId?: string | null };
+        };
+        if (cancelled) return;
+        const resolved = getStoryModel(data.availability?.defaultIntelligenceModelId);
+        if (resolved) setWorkspaceModelName(resolved.name);
+      } catch {
+        // The picker still works; the workspace default label just stays generic.
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const submit = async () => {
     if (idea.trim().length < 3 || generating) return;
@@ -270,7 +293,7 @@ export function CreateView({
         slideCount: Math.min(20, Math.max(1, Math.round(slideCount))),
         language: language.trim() || "English",
         includeCta,
-        model,
+        model: model || undefined,
       });
       setIdea("");
     } catch (submitError) {
@@ -394,9 +417,18 @@ export function CreateView({
                   value={model}
                   onChange={(event) => setModel(event.target.value)}
                   aria-label="Story model"
-                  title={STORY_MODELS.find((m) => m.id === model)?.description}
+                  title={
+                    model
+                      ? STORY_MODELS.find((m) => m.id === model)?.description
+                      : "Uses the intelligence model chosen in Settings"
+                  }
                   className="h-8 max-w-[180px] appearance-none rounded-lg border border-border bg-card pl-2.5 pr-7 text-[11px] font-medium text-foreground outline-none focus:border-[var(--pf-orange)]"
                 >
+                  <option value="">
+                    {workspaceModelName
+                      ? `Workspace default (${workspaceModelName})`
+                      : "Workspace default"}
+                  </option>
                   {STORY_MODELS.map((option) => (
                     <option key={option.id} value={option.id}>
                       {option.name}

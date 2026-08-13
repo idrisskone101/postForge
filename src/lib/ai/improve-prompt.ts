@@ -1,6 +1,7 @@
+import { getDefaultIntelligenceModel } from "@/lib/ai/model-availability";
 import { getProviderCredential } from "@/lib/providers/credentials";
 
-const DEFAULT_PROMPT_MODEL = "gemini-3.6-flash";
+const OLLAMA_CHAT_URL = "https://ollama.com/v1/chat/completions";
 const MAX_PROMPT_LENGTH = 1_500;
 
 export interface ImproveGenerationPromptRequest {
@@ -38,18 +39,18 @@ function parseImprovedPrompt(text: string) {
   try {
     value = JSON.parse(stripMarkdownFence(text));
   } catch {
-    throw new Error("Gemini returned an invalid prompt response. Try again.");
+    throw new Error("The intelligence model returned an invalid prompt response. Try again.");
   }
   const prompt =
     value && typeof value === "object" && !Array.isArray(value)
       ? (value as { prompt?: unknown }).prompt
       : undefined;
   if (typeof prompt !== "string" || !prompt.trim()) {
-    throw new Error("Gemini returned no improved prompt. Try again.");
+    throw new Error("The intelligence model returned no improved prompt. Try again.");
   }
   const normalized = prompt.replace(/\s+/g, " ").trim();
   if (normalized.length > MAX_PROMPT_LENGTH) {
-    throw new Error("Gemini returned a prompt longer than 1,500 characters. Try again.");
+    throw new Error("The intelligence model returned a prompt longer than 1,500 characters. Try again.");
   }
   return normalized;
 }
@@ -109,18 +110,16 @@ export function buildPromptImprovementSystemInstruction(
 }
 
 async function defaultDependencies(): Promise<ImproveGenerationPromptDependencies> {
-  const storedKey = await getProviderCredential("gemini");
-  const apiKey = storedKey?.trim() ?? process.env.GEMINI_API_KEY?.trim();
+  const storedKey = await getProviderCredential("ollama");
+  const apiKey = storedKey?.trim() ?? process.env.OLLAMA_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "Connect Gemini in Settings before improving prompts. Your original prompt is unchanged."
+      "Connect Ollama in Settings before improving prompts. Your original prompt is unchanged."
     );
   }
+  const intelligence = await getDefaultIntelligenceModel();
   return {
-    model:
-      process.env.GEMINI_PROMPT_MODEL?.trim() ||
-      process.env.GEMINI_SLIDESHOW_MODEL?.trim() ||
-      DEFAULT_PROMPT_MODEL,
+    model: intelligence.ollamaId,
     apiKey,
     fetchImpl: globalThis.fetch,
   };
@@ -137,47 +136,39 @@ export async function improveGenerationPrompt(
   }
 
   const resolvedDependencies = dependencies ?? (await defaultDependencies());
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-    resolvedDependencies.model
-  )}:generateContent`;
-  const response = await resolvedDependencies.fetchImpl(endpoint, {
+  const response = await resolvedDependencies.fetchImpl(OLLAMA_CHAT_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-goog-api-key": resolvedDependencies.apiKey,
+      Authorization: `Bearer ${resolvedDependencies.apiKey}`,
     },
     body: JSON.stringify({
-      contents: [
+      model: resolvedDependencies.model,
+      messages: [
         {
-          role: "user",
-          parts: [{ text: originalPrompt }],
+          role: "system",
+          content: buildPromptImprovementSystemInstruction(request),
         },
+        { role: "user", content: originalPrompt },
       ],
-      system_instruction: {
-        parts: [{ text: buildPromptImprovementSystemInstruction(request) }],
-      },
-      generationConfig: {
-        temperature: 0.45,
-        responseMimeType: "application/json",
-      },
+      temperature: 0.45,
+      stream: false,
     }),
     signal: AbortSignal.timeout(30_000),
   });
 
   if (!response.ok) {
     throw new Error(
-      `Gemini prompt improvement failed with HTTP ${response.status}. Your original prompt is unchanged.`
+      `Prompt improvement failed with HTTP ${response.status}. Your original prompt is unchanged.`
     );
   }
 
   const completion = (await response.json()) as {
-    candidates?: Array<{
-      content?: { parts?: Array<{ text?: string }> };
-    }>;
+    choices?: Array<{ message?: { content?: string } }>;
   };
-  const text = completion.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = completion.choices?.[0]?.message?.content;
   if (!text) {
-    throw new Error("Gemini returned no improved prompt. Your original prompt is unchanged.");
+    throw new Error("The intelligence model returned no improved prompt. Your original prompt is unchanged.");
   }
 
   return {

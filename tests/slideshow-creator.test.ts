@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   buildSlideshowCreatorPrompt,
+  deriveTemplateFromReferences,
   parseSlideshowAestheticTemplate,
   planSlideshowCreatorScenes,
   slideshowCreatorLimits,
@@ -215,4 +216,79 @@ assert.equal(JSON.parse(square).aspect_ratio, "1:1");
 assert.equal(slideshowCreatorLimits.maxSlides, 20);
 assert.equal(slideshowCreatorLimits.maxReferenceImages, 14);
 
-console.log("slideshow creator tests passed");
+async function testDeriveTemplateFromReferences() {
+  let capturedUrl = "";
+  let capturedBody = "";
+  let capturedAuth = "";
+  const result = await deriveTemplateFromReferences(
+    [
+      "https://cdn.example.com/ref-1.jpg",
+      "https://cdn.example.com/ref-2.jpg",
+      "not-a-url",
+    ],
+    {
+      model: "qwen3.5-vl",
+      apiKey: "test-key",
+      fetchImpl: async (input, init) => {
+        capturedUrl = String(input);
+        capturedBody = String(init?.body ?? "");
+        capturedAuth = String(
+          (init?.headers as Record<string, string>)?.Authorization ?? "",
+        );
+        return new Response(
+          JSON.stringify({
+            choices: [{ message: { content: JSON.stringify(templateInput) } }],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      },
+    },
+  );
+
+  assert.equal(capturedUrl, "https://ollama.com/v1/chat/completions");
+  assert.equal(capturedAuth, "Bearer test-key");
+  const payload = JSON.parse(capturedBody);
+  assert.equal(payload.model, "qwen3.5-vl");
+  assert.equal(payload.stream, false);
+  const userMessage = payload.messages.find(
+    (message: { role: string }) => message.role === "user",
+  );
+  const imageParts = userMessage.content.filter(
+    (part: { type: string }) => part.type === "image_url",
+  );
+  assert.equal(imageParts.length, 2, "non-HTTPS URLs must be filtered out");
+  assert.equal(imageParts[0].image_url.url, "https://cdn.example.com/ref-1.jpg");
+  assert.equal(result.model, "qwen3.5-vl");
+  assert.equal(result.referenceCount, 2);
+  assert.equal(
+    result.template.aesthetic.core_vibe,
+    "quiet luxury, understated confidence",
+  );
+
+  await assert.rejects(
+    () =>
+      deriveTemplateFromReferences(["https://cdn.example.com/ref-1.jpg"], {
+        model: "qwen3.5-vl",
+        apiKey: "test-key",
+        fetchImpl: async () => new Response("bad request", { status: 400 }),
+      }),
+    /HTTP 400/,
+  );
+
+  await assert.rejects(
+    () =>
+      deriveTemplateFromReferences([], {
+        model: "qwen3.5-vl",
+        apiKey: "test-key",
+        fetchImpl: globalThis.fetch,
+      }),
+    /At least one reference image/,
+  );
+}
+
+testDeriveTemplateFromReferences()
+  .then(() => console.log("slideshow creator tests passed"))
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });

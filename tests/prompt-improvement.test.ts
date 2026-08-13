@@ -146,17 +146,13 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
       capturedBody = String(init?.body ?? "");
       return new Response(
         JSON.stringify({
-          candidates: [
+          choices: [
             {
-              content: {
-                parts: [
-                  {
-                    text: JSON.stringify({
-                      prompt:
-                        "Opening frame: the selected character enters a sunlit kitchen, then lifts the bottle toward camera as a slow handheld push-in settles on the label.",
-                    }),
-                  },
-                ],
+              message: {
+                content: JSON.stringify({
+                  prompt:
+                    "Opening frame: the selected character enters a sunlit kitchen, then lifts the bottle toward camera as a slow handheld push-in settles on the label.",
+                }),
               },
             },
           ],
@@ -167,7 +163,8 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
   });
   assert.equal(result.model, "gemini-test-flash");
   assert.match(result.prompt, /Opening frame/);
-  assert.match(capturedUrl, /gemini-test-flash:generateContent/);
+  assert.match(capturedUrl, /ollama\.com\/v1\/chat\/completions/);
+  assert.match(capturedBody, /"model":"gemini-test-flash"/);
   assert.match(capturedBody, /girl walks into kitchen and shows bottle/);
   assert.match(capturedBody, /Native audio is disabled/);
 
@@ -199,7 +196,7 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
   assert.match(formSource, /\/settings\?tab=api-keys/);
   assert.match(routeSource, /getModel\(modelId\)/);
   assert.match(routeSource, /isSameOriginMutation\(request\)/);
-  assert.match(routeSource, /Connect Gemini\/i\.test\(message\)[\s\S]*503/);
+  assert.match(routeSource, /Connect Ollama\/i\.test\(message\)[\s\S]*503/);
   assert.match(routeSource, /hasCharacterReference/);
   assert.match(routeSource, /hasVisualReference/);
   assert.match(routeSource, /Cache-Control/);

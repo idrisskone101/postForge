@@ -8,6 +8,7 @@ import {
   mapAspectRatioToFalFormat,
 } from "./models";
 import { getProviderCredential } from "@/lib/providers/credentials";
+import { getDefaultVisionIntelligenceModel } from "./model-availability";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
@@ -716,10 +717,10 @@ async function queueCreatorSlideImage(input: QueueCreatorSlideInput) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Reference-image → template derivation (Gemini vision)               */
+/* Reference-image → template derivation (Ollama vision)               */
 /* ------------------------------------------------------------------ */
 
-const DEFAULT_VISION_MODEL = "gemini-3.6-flash";
+const OLLAMA_CHAT_URL = "https://ollama.com/v1/chat/completions";
 
 function stripMarkdownFence(text: string) {
   const trimmed = text.trim();
@@ -763,15 +764,21 @@ type DeriveDependencies = {
 };
 
 async function defaultDeriveDependencies(): Promise<DeriveDependencies> {
-  const storedKey = await getProviderCredential("gemini");
-  const apiKey = storedKey?.trim() ?? process.env.GEMINI_API_KEY?.trim();
+  const storedKey = await getProviderCredential("ollama");
+  const apiKey = storedKey?.trim() ?? process.env.OLLAMA_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "A Gemini key is required to derive a visual template from reference images. Connect Gemini in Settings, then retry."
+      "An Ollama connection is required to derive a visual template from reference images. Connect Ollama in Settings, then retry."
+    );
+  }
+  const visionModel = await getDefaultVisionIntelligenceModel();
+  if (!visionModel) {
+    throw new Error(
+      "No vision-capable intelligence model is available. Add one to the story model catalog."
     );
   }
   return {
-    model: process.env.GEMINI_SLIDESHOW_MODEL?.trim() || DEFAULT_VISION_MODEL,
+    model: visionModel.ollamaId,
     apiKey,
     fetchImpl: globalThis.fetch,
   };
@@ -802,48 +809,49 @@ export async function deriveTemplateFromReferences(
     throw new Error("At least one reference image is required.");
   }
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-    resolvedDependencies.model
-  )}:generateContent`;
-  const parts = urls.map((url) => ({ image_url: { url } }));
+  const endpoint = OLLAMA_CHAT_URL;
+  const imageParts = urls.map((url) => ({
+    type: "image_url" as const,
+    image_url: { url },
+  }));
   const response = await resolvedDependencies.fetchImpl(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-goog-api-key": resolvedDependencies.apiKey,
+      Authorization: `Bearer ${resolvedDependencies.apiKey}`,
     },
     body: JSON.stringify({
-      contents: [
+      model: resolvedDependencies.model,
+      messages: [
+        { role: "system", content: DERIVE_SYSTEM_PROMPT },
         {
           role: "user",
-          parts: [
-            { text: "Analyze these reference images and return the aesthetic template JSON." },
-            ...parts,
+          content: [
+            {
+              type: "text",
+              text: "Analyze these reference images and return the aesthetic template JSON.",
+            },
+            ...imageParts,
           ],
         },
       ],
-      system_instruction: { parts: [{ text: DERIVE_SYSTEM_PROMPT }] },
-      generationConfig: {
-        temperature: 0.6,
-        responseMimeType: "application/json",
-      },
+      temperature: 0.6,
+      stream: false,
     }),
     signal: AbortSignal.timeout(60_000),
   });
 
   if (!response.ok) {
     throw new Error(
-      `Gemini template derivation failed with HTTP ${response.status}.`
+      `Template derivation failed with HTTP ${response.status}.`
     );
   }
 
   const completion = (await response.json()) as {
-    candidates?: Array<{
-      content?: { parts?: Array<{ text?: string }> };
-    }>;
+    choices?: Array<{ message?: { content?: string } }>;
   };
-  const text = completion.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("Gemini returned no template.");
+  const text = completion.choices?.[0]?.message?.content;
+  if (!text) throw new Error("The vision model returned no template.");
 
   const template = extractTemplate(text);
   return {
