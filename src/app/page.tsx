@@ -11,7 +11,7 @@ export default async function HomePage() {
   const now = new Date();
   const activeJobCutoff = getHomeActiveJobCutoff(now);
   const weekCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const [todaySummary, monthSummary, recentJobs, activeJobs, completedThisWeek, pendingReviewCount, recentMediaFiles] =
+  const [todaySummary, monthSummary, recentJobs, activeJobs, activeJobCount, completedThisWeek, pendingReviewCount, recentMediaFiles] =
     await Promise.all([
       getCostSummary({ period: "today" }),
       getCostSummary({ period: "month" }),
@@ -27,6 +27,16 @@ export default async function HomePage() {
         },
         orderBy: { createdAt: "desc" },
         take: 5,
+      }),
+      prisma.generationJob.count({
+        where: {
+          status: { in: ["queued", "processing"] },
+          OR: [
+            { createdAt: { gte: activeJobCutoff } },
+            { startedAt: { gte: activeJobCutoff } },
+            { lockExpiresAt: { gte: now } },
+          ],
+        },
       }),
       prisma.generationJob.count({
         where: { status: "completed", completedAt: { gte: weekCutoff } },
@@ -145,6 +155,7 @@ export default async function HomePage() {
       todaySummary={todaySummary}
       monthSummary={monthSummary}
       activeJobs={activeHomeJobs}
+      activeJobCount={activeJobCount}
       recentJobs={visibleRecentJobs}
       completedThisWeek={completedThisWeek}
       pendingReviewCount={pendingReviewCount}

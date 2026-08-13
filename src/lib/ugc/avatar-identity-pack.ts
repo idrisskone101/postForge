@@ -2,8 +2,10 @@ import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
 import { storage, downloadFromUrl } from "@/lib/storage";
 import { subscribeToGeneration, uploadToFalStorage } from "@/lib/ai/fal-client";
-import { getModel } from "@/lib/ai/models";
+import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
 import { getDefaultEditCapableImageModel } from "@/lib/ai/model-availability";
+import { completeJob, createJob, failJob, startJob } from "@/lib/jobs/queue";
+import { logCost } from "@/lib/costs/tracker";
 import { Prisma } from "@/generated/prisma/client";
 import type { AvatarIdentityImage, AvatarIdentityPack } from "@/generated/prisma/client";
 
@@ -213,13 +215,14 @@ export async function ensureAvatarIdentityPack(
     }
   }
 
+  const imageModel = await getDefaultEditCapableImageModel();
   let pack: PackWithImages;
   try {
     pack = await prisma.avatarIdentityPack.create({
       data: {
         avatarId,
         status: "queued",
-        imageModel: await getDefaultEditCapableImageModel(),
+        imageModel,
       },
       include: { images: true },
     });
@@ -237,7 +240,30 @@ export async function ensureAvatarIdentityPack(
     throw error;
   }
 
-  executeAvatarIdentityPackGeneration(pack.id).catch((error) => {
+  let activityJobId: string;
+  try {
+    const activityJob = await createJob({
+      type: "image",
+      model: imageModel,
+      prompt: `Prepare identity references for ${avatar.name}`,
+      input: {
+        kind: "avatar-identity-pack",
+        avatarId,
+        identityPackId: pack.id,
+        roles: [...ALL_IDENTITY_ROLES],
+      },
+      estimatedCost: calculateEstimatedCost(imageModel, {
+        numImages: ALL_IDENTITY_ROLES.length,
+      }),
+      tags: ["avatar-identity", `avatar:${avatarId}`, `identity-pack:${pack.id}`],
+    });
+    activityJobId = activityJob.id;
+  } catch (error) {
+    await prisma.avatarIdentityPack.delete({ where: { id: pack.id } }).catch(() => {});
+    throw error;
+  }
+
+  executeAvatarIdentityPackGeneration(pack.id, activityJobId).catch((error) => {
     console.error(`[avatar-identity-pack] Failed to generate pack ${pack.id}:`, error);
   });
 
@@ -292,6 +318,9 @@ function startHairstyleBackfill(pack: PackWithImages): boolean {
 }
 
 async function runHairstyleBackfill(packId: string): Promise<void> {
+  let activityJobId: string | null = null;
+  const startedAt = Date.now();
+
   try {
     const pack = await prisma.avatarIdentityPack.findUnique({
       where: { id: packId },
@@ -306,12 +335,36 @@ async function runHairstyleBackfill(packId: string): Promise<void> {
       return;
     }
 
+    const activityJob = await createJob({
+      type: "image",
+      model: pack.imageModel,
+      prompt: `Prepare hairstyle references for ${pack.avatar.name}`,
+      input: {
+        kind: "avatar-identity-hairstyles",
+        avatarId: pack.avatarId,
+        identityPackId: pack.id,
+        roles: missing,
+      },
+      estimatedCost: calculateEstimatedCost(pack.imageModel, {
+        numImages: missing.length,
+      }),
+      tags: [
+        "avatar-identity-hairstyles",
+        `avatar:${pack.avatarId}`,
+        `identity-pack:${pack.id}`,
+      ],
+    });
+    activityJobId = activityJob.id;
+    await startJob(activityJobId);
+
     const avatarFullPath = await storage.ensureLocalFile(pack.avatar.localPath);
     const avatarUrl = await uploadToFalStorage(avatarFullPath);
+    const generatedRoles: string[] = [];
 
     for (const role of missing) {
       try {
         await generateIdentityRoleImage(packId, avatarUrl, role);
+        generatedRoles.push(role);
       } catch (error) {
         console.warn(
           `[avatar-identity-pack] Failed hairstyle backfill ${role} for pack ${packId}:`,
@@ -319,6 +372,33 @@ async function runHairstyleBackfill(packId: string): Promise<void> {
         );
       }
     }
+
+    if (generatedRoles.length === 0) {
+      throw new Error("No hairstyle reference images could be generated");
+    }
+
+    const cost = calculateEstimatedCost(pack.imageModel, {
+      numImages: generatedRoles.length,
+    });
+    await completeJob(
+      activityJobId,
+      { kind: "avatar-identity-hairstyles", identityPackId: pack.id, generatedRoles },
+      Date.now() - startedAt
+    );
+    await logCost(activityJobId, pack.imageModel, "image", cost, {
+      identityPackId: pack.id,
+      avatarId: pack.avatarId,
+      roles: generatedRoles,
+    }).catch((error) => {
+      console.error(`[avatar-identity-pack] Failed to log backfill cost ${activityJobId}:`, error);
+    });
+  } catch (error) {
+    if (activityJobId) {
+      const message =
+        error instanceof Error ? error.message : "Failed to generate hairstyle references";
+      await failJob(activityJobId, message).catch(console.error);
+    }
+    throw error;
   } finally {
     hairstyleBackfillsInProgress.delete(packId);
   }
@@ -511,28 +591,38 @@ async function generateIdentityRoleImage(
   });
 }
 
-async function executeAvatarIdentityPackGeneration(packId: string): Promise<void> {
+async function executeAvatarIdentityPackGeneration(
+  packId: string,
+  activityJobId: string
+): Promise<void> {
   const pack = await prisma.avatarIdentityPack.findUnique({
     where: { id: packId },
     include: { avatar: true },
   });
 
   if (!pack) {
+    await failJob(activityJobId, "Identity pack was removed before generation").catch(console.error);
     return;
   }
 
-  await prisma.avatarIdentityPack.update({
-    where: { id: packId },
-    data: { status: "processing", error: null },
-  });
+  const startedAt = Date.now();
+  await Promise.all([
+    prisma.avatarIdentityPack.update({
+      where: { id: packId },
+      data: { status: "processing", error: null },
+    }),
+    startJob(activityJobId),
+  ]);
 
   try {
     const avatarFullPath = await storage.ensureLocalFile(pack.avatar.localPath);
     const avatarUrl = await uploadToFalStorage(avatarFullPath);
+    const generatedRoles: string[] = [];
 
     // Core angle roles are the identity anchor — a failure here fails the pack.
     for (const role of IDENTITY_IMAGE_ROLES) {
       await generateIdentityRoleImage(packId, avatarUrl, role);
+      generatedRoles.push(role);
     }
 
     // Hairstyle variants are additive options. Generate them best-effort so a
@@ -540,6 +630,7 @@ async function executeAvatarIdentityPackGeneration(packId: string): Promise<void
     for (const role of HAIRSTYLE_VARIANT_ROLES) {
       try {
         await generateIdentityRoleImage(packId, avatarUrl, role);
+        generatedRoles.push(role);
       } catch (variantError) {
         console.warn(
           `[avatar-identity-pack] Skipping hairstyle variant ${role} for pack ${packId}:`,
@@ -548,16 +639,36 @@ async function executeAvatarIdentityPackGeneration(packId: string): Promise<void
       }
     }
 
-    await prisma.avatarIdentityPack.update({
-      where: { id: packId },
-      data: { status: "completed", error: null },
+    const cost = calculateEstimatedCost(pack.imageModel, {
+      numImages: generatedRoles.length,
+    });
+    await Promise.all([
+      prisma.avatarIdentityPack.update({
+        where: { id: packId },
+        data: { status: "completed", error: null },
+      }),
+      completeJob(
+        activityJobId,
+        { kind: "avatar-identity-pack", identityPackId: packId, generatedRoles },
+        Date.now() - startedAt
+      ),
+    ]);
+    await logCost(activityJobId, pack.imageModel, "image", cost, {
+      identityPackId: packId,
+      avatarId: pack.avatarId,
+      roles: generatedRoles,
+    }).catch((error) => {
+      console.error(`[avatar-identity-pack] Failed to log pack cost ${activityJobId}:`, error);
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to generate identity pack";
-    await prisma.avatarIdentityPack.update({
-      where: { id: packId },
-      data: { status: "failed", error: message },
-    });
+    await Promise.all([
+      prisma.avatarIdentityPack.update({
+        where: { id: packId },
+        data: { status: "failed", error: message },
+      }),
+      failJob(activityJobId, message),
+    ]);
     throw error;
   }
 }

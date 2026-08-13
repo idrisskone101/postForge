@@ -182,6 +182,7 @@ export async function retryJob(jobId: string): Promise<GenerationJob> {
     prompt: job.prompt,
     input,
     estimatedCost: job.estimatedCost ?? undefined,
+    tags: job.tags,
   });
 }
 

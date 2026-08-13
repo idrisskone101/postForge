@@ -1,5 +1,6 @@
 export type WorkspaceNavigationLabel =
   | "Home"
+  | "Jobs"
   | "Inspiration"
   | "Clone"
   | "Slideshow"
@@ -33,6 +34,14 @@ export const workspaceNavigationGroups = {
       eyebrow: "Production",
       description: "Today’s jobs, reviews, and the next useful action.",
       primaryAction: { label: "New Clone", href: "/ugc-clone" },
+    },
+    {
+      label: "Jobs",
+      href: "/jobs",
+      match: ["/jobs"],
+      eyebrow: "Activity",
+      description: "Track active generations and review the last 30 days of production history.",
+      primaryAction: { label: "Create Asset", href: "/generate" },
     },
     {
       label: "Inspiration",

@@ -14,6 +14,10 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
+import {
+  getJobActivityLabel,
+  getJobDestination,
+} from "@/lib/jobs/presentation";
 import { WorkspaceState } from "@/components/workspace-state";
 import { VideoFramePreview } from "@/components/video-frame-preview";
 import { HomeReviewQueue } from "./home-review-queue";
@@ -54,6 +58,7 @@ type HomeCockpitProps = {
   todaySummary: CostSummary;
   monthSummary: CostSummary;
   activeJobs: HomeJob[];
+  activeJobCount?: number;
   recentJobs: HomeJob[];
   completedThisWeek: number;
   pendingReviewCount: number;
@@ -61,12 +66,8 @@ type HomeCockpitProps = {
   now?: Date;
 };
 
-function isCloneJob(job: HomeJob) {
-  return job.type === "video" && job.tags?.includes("ugc-clone") === true;
-}
-
 function getJobHref(job: HomeJob) {
-  return isCloneJob(job) ? `/ugc-clone/${job.id}` : `/generate/${job.id}`;
+  return getJobDestination(job);
 }
 
 function truncateAtWord(value: string, maxLength: number) {
@@ -78,13 +79,7 @@ function truncateAtWord(value: string, maxLength: number) {
 }
 
 function getJobTitle(job: HomeJob) {
-  const isActive = job.status === "queued" || job.status === "processing";
-  const clone = isCloneJob(job);
-  if (isActive) return clone ? "Clone in progress" : "Generation in progress";
-  if (job.status === "completed") {
-    return clone ? "Clone output ready" : "Generated asset ready";
-  }
-  return clone ? "Clone job" : "Generation job";
+  return getJobActivityLabel(job);
 }
 
 function getJobPreview(job: HomeJob, maxLength = 96) {
@@ -273,10 +268,13 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
         {job.output ? <JobMedia job={job} /> : isVideo ? <Play className="size-3.5" /> : <ImageIcon className="size-3.5" />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="line-clamp-2 break-words text-[13px] font-medium leading-[1.35] text-[var(--pf-ink)] [overflow-wrap:anywhere]">
+        <strong className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
+          {getJobTitle(job)}
+        </strong>
+        <span className="mt-0.5 line-clamp-1 break-words text-[12px] leading-[1.35] text-[var(--pf-muted)] [overflow-wrap:anywhere]">
           {getJobPreview(job, 88)}
         </span>
-        <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-muted)]">{meta}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-[var(--pf-muted)]">{meta}</span>
       </span>
       <span className="hidden min-[720px]:inline-flex">
         <JobStatusPill status={job.status} />
@@ -325,6 +323,7 @@ export function HomeCockpit({
   todaySummary,
   monthSummary: _monthSummary,
   activeJobs,
+  activeJobCount = activeJobs.length,
   recentJobs,
   completedThisWeek,
   pendingReviewCount,
@@ -364,9 +363,9 @@ export function HomeCockpit({
             value={formatCost(todaySummary.totalCost)}
           />
           <StatCard
-            href="/generate"
+            href="/jobs?status=active"
             label="Jobs running"
-            value={String(activeJobs.length)}
+            value={String(activeJobCount)}
           />
           <StatCard
             href="/gallery?reviewStatus=needs_review"
@@ -441,7 +440,7 @@ export function HomeCockpit({
             <section className="mt-3 min-w-0 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
               <CardHeader
                 title="In progress"
-                action={<CardLink href="/generate">View all</CardLink>}
+                action={<CardLink href="/jobs?status=active">View all jobs</CardLink>}
               />
               {activeJobs.length === 0 ? (
                 <div className="mt-3 flex min-h-[120px] flex-col items-center justify-center px-4 py-5 text-center">

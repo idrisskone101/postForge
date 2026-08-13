@@ -14,6 +14,7 @@ import {
   GalleryHorizontal,
   House,
   Images,
+  ListChecks,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -43,6 +44,7 @@ import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
   Home: House,
+  Jobs: ListChecks,
   Inspiration: Compass,
   Clone: Copy,
   Slideshow: GalleryHorizontal,

@@ -14,6 +14,7 @@
     "test:workspace-state": "node --import tsx tests/workspace-state.test.tsx",
     "test:responsive-layout": "node --import tsx tests/responsive-layout-invariants.test.ts",
     "test:home-active-jobs": "node --import tsx tests/home-active-jobs.test.ts",
+    "test:jobs": "node --import tsx tests/jobs-activity.test.tsx",
     "test:home-review-jobs": "node --import tsx tests/home-review-jobs.test.tsx",
     "test:character-attributes": "node --import tsx tests/character-attributes.test.ts",
     "test:character-builder-workbench": "node --import tsx tests/character-builder-workbench.test.tsx",

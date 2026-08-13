@@ -9,6 +9,7 @@ import {
 const primaryLabels = workspaceNavigationGroups.primary.map((item) => item.label);
 assert.deepEqual(primaryLabels, [
   "Home",
+  "Jobs",
   "Inspiration",
   "Clone",
   "Slideshow",
@@ -22,6 +23,8 @@ const toolLabels = workspaceNavigationGroups.tools.map((item) => item.label);
 assert.deepEqual(toolLabels, ["Generate", "Collections", "Characters"]);
 
 assert.equal(getActiveWorkspaceItem("/")?.label, "Home");
+assert.equal(getActiveWorkspaceItem("/jobs")?.label, "Jobs");
+assert.equal(getActiveWorkspaceItem("/jobs?status=active")?.label, "Jobs");
 assert.equal(getActiveWorkspaceItem("/ugc-inspiration")?.label, "Inspiration");
 assert.equal(getActiveWorkspaceItem("/ugc-clone")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/ugc-clone/abc123")?.label, "Clone");

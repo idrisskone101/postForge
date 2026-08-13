@@ -1,7 +1,7 @@
 import type { VideoGenerationRequest, VideoSwapGenerationRequest } from "./types";
 import { getModel, calculateEstimatedCost } from "./models";
 import { submitToQueue } from "./fal-client";
-import { createJob } from "@/lib/jobs/queue";
+import { createJob, failJob } from "@/lib/jobs/queue";
 import { prisma } from "@/lib/db";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 
@@ -135,20 +135,28 @@ export async function generateVideo(
 
   const input = buildVideoInput(request.model, request);
 
-  // Submit to queue
-  const queueResult = await submitToQueue(model.endpoint, input);
-  const requestId = queueResult.request_id;
+  try {
+    // Submit to queue
+    const queueResult = await submitToQueue(model.endpoint, input);
+    const requestId = queueResult.request_id;
+    if (!requestId?.trim()) {
+      throw new Error("The video provider did not return a request id");
+    }
 
-  // Update job with fal request ID and set to processing
-  await prisma.generationJob.update({
-    where: { id: job.id },
-    data: { status: "processing", startedAt: new Date(), falRequestId: requestId },
-  });
+    // Update job with fal request ID and set to processing
+    await prisma.generationJob.update({
+      where: { id: job.id },
+      data: { status: "processing", startedAt: new Date(), falRequestId: requestId },
+    });
 
-  // Start the poller
-  ensurePollerRunning();
-
-  return job.id;
+    // Start the poller
+    ensurePollerRunning();
+    return job.id;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to queue video generation";
+    await failJob(job.id, message).catch(console.error);
+    throw error;
+  }
 }
 
 export async function generateVideoSwap(
@@ -184,15 +192,23 @@ export async function generateVideoSwap(
 
   const input = buildSwapInput(request);
 
-  const queueResult = await submitToQueue(model.endpoint, input);
-  const requestId = queueResult.request_id;
+  try {
+    const queueResult = await submitToQueue(model.endpoint, input);
+    const requestId = queueResult.request_id;
+    if (!requestId?.trim()) {
+      throw new Error("The video provider did not return a request id");
+    }
 
-  await prisma.generationJob.update({
-    where: { id: job.id },
-    data: { status: "processing", startedAt: new Date(), falRequestId: requestId },
-  });
+    await prisma.generationJob.update({
+      where: { id: job.id },
+      data: { status: "processing", startedAt: new Date(), falRequestId: requestId },
+    });
 
-  ensurePollerRunning();
-
-  return job.id;
+    ensurePollerRunning();
+    return job.id;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to queue video swap";
+    await failJob(job.id, message).catch(console.error);
+    throw error;
+  }
 }
