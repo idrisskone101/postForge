@@ -217,6 +217,7 @@ assert.equal(slideshowCreatorLimits.maxSlides, 20);
 assert.equal(slideshowCreatorLimits.maxReferenceImages, 14);
 
 async function testDeriveTemplateFromReferences() {
+  const imageBytes = Buffer.from("fake-png-bytes", "utf8");
   let capturedUrl = "";
   let capturedBody = "";
   let capturedAuth = "";
@@ -227,10 +228,17 @@ async function testDeriveTemplateFromReferences() {
       "not-a-url",
     ],
     {
-      model: "qwen3.5-vl",
+      model: "gemma4",
       apiKey: "test-key",
       fetchImpl: async (input, init) => {
-        capturedUrl = String(input);
+        const url = String(input);
+        if (url.startsWith("https://cdn.example.com/")) {
+          return new Response(imageBytes, {
+            status: 200,
+            headers: { "Content-Type": "image/png" },
+          });
+        }
+        capturedUrl = url;
         capturedBody = String(init?.body ?? "");
         capturedAuth = String(
           (init?.headers as Record<string, string>)?.Authorization ?? "",
@@ -248,7 +256,7 @@ async function testDeriveTemplateFromReferences() {
   assert.equal(capturedUrl, "https://ollama.com/v1/chat/completions");
   assert.equal(capturedAuth, "Bearer test-key");
   const payload = JSON.parse(capturedBody);
-  assert.equal(payload.model, "qwen3.5-vl");
+  assert.equal(payload.model, "gemma4");
   assert.equal(payload.stream, false);
   const userMessage = payload.messages.find(
     (message: { role: string }) => message.role === "user",
@@ -257,8 +265,11 @@ async function testDeriveTemplateFromReferences() {
     (part: { type: string }) => part.type === "image_url",
   );
   assert.equal(imageParts.length, 2, "non-HTTPS URLs must be filtered out");
-  assert.equal(imageParts[0].image_url.url, "https://cdn.example.com/ref-1.jpg");
-  assert.equal(result.model, "qwen3.5-vl");
+  // Ollama Cloud rejects plain URLs: images must be inlined as base64 data URIs.
+  const expectedDataUri = `data:image/png;base64,${imageBytes.toString("base64")}`;
+  assert.equal(imageParts[0].image_url.url, expectedDataUri);
+  assert.equal(imageParts[1].image_url.url, expectedDataUri);
+  assert.equal(result.model, "gemma4");
   assert.equal(result.referenceCount, 2);
   assert.equal(
     result.template.aesthetic.core_vibe,
@@ -268,17 +279,37 @@ async function testDeriveTemplateFromReferences() {
   await assert.rejects(
     () =>
       deriveTemplateFromReferences(["https://cdn.example.com/ref-1.jpg"], {
-        model: "qwen3.5-vl",
+        model: "gemma4",
         apiKey: "test-key",
-        fetchImpl: async () => new Response("bad request", { status: 400 }),
+        fetchImpl: async (input) => {
+          const url = String(input);
+          if (url.startsWith("https://cdn.example.com/")) {
+            return new Response(imageBytes, {
+              status: 200,
+              headers: { "Content-Type": "image/jpeg" },
+            });
+          }
+          return new Response("bad request", { status: 400 });
+        },
       }),
     /HTTP 400/,
+  );
+
+  // An unfetchable reference image must surface an explicit error.
+  await assert.rejects(
+    () =>
+      deriveTemplateFromReferences(["https://cdn.example.com/missing.jpg"], {
+        model: "gemma4",
+        apiKey: "test-key",
+        fetchImpl: async () => new Response("not found", { status: 404 }),
+      }),
+    /could not be fetched \(HTTP 404\)/,
   );
 
   await assert.rejects(
     () =>
       deriveTemplateFromReferences([], {
-        model: "qwen3.5-vl",
+        model: "gemma4",
         apiKey: "test-key",
         fetchImpl: globalThis.fetch,
       }),

@@ -790,9 +790,51 @@ export type DeriveTemplateFromReferencesResult = {
   referenceCount: number;
 };
 
+const MAX_REFERENCE_IMAGE_BYTES = 10 * 1024 * 1024;
+
 /**
- * Send reference images (fal-storage URLs) to a vision model and derive the
- * aesthetic JSON template used to generate fresh, on-brand visuals.
+ * Ollama Cloud's OpenAI-compatible endpoint rejects plain image URLs, so
+ * every reference image is downloaded server-side and inlined as a base64
+ * data URI. Failures stay explicit — a missing image must never be silently
+ * dropped from the derivation.
+ */
+async function fetchReferenceImageDataUri(
+  url: string,
+  fetchImpl: typeof fetch
+): Promise<string> {
+  const response = await fetchImpl(url, {
+    signal: AbortSignal.timeout(20_000),
+  });
+  if (!response.ok) {
+    throw new Error(
+      `A reference image could not be fetched (HTTP ${response.status}). Remove it and retry.`
+    );
+  }
+  const contentType = response.headers
+    .get("content-type")
+    ?.split(";")[0]
+    ?.trim()
+    .toLowerCase();
+  const mimeType =
+    contentType && /^image\/(jpeg|png|webp|gif)$/.test(contentType)
+      ? contentType
+      : "image/jpeg";
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (!bytes.length) {
+    throw new Error("A reference image was empty. Remove it and retry.");
+  }
+  if (bytes.length > MAX_REFERENCE_IMAGE_BYTES) {
+    throw new Error(
+      "A reference image exceeds the 10 MB limit for template derivation. Remove it and retry."
+    );
+  }
+  return `data:${mimeType};base64,${bytes.toString("base64")}`;
+}
+
+/**
+ * Download reference images (fal-storage URLs), inline them as base64 data
+ * URIs for the vision model, and derive the aesthetic JSON template used to
+ * generate fresh, on-brand visuals.
  *
  * If the vision credential is missing the derivation is left unavailable and
  * reported to the caller — never silently replaced with a generic template.
@@ -810,10 +852,14 @@ export async function deriveTemplateFromReferences(
   }
 
   const endpoint = OLLAMA_CHAT_URL;
-  const imageParts = urls.map((url) => ({
-    type: "image_url" as const,
-    image_url: { url },
-  }));
+  const imageParts = await Promise.all(
+    urls.map(async (url) => ({
+      type: "image_url" as const,
+      image_url: {
+        url: await fetchReferenceImageDataUri(url, resolvedDependencies.fetchImpl),
+      },
+    }))
+  );
   const response = await resolvedDependencies.fetchImpl(endpoint, {
     method: "POST",
     headers: {

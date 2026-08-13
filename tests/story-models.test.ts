@@ -36,9 +36,9 @@ function run() {
 
   // Vision capability flags drive reference-image analysis routing.
   assert.equal(storyModelSupportsVision("deepseek-v4-flash"), false);
-  assert.equal(storyModelSupportsVision("qwen3.5-vl"), true);
+  assert.equal(storyModelSupportsVision("gemma4"), true);
   assert.equal(storyModelSupportsVision(undefined), false);
-  assert.equal(getStoryModel("qwen3.5-vl")?.vision, true);
+  assert.equal(getStoryModel("gemma4")?.vision, true);
   const visionDefault = getDefaultVisionStoryModel();
   assert.ok(visionDefault, "catalog must include a vision-capable model");
   assert.equal(visionDefault.vision, true);

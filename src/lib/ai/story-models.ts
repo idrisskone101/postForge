@@ -58,13 +58,6 @@ export const STORY_MODELS: StoryModel[] = [
     description: "Balanced quality and speed.",
   },
   {
-    id: "qwen3.5-vl",
-    name: "Qwen 3.5 VL",
-    ollamaId: "qwen3.5-vl",
-    description: "Vision-capable; analyzes reference images.",
-    vision: true,
-  },
-  {
     id: "gemma4",
     name: "Gemma 4",
     ollamaId: "gemma4",
