@@ -179,6 +179,34 @@ async function run() {
     false,
     "Missing browser origin metadata must fail closed"
   );
+  assert.equal(
+    isSameOriginMutation(
+      new Request("http://postforge.example/api/workspace-features/collections", {
+        method: "PUT",
+        headers: {
+          Origin: "https://postforge.example",
+          "Sec-Fetch-Site": "same-origin",
+          "X-Forwarded-Host": "postforge.example",
+          "X-Forwarded-Proto": "https",
+        },
+      })
+    ),
+    true,
+    "TLS-terminating proxies must not break same-origin detection"
+  );
+  assert.equal(
+    isSameOriginMutation(
+      new Request("https://postforge.example/api/integrations/tiktok/sync", {
+        method: "POST",
+        headers: {
+          Origin: "https://attacker.example",
+          "Sec-Fetch-Site": "same-origin",
+        },
+      })
+    ),
+    false,
+    "Mismatched origin host must be rejected"
+  );
   const key = Buffer.alloc(32, 7);
   assert.deepEqual(
     decodeIntegrationEncryptionKey(key.toString("base64")),

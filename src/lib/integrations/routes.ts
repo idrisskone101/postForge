@@ -68,6 +68,23 @@ export function noStoreJson(value: unknown, init?: { status?: number }) {
   return response;
 }
 
+function effectiveRequestHost(request: Request) {
+  const headerHost = (
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host") ??
+    ""
+  )
+    .split(",")[0]
+    ?.trim()
+    .toLowerCase();
+  if (headerHost) return headerHost;
+  try {
+    return new URL(request.url).host.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
 export function isSameOriginMutation(request: Request) {
   const fetchSite = request.headers.get("sec-fetch-site")?.toLowerCase();
   if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") {
@@ -76,11 +93,16 @@ export function isSameOriginMutation(request: Request) {
 
   const origin = request.headers.get("origin");
   if (!origin) return false;
+
+  let originHost: string;
   try {
-    return new URL(origin).origin === new URL(request.url).origin;
+    originHost = new URL(origin).host.toLowerCase();
   } catch {
     return false;
   }
+
+  const host = effectiveRequestHost(request);
+  return host !== null && host === originHost;
 }
 
 export function rejectCrossOriginMutation() {
