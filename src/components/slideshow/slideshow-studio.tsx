@@ -80,6 +80,7 @@ export function SlideshowStudio({
   onRegenerateSlide,
   onRegenerateImage,
   onExportProject,
+  initialViewMode = "edit",
 }: SlideshowStudioProps) {
   const [section, setSection] = useState(initialSection);
   const [projects, setProjects] = useState(initialProjects ?? []);
@@ -480,7 +481,7 @@ export function SlideshowStudio({
       </WorkspaceHeaderAccessory>
 
       {activeProject ? (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
+        <div className="fixed inset-0 z-40 overflow-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
           <SlideshowEditor
             key={editorSession}
             project={activeProject}
@@ -497,6 +498,7 @@ export function SlideshowStudio({
             imageModels={imageModels}
             selectedImageModel={selectedImageModel}
             onSelectImageModel={setSelectedImageModel}
+            initialViewMode={initialViewMode}
           />
         </div>
       ) : (

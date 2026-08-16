@@ -56,6 +56,19 @@ import {
   updateSlideshowSlide,
 } from "./model";
 import { SlidePreview, VisualTile } from "./slide-preview";
+import {
+  SlideshowBoardView,
+  SlideshowPlayView,
+  SlideshowViewSwitcher,
+} from "./slideshow-view-modes";
+import {
+  isEditableKeyboardTarget,
+  parseSlideshowViewMode,
+  slideCoverImage,
+  slideLayerCount,
+  stepSlideIndex,
+  type SlideshowViewMode,
+} from "./slideshow-view";
 import type {
   SlideshowAspectRatio,
   SlideshowGrid,
@@ -94,6 +107,7 @@ export interface SlideshowEditorProps {
   imageModels?: Array<{ id: string; name: string }>;
   selectedImageModel?: string | null;
   onSelectImageModel?: (modelId: string) => void;
+  initialViewMode?: SlideshowViewMode;
 }
 
 const SECONDARY_BTN =
@@ -231,8 +245,12 @@ export function SlideshowEditor({
   imageModels = [],
   selectedImageModel = null,
   onSelectImageModel,
+  initialViewMode = "edit",
 }: SlideshowEditorProps) {
   const [draft, setDraft] = useState(project);
+  const [viewMode, setViewMode] = useState<SlideshowViewMode>(() =>
+    parseSlideshowViewMode(initialViewMode),
+  );
   const [selectedSlideId, setSelectedSlideId] = useState(
     project.slides[0]?.id ?? "",
   );
@@ -251,6 +269,8 @@ export function SlideshowEditor({
 
   const draftRef = useRef(draft);
   const selectedSlideIdRef = useRef(selectedSlideId);
+  const viewModeRef = useRef(viewMode);
+  const activeThumbRef = useRef<HTMLButtonElement | null>(null);
   const editVersionRef = useRef(isLocalSlideshowId(project.id) ? 1 : 0);
   const savedVersionRef = useRef(0);
   const inFlightSaveRef = useRef<Promise<void> | null>(null);
@@ -268,6 +288,7 @@ export function SlideshowEditor({
   const activeSlide = draft.slides[activeIndex] ?? draft.slides[0];
   const activePhase = activeSlide?.role ?? "hook";
   const phaseSettings = draft.phaseSettings[activePhase];
+  const layerCount = activeSlide ? slideLayerCount(activeSlide) : 0;
 
   const applyProject = useCallback(
     (next: SlideshowProject) => {
@@ -372,6 +393,57 @@ export function SlideshowEditor({
   const selectSlide = useCallback((slide: SlideshowSlide) => {
     setSelection(slide.id);
   }, [setSelection]);
+
+  const changeViewMode = useCallback((mode: SlideshowViewMode) => {
+    viewModeRef.current = mode;
+    setViewMode(mode);
+  }, []);
+
+  const stepSelectedSlide = useCallback(
+    (delta: -1 | 1, wrap: boolean) => {
+      const current = draftRef.current;
+      const selectedId = selectedSlideIdRef.current;
+      const index = Math.max(
+        0,
+        current.slides.findIndex((slide) => slide.id === selectedId),
+      );
+      const nextIndex = stepSlideIndex(index, delta, current.slides.length, wrap);
+      const next = current.slides[nextIndex];
+      if (next) setSelection(next.id);
+    },
+    [setSelection],
+  );
+
+  useEffect(() => {
+    viewModeRef.current = viewMode;
+  }, [viewMode]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isEditableKeyboardTarget(event.target)) return;
+      const mode = viewModeRef.current;
+      if (event.key === "Escape" && mode === "play") {
+        event.preventDefault();
+        changeViewMode("edit");
+        return;
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        stepSelectedSlide(event.key === "ArrowLeft" ? -1 : 1, mode === "play");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [changeViewMode, stepSelectedSlide]);
+
+  useEffect(() => {
+    if (viewMode !== "edit") return;
+    activeThumbRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [selectedSlideId, viewMode]);
 
   const selectPhase = (phase: SlideshowPhase) => {
     const match = draft.slides.find((slide) => slide.role === phase);
@@ -605,8 +677,8 @@ export function SlideshowEditor({
   if (!activeSlide) return null;
 
   return (
-    <div className="flex min-h-full flex-col bg-[var(--pf-canvas)]">
-      <header className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--pf-canvas)]">
+      <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
         <button
           type="button"
           onClick={() => void handleBack()}
@@ -630,11 +702,14 @@ export function SlideshowEditor({
           placeholder="Untitled slideshow"
         />
         <AutosaveStatus state={saveState} />
+        <SlideshowViewSwitcher value={viewMode} onChange={changeViewMode} />
         <div className="ml-auto flex items-center gap-2">
-          <button type="button" className={SECONDARY_BTN} onClick={() => setPickerOpen(true)}>
-            <Images className="size-3.5" />
-            <span className="hidden sm:inline">Images</span>
-          </button>
+          {viewMode !== "play" ? (
+            <button type="button" className={SECONDARY_BTN} onClick={() => setPickerOpen(true)}>
+              <Images className="size-3.5" />
+              <span className="hidden sm:inline">Images</span>
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => void handlePublish()}
@@ -657,7 +732,35 @@ export function SlideshowEditor({
         </div>
       ) : null}
 
-      <div className="grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(300px,1fr)_304px]">
+      {viewMode === "board" ? (
+        <SlideshowBoardView
+          project={draft}
+          selectedSlideId={selectedSlideId}
+          onSelect={selectSlide}
+          onOpenEdit={(slide) => {
+            selectSlide(slide);
+            changeViewMode("edit");
+          }}
+          onAdd={addSlide}
+          onDuplicate={duplicateSlide}
+          onDelete={deleteSlide}
+          onMove={moveSlide}
+        />
+      ) : null}
+
+      {viewMode === "play" ? (
+        <SlideshowPlayView
+          project={draft}
+          selectedSlideId={selectedSlideId}
+          onSelect={selectSlide}
+        />
+      ) : null}
+
+      {viewMode === "edit" ? (
+      <div
+        data-slideshow-view="edit"
+        className="grid min-h-0 flex-1 overflow-y-auto xl:grid-cols-[264px_minmax(300px,1fr)_304px]"
+      >
         <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">
             {(["hook", "body", "cta"] as SlideshowPhase[]).map((phase) => {
@@ -893,7 +996,7 @@ export function SlideshowEditor({
                       "min-w-0 shrink-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/40",
                       active
                         ? "w-[min(58vw,300px)] opacity-100 sm:w-[min(38vh,318px)]"
-                        : "hidden w-[168px] opacity-40 hover:opacity-70 xl:block",
+                        : "hidden w-[168px] opacity-40 hover:opacity-70 md:block",
                       draft.aspectRatio === "16:9" &&
                         (active ? "w-[min(80vw,520px)]" : "w-[280px]"),
                       draft.aspectRatio === "1:1" &&
@@ -943,17 +1046,21 @@ export function SlideshowEditor({
                 <button
                   key={slide.id}
                   type="button"
+                  ref={index === activeIndex ? activeThumbRef : undefined}
+                  data-slide-thumb={slide.id}
                   onClick={() => selectSlide(slide)}
                   aria-label={`Select slide ${index + 1}`}
                   className={cn(
-                    "relative h-14 w-9 shrink-0 overflow-hidden rounded-[8px] border-2 transition",
+                    "relative h-16 shrink-0 overflow-hidden rounded-[8px] border-2 transition",
+                    draft.aspectRatio === "16:9" ? "w-24" : draft.aspectRatio === "1:1" ? "w-16" : "w-10",
                     index === activeIndex
-                      ? "border-[var(--pf-ink)]"
+                      ? "border-primary ring-1 ring-primary/25"
                       : "border-transparent opacity-55 hover:opacity-100",
                   )}
                 >
                   <VisualTile
                     visualKey={slide.visualKey}
+                    imageUrl={slideCoverImage(slide)}
                     className="absolute inset-0"
                   />
                   <span className="absolute bottom-0 right-0 rounded-tl-md bg-black/60 px-1.5 py-0.5 pf-data text-[11px] font-semibold tabular-nums text-white">
@@ -998,9 +1105,6 @@ export function SlideshowEditor({
               >
                 <Trash2 className="size-3.5" />
               </button>
-              <span className="ml-auto hidden shrink-0 sm:block">
-                <AutosaveStatus state={saveState} />
-              </span>
             </div>
           </div>
         </section>
@@ -1014,8 +1118,8 @@ export function SlideshowEditor({
                   {activePhase === "body" ? "Content" : activePhase} · slide {activeIndex + 1}
                 </p>
               </div>
-              <span className="rounded-full bg-[var(--pf-active)] px-2 py-[3px] text-[12px] font-bold text-muted-foreground">
-                3 layers
+              <span className="rounded-full bg-[var(--pf-active)] px-2 py-[3px] text-[12px] font-bold tabular-nums text-muted-foreground">
+                {layerCount} {layerCount === 1 ? "layer" : "layers"}
               </span>
             </div>
 
@@ -1307,6 +1411,7 @@ export function SlideshowEditor({
           </div>
         </aside>
       </div>
+      ) : null}
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
         <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">

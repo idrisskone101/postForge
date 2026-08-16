@@ -67,6 +67,7 @@
     "test:slideshow-renderer": "node --import tsx tests/slideshow-renderer.test.ts",
     "test:slideshow-automation": "node --import tsx tests/slideshow-automation.test.ts",
     "test:slideshow-management": "node --import tsx tests/slideshow-management.test.ts",
+    "test:slideshow-view": "node --import tsx tests/slideshow-view.test.tsx",
     "test:model-availability": "DATABASE_URL=postgresql://postforge:postforge@127.0.0.1:1/postforge?connect_timeout=1 node --import tsx tests/model-availability.test.ts",
     "test:model-registry": "node --import tsx tests/generate-model-registry.test.ts",
     "test:character-video": "DATABASE_URL=postgresql://postforge:postforge@127.0.0.1:1/postforge?connect_timeout=1 node --import tsx tests/character-video.test.ts",

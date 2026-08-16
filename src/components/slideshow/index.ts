@@ -2,6 +2,13 @@ export { SlideshowStudio } from "./slideshow-studio";
 export { SlideshowEditor } from "./slideshow-editor";
 export { SlidePreview, VisualTile } from "./slide-preview";
 export {
+  parseSlideshowViewMode,
+  slideCoverImage,
+  slideLayerCount,
+  stepSlideIndex,
+} from "./slideshow-view";
+export type { SlideshowViewMode } from "./slideshow-view";
+export {
   addSlideshowSlide,
   createAddedSlide,
   deleteSlideshowSlide,
