@@ -215,16 +215,34 @@ export function updateSlideshowSlide(
   };
 }
 
+export function alignCreatorDirectImages(input: {
+  hookAssetId: string | null;
+  slideLines: readonly string[];
+  slideAssetIds: readonly (string | null)[];
+}): Array<string | null> {
+  const aligned: Array<string | null> = [input.hookAssetId];
+  input.slideLines.forEach((line, index) => {
+    if (line.trim().length > 0) {
+      aligned.push(input.slideAssetIds[index] ?? null);
+    }
+  });
+  return aligned;
+}
+
 export function applyDirectSlideshowImages(
   project: SlideshowProject,
-  imageUrls: readonly string[],
+  imageUrls: readonly (string | null | undefined)[],
 ): SlideshowProject {
-  const usableUrls = imageUrls.filter((url) => url.trim().length > 0);
-  if (!usableUrls.length) return project;
-  const slides = project.slides.map((slide, index) => ({
-    ...slide,
-    imageUrl: usableUrls[index] ?? slide.imageUrl ?? null,
-  }));
+  if (!imageUrls.some((url) => typeof url === "string" && url.trim().length > 0)) {
+    return project;
+  }
+  const slides = project.slides.map((slide, index) => {
+    const url = imageUrls[index];
+    if (typeof url !== "string" || !url.trim()) {
+      return { ...slide, imageUrl: slide.imageUrl ?? null };
+    }
+    return { ...slide, imageUrl: url };
+  });
   return {
     ...project,
     status: slides.every((slide) => Boolean(slide.imageUrl))

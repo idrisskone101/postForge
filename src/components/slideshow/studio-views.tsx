@@ -8,6 +8,8 @@ import {
   ChevronDown,
   Copy,
   FileImage,
+  ImagePlus,
+  Images,
   Link2,
   LoaderCircle,
   Plus,
@@ -16,6 +18,7 @@ import {
   Sparkles,
   WandSparkles,
   Workflow,
+  X,
 } from "lucide-react";
 
 import {
@@ -28,9 +31,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
 import { PinterestImportDialog } from "@/components/pinterest-import-dialog";
-import type { PinterestImportResult } from "@/lib/collections-client";
+import {
+  platformCollectionAssetUrl,
+  type PinterestImportResult,
+} from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
 
+import { alignCreatorDirectImages } from "./model";
 import { SlidePreview, VisualTile } from "./slide-preview";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import type {
@@ -244,7 +251,7 @@ export function CreateView({
     slides: string[];
     template: unknown;
     collectionAssetIds: string[];
-    directImageAssetIds: string[];
+    directImageAssetIds: Array<string | null>;
     model?: string;
     aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
   }) => Promise<void>;
@@ -623,6 +630,59 @@ const SAMPLE_CREATOR_TEMPLATE = `{
   }
 }`;
 
+function CreatorSlideImageSlot({
+  assetId,
+  label,
+  onPick,
+  onClear,
+}: {
+  assetId: string | null;
+  label: string;
+  onPick: () => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="relative mt-0.5 shrink-0">
+      <button
+        type="button"
+        onClick={onPick}
+        aria-label={
+          assetId
+            ? `Change ${label} image`
+            : `Add ${label} image from collections`
+        }
+        className={cn(
+          "relative size-10 overflow-hidden rounded-lg border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30",
+          assetId
+            ? "border-border bg-[#09090B]"
+            : "border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] text-muted-foreground hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]",
+        )}
+      >
+        {assetId ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={platformCollectionAssetUrl(assetId)}
+            alt=""
+            className="size-full object-cover"
+          />
+        ) : (
+          <ImagePlus className="mx-auto size-3.5" />
+        )}
+      </button>
+      {assetId ? (
+        <button
+          type="button"
+          aria-label={`Remove ${label} image`}
+          onClick={onClear}
+          className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full border border-border bg-white text-muted-foreground transition hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
+        >
+          <X className="size-2.5" />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function CreatorView({
   imageModels,
   selectedImageModel,
@@ -640,22 +700,30 @@ function CreatorView({
     slides: string[];
     template: unknown;
     collectionAssetIds: string[];
-    directImageAssetIds: string[];
+    directImageAssetIds: Array<string | null>;
     model?: string;
     aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
   }) => Promise<void>;
 }) {
   const [title, setTitle] = useState("");
   const [hook, setHook] = useState("");
+  const [hookImageAssetId, setHookImageAssetId] = useState<string | null>(null);
   const [slideLines, setSlideLines] = useState<string[]>(["", "", "", ""]);
+  const [slideImageAssetIds, setSlideImageAssetIds] = useState<Array<string | null>>([
+    null,
+    null,
+    null,
+    null,
+  ]);
+  const [imagePickerTarget, setImagePickerTarget] = useState<
+    { kind: "hook" } | { kind: "slide"; index: number } | null
+  >(null);
+  const [pickerAssetIds, setPickerAssetIds] = useState<string[]>([]);
   const [templateText, setTemplateText] = useState(SAMPLE_CREATOR_TEMPLATE);
   const [templateError, setTemplateError] = useState<string | null>(null);
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
   const [referenceRefreshKey, setReferenceRefreshKey] = useState(0);
   const [preferredReferenceAssetIds, setPreferredReferenceAssetIds] = useState<string[]>([]);
-  const [directPinterestAssets, setDirectPinterestAssets] = useState<
-    PinterestImportResult["assets"]
-  >([]);
   const [pinterestOpen, setPinterestOpen] = useState(false);
   const [deriving, setDeriving] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
@@ -669,6 +737,67 @@ function CreatorView({
       return next;
     });
   };
+
+  const addSlideLine = () => {
+    setSlideLines((current) =>
+      current.length >= MAX_CREATOR_SLIDES ? current : [...current, ""],
+    );
+    setSlideImageAssetIds((current) =>
+      current.length >= MAX_CREATOR_SLIDES ? current : [...current, null],
+    );
+  };
+
+  const removeSlideLine = (index: number) => {
+    setSlideLines((current) =>
+      current.length <= 1
+        ? current
+        : current.filter((_, slideIndex) => slideIndex !== index),
+    );
+    setSlideImageAssetIds((current) =>
+      current.length <= 1
+        ? current
+        : current.filter((_, slideIndex) => slideIndex !== index),
+    );
+  };
+
+  const assignDirectAssetsInOrder = (assetIds: string[]) => {
+    setHookImageAssetId(assetIds[0] ?? null);
+    setSlideImageAssetIds((current) =>
+      current.map((_, index) => assetIds[index + 1] ?? null),
+    );
+  };
+
+  const openImagePicker = (
+    target: { kind: "hook" } | { kind: "slide"; index: number },
+  ) => {
+    const currentId =
+      target.kind === "hook"
+        ? hookImageAssetId
+        : slideImageAssetIds[target.index] ?? null;
+    setPickerAssetIds(currentId ? [currentId] : []);
+    setImagePickerTarget(target);
+  };
+
+  const applyPickedSlideImage = () => {
+    const assetId = pickerAssetIds[0] ?? null;
+    if (imagePickerTarget?.kind === "hook") {
+      setHookImageAssetId(assetId);
+    } else if (imagePickerTarget?.kind === "slide") {
+      const index = imagePickerTarget.index;
+      setSlideImageAssetIds((current) =>
+        current.map((id, slideIndex) => (slideIndex === index ? assetId : id)),
+      );
+    }
+    setImagePickerTarget(null);
+    setPickerAssetIds([]);
+  };
+
+  const pickerLabel =
+    imagePickerTarget?.kind === "hook"
+      ? "hook"
+      : imagePickerTarget
+        ? `slide ${imagePickerTarget.index + 1}`
+        : "slide";
 
   const parsedTemplate = useMemo(() => {
     try {
@@ -757,10 +886,6 @@ function CreatorView({
       setError("Add a hook to start the slideshow.");
       return;
     }
-    if (!parsedTemplate) {
-      setTemplateError("Add a valid visual template before generating.");
-      return;
-    }
     const slides = slideLines
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
@@ -768,14 +893,24 @@ function CreatorView({
       setError("Add at least one slide of copy.");
       return;
     }
+    const directImageAssetIds = alignCreatorDirectImages({
+      hookAssetId: hookImageAssetId,
+      slideLines,
+      slideAssetIds: slideImageAssetIds,
+    });
+    const needsGeneration = directImageAssetIds.some((assetId) => !assetId);
+    if (needsGeneration && !parsedTemplate) {
+      setTemplateError("Add a valid visual template before generating remaining slides.");
+      return;
+    }
     try {
       await onGenerateCreator({
         title: title.trim() || hook.trim(),
         hook: hook.trim(),
         slides,
-        template: parsedTemplate,
+        template: parsedTemplate ?? {},
         collectionAssetIds: referenceAssetIds,
-        directImageAssetIds: directPinterestAssets.map((asset) => asset.id),
+        directImageAssetIds,
         model: selectedImageModel ?? "gpt-image-2",
         aspectRatio,
       });
@@ -787,6 +922,12 @@ function CreatorView({
       );
     }
   };
+
+  const needsGeneration = alignCreatorDirectImages({
+    hookAssetId: hookImageAssetId,
+    slideLines,
+    slideAssetIds: slideImageAssetIds,
+  }).some((assetId) => !assetId);
 
   return (
     <>
@@ -801,7 +942,7 @@ function CreatorView({
               Your copy, your visuals
             </h2>
             <p className="text-[11px] text-muted-foreground">
-              PostForge keeps your copy verbatim and generates on-brand imagery for every slide.
+              Keep copy verbatim. Attach a collection image to any slide, or generate the rest.
             </p>
           </div>
         </div>
@@ -816,29 +957,40 @@ function CreatorView({
           />
         </label>
 
-        <label className="mt-3 block">
+        <div className="mt-3">
           <span className={cn(FIELD_LABEL)}>Hook</span>
-          <textarea
-            value={hook}
-            onChange={(event) => setHook(event.target.value)}
-            rows={2}
-            placeholder="The tension-led opening that earns the next swipe"
-            className={cn(INPUT, "mt-1 resize-none py-2.5 leading-5")}
-          />
-        </label>
+          <div className="mt-1 flex items-start gap-2">
+            <CreatorSlideImageSlot
+              assetId={hookImageAssetId}
+              label="hook"
+              onPick={() => openImagePicker({ kind: "hook" })}
+              onClear={() => setHookImageAssetId(null)}
+            />
+            <textarea
+              value={hook}
+              onChange={(event) => setHook(event.target.value)}
+              rows={2}
+              placeholder="The tension-led opening that earns the next swipe"
+              className={cn(INPUT, "resize-none py-2.5 leading-5")}
+            />
+          </div>
+        </div>
 
         <div className="mt-4">
           <div className="flex items-center justify-between">
             <span className={cn(FIELD_LABEL)}>Slide text</span>
             <button
               type="button"
-              onClick={() => setSlideLines((current) => [...current, ""])}
+              onClick={addSlideLine}
               disabled={slideLines.length >= MAX_CREATOR_SLIDES}
               className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-semibold text-[var(--pf-orange)] transition hover:bg-[var(--pf-orange)]/10 disabled:cursor-not-allowed disabled:opacity-45"
             >
               <Plus className="size-3" /> Add slide
             </button>
           </div>
+          <p className="mb-1 text-[11px] text-muted-foreground">
+            Optional: attach a collection image. Empty slots are generated.
+          </p>
           {slideLines.length >= MAX_CREATOR_SLIDES ? (
             <p className="mb-1 text-[11px] font-medium text-muted-foreground">
               Maximum {MAX_CREATOR_SLIDES} slides per slideshow.
@@ -846,37 +998,52 @@ function CreatorView({
           ) : null}
           <div className="mt-2 space-y-2">
             {slideLines.map((line, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="mt-2.5 grid size-6 shrink-0 place-items-center rounded-md bg-[var(--pf-active)] font-mono text-[10px] font-bold text-muted-foreground">
-                  {index + 1}
-                </span>
-                <textarea
-                  value={line}
-                  onChange={(event) => updateLine(index, event.target.value)}
-                  rows={1}
-                  placeholder={`Text for slide ${index + 1}`}
-                  className={cn(INPUT, "min-h-9 resize-y py-2 leading-4")}
-                />
-                {slideLines.length > 1 ? (
-                  <button
-                    type="button"
-                    aria-label="Remove slide"
-                    onClick={() =>
-                      setSlideLines((current) =>
-                        current.filter((_, slideIndex) => slideIndex !== index),
+              <div key={index}>
+                <div className="flex items-start gap-2">
+                  <span className="mt-2.5 grid size-6 shrink-0 place-items-center rounded-md bg-[var(--pf-active)] font-mono text-[10px] font-bold text-muted-foreground">
+                    {index + 1}
+                  </span>
+                  <CreatorSlideImageSlot
+                    assetId={slideImageAssetIds[index] ?? null}
+                    label={`slide ${index + 1}`}
+                    onPick={() => openImagePicker({ kind: "slide", index })}
+                    onClear={() =>
+                      setSlideImageAssetIds((current) =>
+                        current.map((id, slideIndex) =>
+                          slideIndex === index ? null : id,
+                        ),
                       )
                     }
-                    className="mt-2 grid size-6 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
-                  >
-                    ×
-                  </button>
+                  />
+                  <textarea
+                    value={line}
+                    onChange={(event) => updateLine(index, event.target.value)}
+                    rows={1}
+                    placeholder={`Text for slide ${index + 1}`}
+                    className={cn(INPUT, "min-h-9 resize-y py-2 leading-4")}
+                  />
+                  {slideLines.length > 1 ? (
+                    <button
+                      type="button"
+                      aria-label="Remove slide"
+                      onClick={() => removeSlideLine(index)}
+                      className="mt-2 grid size-6 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
+                    >
+                      ×
+                    </button>
+                  ) : null}
+                </div>
+                {slideImageAssetIds[index] && !line.trim() ? (
+                  <p className="mt-1 pl-20 text-[11px] text-muted-foreground">
+                    Add copy to keep this image on the slideshow.
+                  </p>
                 ) : null}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <div className={cn("mt-4 grid gap-2", needsGeneration ? "sm:grid-cols-2" : "")}>
           <label className="block">
             <span className={cn(FIELD_LABEL)}>Aspect ratio</span>
             <span className="relative">
@@ -894,23 +1061,25 @@ function CreatorView({
               <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
             </span>
           </label>
-          <label className="block">
-            <span className={cn(FIELD_LABEL)}>Image model</span>
-            <span className="relative">
-              <select
-                value={selectedImageModel ?? "gpt-image-2"}
-                onChange={(event) => onSelectImageModel?.(event.target.value)}
-                className="h-9 w-full appearance-none rounded-lg border border-border bg-card pl-2.5 pr-7 text-[11px] font-medium outline-none focus:border-[var(--pf-orange)]"
-              >
-                {((imageModels && imageModels.length ? imageModels : [{ id: "gpt-image-2", name: "GPT Image 2" }]) as Array<{ id: string; name: string }>).map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
-            </span>
-          </label>
+          {needsGeneration ? (
+            <label className="block">
+              <span className={cn(FIELD_LABEL)}>Image model</span>
+              <span className="relative">
+                <select
+                  value={selectedImageModel ?? "gpt-image-2"}
+                  onChange={(event) => onSelectImageModel?.(event.target.value)}
+                  className="h-9 w-full appearance-none rounded-lg border border-border bg-card pl-2.5 pr-7 text-[11px] font-medium outline-none focus:border-[var(--pf-orange)]"
+                >
+                  {((imageModels && imageModels.length ? imageModels : [{ id: "gpt-image-2", name: "GPT Image 2" }]) as Array<{ id: string; name: string }>).map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
+              </span>
+            </label>
+          ) : null}
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -922,10 +1091,16 @@ function CreatorView({
           >
             {generating ? (
               <LoaderCircle className="size-3.5 animate-spin" />
-            ) : (
+            ) : needsGeneration ? (
               <WandSparkles className="size-3.5" />
+            ) : (
+              <Images className="size-3.5" />
             )}
-            {generating ? "Generating visuals..." : "Create & generate visuals"}
+            {generating
+              ? "Creating slideshow..."
+              : needsGeneration
+                ? "Create & generate visuals"
+                : "Create slideshow"}
           </button>
         </div>
 
@@ -937,9 +1112,14 @@ function CreatorView({
 
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-4">
           {[
-            ["01", "Paste a JSON visual template"],
-            ["02", "Your copy stays exactly as written"],
-            ["03", "GPT Image 2 generates on-brand visuals"],
+            ["01", "Your copy stays exactly as written"],
+            ["02", "Attach a collection image to any slide"],
+            [
+              "03",
+              needsGeneration
+                ? "The JSON template styles every remaining slide"
+                : "Every slide is covered, so nothing is generated",
+            ],
           ].map(([n, label]) => (
             <span key={n} className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
               <StepChip n={n} />
@@ -969,7 +1149,7 @@ function CreatorView({
             <div>
               <p className="text-[12px] font-semibold text-foreground">Pinterest references</p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">
-                Use images directly on slides or turn them into visual style JSON.
+                Import into Collections, then place images on slides or derive style JSON.
               </p>
             </div>
             <button
@@ -981,44 +1161,11 @@ function CreatorView({
             </button>
           </div>
 
-          {directPinterestAssets.length ? (
-            <div className="mt-3 rounded-lg border border-border bg-[var(--pf-active)] p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[12px] font-semibold text-foreground">
-                    {directPinterestAssets.length} direct slide image{directPinterestAssets.length === 1 ? "" : "s"}
-                  </p>
-                  <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
-                    Assigned from slide 1 in selection order. Remaining slides are generated; extra images stay saved in Collections.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDirectPinterestAssets([])}
-                  className="text-[11px] font-semibold text-muted-foreground transition hover:text-foreground"
-                >
-                  Remove from slides
-                </button>
-              </div>
-              <div className="mt-2 grid grid-cols-6 gap-1.5">
-                {directPinterestAssets.slice(0, 12).map((asset, index) => (
-                  <span
-                    key={asset.id}
-                    className="relative aspect-[4/5] overflow-hidden rounded-lg bg-card"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={asset.imageUrl} alt="" className="size-full object-cover" />
-                    <span className="absolute bottom-1 left-1 grid size-4 place-items-center rounded-full bg-black/70 font-mono text-[11px] text-white">
-                      {index + 1}
-                    </span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
           <div className="mt-3 block">
             <span className={cn(FIELD_LABEL)}>Saved reference images (optional)</span>
+            <p className="mb-1 text-[11px] text-muted-foreground">
+              These shape generated slides. To place an image on a slide, use the slot next to that slide.
+            </p>
             <div className="mt-1">
               <CollectionReferencePicker
                 selectedAssetIds={referenceAssetIds}
@@ -1082,12 +1229,65 @@ function CreatorView({
       onOpenChange={setPinterestOpen}
       workflow="slideshow"
       onUseDirect={(result) => {
-        setDirectPinterestAssets(result.assets);
+        assignDirectAssetsInOrder(result.assetIds);
         setPreferredReferenceAssetIds(result.assetIds);
         setReferenceRefreshKey((current) => current + 1);
       }}
       onCreateVibe={createPinterestVibe}
     />
+    <Dialog
+      open={imagePickerTarget !== null}
+      onOpenChange={(open) => {
+        if (!open) {
+          setImagePickerTarget(null);
+          setPickerAssetIds([]);
+        }
+      }}
+    >
+      <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
+        <DialogHeader>
+          <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+            Image for {pickerLabel}
+          </DialogTitle>
+          <DialogDescription className="text-[11px] text-muted-foreground">
+            Pick one image from Collections. This slide keeps your copy and uses the photo as-is.
+          </DialogDescription>
+        </DialogHeader>
+        <CollectionReferencePicker
+          selectedAssetIds={pickerAssetIds}
+          onChange={setPickerAssetIds}
+          maxSelection={1}
+          refreshKey={referenceRefreshKey}
+          preferredAssetIds={preferredReferenceAssetIds}
+        />
+        <div className="flex items-center justify-between border-t border-border pt-4">
+          <span className="text-[12px] text-muted-foreground">
+            {pickerAssetIds.length ? "1 image selected" : "No image selected"}
+          </span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className={SECONDARY_BTN}
+              onClick={() => {
+                setImagePickerTarget(null);
+                setPickerAssetIds([]);
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="pf-button-primary"
+              disabled={!pickerAssetIds.length}
+              onClick={applyPickedSlideImage}
+            >
+              <Check className="size-3.5" />
+              Apply to {pickerLabel}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

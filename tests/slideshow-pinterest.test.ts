@@ -396,8 +396,13 @@ assert.equal(MAX_PINTEREST_IMPORT_IMAGES, 40);
 assert.match(creatorViewSource, /Search Pinterest/);
 assert.match(creatorViewSource, /Copy JSON/);
 assert.match(creatorViewSource, /directImageAssetIds/);
+assert.match(creatorViewSource, /Add \$\{label\} image from collections/);
+assert.match(creatorViewSource, /openImagePicker\(\{ kind: "hook" \}\)/);
+assert.match(creatorViewSource, /alignCreatorDirectImages/);
+assert.match(creatorViewSource, /These shape generated slides/);
 assert.match(slideshowStudioSource, /slidesToGenerate = saved\.slides\.filter/);
 assert.match(slideshowStudioSource, /applyDirectSlideshowImages/);
+assert.match(slideshowStudioSource, /collection image/);
 
   console.log("slideshow Pinterest tests passed");
 }
