@@ -677,8 +677,8 @@ export function SlideshowEditor({
   if (!activeSlide) return null;
 
   return (
-    <div className="flex min-h-full flex-col bg-[var(--pf-canvas)]">
-      <header className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--pf-canvas)]">
+      <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
         <button
           type="button"
           onClick={() => void handleBack()}
@@ -759,7 +759,7 @@ export function SlideshowEditor({
       {viewMode === "edit" ? (
       <div
         data-slideshow-view="edit"
-        className="grid min-h-0 flex-1 xl:grid-cols-[264px_minmax(300px,1fr)_304px]"
+        className="grid min-h-0 flex-1 overflow-y-auto xl:grid-cols-[264px_minmax(300px,1fr)_304px]"
       >
         <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">

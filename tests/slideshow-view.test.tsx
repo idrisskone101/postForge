@@ -28,6 +28,12 @@ const previewSource = readFileSync(
   "utf8",
 );
 
+const studioSource = readFileSync(
+  new URL("../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
+  "utf8",
+);
+assert.match(studioSource, /overflow-hidden/);
+assert.match(editorSource, /h-full min-h-0/);
 assert.match(editorSource, /SlideshowViewSwitcher/);
 assert.match(editorSource, /SlideshowBoardView/);
 assert.match(editorSource, /SlideshowPlayView/);

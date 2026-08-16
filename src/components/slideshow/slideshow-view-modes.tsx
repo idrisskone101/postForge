@@ -162,7 +162,7 @@ export function SlideshowBoardView({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border bg-card px-3 py-2.5 sm:px-4">
+      <div className="shrink-0 border-t border-border bg-card px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="mx-auto flex w-full max-w-[1240px] items-center gap-1.5 overflow-x-auto">
           <p className="mr-2 hidden min-w-0 truncate text-[12px] text-muted-foreground sm:block">
             {phaseLabel(project.slides[activeIndex]?.role ?? "hook")} · slide{" "}
@@ -369,7 +369,7 @@ export function SlideshowPlayView({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-white/10 px-4 py-3">
+      <div className="shrink-0 border-t border-white/10 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div className="mx-auto flex w-full max-w-[720px] items-center gap-3">
           <button
             type="button"
