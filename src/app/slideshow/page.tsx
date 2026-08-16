@@ -3,6 +3,7 @@ import {
   createBlankSlideshowProject,
   SlideshowStudio,
 } from "@/components/slideshow";
+import { parseSlideshowViewMode } from "@/components/slideshow/slideshow-view";
 
 export const metadata = { title: "Slideshow Studio - PostForge" };
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default async function SlideshowPage({
   return (
     <SlideshowStudio
       initialProject={startNew ? createBlankSlideshowProject() : null}
+      initialViewMode={parseSlideshowViewMode(params.view)}
       supportsMp4Export={await canRenderSlideshowVideo()}
     />
   );

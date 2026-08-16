@@ -80,6 +80,7 @@ export function SlideshowStudio({
   onRegenerateSlide,
   onRegenerateImage,
   onExportProject,
+  initialViewMode = "edit",
 }: SlideshowStudioProps) {
   const [section, setSection] = useState(initialSection);
   const [projects, setProjects] = useState(initialProjects ?? []);
@@ -497,6 +498,7 @@ export function SlideshowStudio({
             imageModels={imageModels}
             selectedImageModel={selectedImageModel}
             onSelectImageModel={setSelectedImageModel}
+            initialViewMode={initialViewMode}
           />
         </div>
       ) : (

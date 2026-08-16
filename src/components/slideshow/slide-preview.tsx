@@ -448,9 +448,11 @@ export function SlidePreview({
 
 export function VisualTile({
   visualKey,
+  imageUrl,
   className,
 }: {
   visualKey: string;
+  imageUrl?: string | null;
   className?: string;
 }) {
   return (
@@ -458,8 +460,9 @@ export function VisualTile({
       aria-hidden="true"
       className={cn("block bg-zinc-900", className)}
       style={{
-        backgroundImage:
-          visualBackgrounds[visualKey] ?? visualBackgrounds["coral-glow"],
+        backgroundImage: imageUrl
+          ? `url(${JSON.stringify(imageUrl)})`
+          : (visualBackgrounds[visualKey] ?? visualBackgrounds["coral-glow"]),
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}

@@ -53,6 +53,7 @@ pnpm test:slideshow-pinterest
 pnpm test:slideshow-renderer
 pnpm test:slideshow-automation
 pnpm test:slideshow-management
+pnpm test:slideshow-view
 pnpm test:home-cockpit
 pnpm test:home-loading
 pnpm test:generate-empty-state

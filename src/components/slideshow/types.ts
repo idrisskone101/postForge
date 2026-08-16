@@ -1,4 +1,5 @@
 export type SlideshowSection = "create" | "drafts";
+export type SlideshowViewMode = "edit" | "board" | "play";
 
 type SlideshowAestheticTemplate = import("@/lib/ai/slideshow-creator-types").SlideshowAestheticTemplate;
 
@@ -200,6 +201,7 @@ export interface SlideshowStudioProps {
     project: SlideshowProject,
     options: SlideshowPublishOptions,
   ) => Promise<void>;
+  initialViewMode?: SlideshowViewMode;
 }
 
 export function isLocalSlideshowId(id: string) {
