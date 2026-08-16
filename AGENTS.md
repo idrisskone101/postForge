@@ -38,3 +38,25 @@ The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI w
 - A provider is connected only after its OAuth callback succeeds. Missing credentials, missing scopes, refresh failures, and sync failures must stay visible and must never be replaced with demo accounts or synthetic metrics.
 - Unavailable provider metrics remain unavailable (`null`), not zero. CSV imports stay a separate local data source.
 - Publishing is always an explicit, approval-gated external mutation. A connected account without the provider's publishing scope must remain unavailable as an automation destination.
+
+## Cursor Cloud specific instructions
+
+PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Prisma. There is no separate backend service; all APIs are Next.js route handlers under `src/app/api`.
+
+### Services and startup
+
+- Postgres is installed on the VM as the local `postgresql-16` cluster (not Docker; `docker` is not available here). It does not auto-start on a fresh boot. Start it before running the app, tests that hit the DB, or migrations: `sudo pg_ctlcluster 16 main start` (check with `pg_isready -h 127.0.0.1 -p 5432`). The `postforge` role/database and applied migrations persist in the VM snapshot.
+- `.env` is gitignored and already created on the VM from `.env.example` with `DATABASE_URL=postgresql://postforge:postforge@localhost:5432/postforge` and `STORAGE_DRIVER="database"`. If `.env` is missing, recreate it: `cp .env.example .env`, then set `STORAGE_LOCAL_PATH` to a path under `/workspace` (the default in the example is a macOS path).
+- After pulling new migrations, apply them with `pnpm exec prisma migrate deploy` (Postgres must be running first). `pnpm install` runs `prisma generate` automatically via `postinstall`.
+- Dev server: `pnpm dev` (Turbopack, http://localhost:3000). The "middleware is deprecated" warning is expected and harmless. Production: `pnpm build` then `pnpm start`.
+
+### Lint / typecheck / test / build
+
+- Standard commands live in `package.json` scripts: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm dev`, `pnpm start`.
+- `pnpm codex:check` (`scripts/codex-check.sh`) is the canonical full gate: it runs the entire `test:*` suite, then typecheck, lint, and a production build. It requires a running Postgres. Individual tests are the `test:*` scripts.
+- Lint currently passes with warnings only (no errors); do not treat those pre-existing warnings as regressions.
+- The tests are `tsx`-run assertion scripts (not a watch framework); most run without external services, and DB-dependent ones use the running local Postgres.
+
+### External integrations
+
+- fal.ai, Ollama, TikTok/Instagram/YouTube, and Railway/S3 storage all require secrets that are absent by default. Core dashboard workflows (characters, collections, slideshow drafts, automation drafts, DB-backed persistence) work without them; only actual media generation and provider publishing/sync need those keys. Missing credentials must stay visibly unavailable — never substitute demo data.
