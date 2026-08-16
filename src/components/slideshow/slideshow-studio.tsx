@@ -255,7 +255,7 @@ export function SlideshowStudio({
       slides: string[];
       template: unknown;
       collectionAssetIds: string[];
-      directImageAssetIds: string[];
+      directImageAssetIds: Array<string | null>;
       model?: string;
       aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
     }) => {
@@ -269,8 +269,8 @@ export function SlideshowStudio({
           title: input.title,
           aspectRatio: input.aspectRatio ?? "9:16",
         });
-        const directImageUrls = input.directImageAssetIds.map(
-          platformCollectionAssetUrl,
+        const directImageUrls = input.directImageAssetIds.map((assetId) =>
+          assetId ? platformCollectionAssetUrl(assetId) : null,
         );
         const local: SlideshowProject = applyDirectSlideshowImages({
           ...creatorDraft,
@@ -281,13 +281,14 @@ export function SlideshowStudio({
         }, directImageUrls);
         const saved = await persistSlideshowProject(local, apiBaseUrl);
 
-        // 2. Keep explicitly selected Pinterest images untouched and queue
+        // 2. Keep explicitly assigned collection images untouched and queue
         // visuals only for slides that still need an image.
         const slidesToGenerate = saved.slides.filter((slide) => !slide.imageUrl);
         if (!slidesToGenerate.length) {
+          const assignedCount = saved.slides.filter((slide) => slide.imageUrl).length;
           openEditor(saved);
           showToast(
-            `${saved.slides.length} Pinterest image${saved.slides.length === 1 ? "" : "s"} added directly to the slideshow.`,
+            `${assignedCount} collection image${assignedCount === 1 ? "" : "s"} added directly to the slideshow.`,
           );
           return;
         }

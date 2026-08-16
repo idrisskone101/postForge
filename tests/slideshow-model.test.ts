@@ -7,6 +7,7 @@ import {
 import {
   MAX_SLIDESHOW_SLIDES,
   addSlideshowSlide,
+  alignCreatorDirectImages,
   applyDirectSlideshowImages,
   deleteSlideshowSlide,
   duplicateSlideshowSlide,
@@ -35,6 +36,27 @@ const directReady = applyDirectSlideshowImages(
   Array.from({ length: 4 }, (_, index) => `/api/collection-assets/pin-${index + 1}`),
 );
 assert.equal(directReady.status, "ready");
+
+const sparseDirect = applyDirectSlideshowImages(createBlankSlideshowProject(), [
+  null,
+  "/api/collection-assets/slide-2",
+  undefined,
+  "/api/collection-assets/slide-4",
+]);
+assert.equal(sparseDirect.slides[0].imageUrl, null);
+assert.equal(sparseDirect.slides[1].imageUrl, "/api/collection-assets/slide-2");
+assert.equal(sparseDirect.slides[2].imageUrl, null);
+assert.equal(sparseDirect.slides[3].imageUrl, "/api/collection-assets/slide-4");
+assert.equal(sparseDirect.status, "draft");
+
+assert.deepEqual(
+  alignCreatorDirectImages({
+    hookAssetId: "hook-asset",
+    slideLines: ["First point", "", "Third point", ""],
+    slideAssetIds: [null, "ignored-empty", "third-asset", "also-ignored"],
+  }),
+  ["hook-asset", null, "third-asset"],
+);
 
 let project = createBlankSlideshowProject();
 assert.equal(project.slides[0].role, "hook");
