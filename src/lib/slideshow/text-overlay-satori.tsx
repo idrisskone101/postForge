@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { createElement, type ReactNode } from "react";
 import satori from "satori";
 import type { Font } from "satori";
@@ -15,72 +16,54 @@ import {
 type OverlayStyle = Record<string, string | number | undefined>;
 
 type FontFace = {
+  file: string;
   name: string;
   weight: 400 | 600 | 700;
   style: "normal" | "italic";
-  url: URL;
 };
 
+const fontsDir = join(process.cwd(), "src/lib/slideshow/fonts");
+
 const FONT_FILES: FontFace[] = [
+  { file: "Inter-Regular.ttf", name: "Inter", weight: 400, style: "normal" },
+  { file: "Inter-SemiBold.ttf", name: "Inter", weight: 600, style: "normal" },
+  { file: "Inter-Bold.ttf", name: "Inter", weight: 700, style: "normal" },
+  { file: "Inter-Italic.ttf", name: "Inter", weight: 400, style: "italic" },
   {
-    name: "Inter",
-    weight: 400,
-    style: "normal",
-    url: new URL("./fonts/Inter-Regular.ttf", import.meta.url),
-  },
-  {
-    name: "Inter",
-    weight: 600,
-    style: "normal",
-    url: new URL("./fonts/Inter-SemiBold.ttf", import.meta.url),
-  },
-  {
-    name: "Inter",
-    weight: 700,
-    style: "normal",
-    url: new URL("./fonts/Inter-Bold.ttf", import.meta.url),
-  },
-  {
-    name: "Inter",
-    weight: 400,
-    style: "italic",
-    url: new URL("./fonts/Inter-Italic.ttf", import.meta.url),
-  },
-  {
+    file: "LiberationSerif-Regular.ttf",
     name: "Liberation Serif",
     weight: 400,
     style: "normal",
-    url: new URL("./fonts/LiberationSerif-Regular.ttf", import.meta.url),
   },
   {
+    file: "LiberationSerif-Bold.ttf",
     name: "Liberation Serif",
     weight: 700,
     style: "normal",
-    url: new URL("./fonts/LiberationSerif-Bold.ttf", import.meta.url),
   },
   {
+    file: "LiberationSerif-Italic.ttf",
     name: "Liberation Serif",
     weight: 400,
     style: "italic",
-    url: new URL("./fonts/LiberationSerif-Italic.ttf", import.meta.url),
   },
   {
+    file: "LiberationSerif-BoldItalic.ttf",
     name: "Liberation Serif",
     weight: 700,
     style: "italic",
-    url: new URL("./fonts/LiberationSerif-BoldItalic.ttf", import.meta.url),
   },
   {
+    file: "LiberationMono-Regular.ttf",
     name: "Liberation Mono",
     weight: 400,
     style: "normal",
-    url: new URL("./fonts/LiberationMono-Regular.ttf", import.meta.url),
   },
   {
+    file: "LiberationMono-Bold.ttf",
     name: "Liberation Mono",
     weight: 700,
     style: "normal",
-    url: new URL("./fonts/LiberationMono-Bold.ttf", import.meta.url),
   },
 ];
 
@@ -94,7 +77,7 @@ async function overlayFonts() {
   fontCache = await Promise.all(
     FONT_FILES.map(async (face) => ({
       name: face.name,
-      data: await readFile(face.url),
+      data: await readFile(join(fontsDir, face.file)),
       weight: face.weight,
       style: face.style,
     })),
