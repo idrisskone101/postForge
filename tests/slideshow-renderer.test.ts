@@ -15,6 +15,7 @@ import {
 } from "../src/lib/ai/slideshow-renderer";
 import {
   SLIDESHOW_TEXT_REFERENCE_WIDTH,
+  createSlideshowTextOverlayMarkup,
   slideshowHeadlineFontSize,
 } from "../src/lib/slideshow/text-overlay";
 
@@ -83,14 +84,19 @@ async function main() {
     style: "plain",
     size: 56,
   }).toString("utf8");
-  const sizedPreview = createSlideshowTextOverlaySvg(slide, 282, 501, {
+  const sizedPreview = createSlideshowTextOverlayMarkup(slide, 1080, 1920, {
     style: "plain",
     size: 56,
-  }).toString("utf8");
+  }, { fit: "frame" });
   const exportHeadline = headlineFontSizes(sizedExport)[0];
   const previewHeadline = headlineFontSizes(sizedPreview)[0];
   assert.equal(exportHeadline, slideshowHeadlineFontSize(56, 1080));
-  assert.equal(previewHeadline, 56);
+  assert.equal(previewHeadline, exportHeadline);
+  assert.match(sizedExport, /width="1080"/);
+  assert.match(sizedExport, /height="1920"/);
+  assert.match(sizedPreview, /width="100%"/);
+  assert.match(sizedPreview, /height="100%"/);
+  assert.match(sizedPreview, /viewBox="0 0 1080 1920"/);
   assert.ok(
     Math.abs(exportHeadline - 56 * (1080 / SLIDESHOW_TEXT_REFERENCE_WIDTH)) < 0.001,
   );

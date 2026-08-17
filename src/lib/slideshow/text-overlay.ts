@@ -118,11 +118,14 @@ function overlayFilterId(slideId: string) {
   return `slideshow-text-shadow-${trimmed}`;
 }
 
+export type SlideshowTextOverlayFit = "canvas" | "frame";
+
 export function createSlideshowTextOverlayMarkup(
   slide: SlideshowTextOverlaySlide,
   width: number,
   height: number,
   settings: SlideshowRenderTextSettings,
+  options: { fit?: SlideshowTextOverlayFit } = {},
 ) {
   const safeWidth = Math.max(45, Math.min(100, settings.width ?? 88)) / 100;
   const copyWidth = width * safeWidth;
@@ -343,9 +346,16 @@ export function createSlideshowTextOverlayMarkup(
 
   const shadowBlur = Math.max(2.4, headlineSize * 0.018);
   const shadowOffset = Math.max(1.5, headlineSize * 0.014);
+  const fit = options.fit ?? "canvas";
+  const svgWidth = fit === "frame" ? "100%" : String(width);
+  const svgHeight = fit === "frame" ? "100%" : String(height);
+  const svgStyle =
+    fit === "frame"
+      ? "display:block;width:100%;height:100%"
+      : "display:block";
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" data-slideshow-text-overlay="true" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" style="display:block">
+    <svg xmlns="http://www.w3.org/2000/svg" data-slideshow-text-overlay="true" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" style="${svgStyle}">
       <defs>
         <filter id="${filterId}" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB">
           <feGaussianBlur in="SourceAlpha" stdDeviation="${shadowBlur}" result="near-blur"/>
