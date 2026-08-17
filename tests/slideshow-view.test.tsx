@@ -41,6 +41,11 @@ assert.match(editorSource, /slideCoverImage/);
 assert.match(editorSource, /ArrowLeft/);
 assert.match(pageSource, /parseSlideshowViewMode\(params\.view\)/);
 assert.match(previewSource, /imageUrl\?:/);
+assert.match(previewSource, /createSlideshowTextOverlayMarkup/);
+assert.match(previewSource, /getSlideshowDimensions/);
+assert.doesNotMatch(previewSource, /1vw/);
+assert.doesNotMatch(previewSource, /--slide-copy-size/);
+assert.doesNotMatch(previewSource, /clamp\(13px/);
 
 assert.equal(parseSlideshowViewMode(undefined), "edit");
 assert.equal(parseSlideshowViewMode("board"), "board");
@@ -121,8 +126,17 @@ assert.match(editMarkup, /data-slideshow-view="edit"/);
 assert.match(editMarkup, /data-slide-thumb=/);
 assert.match(editMarkup, /\/slide-1\.jpg/);
 assert.match(editMarkup, /layers/);
+assert.match(editMarkup, /data-slideshow-text-overlay="true"/);
+assert.match(editMarkup, /viewBox="0 0 1080 1920"/);
+assert.match(editMarkup, /id="slideshow-text-shadow-/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="board"/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="play"/);
+
+const overlayIds = [...editMarkup.matchAll(/id="(slideshow-text-shadow-[^"]+)"/g)].map(
+  (match) => match[1],
+);
+assert.ok(overlayIds.length >= 2);
+assert.equal(new Set(overlayIds).size, overlayIds.length);
 
 const boardMarkup = renderEditor("board");
 assert.match(boardMarkup, /data-slideshow-view="board"/);

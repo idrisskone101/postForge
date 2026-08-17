@@ -13,6 +13,16 @@ import {
   renderSlideshowSlide,
   renderSlideshowVideo,
 } from "../src/lib/ai/slideshow-renderer";
+import {
+  SLIDESHOW_TEXT_REFERENCE_WIDTH,
+  slideshowHeadlineFontSize,
+} from "../src/lib/slideshow/text-overlay";
+
+function headlineFontSizes(svg: string) {
+  return [...svg.matchAll(/font-size="([\d.]+)" font-weight="800"/g)].map((match) =>
+    Number(match[1]),
+  );
+}
 
 function readZipEntry(archive: Buffer, target: string) {
   let offset = 0;
@@ -61,10 +71,42 @@ async function main() {
     font: "SerifItalic",
     padding: "flush",
   }).toString("utf8");
-  assert.match(shadowSvg, /id="text-shadow"/);
+  assert.match(shadowSvg, /id="slideshow-text-shadow-slide-1"/);
+  assert.match(shadowSvg, /url\(#slideshow-text-shadow-slide-1\)/);
+  assert.match(shadowSvg, /viewBox="0 0 1080 1920"/);
+  assert.match(shadowSvg, /data-slideshow-text-overlay="true"/);
   assert.match(shadowSvg, /<feGaussianBlur/);
   assert.match(shadowSvg, /text-rendering="geometricPrecision"/);
   assert.match(shadowSvg, /font-style="italic"/);
+
+  const sizedExport = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+    style: "plain",
+    size: 56,
+  }).toString("utf8");
+  const sizedPreview = createSlideshowTextOverlaySvg(slide, 282, 501, {
+    style: "plain",
+    size: 56,
+  }).toString("utf8");
+  const exportHeadline = headlineFontSizes(sizedExport)[0];
+  const previewHeadline = headlineFontSizes(sizedPreview)[0];
+  assert.equal(exportHeadline, slideshowHeadlineFontSize(56, 1080));
+  assert.equal(previewHeadline, 56);
+  assert.ok(
+    Math.abs(exportHeadline - 56 * (1080 / SLIDESHOW_TEXT_REFERENCE_WIDTH)) < 0.001,
+  );
+  assert.equal(
+    (sizedExport.match(/font-weight="800"/g) ?? []).length,
+    (sizedPreview.match(/font-weight="800"/g) ?? []).length,
+  );
+
+  const neighborSvg = createSlideshowTextOverlaySvg(
+    { ...slide, id: "slide-2" },
+    1080,
+    1920,
+    { style: "plain" },
+  ).toString("utf8");
+  assert.match(neighborSvg, /id="slideshow-text-shadow-slide-2"/);
+  assert.doesNotMatch(neighborSvg, /id="slideshow-text-shadow-slide-1"/);
 
   const lightBackgroundSvg = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
     style: "light",
