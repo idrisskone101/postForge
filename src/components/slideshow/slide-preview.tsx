@@ -159,13 +159,16 @@ export function SlidePreview({
           />
         ) : null}
         {overlaySrc ? (
-          <img
-            alt=""
+          <div
             aria-hidden="true"
-            draggable={false}
             data-slideshow-text-overlay=""
-            className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-contain"
-            src={overlaySrc}
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: `url(${JSON.stringify(overlaySrc)})`,
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "contain",
+            }}
           />
         ) : null}
       </div>
