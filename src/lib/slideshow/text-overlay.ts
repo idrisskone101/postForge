@@ -345,7 +345,7 @@ export function createSlideshowTextOverlayMarkup(
   const shadowOffset = Math.max(1.5, headlineSize * 0.014);
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" data-slideshow-text-overlay="true" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+    <svg xmlns="http://www.w3.org/2000/svg" data-slideshow-text-overlay="true" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" style="display:block">
       <defs>
         <filter id="${filterId}" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB">
           <feGaussianBlur in="SourceAlpha" stdDeviation="${shadowBlur}" result="near-blur"/>

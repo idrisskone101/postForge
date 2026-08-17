@@ -138,26 +138,36 @@ export function SlidePreview({
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white",
-        aspectClasses[aspectRatio],
+        "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white [container-type:inline-size]",
         className,
       )}
+      style={{ aspectRatio: `${width} / ${height}` }}
     >
-      <GridMedia slide={slide} grid={phaseSettings.grid} />
-      {phaseSettings.overlayEnabled ? (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-black"
-          style={{ opacity: phaseSettings.overlayOpacity / 100 }}
-        />
-      ) : null}
-      {overlayMarkup ? (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 [&_svg]:block [&_svg]:h-full [&_svg]:w-full"
-          dangerouslySetInnerHTML={{ __html: overlayMarkup }}
-        />
-      ) : null}
+      <div
+        data-slide-stage=""
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width,
+          height,
+          transform: `scale(calc(100cqw / ${width}))`,
+        }}
+      >
+        <GridMedia slide={slide} grid={phaseSettings.grid} />
+        {phaseSettings.overlayEnabled ? (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-black"
+            style={{ opacity: phaseSettings.overlayOpacity / 100 }}
+          />
+        ) : null}
+        {overlayMarkup ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            dangerouslySetInnerHTML={{ __html: overlayMarkup }}
+          />
+        ) : null}
+      </div>
       {showCounter && counter ? (
         <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
           {counter}
