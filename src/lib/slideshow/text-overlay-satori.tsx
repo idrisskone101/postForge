@@ -85,6 +85,22 @@ async function overlayFonts() {
   return fontCache;
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+const JUSTIFY = {
+  top: "flex-start",
+  center: "center",
+  bottom: "flex-end",
+} as const;
+
+const ITEMS = {
+  left: "flex-start",
+  center: "center",
+  right: "flex-end",
+} as const;
+
 function overlayFont(settings: SlideshowRenderTextSettings) {
   const key = settings.font ?? "Poppins";
   if (key === "Mono") {
@@ -97,6 +113,64 @@ function overlayFont(settings: SlideshowRenderTextSettings) {
     return { fontFamily: "Liberation Serif", fontStyle: "italic" as const };
   }
   return { fontFamily: "Inter", fontStyle: "normal" as const };
+}
+
+function overlayLayout(
+  width: number,
+  height: number,
+  settings: SlideshowRenderTextSettings,
+) {
+  const style = settings.style ?? "outline";
+  const align = settings.align ?? "center";
+  const headline = slideshowHeadlineFontSize(settings.size, width);
+  const copyWidth = width * (clamp(settings.width ?? 88, 45, 100) / 100);
+  const pills = style === "solid" || style === "light";
+  const color =
+    style === "light" ? "#111111" : slideshowOverlayTextColor(settings.color);
+  const stroke = style === "outline" ? Math.max(2.5, headline * 0.052) : 0;
+  const shadow = Math.max(1.5, headline * 0.014);
+  const blur = Math.max(2.4, headline * 0.018);
+  const font = overlayFont(settings);
+  const textShadow =
+    style === "plain" || style === "outline"
+      ? `0 ${shadow}px ${blur}px rgba(0,0,0,0.92), 0 ${shadow * 2.3}px ${blur * 2.2}px rgba(0,0,0,0.5)`
+      : undefined;
+  return {
+    style,
+    align,
+    pills,
+    color,
+    copyWidth,
+    headline,
+    body: Math.round(headline * 0.46),
+    eyebrow: Math.round(headline * 0.34),
+    radius:
+      clamp(settings.backgroundRadius ?? 4, 0, 20) * slideshowTextScale(width),
+    inset: settings.padding === "flush" ? height * 0.035 : height * 0.13,
+    gap: Math.max(pills ? 8 : 6, headline * (pills ? 0.12 : 0.08)),
+    panel: Math.max(24, headline * 0.55),
+    justifyContent: JUSTIFY[settings.position ?? "center"],
+    alignItems: ITEMS[align],
+    font,
+    wrapChars(size: number, em: number, floor: number) {
+      return Math.max(floor, Math.floor(copyWidth / (size * em)));
+    },
+    typeStyle(fontSize: number, fontWeight: 400 | 600 | 700): OverlayStyle {
+      return {
+        color,
+        ...font,
+        fontSize,
+        fontWeight,
+        textAlign: align,
+        width: "100%",
+        letterSpacing:
+          settings.font === "Condensed" ? -headline * 0.02 : undefined,
+        textShadow,
+        WebkitTextStrokeWidth: stroke ? `${stroke}px` : undefined,
+        WebkitTextStrokeColor: stroke ? "#09090b" : undefined,
+      };
+    },
+  };
 }
 
 function cleanStyle(style: OverlayStyle): OverlayStyle {
@@ -125,16 +199,10 @@ function pillLines(
   },
 ) {
   const pad = Math.max(12, options.fontSize * 0.34);
-  const alignSelf =
-    options.align === "left"
-      ? "flex-start"
-      : options.align === "right"
-        ? "flex-end"
-        : "center";
   return lines.map((line, index) =>
     box(line, {
       display: "flex",
-      alignSelf,
+      alignSelf: ITEMS[options.align],
       alignItems: "center",
       backgroundColor: options.background,
       color: options.color,
@@ -156,181 +224,132 @@ function pillLines(
   );
 }
 
+function overlayCopy(slide: SlideshowTextOverlaySlide) {
+  return {
+    eyebrow: slide.eyebrow?.trim() ? slide.eyebrow.trim().toUpperCase() : "",
+    headline: slide.headline.trim(),
+    body: (slide.body ?? "").trim(),
+  };
+}
+
+function overlayLayers(
+  copy: ReturnType<typeof overlayCopy>,
+  layout: ReturnType<typeof overlayLayout>,
+) {
+  if (layout.pills) {
+    const background =
+      layout.style === "solid" ? "rgba(17,17,17,0.9)" : "#ffffff";
+    const pill = (
+      lines: string[],
+      fontSize: number,
+      fontWeight: 400 | 600 | 700,
+      extra: { letterSpacing?: number; opacity?: number } = {},
+    ) =>
+      pillLines(lines, {
+        fontSize,
+        fontWeight,
+        color: layout.color,
+        background,
+        radius: layout.radius,
+        align: layout.align,
+        fontFamily: layout.font.fontFamily,
+        fontStyle: layout.font.fontStyle,
+        ...extra,
+      });
+    return [
+      ...(copy.eyebrow
+        ? pill([copy.eyebrow], layout.eyebrow, 700, {
+            letterSpacing: layout.eyebrow * 0.12,
+            opacity: 0.92,
+          })
+        : []),
+      ...(copy.headline
+        ? pill(
+            wrapSlideshowText(
+              copy.headline,
+              layout.wrapChars(layout.headline, 0.56, 12),
+              5,
+            ),
+            layout.headline,
+            700,
+          )
+        : []),
+      ...(copy.body
+        ? pill(
+            wrapSlideshowText(
+              copy.body,
+              layout.wrapChars(layout.body, 0.53, 18),
+              4,
+            ),
+            layout.body,
+            600,
+            { opacity: 0.96 },
+          )
+        : []),
+    ];
+  }
+
+  return [
+    copy.eyebrow
+      ? box(copy.eyebrow, {
+          ...layout.typeStyle(layout.eyebrow, 700),
+          opacity: 0.92,
+          letterSpacing: layout.eyebrow * 0.12,
+          lineHeight: 1.2,
+        })
+      : null,
+    copy.headline
+      ? box(copy.headline, {
+          ...layout.typeStyle(layout.headline, 700),
+          lineHeight: 1.12,
+          lineClamp: 5,
+        })
+      : null,
+    copy.body
+      ? box(copy.body, {
+          ...layout.typeStyle(layout.body, 600),
+          opacity: 0.96,
+          lineHeight: 1.42,
+          lineClamp: 4,
+        })
+      : null,
+  ].filter(Boolean);
+}
+
 function overlayTree(
   slide: SlideshowTextOverlaySlide,
   width: number,
   height: number,
   settings: SlideshowRenderTextSettings,
 ) {
-  const copyRatio = Math.max(45, Math.min(100, settings.width ?? 88)) / 100;
-  const copyWidth = width * copyRatio;
-  const headlineSize = slideshowHeadlineFontSize(settings.size, width);
-  const bodySize = Math.round(headlineSize * 0.46);
-  const eyebrowSize = Math.round(headlineSize * 0.34);
-  const style = settings.style ?? "outline";
-  const align = settings.align ?? "center";
-  const position = settings.position ?? "center";
-  const inset = settings.padding === "flush" ? height * 0.035 : height * 0.13;
-  const color = slideshowOverlayTextColor(settings.color);
-  const { fontFamily, fontStyle } = overlayFont(settings);
-  const condensed = settings.font === "Condensed";
-  const hasPills = style === "solid" || style === "light";
-  const renderedColor = style === "light" ? "#111111" : color;
-  const radius =
-    Math.max(0, Math.min(20, settings.backgroundRadius ?? 4)) *
-    slideshowTextScale(width);
-  const strokeWidth =
-    style === "outline" ? Math.max(2.5, headlineSize * 0.052) : 0;
-  const shadowBlur = Math.max(2.4, headlineSize * 0.018);
-  const shadowOffset = Math.max(1.5, headlineSize * 0.014);
-  const textShadow =
-    style === "plain" || style === "outline"
-      ? `0 ${shadowOffset}px ${shadowBlur}px rgba(0,0,0,0.92), 0 ${shadowOffset * 2.3}px ${shadowBlur * 2.2}px rgba(0,0,0,0.5)`
-      : undefined;
-  const panelPadding = Math.max(24, headlineSize * 0.55);
-  const justifyContent =
-    position === "top"
-      ? "flex-start"
-      : position === "bottom"
-        ? "flex-end"
-        : "center";
-  const alignItems =
-    align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center";
-  const textAlign = align;
-  const layerGap = hasPills
-    ? Math.max(8, headlineSize * 0.12)
-    : Math.max(6, headlineSize * 0.08);
-  const headlineMaxChars = Math.max(
-    12,
-    Math.floor(copyWidth / (headlineSize * 0.56)),
+  const layout = overlayLayout(width, height, settings);
+  return box(
+    box(overlayLayers(overlayCopy(slide), layout), {
+      display: "flex",
+      flexDirection: "column",
+      width: layout.copyWidth,
+      alignItems: layout.alignItems,
+      gap: layout.gap,
+      ...(layout.style === "translucent"
+        ? {
+            backgroundColor: "rgba(17,17,17,0.58)",
+            borderRadius: layout.panel * 0.55,
+            padding: layout.panel,
+          }
+        : {}),
+    }),
+    {
+      display: "flex",
+      width,
+      height,
+      flexDirection: "column",
+      justifyContent: layout.justifyContent,
+      alignItems: layout.alignItems,
+      paddingTop: layout.inset,
+      paddingBottom: layout.inset,
+      overflow: "hidden",
+    },
   );
-  const bodyMaxChars = Math.max(18, Math.floor(copyWidth / (bodySize * 0.53)));
-  const eyebrow = slide.eyebrow?.trim()
-    ? slide.eyebrow.trim().toUpperCase()
-    : "";
-  const headline = slide.headline.trim();
-  const body = (slide.body ?? "").trim();
-
-  const typeStyle = (fontSize: number, fontWeight: 400 | 600 | 700): OverlayStyle => ({
-    color: renderedColor,
-    fontFamily,
-    fontStyle,
-    fontSize,
-    fontWeight,
-    textAlign,
-    width: "100%",
-    letterSpacing: condensed ? -headlineSize * 0.02 : undefined,
-    textShadow,
-    WebkitTextStrokeWidth: strokeWidth ? `${strokeWidth}px` : undefined,
-    WebkitTextStrokeColor: strokeWidth ? "#09090b" : undefined,
-  });
-
-  const children: ReactNode[] = [];
-  if (hasPills) {
-    const background = style === "solid" ? "rgba(17,17,17,0.9)" : "#ffffff";
-    if (eyebrow) {
-      children.push(
-        ...pillLines([eyebrow], {
-          fontSize: eyebrowSize,
-          fontWeight: 700,
-          color: renderedColor,
-          background,
-          radius,
-          align,
-          letterSpacing: eyebrowSize * 0.12,
-          opacity: 0.92,
-          fontFamily,
-          fontStyle,
-        }),
-      );
-    }
-    if (headline) {
-      children.push(
-        ...pillLines(wrapSlideshowText(headline, headlineMaxChars, 5), {
-          fontSize: headlineSize,
-          fontWeight: 700,
-          color: renderedColor,
-          background,
-          radius,
-          align,
-          fontFamily,
-          fontStyle,
-        }),
-      );
-    }
-    if (body) {
-      children.push(
-        ...pillLines(wrapSlideshowText(body, bodyMaxChars, 4), {
-          fontSize: bodySize,
-          fontWeight: 600,
-          color: renderedColor,
-          background,
-          radius,
-          align,
-          opacity: 0.96,
-          fontFamily,
-          fontStyle,
-        }),
-      );
-    }
-  } else {
-    if (eyebrow) {
-      children.push(
-        box(eyebrow, {
-          ...typeStyle(eyebrowSize, 700),
-          opacity: 0.92,
-          letterSpacing: eyebrowSize * 0.12,
-          lineHeight: 1.2,
-        }),
-      );
-    }
-    if (headline) {
-      children.push(
-        box(headline, {
-          ...typeStyle(headlineSize, 700),
-          lineHeight: 1.12,
-          lineClamp: 5,
-        }),
-      );
-    }
-    if (body) {
-      children.push(
-        box(body, {
-          ...typeStyle(bodySize, 600),
-          opacity: 0.96,
-          lineHeight: 1.42,
-          lineClamp: 4,
-        }),
-      );
-    }
-  }
-
-  const stack = box(children, {
-    display: "flex",
-    flexDirection: "column",
-    width: copyWidth,
-    alignItems,
-    gap: layerGap,
-    ...(style === "translucent"
-      ? {
-          backgroundColor: "rgba(17,17,17,0.58)",
-          borderRadius: panelPadding * 0.55,
-          padding: panelPadding,
-        }
-      : {}),
-  });
-
-  return box(stack, {
-    display: "flex",
-    width,
-    height,
-    flexDirection: "column",
-    justifyContent,
-    alignItems,
-    paddingTop: inset,
-    paddingBottom: inset,
-    overflow: "hidden",
-  });
 }
 
 function overlayCacheKey(
