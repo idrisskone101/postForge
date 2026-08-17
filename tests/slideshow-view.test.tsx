@@ -41,11 +41,13 @@ assert.match(editorSource, /slideCoverImage/);
 assert.match(editorSource, /ArrowLeft/);
 assert.match(pageSource, /parseSlideshowViewMode\(params\.view\)/);
 assert.match(previewSource, /imageUrl\?:/);
-assert.match(previewSource, /createSlideshowTextOverlayMarkup/);
+assert.match(previewSource, /\/api\/slideshows\/overlay/);
 assert.match(previewSource, /getSlideshowDimensions/);
 assert.match(previewSource, /data-slide-canvas/);
 assert.match(previewSource, /data:image\/svg\+xml/);
 assert.match(previewSource, /backgroundSize: "contain"/);
+assert.doesNotMatch(previewSource, /createSlideshowTextOverlayMarkup/);
+assert.doesNotMatch(previewSource, /text-overlay-satori/);
 assert.doesNotMatch(previewSource, /data-slide-stage/);
 assert.doesNotMatch(previewSource, /100cqw/);
 assert.doesNotMatch(previewSource, /ResizeObserver/);
@@ -136,20 +138,13 @@ assert.match(editMarkup, /\/slide-1\.jpg/);
 assert.match(editMarkup, /layers/);
 assert.match(editMarkup, /data-slideshow-text-overlay=/);
 assert.match(editMarkup, /data-slide-canvas=/);
-assert.match(editMarkup, /data:image\/svg\+xml/);
-assert.match(editMarkup, /background-size:contain/);
+assert.doesNotMatch(editMarkup, /data:image\/svg\+xml/);
 assert.doesNotMatch(editMarkup, /data-slide-stage=/);
 assert.doesNotMatch(editMarkup, /100cqw/);
-assert.match(editMarkup, /slideshow-text-shadow-/);
+assert.doesNotMatch(editMarkup, /slideshow-text-shadow-/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="board"/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="play"/);
-
-const overlayIds = [
-  ...editMarkup.matchAll(/id%3D%22(slideshow-text-shadow-[^%]+)%22/g),
-].map((match) => match[1]);
-assert.ok(overlayIds.length >= 2);
-assert.equal(new Set(overlayIds).size, overlayIds.length);
-assert.match(editMarkup, /viewBox%3D%220%200%201080%201920%22/);
+assert.ok((editMarkup.match(/data-slideshow-text-overlay=/g) ?? []).length >= 2);
 
 const boardMarkup = renderEditor("board");
 assert.match(boardMarkup, /data-slideshow-view="board"/);

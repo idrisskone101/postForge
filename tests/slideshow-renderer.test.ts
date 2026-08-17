@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { inflateRawSync } from "node:zlib";
 
+import { NextRequest } from "next/server";
 import sharp from "sharp";
 
 import {
@@ -13,17 +14,14 @@ import {
   renderSlideshowSlide,
   renderSlideshowVideo,
 } from "../src/lib/ai/slideshow-renderer";
+import { SlideshowApiError } from "../src/lib/slideshow/errors";
+import { parseSlideshowOverlayRequest } from "../src/lib/slideshow/overlay-request";
 import {
   SLIDESHOW_TEXT_REFERENCE_WIDTH,
-  createSlideshowTextOverlayMarkup,
   slideshowHeadlineFontSize,
 } from "../src/lib/slideshow/text-overlay";
-
-function headlineFontSizes(svg: string) {
-  return [...svg.matchAll(/font-size="([\d.]+)" font-weight="800"/g)].map((match) =>
-    Number(match[1]),
-  );
-}
+import { createSlideshowTextOverlayMarkup } from "../src/lib/slideshow/text-overlay-satori";
+import { POST as overlayPost } from "../src/app/api/slideshows/overlay/route";
 
 function readZipEntry(archive: Buffer, target: string) {
   let offset = 0;
@@ -40,6 +38,35 @@ function readZipEntry(archive: Buffer, target: string) {
     offset = dataStart + compressedSize;
   }
   throw new Error(`ZIP entry not found: ${target}`);
+}
+
+async function overlayInk(svg: string) {
+  const { data, info } = await sharp(Buffer.from(svg))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let minX = info.width;
+  let minY = info.height;
+  let maxX = 0;
+  let maxY = 0;
+  let count = 0;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      const alpha = data[(y * info.width + x) * info.channels + 3];
+      if (alpha > 12) {
+        count += 1;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
+    }
+  }
+  return {
+    count,
+    width: Math.max(0, maxX - minX),
+    height: Math.max(0, maxY - minY),
+  };
 }
 
 async function main() {
@@ -67,111 +94,98 @@ async function main() {
   assert.equal(metadata.height, 1350);
   assert.equal(metadata.format, "jpeg");
 
-  const shadowSvg = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
-    style: "plain",
-    font: "SerifItalic",
-    padding: "flush",
-  }).toString("utf8");
-  assert.match(shadowSvg, /id="slideshow-text-shadow-slide-1"/);
-  assert.match(shadowSvg, /url\(#slideshow-text-shadow-slide-1\)/);
+  const shadowSvg = (
+    await createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+      style: "plain",
+      font: "SerifItalic",
+      padding: "flush",
+    })
+  ).toString("utf8");
   assert.match(shadowSvg, /viewBox="0 0 1080 1920"/);
   assert.match(shadowSvg, /data-slideshow-text-overlay="true"/);
-  assert.match(shadowSvg, /<feGaussianBlur/);
-  assert.match(shadowSvg, /text-rendering="geometricPrecision"/);
-  assert.match(shadowSvg, /font-style="italic"/);
+  assert.match(shadowSvg, /<path /);
+  const uprightSerif = (
+    await createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+      style: "plain",
+      font: "Serif",
+      padding: "flush",
+    })
+  ).toString("utf8");
+  assert.notEqual(shadowSvg, uprightSerif);
 
-  const sizedExport = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
-    style: "plain",
-    size: 56,
-  }).toString("utf8");
-  const sizedPreview = createSlideshowTextOverlayMarkup(slide, 1080, 1920, {
+  const sizedExport = (
+    await createSlideshowTextOverlaySvg(slide, 1080, 1920, {
+      style: "plain",
+      size: 56,
+    })
+  ).toString("utf8");
+  const sizedPreview = await createSlideshowTextOverlayMarkup(slide, 1080, 1920, {
     style: "plain",
     size: 56,
   });
-  const exportHeadline = headlineFontSizes(sizedExport)[0];
-  const previewHeadline = headlineFontSizes(sizedPreview)[0];
-  assert.equal(exportHeadline, slideshowHeadlineFontSize(56, 1080));
-  assert.equal(previewHeadline, exportHeadline);
+  assert.equal(sizedExport, sizedPreview);
   assert.match(sizedExport, /width="1080"/);
   assert.match(sizedExport, /height="1920"/);
-  assert.match(sizedPreview, /width="1080"/);
   assert.match(sizedPreview, /viewBox="0 0 1080 1920"/);
-  assert.ok(
-    Math.abs(exportHeadline - 56 * (1080 / SLIDESHOW_TEXT_REFERENCE_WIDTH)) < 0.001,
-  );
   assert.equal(
-    (sizedExport.match(/font-weight="800"/g) ?? []).length,
-    (sizedPreview.match(/font-weight="800"/g) ?? []).length,
+    slideshowHeadlineFontSize(56, 1080),
+    56 * (1080 / SLIDESHOW_TEXT_REFERENCE_WIDTH),
   );
 
-  const neighborSvg = createSlideshowTextOverlaySvg(
-    { ...slide, id: "slide-2" },
-    1080,
-    1920,
-    { style: "plain" },
+  const compactSvg = await createSlideshowTextOverlayMarkup(slide, 1080, 1920, {
+    style: "plain",
+    size: 28,
+  });
+  const compactInk = await overlayInk(compactSvg);
+  const largeInk = await overlayInk(sizedExport);
+  assert.ok(compactInk.count > 0);
+  assert.ok(largeInk.height > compactInk.height * 1.35);
+
+  const neighborSvg = (
+    await createSlideshowTextOverlaySvg(
+      { ...slide, id: "slide-2", headline: "Keep it repeatable" },
+      1080,
+      1920,
+      { style: "plain" },
+    )
   ).toString("utf8");
-  assert.match(neighborSvg, /id="slideshow-text-shadow-slide-2"/);
-  assert.doesNotMatch(neighborSvg, /id="slideshow-text-shadow-slide-1"/);
+  assert.match(neighborSvg, /data-slideshow-text-overlay="true"/);
+  assert.notEqual(neighborSvg, shadowSvg);
 
-  const lightBackgroundSvg = createSlideshowTextOverlaySvg(slide, 1080, 1920, {
-    style: "light",
-    align: "center",
-  }).toString("utf8");
-  assert.match(lightBackgroundSvg, /fill="#ffffff" opacity="0.96"/);
-  assert.match(lightBackgroundSvg, /fill="#111111"/);
-
-  const wrappedBackgroundSvg = createSlideshowTextOverlaySvg(
-    {
-      ...slide,
-      eyebrow: "",
-      headline: "A longer headline tiny",
-      body: "",
-    },
-    1080,
-    1920,
-    {
+  const lightBackgroundSvg = (
+    await createSlideshowTextOverlaySvg(slide, 1080, 1920, {
       style: "light",
       align: "center",
-      width: 50,
-      backgroundRadius: 12,
-    },
+    })
   ).toString("utf8");
-  const wrappedLineBoxes = [
-    ...wrappedBackgroundSvg.matchAll(
-      /data-line-box="true" data-y="([\d.]+)" data-height="([\d.]+)" data-width="([\d.]+)" data-radius="([\d.]+)" data-top-radius="([\d.]+)" data-bottom-radius="([\d.]+)"/g,
-    ),
-  ].map((match) => ({
-    y: Number(match[1]),
-    height: Number(match[2]),
-    width: Number(match[3]),
-    radius: Number(match[4]),
-    topRadius: Number(match[5]),
-    bottomRadius: Number(match[6]),
-  }));
-  const wrappedLineWidths = wrappedLineBoxes.map((box) => box.width);
-  assert.ok(wrappedLineWidths.length >= 2);
-  assert.ok(new Set(wrappedLineWidths.map(Math.round)).size >= 2);
-  assert.ok(wrappedLineBoxes.length >= 2);
-  assert.ok(
-    Math.abs(
-      wrappedLineBoxes[0].y +
-        wrappedLineBoxes[0].height -
-        wrappedLineBoxes[1].y,
-    ) < 0.01,
-  );
-  assert.ok(wrappedLineBoxes.every((box) => box.radius > 0));
-  assert.equal(wrappedLineBoxes[0].topRadius, wrappedLineBoxes[0].radius);
-  assert.equal(wrappedLineBoxes[0].bottomRadius, 0);
-  assert.equal(wrappedLineBoxes.at(-1)?.topRadius, 0);
-  assert.equal(
-    wrappedLineBoxes.at(-1)?.bottomRadius,
-    wrappedLineBoxes.at(-1)?.radius,
-  );
-  assert.ok(
-    wrappedLineBoxes.slice(1, -1).every(
-      (box) => box.topRadius === 0 && box.bottomRadius === 0,
-    ),
-  );
+  assert.match(lightBackgroundSvg, /#ffffff|#fff|rgb\(255,\s*255,\s*255\)/i);
+  assert.match(lightBackgroundSvg, /#111111|#111|rgb\(17,\s*17,\s*17\)/i);
+
+  const wrappedBackgroundSvg = (
+    await createSlideshowTextOverlaySvg(
+      {
+        ...slide,
+        eyebrow: "",
+        headline: "A longer headline tiny",
+        body: "",
+      },
+      1080,
+      1920,
+      {
+        style: "light",
+        align: "center",
+        width: 50,
+        backgroundRadius: 12,
+      },
+    )
+  ).toString("utf8");
+  const wrappedWidths = [
+    ...wrappedBackgroundSvg.matchAll(/\bwidth="([\d.]+)"/g),
+  ]
+    .map((match) => Number(match[1]))
+    .filter((value) => value > 40 && value < 1080);
+  assert.ok(wrappedWidths.length >= 2);
+  assert.ok(new Set(wrappedWidths.map((value) => Math.round(value))).size >= 2);
 
   const backgroundImage = await renderSlideshowSlide(slide, {
     aspectRatio: "9:16",
@@ -225,6 +239,46 @@ async function main() {
     isSlideshowRemoteImageUrlAllowed("https://example.com/untrusted.png"),
     false,
   );
+
+  const parsed = parseSlideshowOverlayRequest({
+    slide: { headline: "Hello overlay" },
+    width: 1080,
+    height: 1920,
+    settings: { style: "plain", size: 28 },
+  });
+  assert.equal(parsed.slide.headline, "Hello overlay");
+  assert.equal(parsed.settings.size, 28);
+  try {
+    parseSlideshowOverlayRequest({
+      slide: { headline: "Hello overlay" },
+      width: 12,
+      height: 12,
+    });
+    assert.fail("expected invalid canvas size to throw");
+  } catch (error) {
+    assert.equal(error instanceof SlideshowApiError, true);
+  }
+
+  const overlayResponse = await overlayPost(
+    new NextRequest("http://localhost/api/slideshows/overlay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slide: { headline: "Hello overlay" },
+        width: 1080,
+        height: 1920,
+        settings: { style: "plain", size: 28 },
+      }),
+    }),
+  );
+  assert.equal(overlayResponse.status, 200);
+  assert.match(
+    overlayResponse.headers.get("content-type") ?? "",
+    /image\/svg\+xml/,
+  );
+  const overlayBody = await overlayResponse.text();
+  assert.match(overlayBody, /data-slideshow-text-overlay="true"/);
+  assert.match(overlayBody, /viewBox="0 0 1080 1920"/);
 
   const archive = await renderSlideshowArchive({
     id: "project-1",

@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import { cn } from "@/lib/utils";
 import {
-  createSlideshowTextOverlayMarkup,
   getSlideshowDimensions,
   type SlideshowRenderTextSettings,
 } from "@/lib/slideshow/text-overlay";
@@ -42,6 +43,17 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
   "1:1": "aspect-square",
   "16:9": "aspect-video",
 };
+
+const overlaySrcCache = new Map<string, string>();
+const OVERLAY_SRC_CACHE_LIMIT = 40;
+
+function rememberOverlaySrc(key: string, src: string) {
+  if (overlaySrcCache.size >= OVERLAY_SRC_CACHE_LIMIT) {
+    const oldest = overlaySrcCache.keys().next().value;
+    if (oldest) overlaySrcCache.delete(oldest);
+  }
+  overlaySrcCache.set(key, src);
+}
 
 function overlayTextSettings(
   textSettings: SlideshowTextSettings,
@@ -126,17 +138,82 @@ export function SlidePreview({
   counter?: string;
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
-  const overlayMarkup = phaseSettings.displayText
-    ? createSlideshowTextOverlayMarkup(
-        slide,
-        width,
-        height,
-        overlayTextSettings(textSettings),
-      )
-    : null;
-  const overlaySrc = overlayMarkup
-    ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(overlayMarkup.trim())}`
-    : null;
+  const displayText = phaseSettings.displayText;
+  const overlayRequest = useMemo(
+    () => ({
+      slide: {
+        id: slide.id,
+        eyebrow: slide.eyebrow,
+        headline: slide.headline,
+        body: slide.body,
+      },
+      width,
+      height,
+      settings: overlayTextSettings(textSettings),
+    }),
+    [
+      slide.id,
+      slide.eyebrow,
+      slide.headline,
+      slide.body,
+      width,
+      height,
+      textSettings.font,
+      textSettings.color,
+      textSettings.customColor,
+      textSettings.style,
+      textSettings.size,
+      textSettings.position,
+      textSettings.width,
+      textSettings.align,
+      textSettings.padding,
+      textSettings.backgroundRadius,
+    ],
+  );
+  const overlayKey = JSON.stringify(overlayRequest);
+  const [overlaySrc, setOverlaySrc] = useState<string | null>(
+    () => overlaySrcCache.get(overlayKey) ?? null,
+  );
+
+  useEffect(() => {
+    if (!displayText) {
+      setOverlaySrc(null);
+      return;
+    }
+
+    const cached = overlaySrcCache.get(overlayKey);
+    if (cached) {
+      setOverlaySrc(cached);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const response = await fetch("/api/slideshows/overlay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: overlayKey,
+            signal: controller.signal,
+          });
+          if (!response.ok) return;
+          const svg = (await response.text()).trim();
+          if (!svg.includes('data-slideshow-text-overlay="true"')) return;
+          const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+          rememberOverlaySrc(overlayKey, src);
+          if (!controller.signal.aborted) setOverlaySrc(src);
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+        }
+      })();
+    }, 60);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [displayText, overlayKey]);
 
   return (
     <div
@@ -158,17 +235,21 @@ export function SlidePreview({
             style={{ opacity: phaseSettings.overlayOpacity / 100 }}
           />
         ) : null}
-        {overlaySrc ? (
+        {displayText ? (
           <div
             aria-hidden="true"
             data-slideshow-text-overlay=""
             className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage: `url(${JSON.stringify(overlaySrc)})`,
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "contain",
-            }}
+            style={
+              overlaySrc
+                ? {
+                    backgroundImage: `url(${JSON.stringify(overlaySrc)})`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "contain",
+                  }
+                : undefined
+            }
           />
         ) : null}
       </div>

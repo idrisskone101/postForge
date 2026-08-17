@@ -7,8 +7,8 @@ import { deflateRawSync } from "node:zlib";
 
 import sharp from "sharp";
 
+import { createSlideshowTextOverlaySvg } from "@/lib/slideshow/text-overlay-satori";
 import {
-  createSlideshowTextOverlayMarkup,
   getSlideshowDimensions,
   type SlideshowRenderTextSettings,
   type SlideshowTextOverlaySlide,
@@ -24,7 +24,7 @@ const execFileAsync = promisify(execFile);
 
 export type SlideshowRenderFormat = "jpeg" | "png" | "webp";
 export type { SlideshowRenderTextSettings };
-export { getSlideshowDimensions };
+export { getSlideshowDimensions, createSlideshowTextOverlaySvg };
 
 export type SlideshowRenderSlide = SlideshowTextOverlaySlide & {
   imageUrl?: string | null;
@@ -301,17 +301,6 @@ async function buildSlideBackground(
     .toBuffer();
 }
 
-export function createSlideshowTextOverlaySvg(
-  slide: SlideshowRenderSlide,
-  width: number,
-  height: number,
-  settings: SlideshowRenderTextSettings,
-) {
-  return Buffer.from(
-    createSlideshowTextOverlayMarkup(slide, width, height, settings),
-  );
-}
-
 export async function renderSlideshowSlide(
   slide: SlideshowRenderSlide,
   options: {
@@ -335,7 +324,14 @@ export async function renderSlideshowSlide(
     },
   ];
   if (slide.displayText !== false) {
-    layers.push({ input: createSlideshowTextOverlaySvg(slide, width, height, options.textSettings ?? {}) });
+    layers.push({
+      input: await createSlideshowTextOverlaySvg(
+        slide,
+        width,
+        height,
+        options.textSettings ?? {},
+      ),
+    });
   }
 
   const renderer = sharp(background).composite(layers);
