@@ -132,8 +132,10 @@ export function SlidePreview({
         width,
         height,
         overlayTextSettings(textSettings),
-        { fit: "frame" },
       )
+    : null;
+  const overlaySrc = overlayMarkup
+    ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(overlayMarkup.trim())}`
     : null;
 
   return (
@@ -156,11 +158,14 @@ export function SlidePreview({
             style={{ opacity: phaseSettings.overlayOpacity / 100 }}
           />
         ) : null}
-        {overlayMarkup ? (
-          <div
+        {overlaySrc ? (
+          <img
+            alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
-            dangerouslySetInnerHTML={{ __html: overlayMarkup }}
+            draggable={false}
+            data-slideshow-text-overlay=""
+            className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-contain"
+            src={overlaySrc}
           />
         ) : null}
       </div>

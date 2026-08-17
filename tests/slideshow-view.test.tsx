@@ -44,10 +44,12 @@ assert.match(previewSource, /imageUrl\?:/);
 assert.match(previewSource, /createSlideshowTextOverlayMarkup/);
 assert.match(previewSource, /getSlideshowDimensions/);
 assert.match(previewSource, /data-slide-canvas/);
-assert.match(previewSource, /fit: "frame"/);
+assert.match(previewSource, /data:image\/svg\+xml/);
+assert.match(previewSource, /object-contain/);
 assert.doesNotMatch(previewSource, /data-slide-stage/);
 assert.doesNotMatch(previewSource, /100cqw/);
 assert.doesNotMatch(previewSource, /ResizeObserver/);
+assert.doesNotMatch(previewSource, /dangerouslySetInnerHTML/);
 assert.doesNotMatch(previewSource, /1vw/);
 assert.doesNotMatch(previewSource, /--slide-copy-size/);
 assert.doesNotMatch(previewSource, /clamp\(13px/);
@@ -131,22 +133,22 @@ assert.match(editMarkup, /data-slideshow-view="edit"/);
 assert.match(editMarkup, /data-slide-thumb=/);
 assert.match(editMarkup, /\/slide-1\.jpg/);
 assert.match(editMarkup, /layers/);
-assert.match(editMarkup, /data-slideshow-text-overlay="true"/);
-assert.match(editMarkup, /viewBox="0 0 1080 1920"/);
+assert.match(editMarkup, /data-slideshow-text-overlay=/);
 assert.match(editMarkup, /data-slide-canvas=/);
-assert.match(editMarkup, /width="100%"/);
-assert.match(editMarkup, /height="100%"/);
+assert.match(editMarkup, /data:image\/svg\+xml/);
+assert.match(editMarkup, /object-contain/);
 assert.doesNotMatch(editMarkup, /data-slide-stage=/);
 assert.doesNotMatch(editMarkup, /100cqw/);
-assert.match(editMarkup, /id="slideshow-text-shadow-/);
+assert.match(editMarkup, /slideshow-text-shadow-/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="board"/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="play"/);
 
-const overlayIds = [...editMarkup.matchAll(/id="(slideshow-text-shadow-[^"]+)"/g)].map(
-  (match) => match[1],
-);
+const overlayIds = [
+  ...editMarkup.matchAll(/id%3D%22(slideshow-text-shadow-[^%]+)%22/g),
+].map((match) => match[1]);
 assert.ok(overlayIds.length >= 2);
 assert.equal(new Set(overlayIds).size, overlayIds.length);
+assert.match(editMarkup, /viewBox%3D%220%200%201080%201920%22/);
 
 const boardMarkup = renderEditor("board");
 assert.match(boardMarkup, /data-slideshow-view="board"/);
