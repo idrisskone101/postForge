@@ -1004,7 +1004,6 @@ export function GenerateFormView({
 
   return (
     <form
-      data-magicpath-frame="generate-studio-435054350382039040"
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();

@@ -946,7 +946,7 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* PostForge / MagicPath production primitives */
+/* PostForge production primitives */
 @layer components {
   .policy-copy p,
   .policy-copy li {

@@ -1,7 +1,5 @@
 # Product
 
-<!-- impeccable:product-schema 1 -->
-
 ## Platform
 
 web
@@ -51,14 +49,13 @@ Confirmed constraints and invariants:
 
 - Name: PostForge.
 - Voice/identity: the platform should feel polished and great to use even though it is single-user; craft is an explicit commitment, not optional.
-- **Standing visual preference (recorded August 2026, Impeccable direction round, seed `c509faa7`): the category standard played straight.** PostForge's visual world is the calm professional SaaS dashboard — the canon, chosen deliberately over metaphor worlds (rack, nixie, man-machine, quote grammar). Restraint and clarity are the identity; the content (generated media, pipeline state, spend) carries the color. The craft bar is **Linear and Resend**: this surface should read as belonging next to them. Execute the canon at full fidelity — no irony, no smuggled quirk.
+- **Standing visual preference: the category standard played straight.** PostForge's visual world is the calm professional SaaS dashboard — the canon, chosen deliberately over metaphor worlds (rack, nixie, man-machine, quote grammar). Restraint and clarity are the identity; the content (generated media, pipeline state, spend) carries the color. The craft bar is **Linear and Resend**: this surface should read as belonging next to them. Execute the canon at full fidelity — no irony, no smuggled quirk.
 - Single brand accent: coral `#FF4A20` (hover `#E9421C`), reserved for primary actions and active states; Geist typography (Geist Mono as the data voice); token-driven light + dark themes. Design language is documented in `DESIGN.md`.
 
 ## Evidence on Hand
 
-- Design language: `DESIGN.md` (canonical design authority, kept current by Impeccable).
+- Design language: `DESIGN.md` (canonical design authority).
 - Product spec history: `PHASE1.md` (early phase; product has since expanded well beyond it).
-- MagicPath visual reference and production parity map: `docs/magicpath-visual-qa.md`.
 - Screenshots of running surfaces in the repo root (e.g. `fixed-home.png`, `fixed-characters.png`, `pf-settings-models-1440.png`).
 
 ## Product Principles
