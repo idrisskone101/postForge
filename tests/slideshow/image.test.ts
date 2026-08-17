@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   buildSlideshowImagePrompt,
   buildSlideshowImageQueueRequest,
-} from "../src/lib/ai/slideshow-image";
+} from "../../src/lib/ai/slideshow-image";
 
 const prompt = buildSlideshowImagePrompt(
   "A calm morning routine beside a bright apartment window",

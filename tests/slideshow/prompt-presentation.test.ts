@@ -3,7 +3,7 @@ import {
   formatGenerationPromptForEditing,
   humanizeGenerationFailure,
   summarizeGenerationPrompt,
-} from "../src/lib/ai/prompt-presentation";
+} from "../../src/lib/ai/prompt-presentation";
 
 const malformedStructuredPrompt = JSON.stringify({
   aspect_ratio: "9:16",

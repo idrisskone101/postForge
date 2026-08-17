@@ -6,7 +6,7 @@ import {
   CloneProductionStatePanel,
   createReferenceImageBatchEntries,
   getClonePrimaryAction,
-} from "../src/components/ugc-clone-form";
+} from "../../src/components/ugc-clone-form";
 
 const emptyState = renderToStaticMarkup(
   <CloneProductionStatePanel

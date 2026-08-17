@@ -5,10 +5,10 @@ import { Compass, RefreshCw } from "lucide-react";
 import {
   WorkspaceState,
   WorkspaceStateSkeleton,
-} from "../src/components/workspace-state";
+} from "../../src/components/workspace-state";
 
 const workspaceStateSource = readFileSync(
-  new URL("../src/components/workspace-state.tsx", import.meta.url),
+  new URL("../../src/components/workspace-state.tsx", import.meta.url),
   "utf8"
 );
 

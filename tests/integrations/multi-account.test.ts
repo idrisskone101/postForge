@@ -5,12 +5,12 @@ import {
   getIntegrationPerformanceResponse,
   getPublicIntegrationStatus,
   syncIntegrationAccount,
-} from "../src/lib/integrations/service";
+} from "../../src/lib/integrations/service";
 import {
   createMemoryIntegrationStorage,
   readIntegrationConnection,
   readProviderMetrics,
-} from "../src/lib/integrations/store";
+} from "../../src/lib/integrations/store";
 
 const key = Buffer.alloc(32, 6);
 const env = {

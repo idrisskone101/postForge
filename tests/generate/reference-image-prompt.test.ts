@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { analyzeSceneAndBuildPrompt } from "../src/lib/ai/analyze-scene";
+import { analyzeSceneAndBuildPrompt } from "../../src/lib/ai/analyze-scene";
 
 void (async () => {
   const { promptJson, promptString, negativePrompt } = await analyzeSceneAndBuildPrompt(

@@ -9,11 +9,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { parseSingleByteRange } from "../src/lib/http-byte-range";
+import { parseSingleByteRange } from "../../src/lib/http-byte-range";
 import {
   RailwayS3StorageDriver,
   railwayS3StorageConfigFromEnvironment,
-} from "../src/lib/storage";
+} from "../../src/lib/storage";
 
 const config = railwayS3StorageConfigFromEnvironment({
   STORAGE_S3_BUCKET: "postforge-media-test",

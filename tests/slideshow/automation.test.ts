@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   nextSlideshowAutomationRun,
   parseSlideshowAutomationSchedule,
-} from "../src/lib/slideshow/automation-schedule";
+} from "../../src/lib/slideshow/automation-schedule";
 import {
   copySlideshowAutomationSourceContent,
   launchSlideshowAutomationFreshVisuals,
@@ -12,11 +12,11 @@ import {
   stripSlideshowClientId,
   stripSlideshowProjectActivity,
   type SlideshowAutomationFreshVisualDependencies,
-} from "../src/lib/slideshow/automation-worker";
+} from "../../src/lib/slideshow/automation-worker";
 import {
   readSlideshowAutomationVisualSettings,
   shouldGenerateFreshAutomationVisuals,
-} from "../src/lib/slideshow/automation-visuals";
+} from "../../src/lib/slideshow/automation-visuals";
 
 const weekdays = {
   weekdays: ["Mon", "Wed", "Fri"],

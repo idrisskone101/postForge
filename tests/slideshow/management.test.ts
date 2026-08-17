@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import {
   deleteSlideshowAutomation,
   updateSlideshowAutomation,
-} from "../src/components/slideshow/api";
-import type { SlideshowAutomation } from "../src/components/slideshow/types";
+} from "../../src/components/slideshow/api";
+import type { SlideshowAutomation } from "../../src/components/slideshow/types";
 
 const originalFetch = globalThis.fetch;
 const requests: Array<{ url: string; init?: RequestInit }> = [];

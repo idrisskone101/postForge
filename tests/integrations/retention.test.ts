@@ -2,27 +2,27 @@ import assert from "node:assert/strict";
 import {
   claimAutomationPublication,
   manuallyResolveUnknownPublication,
-} from "../src/lib/automation-publishing";
+} from "../../src/lib/automation-publishing";
 import {
   createAutomationRecord,
   type AutomationPublication,
   type AutomationRecord,
-} from "../src/lib/automations";
-import { isRetentionCronAuthorized } from "../src/lib/integrations/retention-auth";
+} from "../../src/lib/automations";
+import { isRetentionCronAuthorized } from "../../src/lib/integrations/retention-auth";
 import {
   scrubYouTubeAutomationProviderData,
   YOUTUBE_RETENTION_UNKNOWN_STATUS,
-} from "../src/lib/integrations/retention-records";
-import { runYouTubeDataRetentionSweep } from "../src/lib/integrations/retention";
-import { forceDeleteLocalIntegrationData } from "../src/lib/integrations/service";
+} from "../../src/lib/integrations/retention-records";
+import { runYouTubeDataRetentionSweep } from "../../src/lib/integrations/retention";
+import { forceDeleteLocalIntegrationData } from "../../src/lib/integrations/service";
 import {
   createMemoryIntegrationStorage,
   readIntegrationConnection,
   readProviderMetrics,
   saveIntegrationConnection,
   saveProviderMetrics,
-} from "../src/lib/integrations/store";
-import type { DecryptedIntegrationConnection } from "../src/lib/integrations/types";
+} from "../../src/lib/integrations/store";
+import type { DecryptedIntegrationConnection } from "../../src/lib/integrations/types";
 
 const now = new Date("2026-08-03T12:00:00.000Z");
 

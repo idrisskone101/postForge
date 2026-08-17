@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GenerateOutputActions } from "../src/components/generate-output-actions";
+import { GenerateOutputActions } from "../../src/components/generate-output-actions";
 
 const markup = renderToStaticMarkup(
   <GenerateOutputActions

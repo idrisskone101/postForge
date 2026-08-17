@@ -6,7 +6,7 @@ import {
   buildAvatarCandidateGenerationRequest,
   getDefaultAvatarImportName,
   resetAvatarImportDraft,
-} from "../src/components/avatar-picker";
+} from "../../src/components/avatar-picker";
 
 const request = buildAvatarCandidateGenerationRequest({
   rawJson: JSON.stringify({ name: "Imported Creator", tone: "warm" }),

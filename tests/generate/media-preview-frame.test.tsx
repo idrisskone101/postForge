@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { MediaPreviewFrame } from "../src/components/media-preview";
+import { MediaPreviewFrame } from "../../src/components/media-preview";
 
 const detailMarkup = renderToStaticMarkup(
   <MediaPreviewFrame

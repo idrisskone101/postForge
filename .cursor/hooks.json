@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/prune-playwright-artifacts.sh",
+        "timeout": 15
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".cursor/hooks/prune-playwright-artifacts.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}

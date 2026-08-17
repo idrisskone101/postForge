@@ -14,19 +14,19 @@ import {
   syncIntegrationAccount,
   YouTubePolicyConsentRequiredError,
   youtubeProviderDataIsFresh,
-} from "../src/lib/integrations/service";
-import { integrationJsonError } from "../src/lib/integrations/routes";
+} from "../../src/lib/integrations/service";
+import { integrationJsonError } from "../../src/lib/integrations/routes";
 import {
   createMemoryIntegrationStorage,
   readIntegrationConnection,
   readProviderMetrics,
   saveIntegrationConnection,
   saveProviderMetrics,
-} from "../src/lib/integrations/store";
+} from "../../src/lib/integrations/store";
 import type {
   DecryptedIntegrationConnection,
   PublicOwnedPostMetric,
-} from "../src/lib/integrations/types";
+} from "../../src/lib/integrations/types";
 
 const key = Buffer.alloc(32, 6);
 const env = {

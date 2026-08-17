@@ -5,8 +5,8 @@ import {
   readIntegrationCallbackFeedback,
   SettingsNavigation,
   SocialIntegrationCard,
-} from "../src/app/settings/settings-page-client";
-import type { PublicIntegrationStatus } from "../src/lib/integrations/types";
+} from "../../src/app/settings/settings-page-client";
+import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
 
 const noOp = () => {};
 

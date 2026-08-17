@@ -78,3 +78,6 @@ if command -v pg_isready >/dev/null 2>&1 && [ -f ".env" ]; then
 else
   echo "==> pg_isready is not available; skipping Prisma migrations"
 fi
+
+echo "==> Pruning Playwright CLI/MCP session artifacts"
+bash "$REPO_ROOT/scripts/prune-playwright-artifacts.sh"

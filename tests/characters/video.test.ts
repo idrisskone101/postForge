@@ -1,11 +1,12 @@
+import "../_env/unreachable-database";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   buildCharacterVideoProviderRequest,
   submitDurableCharacterIntent,
   type DurableCharacterSubmissionDependencies,
-} from "../src/lib/ai/generate-character-video";
-import { getModel } from "../src/lib/ai/models";
+} from "../../src/lib/ai/generate-character-video";
+import { getModel } from "../../src/lib/ai/models";
 
 const identityElement = {
   frontal_image_url: "https://example.com/front.jpg",
@@ -170,15 +171,15 @@ assert.equal(
 assert.equal(unclaimedSubmission.calls.submits, 0);
 
 const formSource = readFileSync(
-  new URL("../src/components/generation-form.tsx", import.meta.url),
+  new URL("../../src/components/generation-form.tsx", import.meta.url),
   "utf8"
 );
 const videoRouteSource = readFileSync(
-  new URL("../src/app/api/generate/videos/route.ts", import.meta.url),
+  new URL("../../src/app/api/generate/videos/route.ts", import.meta.url),
   "utf8"
 );
 const retryRouteSource = readFileSync(
-  new URL("../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
+  new URL("../../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
   "utf8"
 );
 

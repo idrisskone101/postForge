@@ -5,12 +5,12 @@ import {
   GalleryHeaderControls,
   GalleryLoadErrorState,
   GalleryPageClient,
-} from "../src/app/gallery/gallery-page-client";
-import { GallerySelectionInspector } from "../src/components/gallery-grid";
+} from "../../src/app/gallery/gallery-page-client";
+import { GallerySelectionInspector } from "../../src/components/gallery-grid";
 import {
   buildGalleryWhere,
   normalizeGalleryReviewStatusFilter,
-} from "../src/lib/gallery";
+} from "../../src/lib/gallery";
 
 const initialPage = {
   nextCursor: null,

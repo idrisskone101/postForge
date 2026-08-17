@@ -3,7 +3,7 @@ import {
   AutomationReviewValidationError,
   buildAutomationReviewDraftSpec,
   runAutomationReviewDraft,
-} from "../src/lib/automation-review";
+} from "../../src/lib/automation-review";
 import {
   AUTOMATION_SOCIAL_DESTINATIONS,
   AUTOMATION_TEMPLATES,
@@ -17,19 +17,19 @@ import {
   isAutomationSocialDestination,
   resolveAutomationDestination,
   type AutomationRecord,
-} from "../src/lib/automations";
+} from "../../src/lib/automations";
 import {
   getDueAutomationScheduleSlot,
   runAutomationSchedulerTick,
   validateAutomationSchedule,
   type AutomationScheduleSlot,
   type AutomationSchedulerDependencies,
-} from "../src/lib/automation-schedule";
+} from "../../src/lib/automation-schedule";
 import type {
   IntegrationProvider,
   PublicIntegrationStatus,
-} from "../src/lib/integrations/types";
-import { POST as updateAutomationSchedule } from "../src/app/api/automations/[id]/schedule/route";
+} from "../../src/lib/integrations/types";
+import { POST as updateAutomationSchedule } from "../../src/app/api/automations/[id]/schedule/route";
 
 assert.deepEqual(
   AUTOMATION_TEMPLATES.map((template) => template.id),

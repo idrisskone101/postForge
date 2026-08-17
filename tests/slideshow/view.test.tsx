@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { SlideshowEditor } from "../src/components/slideshow/slideshow-editor";
-import { SlideshowViewSwitcher } from "../src/components/slideshow/slideshow-view-modes";
-import { createBlankSlideshowProject } from "../src/components/slideshow/fixtures";
+import { SlideshowEditor } from "../../src/components/slideshow/slideshow-editor";
+import { SlideshowViewSwitcher } from "../../src/components/slideshow/slideshow-view-modes";
+import { createBlankSlideshowProject } from "../../src/components/slideshow/fixtures";
 import {
   isEditableKeyboardTarget,
   parseSlideshowViewMode,
@@ -12,24 +12,24 @@ import {
   slideCoverImage,
   slideLayerCount,
   stepSlideIndex,
-} from "../src/components/slideshow/slideshow-view";
-import type { SlideshowProject } from "../src/components/slideshow/types";
+} from "../../src/components/slideshow/slideshow-view";
+import type { SlideshowProject } from "../../src/components/slideshow/types";
 
 const editorSource = readFileSync(
-  new URL("../src/components/slideshow/slideshow-editor.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/slideshow-editor.tsx", import.meta.url),
   "utf8",
 );
 const pageSource = readFileSync(
-  new URL("../src/app/slideshow/page.tsx", import.meta.url),
+  new URL("../../src/app/slideshow/page.tsx", import.meta.url),
   "utf8",
 );
 const previewSource = readFileSync(
-  new URL("../src/components/slideshow/slide-preview.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/slide-preview.tsx", import.meta.url),
   "utf8",
 );
 
 const studioSource = readFileSync(
-  new URL("../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
   "utf8",
 );
 assert.match(studioSource, /overflow-hidden/);

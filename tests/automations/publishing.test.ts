@@ -10,35 +10,35 @@ import {
   recoverStalePendingPublication,
   refreshAutomationPublicationStatus,
   releaseAutomationPublicationRecovery,
-} from "../src/lib/automation-publishing";
+} from "../../src/lib/automation-publishing";
 import {
   assertAssetsAreNotPublicationLeased,
   assertProviderHasNoUnresolvedPublication,
   assertReconnectCompatibleWithPublications,
   publicationIsUnresolved,
   UnresolvedPublicationConflictError,
-} from "../src/lib/publication-lifecycle";
+} from "../../src/lib/publication-lifecycle";
 import {
   createAutomationRecord,
   type AutomationPublication,
   type AutomationRecord,
-} from "../src/lib/automations";
+} from "../../src/lib/automations";
 import {
   completeOAuthConnection,
   disconnectIntegrationAccount,
   IntegrationMutationSupersededError,
   publishIntegrationShort,
-} from "../src/lib/integrations/service";
+} from "../../src/lib/integrations/service";
 import {
   createMemoryIntegrationStorage,
   readIntegrationConnection,
   saveIntegrationConnection,
-} from "../src/lib/integrations/store";
-import type { DecryptedIntegrationConnection } from "../src/lib/integrations/types";
+} from "../../src/lib/integrations/store";
+import type { DecryptedIntegrationConnection } from "../../src/lib/integrations/types";
 import {
   truncateUtf16Units,
   truncateUtf8Bytes,
-} from "../src/lib/unicode";
+} from "../../src/lib/unicode";
 
 function record(): AutomationRecord {
   const value = createAutomationRecord();
@@ -857,7 +857,7 @@ async function run() {
   assert.equal(afterAuthRace?.authorization.status, "healthy");
 
   const publishRoute = readFileSync(
-    new URL("../src/app/api/automations/[id]/publish/route.ts", import.meta.url),
+    new URL("../../src/app/api/automations/[id]/publish/route.ts", import.meta.url),
     "utf8"
   );
   const globalClaimLockIndex = publishRoute.indexOf(
@@ -900,7 +900,7 @@ async function run() {
   );
   const signedMediaRoute = readFileSync(
     new URL(
-      "../src/app/api/integrations/publish-media/[id]/route.ts",
+      "../../src/app/api/integrations/publish-media/[id]/route.ts",
       import.meta.url
     ),
     "utf8"
@@ -913,7 +913,7 @@ async function run() {
     /"Cache-Control": "public, max-age=300"/
   );
   const publishingSource = readFileSync(
-    new URL("../src/lib/integrations/publishing.ts", import.meta.url),
+    new URL("../../src/lib/integrations/publishing.ts", import.meta.url),
     "utf8"
   );
   const uploadRequestStage = publishingSource.indexOf(
@@ -928,7 +928,7 @@ async function run() {
     "YouTube upload boundary is persisted before sending non-empty media bytes"
   );
   const automationUi = readFileSync(
-    new URL("../src/app/automations/automations-page-client.tsx", import.meta.url),
+    new URL("../../src/app/automations/automations-page-client.tsx", import.meta.url),
     "utf8"
   );
   assert.match(automationUi, /pf-safe-overlay/);

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   getHomeActiveJobCutoff,
   isHomeActiveJob,
-} from "../src/lib/jobs/home-active";
+} from "../../src/lib/jobs/home-active";
 
 const now = new Date("2026-06-14T18:00:00Z");
 

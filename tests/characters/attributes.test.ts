@@ -4,7 +4,7 @@ import {
   CHARACTER_ATTRIBUTE_SECTIONS,
   DEFAULT_CHARACTER_ATTRIBUTES,
   randomCharacterAttributes,
-} from "../src/lib/character-attributes";
+} from "../../src/lib/character-attributes";
 
 const expectedSections = [
   {

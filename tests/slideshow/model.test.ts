@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { createBlankSlideshowProject } from "../src/components/slideshow/fixtures";
+import { createBlankSlideshowProject } from "../../src/components/slideshow/fixtures";
 import {
   deserializeSlideshowProject,
   serializeSlideshowProject,
-} from "../src/components/slideshow/api";
+} from "../../src/components/slideshow/api";
 import {
   MAX_SLIDESHOW_SLIDES,
   addSlideshowSlide,
@@ -14,7 +14,7 @@ import {
   moveSlideshowSlide,
   reorderSlideshowSlides,
   setSlideshowCta,
-} from "../src/components/slideshow/model";
+} from "../../src/components/slideshow/model";
 
 const withDirectImages = applyDirectSlideshowImages(
   createBlankSlideshowProject(),

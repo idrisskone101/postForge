@@ -5,7 +5,7 @@ import {
   isSettingsTab,
   SETTINGS_NAVIGATION,
   SettingsNavigation,
-} from "../src/app/settings/settings-page-client";
+} from "../../src/app/settings/settings-page-client";
 
 assert.deepEqual(
   SETTINGS_NAVIGATION.map(({ id, group }) => [id, group]),

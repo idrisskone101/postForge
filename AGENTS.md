@@ -28,6 +28,10 @@ The reviewer must:
 
 The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI work is not complete until the reviewer confirms design-system consistency and no material functionality regression, followed by lint, typecheck, tests, and a production build.
 
+## Playwright session artifacts
+
+`.playwright-cli/` and `.playwright-mcp/` are gitignored dumps from Playwright CLI/MCP (snapshots, screenshots, videos). Agent screenshots dropped in the repo root (`ugc-clone-*.png`, `pf-canon-*.png`, and similar) are also not app data. `scripts/prune-playwright-artifacts.sh` removes videos after 1 day, other Playwright files after 7 days, caps those folders at 20 MB, and deletes untracked image/video files from the repo root. It runs from `pnpm prune:playwright`, `codex:setup`, and Cursor `sessionStart`/`sessionEnd` hooks. Do not write review screenshots into the repository root.
+
 ## Integration system invariant
 
 - TikTok, Instagram, and YouTube are one server-owned connection system. Settings controls a connection; Performance reads that connection's owned-media metrics; Automations reads the same connection and granted publishing capability.

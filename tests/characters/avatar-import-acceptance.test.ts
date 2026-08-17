@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { acceptAvatarCandidateAsImportedAvatar } from "../src/lib/avatar-import-acceptance";
+import { acceptAvatarCandidateAsImportedAvatar } from "../../src/lib/avatar-import-acceptance";
 
 async function main() {
   const discardedCandidateIds: string[] = [];

@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   CloneOutputReviewDetail,
   type CloneOutputReviewJob,
-} from "../src/components/clone-output-review-detail";
+} from "../../src/components/clone-output-review-detail";
 
 const completedJob = {
   id: "job-12345678",

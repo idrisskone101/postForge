@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GenerateOutputActions } from "../src/components/generate-output-actions";
+import { GenerateOutputActions } from "../../src/components/generate-output-actions";
 import {
   buildCloneHandoffHref,
   buildContinueVideoHref,
@@ -10,26 +10,26 @@ import {
   clampPreviewZoom,
   getGenerationStatusCopy,
   type JobDetail,
-} from "../src/lib/generation-editor";
+} from "../../src/lib/generation-editor";
 
 const generationFormSource = readFileSync(
-  new URL("../src/components/generation-form.tsx", import.meta.url),
+  new URL("../../src/components/generation-form.tsx", import.meta.url),
   "utf8"
 );
 const generationDetailSource = readFileSync(
-  new URL("../src/app/generate/[id]/page.tsx", import.meta.url),
+  new URL("../../src/app/generate/[id]/page.tsx", import.meta.url),
   "utf8"
 );
 const imageRouteSource = readFileSync(
-  new URL("../src/app/api/generate/images/route.ts", import.meta.url),
+  new URL("../../src/app/api/generate/images/route.ts", import.meta.url),
   "utf8"
 );
 const videoRouteSource = readFileSync(
-  new URL("../src/app/api/generate/videos/route.ts", import.meta.url),
+  new URL("../../src/app/api/generate/videos/route.ts", import.meta.url),
   "utf8"
 );
 const collectionsSource = readFileSync(
-  new URL("../src/app/collections/collections-page-client.tsx", import.meta.url),
+  new URL("../../src/app/collections/collections-page-client.tsx", import.meta.url),
   "utf8"
 );
 

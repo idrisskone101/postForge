@@ -3,11 +3,11 @@ import {
   fetchWorkspaceFeature,
   removeWorkspaceFeature,
   saveWorkspaceFeature,
-} from "../src/lib/workspace-features-client";
+} from "../../src/lib/workspace-features-client";
 import {
   removeCollectionAssetReferences,
   type CollectionFeatureRecord,
-} from "../src/lib/collections";
+} from "../../src/lib/collections";
 
 type ExampleRecord = {
   id: string;

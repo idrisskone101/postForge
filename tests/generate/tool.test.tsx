@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GenerateFormView } from "../src/components/generation-form";
-import { VideoReferencePicker } from "../src/components/video-reference-picker";
-import { getAllModels } from "../src/lib/ai/models";
+import { GenerateFormView } from "../../src/components/generation-form";
+import { VideoReferencePicker } from "../../src/components/video-reference-picker";
+import { getAllModels } from "../../src/lib/ai/models";
 
 const models = getAllModels();
 const selectedModel = models.find((model) => model.type === "image") ?? models[0];
@@ -87,7 +87,7 @@ assert.match(videoMarkup, /5s video/);
 assert.match(videoMarkup, /Loading recent outputs…/);
 
 const formSource = readFileSync(
-  new URL("../src/components/generation-form.tsx", import.meta.url),
+  new URL("../../src/components/generation-form.tsx", import.meta.url),
   "utf8"
 );
 assert.match(formSource, /getContinuityVideoModel\(\)/);

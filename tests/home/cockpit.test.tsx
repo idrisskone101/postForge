@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { HomeCockpit } from "../src/app/home-cockpit";
-import { getHomeJobProductionMetadata } from "../src/lib/jobs/home-production-context";
+import { HomeCockpit } from "../../src/app/home-cockpit";
+import { getHomeJobProductionMetadata } from "../../src/lib/jobs/home-production-context";
 
 const now = new Date("2026-06-12T15:00:00Z");
 

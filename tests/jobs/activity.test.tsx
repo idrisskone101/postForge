@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { JobsActivity } from "../src/app/jobs/jobs-activity";
+import { JobsActivity } from "../../src/app/jobs/jobs-activity";
 import {
   getJobActivityLabel,
   getJobDestination,
   getJobStatusLabel,
-} from "../src/lib/jobs/presentation";
+} from "../../src/lib/jobs/presentation";
 
 const now = new Date("2026-08-10T14:30:00.000Z");
 const baseJob = {
@@ -97,7 +97,7 @@ assert.equal(
 );
 
 const identityPackSource = readFileSync(
-  new URL("../src/lib/ugc/avatar-identity-pack.ts", import.meta.url),
+  new URL("../../src/lib/ugc/avatar-identity-pack.ts", import.meta.url),
   "utf8"
 );
 assert.match(identityPackSource, /tags: \["avatar-identity"/);

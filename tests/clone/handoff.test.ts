@@ -4,27 +4,27 @@ import {
   consumeCloneHandoffQuery,
   isSupportedCloneReferenceFile,
   readCloneHandoffQuery,
-} from "../src/lib/ugc-clone-handoff";
+} from "../../src/lib/ugc-clone-handoff";
 import {
   buildCloneOutputHandoffUrl,
   handoffCloneOutput,
   updateCloneOutputReviewStatus,
-} from "../src/lib/clone-output-actions";
+} from "../../src/lib/clone-output-actions";
 
 const cloneFormSource = readFileSync(
-  new URL("../src/components/ugc-clone-form.tsx", import.meta.url),
+  new URL("../../src/components/ugc-clone-form.tsx", import.meta.url),
   "utf8"
 );
 const cloneRouteSource = readFileSync(
-  new URL("../src/app/api/ugc-clone/generate/route.ts", import.meta.url),
+  new URL("../../src/app/api/ugc-clone/generate/route.ts", import.meta.url),
   "utf8"
 );
 const cloneServiceSource = readFileSync(
-  new URL("../src/lib/ugc/generate-clone.ts", import.meta.url),
+  new URL("../../src/lib/ugc/generate-clone.ts", import.meta.url),
   "utf8"
 );
 const sourcePickerSource = readFileSync(
-  new URL("../src/components/tiktok-input.tsx", import.meta.url),
+  new URL("../../src/components/tiktok-input.tsx", import.meta.url),
   "utf8"
 );
 

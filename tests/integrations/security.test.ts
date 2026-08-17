@@ -4,7 +4,7 @@ import {
   decodeIntegrationEncryptionKey,
   decryptIntegrationSecret,
   encryptIntegrationSecret,
-} from "../src/lib/integrations/crypto";
+} from "../../src/lib/integrations/crypto";
 import {
   consumeOAuthStateRecord,
   createMemoryIntegrationStorage,
@@ -12,19 +12,19 @@ import {
   readIntegrationConnection,
   saveIntegrationConnection,
   saveOAuthStateRecord,
-} from "../src/lib/integrations/store";
-import { isSameOriginMutation } from "../src/lib/integrations/routes";
+} from "../../src/lib/integrations/store";
+import { isSameOriginMutation } from "../../src/lib/integrations/routes";
 import {
   createOAuthState,
   verifyOAuthState,
-} from "../src/lib/integrations/state";
-import type { DecryptedIntegrationConnection } from "../src/lib/integrations/types";
+} from "../../src/lib/integrations/state";
+import type { DecryptedIntegrationConnection } from "../../src/lib/integrations/types";
 import { NextRequest } from "next/server";
-import { middleware } from "../src/middleware";
+import { middleware } from "../../src/middleware";
 import {
   handleInstagramDeauthorize,
   verifyMetaSignedRequest,
-} from "../src/lib/integrations/meta-deauthorize";
+} from "../../src/lib/integrations/meta-deauthorize";
 
 function metaSignedRequest(
   payload: Record<string, unknown>,

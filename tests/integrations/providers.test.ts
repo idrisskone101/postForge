@@ -6,12 +6,12 @@ import {
   isValidRetentionCronSecret,
   INTEGRATION_PROVIDER_NAMES,
   INTEGRATION_PROVIDER_SCOPES,
-} from "../src/lib/integrations/config";
+} from "../../src/lib/integrations/config";
 import {
   instagramAdapter,
   tiktokAdapter,
   youtubeAdapter,
-} from "../src/lib/integrations/providers";
+} from "../../src/lib/integrations/providers";
 
 const encryptionKey = Buffer.alloc(32, 4).toString("base64");
 const env = {

@@ -3,19 +3,19 @@ import assert from "node:assert/strict";
 import type {
   GeneratedFile,
   GenerationJob,
-} from "../src/generated/prisma/client";
-import { calculateEstimatedCost, getModel } from "../src/lib/ai/models";
+} from "../../src/generated/prisma/client";
+import { calculateEstimatedCost, getModel } from "../../src/lib/ai/models";
 import {
   buildSlideshowImageQueueRequest,
   recoverQueuedSlideshowImageJobs,
   submitReservedSlideshowImage,
   type SlideshowImageSubmissionDependencies,
-} from "../src/lib/ai/slideshow-image";
+} from "../../src/lib/ai/slideshow-image";
 import {
   pollSingleJob,
   type FalJobPollDependencies,
-} from "../src/lib/jobs/poller";
-import { runSlideshowMaintenanceTick } from "../src/lib/slideshow/maintenance";
+} from "../../src/lib/jobs/poller";
+import { runSlideshowMaintenanceTick } from "../../src/lib/slideshow/maintenance";
 
 const now = new Date("2026-08-03T16:00:00.000Z");
 const oldStartedAt = new Date(now.getTime() - 60 * 60 * 1000);

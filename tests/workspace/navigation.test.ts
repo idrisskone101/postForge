@@ -4,7 +4,7 @@ import {
   getActiveWorkspaceItem,
   workspaceNavigationGroups,
   workspaceNavigationItems,
-} from "../src/lib/workspace-navigation";
+} from "../../src/lib/workspace-navigation";
 
 const primaryLabels = workspaceNavigationGroups.primary.map((item) => item.label);
 assert.deepEqual(primaryLabels, [
@@ -109,19 +109,19 @@ assert.equal(allLabels.includes("Analytics"), false);
 assert.equal(allLabels.includes("Costs"), false);
 
 const sidebarSource = readFileSync(
-  new URL("../src/components/sidebar.tsx", import.meta.url),
+  new URL("../../src/components/sidebar.tsx", import.meta.url),
   "utf8"
 );
 const shellSource = readFileSync(
-  new URL("../src/components/workspace-shell.tsx", import.meta.url),
+  new URL("../../src/components/workspace-shell.tsx", import.meta.url),
   "utf8"
 );
 const layoutSource = readFileSync(
-  new URL("../src/app/layout.tsx", import.meta.url),
+  new URL("../../src/app/layout.tsx", import.meta.url),
   "utf8"
 );
 const globalStyles = readFileSync(
-  new URL("../src/app/globals.css", import.meta.url),
+  new URL("../../src/app/globals.css", import.meta.url),
   "utf8"
 );
 

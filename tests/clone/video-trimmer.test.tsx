@@ -5,8 +5,8 @@ import {
   formatTrimTime,
   getTrimSummary,
   normalizeTrimRange,
-} from "../src/components/video-trimmer";
-import { isMotionSourceWithinLimit } from "../src/lib/ugc/source-limits";
+} from "../../src/components/video-trimmer";
+import { isMotionSourceWithinLimit } from "../../src/lib/ugc/source-limits";
 
 assert.equal(formatTrimTime(1.234), "1.23s");
 assert.equal(formatTrimTime(0), "0.00s");

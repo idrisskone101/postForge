@@ -9,7 +9,7 @@ import {
   getAvatarActionErrorMessage,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
-} from "../src/components/avatar-picker";
+} from "../../src/components/avatar-picker";
 
 assert.equal(
   getAvatarActionErrorMessage(new Error("Upload service unavailable"), "Upload failed"),

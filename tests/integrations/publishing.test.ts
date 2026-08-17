@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { getProviderOAuthConfig } from "../src/lib/integrations/config";
+import { getProviderOAuthConfig } from "../../src/lib/integrations/config";
 import {
   IntegrationMediaValidationError,
   IntegrationPublicationAmbiguousError,
@@ -14,14 +14,14 @@ import {
   resumeYouTubeUpload,
   youtubeResumableStatusIsRetryable,
   type ProviderPublishProgress,
-} from "../src/lib/integrations/publishing";
-import { IntegrationProviderError } from "../src/lib/integrations/providers/http";
+} from "../../src/lib/integrations/publishing";
+import { IntegrationProviderError } from "../../src/lib/integrations/providers/http";
 import {
   assertInstagramMediaProbe,
   inspectInstagramReelMedia,
   InstagramMediaProbeError,
   instagramMediaProbeIsAvailable,
-} from "../src/lib/integrations/instagram-media-probe";
+} from "../../src/lib/integrations/instagram-media-probe";
 
 const env = {
   POSTFORGE_PUBLIC_URL: "https://postforge.example",

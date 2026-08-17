@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GenerateEmptyState } from "../src/components/generation-form";
+import { GenerateEmptyState } from "../../src/components/generation-form";
 
 const markup = renderToStaticMarkup(<GenerateEmptyState />);
 

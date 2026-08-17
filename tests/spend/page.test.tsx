@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { TooltipProvider } from "../src/components/ui/tooltip";
-import { SpendPageContent } from "../src/app/costs/costs-page-client";
+import { TooltipProvider } from "../../src/components/ui/tooltip";
+import { SpendPageContent } from "../../src/app/costs/costs-page-client";
 
 const markup = renderToStaticMarkup(
   <TooltipProvider>

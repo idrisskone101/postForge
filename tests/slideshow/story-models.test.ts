@@ -8,7 +8,7 @@ import {
   storyModelSupportsVision,
   STORY_MODELS,
   DEFAULT_MODEL,
-} from "../src/lib/ai/story-models";
+} from "../../src/lib/ai/story-models";
 
 function run() {
   assert.ok(STORY_MODELS.length > 0, "expected at least one story model");

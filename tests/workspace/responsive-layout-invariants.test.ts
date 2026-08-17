@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 function source(relativePath: string) {
-  return readFileSync(new URL(`../${relativePath}`, import.meta.url), "utf8");
+  return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
 const shell = source("src/components/workspace-shell.tsx");

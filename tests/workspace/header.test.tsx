@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { WorkspaceRouteHeader } from "../src/components/workspace-shell";
-import { workspaceNavigationItems } from "../src/lib/workspace-navigation";
+import { WorkspaceRouteHeader } from "../../src/components/workspace-shell";
+import { workspaceNavigationItems } from "../../src/lib/workspace-navigation";
 
 const home = workspaceNavigationItems.find((item) => item.label === "Home");
 assert.ok(home);

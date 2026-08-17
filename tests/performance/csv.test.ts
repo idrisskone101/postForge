@@ -9,7 +9,7 @@ import {
   parsePerformanceCsv,
   postEngagementRate,
   type PerformancePostView,
-} from "../src/app/performance/performance-page-client";
+} from "../../src/app/performance/performance-page-client";
 
 const parsed = parsePerformanceCsv(
   '\uFEFFtitle,views,likes,comments,shares,saves,publishedAt\r\n"Launch day, part one","12.5k",840,62,91,430,2026-08-01\r\n"A quote: ""ship it""",2m,10,2,3,4,2026-08-02'
@@ -164,7 +164,7 @@ assert.equal(
 );
 
 const performanceSource = readFileSync(
-  new URL("../src/app/performance/performance-page-client.tsx", import.meta.url),
+  new URL("../../src/app/performance/performance-page-client.tsx", import.meta.url),
   "utf8"
 );
 assert.match(performanceSource, /min-\[1180px\]:grid-cols-2/);

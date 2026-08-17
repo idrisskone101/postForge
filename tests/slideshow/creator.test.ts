@@ -5,7 +5,7 @@ import {
   parseSlideshowAestheticTemplate,
   planSlideshowCreatorScenes,
   slideshowCreatorLimits,
-} from "../src/lib/ai/slideshow-creator";
+} from "../../src/lib/ai/slideshow-creator";
 
 const templateInput = {
   aesthetic: {

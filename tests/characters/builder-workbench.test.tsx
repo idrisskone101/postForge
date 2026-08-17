@@ -1,29 +1,29 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { CharacterPhoto } from "../src/components/character-photo";
-import { parseImportedCharacterAttributes } from "../src/app/characters/new/character-builder-client";
+import { CharacterPhoto } from "../../src/components/character-photo";
+import { parseImportedCharacterAttributes } from "../../src/app/characters/new/character-builder-client";
 import {
   buildCharacterImagePrompt,
   characterRecipeFingerprint,
   CHARACTER_ATTRIBUTE_SECTIONS,
   DEFAULT_CHARACTER_ATTRIBUTES,
-} from "../src/lib/character-attributes";
+} from "../../src/lib/character-attributes";
 
 const builderSource = readFileSync(
-  new URL("../src/app/characters/new/character-builder-client.tsx", import.meta.url),
+  new URL("../../src/app/characters/new/character-builder-client.tsx", import.meta.url),
   "utf8"
 );
 const librarySource = readFileSync(
-  new URL("../src/app/characters/characters-page-client.tsx", import.meta.url),
+  new URL("../../src/app/characters/characters-page-client.tsx", import.meta.url),
   "utf8"
 );
 const avatarRouteSource = readFileSync(
-  new URL("../src/app/api/avatars/[id]/route.ts", import.meta.url),
+  new URL("../../src/app/api/avatars/[id]/route.ts", import.meta.url),
   "utf8"
 );
 const generationRouteSource = readFileSync(
-  new URL("../src/app/api/generate/images/route.ts", import.meta.url),
+  new URL("../../src/app/api/generate/images/route.ts", import.meta.url),
   "utf8"
 );
 
@@ -115,7 +115,7 @@ assert.match(photoMarkup, /\/character-builder\/default-portrait\.png/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 
 const defaultPortrait = readFileSync(
-  new URL("../public/character-builder/default-portrait.png", import.meta.url)
+  new URL("../../public/character-builder/default-portrait.png", import.meta.url)
 );
 assert.equal(defaultPortrait.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
 assert.ok(defaultPortrait.length > 100_000, "default portrait should be a real image asset");

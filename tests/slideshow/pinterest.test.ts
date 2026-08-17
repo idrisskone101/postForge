@@ -1,22 +1,22 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-import { SlideshowApiError } from "../src/lib/slideshow/errors";
+import { SlideshowApiError } from "../../src/lib/slideshow/errors";
 import {
   buildPinterestSourceUrl,
   extractPinterestImageUrls,
   extractPinterestSearchCandidates,
   findPinterestCandidates,
-} from "../src/lib/pinterest";
+} from "../../src/lib/pinterest";
 import {
   assertPinImageUrl,
   downloadPinterestImage,
-} from "../src/lib/pinterest-import";
+} from "../../src/lib/pinterest-import";
 import {
   importPinterestImages,
   pinterestImageUrlsInSelectionOrder,
-} from "../src/lib/collections-client";
-import { MAX_PINTEREST_IMPORT_IMAGES } from "../src/lib/pinterest-constants";
+} from "../../src/lib/collections-client";
+import { MAX_PINTEREST_IMPORT_IMAGES } from "../../src/lib/pinterest-constants";
 
 async function main() {
 const searchUrl = buildPinterestSourceUrl("search", " calm desk ");
@@ -370,15 +370,15 @@ await assert.rejects(
 );
 
 const pinterestDialogSource = readFileSync(
-  new URL("../src/components/pinterest-import-dialog.tsx", import.meta.url),
+  new URL("../../src/components/pinterest-import-dialog.tsx", import.meta.url),
   "utf8",
 );
 const creatorViewSource = readFileSync(
-  new URL("../src/components/slideshow/studio-views.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/studio-views.tsx", import.meta.url),
   "utf8",
 );
 const slideshowStudioSource = readFileSync(
-  new URL("../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
   "utf8",
 );
 assert.match(pinterestDialogSource, /Use .* as slide image/);

@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import PrivacyPage from "../src/app/privacy/page";
-import TermsPage from "../src/app/terms/page";
-import DataDeletionPage from "../src/app/data-deletion/page";
-import { isPublicPolicyPath } from "../src/lib/public-policy-routes";
+import PrivacyPage from "../../src/app/privacy/page";
+import TermsPage from "../../src/app/terms/page";
+import DataDeletionPage from "../../src/app/data-deletion/page";
+import { isPublicPolicyPath } from "../../src/lib/public-policy-routes";
 
 const privacy = renderToStaticMarkup(<PrivacyPage />);
 const terms = renderToStaticMarkup(<TermsPage />);

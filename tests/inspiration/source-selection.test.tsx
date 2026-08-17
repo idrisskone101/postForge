@@ -4,8 +4,8 @@ import {
   filterVideosBySourceUsage,
   InspirationHeaderControls,
   InspirationPageClient,
-} from "../src/app/ugc-inspiration/inspiration-page-client";
-import type { TrackedInspirationAccount } from "../src/lib/inspiration/types";
+} from "../../src/app/ugc-inspiration/inspiration-page-client";
+import type { TrackedInspirationAccount } from "../../src/lib/inspiration/types";
 
 const accounts: TrackedInspirationAccount[] = [
   {

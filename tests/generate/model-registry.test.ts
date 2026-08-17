@@ -5,8 +5,8 @@ import {
   getAllModels,
   getModel,
   mapAspectRatioToFalFormat,
-} from "../src/lib/ai/models";
-import { MODEL_REGISTRY } from "../src/lib/ai/models";
+} from "../../src/lib/ai/models";
+import { MODEL_REGISTRY } from "../../src/lib/ai/models";
 
 const models = getAllModels();
 
@@ -76,7 +76,7 @@ assert.equal(calculateEstimatedCost("pixverse-swap", { durationSec: 8 }), 0.4);
 // the picker, otherwise the Generate tab renders a generic card.
 import { readFileSync } from "node:fs";
 const pickerSource = readFileSync(
-  new URL("../src/components/model-picker.tsx", import.meta.url),
+  new URL("../../src/components/model-picker.tsx", import.meta.url),
   "utf8"
 );
 // Model picker icon coverage: every generation model must have an icon mapping

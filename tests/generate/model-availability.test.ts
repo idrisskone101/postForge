@@ -1,3 +1,4 @@
+import "../_env/unreachable-database";
 import assert from "node:assert/strict";
 import {
   DEFAULT_IMAGE_MODEL,
@@ -9,9 +10,9 @@ import {
   isModelEnabled,
   readModelAvailability,
   saveModelAvailability,
-} from "../src/lib/ai/model-availability";
-import { getAllModels } from "../src/lib/ai/models";
-import { STORY_MODELS } from "../src/lib/ai/story-models";
+} from "../../src/lib/ai/model-availability";
+import { getAllModels } from "../../src/lib/ai/models";
+import { STORY_MODELS } from "../../src/lib/ai/story-models";
 
 async function testAvailabilityDefaults() {
   const availability = await readModelAvailability();

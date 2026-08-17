@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { OutputReviewStatusControl } from "../src/components/output-review-status-control";
+import { OutputReviewStatusControl } from "../../src/components/output-review-status-control";
 import {
   OUTPUT_REVIEW_STATUSES,
   normalizeOutputReviewStatus,
   serializeOutputReviewStatus,
   updateOutputReviewStatus,
-} from "../src/lib/output-review-status";
+} from "../../src/lib/output-review-status";
 
 assert.deepEqual(
   OUTPUT_REVIEW_STATUSES.map((status) => status.label),

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import { HomeCockpit } from "../src/app/home-cockpit";
+import { HomeCockpit } from "../../src/app/home-cockpit";
 
 const now = new Date("2026-06-14T18:00:00Z");
 

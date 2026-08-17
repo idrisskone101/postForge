@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildCloneRetryRequest, buildSwapRetryRequest } from "../src/lib/jobs/retry-inputs";
+import { buildCloneRetryRequest, buildSwapRetryRequest } from "../../src/lib/jobs/retry-inputs";
 import {
   resolveImageRetryReferences,
   resolveVideoRetryReference,
-} from "../src/lib/jobs/retry-reference-resolution";
+} from "../../src/lib/jobs/retry-reference-resolution";
 
 const cloneRequest = buildCloneRetryRequest(
   {
@@ -173,7 +173,7 @@ void (async () => {
   );
 
   const routeSource = readFileSync(
-    new URL("../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
+    new URL("../../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
     "utf8"
   );
   assert.match(routeSource, /resolveCollectionAssetLocalPath\(cloneRequest\.collectionAssetId\)/);

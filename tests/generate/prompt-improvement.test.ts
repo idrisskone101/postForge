@@ -1,17 +1,18 @@
+import "../_env/unreachable-database";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { NextRequest } from "next/server";
 import {
   buildPromptImprovementSystemInstruction,
   improveGenerationPrompt,
-} from "../src/lib/ai/improve-prompt";
+} from "../../src/lib/ai/improve-prompt";
 import {
   canRunPromptImprovement,
   createPromptImprovementRequestGate,
   invalidatePromptImprovementUndo,
   restorePromptImprovementUndo,
-} from "../src/lib/ai/prompt-improvement-ui";
-import { POST as improvePromptRoute } from "../src/app/api/prompts/improve/route";
+} from "../../src/lib/ai/prompt-improvement-ui";
+import { POST as improvePromptRoute } from "../../src/app/api/prompts/improve/route";
 
 const videoRequest = {
   prompt: "girl walks into kitchen and shows bottle",
@@ -179,11 +180,11 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
   );
 
   const formSource = readFileSync(
-    new URL("../src/components/generation-form.tsx", import.meta.url),
+    new URL("../../src/components/generation-form.tsx", import.meta.url),
     "utf8"
   );
   const routeSource = readFileSync(
-    new URL("../src/app/api/prompts/improve/route.ts", import.meta.url),
+    new URL("../../src/app/api/prompts/improve/route.ts", import.meta.url),
     "utf8"
   );
   assert.match(formSource, /\/api\/prompts\/improve/);

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { resolveApiUrl } from "../src/lib/api/client";
+import { resolveApiUrl } from "../../src/lib/api/client";
 
 const originalBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 const originalWindow = (globalThis as { window?: unknown }).window;

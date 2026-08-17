@@ -1,14 +1,15 @@
+import "../_env/unreachable-database";
 import assert from "node:assert/strict";
 import {
   encryptIntegrationSecret,
   decryptIntegrationSecret,
   getIntegrationEncryptionKey,
-} from "../src/lib/integrations/crypto";
+} from "../../src/lib/integrations/crypto";
 import {
   getStoredProviderCredential,
   PROVIDER_ENV_KEYS,
   saveProviderCredential,
-} from "../src/lib/providers/credentials";
+} from "../../src/lib/providers/credentials";
 
 const TEST_KEY_HEX = "a".repeat(64);
 process.env.INTEGRATION_ENCRYPTION_KEY = TEST_KEY_HEX;

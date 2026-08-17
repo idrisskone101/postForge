@@ -6,7 +6,7 @@ import {
   PREVIEW_ZOOM_MIN,
   PREVIEW_ZOOM_STEP,
   selectAutomationPreviewAsset,
-} from "../src/app/automations/new/automation-builder-client";
+} from "../../src/app/automations/new/automation-builder-client";
 
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MIN - 100), PREVIEW_ZOOM_MIN);
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MAX + 100), PREVIEW_ZOOM_MAX);
@@ -95,7 +95,7 @@ assert.equal(collectionPreview?.previewUrl, "/api/files/collection%20asset%2F1")
 assert.equal(collectionPreview?.origin, "Visual collection");
 
 const source = readFileSync(
-  new URL("../src/app/automations/new/automation-builder-client.tsx", import.meta.url),
+  new URL("../../src/app/automations/new/automation-builder-client.tsx", import.meta.url),
   "utf8"
 );
 
@@ -141,7 +141,7 @@ assert.match(source, /AutomationPreviewMedia asset=\{previewAsset\}/);
 assert.doesNotMatch(source, /Math\.floor\(Math\.random\(\) \* 3\)/);
 
 const hubSource = readFileSync(
-  new URL("../src/app/automations/automations-page-client.tsx", import.meta.url),
+  new URL("../../src/app/automations/automations-page-client.tsx", import.meta.url),
   "utf8"
 );
 
@@ -176,7 +176,7 @@ assert.match(hubSource, /\[overflow-wrap:anywhere\]/);
 
 const runRouteSource = readFileSync(
   new URL(
-    "../src/app/api/automations/[id]/run/route.ts",
+    "../../src/app/api/automations/[id]/run/route.ts",
     import.meta.url
   ),
   "utf8"
@@ -189,7 +189,7 @@ assert.match(runRouteSource, /publishingStarted: false/);
 
 const scheduleRouteSource = readFileSync(
   new URL(
-    "../src/app/api/automations/[id]/schedule/route.ts",
+    "../../src/app/api/automations/[id]/schedule/route.ts",
     import.meta.url
   ),
   "utf8"
@@ -201,7 +201,7 @@ assert.match(scheduleRouteSource, /executionEnabled: action === "activate"/);
 assert.match(scheduleRouteSource, /Automatic social scheduling is unavailable/);
 
 const schedulerSource = readFileSync(
-  new URL("../src/lib/automation-scheduler.ts", import.meta.url),
+  new URL("../../src/lib/automation-scheduler.ts", import.meta.url),
   "utf8"
 );
 assert.match(schedulerSource, /getDueAutomationScheduleSlot/);
@@ -210,14 +210,14 @@ assert.match(schedulerSource, /generateImage\(spec\.request/);
 assert.match(schedulerSource, /scheduleSlot:/);
 
 const bootstrapSource = readFileSync(
-  new URL("../src/lib/runtime-bootstrap.ts", import.meta.url),
+  new URL("../../src/lib/runtime-bootstrap.ts", import.meta.url),
   "utf8"
 );
 assert.match(bootstrapSource, /ensureAutomationSchedulerRunning/);
 
 const workspaceFeatureRouteSource = readFileSync(
   new URL(
-    "../src/app/api/workspace-features/[feature]/route.ts",
+    "../../src/app/api/workspace-features/[feature]/route.ts",
     import.meta.url
   ),
   "utf8"

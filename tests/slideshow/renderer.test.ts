@@ -12,7 +12,7 @@ import {
   renderSlideshowArchive,
   renderSlideshowSlide,
   renderSlideshowVideo,
-} from "../src/lib/ai/slideshow-renderer";
+} from "../../src/lib/ai/slideshow-renderer";
 
 function readZipEntry(archive: Buffer, target: string) {
   let offset = 0;

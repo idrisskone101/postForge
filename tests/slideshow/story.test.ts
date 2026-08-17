@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   generateSlideshowStory,
   slideshowStoryLimits,
-} from "../src/lib/ai/slideshow-story";
+} from "../../src/lib/ai/slideshow-story";
 
 async function main() {
   const previousKey = process.env.OLLAMA_API_KEY;

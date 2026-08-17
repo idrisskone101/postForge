@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   buildAvatarCreateData,
   serializeAvatarApiRecord,
-} from "../src/lib/avatar-provenance";
+} from "../../src/lib/avatar-provenance";
 
 const importedAvatar = buildAvatarCreateData({
   name: "Imported Creator",
