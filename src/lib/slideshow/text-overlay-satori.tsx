@@ -65,6 +65,12 @@ const FONT_FILES: FontFace[] = [
     url: new URL("./fonts/LiberationSerif-Italic.ttf", import.meta.url),
   },
   {
+    name: "Liberation Serif",
+    weight: 700,
+    style: "italic",
+    url: new URL("./fonts/LiberationSerif-BoldItalic.ttf", import.meta.url),
+  },
+  {
     name: "Liberation Mono",
     weight: 400,
     style: "normal",
@@ -110,8 +116,14 @@ function overlayFont(settings: SlideshowRenderTextSettings) {
   return { fontFamily: "Inter", fontStyle: "normal" as const };
 }
 
+function cleanStyle(style: OverlayStyle): OverlayStyle {
+  return Object.fromEntries(
+    Object.entries(style).filter(([, value]) => value !== undefined),
+  );
+}
+
 function box(children: ReactNode, style: OverlayStyle): ReactNode {
-  return createElement("div", { style }, children);
+  return createElement("div", { style: cleanStyle(style) }, children);
 }
 
 function pillLines(

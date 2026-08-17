@@ -4,7 +4,7 @@ Vendored faces:
 
 - `Inter-Regular.ttf`, `Inter-SemiBold.ttf`, `Inter-Bold.ttf`, `Inter-Italic.ttf`
   SIL Open Font License 1.1, https://github.com/rsms/inter (`Inter-OFL.txt`)
-- `LiberationSerif-Regular.ttf`, `LiberationSerif-Bold.ttf`, `LiberationSerif-Italic.ttf`
+- `LiberationSerif-Regular.ttf`, `LiberationSerif-Bold.ttf`, `LiberationSerif-Italic.ttf`, `LiberationSerif-BoldItalic.ttf`
   `LiberationMono-Regular.ttf`, `LiberationMono-Bold.ttf`
   SIL Open Font License 1.1, https://github.com/liberationfonts/liberation-fonts (`Liberation-OFL.txt`)
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -139,53 +139,29 @@ export function SlidePreview({
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
   const displayText = phaseSettings.displayText;
-  const overlayRequest = useMemo(
-    () => ({
-      slide: {
-        id: slide.id,
-        eyebrow: slide.eyebrow,
-        headline: slide.headline,
-        body: slide.body,
-      },
-      width,
-      height,
-      settings: overlayTextSettings(textSettings),
-    }),
-    [
-      slide.id,
-      slide.eyebrow,
-      slide.headline,
-      slide.body,
-      width,
-      height,
-      textSettings.font,
-      textSettings.color,
-      textSettings.customColor,
-      textSettings.style,
-      textSettings.size,
-      textSettings.position,
-      textSettings.width,
-      textSettings.align,
-      textSettings.padding,
-      textSettings.backgroundRadius,
-    ],
-  );
-  const overlayKey = JSON.stringify(overlayRequest);
-  const [overlaySrc, setOverlaySrc] = useState<string | null>(
-    () => overlaySrcCache.get(overlayKey) ?? null,
-  );
+  const overlayKey = JSON.stringify({
+    slide: {
+      id: slide.id,
+      eyebrow: slide.eyebrow,
+      headline: slide.headline,
+      body: slide.body,
+    },
+    width,
+    height,
+    settings: overlayTextSettings(textSettings),
+  });
+  const [fetchedOverlay, setFetchedOverlay] = useState<{
+    key: string;
+    src: string;
+  } | null>(null);
+  const overlaySrc = displayText
+    ? overlaySrcCache.get(overlayKey) ??
+      (fetchedOverlay?.key === overlayKey ? fetchedOverlay.src : null)
+    : null;
 
   useEffect(() => {
-    if (!displayText) {
-      setOverlaySrc(null);
-      return;
-    }
-
-    const cached = overlaySrcCache.get(overlayKey);
-    if (cached) {
-      setOverlaySrc(cached);
-      return;
-    }
+    if (!displayText) return;
+    if (overlaySrcCache.has(overlayKey)) return;
 
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
@@ -202,7 +178,9 @@ export function SlidePreview({
           if (!svg.includes('data-slideshow-text-overlay="true"')) return;
           const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
           rememberOverlaySrc(overlayKey, src);
-          if (!controller.signal.aborted) setOverlaySrc(src);
+          if (!controller.signal.aborted) {
+            setFetchedOverlay({ key: overlayKey, src });
+          }
         } catch (error) {
           if (error instanceof DOMException && error.name === "AbortError") return;
         }
