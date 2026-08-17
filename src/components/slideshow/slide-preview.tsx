@@ -1,5 +1,7 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
+
 import { cn } from "@/lib/utils";
 import {
   createSlideshowTextOverlayMarkup,
@@ -126,6 +128,8 @@ export function SlidePreview({
   counter?: string;
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const overlayMarkup = phaseSettings.displayText
     ? createSlideshowTextOverlayMarkup(
         slide,
@@ -135,8 +139,25 @@ export function SlidePreview({
       )
     : null;
 
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    const stage = stageRef.current;
+    if (!frame || !stage) return;
+    const applyScale = () => {
+      const next = frame.clientWidth / width;
+      if (Number.isFinite(next) && next > 0) {
+        stage.style.transform = `scale(${next})`;
+      }
+    };
+    const observer = new ResizeObserver(applyScale);
+    observer.observe(frame);
+    applyScale();
+    return () => observer.disconnect();
+  }, [width]);
+
   return (
     <div
+      ref={frameRef}
       className={cn(
         "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white [container-type:inline-size]",
         className,
@@ -144,12 +165,13 @@ export function SlidePreview({
       style={{ aspectRatio: `${width} / ${height}` }}
     >
       <div
+        ref={stageRef}
         data-slide-stage=""
         className="absolute left-0 top-0 origin-top-left"
         style={{
           width,
           height,
-          transform: `scale(calc(100cqw / ${width}))`,
+          transform: `scale(calc(100cqw / ${width}px))`,
         }}
       >
         <GridMedia slide={slide} grid={phaseSettings.grid} />
