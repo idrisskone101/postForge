@@ -1,9 +1,12 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import {
+  getSlideshowDimensions,
+  type SlideshowRenderTextSettings,
+} from "@/lib/slideshow/text-overlay";
 
 import type {
   SlideshowAspectRatio,
@@ -41,181 +44,34 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
   "16:9": "aspect-video",
 };
 
-const previewFontFamilies: Record<SlideshowTextSettings["font"], string> = {
-  Poppins: "var(--font-sans), Poppins, Avenir Next, Arial, sans-serif",
-  Inter: "Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif",
-  Serif: "Georgia, Times New Roman, serif",
-  SerifItalic: "Georgia, Times New Roman, serif",
-  Editorial: "Baskerville, Palatino Linotype, Times New Roman, serif",
-  Condensed: "Arial Narrow, Helvetica Neue, Arial, sans-serif",
-  Mono: "SFMono-Regular, Menlo, Courier New, monospace",
-  Rounded: "Arial Rounded MT Bold, Trebuchet MS, Arial, sans-serif",
-};
+const overlaySrcCache = new Map<string, string>();
+const OVERLAY_SRC_CACHE_LIMIT = 40;
 
-const colorClasses: Record<SlideshowTextSettings["color"], string> = {
-  white: "text-white",
-  black: "text-black",
-  coral: "text-[#ff8a6e]",
-  blue: "text-[#78b9e7]",
-  yellow: "text-[#f7e27d]",
-  custom: "",
-};
+function rememberOverlaySrc(key: string, src: string) {
+  if (overlaySrcCache.size >= OVERLAY_SRC_CACHE_LIMIT) {
+    const oldest = overlaySrcCache.keys().next().value;
+    if (oldest) overlaySrcCache.delete(oldest);
+  }
+  overlaySrcCache.set(key, src);
+}
 
-const positionClasses: Record<SlideshowTextSettings["position"], string> = {
-  top: "justify-start pt-[14%]",
-  center: "justify-center",
-  bottom: "justify-end pb-[14%]",
-};
-
-const alignClasses: Record<SlideshowTextSettings["align"], string> = {
-  left: "text-left items-start",
-  center: "text-center items-center",
-  right: "text-right items-end",
-};
-
-function BackgroundTextBlock({
-  text,
-  maxLines,
-  radius,
-  backgroundFill,
-  textClassName,
-  className,
-  style,
-}: {
-  text: string;
-  maxLines: number;
-  radius: number;
-  backgroundFill: string;
-  textClassName: string;
-  className: string;
-  style?: CSSProperties;
-}) {
-  const blockRef = useRef<HTMLParagraphElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const [fragmentPath, setFragmentPath] = useState("");
-
-  useLayoutEffect(() => {
-    const block = blockRef.current;
-    const textElement = textRef.current;
-    if (!block || !textElement) return;
-
-    let active = true;
-    const measure = () => {
-      if (!active) return;
-      const blockRect = block.getBoundingClientRect();
-      const fragments = [...textElement.getClientRects()]
-        .filter(
-          (rect) =>
-            rect.width > 0 &&
-            rect.height > 0 &&
-            rect.top < blockRect.bottom - 0.5,
-        )
-        .slice(0, maxLines)
-        .map((rect) => ({
-          bottom: rect.bottom - blockRect.top,
-          left: rect.left - blockRect.left,
-          right: rect.right - blockRect.left,
-          top: rect.top - blockRect.top,
-        }));
-
-      if (!fragments.length) {
-        setFragmentPath("");
-        return;
-      }
-
-      const first = fragments[0];
-      const last = fragments[fragments.length - 1];
-      const topRadius = Math.max(
-        0,
-        Math.min(radius, (first.right - first.left) / 2, (first.bottom - first.top) / 2),
-      );
-      const bottomRadius = Math.max(
-        0,
-        Math.min(radius, (last.right - last.left) / 2, (last.bottom - last.top) / 2),
-      );
-      const commands = [
-        `M ${first.left + topRadius} ${first.top}`,
-        `H ${first.right - topRadius}`,
-        `Q ${first.right} ${first.top} ${first.right} ${first.top + topRadius}`,
-      ];
-
-      fragments.forEach((fragment, index) => {
-        commands.push(
-          `V ${index === fragments.length - 1 ? fragment.bottom - bottomRadius : fragment.bottom}`,
-        );
-        const next = fragments[index + 1];
-        if (next) commands.push(`H ${next.right}`);
-      });
-      commands.push(
-        `Q ${last.right} ${last.bottom} ${last.right - bottomRadius} ${last.bottom}`,
-        `H ${last.left + bottomRadius}`,
-        `Q ${last.left} ${last.bottom} ${last.left} ${last.bottom - bottomRadius}`,
-      );
-      for (let index = fragments.length - 1; index >= 0; index -= 1) {
-        const fragment = fragments[index];
-        commands.push(
-          `V ${index === 0 ? fragment.top + topRadius : fragment.top}`,
-        );
-        const previous = fragments[index - 1];
-        if (previous) commands.push(`H ${previous.left}`);
-      }
-      commands.push(
-        `Q ${first.left} ${first.top} ${first.left + topRadius} ${first.top}`,
-        "Z",
-      );
-      const nextPath = commands.join(" ");
-      setFragmentPath((current) => (current === nextPath ? current : nextPath));
-    };
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(block);
-    observer.observe(textElement);
-    measure();
-    void document.fonts?.ready.then(measure);
-    return () => {
-      active = false;
-      observer.disconnect();
-    };
-  }, [maxLines, radius, text]);
-
-  return (
-    <p
-      ref={blockRef}
-      className={cn(
-        "relative box-border w-full max-w-full overflow-hidden",
-        textClassName,
-        className,
-      )}
-      style={{
-        ...style,
-        display: "-webkit-box",
-        lineHeight: 1.29,
-        paddingInline: "0.34em",
-        WebkitBoxOrient: "vertical",
-        WebkitLineClamp: maxLines,
-      }}
-    >
-      {fragmentPath ? (
-        <svg
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 size-full overflow-visible"
-        >
-          <path d={fragmentPath} fill={backgroundFill} />
-        </svg>
-      ) : null}
-      <span
-        ref={textRef}
-        className="relative z-10 box-decoration-clone"
-        style={{
-          WebkitBoxDecorationBreak: "clone",
-          boxDecorationBreak: "clone",
-          paddingInline: "0.34em",
-        }}
-      >
-        {text}
-      </span>
-    </p>
-  );
+function overlayTextSettings(
+  textSettings: SlideshowTextSettings,
+): SlideshowRenderTextSettings {
+  return {
+    font: textSettings.font,
+    color:
+      textSettings.color === "custom"
+        ? (textSettings.customColor ?? "#ffffff")
+        : textSettings.color,
+    style: textSettings.style,
+    size: textSettings.size,
+    position: textSettings.position,
+    width: textSettings.width,
+    align: textSettings.align,
+    padding: textSettings.padding,
+    backgroundRadius: textSettings.backgroundRadius,
+  };
 }
 
 function GridMedia({ slide, grid }: { slide: SlideshowSlide; grid: SlideshowGrid }) {
@@ -281,162 +137,100 @@ export function SlidePreview({
   showCounter?: boolean;
   counter?: string;
 }) {
-  const textStyle = {
-    width: `${textSettings.width}%`,
-    "--slide-copy-size": `${textSettings.size}px`,
-    fontStyle:
-      textSettings.font === "SerifItalic" || textSettings.font === "Editorial"
-        ? "italic"
-        : "normal",
-    fontStretch: textSettings.font === "Condensed" ? "condensed" : "normal",
-  } as CSSProperties;
-  const hasSmoothShadow =
-    textSettings.style === "plain" || textSettings.style === "outline";
-  const textEffectStyle = {
-    ...(hasSmoothShadow
-      ? {
-          textShadow:
-            "0 1px 1px rgba(0,0,0,.96), 0 2px 4px rgba(0,0,0,.78), 0 6px 14px rgba(0,0,0,.52)",
+  const { width, height } = getSlideshowDimensions(aspectRatio);
+  const displayText = phaseSettings.displayText;
+  const overlayKey = JSON.stringify({
+    slide: {
+      id: slide.id,
+      eyebrow: slide.eyebrow,
+      headline: slide.headline,
+      body: slide.body,
+    },
+    width,
+    height,
+    settings: overlayTextSettings(textSettings),
+  });
+  const [fetchedOverlay, setFetchedOverlay] = useState<{
+    key: string;
+    src: string;
+  } | null>(null);
+  const overlaySrc = displayText
+    ? overlaySrcCache.get(overlayKey) ??
+      (fetchedOverlay?.key === overlayKey ? fetchedOverlay.src : null)
+    : null;
+
+  useEffect(() => {
+    if (!displayText) return;
+    if (overlaySrcCache.has(overlayKey)) return;
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const response = await fetch("/api/slideshows/overlay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: overlayKey,
+            signal: controller.signal,
+          });
+          if (!response.ok) return;
+          const svg = (await response.text()).trim();
+          if (!svg.includes('data-slideshow-text-overlay="true"')) return;
+          const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+          rememberOverlaySrc(overlayKey, src);
+          if (!controller.signal.aborted) {
+            setFetchedOverlay({ key: overlayKey, src });
+          }
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
         }
-      : {}),
-    ...(textSettings.style === "outline"
-      ? {
-          WebkitTextStroke: "clamp(.65px, .055em, 1.6px) rgba(9,9,11,.96)",
-          paintOrder: "stroke fill",
-        }
-      : {}),
-  } as CSSProperties;
-  const hasLineBackground =
-    textSettings.style === "solid" || textSettings.style === "light";
-  const textBandFill =
-    textSettings.style === "solid"
-      ? "rgba(0, 0, 0, 0.9)"
-      : "rgba(255, 255, 255, 0.95)";
-  const textBandTextClass = cn(
-    textSettings.style === "solid" && "text-white",
-    textSettings.style === "light" && "text-zinc-950",
-  );
+      })();
+    }, 60);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [displayText, overlayKey]);
 
   return (
     <div
       className={cn(
         "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white",
-        aspectClasses[aspectRatio],
         className,
       )}
     >
-      <GridMedia slide={slide} grid={phaseSettings.grid} />
-      {phaseSettings.overlayEnabled ? (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-black"
-          style={{ opacity: phaseSettings.overlayOpacity / 100 }}
-        />
-      ) : null}
-      {phaseSettings.displayText ? (
-        <div
-          className={cn(
-            "absolute inset-0 z-10 flex flex-col",
-            textSettings.padding === "padded" ? "px-[7%] py-[8%]" : "px-[2.5%] py-[3%]",
-            positionClasses[textSettings.position],
-            textSettings.padding === "flush" && textSettings.position === "top" && "pt-[3%]",
-            textSettings.padding === "flush" && textSettings.position === "bottom" && "pb-[3%]",
-            alignClasses[textSettings.align],
-            colorClasses[textSettings.color],
-          )}
-          style={{
-            fontFamily: previewFontFamilies[textSettings.font],
-            ...(textSettings.color === "custom"
-              ? { color: textSettings.customColor ?? "#ffffff" }
-              : {}),
-          }}
-        >
+      <div
+        data-slide-canvas=""
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <GridMedia slide={slide} grid={phaseSettings.grid} />
+        {phaseSettings.overlayEnabled ? (
           <div
-            className={cn(
-              "flex flex-col gap-[clamp(4px,1.8%,10px)]",
-              alignClasses[textSettings.align],
-              textSettings.style === "translucent" &&
-                "rounded-lg bg-black/55 px-4 py-3 text-white backdrop-blur-sm",
-            )}
-            style={textStyle}
-          >
-            {slide.eyebrow ? (
-              hasLineBackground ? (
-                <BackgroundTextBlock
-                  text={slide.eyebrow}
-                  maxLines={1}
-                  radius={textSettings.backgroundRadius}
-                  backgroundFill={textBandFill}
-                  textClassName={textBandTextClass}
-                  className="text-[clamp(7px,1vw,11px)] font-semibold uppercase tracking-[0.16em] opacity-90"
-                  style={textEffectStyle}
-                />
-              ) : (
-                <p
-                  className="w-fit max-w-full text-[clamp(7px,1vw,11px)] font-semibold uppercase tracking-[0.16em] opacity-90"
-                  style={textEffectStyle}
-                >
-                  {slide.eyebrow}
-                </p>
-              )
-            ) : null}
-            {hasLineBackground ? (
-              <BackgroundTextBlock
-                text={slide.headline}
-                maxLines={5}
-                radius={textSettings.backgroundRadius}
-                backgroundFill={textBandFill}
-                textClassName={textBandTextClass}
-                className="font-bold"
-                style={{
-                  ...textEffectStyle,
-                  fontSize:
-                    "clamp(13px, calc(var(--slide-copy-size) * .72), var(--slide-copy-size))",
-                }}
-              />
-            ) : (
-              <p
-                className="w-fit max-w-full overflow-hidden pb-[0.14em] font-bold leading-[1.08]"
-                style={{
-                  ...textEffectStyle,
-                  fontSize:
-                    "clamp(13px, calc(var(--slide-copy-size) * .72), var(--slide-copy-size))",
-                  display: "-webkit-box",
-                  WebkitBoxOrient: "vertical",
-                  WebkitLineClamp: 5,
-                }}
-              >
-                {slide.headline}
-              </p>
-            )}
-            {slide.body ? (
-              hasLineBackground ? (
-                <BackgroundTextBlock
-                  text={slide.body}
-                  maxLines={4}
-                  radius={textSettings.backgroundRadius}
-                  backgroundFill={textBandFill}
-                  textClassName={textBandTextClass}
-                  className="text-[clamp(8px,1.15vw,13px)] font-medium opacity-95"
-                  style={textEffectStyle}
-                />
-              ) : (
-                <p
-                  className="w-fit max-w-full overflow-hidden pb-[0.14em] text-[clamp(8px,1.15vw,13px)] font-medium leading-[1.55] opacity-95"
-                  style={{
-                    ...textEffectStyle,
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 4,
-                  }}
-                >
-                  {slide.body}
-                </p>
-              )
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+            aria-hidden="true"
+            className="absolute inset-0 bg-black"
+            style={{ opacity: phaseSettings.overlayOpacity / 100 }}
+          />
+        ) : null}
+        {displayText ? (
+          <div
+            aria-hidden="true"
+            data-slideshow-text-overlay=""
+            className="pointer-events-none absolute inset-0"
+            style={
+              overlaySrc
+                ? {
+                    backgroundImage: `url(${JSON.stringify(overlaySrc)})`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "contain",
+                  }
+                : undefined
+            }
+          />
+        ) : null}
+      </div>
       {showCounter && counter ? (
         <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
           {counter}
