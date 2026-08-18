@@ -1,7 +1,6 @@
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
-  type CollectionAssetRecord,
   type CollectionFeatureRecord,
 } from "@/lib/collections";
 import {

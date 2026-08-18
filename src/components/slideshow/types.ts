@@ -1,15 +1,8 @@
 import type {
-  SlideshowAspectRatio,
-  SlideshowGrid,
   SlideshowKindSettings,
   SlideshowProject,
-  SlideshowProjectStatus,
   SlideshowSlide,
   SlideshowSlideKind,
-  SlideshowTextAlign,
-  SlideshowTextPosition,
-  SlideshowTextSettings,
-  SlideshowTextStyle,
 } from "@/lib/slideshow/project";
 
 export type {

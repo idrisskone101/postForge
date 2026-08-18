@@ -814,7 +814,7 @@ export function UGCCloneForm() {
   const [removeTextOverlays, setRemoveTextOverlays] = useState(false);
   const [selectedModel, setSelectedModel] = useState("kling-3.0-motion");
   const [selectedReferenceImageModel, setSelectedReferenceImageModel] = useState("nano-banana-2");
-  const [referenceBatchSize, setReferenceBatchSize] = useState<(typeof REFERENCE_BATCH_OPTIONS)[number]>(1);
+  const [referenceBatchSize, setReferenceBatchSize] = useState<ReferenceBatchSize>(1);
   const [cloneTip, setCloneTip] = useState<(typeof UGC_CLONE_TIPS)[number]>(UGC_CLONE_TIPS[0]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
