@@ -1,4 +1,7 @@
 import { SlideshowApiError, badRequest } from "@/lib/slideshow/errors";
+import type { PinterestImageCandidate } from "@/lib/collections-read-model";
+
+export type { PinterestImageCandidate } from "@/lib/collections-read-model";
 
 const PINTEREST_SEARCH_URL = "https://www.pinterest.com/search/pins/";
 const MAX_QUERY_LENGTH = 120;
@@ -15,16 +18,6 @@ type FetchLike = (
 ) => Promise<Response>;
 
 export type PinterestCandidateSource = "search" | "board";
-
-export type PinterestImageCandidate = {
-  id: string;
-  imageUrl: string;
-  sourceUrl: string;
-  title?: string;
-  altText?: string;
-  width?: number;
-  height?: number;
-};
 
 export type PinterestCandidateResult = {
   source: PinterestCandidateSource;

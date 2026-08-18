@@ -71,7 +71,7 @@ assert.equal(stepSlideIndex(1, 1, 4, false), 2);
 assert.equal(stepSlideIndex(0, 1, 0, true), 0);
 
 assert.equal(phaseLabel("hook"), "Hook");
-assert.equal(phaseLabel("body"), "Content");
+assert.equal(phaseLabel("content"), "Content");
 assert.equal(phaseLabel("cta"), "CTA");
 
 assert.equal(

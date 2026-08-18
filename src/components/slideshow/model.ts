@@ -1,7 +1,7 @@
 import type {
-  SlideshowPhase,
   SlideshowProject,
   SlideshowSlide,
+  SlideshowSlideKind,
 } from "./types";
 
 export const MIN_SLIDESHOW_SLIDES = 1;
@@ -24,10 +24,10 @@ export function phaseForSlideIndex(
   index: number,
   slideCount: number,
   includeCta: boolean,
-): SlideshowPhase {
+): SlideshowSlideKind {
   if (index === 0) return "hook";
   if (includeCta && slideCount > 1 && index === slideCount - 1) return "cta";
-  return "body";
+  return "content";
 }
 
 export function normalizeSlideshowSlides(
@@ -39,7 +39,7 @@ export function normalizeSlideshowSlides(
     .map((slide, index, current) => ({
       ...slide,
       order: index,
-      role: phaseForSlideIndex(index, current.length, includeCta),
+      kind: phaseForSlideIndex(index, current.length, includeCta),
     }));
 
   return normalized;
@@ -51,7 +51,7 @@ export function createAddedSlide(
 ): SlideshowSlide {
   return {
     order: 0,
-    role: "body",
+    kind: "content",
     eyebrow: "Next point",
     headline: "Add one clear idea that keeps the story moving.",
     body: "Use a specific example, proof point, or practical detail here.",
@@ -115,14 +115,14 @@ export function duplicateSlideshowSlide(
   const duplicate = createAddedSlide(
     {
       ...source,
-      role: "body",
+      kind: "content",
       eyebrow: `${source.eyebrow} · variation`,
     },
     nextLocalSlideId(project),
   );
   const slides = [...project.slides];
   const insertAt =
-    source.role === "cta" ? Math.max(1, slides.length - 1) : index + 1;
+    source.kind === "cta" ? Math.max(1, slides.length - 1) : index + 1;
   slides.splice(insertAt, 0, duplicate);
 
   return {

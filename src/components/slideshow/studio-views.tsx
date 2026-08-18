@@ -1517,7 +1517,7 @@ export function DraftsView({
                       key={slide.id}
                       slide={slide}
                       aspectRatio={project.aspectRatio}
-                      phaseSettings={project.phaseSettings[slide.role]}
+                      phaseSettings={project.phaseSettings[slide.kind]}
                       textSettings={project.textSettings}
                       label={index === 0 ? `${project.slides.length} slides` : undefined}
                       fallbackText="Untitled slide"

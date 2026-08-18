@@ -857,7 +857,7 @@ async function run() {
   assert.equal(afterAuthRace?.authorization.status, "healthy");
 
   const publishRoute = readFileSync(
-    new URL("../../src/app/api/automations/[id]/publish/route.ts", import.meta.url),
+    new URL("../../src/lib/automation-publish-orchestration.ts", import.meta.url),
     "utf8"
   );
   const globalClaimLockIndex = publishRoute.indexOf(

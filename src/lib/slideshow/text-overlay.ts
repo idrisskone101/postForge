@@ -57,7 +57,7 @@ export function slideshowHeadlineFontSize(
   canvasWidth: number,
 ) {
   const configured =
-    typeof size === "number" && Number.isFinite(size) ? size : 28;
+    typeof size === "number" && Number.isFinite(size) ? size : 56;
   return configured * slideshowTextScale(canvasWidth);
 }
 

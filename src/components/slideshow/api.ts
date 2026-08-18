@@ -3,53 +3,18 @@ import { normalizeSlideshowSlides } from "./model";
 import type {
   SlideshowAutomation,
   SlideshowAspectRatio,
-  SlideshowGrid,
-  SlideshowPhase,
-  SlideshowPhaseSettings,
   SlideshowProject,
-  SlideshowProjectStatus,
   SlideshowSlide,
-  SlideshowTextSettings,
 } from "./types";
 import { isLocalSlideshowId } from "./types";
 import { formatGenerationPromptForEditing } from "@/lib/ai/prompt-presentation";
-
-type SlideshowAestheticTemplate = import("@/lib/ai/slideshow-creator-types").SlideshowAestheticTemplate;
+import {
+  parseSlideshowProject,
+  slideKindFromUnknown,
+  slideshowProjectWriteBody,
+} from "@/lib/slideshow/project";
 
 type JsonRecord = Record<string, unknown>;
-
-interface ApiTextItem {
-  id?: string;
-  text?: string;
-  role?: string;
-}
-
-interface ApiSlide {
-  id?: string;
-  projectId?: string;
-  position?: number;
-  kind?: string;
-  imageUrl?: string | null;
-  imagePrompt?: string | null;
-  content?: JsonRecord | null;
-  settings?: JsonRecord | null;
-  layout?: JsonRecord | null;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface ApiProject {
-  id?: string;
-  title?: string;
-  description?: string | null;
-  status?: string;
-  revision?: number;
-  settings?: JsonRecord | null;
-  layout?: JsonRecord | null;
-  slides?: ApiSlide[];
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 export class SlideshowApiError extends Error {
   status: number;
@@ -75,10 +40,6 @@ function asNumber(value: unknown, fallback: number) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
-function asBoolean(value: unknown, fallback: boolean) {
-  return typeof value === "boolean" ? value : fallback;
-}
-
 function asNonNegativeInteger(value: unknown, fallback = 0) {
   return typeof value === "number" &&
     Number.isSafeInteger(value) &&
@@ -97,340 +58,21 @@ function asDateHistory(value: unknown) {
 }
 
 
-function normalizeAspectRatio(value: unknown): SlideshowAspectRatio {
-  return value === "4:5" || value === "1:1" || value === "16:9"
-    ? value
-    : "9:16";
-}
-
-function normalizeGrid(value: unknown): SlideshowGrid {
-  return value === "1:2" ||
-    value === "1:3" ||
-    value === "2:1" ||
-    value === "2:2"
-    ? value
-    : "none";
-}
-
-function normalizePhase(value: unknown): SlideshowPhase {
-  if (value === "cta") return "cta";
-  if (value === "content" || value === "body") return "body";
-  return "hook";
-}
-
-function normalizeStatus(value: unknown): SlideshowProjectStatus {
-  if (
-    value === "generating" ||
-    value === "ready" ||
-    value === "scheduled" ||
-    value === "published" ||
-    value === "archived" ||
-    value === "exported" ||
-    value === "failed"
-  ) {
-    return value;
-  }
-  return "draft";
-}
-
 function readTextItems(content: JsonRecord) {
   const rawItems = Array.isArray(content.textItems) ? content.textItems : [];
-  return rawItems.filter(isRecord) as ApiTextItem[];
-}
-
-function deserializeSlide(slide: ApiSlide, index: number): SlideshowSlide {
-  const content = isRecord(slide.content) ? slide.content : {};
-  const textItems = readTextItems(content);
-  const byRole = (role: string, fallbackIndex: number) =>
-    asString(
-      textItems.find((item) => item.role === role)?.text ??
-        textItems[fallbackIndex]?.text,
-    );
-
-  return {
-    id: slide.id ?? `local-slide-api-${index + 1}`,
-    clientId: asString(content.clientId) || undefined,
-    order: typeof slide.position === "number" ? slide.position : index,
-    role: normalizePhase(slide.kind),
-    eyebrow: asString(content.eyebrow, byRole("eyebrow", 0)),
-    headline: asString(content.headline, byRole("headline", 1)),
-    body: asString(content.body, byRole("body", 2)),
-    prompt: formatGenerationPromptForEditing(
-      asString(slide.imagePrompt ?? content.prompt),
-    ),
-    visualKey: asString(content.visualKey, "coral-glow"),
-    visualKeys: Array.isArray(content.visualKeys)
-      ? content.visualKeys.filter((value): value is string => typeof value === "string")
-      : undefined,
-    imageUrl: slide.imageUrl ?? null,
-    imageUrls: Array.isArray(content.imageUrls)
-      ? content.imageUrls.filter((value): value is string => typeof value === "string")
-      : undefined,
-  };
-}
-
-function readPhaseSettings(
-  settings: JsonRecord,
-): Record<SlideshowPhase, SlideshowPhaseSettings> {
-  const stored = isRecord(settings.phaseSettings) ? settings.phaseSettings : {};
-  const overlay = isRecord(settings.darkOverlay) ? settings.darkOverlay : {};
-  const fallback: SlideshowPhaseSettings = {
-    grid: normalizeGrid(settings.imageGrid),
-    overlayEnabled: asBoolean(overlay.enabled, true),
-    overlayOpacity: asNumber(overlay.opacity, 45),
-    displayText: asBoolean(settings.displayText, true),
-  };
-
-  const read = (phase: SlideshowPhase): SlideshowPhaseSettings => {
-    const value = isRecord(stored[phase]) ? stored[phase] : {};
-    return {
-      grid: normalizeGrid(value.grid ?? fallback.grid),
-      overlayEnabled: asBoolean(value.overlayEnabled, fallback.overlayEnabled),
-      overlayOpacity: asNumber(value.overlayOpacity, fallback.overlayOpacity),
-      displayText: asBoolean(value.displayText, fallback.displayText),
-    };
-  };
-
-  return { hook: read("hook"), body: read("body"), cta: read("cta") };
-}
-
-function readTextSettings(
-  settings: JsonRecord,
-  firstSlide?: ApiSlide,
-): SlideshowTextSettings {
-  const stored = isRecord(settings.textSettings) ? settings.textSettings : {};
-  const slideSettings = isRecord(firstSlide?.settings) ? firstSlide.settings : {};
-  const font = asString(stored.font ?? slideSettings.fontFamily, "Poppins");
-  const colorValue = asString(stored.color ?? slideSettings.textColor, "white");
-  const customColorValue = asString(
-    stored.customColor,
-    /^#[0-9a-f]{3,8}$/i.test(colorValue) ? colorValue : "#ffffff",
-  );
-  const isCustomColor =
-    colorValue === "custom" || /^#[0-9a-f]{3,8}$/i.test(colorValue);
-  const styleValue = asString(stored.style ?? slideSettings.textStyle, "outline");
-  const positionValue = asString(
-    stored.position ?? slideSettings.verticalPosition,
-    "center",
-  );
-  const alignValue = asString(stored.align ?? slideSettings.textAlign, "center");
-  const paddingValue = asString(
-    stored.padding,
-    "padded",
-  );
-
-  return {
-    font:
-      font === "Inter" ||
-      font === "Serif" ||
-      font === "SerifItalic" ||
-      font === "Editorial" ||
-      font === "Condensed" ||
-      font === "Mono" ||
-      font === "Rounded"
-        ? font
-        : "Poppins",
-    color:
-      colorValue === "#000" || colorValue === "black"
-        ? "black"
-        : colorValue === "coral" || colorValue === "#ff7a59"
-          ? "coral"
-          : colorValue === "blue" || colorValue === "#4f9fd9"
-            ? "blue"
-            : colorValue === "yellow"
-              ? "yellow"
-              : isCustomColor
-                ? "custom"
-                : "white",
-    customColor: isCustomColor ? customColorValue : undefined,
-    style:
-      styleValue === "solid" ||
-      styleValue === "light" ||
-      styleValue === "translucent" ||
-      styleValue === "plain"
-        ? styleValue
-        : "outline",
-    size: asNumber(stored.size ?? slideSettings.fontSize, 28),
-    position:
-      positionValue === "top" || positionValue === "bottom"
-        ? positionValue
-        : "center",
-    width: asNumber(stored.width ?? slideSettings.textWidth, 88),
-    align:
-      alignValue === "left" || alignValue === "right" ? alignValue : "center",
-    padding: paddingValue === "flush" ? "flush" : "padded",
-    backgroundRadius: Math.max(
-      0,
-      Math.min(20, asNumber(stored.backgroundRadius, 4)),
-    ),
-  };
+  return rawItems.filter(isRecord);
 }
 
 export function deserializeSlideshowProject(input: unknown): SlideshowProject {
-  const project = isRecord(input) ? (input as ApiProject) : {};
-  const settings = isRecord(project.settings) ? project.settings : {};
-  const layout = isRecord(project.layout) ? project.layout : {};
-  const rawSlides = Array.isArray(project.slides) ? project.slides : [];
-  const includeCta = asBoolean(
-    settings.includeCta,
-    rawSlides.some((slide) => normalizePhase(slide.kind) === "cta"),
-  );
-  const fallback = createBlankSlideshowProject();
-  const exportHistory = asDateHistory(settings.exportHistory);
-  const slides = rawSlides.length
-    ? rawSlides
-        .map(deserializeSlide)
-        .sort((a, b) => a.order - b.order)
-    : fallback.slides;
-
+  const project = parseSlideshowProject(input);
   return {
-    id: project.id ?? fallback.id,
-    clientId: asString(settings.clientId) || undefined,
-    title: project.title ?? fallback.title,
-    description: project.description ?? undefined,
-    caption: asString(settings.caption) || undefined,
-    generationProvider:
-      settings.generationProvider === "ollama" ||
-      settings.generationProvider === "local-fallback"
-        ? settings.generationProvider
-        : undefined,
-    generationWarning: asString(settings.generationWarning) || undefined,
-    status: normalizeStatus(project.status),
-    revision: project.revision,
-    aspectRatio: normalizeAspectRatio(
-      settings.aspectRatio ?? layout.aspectRatio,
-    ),
-    slides: normalizeSlideshowSlides(slides, includeCta),
-    phaseSettings: readPhaseSettings(settings),
-    textSettings: readTextSettings(settings, rawSlides[0]),
-    includeCta,
-    preventRepeats: asBoolean(settings.preventRepeats, true),
-    language: asString(settings.language, "English"),
-    templateId: asString(settings.templateId) || null,
-    creator:
-      isRecord(settings.creator) && isRecord(settings.creator.template)
-        ? {
-            template:
-              settings.creator.template as unknown as SlideshowAestheticTemplate,
-            updatedAt:
-              typeof settings.creator.updatedAt === "string"
-                ? settings.creator.updatedAt
-                : undefined,
-          }
-        : null,
-    successfulExportCount: asNonNegativeInteger(
-      settings.successfulExportCount,
-      exportHistory.length,
-    ),
-    lastExportedAt:
-      typeof settings.lastExportedAt === "string" &&
-      Number.isFinite(Date.parse(settings.lastExportedAt))
-        ? settings.lastExportedAt
-        : exportHistory.at(-1) ?? null,
-    exportHistory,
-    createdAt: project.createdAt,
-    updatedAt: project.updatedAt ?? new Date(0).toISOString(),
+    ...project,
+    slides: normalizeSlideshowSlides(project.slides, project.includeCta),
   };
 }
 
-const textColorMap: Record<SlideshowTextSettings["color"], string> = {
-  white: "#fff",
-  black: "#000",
-  coral: "#ff7a59",
-  blue: "#4f9fd9",
-  yellow: "#f7e27d",
-  custom: "#fff",
-};
-
 export function serializeSlideshowProject(project: SlideshowProject) {
-  const bodySettings = project.phaseSettings.body;
-  return {
-    title: project.title.trim() || "Untitled slideshow",
-    ...(project.description?.trim()
-      ? { description: project.description.trim() }
-      : {}),
-    status:
-      project.status === "generating" ||
-      project.status === "exported" ||
-      project.status === "failed"
-        ? "draft"
-        : project.status,
-    settings: {
-      aspectRatio: project.aspectRatio,
-      imageGrid: bodySettings.grid,
-      darkOverlay: {
-        enabled: bodySettings.overlayEnabled,
-        opacity: bodySettings.overlayOpacity,
-      },
-      displayText: bodySettings.displayText,
-      phaseSettings: project.phaseSettings,
-      textSettings: project.textSettings,
-      includeCta: project.includeCta,
-      preventRepeats: project.preventRepeats,
-      language: project.language,
-      caption: project.caption ?? null,
-      generationProvider: project.generationProvider ?? null,
-      generationWarning: project.generationWarning ?? null,
-      templateId: project.templateId ?? null,
-      creator: project.creator?.template ? project.creator : null,
-      clientId: project.clientId ?? project.id,
-    },
-    layout: {
-      aspectRatio: project.aspectRatio,
-      safeArea: { top: 8, right: 8, bottom: 8, left: 8 },
-    },
-    slides: project.slides.map((slide, index) => ({
-      ...(isLocalSlideshowId(slide.id) || slide.id.startsWith("local-slide-")
-        ? {}
-        : { id: slide.id }),
-      position: index,
-      kind: slide.role === "body" ? "content" : slide.role,
-      imageUrl: slide.imageUrl ?? null,
-      imagePrompt: slide.prompt,
-      content: {
-        clientId: slide.clientId ?? slide.id,
-        eyebrow: slide.eyebrow,
-        headline: slide.headline,
-        body: slide.body,
-        prompt: slide.prompt,
-        visualKey: slide.visualKey,
-        visualKeys: slide.visualKeys,
-        imageUrls: slide.imageUrls,
-        textItems: [
-          { id: `${slide.id}-eyebrow`, role: "eyebrow", text: slide.eyebrow },
-          { id: `${slide.id}-headline`, role: "headline", text: slide.headline },
-          { id: `${slide.id}-body`, role: "body", text: slide.body },
-        ],
-      },
-      settings: {
-        fontFamily: project.textSettings.font,
-        fontSize: project.textSettings.size,
-        textColor:
-          project.textSettings.color === "custom"
-            ? (project.textSettings.customColor ?? "#fff")
-            : textColorMap[project.textSettings.color],
-        textStyle: project.textSettings.style,
-        textAlign: project.textSettings.align,
-        verticalPosition: project.textSettings.position,
-        textWidth: project.textSettings.width,
-        backgroundRadius: project.textSettings.backgroundRadius,
-        padded:
-          project.textSettings.padding === "padded",
-      },
-      layout: {
-        text: {
-          x: 50,
-          y:
-            project.textSettings.position === "top"
-              ? 18
-              : project.textSettings.position === "bottom"
-                ? 82
-                : 50,
-          width: project.textSettings.width,
-        },
-      },
-    })),
-  };
+  return slideshowProjectWriteBody(project);
 }
 
 async function readJsonResponse(response: Response) {
@@ -565,12 +207,12 @@ export async function requestSlideshowCopyVariation(
   const textItems = readTextItems(content);
 
   return {
-    eyebrow: asString(content.eyebrow, textItems[0]?.text ?? slide.eyebrow),
+    eyebrow: asString(content.eyebrow, asString(textItems[0]?.text, slide.eyebrow)),
     headline: asString(
       content.headline ?? content.heading,
-      textItems[1]?.text ?? slide.headline,
+      asString(textItems[1]?.text, slide.headline),
     ),
-    body: asString(content.body, textItems[2]?.text ?? slide.body),
+    body: asString(content.body, asString(textItems[2]?.text, slide.body)),
     prompt: formatGenerationPromptForEditing(
       asString(generated.imagePrompt, slide.prompt),
     ),
@@ -617,16 +259,16 @@ export async function requestSlideshowStory(
   ];
   const slides = generated.map((raw, index): SlideshowSlide => {
     const content = isRecord(raw.content) ? raw.content : raw;
-    const role = normalizePhase(raw.role ?? raw.kind);
+    const kind = slideKindFromUnknown(raw.kind ?? raw.role);
     const id = `local-slide-${localId}-${index + 1}`;
     return {
       id,
       clientId: id,
       order: index,
-      role,
+      kind,
       eyebrow: asString(
         content.eyebrow,
-        role === "hook" ? "START HERE" : role === "cta" ? "NEXT STEP" : `POINT ${index}`,
+        kind === "hook" ? "START HERE" : kind === "cta" ? "NEXT STEP" : `POINT ${index}`,
       ),
       headline: asString(content.headline ?? content.heading, `Slide ${index + 1}`),
       body: asString(content.body),
@@ -634,7 +276,7 @@ export async function requestSlideshowStory(
       visualKey: visualKeys[index % visualKeys.length],
     };
   });
-  const includeCta = slides.some((slide) => slide.role === "cta");
+  const includeCta = slides.some((slide) => slide.kind === "cta");
 
   return {
     ...base,

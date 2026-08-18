@@ -7,6 +7,10 @@ import {
   mapAspectRatioToFalFormat,
 } from "./models";
 import { prisma } from "@/lib/db";
+import {
+  submitDurableFalRequest,
+  type DurableFalSubmitOutcome,
+} from "@/lib/jobs/durable-fal-submit";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import type { GenerationJob } from "@/generated/prisma/client";
 
@@ -214,90 +218,101 @@ export async function submitReservedSlideshowImage(
   const leaseOwner = dependencies.createLeaseOwner();
   const claimedAt = dependencies.now();
   let claimed = false;
-  let providerAccepted = false;
+  let submitted = false;
+  let persisted = false;
 
   try {
-    claimed = await dependencies.claimQueuedJob(
-      jobId,
-      leaseOwner,
-      claimedAt,
-      new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
+    const outcome = await submitDurableFalRequest({
+      claim: async () => {
+        claimed = await dependencies.claimQueuedJob(
+          jobId,
+          leaseOwner,
+          claimedAt,
+          new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
+        );
+        return claimed;
+      },
+      submit: () => dependencies.submitToQueue(request.endpoint, request.falInput),
+      persistRequestId: async (requestId) => {
+        submitted = true;
+        persisted = await dependencies.markProcessing(
+          jobId,
+          leaseOwner,
+          requestId,
+          dependencies.now(),
+        );
+        return persisted;
+      },
+      onRejectedBeforeAccept: async (error) => {
+        const failed = await dependencies
+          .failClaimedJob(jobId, leaseOwner, error.message, dependencies.now())
+          .catch(() => false);
+        return failed ? "failed" : "error";
+      },
+      onAmbiguous: async (error) => {
+        console.error(
+          `[Slideshow images] Fal accepted job ${jobId}, but its request id could not be persisted:`,
+          error,
+        );
+        return "error";
+      },
+      onStarted: () => {
+        dependencies.startPoller();
+      },
+    });
+    return slideshowSubmissionResult(outcome, { claimed, submitted, persisted });
+  } catch (error) {
+    console.error(
+      `[Slideshow images] Failed to claim queued job ${jobId}:`,
+      error,
     );
-    if (!claimed) {
+    return {
+      claimed: false,
+      submitted: false,
+      persisted: false,
+      outcome: "error",
+    };
+  }
+}
+
+function slideshowSubmissionResult(
+  outcome: DurableFalSubmitOutcome,
+  state: { claimed: boolean; submitted: boolean; persisted: boolean },
+): SlideshowImageSubmissionResult {
+  switch (outcome) {
+    case "unclaimed":
       return {
         claimed: false,
         submitted: false,
         persisted: false,
         outcome: "unclaimed",
       };
-    }
-
-    const queued = await dependencies.submitToQueue(
-      request.endpoint,
-      request.falInput,
-    );
-    const requestId = queued.request_id?.trim();
-    if (!requestId) {
-      throw new Error("The image provider did not return a request id");
-    }
-    providerAccepted = true;
-    const persisted = await dependencies.markProcessing(
-      jobId,
-      leaseOwner,
-      requestId,
-      dependencies.now(),
-    );
-
-    if (persisted) dependencies.startPoller();
-    return {
-      claimed: true,
-      submitted: true,
-      persisted,
-      outcome: persisted ? "submitted" : "error",
-    };
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to queue slideshow image";
-
-    // Fal does not expose an idempotency key for queue submission. If Fal
-    // accepted the request but this process cannot persist its request id, a
-    // hard crash here remains an unavoidable provider/DB boundary. Crucially,
-    // do not mark that accepted request failed or release its lease early.
-    if (claimed && !providerAccepted) {
-      const failed = await dependencies
-        .failClaimedJob(jobId, leaseOwner, message, dependencies.now())
-        .catch(() => false);
+    case "submitted":
+      return {
+        claimed: true,
+        submitted: true,
+        persisted: true,
+        outcome: "submitted",
+      };
+    case "failed":
       return {
         claimed: true,
         submitted: false,
         persisted: false,
-        outcome: failed ? "failed" : "error",
+        outcome: "failed",
       };
-    }
-
-    if (!claimed) {
-      console.error(
-        `[Slideshow images] Failed to claim queued job ${jobId}:`,
-        error,
-      );
+    case "error":
+    case "submission-unknown":
       return {
-        claimed: false,
-        submitted: false,
-        persisted: false,
+        claimed: state.claimed,
+        submitted: state.submitted,
+        persisted: state.persisted,
         outcome: "error",
       };
+    default: {
+      const exhaustive: never = outcome;
+      return exhaustive;
     }
-
-    console.error(
-      `[Slideshow images] Fal accepted job ${jobId}, but its request id could not be persisted:`,
-      error,
-    );
-    return {
-      claimed,
-      submitted: providerAccepted,
-      persisted: false,
-      outcome: "error",
-    };
   }
 }
 

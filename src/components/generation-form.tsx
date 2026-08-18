@@ -43,19 +43,16 @@ import {
 } from "@/lib/ai/prompt-improvement-ui";
 import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
+import {
+  describeGenerateIdentityStatus,
+  generationErrorMessage,
+  type GenerateIdentityPackSummary,
+} from "@/lib/generation-workflow";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 
 interface GenerationFormProps {
   models: ModelDefinition[];
-}
-
-interface AvatarIdentityPackSummary {
-  id: string;
-  avatarId: string;
-  status: "queued" | "processing" | "completed" | "failed";
-  error: string | null;
-  images: { id: string }[];
 }
 
 interface GenerateFormViewProps {
@@ -117,45 +114,6 @@ const RATIO_LABELS: Record<string, string> = {
   "16:9": "Landscape",
 };
 
-function errorMessage(error: unknown, fallback: string) {
-  return error instanceof Error && error.message.trim().length > 0
-    ? error.message
-    : fallback;
-}
-
-function describeIdentityStatus(pack: AvatarIdentityPackSummary | null): {
-  label: string;
-  tone: "ready" | "working" | "failed";
-} {
-  if (!pack) {
-    return {
-      label: "No prepared identity pack yet. The original avatar image will be used.",
-      tone: "ready",
-    };
-  }
-
-  if (pack.status === "completed") {
-    return {
-      label: `${pack.images.length} identity reference${pack.images.length === 1 ? " is" : "s are"} ready.`,
-      tone: "ready",
-    };
-  }
-
-  if (pack.status === "failed") {
-    return {
-      label: pack.error
-        ? `Identity preparation failed: ${pack.error}`
-        : "Identity preparation failed. The original avatar image will be used.",
-      tone: "failed",
-    };
-  }
-
-  return {
-    label: "Preparing identity references. The original avatar is usable now.",
-    tone: "working",
-  };
-}
-
 export function GenerateEmptyState() {
   return (
     <WorkspaceState
@@ -214,7 +172,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
   );
   const [videoSeedMissing, setVideoSeedMissing] = useState(false);
   const [identityPack, setIdentityPack] =
-    useState<AvatarIdentityPackSummary | null>(null);
+    useState<GenerateIdentityPackSummary | null>(null);
   const [identityError, setIdentityError] = useState<string | null>(null);
   const [swapVideo, setSwapVideo] = useState<SwapUploadedAsset | null>(null);
   const [swapReference, setSwapReference] = useState<SwapUploadedAsset | null>(null);
@@ -267,7 +225,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
     const load = async () => {
       try {
-        const pack = await apiGet<AvatarIdentityPackSummary | null>(
+        const pack = await apiGet<GenerateIdentityPackSummary | null>(
           `/api/avatars/${encodeURIComponent(avatarId)}/identity-pack`
         );
         if (!active) return;
@@ -280,7 +238,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
         if (!active) return;
         setIdentityPack(null);
         setIdentityError(
-          errorMessage(error, "Identity references could not be checked.")
+          generationErrorMessage(error, "Identity references could not be checked.")
         );
       }
     };
@@ -558,7 +516,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       );
     } catch (error) {
       setPromptImprovementError(
-        errorMessage(error, "Prompt improvement failed. Your original prompt is unchanged.")
+        generationErrorMessage(error, "Prompt improvement failed. Your original prompt is unchanged.")
       );
     } finally {
       promptImprovementRequestGateRef.current.finish(requestToken);
@@ -627,11 +585,11 @@ export function GenerationForm({ models }: GenerationFormProps) {
         router.push(`/generate/${result.id}`);
       }
     } catch (error) {
-      setSubmitError(errorMessage(error, "Generation could not be started."));
+      setSubmitError(generationErrorMessage(error, "Generation could not be started."));
       setIsSubmitting(false);
     }
   };
-  const identityStatus = describeIdentityStatus(identityPack);
+  const identityStatus = describeGenerateIdentityStatus(identityPack);
   const avatarSection =
     selectedDefinition?.type !== "video" ||
     Boolean(selectedDefinition.capabilities.characterReference) ? (

@@ -1,9 +1,11 @@
 import type { ImageGenerationRequest } from "./types";
 import { getModel, mapAspectRatioToFalFormat, calculateEstimatedCost } from "./models";
 import { subscribeToGeneration } from "./fal-client";
-import { createJob, startJob, completeJob, failJob, addGeneratedFile } from "@/lib/jobs/queue";
-import { logCost } from "@/lib/costs/tracker";
-import { storage, downloadFromUrl } from "@/lib/storage";
+import { createJob, startJob, failJob } from "@/lib/jobs/queue";
+import {
+  completeFalImageJob,
+  persistFalImageOutputs,
+} from "@/lib/jobs/complete-fal-result";
 import { persistUgcReferenceImageFromJob } from "@/lib/ugc/reference-library";
 
 export function buildImageProviderRequest(request: ImageGenerationRequest): {
@@ -107,39 +109,14 @@ async function executeImageGeneration(
     }[];
   };
   const images = data.images ?? [];
-
-  await Promise.all(images.map(async (image, i) => {
-    let { buffer, contentType } = await downloadFromUrl(image.url);
-
-    // Apply post-processing if provided (e.g., color/quality matching)
-    if (postProcess) {
-      buffer = await postProcess(buffer);
-      contentType = "image/jpeg"; // post-process outputs JPEG
-    }
-
-    const extension = contentType.includes("png") ? "png" : "jpg";
-    const filename = `${jobId}-${i}.${extension}`;
-    const localPath = await storage.save("images", filename, buffer);
-
-    await addGeneratedFile({
-      jobId,
-      type: "image",
-      originalUrl: image.url,
-      localPath,
-      filename,
-      mimeType: contentType,
-      width: image.width,
-      height: image.height,
-      fileSizeBytes: buffer.length,
-    });
-  }));
-
-  const durationMs = Date.now() - startTime;
-  const actualCost = calculateEstimatedCost(request.model, {
-    numImages: images.length,
-  });
-
-  await completeJob(jobId, { imageCount: images.length }, durationMs);
+  await persistFalImageOutputs(jobId, images, postProcess);
+  await completeFalImageJob(
+    jobId,
+    request.model,
+    request.prompt,
+    images.length,
+    startTime,
+  );
 
   try {
     await persistUgcReferenceImageFromJob(jobId);
@@ -149,9 +126,4 @@ async function executeImageGeneration(
       error
     );
   }
-
-  await logCost(jobId, request.model, "image", actualCost, {
-    numImages: images.length,
-    prompt: request.prompt,
-  });
 }

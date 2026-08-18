@@ -30,6 +30,7 @@ import {
   DEFAULT_SLIDE_SETTINGS,
   MAX_SLIDES_PER_PROJECT,
 } from "@/lib/slideshow/constants";
+import { slideKindFromStoryRole } from "@/lib/slideshow/project";
 import { reserveSlideGenerationJob } from "@/lib/slideshow/service";
 
 const DEFAULT_TICK_INTERVAL_MS = 30_000;
@@ -344,8 +345,7 @@ function generatedSlideData(
   },
 ) {
   return story.slides.map((slide, position) => {
-    const kind: SlideshowSlideKind =
-      slide.role === "body" ? "content" : slide.role;
+    const kind = slideKindFromStoryRole(slide.role);
     const sourceSlide = sourceSlideFor(source, position, kind);
     const collectionImage = options.collectionImages.length
       ? options.collectionImages[position % options.collectionImages.length]
@@ -355,9 +355,9 @@ function generatedSlideData(
       options.reuseVisuals,
     );
     const eyebrow =
-      slide.role === "hook"
+      kind === "hook"
         ? "Hook"
-        : slide.role === "cta"
+        : kind === "cta"
           ? "Call to action"
           : `Point ${position + 1}`;
     return {

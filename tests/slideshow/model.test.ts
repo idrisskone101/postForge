@@ -59,8 +59,8 @@ assert.deepEqual(
 );
 
 let project = createBlankSlideshowProject();
-assert.equal(project.slides[0].role, "hook");
-assert.equal(project.slides.at(-1)?.role, "cta");
+assert.equal(project.slides[0].kind, "hook");
+assert.equal(project.slides.at(-1)?.kind, "cta");
 assert.deepEqual(
   project.slides.map((slide) => slide.order),
   [0, 1, 2, 3],
@@ -68,8 +68,8 @@ assert.deepEqual(
 
 project = addSlideshowSlide(project, 1);
 assert.equal(project.slides.length, 5);
-assert.equal(project.slides.at(-1)?.role, "cta");
-assert.equal(project.slides[2].role, "body");
+assert.equal(project.slides.at(-1)?.kind, "cta");
+assert.equal(project.slides[2].kind, "content");
 
 const sourceId = project.slides[1].id;
 project = duplicateSlideshowSlide(project, 1);
@@ -80,8 +80,8 @@ assert.match(project.slides[2].eyebrow, /variation/);
 const beforeMove = project.slides.map((slide) => slide.id);
 project = moveSlideshowSlide(project, 1, 3);
 assert.equal(project.slides[3].id, beforeMove[1]);
-assert.equal(project.slides[0].role, "hook");
-assert.equal(project.slides.at(-1)?.role, "cta");
+assert.equal(project.slides[0].kind, "hook");
+assert.equal(project.slides.at(-1)?.kind, "cta");
 
 const reversedIds = [...project.slides].reverse().map((slide) => slide.id);
 project = reorderSlideshowSlides(project, reversedIds);
@@ -89,12 +89,12 @@ assert.deepEqual(
   project.slides.map((slide) => slide.id),
   reversedIds,
 );
-assert.equal(project.slides[0].role, "hook");
-assert.equal(project.slides.at(-1)?.role, "cta");
+assert.equal(project.slides[0].kind, "hook");
+assert.equal(project.slides.at(-1)?.kind, "cta");
 
 project = setSlideshowCta(project, false);
 assert.equal(project.includeCta, false);
-assert.equal(project.slides.at(-1)?.role, "body");
+assert.equal(project.slides.at(-1)?.kind, "content");
 
 while (project.slides.length < MAX_SLIDESHOW_SLIDES) {
   project = addSlideshowSlide(project);

@@ -7,6 +7,10 @@ import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { buildImageProviderRequest } from "@/lib/ai/generate-image";
 import { createJob, failJob, getJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
+import {
+  submitDurableFalRequest,
+  type DurableFalSubmitOutcome,
+} from "@/lib/jobs/durable-fal-submit";
 import { storage } from "@/lib/storage";
 import { buildAvatarImageGenerationRequest } from "@/lib/ugc/generate-avatar-image";
 import {
@@ -396,35 +400,51 @@ export async function submitDurableCharacterIntent(
     return "submission-unknown";
   }
 
-  try {
-    const queued = await dependencies.submit(intent.endpoint, intent.payload);
-    const requestId = queued.request_id?.trim();
-    if (!requestId) throw new Error("The generation provider did not return a request id");
-    const persisted = await dependencies.markSubmitted(
-      jobId,
-      leaseOwner,
-      requestId,
-      options.submittedStage
-    );
-    if (!persisted) {
+  const outcome = await submitDurableFalRequest({
+    claim: async () => true,
+    submit: () => dependencies.submit(intent.endpoint, intent.payload),
+    persistRequestId: (requestId) =>
+      dependencies.markSubmitted(
+        jobId,
+        leaseOwner,
+        requestId,
+        options.submittedStage
+      ),
+    onAmbiguous: async (error) => {
+      const persistLost = error.message.includes("could not be persisted");
       await dependencies.markUnknown(
         jobId,
         leaseOwner,
-        "Generation submission was accepted but its request id could not be persisted; automatic replay was disabled to prevent a duplicate charge.",
+        persistLost
+          ? "Generation submission was accepted but its request id could not be persisted; automatic replay was disabled to prevent a duplicate charge."
+          : "Generation submission outcome is unknown; automatic replay was disabled to prevent a duplicate charge. Retry manually only after checking provider activity.",
         dependencies.now()
       );
       return "submission-unknown";
+    },
+    onStarted: () => {
+      dependencies.startPoller();
+    },
+  });
+  return characterSubmissionOutcome(outcome);
+}
+
+function characterSubmissionOutcome(
+  outcome: DurableFalSubmitOutcome,
+): DurableSubmissionOutcome {
+  switch (outcome) {
+    case "unclaimed":
+      return "unclaimed";
+    case "submitted":
+      return "submitted";
+    case "submission-unknown":
+    case "failed":
+    case "error":
+      return "submission-unknown";
+    default: {
+      const exhaustive: never = outcome;
+      return exhaustive;
     }
-    dependencies.startPoller();
-    return "submitted";
-  } catch {
-    await dependencies.markUnknown(
-      jobId,
-      leaseOwner,
-      "Generation submission outcome is unknown; automatic replay was disabled to prevent a duplicate charge. Retry manually only after checking provider activity.",
-      dependencies.now()
-    );
-    return "submission-unknown";
   }
 }
 

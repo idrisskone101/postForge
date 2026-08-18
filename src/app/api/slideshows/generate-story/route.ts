@@ -3,6 +3,7 @@ import { generateSlideshowStory } from "@/lib/ai/slideshow-story";
 import { getStoryModel, resolveStoryModelOllamaId } from "@/lib/ai/story-models";
 import { badRequest } from "@/lib/slideshow/errors";
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
+import { slideKindFromStoryRole } from "@/lib/slideshow/project";
 import {
   optionalInteger,
   optionalString,
@@ -33,21 +34,23 @@ export async function POST(request: NextRequest) {
       },
       modelOverride,
     );
-    const slides = result.slides.map((slide, position) => ({
-      position,
-      kind: slide.role === "body" ? "content" : slide.role,
-      role: slide.role,
-      imagePrompt: slide.imagePrompt,
-      content: {
-        eyebrow: slide.role === "hook" ? "START HERE" : "",
-        headline: slide.heading,
-        body: slide.body,
-        textItems: [
-          { id: `generated-${position}-headline`, role: "headline", text: slide.heading },
-          { id: `generated-${position}-body`, role: "body", text: slide.body },
-        ],
-      },
-    }));
+    const slides = result.slides.map((slide, position) => {
+      const kind = slideKindFromStoryRole(slide.role);
+      return {
+        position,
+        kind,
+        imagePrompt: slide.imagePrompt,
+        content: {
+          eyebrow: kind === "hook" ? "START HERE" : "",
+          headline: slide.heading,
+          body: slide.body,
+          textItems: [
+            { id: `generated-${position}-headline`, role: "headline", text: slide.heading },
+            { id: `generated-${position}-body`, role: "body", text: slide.body },
+          ],
+        },
+      };
+    });
     return NextResponse.json({
       source: result.provider,
       provider: result.provider,

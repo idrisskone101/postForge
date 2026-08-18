@@ -35,7 +35,7 @@ export const DEFAULT_PROJECT_SETTINGS = Object.freeze({
       overlayOpacity: 45,
       displayText: true,
     },
-    body: {
+    content: {
       grid: "none",
       overlayEnabled: true,
       overlayOpacity: 45,

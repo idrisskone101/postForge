@@ -29,10 +29,6 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC, getModel, getModelsByType } from "@/lib/ai/models";
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import type { ModelDefinition } from "@/lib/ai/types";
-
-function getModelCatalogFallback(): ModelDefinition[] {
-  return getModelsByType("video").concat(getModelsByType("image"));
-}
 import { apiGet, apiPost } from "@/lib/api/client";
 import {
   consumeCloneHandoffQuery,
@@ -44,6 +40,11 @@ import {
   MAX_MOTION_SOURCE_DURATION_SEC,
   isMotionSourceWithinLimit,
 } from "@/lib/ugc/source-limits";
+import {
+  createReferenceImageBatchEntries,
+  getClonePrimaryAction,
+  type ClonePrimaryAction,
+} from "@/lib/ugc/clone-workflow";
 import {
   Loader2,
   Check,
@@ -60,6 +61,15 @@ import {
   ChevronDown,
   Eye,
 } from "lucide-react";
+
+function getModelCatalogFallback(): ModelDefinition[] {
+  return getModelsByType("video").concat(getModelsByType("image"));
+}
+
+export {
+  createReferenceImageBatchEntries,
+  getClonePrimaryAction,
+} from "@/lib/ugc/clone-workflow";
 
 const IDENTITY_ROLE_LABELS: Record<string, string> = {
   front: "Front",
@@ -281,48 +291,7 @@ export interface RefImageEntry {
   error?: string;
 }
 
-type ReferenceImagePost = <T>(path: string, body: unknown) => Promise<T>;
-
-export async function createReferenceImageBatchEntries({
-  batchSize,
-  videoInfo,
-  avatarId,
-  prompt,
-  imageModel,
-  unitCost,
-  hairstyleRole = null,
-  post = apiPost,
-}: {
-  batchSize: ReferenceBatchSize;
-  videoInfo: Pick<TikTokVideoInfo, "id" | "localPath">;
-  avatarId: string;
-  prompt: string;
-  imageModel: string;
-  unitCost: number;
-  hairstyleRole?: string | null;
-  post?: ReferenceImagePost;
-}): Promise<RefImageEntry[]> {
-  const batchResults = await Promise.all(
-    Array.from({ length: batchSize }, () =>
-      post<{ id: string; estimatedCost?: number }>("/api/ugc-clone/reference-image", {
-        tiktokVideoPath: videoInfo.localPath,
-        tiktokSourceId: videoInfo.id,
-        avatarId,
-        prompt: prompt || undefined,
-        imageModel,
-        ...(hairstyleRole ? { hairstyleRole } : {}),
-      })
-    )
-  );
-
-  return batchResults.map((result) => ({
-    jobId: result.id,
-    fileId: null,
-    prompt,
-    cost: result.estimatedCost ?? unitCost,
-    status: "generating" as const,
-  }));
-}
+export type { ClonePrimaryAction };
 
 interface SavedReference {
   id: string;
@@ -372,20 +341,6 @@ interface CloneIdentityStatusPanelProps {
 
 type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
 
-interface ClonePrimaryActionState {
-  sourceReady: boolean;
-  trimReady: boolean;
-  identityReady: boolean;
-  referenceReady: boolean;
-  canGenerate: boolean;
-  usesSavedReference: boolean;
-}
-
-export interface ClonePrimaryAction {
-  label: string;
-  detail: string;
-}
-
 interface CloneProductionStatePanelProps {
   sourceReady: boolean;
   trimReady: boolean;
@@ -398,50 +353,6 @@ interface CloneProductionStatePanelProps {
   identityDetail?: string;
   referenceDetail?: string;
   readinessDetail?: string;
-}
-
-export function getClonePrimaryAction({
-  sourceReady,
-  trimReady,
-  identityReady,
-  referenceReady,
-  canGenerate,
-  usesSavedReference,
-}: ClonePrimaryActionState): ClonePrimaryAction {
-  if (!sourceReady) {
-    return {
-      label: "Add source",
-      detail: "Paste a TikTok URL or choose a saved source.",
-    };
-  }
-
-  if (!trimReady) {
-    return {
-      label: "Trim source",
-      detail: `Trim the source to ${MAX_MOTION_SOURCE_DURATION_SEC} seconds or less.`,
-    };
-  }
-
-  if (!identityReady) {
-    return {
-      label: "Choose identity",
-      detail: "Select the avatar for this clone.",
-    };
-  }
-
-  if (canGenerate || referenceReady) {
-    return {
-      label: "Generate clone",
-      detail: usesSavedReference
-        ? "Use the selected reference to start video generation."
-        : "Use the generated reference to start video generation.",
-    };
-  }
-
-  return {
-    label: "Generate reference",
-    detail: "Create or choose the reference image first.",
-  };
 }
 
 function getStepStatus(isReady: boolean, readyStatus: CloneProductionStepStatus = "ready") {
@@ -1338,6 +1249,7 @@ export function UGCCloneForm() {
         imageModel: selectedReferenceImageModel,
         unitCost: referenceImageUnitCost,
         hairstyleRole: selectedHairstyleRole,
+        post: apiPost,
       });
 
       setRefImages((prev) => [...prev, ...newEntries]);
