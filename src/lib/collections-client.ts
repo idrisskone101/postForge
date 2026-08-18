@@ -1,27 +1,16 @@
+import { type CollectionFeatureRecord } from "@/lib/collections";
 import {
-  isCollectionAssetRecord,
-  isCollectionRecord,
-  type CollectionFeatureRecord,
-} from "@/lib/collections";
+  platformCollectionAssetUrl,
+  summarizePlatformCollections,
+  type PlatformCollectionSummary,
+} from "@/lib/collections-read-model";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
+import type { PinterestImageCandidate } from "@/lib/pinterest";
 
-export type PlatformCollectionSummary = {
-  id: string;
-  name: string;
-  imageCount: number;
-  imageUrls: string[];
-};
-
-export type PinterestCandidate = {
-  id: string;
-  imageUrl: string;
-  sourceUrl: string;
-  title?: string;
-  altText?: string;
-  width?: number;
-  height?: number;
-};
+export type { PlatformCollectionSummary, PinterestImageCandidate };
+export type PinterestCandidate = PinterestImageCandidate;
+export { platformCollectionAssetUrl };
 
 export type PinterestCandidatePage = {
   candidates: PinterestCandidate[];
@@ -36,10 +25,6 @@ export type PinterestImportResult = {
   assetIds: string[];
   assets: Array<{ id: string; imageUrl: string }>;
 };
-
-export function platformCollectionAssetUrl(assetId: string) {
-  return `/api/collection-assets/${encodeURIComponent(assetId)}`;
-}
 
 export function pinterestImageUrlsInSelectionOrder(
   candidates: PinterestCandidate[],
@@ -58,16 +43,7 @@ export async function fetchPlatformCollections(): Promise<
 > {
   const { records } =
     await fetchWorkspaceFeature<CollectionFeatureRecord>("collections");
-  const assets = records.filter(isCollectionAssetRecord);
-  return records.filter(isCollectionRecord).map((collection) => ({
-    id: collection.id,
-    name: collection.name,
-    imageCount: collection.assetIds.length,
-    imageUrls: collection.assetIds
-      .map((assetId) => assets.find((asset) => asset.id === assetId))
-      .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
-      .map((asset) => platformCollectionAssetUrl(asset.id)),
-  }));
+  return summarizePlatformCollections(records);
 }
 
 async function readJsonResponse(response: Response) {

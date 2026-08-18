@@ -51,6 +51,7 @@ import {
   requireRevision,
   type JsonRecord,
 } from "@/lib/slideshow/validation";
+import { canonicalizePhaseSettings } from "@/lib/slideshow/project";
 
 const projectInclude = {
   slides: { orderBy: [{ position: "asc" }, { createdAt: "asc" }] },
@@ -166,6 +167,8 @@ function projectSettingsFrom(
       delete result[key];
     }
   }
+
+  result.phaseSettings = canonicalizePhaseSettings(result.phaseSettings);
 
   return inputJson(result);
 }
@@ -300,7 +303,6 @@ function serializeSlide(slide: SlideRecord) {
   const textItems = Array.isArray(content.textItems) ? content.textItems : [];
   const firstTextItem = textItems.find(isRecord);
   const fallbackHeadline = readString(firstTextItem?.text);
-  const role = slide.kind === "content" ? "body" : slide.kind;
   const imageUrls = Array.isArray(content.imageUrls)
     ? content.imageUrls.filter((value): value is string => typeof value === "string")
     : [];
@@ -314,7 +316,6 @@ function serializeSlide(slide: SlideRecord) {
     position: slide.position,
     order: slide.position,
     kind: slide.kind,
-    role,
     eyebrow: readString(content.eyebrow),
     headline: readString(content.headline, fallbackHeadline),
     body: readString(content.body),
@@ -338,7 +339,7 @@ function serializeSlide(slide: SlideRecord) {
   };
 }
 
-export function serializeSlideshowProject(project: ProjectRecord) {
+export function toSlideshowProjectDto(project: ProjectRecord) {
   const settings = recordOrEmpty(project.settings);
   const defaults = DEFAULT_PROJECT_SETTINGS;
   const exportHistory = Array.isArray(settings.exportHistory)
@@ -355,7 +356,9 @@ export function serializeSlideshowProject(project: ProjectRecord) {
     status: project.status,
     revision: project.revision,
     aspectRatio: readString(settings.aspectRatio, defaults.aspectRatio),
-    phaseSettings: settings.phaseSettings ?? defaults.phaseSettings,
+    phaseSettings: canonicalizePhaseSettings(
+      settings.phaseSettings ?? defaults.phaseSettings,
+    ),
     textSettings: settings.textSettings ?? defaults.textSettings,
     includeCta:
       typeof settings.includeCta === "boolean"
@@ -576,7 +579,7 @@ export async function listSlideshowProjects(options: {
   ]);
 
   return {
-    projects: projects.map(serializeSlideshowProject),
+    projects: projects.map(toSlideshowProjectDto),
     total,
     limit: options.limit,
     offset: options.offset,
@@ -584,7 +587,7 @@ export async function listSlideshowProjects(options: {
 }
 
 export async function getSlideshowProject(id: string) {
-  return serializeSlideshowProject(await getProjectRecord(id));
+  return toSlideshowProjectDto(await getProjectRecord(id));
 }
 
 export async function listSlideshowSlides(projectId: string) {
@@ -647,7 +650,7 @@ export async function createSlideshowProject(input: unknown) {
     },
     include: projectInclude,
   });
-  return serializeSlideshowProject(project);
+  return toSlideshowProjectDto(project);
 }
 
 export async function updateSlideshowProject(id: string, input: unknown) {
@@ -691,7 +694,7 @@ export async function updateSlideshowProject(id: string, input: unknown) {
           : {}),
       },
     });
-    return serializeSlideshowProject(await getProjectRecord(id, tx));
+    return toSlideshowProjectDto(await getProjectRecord(id, tx));
   });
 }
 
@@ -737,7 +740,7 @@ export async function duplicateSlideshowProject(id: string, input: unknown) {
     },
     include: projectInclude,
   });
-  return serializeSlideshowProject(duplicate);
+  return toSlideshowProjectDto(duplicate);
 }
 
 export async function addSlideshowSlide(projectId: string, input: unknown) {
@@ -776,7 +779,7 @@ export async function addSlideshowSlide(projectId: string, input: unknown) {
     const ids = existing.map((slide) => slide.id);
     ids.splice(position, 0, created.id);
     await setSlidePositions(tx, projectId, ids);
-    return serializeSlideshowProject(await getProjectRecord(projectId, tx));
+    return toSlideshowProjectDto(await getProjectRecord(projectId, tx));
   });
 }
 
@@ -808,7 +811,7 @@ export async function updateSlideshowSlide(
         layout: parsed.layout,
       },
     });
-    return serializeSlideshowProject(await getProjectRecord(projectId, tx));
+    return toSlideshowProjectDto(await getProjectRecord(projectId, tx));
   });
 }
 
@@ -837,7 +840,7 @@ export async function deleteSlideshowSlide(
       projectId,
       remaining.map((item) => item.id)
     );
-    return serializeSlideshowProject(await getProjectRecord(projectId, tx));
+    return toSlideshowProjectDto(await getProjectRecord(projectId, tx));
   });
 }
 
@@ -866,7 +869,7 @@ export async function reorderSlideshowSlides(projectId: string, input: unknown) 
       badRequest("slideIds must contain every slide exactly once");
     }
     await setSlidePositions(tx, projectId, slideIds);
-    return serializeSlideshowProject(await getProjectRecord(projectId, tx));
+    return toSlideshowProjectDto(await getProjectRecord(projectId, tx));
   });
 }
 
@@ -1252,7 +1255,7 @@ export async function getSlideshowRenderProject(
   id: string
 ): Promise<SlideshowRenderProject> {
   const project = await getProjectRecord(id);
-  const serialized = serializeSlideshowProject(project);
+  const serialized = toSlideshowProjectDto(project);
   const phaseSettings = recordOrEmpty(serialized.phaseSettings);
   const rawTextSettings = recordOrEmpty(serialized.textSettings);
   const style = readString(rawTextSettings.style, "outline");
@@ -1385,7 +1388,7 @@ export async function getSlideshowRenderProject(
     textSettings,
     slides: project.slides.map((slide) => {
       const serializedSlide = serializeSlide(slide);
-      const phase = serializedSlide.role;
+      const phase = serializedSlide.kind;
       const phaseSetting = recordOrEmpty(phaseSettings[phase]);
       const reusableBuffers = serializedSlide.imageUrls.map(
         (url) => reusableImageBuffers.get(url) ?? null

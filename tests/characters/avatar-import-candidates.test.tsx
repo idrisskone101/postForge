@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  appendAvatarCandidateSet,
   AvatarImportPanel,
+} from "../../src/components/avatar-picker";
+import {
   buildAvatarCandidateGenerationRequest,
   getDefaultAvatarImportName,
-  resetAvatarImportDraft,
-} from "../../src/components/avatar-picker";
+} from "../../src/lib/avatar-workflow";
 
 const request = buildAvatarCandidateGenerationRequest({
   rawJson: JSON.stringify({ name: "Imported Creator", tone: "warm" }),
@@ -132,47 +132,6 @@ assert.equal(getDefaultAvatarImportName('{"name":"Imported Creator"}'), "Importe
 assert.equal(getDefaultAvatarImportName('{"displayName":"Display Creator"}'), "Display Creator");
 assert.equal(getDefaultAvatarImportName("{bad json"), "Imported Avatar");
 
-assert.deepEqual(
-  appendAvatarCandidateSet(
-    [
-      {
-        jobId: "first-job",
-        candidates: [
-          { fileId: "candidate-1" },
-          { fileId: "candidate-2" },
-          { fileId: "candidate-3" },
-        ],
-      },
-    ],
-    {
-      jobId: "second-job",
-      candidates: [
-        { fileId: "candidate-4" },
-        { fileId: "candidate-5" },
-        { fileId: "candidate-6" },
-      ],
-    }
-  ),
-  [
-    {
-      jobId: "first-job",
-      candidates: [
-        { fileId: "candidate-1" },
-        { fileId: "candidate-2" },
-        { fileId: "candidate-3" },
-      ],
-    },
-    {
-      jobId: "second-job",
-      candidates: [
-        { fileId: "candidate-4" },
-        { fileId: "candidate-5" },
-        { fileId: "candidate-6" },
-      ],
-    },
-  ]
-);
-
 const candidateReviewMarkup = renderToStaticMarkup(
   <AvatarImportPanel
     rawJson='{"name":"Imported Creator"}'
@@ -244,13 +203,3 @@ assert.match(activeRegenerationMarkup, /Candidate 1/);
 assert.match(activeRegenerationMarkup, /Candidate 2/);
 assert.match(activeRegenerationMarkup, /Candidate 3/);
 assert.match(activeRegenerationMarkup, /Use Candidate/);
-
-assert.deepEqual(
-  resetAvatarImportDraft(),
-  {
-    rawJson: "",
-    seedReferenceImages: [],
-    candidateSets: [],
-    generationError: null,
-  }
-);

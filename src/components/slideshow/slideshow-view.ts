@@ -51,6 +51,6 @@ export function slideLayerCount(
   ).length;
 }
 
-export function phaseLabel(role: SlideshowSlide["role"]): string {
-  return role === "body" ? "Content" : role === "cta" ? "CTA" : "Hook";
+export function phaseLabel(kind: SlideshowSlide["kind"]): string {
+  return kind === "content" ? "Content" : kind === "cta" ? "CTA" : "Hook";
 }

@@ -1,26 +1,19 @@
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
-  type CollectionAssetRecord,
   type CollectionFeatureRecord,
 } from "@/lib/collections";
+import {
+  collectionImagesFor,
+  platformCollectionAssetIdFromUrl,
+  platformCollectionAssetUrl,
+} from "@/lib/collections-read-model";
 import { readWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
 
-const ASSET_URL_PATTERN = /^\/api\/collection-assets\/([^/?#]+)$/;
-
-export function platformCollectionAssetUrl(assetId: string) {
-  return `/api/collection-assets/${encodeURIComponent(assetId)}`;
-}
-
-export function platformCollectionAssetIdFromUrl(url: string) {
-  const match = ASSET_URL_PATTERN.exec(url);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return null;
-  }
-}
+export {
+  platformCollectionAssetIdFromUrl,
+  platformCollectionAssetUrl,
+} from "@/lib/collections-read-model";
 
 export type PlatformCollectionImage = {
   id: string;
@@ -44,14 +37,7 @@ export async function readPlatformCollection(collectionId: string): Promise<{
   return {
     id: collection.id,
     name: collection.name,
-    images: collection.assetIds
-      .map((assetId) => assets.find((asset) => asset.id === assetId))
-      .filter((asset): asset is CollectionAssetRecord => Boolean(asset))
-      .map((asset) => ({
-        id: asset.id,
-        url: platformCollectionAssetUrl(asset.id),
-        localPath: asset.localPath,
-      })),
+    images: collectionImagesFor(collection, assets),
   };
 }
 

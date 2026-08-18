@@ -179,7 +179,7 @@ const videoRouteSource = readFileSync(
   "utf8"
 );
 const retryRouteSource = readFileSync(
-  new URL("../../src/app/api/jobs/[id]/retry/route.ts", import.meta.url),
+  new URL("../../src/lib/jobs/retry-generation.ts", import.meta.url),
   "utf8"
 );
 

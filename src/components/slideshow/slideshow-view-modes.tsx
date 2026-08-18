@@ -121,7 +121,7 @@ export function SlideshowBoardView({
                 type="button"
                 data-slide-board-card={slide.id}
                 aria-pressed={selected}
-                aria-label={`${phaseLabel(slide.role)} slide ${index + 1}: ${slide.headline || "Untitled slide"}`}
+                aria-label={`${phaseLabel(slide.kind)} slide ${index + 1}: ${slide.headline || "Untitled slide"}`}
                 onClick={() => onSelect(slide)}
                 onDoubleClick={() => onOpenEdit(slide)}
                 className={cn(
@@ -134,13 +134,13 @@ export function SlideshowBoardView({
                 <SlidePreview
                   slide={slide}
                   aspectRatio={project.aspectRatio}
-                  phaseSettings={project.phaseSettings[slide.role]}
+                  phaseSettings={project.phaseSettings[slide.kind]}
                   textSettings={project.textSettings}
                   className="w-full rounded-lg"
                 />
                 <span className="mt-2 flex items-center justify-between gap-2 px-0.5">
                   <span className="truncate text-[12px] font-semibold text-foreground">
-                    {phaseLabel(slide.role)}
+                    {phaseLabel(slide.kind)}
                   </span>
                   <span className="pf-data shrink-0 text-[11px] tabular-nums text-muted-foreground">
                     {index + 1}/{project.slides.length}
@@ -165,7 +165,7 @@ export function SlideshowBoardView({
       <div className="shrink-0 border-t border-border bg-card px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="mx-auto flex w-full max-w-[1240px] items-center gap-1.5 overflow-x-auto">
           <p className="mr-2 hidden min-w-0 truncate text-[12px] text-muted-foreground sm:block">
-            {phaseLabel(project.slides[activeIndex]?.role ?? "hook")} · slide{" "}
+            {phaseLabel(project.slides[activeIndex]?.kind ?? "hook")} · slide{" "}
             {activeIndex + 1}
           </p>
           <button
@@ -360,7 +360,7 @@ export function SlideshowPlayView({
           <SlidePreview
             slide={activeSlide}
             aspectRatio={project.aspectRatio}
-            phaseSettings={project.phaseSettings[activeSlide.role]}
+            phaseSettings={project.phaseSettings[activeSlide.kind]}
             textSettings={project.textSettings}
             showCounter
             counter={`${activeIndex + 1}/${project.slides.length}`}
@@ -385,7 +385,7 @@ export function SlideshowPlayView({
             aria-live="polite"
             className="text-[12px] font-medium text-white/70"
           >
-            {phaseLabel(activeSlide.role)} · {activeIndex + 1} of{" "}
+            {phaseLabel(activeSlide.kind)} · {activeIndex + 1} of{" "}
             {project.slides.length}
           </p>
           <p className="ml-auto hidden text-[12px] text-white/45 sm:block">

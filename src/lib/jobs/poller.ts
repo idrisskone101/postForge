@@ -13,6 +13,13 @@ import { storage, downloadFromUrl } from "@/lib/storage";
 import type { GeneratedFile, GenerationJob } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { attachSlideshowGeneratedFile } from "@/lib/slideshow/service";
+import {
+  persistFalImageOutputs,
+  persistFalVideoOutput,
+  completeFalImageJob,
+  completeFalVideoJob,
+  type CompleteFalResultDependencies,
+} from "@/lib/jobs/complete-fal-result";
 
 const POLL_INTERVAL_MS = 10_000;
 const TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
@@ -185,6 +192,24 @@ const productionPollDependencies: FalJobPollDependencies = {
   now: Date.now,
 };
 
+function falResultDependenciesFromPoller(
+  dependencies: FalJobPollDependencies,
+): CompleteFalResultDependencies {
+  return {
+    downloadFromUrl: dependencies.downloadFromUrl,
+    saveFile: dependencies.saveFile,
+    addGeneratedFile: dependencies.addGeneratedFile,
+    completeJob: dependencies.completeJob,
+    logCost: dependencies.logCost,
+    calculateEstimatedCost: dependencies.calculateEstimatedCost,
+    now: dependencies.now,
+  };
+}
+
+function jobStartedAtMs(job: GenerationJob, now: () => number) {
+  return job.startedAt ? new Date(job.startedAt).getTime() : now();
+}
+
 async function claimAndPollSingleJob(jobId: string): Promise<FalJobPollOutcome> {
   const now = new Date();
   const claimed = await prisma.generationJob.updateMany({
@@ -255,57 +280,28 @@ export async function pollSingleJob(
           if (!images.length) {
             throw new Error("Image generation completed without an output");
           }
+          const fal = falResultDependenciesFromPoller(dependencies);
           let primaryFile = await dependencies.findPrimaryImage(job.id);
           if (!primaryFile) {
-            for (const [index, image] of images.entries()) {
-              const { buffer, contentType } =
-                await dependencies.downloadFromUrl(image.url);
-              const extension = contentType.includes("png") ? "png" : "jpg";
-              const filename = `${job.id}-${index}.${extension}`;
-              const localPath = await dependencies.saveFile(
-                "images",
-                filename,
-                buffer
-              );
-              const savedFile = await dependencies.addGeneratedFile({
-                jobId: job.id,
-                type: "image",
-                originalUrl: image.url,
-                localPath,
-                filename,
-                mimeType: contentType,
-                width: image.width,
-                height: image.height,
-                fileSizeBytes: buffer.length,
-              });
-              primaryFile ??= savedFile;
-            }
+            primaryFile = await persistFalImageOutputs(
+              job.id,
+              images,
+              undefined,
+              fal,
+            );
           }
           if (!primaryFile) {
             throw new Error("Image generation output could not be persisted");
           }
           await dependencies.attachSlideshowGeneratedFile(job.id, primaryFile.id);
-
-          const startTime = job.startedAt
-            ? new Date(job.startedAt).getTime()
-            : dependencies.now();
-          const durationMs = dependencies.now() - startTime;
-          const actualCost = dependencies.calculateEstimatedCost(job.model, {
-            numImages: images.length,
-          });
-          await dependencies.completeJob(
+          await completeFalImageJob(
             job.id,
-            { imageCount: images.length },
-            durationMs
+            job.model,
+            job.prompt,
+            images.length,
+            jobStartedAtMs(job, dependencies.now),
+            fal,
           );
-          await dependencies
-            .logCost(job.id, job.model, "image", actualCost, {
-              numImages: images.length,
-              prompt: job.prompt,
-            })
-            .catch((error) => {
-              console.error(`Failed to log cost for job ${job.id}:`, error);
-            });
           return "completed";
         }
         const data = result.data as {
@@ -313,61 +309,25 @@ export async function pollSingleJob(
           duration?: number;
           has_audio?: boolean;
         };
+        const fal = falResultDependenciesFromPoller(dependencies);
 
         if (data.video) {
-          const { buffer, contentType } =
-            await dependencies.downloadFromUrl(data.video.url);
-
-          const extension = contentType.includes("mp4") ? "mp4" : "webm";
-          const filename = `${job.id}-0.${extension}`;
-          const localPath = await dependencies.saveFile(
-            "videos",
-            filename,
-            buffer
-          );
-
-          await dependencies.addGeneratedFile({
-            jobId: job.id,
-            type: "video",
-            originalUrl: data.video.url,
-            localPath,
-            filename,
-            mimeType: contentType,
-            width: data.video.width,
-            height: data.video.height,
-            durationSec: data.duration,
-            fileSizeBytes: buffer.length,
-          });
+          await persistFalVideoOutput(job.id, data.video, data.duration, fal);
         }
 
-        const startTime = job.startedAt
-          ? new Date(job.startedAt).getTime()
-          : dependencies.now();
-        const durationMs = dependencies.now() - startTime;
-
-        const actualDuration = data.duration ?? (jobInput.duration ? Number(jobInput.duration) : model.defaults.duration ?? 5);
+        const actualDuration =
+          data.duration ??
+          (jobInput.duration ? Number(jobInput.duration) : model.defaults.duration ?? 5);
         const enableAudio = !!jobInput.enable_audio;
-
-        const actualCost = dependencies.calculateEstimatedCost(job.model, {
-          durationSec: actualDuration,
-          enableAudio,
-        });
-
-        await dependencies.completeJob(
+        await completeFalVideoJob(
           job.id,
+          job.model,
+          job.prompt,
           { video: data.video, duration: data.duration },
-          durationMs
+          { durationSec: actualDuration, enableAudio },
+          jobStartedAtMs(job, dependencies.now),
+          fal,
         );
-
-        await dependencies
-          .logCost(job.id, job.model, "video", actualCost, {
-            durationSec: actualDuration,
-            enableAudio,
-            prompt: job.prompt,
-          })
-          .catch((error) => {
-            console.error(`Failed to log cost for job ${job.id}:`, error);
-          });
         return "completed";
       } catch (resultErr) {
         console.error(`Failed to retrieve/download result for job ${job.id}:`, resultErr);

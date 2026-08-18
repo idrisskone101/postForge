@@ -1,10 +1,10 @@
 import type {
   SlideshowAspectRatio,
   SlideshowCollection,
-  SlideshowPhase,
-  SlideshowPhaseSettings,
+  SlideshowKindSettings,
   SlideshowProject,
   SlideshowSlide,
+  SlideshowSlideKind,
   SlideshowTemplate,
 } from "./types";
 
@@ -13,7 +13,7 @@ const hook = (
   visualKey: string,
   eyebrow = "A hard truth nobody says out loud",
 ): SlideshowTemplate["slides"][number] => ({
-  role: "hook",
+  kind: "hook",
   eyebrow,
   headline,
   body: "Swipe for the part that changed everything.",
@@ -27,7 +27,7 @@ const body = (
   bodyCopy: string,
   visualKey: string,
 ): SlideshowTemplate["slides"][number] => ({
-  role: "body",
+  kind: "content",
   eyebrow,
   headline,
   body: bodyCopy,
@@ -39,7 +39,7 @@ const cta = (
   headline: string,
   visualKey: string,
 ): SlideshowTemplate["slides"][number] => ({
-  role: "cta",
+  kind: "cta",
   eyebrow: "Keep the next step simple",
   headline,
   body: "Save this post so you can come back when you need it.",
@@ -190,8 +190,8 @@ export const DEFAULT_SLIDESHOW_COLLECTIONS: SlideshowCollection[] = [
 
 
 const defaultPhaseSettings = (): Record<
-  SlideshowPhase,
-  SlideshowPhaseSettings
+  SlideshowSlideKind,
+  SlideshowKindSettings
 > => ({
   hook: {
     grid: "none",
@@ -199,7 +199,7 @@ const defaultPhaseSettings = (): Record<
     overlayOpacity: 38,
     displayText: true,
   },
-  body: {
+  content: {
     grid: "none",
     overlayEnabled: true,
     overlayOpacity: 34,
@@ -236,14 +236,14 @@ export function createProjectFromTemplate(
       font: "Poppins",
       color: "white",
       style: "outline",
-      size: 28,
+      size: 56,
       position: "center",
       width: 88,
       align: "center",
       padding: "padded",
       backgroundRadius: 4,
     },
-    includeCta: slides.some((slide) => slide.role === "cta"),
+    includeCta: slides.some((slide) => slide.kind === "cta"),
     preventRepeats: true,
     language: "English",
     templateId: template.id,
@@ -312,21 +312,21 @@ export function createProjectFromCreatorCopy(input: {
   const slides: SlideshowSlide[] = allLines.map((line, index) => {
     const isFirst = index === 0;
     const isLast = !isFirst && index === allLines.length - 1 && allLines.length > 2;
-    const role: SlideshowPhase = isFirst
+    const kind: SlideshowSlideKind = isFirst
       ? "hook"
       : isLast
         ? "cta"
-        : "body";
+        : "content";
     const id = `local-slide-${nonce}-${index + 1}`;
     return {
       id,
       clientId: id,
       order: index,
-      role,
+      kind,
       eyebrow:
-        role === "hook" ? "START HERE" : role === "cta" ? "NEXT STEP" : `POINT ${index}`,
+        kind === "hook" ? "START HERE" : kind === "cta" ? "NEXT STEP" : `POINT ${index}`,
       headline: line,
-      body: role === "cta" ? "Save this and try one simple next step." : "",
+      body: kind === "cta" ? "Save this and try one simple next step." : "",
       prompt: line,
       visualKey: visualKeys[index % visualKeys.length],
     };
@@ -344,14 +344,14 @@ export function createProjectFromCreatorCopy(input: {
       font: "Poppins",
       color: "white",
       style: "outline",
-      size: 28,
+      size: 56,
       position: "center",
       width: 88,
       align: "center",
       padding: "padded",
       backgroundRadius: 4,
     },
-    includeCta: slides.some((slide) => slide.role === "cta"),
+    includeCta: slides.some((slide) => slide.kind === "cta"),
     preventRepeats: true,
     language: "English",
     templateId: null,

@@ -64,6 +64,7 @@ import {
 import {
   isEditableKeyboardTarget,
   parseSlideshowViewMode,
+  phaseLabel,
   slideCoverImage,
   slideLayerCount,
   stepSlideIndex,
@@ -74,9 +75,9 @@ import type {
   SlideshowGrid,
   SlideshowCollection,
   SlideshowImageGenerationResult,
-  SlideshowPhase,
   SlideshowProject,
   SlideshowSlide,
+  SlideshowSlideKind,
   SlideshowTextAlign,
   SlideshowTextPosition,
   SlideshowTextSettings,
@@ -286,7 +287,7 @@ export function SlideshowEditor({
     draft.slides.findIndex((slide) => slide.id === selectedSlideId),
   );
   const activeSlide = draft.slides[activeIndex] ?? draft.slides[0];
-  const activePhase = activeSlide?.role ?? "hook";
+  const activePhase = activeSlide?.kind ?? "hook";
   const phaseSettings = draft.phaseSettings[activePhase];
   const layerCount = activeSlide ? slideLayerCount(activeSlide) : 0;
 
@@ -445,8 +446,8 @@ export function SlideshowEditor({
     });
   }, [selectedSlideId, viewMode]);
 
-  const selectPhase = (phase: SlideshowPhase) => {
-    const match = draft.slides.find((slide) => slide.role === phase);
+  const selectPhase = (phase: SlideshowSlideKind) => {
+    const match = draft.slides.find((slide) => slide.kind === phase);
     if (match) {
       selectSlide(match);
       return;
@@ -507,7 +508,7 @@ export function SlideshowEditor({
   };
 
   const updatePhaseSettings = (
-    patch: Partial<(typeof draft.phaseSettings)[SlideshowPhase]>,
+    patch: Partial<(typeof draft.phaseSettings)[SlideshowSlideKind]>,
   ) => {
     updateProject((current) => ({
       ...current,
@@ -763,8 +764,8 @@ export function SlideshowEditor({
       >
         <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">
-            {(["hook", "body", "cta"] as SlideshowPhase[]).map((phase) => {
-              const exists = draft.slides.some((slide) => slide.role === phase);
+            {(["hook", "content", "cta"] as SlideshowSlideKind[]).map((phase) => {
+              const exists = draft.slides.some((slide) => slide.kind === phase);
               return (
                 <button
                   key={phase}
@@ -777,7 +778,7 @@ export function SlideshowEditor({
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {phase === "body" ? "Content" : phase}
+                  {phaseLabel(phase)}
                   {!exists && phase === "cta" ? " +" : ""}
                 </button>
               );
@@ -795,7 +796,7 @@ export function SlideshowEditor({
               </span>
               <span className="min-w-0">
                 <span className="block text-[12px] font-semibold text-foreground">
-                  Select {activePhase === "body" ? "content" : activePhase} images
+                  Select {phaseLabel(activePhase).toLowerCase()} images
                 </span>
                 <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                   Pick from the shared Collections library
@@ -1006,7 +1007,7 @@ export function SlideshowEditor({
                     <SlidePreview
                       slide={slide}
                       aspectRatio={draft.aspectRatio}
-                      phaseSettings={draft.phaseSettings[slide.role]}
+                      phaseSettings={draft.phaseSettings[slide.kind]}
                       textSettings={draft.textSettings}
                       showCounter
                       counter={`${index + 1}/${draft.slides.length}`}
@@ -1115,7 +1116,7 @@ export function SlideshowEditor({
               <div>
                 <p className="text-[13px] font-semibold text-foreground">Text layers</p>
                 <p className="mt-0.5 text-[12px] capitalize text-muted-foreground">
-                  {activePhase === "body" ? "Content" : activePhase} · slide {activeIndex + 1}
+                  {phaseLabel(activePhase)} · slide {activeIndex + 1}
                 </p>
               </div>
               <span className="rounded-full bg-[var(--pf-active)] px-2 py-[3px] text-[12px] font-bold tabular-nums text-muted-foreground">

@@ -5,17 +5,19 @@ import {
   AvatarCreationCard,
   AvatarActionErrorNotice,
   AvatarImportPanel,
+} from "../../src/components/avatar-picker";
+import {
   buildAvatarGenerationPrompt,
-  getAvatarActionErrorMessage,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
-} from "../../src/components/avatar-picker";
+} from "../../src/lib/avatar-workflow";
+import { userErrorMessage } from "../../src/lib/user-error-message";
 
 assert.equal(
-  getAvatarActionErrorMessage(new Error("Upload service unavailable"), "Upload failed"),
+  userErrorMessage(new Error("Upload service unavailable"), "Upload failed"),
   "Upload service unavailable"
 );
-assert.equal(getAvatarActionErrorMessage(null, "Upload failed"), "Upload failed");
+assert.equal(userErrorMessage(null, "Upload failed"), "Upload failed");
 
 const avatarErrorMarkup = renderToStaticMarkup(
   <AvatarActionErrorNotice message="Avatar upload failed." onDismiss={() => {}} />

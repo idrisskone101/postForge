@@ -4,9 +4,11 @@ import {
   CloneSourceEmptyState,
   CloneIdentityStatusPanel,
   CloneProductionStatePanel,
+} from "../../src/components/ugc-clone-form";
+import {
   createReferenceImageBatchEntries,
   getClonePrimaryAction,
-} from "../../src/components/ugc-clone-form";
+} from "../../src/lib/ugc/clone-workflow";
 
 const emptyState = renderToStaticMarkup(
   <CloneProductionStatePanel

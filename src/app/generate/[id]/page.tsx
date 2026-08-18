@@ -29,6 +29,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { humanizeGenerationFailure } from "@/lib/ai/prompt-presentation";
+import { userErrorMessage } from "@/lib/user-error-message";
 import { GenerateOutputActions } from "@/components/generate-output-actions";
 import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
 import {
@@ -109,12 +110,6 @@ function asString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
     ? value
     : undefined;
-}
-
-function errorMessage(error: unknown, fallback: string) {
-  return error instanceof Error && error.message.trim().length > 0
-    ? error.message
-    : fallback;
 }
 
 function getEditorTitle(prompt: string) {
@@ -247,7 +242,7 @@ export default function JobDetailPage() {
       const result = await apiPost<{ id: string }>(`/api/jobs/${job.id}/retry`, {});
       router.push(`/generate/${result.id}`);
     } catch (retryError) {
-      showError(errorMessage(retryError, "The generation could not be retried."));
+      showError(userErrorMessage(retryError, "The generation could not be retried."));
       setIsRetrying(false);
     }
   };
@@ -260,7 +255,7 @@ export default function JobDetailPage() {
       await downloadFile(`/api/files/${output.id}/download`, output.filename);
       showSuccess("Download prepared.");
     } catch (downloadError) {
-      showError(errorMessage(downloadError, "The output could not be downloaded."));
+      showError(userErrorMessage(downloadError, "The output could not be downloaded."));
     } finally {
       setIsDownloading(false);
     }
@@ -304,7 +299,7 @@ export default function JobDetailPage() {
       }
     } catch (fullscreenError) {
       showError(
-        errorMessage(fullscreenError, "Fullscreen is unavailable in this browser.")
+        userErrorMessage(fullscreenError, "Fullscreen is unavailable in this browser.")
       );
     }
   };
@@ -336,7 +331,7 @@ export default function JobDetailPage() {
       router.push(`/generate/${result.id}`);
     } catch (enhanceError) {
       showError(
-        errorMessage(enhanceError, "The enhancement could not be started.")
+        userErrorMessage(enhanceError, "The enhancement could not be started.")
       );
       setIsApplying(false);
     }
@@ -350,7 +345,7 @@ export default function JobDetailPage() {
       await apiDelete(`/api/jobs/${job.id}`);
       router.push("/generate");
     } catch (discardError) {
-      showError(errorMessage(discardError, "The generation could not be discarded."));
+      showError(userErrorMessage(discardError, "The generation could not be discarded."));
       setIsDiscarding(false);
     }
   };

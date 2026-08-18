@@ -7,6 +7,11 @@ import {
   mapAspectRatioToFalFormat,
 } from "./models";
 import { prisma } from "@/lib/db";
+import {
+  submitDurableFalRequest,
+  type DurableFalSubmitOutcome,
+  type DurableFalSubmitResult,
+} from "@/lib/jobs/durable-fal-submit";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import type { GenerationJob } from "@/generated/prisma/client";
 
@@ -213,91 +218,84 @@ export async function submitReservedSlideshowImage(
 ): Promise<SlideshowImageSubmissionResult> {
   const leaseOwner = dependencies.createLeaseOwner();
   const claimedAt = dependencies.now();
-  let claimed = false;
-  let providerAccepted = false;
 
   try {
-    claimed = await dependencies.claimQueuedJob(
-      jobId,
-      leaseOwner,
-      claimedAt,
-      new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
-    );
-    if (!claimed) {
-      return {
-        claimed: false,
-        submitted: false,
-        persisted: false,
-        outcome: "unclaimed",
-      };
-    }
-
-    const queued = await dependencies.submitToQueue(
-      request.endpoint,
-      request.falInput,
-    );
-    const requestId = queued.request_id?.trim();
-    if (!requestId) {
-      throw new Error("The image provider did not return a request id");
-    }
-    providerAccepted = true;
-    const persisted = await dependencies.markProcessing(
-      jobId,
-      leaseOwner,
-      requestId,
-      dependencies.now(),
-    );
-
-    if (persisted) dependencies.startPoller();
-    return {
-      claimed: true,
-      submitted: true,
-      persisted,
-      outcome: persisted ? "submitted" : "error",
-    };
+    const result = await submitDurableFalRequest({
+      claim: () =>
+        dependencies.claimQueuedJob(
+          jobId,
+          leaseOwner,
+          claimedAt,
+          new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
+        ),
+      submit: () => dependencies.submitToQueue(request.endpoint, request.falInput),
+      persistRequestId: (requestId) =>
+        dependencies.markProcessing(
+          jobId,
+          leaseOwner,
+          requestId,
+          dependencies.now(),
+        ),
+      onRejectedBeforeAccept: async (error) => {
+        const failed = await dependencies
+          .failClaimedJob(jobId, leaseOwner, error.message, dependencies.now())
+          .catch(() => false);
+        return failed ? "failed" : "error";
+      },
+      onAmbiguous: async (error) => {
+        console.error(
+          `[Slideshow images] Fal accepted job ${jobId}, but its request id could not be persisted:`,
+          error,
+        );
+        return "error";
+      },
+      onStarted: () => {
+        dependencies.startPoller();
+      },
+    });
+    return slideshowSubmissionResult(result);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to queue slideshow image";
-
-    // Fal does not expose an idempotency key for queue submission. If Fal
-    // accepted the request but this process cannot persist its request id, a
-    // hard crash here remains an unavoidable provider/DB boundary. Crucially,
-    // do not mark that accepted request failed or release its lease early.
-    if (claimed && !providerAccepted) {
-      const failed = await dependencies
-        .failClaimedJob(jobId, leaseOwner, message, dependencies.now())
-        .catch(() => false);
-      return {
-        claimed: true,
-        submitted: false,
-        persisted: false,
-        outcome: failed ? "failed" : "error",
-      };
-    }
-
-    if (!claimed) {
-      console.error(
-        `[Slideshow images] Failed to claim queued job ${jobId}:`,
-        error,
-      );
-      return {
-        claimed: false,
-        submitted: false,
-        persisted: false,
-        outcome: "error",
-      };
-    }
-
     console.error(
-      `[Slideshow images] Fal accepted job ${jobId}, but its request id could not be persisted:`,
+      `[Slideshow images] Failed to claim queued job ${jobId}:`,
       error,
     );
     return {
-      claimed,
-      submitted: providerAccepted,
+      claimed: false,
+      submitted: false,
       persisted: false,
       outcome: "error",
     };
+  }
+}
+
+function slideshowSubmissionResult(
+  result: DurableFalSubmitResult,
+): SlideshowImageSubmissionResult {
+  return {
+    claimed: result.claimed,
+    submitted: result.submitted,
+    persisted: result.persisted,
+    outcome: slideshowOutcome(result.outcome),
+  };
+}
+
+function slideshowOutcome(
+  outcome: DurableFalSubmitOutcome,
+): NonNullable<SlideshowImageSubmissionResult["outcome"]> {
+  switch (outcome) {
+    case "unclaimed":
+      return "unclaimed";
+    case "submitted":
+      return "submitted";
+    case "failed":
+      return "failed";
+    case "error":
+    case "submission-unknown":
+      return "error";
+    default: {
+      const exhaustive: never = outcome;
+      return exhaustive;
+    }
   }
 }
 

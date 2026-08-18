@@ -1,5 +1,15 @@
 import { SlideshowApiError, badRequest } from "@/lib/slideshow/errors";
 
+export type PinterestImageCandidate = {
+  id: string;
+  imageUrl: string;
+  sourceUrl: string;
+  title?: string;
+  altText?: string;
+  width?: number;
+  height?: number;
+};
+
 const PINTEREST_SEARCH_URL = "https://www.pinterest.com/search/pins/";
 const MAX_QUERY_LENGTH = 120;
 const MAX_BOARD_URL_LENGTH = 2_048;
@@ -15,16 +25,6 @@ type FetchLike = (
 ) => Promise<Response>;
 
 export type PinterestCandidateSource = "search" | "board";
-
-export type PinterestImageCandidate = {
-  id: string;
-  imageUrl: string;
-  sourceUrl: string;
-  title?: string;
-  altText?: string;
-  width?: number;
-  height?: number;
-};
 
 export type PinterestCandidateResult = {
   source: PinterestCandidateSource;
