@@ -3,19 +3,17 @@
 import { useState, useEffect, useRef } from "react";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
 import {
-  appendAvatarCandidateSet,
   buildAvatarCandidateGenerationRequest,
   buildAvatarGenerationPrompt,
-  getAvatarActionErrorMessage,
   getAvatarIdentityPackStatusLabel,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
   getAvatarOriginLabel,
   getDefaultAvatarImportName,
-  resetAvatarImportDraft,
   type AvatarCandidateSet,
   type AvatarSeedReferenceImage,
 } from "@/lib/avatar-workflow";
+import { userErrorMessage } from "@/lib/user-error-message";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { getModelsByType } from "@/lib/ai/models";
@@ -32,27 +30,6 @@ import {
   FileJson,
   AlertCircle,
 } from "lucide-react";
-
-export {
-  appendAvatarCandidateSet,
-  buildAvatarCandidateGenerationRequest,
-  buildAvatarGenerationPrompt,
-  getAvatarActionErrorMessage,
-  getAvatarIdentityPackStatusLabel,
-  getAvatarImportReadiness,
-  getAvatarOptionLabel,
-  getAvatarOriginLabel,
-  getDefaultAvatarImportName,
-  resetAvatarImportDraft,
-} from "@/lib/avatar-workflow";
-
-export type {
-  AvatarCandidateArtifact,
-  AvatarCandidateGenerationRequest,
-  AvatarCandidateSet,
-  AvatarImportDraft,
-  AvatarSeedReferenceImage,
-} from "@/lib/avatar-workflow";
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -572,7 +549,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setAvatars(data);
     } catch (err) {
       console.error("Failed to load avatars:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Failed to load saved identities."));
+      setActionError(userErrorMessage(err, "Failed to load saved identities."));
     } finally {
       setIsLoading(false);
     }
@@ -607,7 +584,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       onSelect(avatar.id);
     } catch (err) {
       console.error("Failed to upload avatar:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Avatar upload failed."));
+      setActionError(userErrorMessage(err, "Avatar upload failed."));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -627,7 +604,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       }
     } catch (err) {
       console.error("Failed to delete avatar:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Avatar could not be deleted."));
+      setActionError(userErrorMessage(err, "Avatar could not be deleted."));
     }
   };
 
@@ -646,7 +623,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setGenJobId(result.id);
     } catch (err) {
       console.error("Failed to start generation:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Failed to start avatar generation."));
+      setActionError(userErrorMessage(err, "Failed to start avatar generation."));
     }
   };
 
@@ -672,7 +649,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       } catch (err) {
         console.error("Failed to poll job:", err);
         setActionError(
-          getAvatarActionErrorMessage(err, "Avatar generation status is temporarily unavailable.")
+          userErrorMessage(err, "Avatar generation status is temporarily unavailable.")
         );
         if (active) {
           timeoutId = setTimeout(poll, 5000);
@@ -704,7 +681,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setGenPrompt("");
     } catch (err) {
       console.error("Failed to save avatar:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Generated avatar could not be saved."));
+      setActionError(userErrorMessage(err, "Generated avatar could not be saved."));
     } finally {
       setIsSavingGenerated(false);
     }
@@ -719,7 +696,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setGalleryFiles(files);
     } catch (err) {
       console.error("Failed to load gallery:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Failed to load gallery images."));
+      setActionError(userErrorMessage(err, "Failed to load gallery images."));
     } finally {
       setIsLoadingGallery(false);
     }
@@ -738,7 +715,7 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
       setMode("grid");
     } catch (err) {
       console.error("Failed to save gallery image as avatar:", err);
-      setActionError(getAvatarActionErrorMessage(err, "Gallery image could not be saved as an avatar."));
+      setActionError(userErrorMessage(err, "Gallery image could not be saved as an avatar."));
     } finally {
       setSavingFileId(null);
     }
@@ -808,12 +785,15 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
         if (!active) return;
 
         if (result.status === "completed") {
-          setAvatarCandidateSets((current) => appendAvatarCandidateSet(current, {
-            jobId: result.id,
-            candidates: result.outputs
-              .filter((output) => output.type === "image")
-              .map((output) => ({ fileId: output.id })),
-          }));
+          setAvatarCandidateSets((current) => [
+            ...current,
+            {
+              jobId: result.id,
+              candidates: result.outputs
+                .filter((output) => output.type === "image")
+                .map((output) => ({ fileId: output.id })),
+            },
+          ]);
           setImportCandidateJobId(null);
           setIsGeneratingImportCandidates(false);
           return;
@@ -844,12 +824,11 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   }, [importCandidateJobId]);
 
   const abandonImport = () => {
-    const cleared = resetAvatarImportDraft();
-    setImportRawJson(cleared.rawJson);
+    setImportRawJson("");
     setImportAvatarName("Imported Avatar");
     setSeedReferenceImages([]);
-    setAvatarCandidateSets(cleared.candidateSets);
-    setImportGenerationError(cleared.generationError);
+    setAvatarCandidateSets([]);
+    setImportGenerationError(null);
     setImportCandidateJobId(null);
     setIsGeneratingImportCandidates(false);
     setMode("grid");

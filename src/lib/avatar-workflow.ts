@@ -29,13 +29,6 @@ export type AvatarCandidateSet = {
   candidates: AvatarCandidateArtifact[];
 };
 
-export type AvatarImportDraft = {
-  rawJson: string;
-  seedReferenceImages: AvatarSeedReferenceImage[];
-  candidateSets: AvatarCandidateSet[];
-  generationError: string | null;
-};
-
 const AVATAR_GENERATION_STYLE_PROMPT = [
   "Create a photorealistic avatar with a Pinterest-style pretty girl, soft baddie, girly pop UGC creator aesthetic.",
   "Use an iPhone influencer selfie feel with natural iPhone available light, slight grain, realistic skin texture, soft baby hairs, subtle flyaways, and imperfect real-photo sharpness.",
@@ -46,10 +39,6 @@ const AVATAR_GENERATION_STYLE_PROMPT = [
 
 export function buildAvatarGenerationPrompt(userPrompt: string): string {
   return `${AVATAR_GENERATION_STYLE_PROMPT} User direction: ${userPrompt.trim()}`;
-}
-
-export function getAvatarActionErrorMessage(error: unknown, fallback: string) {
-  return error instanceof Error && error.message ? error.message : fallback;
 }
 
 export function getAvatarOptionLabel(index: number): string {
@@ -109,22 +98,6 @@ export function getDefaultAvatarImportName(rawJson: string): string {
   }
 
   return "Imported Avatar";
-}
-
-export function appendAvatarCandidateSet(
-  currentSets: AvatarCandidateSet[],
-  nextSet: AvatarCandidateSet,
-): AvatarCandidateSet[] {
-  return [...currentSets, nextSet];
-}
-
-export function resetAvatarImportDraft(): AvatarImportDraft {
-  return {
-    rawJson: "",
-    seedReferenceImages: [],
-    candidateSets: [],
-    generationError: null,
-  };
 }
 
 export function buildAvatarCandidateGenerationRequest({

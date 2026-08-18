@@ -1,8 +1,6 @@
 import type {
-  SlideshowKindSettings,
   SlideshowProject,
   SlideshowSlide,
-  SlideshowSlideKind,
 } from "@/lib/slideshow/project";
 
 export type {
@@ -25,8 +23,6 @@ export {
   slideshowProjectWriteBody,
 } from "@/lib/slideshow/project";
 
-export type SlideshowPhase = SlideshowSlideKind;
-export type SlideshowPhaseSettings = SlideshowKindSettings;
 export type SlideshowSection = "create" | "drafts";
 export type SlideshowViewMode = "edit" | "board" | "play";
 

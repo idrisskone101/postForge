@@ -66,11 +66,6 @@ function getModelCatalogFallback(): ModelDefinition[] {
   return getModelsByType("video").concat(getModelsByType("image"));
 }
 
-export {
-  createReferenceImageBatchEntries,
-  getClonePrimaryAction,
-} from "@/lib/ugc/clone-workflow";
-
 const IDENTITY_ROLE_LABELS: Record<string, string> = {
   front: "Front",
   threeQuarterLeft: "3/4 Left",
@@ -290,8 +285,6 @@ export interface RefImageEntry {
   status: "generating" | "completed" | "failed";
   error?: string;
 }
-
-export type { ClonePrimaryAction };
 
 interface SavedReference {
   id: string;

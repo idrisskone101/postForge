@@ -342,9 +342,9 @@ function publicPublication(publication: AutomationPublication) {
   return publication;
 }
 
-export async function POST(
+export async function runAutomationPublish(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();
 

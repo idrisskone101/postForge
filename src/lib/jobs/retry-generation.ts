@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getJob } from "@/lib/jobs/queue";
 import { generateImage } from "@/lib/ai/generate-image";
 import { generateVideo, generateVideoSwap } from "@/lib/ai/generate-video";
@@ -34,20 +33,25 @@ import {
 } from "@/lib/jobs/retry-reference-resolution";
 import { generateCharacterVideo } from "@/lib/ai/generate-character-video";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
+export type RetryGenerationResult = {
+  status: number;
+  body: Record<string, unknown>;
+};
 
+function retryError(status: number, error: string): RetryGenerationResult {
+  return { status, body: { error } };
+}
+
+function retryQueued(body: Record<string, unknown>): RetryGenerationResult {
+  return { status: 202, body };
+}
+
+export async function retryGenerationJob(id: string): Promise<RetryGenerationResult> {
+  try {
     const originalJob = await getJob(id);
 
     if (!originalJob) {
-      return NextResponse.json(
-        { error: "Job not found" },
-        { status: 404 }
-      );
+      return retryError(404, "Job not found");
     }
 
     const input = originalJob.input as Record<string, unknown>;
@@ -59,29 +63,23 @@ export async function POST(
 
     if (isVideoSwap) {
       if (!isTerminal) {
-        return NextResponse.json(
-          { error: `Can only retry completed or failed subject swap jobs. Current status: ${originalJob.status}` },
-          { status: 400 }
+        return retryError(
+          400,
+          `Can only retry completed or failed subject swap jobs. Current status: ${originalJob.status}`,
         );
       }
 
       const swapRequest = buildSwapRetryRequest(input, originalJob.model);
       if (!swapRequest) {
-        return NextResponse.json(
-          {
-            error:
-              "This subject swap job is missing saved inputs, so it cannot be retried.",
-          },
-          { status: 400 }
+        return retryError(
+          400,
+          "This subject swap job is missing saved inputs, so it cannot be retried.",
         );
       }
 
       const resolvedVideo = await resolveSwapSourceVideoUrl(swapRequest.videoUrl);
       if (!resolvedVideo) {
-        return NextResponse.json(
-          { error: "The swap source video could not be found for retry" },
-          { status: 404 }
-        );
+        return retryError(404, "The swap source video could not be found for retry");
       }
       const referenceUrl = swapRequest.referenceImageUrl
         ? ((await resolveSwapReferenceUrl(swapRequest.referenceImageUrl)) ?? undefined)
@@ -90,10 +88,7 @@ export async function POST(
         swapRequest.model === "pixverse-swap" &&
         !referenceUrl
       ) {
-        return NextResponse.json(
-          { error: "The swap reference image could not be found for retry" },
-          { status: 404 }
-        );
+        return retryError(404, "The swap reference image could not be found for retry");
       }
 
       const newJobId = await generateVideoSwap({
@@ -102,76 +97,65 @@ export async function POST(
         referenceImageUrl: referenceUrl,
       });
 
-      return NextResponse.json(
-        {
-          id: newJobId,
-          originalJobId: id,
-          status: "queued",
-          type: "video",
-          model: originalJob.model,
-          estimatedCost: originalJob.estimatedCost,
-          createdAt: new Date().toISOString(),
-        },
-        { status: 202 }
-      );
+      return retryQueued({
+        id: newJobId,
+        originalJobId: id,
+        status: "queued",
+        type: "video",
+        model: originalJob.model,
+        estimatedCost: originalJob.estimatedCost,
+        createdAt: new Date().toISOString(),
+      });
     }
 
     if (isUgcClone) {
       if (!isTerminal) {
-        return NextResponse.json(
-          { error: `Can only retry completed or failed UGC clone jobs. Current status: ${originalJob.status}` },
-          { status: 400 }
+        return retryError(
+          400,
+          `Can only retry completed or failed UGC clone jobs. Current status: ${originalJob.status}`,
         );
       }
 
       const cloneRequest = buildCloneRetryRequest(input, originalJob.model);
 
       if (!cloneRequest) {
-        return NextResponse.json(
-          {
-            error:
-              "This UGC clone job is missing saved inputs or contains conflicting reference sources, so it cannot be retried.",
-          },
-          { status: 400 }
+        return retryError(
+          400,
+          "This UGC clone job is missing saved inputs or contains conflicting reference sources, so it cannot be retried.",
         );
       }
 
       if (cloneRequest.collectionAssetId) {
-        // Resolve the server-owned collection record again for every retry.
-        // Provider URLs are transient execution details, never persisted inputs.
         await resolveCollectionAssetLocalPath(cloneRequest.collectionAssetId);
       }
 
       const { jobId, estimatedCost, modelId } = await generateClone(cloneRequest);
       ensureCloneWorkerRunning();
 
-      return NextResponse.json(
-        {
-          id: jobId,
-          originalJobId: id,
-          status: "queued",
-          type: "video",
-          model: modelId,
-          estimatedCost,
-          createdAt: new Date().toISOString(),
-        },
-        { status: 202 }
-      );
+      return retryQueued({
+        id: jobId,
+        originalJobId: id,
+        status: "queued",
+        type: "video",
+        model: modelId,
+        estimatedCost,
+        createdAt: new Date().toISOString(),
+      });
     }
 
     if (isCharacterVideo) {
       if (originalJob.status !== "failed") {
-        return NextResponse.json(
-          { error: `Can only retry failed character video jobs. Current status: ${originalJob.status}` },
-          { status: 400 }
+        return retryError(
+          400,
+          `Can only retry failed character video jobs. Current status: ${originalJob.status}`,
         );
       }
       const avatarId = asRetryString(input.avatarId);
       const prompt = asRetryString(input.prompt) ?? originalJob.prompt;
       if (!avatarId) {
-        return NextResponse.json(
-          { error: "This character video is missing its saved avatar identity." },
-          { status: 400 }
+        return retryError(
+          400,
+          "This character video is missing its saved avatar identity.",
         );
       }
       const savedAnchorJobId = asRetryString(input.anchorJobId);
@@ -193,24 +177,21 @@ export async function POST(
         negativePrompt: asRetryString(input.negativePrompt),
         anchorJobId: reusableAnchorJobId,
       });
-      return NextResponse.json(
-        {
-          id: result.jobId,
-          originalJobId: id,
-          status: "queued",
-          type: "video",
-          model: result.model,
-          estimatedCost: result.estimatedCost,
-          createdAt: new Date().toISOString(),
-        },
-        { status: 202 }
-      );
+      return retryQueued({
+        id: result.jobId,
+        originalJobId: id,
+        status: "queued",
+        type: "video",
+        model: result.model,
+        estimatedCost: result.estimatedCost,
+        createdAt: new Date().toISOString(),
+      });
     }
 
     if (originalJob.status !== "failed") {
-      return NextResponse.json(
-        { error: `Can only retry failed jobs. Current status: ${originalJob.status}` },
-        { status: 400 }
+      return retryError(
+        400,
+        `Can only retry failed jobs. Current status: ${originalJob.status}`,
       );
     }
 
@@ -219,9 +200,9 @@ export async function POST(
     if (originalJob.type === "image") {
       const model = getModel(originalJob.model);
       if (!model || model.type !== "image") {
-        return NextResponse.json(
-          { error: `Model ${originalJob.model} is not available for image retry` },
-          { status: 400 }
+        return retryError(
+          400,
+          `Model ${originalJob.model} is not available for image retry`,
         );
       }
       const retryReferences = await resolveImageRetryReferences(input, {
@@ -258,9 +239,9 @@ export async function POST(
     } else if (originalJob.type === "video") {
       const model = getModel(originalJob.model);
       if (!model || model.type !== "video") {
-        return NextResponse.json(
-          { error: `Model ${originalJob.model} is not available for video retry` },
-          { status: 400 }
+        return retryError(
+          400,
+          `Model ${originalJob.model} is not available for video retry`,
         );
       }
       const retryReference = await resolveVideoRetryReference(input, {
@@ -290,39 +271,30 @@ export async function POST(
         },
       });
     } else {
-      return NextResponse.json(
-        { error: `Unsupported job type: ${originalJob.type}` },
-        { status: 400 }
-      );
+      return retryError(400, `Unsupported job type: ${originalJob.type}`);
     }
 
-    return NextResponse.json(
-      {
-        id: newJobId,
-        originalJobId: id,
-        status: "queued",
-        type: originalJob.type,
-        model: originalJob.model,
-        estimatedCost: originalJob.estimatedCost,
-        createdAt: new Date().toISOString(),
-      },
-      { status: 202 }
-    );
+    return retryQueued({
+      id: newJobId,
+      originalJobId: id,
+      status: "queued",
+      type: originalJob.type,
+      model: originalJob.model,
+      estimatedCost: originalJob.estimatedCost,
+      createdAt: new Date().toISOString(),
+    });
   } catch (error) {
     if (
       error instanceof InvalidCloneRequestError ||
       error instanceof CollectionAssetRequestError
     ) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return retryError(400, error.message);
     }
 
     console.error("Failed to retry job:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to retry job" },
-      { status: 500 }
+    return retryError(
+      500,
+      error instanceof Error ? error.message : "Failed to retry job",
     );
   }
 }

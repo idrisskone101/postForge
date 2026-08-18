@@ -6,16 +6,6 @@ import {
   type CollectionRecord,
 } from "@/lib/collections";
 
-export type PinterestImageCandidate = {
-  id: string;
-  imageUrl: string;
-  sourceUrl: string;
-  title?: string;
-  altText?: string;
-  width?: number;
-  height?: number;
-};
-
 export type PlatformCollectionSummary = {
   id: string;
   name: string;

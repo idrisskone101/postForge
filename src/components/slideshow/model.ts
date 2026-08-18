@@ -20,7 +20,7 @@ export function nextLocalSlideId(project: SlideshowProject) {
   return candidate;
 }
 
-export function phaseForSlideIndex(
+export function kindForSlideIndex(
   index: number,
   slideCount: number,
   includeCta: boolean,
@@ -39,7 +39,7 @@ export function normalizeSlideshowSlides(
     .map((slide, index, current) => ({
       ...slide,
       order: index,
-      kind: phaseForSlideIndex(index, current.length, includeCta),
+      kind: kindForSlideIndex(index, current.length, includeCta),
     }));
 
   return normalized;

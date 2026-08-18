@@ -5,13 +5,10 @@ import {
   DEFAULT_PROJECT_SETTINGS,
   MAX_SLIDES_PER_PROJECT,
   SLIDESHOW_PROJECT_STATUSES,
-  SLIDESHOW_SLIDE_KINDS,
   type SlideshowProjectStatusValue,
   type SlideshowSlideKindValue,
 } from "@/lib/slideshow/constants";
 import { slideshowOverlayTextColor } from "@/lib/slideshow/text-overlay";
-
-export const SLIDESHOW_SLIDE_KINDS_CANONICAL = SLIDESHOW_SLIDE_KINDS;
 export type SlideshowSlideKind = SlideshowSlideKindValue;
 export type SlideshowProjectStatus = SlideshowProjectStatusValue;
 export type SlideshowAspectRatio = "9:16" | "4:5" | "1:1" | "16:9";
@@ -632,6 +629,3 @@ export function slideshowProjectWriteBody(project: SlideshowProject) {
     })),
   };
 }
-
-export const deserializeSlideshowProject = parseSlideshowProject;
-export const serializeSlideshowProject = slideshowProjectWriteBody;

@@ -18,7 +18,7 @@ export {
   moveSlideshowSlide,
   nextLocalSlideId,
   normalizeSlideshowSlides,
-  phaseForSlideIndex,
+  kindForSlideIndex,
   reorderSlideshowSlides,
   setSlideshowCta,
   updateSlideshowSlide,

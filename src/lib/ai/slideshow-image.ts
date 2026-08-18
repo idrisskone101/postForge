@@ -10,6 +10,7 @@ import { prisma } from "@/lib/db";
 import {
   submitDurableFalRequest,
   type DurableFalSubmitOutcome,
+  type DurableFalSubmitResult,
 } from "@/lib/jobs/durable-fal-submit";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import type { GenerationJob } from "@/generated/prisma/client";
@@ -217,32 +218,24 @@ export async function submitReservedSlideshowImage(
 ): Promise<SlideshowImageSubmissionResult> {
   const leaseOwner = dependencies.createLeaseOwner();
   const claimedAt = dependencies.now();
-  let claimed = false;
-  let submitted = false;
-  let persisted = false;
 
   try {
-    const outcome = await submitDurableFalRequest({
-      claim: async () => {
-        claimed = await dependencies.claimQueuedJob(
+    const result = await submitDurableFalRequest({
+      claim: () =>
+        dependencies.claimQueuedJob(
           jobId,
           leaseOwner,
           claimedAt,
           new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
-        );
-        return claimed;
-      },
+        ),
       submit: () => dependencies.submitToQueue(request.endpoint, request.falInput),
-      persistRequestId: async (requestId) => {
-        submitted = true;
-        persisted = await dependencies.markProcessing(
+      persistRequestId: (requestId) =>
+        dependencies.markProcessing(
           jobId,
           leaseOwner,
           requestId,
           dependencies.now(),
-        );
-        return persisted;
-      },
+        ),
       onRejectedBeforeAccept: async (error) => {
         const failed = await dependencies
           .failClaimedJob(jobId, leaseOwner, error.message, dependencies.now())
@@ -260,7 +253,7 @@ export async function submitReservedSlideshowImage(
         dependencies.startPoller();
       },
     });
-    return slideshowSubmissionResult(outcome, { claimed, submitted, persisted });
+    return slideshowSubmissionResult(result);
   } catch (error) {
     console.error(
       `[Slideshow images] Failed to claim queued job ${jobId}:`,
@@ -276,39 +269,29 @@ export async function submitReservedSlideshowImage(
 }
 
 function slideshowSubmissionResult(
-  outcome: DurableFalSubmitOutcome,
-  state: { claimed: boolean; submitted: boolean; persisted: boolean },
+  result: DurableFalSubmitResult,
 ): SlideshowImageSubmissionResult {
+  return {
+    claimed: result.claimed,
+    submitted: result.submitted,
+    persisted: result.persisted,
+    outcome: slideshowOutcome(result.outcome),
+  };
+}
+
+function slideshowOutcome(
+  outcome: DurableFalSubmitOutcome,
+): NonNullable<SlideshowImageSubmissionResult["outcome"]> {
   switch (outcome) {
     case "unclaimed":
-      return {
-        claimed: false,
-        submitted: false,
-        persisted: false,
-        outcome: "unclaimed",
-      };
+      return "unclaimed";
     case "submitted":
-      return {
-        claimed: true,
-        submitted: true,
-        persisted: true,
-        outcome: "submitted",
-      };
+      return "submitted";
     case "failed":
-      return {
-        claimed: true,
-        submitted: false,
-        persisted: false,
-        outcome: "failed",
-      };
+      return "failed";
     case "error":
     case "submission-unknown":
-      return {
-        claimed: state.claimed,
-        submitted: state.submitted,
-        persisted: state.persisted,
-        outcome: "error",
-      };
+      return "error";
     default: {
       const exhaustive: never = outcome;
       return exhaustive;

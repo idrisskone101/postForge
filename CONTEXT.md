@@ -29,11 +29,11 @@ Single-operator, self-hosted marketing pipeline. One owner generates media, pack
 - The Slideshow Project record is flat (kind, copy, visuals, job ids). Prisma `content` / `settings` / `layout` JSON is a persistence adapter, not the domain shape.
 - Persistence reads legacy `role` and `phaseSettings.body`; it writes only `kind` and `phaseSettings.content`. GET does not emit `role`.
 - Slideshow Project defaults: missing text size is 56; on-slide color tokens are the export overlay palette. Brand coral is not slide text.
-- The Slideshow Project module is Prisma-free (`src/lib/slideshow/project.ts`). Prisma JSON mapping stays in the persistence adapter.
-- Fal result persistence and durable submit live in Job modules; HTTP retry is a thin adapter over retry dispatch.
-- Workspace Automation publish orchestration is a server module; the publish route is an HTTP adapter.
-- Clone, Avatar import, and Generate studio workflow rules live in lib modules; UI modules present them.
-- Collection join, asset URLs, and Pinterest candidate shape live in one read-model module.
+- The Slideshow Project module is Prisma-free (`src/lib/slideshow/project.ts`). Prisma JSON mapping stays in the persistence adapter (`toSlideshowProjectDto`).
+- Fal result persistence lives in `src/lib/jobs/complete-fal-result.ts`. Durable Fal submit lives in `src/lib/jobs/durable-fal-submit.ts`. Retry dispatch is `retryGenerationJob`; the route maps it to HTTP.
+- Workspace Automation publish orchestration is `runAutomationPublish`; the publish route is the HTTP adapter.
+- Clone primary-action rules, Avatar import/generation rules, and Generate identity-status copy live in lib modules; UI modules present them.
+- Collection join and asset URLs live in `src/lib/collections-read-model.ts`. Pinterest candidate shape lives next to Pinterest.
 - A **Character** may point at one **Avatar**; the link is conventional, not schema-enforced.
 - An **Avatar** owns zero or more **Identity packs**.
 - A **Clone** uses a TikTok source and an **Avatar** / references; it produces **Generation Jobs**.

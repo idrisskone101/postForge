@@ -11,7 +11,7 @@ import {
 import type {
   SlideshowAspectRatio,
   SlideshowGrid,
-  SlideshowPhaseSettings,
+  SlideshowKindSettings,
   SlideshowSlide,
   SlideshowTextSettings,
 } from "./types";
@@ -131,7 +131,7 @@ export function SlidePreview({
 }: {
   slide: SlideshowSlide;
   aspectRatio: SlideshowAspectRatio;
-  phaseSettings: SlideshowPhaseSettings;
+  phaseSettings: SlideshowKindSettings;
   textSettings: SlideshowTextSettings;
   className?: string;
   showCounter?: boolean;

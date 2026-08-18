@@ -5,8 +5,8 @@ import {
 } from "../../src/lib/ugc/clone-workflow";
 import {
   describeGenerateIdentityStatus,
-  generationErrorMessage,
 } from "../../src/lib/generation-workflow";
+import { userErrorMessage } from "../../src/lib/user-error-message";
 
 assert.equal(
   getClonePrimaryAction({
@@ -21,10 +21,10 @@ assert.equal(
 );
 
 assert.equal(
-  generationErrorMessage(new Error("provider unavailable"), "fallback"),
+  userErrorMessage(new Error("provider unavailable"), "fallback"),
   "provider unavailable",
 );
-assert.equal(generationErrorMessage(null, "fallback"), "fallback");
+assert.equal(userErrorMessage(null, "fallback"), "fallback");
 
 assert.equal(
   describeGenerateIdentityStatus(null).label,

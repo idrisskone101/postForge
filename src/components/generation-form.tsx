@@ -43,9 +43,9 @@ import {
 } from "@/lib/ai/prompt-improvement-ui";
 import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 import { apiGet, apiPost } from "@/lib/api/client";
+import { userErrorMessage } from "@/lib/user-error-message";
 import {
   describeGenerateIdentityStatus,
-  generationErrorMessage,
   type GenerateIdentityPackSummary,
 } from "@/lib/generation-workflow";
 import { cn } from "@/lib/utils";
@@ -238,7 +238,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
         if (!active) return;
         setIdentityPack(null);
         setIdentityError(
-          generationErrorMessage(error, "Identity references could not be checked.")
+          userErrorMessage(error, "Identity references could not be checked.")
         );
       }
     };
@@ -516,7 +516,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       );
     } catch (error) {
       setPromptImprovementError(
-        generationErrorMessage(error, "Prompt improvement failed. Your original prompt is unchanged.")
+        userErrorMessage(error, "Prompt improvement failed. Your original prompt is unchanged.")
       );
     } finally {
       promptImprovementRequestGateRef.current.finish(requestToken);
@@ -585,7 +585,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
         router.push(`/generate/${result.id}`);
       }
     } catch (error) {
-      setSubmitError(generationErrorMessage(error, "Generation could not be started."));
+      setSubmitError(userErrorMessage(error, "Generation could not be started."));
       setIsSubmitting(false);
     }
   };

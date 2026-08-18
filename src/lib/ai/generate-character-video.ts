@@ -8,8 +8,7 @@ import { buildImageProviderRequest } from "@/lib/ai/generate-image";
 import { createJob, failJob, getJob } from "@/lib/jobs/queue";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 import {
-  submitDurableFalRequest,
-  type DurableFalSubmitOutcome,
+  submitAcceptedFalRequest,
 } from "@/lib/jobs/durable-fal-submit";
 import { storage } from "@/lib/storage";
 import { buildAvatarImageGenerationRequest } from "@/lib/ugc/generate-avatar-image";
@@ -400,8 +399,7 @@ export async function submitDurableCharacterIntent(
     return "submission-unknown";
   }
 
-  const outcome = await submitDurableFalRequest({
-    claim: async () => true,
+  const result = await submitAcceptedFalRequest({
     submit: () => dependencies.submit(intent.endpoint, intent.payload),
     persistRequestId: (requestId) =>
       dependencies.markSubmitted(
@@ -426,23 +424,17 @@ export async function submitDurableCharacterIntent(
       dependencies.startPoller();
     },
   });
-  return characterSubmissionOutcome(outcome);
-}
-
-function characterSubmissionOutcome(
-  outcome: DurableFalSubmitOutcome,
-): DurableSubmissionOutcome {
-  switch (outcome) {
-    case "unclaimed":
-      return "unclaimed";
+  switch (result.outcome) {
     case "submitted":
       return "submitted";
+    case "unclaimed":
+      return "unclaimed";
     case "submission-unknown":
     case "failed":
     case "error":
       return "submission-unknown";
     default: {
-      const exhaustive: never = outcome;
+      const exhaustive: never = result.outcome;
       return exhaustive;
     }
   }

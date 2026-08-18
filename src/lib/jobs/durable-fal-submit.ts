@@ -5,6 +5,13 @@ export type DurableFalSubmitOutcome =
   | "failed"
   | "error";
 
+export type DurableFalSubmitResult = {
+  outcome: DurableFalSubmitOutcome;
+  claimed: boolean;
+  submitted: boolean;
+  persisted: boolean;
+};
+
 export type DurableFalSubmitDependencies = {
   claim: () => Promise<boolean>;
   submit: () => Promise<{ request_id: string }>;
@@ -14,12 +21,11 @@ export type DurableFalSubmitDependencies = {
   onStarted?: () => void;
 };
 
-export async function submitDurableFalRequest(
-  dependencies: DurableFalSubmitDependencies,
-): Promise<DurableFalSubmitOutcome> {
-  const claimed = await dependencies.claim();
-  if (!claimed) return "unclaimed";
-
+export async function submitAcceptedFalRequest(
+  dependencies: Omit<DurableFalSubmitDependencies, "claim">,
+): Promise<DurableFalSubmitResult> {
+  let submitted = false;
+  let persisted = false;
   let providerAccepted = false;
   try {
     const queued = await dependencies.submit();
@@ -28,24 +34,60 @@ export async function submitDurableFalRequest(
       throw new Error("The generation provider did not return a request id");
     }
     providerAccepted = true;
-    const persisted = await dependencies.persistRequestId(requestId);
+    submitted = true;
+    persisted = await dependencies.persistRequestId(requestId);
     if (!persisted) {
-      return dependencies.onAmbiguous(
-        new Error(
-          "Generation submission was accepted but its request id could not be persisted",
+      return {
+        outcome: await dependencies.onAmbiguous(
+          new Error(
+            "Generation submission was accepted but its request id could not be persisted",
+          ),
         ),
-      );
+        claimed: true,
+        submitted: true,
+        persisted: false,
+      };
     }
     dependencies.onStarted?.();
-    return "submitted";
+    return {
+      outcome: "submitted",
+      claimed: true,
+      submitted: true,
+      persisted: true,
+    };
   } catch (error) {
     const failure =
       error instanceof Error
         ? error
         : new Error("Generation submission failed");
     if (!providerAccepted && dependencies.onRejectedBeforeAccept) {
-      return dependencies.onRejectedBeforeAccept(failure);
+      return {
+        outcome: await dependencies.onRejectedBeforeAccept(failure),
+        claimed: true,
+        submitted: false,
+        persisted: false,
+      };
     }
-    return dependencies.onAmbiguous(failure);
+    return {
+      outcome: await dependencies.onAmbiguous(failure),
+      claimed: true,
+      submitted,
+      persisted,
+    };
   }
+}
+
+export async function submitDurableFalRequest(
+  dependencies: DurableFalSubmitDependencies,
+): Promise<DurableFalSubmitResult> {
+  const claimed = await dependencies.claim();
+  if (!claimed) {
+    return {
+      outcome: "unclaimed",
+      claimed: false,
+      submitted: false,
+      persisted: false,
+    };
+  }
+  return submitAcceptedFalRequest(dependencies);
 }

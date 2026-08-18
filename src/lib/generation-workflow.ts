@@ -6,12 +6,6 @@ export type GenerateIdentityPackSummary = {
   images: { id: string }[];
 };
 
-export function generationErrorMessage(error: unknown, fallback: string) {
-  return error instanceof Error && error.message.trim().length > 0
-    ? error.message
-    : fallback;
-}
-
 export function describeGenerateIdentityStatus(
   pack: GenerateIdentityPackSummary | null,
 ): {

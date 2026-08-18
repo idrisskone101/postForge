@@ -1,7 +1,14 @@
 import { SlideshowApiError, badRequest } from "@/lib/slideshow/errors";
-import type { PinterestImageCandidate } from "@/lib/collections-read-model";
 
-export type { PinterestImageCandidate } from "@/lib/collections-read-model";
+export type PinterestImageCandidate = {
+  id: string;
+  imageUrl: string;
+  sourceUrl: string;
+  title?: string;
+  altText?: string;
+  width?: number;
+  height?: number;
+};
 
 const PINTEREST_SEARCH_URL = "https://www.pinterest.com/search/pins/";
 const MAX_QUERY_LENGTH = 120;

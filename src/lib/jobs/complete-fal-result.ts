@@ -53,30 +53,30 @@ export async function persistFalImageOutputs(
   postProcess: ((buffer: Buffer) => Promise<Buffer>) | undefined,
   dependencies: CompleteFalResultDependencies = productionCompleteFalDependencies,
 ): Promise<GeneratedFile | null> {
-  let primaryFile: GeneratedFile | null = null;
-  for (const [index, image] of images.entries()) {
-    let { buffer, contentType } = await dependencies.downloadFromUrl(image.url);
-    if (postProcess) {
-      buffer = await postProcess(buffer);
-      contentType = "image/jpeg";
-    }
-    const extension = contentType.includes("png") ? "png" : "jpg";
-    const filename = `${jobId}-${index}.${extension}`;
-    const localPath = await dependencies.saveFile("images", filename, buffer);
-    const savedFile = await dependencies.addGeneratedFile({
-      jobId,
-      type: "image",
-      originalUrl: image.url,
-      localPath,
-      filename,
-      mimeType: contentType,
-      width: image.width,
-      height: image.height,
-      fileSizeBytes: buffer.length,
-    });
-    primaryFile ??= savedFile;
-  }
-  return primaryFile;
+  const savedFiles = await Promise.all(
+    images.map(async (image, index) => {
+      let { buffer, contentType } = await dependencies.downloadFromUrl(image.url);
+      if (postProcess) {
+        buffer = await postProcess(buffer);
+        contentType = "image/jpeg";
+      }
+      const extension = contentType.includes("png") ? "png" : "jpg";
+      const filename = `${jobId}-${index}.${extension}`;
+      const localPath = await dependencies.saveFile("images", filename, buffer);
+      return dependencies.addGeneratedFile({
+        jobId,
+        type: "image",
+        originalUrl: image.url,
+        localPath,
+        filename,
+        mimeType: contentType,
+        width: image.width,
+        height: image.height,
+        fileSizeBytes: buffer.length,
+      });
+    }),
+  );
+  return savedFiles[0] ?? null;
 }
 
 export async function persistFalVideoOutput(

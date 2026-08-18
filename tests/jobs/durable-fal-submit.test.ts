@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
 
 (async () => {
-  assert.equal(
+  assert.deepEqual(
     await submitDurableFalRequest({
       claim: async () => false,
       submit: async () => {
@@ -14,11 +14,16 @@ import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
       },
       onAmbiguous: async () => "error",
     }),
-    "unclaimed",
+    {
+      outcome: "unclaimed",
+      claimed: false,
+      submitted: false,
+      persisted: false,
+    },
   );
 
   let started = 0;
-  assert.equal(
+  assert.deepEqual(
     await submitDurableFalRequest({
       claim: async () => true,
       submit: async () => ({ request_id: " fal-1 " }),
@@ -31,12 +36,17 @@ import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
         started += 1;
       },
     }),
-    "submitted",
+    {
+      outcome: "submitted",
+      claimed: true,
+      submitted: true,
+      persisted: true,
+    },
   );
   assert.equal(started, 1);
 
   let rejected = 0;
-  assert.equal(
+  assert.deepEqual(
     await submitDurableFalRequest({
       claim: async () => true,
       submit: async () => {
@@ -50,12 +60,17 @@ import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
       },
       onAmbiguous: async () => "error",
     }),
-    "failed",
+    {
+      outcome: "failed",
+      claimed: true,
+      submitted: false,
+      persisted: false,
+    },
   );
   assert.equal(rejected, 1);
 
   let ambiguous = 0;
-  assert.equal(
+  assert.deepEqual(
     await submitDurableFalRequest({
       claim: async () => true,
       submit: async () => ({ request_id: "fal-3" }),
@@ -66,11 +81,16 @@ import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
         return "error";
       },
     }),
-    "error",
+    {
+      outcome: "error",
+      claimed: true,
+      submitted: true,
+      persisted: false,
+    },
   );
   assert.equal(ambiguous, 1);
 
-  assert.equal(
+  assert.deepEqual(
     await submitDurableFalRequest({
       claim: async () => true,
       submit: async () => ({ request_id: "fal-4" }),
@@ -83,7 +103,12 @@ import { submitDurableFalRequest } from "../../src/lib/jobs/durable-fal-submit";
         return "submission-unknown";
       },
     }),
-    "submission-unknown",
+    {
+      outcome: "submission-unknown",
+      claimed: true,
+      submitted: true,
+      persisted: false,
+    },
   );
 
   console.log("durable fal submit tests passed");
