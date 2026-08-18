@@ -4,13 +4,10 @@
 
 - User-scope skills (`~/.agents/skills/`) take priority over project-scope skills (`.agents/skills/`) whenever names or directives conflict.
 - Do not install a project-scope copy of a skill that already exists at user scope; the user-scope copy is the canonical one.
-- **Design work is owned by the Impeccable skill** (`.pi/skills/impeccable`, invoked as `/impeccable`). It is the only design/direction skill loaded for frontend work. The legacy taste skills (`design-taste-frontend`, `minimalist-ui`, `high-end-visual-design`, `industrial-brutalist-ui`, `gpt-taste`, `brandkit`, `imagegen-*`, etc.) are archived at `.agents/skills-archive/taste-skills/`, intentionally outside the active discovery path so they cannot collide with Impeccable. Never blend Impeccable with another design vocabulary on the same surface.
-- Follow the Impeccable setup: run `node .pi/skills/impeccable/scripts/context.mjs` once per session, load the one playbook that owns the request, and load `reference/craft-floor.md` immediately before editing UI.
 
 ## Design source of truth
 
-- **Impeccable owns the design engine.** `DESIGN.md` is the canonical design-language authority for PostForge; keep it current with `/impeccable init` (one-time) and `/impeccable document` as the system drifts. `PRODUCT.md` holds the product context Impeccable reads on every command.
-- MagicPath is the visual reference layer for parity QA, not a competing design generator. Keep the route-to-frame map in `docs/magicpath-visual-qa.md` current whenever a MagicPath frame or production route changes, and compare running UI against MagicPath frames during review.
+- `DESIGN.md` is the canonical design-language authority for PostForge, and `PRODUCT.md` holds the product context for design and implementation decisions.
 - Reuse the shared PostForge design tokens and shell before introducing route-specific visual primitives.
 
 ## Required adversarial review
@@ -19,17 +16,21 @@ Every user-visible UI change must end with an independent **Adversarial Review**
 
 Run the review against an optimized production build (`pnpm build`, followed by `pnpm start`), not only the development server.
 
-Run Impeccable's pre-ship gauntlet (`/impeccable score`, `copy`, and `stress-test`) on the affected surface and pipe its P0/P1 findings into this review. The review agent still stays independent and remains the mandatory gate.
+Before reviewing, read `DESIGN.md`, `PRODUCT.md`, the affected route, and the shared shell. Use those sources to establish the expected visual and behavioral contract.
 
 The reviewer must:
 
-1. Compare the running production code with its MagicPath frame at desktop (1440 x 1024) and mobile (390 x 844), then run responsive fit checks at 1280, 1024, and 768 CSS pixels wide.
+1. Compare the running production code with `DESIGN.md`, the shared shell, and the affected route's intended state at desktop (1440 x 1024) and mobile (390 x 844), then run responsive fit checks at 1280, 1024, and 768 CSS pixels wide.
 2. Check layout, hierarchy, typography, color, spacing, borders, controls, responsive behavior, sidebar expansion/collapse, column fallbacks, fixed or sticky bars, safe areas, and loading, empty, error, and populated states.
 3. Exercise the pre-redesign behavior contract for the affected route, including deep links, query parameters, mutations, handoffs, downloads, retries, and failure recovery.
 4. Reject invented integrations or fabricated data. Disconnected services must remain explicit and functional local workflows must remain real.
 5. Report findings with severity, route, reproduction steps, and screenshot or DOM evidence.
 
-The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI work is not complete until the reviewer confirms visual parity and no material functionality regression, followed by lint, typecheck, tests, and a production build.
+The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI work is not complete until the reviewer confirms design-system consistency and no material functionality regression, followed by lint, typecheck, tests, and a production build.
+
+## Playwright session artifacts
+
+`.playwright-cli/` and `.playwright-mcp/` are gitignored dumps from Playwright CLI/MCP (snapshots, screenshots, videos). Agent screenshots dropped in the repo root (`ugc-clone-*.png`, `pf-canon-*.png`, and similar) are also not app data. `scripts/prune-playwright-artifacts.sh` removes videos after 1 day, other Playwright files after 7 days, caps those folders at 20 MB, and deletes untracked image/video files from the repo root. It runs from `pnpm prune:playwright`, `codex:setup`, and Cursor `sessionStart`/`sessionEnd` hooks. Do not write review screenshots into the repository root.
 
 ## Integration system invariant
 

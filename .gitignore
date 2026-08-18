@@ -28,7 +28,6 @@
 *.jpeg
 *.jpg
 *.png
-!.impeccable/mocks/*.png
 .cache/
 .cmux-browser
 

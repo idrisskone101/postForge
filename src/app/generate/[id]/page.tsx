@@ -411,10 +411,7 @@ export default function JobDetailPage() {
     ENHANCEMENT_TOOLS[0];
 
   return (
-    <div
-      data-magicpath-frame="generation-editor-435054353376751616"
-      className="pf-content-viewport min-w-0 animate-fade-in-up"
-    >
+    <div className="pf-content-viewport min-w-0 animate-fade-in-up">
       <header className="border-b border-border bg-[var(--pf-canvas)] px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <div className="flex min-w-0 flex-1 items-start gap-3">
