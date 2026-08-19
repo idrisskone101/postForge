@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateImage } from "@/lib/ai/generate-image";
 import { generateAvatarImage } from "@/lib/ugc/generate-avatar-image";
+import { parseSlideshowAestheticTemplate } from "@/lib/ai/slideshow-creator";
 import { getModel, calculateEstimatedCost } from "@/lib/ai/models";
 import { getDefaultModel } from "@/lib/ai/model-availability";
 import type { ImageGenerationRequest } from "@/lib/ai/types";
@@ -66,6 +67,11 @@ export async function POST(request: NextRequest) {
         numImages: body.numImages,
         negativePrompt: body.negativePrompt,
         hairstyleRole: body.hairstyleRole ?? null,
+        styleTemplate:
+          body.styleTemplate !== undefined && body.styleTemplate !== null
+            ? parseSlideshowAestheticTemplate(body.styleTemplate)
+            : undefined,
+        styleTemplateFolded: body.styleTemplateFolded === true,
       });
 
       return NextResponse.json(
@@ -186,6 +192,13 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     if (error instanceof CollectionAssetRequestError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    // Invalid vibe JSON (parseSlideshowAestheticTemplate) is a client error.
+    if (
+      error instanceof Error &&
+      /visual template/i.test(error.message)
+    ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("Image generation error:", error);

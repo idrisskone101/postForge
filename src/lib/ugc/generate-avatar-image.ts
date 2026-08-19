@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db";
 import { generateImage } from "@/lib/ai/generate-image";
+import { buildAvatarVibePrompt } from "@/lib/ai/collection-vibe";
 import { calculateEstimatedCost, getModel } from "@/lib/ai/models";
 import { getDefaultEditCapableImageModel } from "@/lib/ai/model-availability";
+import type { SlideshowAestheticTemplate } from "@/lib/ai/slideshow-creator-types";
 import {
   buildHairstyleDirective,
   resolveIdentityReferenceUrlsForAvatar,
@@ -16,6 +18,14 @@ export interface AvatarImageRequest {
   numImages?: number;
   negativePrompt?: string;
   hairstyleRole?: string | null;
+  /**
+   * Aesthetic JSON extracted from collection images. When present it becomes
+   * the style authority of a JSON-structured prompt; the collection images
+   * themselves are never sent to the image model.
+   */
+  styleTemplate?: SlideshowAestheticTemplate | null;
+  /** True when the user prompt was already folded into the style template. */
+  styleTemplateFolded?: boolean;
 }
 
 // Identity references give the model the person; the user's prompt gives the
@@ -112,9 +122,16 @@ export async function buildAvatarImageGenerationRequest(
     ? buildHairstyleDirective(identityReferences.appliedHairstyleRole)
     : undefined;
 
-  const promptString = buildAvatarScenePrompt(request.prompt, {
-    hairstyleDirective,
-  });
+  const promptString = request.styleTemplate
+    ? buildAvatarVibePrompt({
+        userPrompt: request.prompt,
+        template: request.styleTemplate,
+        folded: request.styleTemplateFolded === true,
+        hairstyleDirective,
+      })
+    : buildAvatarScenePrompt(request.prompt, {
+        hairstyleDirective,
+      });
   const negativePrompt = request.negativePrompt?.trim()
     ? `${AVATAR_IMAGE_NEGATIVE_PROMPT}, ${request.negativePrompt.trim()}`
     : AVATAR_IMAGE_NEGATIVE_PROMPT;
@@ -144,6 +161,10 @@ export async function buildAvatarImageGenerationRequest(
       appliedHairstyleRole: identityReferences.appliedHairstyleRole,
       requestedHairstyleRole: request.hairstyleRole ?? null,
       usedAvatarFallback: identityReferences.usedAvatarFallback,
+      styleTemplate: request.styleTemplate ?? undefined,
+      styleTemplateFolded: request.styleTemplate
+        ? request.styleTemplateFolded === true
+        : undefined,
       prompt: request.prompt,
     },
     estimatedCost,

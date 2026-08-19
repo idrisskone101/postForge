@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   ArrowRight,
+  Braces,
   CheckCircle2,
   ChevronDown,
   Clock3,
@@ -42,6 +43,7 @@ import {
   restorePromptImprovementUndo,
 } from "@/lib/ai/prompt-improvement-ui";
 import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
+import type { SlideshowAestheticTemplate } from "@/lib/ai/slideshow-creator-types";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -97,6 +99,8 @@ interface GenerateFormViewProps {
   swapReady?: boolean;
   swapSourceDurationSec?: number;
   avatarName?: string | null;
+  /** When set, generation is blocked until the vibe JSON requirement is met. */
+  vibeRequirement?: string | null;
 }
 
 const CREATIVE_SPARKS = [
@@ -209,6 +213,19 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [collectionAssetIds, setCollectionAssetIds] = useState<string[]>([]);
+  const [vibeTemplate, setVibeTemplate] = useState<SlideshowAestheticTemplate | null>(
+    null
+  );
+  const [vibeJsonText, setVibeJsonText] = useState("");
+  const [vibeEditorActive, setVibeEditorActive] = useState(false);
+  const [vibeJsonError, setVibeJsonError] = useState<string | null>(null);
+  const [vibeExtracting, setVibeExtracting] = useState(false);
+  const [vibeExtractError, setVibeExtractError] = useState<string | null>(null);
+  const [vibeAssetKey, setVibeAssetKey] = useState<string | null>(null);
+  const [foldEnabled, setFoldEnabled] = useState(false);
+  const [vibeFolding, setVibeFolding] = useState(false);
+  const [vibeFoldError, setVibeFoldError] = useState<string | null>(null);
+  const [foldedPromptValue, setFoldedPromptValue] = useState<string | null>(null);
   const [videoReferenceFileId, setVideoReferenceFileId] = useState<string | null>(
     searchParams.get("referenceFileId") ?? null
   );
@@ -227,6 +244,8 @@ export function GenerationForm({ models }: GenerationFormProps) {
     enableAudio,
     avatarId,
     collectionAssetIds,
+    hasVibeTemplate: Boolean(vibeTemplate),
+    foldEnabled,
     videoReferenceFileId,
     swapVideoId: swapVideo?.id ?? null,
     swapReferenceId: swapReference?.id ?? null,
@@ -312,6 +331,17 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
   const selectedDefinition = models.find((model) => model.id === selectedModel);
 
+  const resetVibeState = () => {
+    setVibeTemplate(null);
+    setVibeJsonText("");
+    setVibeEditorActive(false);
+    setVibeJsonError(null);
+    setVibeExtractError(null);
+    setVibeAssetKey(null);
+    setVibeFoldError(null);
+    setFoldedPromptValue(null);
+  };
+
   const handleModelSelect = (modelId: string) => {
     const nextModel = models.find((model) => model.id === modelId);
     if (!nextModel) return;
@@ -324,12 +354,24 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setPromptImprovementNotice(null);
     setNotice(null);
 
+    // The vibe JSON workflow is image-only; switching to video retires it.
+    if (nextModel.type === "video") {
+      resetVibeState();
+      if (avatarId && collectionAssetIds.length > 0) {
+        setCollectionAssetIds([]);
+        setNotice(
+          "Collection images were cleared because the collection vibe JSON is only available for image generation."
+        );
+      }
+    }
+
     const acceptsCollectionReference =
       nextModel.type === "image"
         ? nextModel.capabilities.referenceImages === true
         : nextModel.capabilities.imageToVideo === true;
     if (collectionAssetIds.length > 0 && !acceptsCollectionReference) {
       setCollectionAssetIds([]);
+      resetVibeState();
       setNotice(
         "Collection references were cleared because the selected model does not accept them."
       );
@@ -356,7 +398,11 @@ export function GenerationForm({ models }: GenerationFormProps) {
         setAvatarId(null);
         setIdentityPack(null);
         setIdentityError(null);
-        setNotice(`${nextModel.name} does not accept a saved character identity.`);
+        // Keep an earlier notice (for example a collection-clearing message
+        // from the vibe JSON reset above) instead of clobbering it.
+        setNotice((current) =>
+          current ?? `${nextModel.name} does not accept a saved character identity.`
+        );
       }
     }
   };
@@ -367,11 +413,8 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setSubmitError(null);
     setIdentityError(null);
     setAvatarId(nextAvatarId);
-    if (nextAvatarId && collectionAssetIds.length > 0) {
-      setCollectionAssetIds([]);
-      setNotice(
-        "Collection references were cleared because character identity and visual collections cannot be combined yet."
-      );
+    if (!nextAvatarId) {
+      resetVibeState();
     }
     if (nextAvatarId && videoReferenceFileId) {
       setVideoReferenceFileId(null);
@@ -414,16 +457,30 @@ export function GenerationForm({ models }: GenerationFormProps) {
   const handleCollectionAssetChange = (assetIds: string[]) => {
     setSubmitError(null);
     setNotice(null);
-    if (avatarId) return;
     promptImprovementRequestGateRef.current.invalidateInputs();
+    if (assetIds.length > 0 && avatarId && selectedDefinition?.type === "video") {
+      // The collection vibe JSON workflow is image-only; video identity
+      // models cannot take it, so the selection is rejected up front.
+      setNotice(
+        "Visual collections are only available with a character identity for image generation."
+      );
+      return;
+    }
     setCollectionAssetIds(assetIds);
-    if (assetIds.length > 0 && videoReferenceFileId) {
+    if (assetIds.length === 0) {
+      resetVibeState();
+      return;
+    }
+    if (videoReferenceFileId) {
       setVideoReferenceFileId(null);
       setNotice(
         "The video seed was cleared because visual collections cannot be combined with it yet."
       );
     }
-    if (assetIds.length === 0) return;
+
+    // With a character identity attached the collection feeds the vibe JSON
+    // instead of the model's reference slots, so no model fallback is needed.
+    if (avatarId) return;
 
     const selectedSupportsCollection =
       selectedDefinition?.type === "image"
@@ -461,6 +518,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
     setVideoReferenceFileId(fileId);
     if (fileId && collectionAssetIds.length > 0) {
       setCollectionAssetIds([]);
+      resetVibeState();
       setNotice(
         "Collection references were cleared because a video seed cannot be combined with them yet."
       );
@@ -469,6 +527,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       setAvatarId(null);
       setIdentityPack(null);
       setIdentityError(null);
+      resetVibeState();
       setNotice(
         "Character identity was cleared because video seeds do not accept it yet."
       );
@@ -490,9 +549,32 @@ export function GenerationForm({ models }: GenerationFormProps) {
     }
   };
 
+  const vibeMode =
+    Boolean(avatarId) &&
+    collectionAssetIds.length > 0 &&
+    selectedDefinition?.type === "image";
+  const vibeStale =
+    vibeTemplate !== null &&
+    vibeAssetKey !== null &&
+    vibeAssetKey !== collectionAssetIds.join(",");
+  const foldStale =
+    foldEnabled && vibeTemplate !== null && foldedPromptValue !== prompt.trim();
+  const vibeRequirement = !vibeMode
+    ? null
+    : vibeJsonError
+      ? "Fix the vibe JSON (or re-extract it) to continue."
+      : !vibeTemplate
+        ? "Extract the vibe JSON from your collection images to continue."
+        : vibeStale
+          ? "Your collection selection changed. Re-extract the vibe JSON to continue."
+          : foldEnabled && foldStale
+            ? "Fold your prompt into the vibe JSON to continue."
+            : null;
+
   const canSubmit =
     Boolean(selectedDefinition) &&
     prompt.trim().length > 0 &&
+    !vibeRequirement &&
     !isSubmitting &&
     !isImprovingPrompt;
 
@@ -501,6 +583,91 @@ export function GenerationForm({ models }: GenerationFormProps) {
     !isSwapSelected ||
     (Boolean(swapVideo) &&
       (selectedDefinition?.id !== "pixverse-swap" || Boolean(swapReference)));
+
+  const handleExtractVibe = async () => {
+    if (collectionAssetIds.length === 0 || vibeExtracting) return;
+    promptImprovementRequestGateRef.current.invalidateInputs();
+    setVibeExtracting(true);
+    setVibeExtractError(null);
+    setVibeFoldError(null);
+    setSubmitError(null);
+    setNotice(null);
+    try {
+      const result = await apiPost<{
+        template: SlideshowAestheticTemplate;
+        model: string;
+        referenceCount: number;
+      }>("/api/collection-assets/vibe", { collectionAssetIds });
+      setVibeTemplate(result.template);
+      setVibeJsonText(JSON.stringify(result.template, null, 2));
+      setVibeEditorActive(true);
+      setVibeJsonError(null);
+      setVibeAssetKey(collectionAssetIds.join(","));
+      setFoldedPromptValue(null);
+      setNotice(
+        `Vibe JSON extracted from ${result.referenceCount} collection image${result.referenceCount === 1 ? "" : "s"} with ${result.model}. Review and edit it before generating.`
+      );
+    } catch (error) {
+      setVibeExtractError(
+        errorMessage(error, "Vibe extraction failed. Your selection is unchanged.")
+      );
+    } finally {
+      setVibeExtracting(false);
+    }
+  };
+
+  const handleVibeJsonChange = (text: string) => {
+    promptImprovementRequestGateRef.current.invalidateInputs();
+    setVibeJsonText(text);
+    // Manual edits retire the fold: the JSON no longer matches the fold output.
+    setFoldedPromptValue(null);
+    try {
+      const parsed: unknown = JSON.parse(text);
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        throw new Error("not an object");
+      }
+      setVibeTemplate(parsed as SlideshowAestheticTemplate);
+      setVibeJsonError(null);
+    } catch {
+      setVibeTemplate(null);
+      setVibeJsonError("The vibe JSON is invalid. Fix it or re-extract.");
+    }
+  };
+
+  const handleFoldIntoVibe = async () => {
+    if (!vibeTemplate || vibeFolding) return;
+    const currentPrompt = prompt.trim();
+    if (!currentPrompt) {
+      setVibeFoldError("Write a prompt before folding it into the vibe JSON.");
+      return;
+    }
+    promptImprovementRequestGateRef.current.invalidateInputs();
+    setVibeFolding(true);
+    setVibeFoldError(null);
+    setNotice(null);
+    try {
+      const result = await apiPost<{
+        template: SlideshowAestheticTemplate;
+        model: string;
+      }>("/api/collection-assets/vibe/fold", {
+        template: vibeTemplate,
+        prompt: currentPrompt,
+      });
+      setVibeTemplate(result.template);
+      setVibeJsonText(JSON.stringify(result.template, null, 2));
+      setVibeJsonError(null);
+      setFoldedPromptValue(currentPrompt);
+      setNotice(
+        "Your prompt was folded into the vibe JSON. Review it before generating."
+      );
+    } catch (error) {
+      setVibeFoldError(
+        errorMessage(error, "Folding failed. Your vibe JSON is unchanged.")
+      );
+    } finally {
+      setVibeFolding(false);
+    }
+  };
 
   const handleImprovePrompt = async () => {
     if (!selectedDefinition) {
@@ -598,6 +765,8 @@ export function GenerationForm({ models }: GenerationFormProps) {
         return;
       }
       if (selectedDefinition.type === "image") {
+        const vibeTemplateActive =
+          Boolean(avatarId) && collectionAssetIds.length > 0 && vibeTemplate;
         const result = await apiPost<{ id: string }>("/api/generate/images", {
           prompt: prompt.trim(),
           model: selectedDefinition.id,
@@ -607,7 +776,12 @@ export function GenerationForm({ models }: GenerationFormProps) {
           enableWebSearch: avatarId ? undefined : enableWebSearch,
           avatarId: avatarId ?? undefined,
           collectionAssetIds:
-            collectionAssetIds.length > 0 ? collectionAssetIds : undefined,
+            !avatarId && collectionAssetIds.length > 0
+              ? collectionAssetIds
+              : undefined,
+          styleTemplate: vibeTemplateActive ? vibeTemplate : undefined,
+          styleTemplateFolded:
+            vibeTemplateActive && foldEnabled ? true : undefined,
         });
         router.push(`/generate/${result.id}`);
       } else {
@@ -718,7 +892,9 @@ export function GenerationForm({ models }: GenerationFormProps) {
             </span>
           </div>
           <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
-            Reuse server-owned product, location, or style images from Collections.
+            {avatarId
+              ? "Distill the shared vibe of collection images (like Pinterest saves) into an editable JSON that steers the generation."
+              : "Reuse server-owned product, location, or style images from Collections."}
           </p>
         </div>
         {collectionAssetIds.length > 0 && (
@@ -727,6 +903,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
             onClick={() => {
               promptImprovementRequestGateRef.current.invalidateInputs();
               setCollectionAssetIds([]);
+              resetVibeState();
             }}
             className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
           >
@@ -738,9 +915,176 @@ export function GenerationForm({ models }: GenerationFormProps) {
         selectedAssetIds={collectionAssetIds}
         onChange={handleCollectionAssetChange}
         maxSelection={maximumCollectionReferences}
-        disabled={Boolean(avatarId) || Boolean(videoReferenceFileId)}
-        disabledMessage="Clear the character identity or video seed to use visual collection references."
+        disabled={Boolean(videoReferenceFileId)}
+        disabledMessage="Clear the video seed to use visual collection references."
       />
+      {vibeMode && (
+        <div className="mt-3 space-y-3 rounded-lg border border-border bg-[var(--pf-active)] p-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <strong className="flex items-center gap-1.5 text-[12px] font-semibold text-foreground">
+                <Braces className="size-3.5 text-muted-foreground" /> Collection vibe JSON
+              </strong>
+              <span className="mt-1 block text-[12px] leading-4 text-muted-foreground">
+                With a character identity selected, collection images are distilled
+                into this JSON. The images themselves are never sent to the image
+                model, so your character&rsquo;s identity is never in competition with
+                people in the inspiration photos.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleExtractVibe}
+              disabled={vibeExtracting}
+              aria-busy={vibeExtracting}
+              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-white px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {vibeExtracting ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Sparkles className="size-3" />
+              )}
+              {vibeExtracting
+                ? "Extracting…"
+                : vibeEditorActive
+                  ? "Re-extract vibe JSON"
+                  : "Extract vibe JSON"}
+            </button>
+          </div>
+
+          {vibeExtractError && (
+            <div
+              role="alert"
+              className="flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)]"
+            >
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+                {vibeExtractError}
+              </span>
+            </div>
+          )}
+
+          {vibeStale && (
+            <div
+              role="alert"
+              className="flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-lamp-amber)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-lamp-amber)]"
+            >
+              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+              <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+                Your collection selection changed. Re-extract the vibe JSON so it
+                matches the selected images.
+              </span>
+            </div>
+          )}
+
+          {vibeEditorActive && (
+            <>
+              <textarea
+                aria-label="Vibe JSON"
+                value={vibeJsonText}
+                onChange={(event) => handleVibeJsonChange(event.target.value)}
+                spellCheck={false}
+                className="min-h-56 w-full resize-y rounded-lg border border-border bg-card px-3 py-2 font-mono text-[13px] leading-5 text-foreground shadow-none outline-none focus:border-[var(--pf-orange)]"
+              />
+              {vibeJsonError ? (
+                <div
+                  role="alert"
+                  className="flex items-start gap-1.5 text-[12px] leading-4 text-[var(--pf-danger)]"
+                >
+                  <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                  <span>{vibeJsonError}</span>
+                </div>
+              ) : (
+                <p className="text-[12px] leading-4 text-muted-foreground">
+                  This JSON is fed to the image model verbatim, together with your
+                  character identity. Edit any value to steer the result.
+                </p>
+              )}
+
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-white px-3 py-2.5">
+                <span className="min-w-0">
+                  <strong className="block text-[12px] font-semibold text-foreground">
+                    Fold my prompt into the JSON
+                  </strong>
+                  <small className="mt-0.5 block text-[12px] leading-4 text-muted-foreground">
+                    Merge your prompt (for example &ldquo;eating a sandwich&rdquo;) into the
+                    vibe JSON with the intelligence model from Settings
+                  </small>
+                </span>
+                <Switch
+                  aria-label="Fold my prompt into the JSON"
+                  checked={foldEnabled}
+                  onCheckedChange={(enabled) => {
+                    promptImprovementRequestGateRef.current.invalidateInputs();
+                    setFoldEnabled(enabled);
+                    setVibeFoldError(null);
+                  }}
+                />
+              </div>
+
+              {foldEnabled && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleFoldIntoVibe}
+                    disabled={
+                      vibeFolding ||
+                      !vibeTemplate ||
+                      !prompt.trim() ||
+                      Boolean(vibeJsonError)
+                    }
+                    aria-busy={vibeFolding}
+                    className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-white px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    {vibeFolding ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="size-3" />
+                    )}
+                    {vibeFolding ? "Folding…" : "Fold into JSON"}
+                  </button>
+                  {!prompt.trim() && (
+                    <span className="text-[12px] text-muted-foreground">
+                      Write a prompt first.
+                    </span>
+                  )}
+                  {foldStale && foldedPromptValue !== null && (
+                    <span className="text-[12px] leading-4 text-[var(--pf-lamp-amber)]">
+                      Your prompt changed since the last fold. Fold again to update
+                      the JSON.
+                    </span>
+                  )}
+                  {!foldStale && foldedPromptValue !== null && (
+                    <span className="inline-flex items-center gap-1 text-[12px] leading-4 text-[var(--pf-success)]">
+                      <CheckCircle2 className="size-3.5" /> Prompt folded into the
+                      JSON
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {vibeFoldError && (
+                <div
+                  role="alert"
+                  className="flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)]"
+                >
+                  <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                  <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+                    {vibeFoldError}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+
+          {!vibeEditorActive && !vibeExtracting && !vibeExtractError && (
+            <p className="text-[12px] leading-4 text-muted-foreground">
+              Extract the vibe JSON to combine this collection with your character
+              identity.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -878,13 +1222,16 @@ export function GenerationForm({ models }: GenerationFormProps) {
       swapSourceDurationSec={swapVideo?.durationSec ?? undefined}
       avatarName={
         avatarId
-          ? "Character identity"
+          ? vibeMode && vibeTemplate
+            ? "Character identity + vibe JSON"
+            : "Character identity"
           : videoReferenceFileId && !videoSeedMissing
             ? "Continuity seed"
             : collectionAssetIds.length > 0
               ? `${collectionAssetIds.length} collection reference${collectionAssetIds.length === 1 ? "" : "s"}`
               : null
       }
+      vibeRequirement={vibeRequirement}
     />
   );
 }
@@ -945,6 +1292,7 @@ export function GenerateFormView({
   swapReady = true,
   swapSourceDurationSec,
   avatarName,
+  vibeRequirement = null,
 }: GenerateFormViewProps) {
   const model = models.find((item) => item.id === selectedModel);
   const isImage = model?.type === "image";
@@ -955,6 +1303,7 @@ export function GenerateFormView({
     Boolean(model) &&
     prompt.trim().length > 0 &&
     !requiresVideoSeed &&
+    !vibeRequirement &&
     !isSubmitting &&
     !isImprovingPrompt &&
     swapReady;
@@ -1408,6 +1757,11 @@ export function GenerateFormView({
                   : `Add ${missing.join(" and ")} to continue`}
               </span>
             )}
+            {vibeRequirement && (
+              <span className="mt-0.5 block text-[12px] text-[var(--pf-lamp-amber)]">
+                {vibeRequirement}
+              </span>
+            )}
           </div>
           <Button
             type="submit"
@@ -1448,6 +1802,11 @@ export function GenerateFormView({
                   ? "Add a source video and a swap reference"
                   : "Add a source video"
                 : `Add ${missing.join(" and ")} to continue`}
+            </span>
+          )}
+          {vibeRequirement && (
+            <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-lamp-amber)]">
+              {vibeRequirement}
             </span>
           )}
         </div>
