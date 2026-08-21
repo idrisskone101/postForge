@@ -7,9 +7,13 @@ import { userErrorMessage } from "@/lib/user-error-message";
 import { cn } from "@/lib/utils";
 import { GenerateFormControls } from "@/app/generate/form-controls";
 import { GenerateIdentitySection } from "@/app/generate/form-identity-section";
-import { generateFormViewProps } from "@/app/generate/form-session";
+import { buildGenerateFormView } from "@/app/generate/form-session";
 import { GenerateFormSubmitBars } from "@/app/generate/form-submit-bars";
-import type { GenerateFormViewProps, GenerationFormProps } from "@/app/generate/form-types";
+import type {
+  GenerateFormActions,
+  GenerateFormModel,
+  GenerationFormProps,
+} from "@/app/generate/form-types";
 import { getGenerateFormViewModel } from "@/app/generate/form-view-model";
 import {
   postImageGeneration,
@@ -149,7 +153,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
 
   return (
     <GenerateFormView
-      {...generateFormViewProps({
+      {...buildGenerateFormView({
         models,
         form,
         onSubmit: handleSubmit,
@@ -174,44 +178,20 @@ export function GenerationForm({ models }: GenerationFormProps) {
 }
 
 export function GenerateFormView({
-  models,
-  selectedModel,
-  prompt,
-  aspectRatio,
-  numImages,
-  duration = 5,
-  enableAudio,
-  isSubmitting,
-  isImprovingPrompt = false,
-  swapReady = true,
-  swapSourceDurationSec,
-  avatarName,
-  vibeRequirement = null,
-  submitError = null,
-  notice = null,
-  ...rest
-}: GenerateFormViewProps) {
-  const view = getGenerateFormViewModel({
-    models,
-    selectedModel,
-    prompt,
-    aspectRatio,
-    numImages,
-    duration,
-    enableAudio,
-    isSubmitting,
-    isImprovingPrompt,
-    swapReady,
-    swapSourceDurationSec,
-    avatarName,
-    vibeRequirement,
-  });
+  form,
+  actions,
+}: {
+  form: GenerateFormModel;
+  actions: GenerateFormActions;
+}) {
+  const view = getGenerateFormViewModel(form);
+  const { prompt, aspectRatio, numImages } = form;
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        rest.onSubmit();
+        actions.onSubmit();
       }}
       className="grid items-start gap-4 pb-20 md:pb-0 xl:grid-cols-[minmax(360px,0.72fr)_minmax(500px,1.28fr)]"
     >
@@ -219,27 +199,7 @@ export function GenerateFormView({
         Creative Prompt Model Selection Current Config {view.isImage ? `${numImages} img` : ""}
       </span>
 
-      <GenerateFormControls
-        props={{
-          models,
-          selectedModel,
-          prompt,
-          aspectRatio,
-          numImages,
-          duration,
-          enableAudio,
-          isSubmitting,
-          isImprovingPrompt,
-          swapReady,
-          swapSourceDurationSec,
-          avatarName,
-          vibeRequirement,
-          submitError,
-          notice,
-          ...rest,
-        }}
-        view={view}
-      />
+      <GenerateFormControls form={form} actions={actions} view={view} />
 
       <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
         <div className="flex h-12 items-center justify-between border-b border-border px-4">
@@ -279,17 +239,8 @@ export function GenerateFormView({
         </div>
 
         <GenerateFormSubmitBars
+          form={form}
           view={view}
-          aspectRatio={aspectRatio}
-          numImages={numImages}
-          duration={duration}
-          isSubmitting={isSubmitting}
-          submitError={submitError}
-          notice={notice}
-          swapReady={swapReady}
-          swapSourceDurationSec={swapSourceDurationSec}
-          avatarName={avatarName}
-          vibeRequirement={vibeRequirement}
           desktopBarClassName="sticky bottom-0 hidden gap-3 border-t border-border bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
         />
       </aside>
