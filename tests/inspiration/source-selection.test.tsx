@@ -6,6 +6,7 @@ import {
 import { InspirationHeaderControls } from "../../src/app/ugc-inspiration/inspiration-header-controls";
 import { filterVideosBySourceUsage } from "../../src/app/ugc-inspiration/inspiration-models";
 import {
+  emptyInspirationAccountPage,
   emptyInspirationVideoPage,
   INSPIRATION_VIDEO_PAGE_SIZE,
   inspirationVideoFeedPath,
@@ -175,7 +176,7 @@ assert.equal(
 
 const markup = renderToStaticMarkup(
   <InspirationPageClient
-    initialAccounts={accounts}
+    initialAccountPage={{ items: accounts, nextCursor: null }}
     initialVideoPage={initialVideoPage}
   />
 );
@@ -189,14 +190,23 @@ const headerMarkup = renderToStaticMarkup(
 );
 const emptyMarkup = renderToStaticMarkup(
   <InspirationPageClient
-    initialAccounts={[]}
+    initialAccountPage={emptyInspirationAccountPage()}
     initialVideoPage={emptyInspirationVideoPage()}
   />
 );
 const manySourcesMarkup = renderToStaticMarkup(
   <InspirationPageClient
-    initialAccounts={[{ ...accounts[0], videoCount: 30 }]}
+    initialAccountPage={{
+      items: [{ ...accounts[0], videoCount: 30 }],
+      nextCursor: null,
+    }}
     initialVideoPage={manySourcesPage}
+  />
+);
+const manyAccountsMarkup = renderToStaticMarkup(
+  <InspirationPageClient
+    initialAccountPage={{ items: accounts, nextCursor: "account-50" }}
+    initialVideoPage={initialVideoPage}
   />
 );
 
@@ -278,6 +288,8 @@ assert.equal(
 assert.match(manySourcesMarkup, /Showing 24 of 30 matching sources/);
 assert.match(manySourcesMarkup, /Load 6 more/);
 assert.match(manySourcesMarkup, /data-inspiration-load-more="true"/);
+assert.doesNotMatch(markup, /data-inspiration-load-more-accounts="true"/);
+assert.match(manyAccountsMarkup, /data-inspiration-load-more-accounts="true"/);
 assert.equal(
   inspirationVideoFeedPath({
     cursor: pagedCursor,
