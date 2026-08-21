@@ -1,6 +1,6 @@
 import { calculateEstimatedCost } from "@/lib/ai/models";
-import type { ModelDefinition } from "@/lib/ai/types";
 import { RATIO_LABELS } from "./form-constants";
+import type { GenerateFormModel } from "./form-types";
 
 export function getGenerateFormViewModel({
   models,
@@ -8,29 +8,15 @@ export function getGenerateFormViewModel({
   prompt,
   aspectRatio,
   numImages,
-  duration,
+  duration = 5,
   enableAudio,
   isSubmitting,
-  isImprovingPrompt,
-  swapReady,
+  isImprovingPrompt = false,
+  swapReady = true,
   swapSourceDurationSec,
   avatarName,
-  vibeRequirement,
-}: {
-  models: ModelDefinition[];
-  selectedModel: string | null;
-  prompt: string;
-  aspectRatio: string;
-  numImages: number;
-  duration: number;
-  enableAudio: boolean;
-  isSubmitting: boolean;
-  isImprovingPrompt: boolean;
-  swapReady: boolean;
-  swapSourceDurationSec?: number;
-  avatarName?: string | null;
-  vibeRequirement: string | null;
-}) {
+  vibeRequirement = null,
+}: GenerateFormModel) {
   const model = models.find((item) => item.id === selectedModel);
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";

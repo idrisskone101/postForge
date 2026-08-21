@@ -4,35 +4,30 @@ import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import type { GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
 
 export function GenerateFormSubmitBars({
+  form,
   view,
-  aspectRatio,
-  numImages,
-  duration,
-  isSubmitting,
-  submitError,
-  notice,
-  swapReady,
-  swapSourceDurationSec,
-  avatarName,
-  vibeRequirement,
   desktopBarClassName,
 }: {
+  form: GenerateFormModel;
   view: GenerateFormViewModel;
-  aspectRatio: string;
-  numImages: number;
-  duration: number;
-  isSubmitting: boolean;
-  submitError: string | null;
-  notice: string | null;
-  swapReady: boolean;
-  swapSourceDurationSec?: number;
-  avatarName?: string | null;
-  vibeRequirement: string | null;
   desktopBarClassName: string;
 }) {
+  const {
+    aspectRatio,
+    numImages,
+    duration = 5,
+    isSubmitting,
+    submitError = null,
+    notice = null,
+    swapReady = true,
+    swapSourceDurationSec,
+    avatarName,
+    vibeRequirement = null,
+  } = form;
   const {
     model,
     isImage,

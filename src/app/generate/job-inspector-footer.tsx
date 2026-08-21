@@ -22,45 +22,39 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { cn } from "@/lib/utils";
-import type { JobFeedback } from "./job-enhancements";
+import type {
+  JobDetailActions,
+  JobDetailViewModel,
+} from "./job-enhancements";
 
 export function JobInspectorFooter({
-  job,
-  featured,
-  isCompleted,
-  canDiscard,
-  isRetrying,
-  isDownloading,
-  isDiscarding,
-  feedback,
-  onDownload,
-  onRetry,
-  onSaveToGallery,
-  onUseInClone,
-  onGenerateSimilar,
-  onAddToAutomation,
-  onDiscard,
-  onLeave,
+  view,
+  actions,
 }: {
-  job: JobDetail;
-  featured: JobOutput | undefined;
-  isCompleted: boolean;
-  canDiscard: boolean;
-  isRetrying: boolean;
-  isDownloading: boolean;
-  isDiscarding: boolean;
-  feedback: JobFeedback;
-  onDownload: () => void;
-  onRetry: () => void;
-  onSaveToGallery: () => void;
-  onUseInClone: () => void;
-  onGenerateSimilar: () => void;
-  onAddToAutomation: () => void;
-  onDiscard: () => void;
-  onLeave: () => void;
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
 }) {
+  const {
+    job,
+    featured,
+    isCompleted,
+    canDiscard,
+    isRetrying,
+    isDownloading,
+    isDiscarding,
+    feedback,
+  } = view;
+  const {
+    onDownload,
+    onRetry,
+    onSaveToGallery,
+    onUseInClone,
+    onGenerateSimilar,
+    onAddToAutomation,
+    onDiscard,
+    onLeave,
+  } = actions;
   return (
     <div className="min-w-0 border-t border-border p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
       {isCompleted && featured ? (
