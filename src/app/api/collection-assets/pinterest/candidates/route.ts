@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
-import { findPinterestCandidates } from "@/lib/pinterest";
+import { findPinterestCandidates } from "@/lib/collections/pinterest-candidates";
 
 export const runtime = "nodejs";
 
