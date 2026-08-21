@@ -16,6 +16,8 @@ import {
   ENHANCEMENT_TOOLS,
   asString,
   type InspectorTab,
+  type JobDetailActions,
+  type JobDetailViewModel,
 } from "./job-enhancements";
 
 export function JobInspectorTabs({
@@ -52,34 +54,29 @@ export function JobInspectorTabs({
 }
 
 export function JobEnhancePanel({
-  job,
-  featured,
-  selectedEnhancement,
-  enhancementInstruction,
-  editStrength,
-  preserveSubject,
-  isCompleted,
-  isApplying,
-  onSelectTool,
-  onInstructionChange,
-  onEditStrengthChange,
-  onPreserveSubjectChange,
-  onApply,
+  view,
+  actions,
 }: {
-  job: JobDetail;
-  featured: JobOutput | undefined;
-  selectedEnhancement: (typeof ENHANCEMENT_TOOLS)[number]["id"];
-  enhancementInstruction: string;
-  editStrength: number;
-  preserveSubject: boolean;
-  isCompleted: boolean;
-  isApplying: boolean;
-  onSelectTool: (id: (typeof ENHANCEMENT_TOOLS)[number]["id"]) => void;
-  onInstructionChange: (value: string) => void;
-  onEditStrengthChange: (value: number) => void;
-  onPreserveSubjectChange: (value: boolean) => void;
-  onApply: () => void;
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
 }) {
+  const {
+    job,
+    featured,
+    selectedEnhancement,
+    enhancementInstruction,
+    editStrength,
+    preserveSubject,
+    isCompleted,
+    isApplying,
+  } = view;
+  const {
+    onSelectTool,
+    onInstructionChange,
+    onEditStrengthChange,
+    onPreserveSubjectChange,
+    onApply,
+  } = actions;
   const selectedTool =
     ENHANCEMENT_TOOLS.find((tool) => tool.id === selectedEnhancement) ??
     ENHANCEMENT_TOOLS[0];
