@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { automationsHubSource } from "./hub-source";
 import {
   clampPreviewZoom,
   PREVIEW_ZOOM_MAX,
@@ -140,10 +141,7 @@ assert.match(source, /Composed locally from your prompt and strategy\. No networ
 assert.match(source, /AutomationPreviewMedia asset=\{previewAsset\}/);
 assert.doesNotMatch(source, /Math\.floor\(Math\.random\(\) \* 3\)/);
 
-const hubSource = readFileSync(
-  new URL("../../src/app/automations/automations-page-client.tsx", import.meta.url),
-  "utf8"
-);
+const hubSource = automationsHubSource();
 
 for (const requiredHubState of [
   "SocialProviderIcon",
