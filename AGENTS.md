@@ -67,3 +67,9 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 ### External integrations
 
 - fal.ai, Ollama, TikTok/Instagram/YouTube, and Railway/S3 storage all require secrets that are absent by default. Core dashboard workflows (characters, collections, slideshow drafts, automation drafts, DB-backed persistence) work without them; only actual media generation and provider publishing/sync need those keys. Missing credentials must stay visibly unavailable — never substitute demo data.
+
+### Linear MCP
+
+- Linear's official HTTP MCP is declared in `.cursor/mcp.json` at `https://mcp.linear.app/mcp`. Use that Streamable HTTP URL. Do not wrap it with `npx mcp-remote`; Cloud Agents do not support that transport.
+- Cloud Agents load Linear from the MCP dropdown on [cursor.com/agents](https://cursor.com/agents), not automatically from desktop MCP settings. Desktop OAuth and the Linear issue-delegation integration (`@Cursor` on issues) do not authorize Linear MCP tools inside a cloud VM.
+- If Linear shows `needsAuth`, authenticate it from that Cloud Agents MCP dropdown. Interactive OAuth cannot run inside the cloud VM. Re-auth from desktop Settings → MCP is not enough.
