@@ -1,11 +1,10 @@
 import * as fs from "fs/promises";
-import * as path from "path";
-import { randomUUID } from "crypto";
+import { getDefaultModel } from "@/lib/ai/model-availability";
 import { getModel, calculateEstimatedCost, BRIA_ERASER_COST_PER_SEC } from "@/lib/ai/models";
 import { submitToQueue, uploadToFalStorage } from "@/lib/ai/fal-client";
 import { createJob, failJob } from "@/lib/jobs/queue";
 import { prisma } from "@/lib/db";
-import { isStoragePathUnder, storage } from "@/lib/storage";
+import { storage } from "@/lib/storage";
 import { extractReferenceFrame } from "@/lib/ugc/extract-frame";
 import { eraseTextFromVideo } from "@/lib/ugc/erase-text";
 import { normalizeVideoForMotionControl } from "@/lib/ugc/normalize-video";
@@ -16,215 +15,28 @@ import {
   markCloneJobSubmitted,
   setCloneQueueStage,
 } from "@/lib/ugc/clone-queue-store";
-import type { TikTokSource } from "@/generated/prisma/client";
 import { findCollectionAsset } from "@/lib/collection-assets-server";
+import {
+  InvalidCloneRequestError,
+  parseCloneJobInput,
+  PROCESS_LOCK_MS,
+  UGC_CLONE_TAG,
+  type CloneGenerationRequest,
+  type CloneJobInput,
+  type SourceVideoSnapshot,
+} from "@/lib/ugc/clone-job-input";
+import { buildFinalClonePrompt } from "@/lib/ugc/clone-prompt";
+import {
+  createSourceVideoSnapshot,
+  isTrustedSourceVideoPath,
+  sourceToSnapshot,
+} from "@/lib/ugc/clone-source-snapshot";
 
-// Default prompts for motion control.
-// When a reference image is provided, it already contains the avatar in the scene,
-// so we use a bare-minimum prompt — let the image speak for itself.
-const DEFAULT_CLONE_PROMPT_WITH_REF =
-  "Person performing the actions from the reference video, consistent appearance";
-const DEFAULT_CLONE_PROMPT_V3 =
-  "@Element1 in the scene, natural environment lighting, consistent background, seamless scene continuity";
-const DEFAULT_CLONE_PROMPT_V2 =
-  "Person in the scene, natural environment lighting, consistent background, seamless scene continuity";
-const MOTION_CAMERA_LOCK_PROMPT =
-  "Use the motion video as the authority for the opening pose, body position, scale, crop, camera height, camera distance, perspective, and timing. Use the supplied reference image for the avatar identity, clothing, lighting, and scene appearance, but do not let it reposition the person or change the starting camera geometry. If the reference image and motion video disagree about the starting pose or framing, follow the motion video's first frame. Keep a natural front-facing phone-camera feel. Avoid visible phones, tripod-like professional angles, and extra hands.";
-const UGC_CLONE_TAG = "ugc-clone";
-const PROCESS_LOCK_MS = 30 * 60 * 1000;
-const SOURCE_VIDEO_PATH_PREFIXES = ["tiktok-sources", "ugc-clone-sources"];
-
-export interface CloneGenerationRequest {
-  tiktokSourceId: string;
-  tiktokVideoPath: string;
-  avatarId: string;
-  prompt?: string;
-  keepOriginalSound?: boolean;
-  modelId?: string;
-  referenceImageFileId?: string;
-  collectionAssetId?: string;
-  savedReferenceId?: string;
-  durationSec?: number;
-  removeTextOverlays?: boolean;
-  sourceVideoSnapshot?: SourceVideoSnapshot;
-}
-
-export interface SourceVideoSnapshot {
-  sourceId: string;
-  label: string;
-  originalUrl: string;
-  localPath: string;
-  filename: string;
-  durationSec: number;
-  width: number;
-  height: number;
-}
-
-type CloneJobInput = CloneGenerationRequest & {
-  modelId: string;
-  sourceVideo?: SourceVideoSnapshot;
-  sceneImageUrl?: string;
-  videoUrl?: string;
-  identityPackId?: string | null;
-  identityElementImageUrls?: string[];
-  usedKlingElementBinding?: boolean;
-  textErasureCost?: number;
+export {
+  InvalidCloneRequestError,
+  type CloneGenerationRequest,
+  type SourceVideoSnapshot,
 };
-
-async function createSourceVideoSnapshot(
-  source: {
-    id: string;
-    label: string;
-    originalUrl: string;
-    filename: string;
-    durationSec: number;
-    width: number;
-    height: number;
-  },
-  localPath: string
-): Promise<SourceVideoSnapshot> {
-  const sourceFullPath = await storage.ensureLocalFile(localPath);
-  const extension = path.extname(source.filename) || path.extname(localPath) || ".mp4";
-  const snapshotFilename = `${randomUUID()}${extension}`;
-  const snapshotLocalPath = await storage.saveFromFile(
-    "ugc-clone-sources",
-    snapshotFilename,
-    sourceFullPath
-  );
-
-  return {
-    sourceId: source.id,
-    label: source.label,
-    originalUrl: source.originalUrl,
-    localPath: snapshotLocalPath,
-    filename: snapshotFilename,
-    durationSec: source.durationSec,
-    width: source.width,
-    height: source.height,
-  };
-}
-
-export class InvalidCloneRequestError extends Error {}
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : null;
-}
-
-function asString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim().length > 0
-    ? value
-    : undefined;
-}
-
-function asNumber(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value)
-    ? value
-    : undefined;
-}
-
-function asBoolean(value: unknown): boolean | undefined {
-  return typeof value === "boolean" ? value : undefined;
-}
-
-function parseSourceVideoSnapshot(value: unknown): SourceVideoSnapshot | undefined {
-  const input = asRecord(value);
-  if (!input) return undefined;
-
-  const sourceId = asString(input.sourceId);
-  const label = asString(input.label);
-  const originalUrl = asString(input.originalUrl);
-  const localPath = asString(input.localPath);
-  const filename = asString(input.filename);
-  const durationSec = asNumber(input.durationSec);
-  const width = asNumber(input.width);
-  const height = asNumber(input.height);
-
-  if (
-    !sourceId ||
-    !label ||
-    !originalUrl ||
-    !localPath ||
-    !filename ||
-    durationSec === undefined ||
-    width === undefined ||
-    height === undefined
-  ) {
-    return undefined;
-  }
-
-  return {
-    sourceId,
-    label,
-    originalUrl,
-    localPath,
-    filename,
-    durationSec,
-    width,
-    height,
-  };
-}
-
-function sourceToSnapshot(source: TikTokSource, localPath: string): SourceVideoSnapshot {
-  return {
-    sourceId: source.id,
-    label: source.label,
-    originalUrl: source.originalUrl,
-    localPath,
-    filename: source.filename,
-    durationSec: source.durationSec,
-    width: source.width,
-    height: source.height,
-  };
-}
-
-function isTrustedSourceVideoPath(
-  source: TikTokSource,
-  localPath: string,
-  sourceVideoSnapshot?: SourceVideoSnapshot
-): boolean {
-  if (!isStoragePathUnder(localPath, SOURCE_VIDEO_PATH_PREFIXES)) {
-    return false;
-  }
-
-  if (localPath === source.localPath) {
-    return true;
-  }
-
-  return (
-    !!sourceVideoSnapshot &&
-    sourceVideoSnapshot.sourceId === source.id &&
-    sourceVideoSnapshot.localPath === localPath
-  );
-}
-
-function buildFinalClonePrompt(params: {
-  prompt?: string;
-  hasRefImage: boolean;
-  isV3: boolean;
-}): string {
-  const userPrompt = params.prompt?.trim();
-
-  if (userPrompt) {
-    const promptWithCameraLock = `${userPrompt} ${MOTION_CAMERA_LOCK_PROMPT}`;
-    return params.isV3 && !promptWithCameraLock.includes("@Element1")
-      ? `@Element1 ${promptWithCameraLock}`
-      : params.isV3
-        ? promptWithCameraLock
-        : promptWithCameraLock.replace(/@Element1\s*/g, "");
-  }
-
-  if (params.hasRefImage) {
-    return params.isV3
-      ? `@Element1 ${DEFAULT_CLONE_PROMPT_WITH_REF}. ${MOTION_CAMERA_LOCK_PROMPT}`
-      : `${DEFAULT_CLONE_PROMPT_WITH_REF}. ${MOTION_CAMERA_LOCK_PROMPT}`;
-  }
-
-  return params.isV3
-    ? `${DEFAULT_CLONE_PROMPT_V3}. ${MOTION_CAMERA_LOCK_PROMPT}`
-    : `${DEFAULT_CLONE_PROMPT_V2}. ${MOTION_CAMERA_LOCK_PROMPT}`;
-}
 
 function addMs(ms: number): Date {
   return new Date(Date.now() + ms);
@@ -242,53 +54,9 @@ async function updateCloneJobInput(
   });
 }
 
-function parseCloneJobInput(
-  inputValue: unknown,
-  fallbackModelId: string
-): CloneJobInput | null {
-  const input = asRecord(inputValue);
-  if (!input) return null;
-
-  const sourceVideo = parseSourceVideoSnapshot(input.sourceVideo);
-  const sourceVideoSnapshot =
-    parseSourceVideoSnapshot(input.sourceVideoSnapshot) ?? sourceVideo;
-  const tiktokSourceId = asString(input.tiktokSourceId) ?? sourceVideoSnapshot?.sourceId;
-  const tiktokVideoPath = asString(input.tiktokVideoPath) ?? sourceVideoSnapshot?.localPath;
-  const avatarId = asString(input.avatarId);
-
-  if (!tiktokSourceId || !tiktokVideoPath || !avatarId) {
-    return null;
-  }
-
-  return {
-    tiktokSourceId,
-    tiktokVideoPath,
-    avatarId,
-    prompt: asString(input.prompt),
-    keepOriginalSound: asBoolean(input.keepOriginalSound),
-    modelId: asString(input.modelId) ?? fallbackModelId,
-    referenceImageFileId: asString(input.referenceImageFileId),
-    collectionAssetId: asString(input.collectionAssetId),
-    savedReferenceId: asString(input.savedReferenceId),
-    durationSec: asNumber(input.durationSec),
-    removeTextOverlays: input.removeTextOverlays === true,
-    sourceVideoSnapshot,
-    sourceVideo,
-    sceneImageUrl: asString(input.sceneImageUrl),
-    videoUrl: asString(input.videoUrl),
-    identityPackId: asString(input.identityPackId) ?? null,
-    identityElementImageUrls: Array.isArray(input.identityElementImageUrls)
-      ? input.identityElementImageUrls.filter((url): url is string => typeof url === "string")
-      : undefined,
-    usedKlingElementBinding: input.usedKlingElementBinding === true,
-    textErasureCost: asNumber(input.textErasureCost),
-  };
-}
-
 export async function enqueueCloneJob(
   request: CloneGenerationRequest
 ): Promise<{ jobId: string; estimatedCost: number; modelId: string }> {
-  const { getDefaultModel } = await import("@/lib/ai/model-availability");
   const modelId = request.modelId ?? (await getDefaultModel("video"));
   const model = getModel(modelId);
   if (!model) {
@@ -300,7 +68,6 @@ export async function enqueueCloneJob(
     );
   }
 
-  // Look up avatar
   const avatar = await prisma.avatar.findUnique({
     where: { id: request.avatarId },
   });
@@ -469,9 +236,6 @@ export async function processCloneJob(jobId: string): Promise<void> {
     };
     await updateCloneJobInput(job.id, persistedInput);
 
-    // Resolve full paths
-    // Optional: strip text overlays from the reference video before motion control.
-    // This runs Bria Video Eraser on fal.ai and saves a cleaned copy locally.
     let videoPath = sourceVideo.localPath;
     let textErasureCost = 0;
     if (request.removeTextOverlays) {
@@ -485,8 +249,6 @@ export async function processCloneJob(jobId: string): Promise<void> {
       await updateCloneJobInput(job.id, persistedInput);
     }
 
-    // Normalize video for optimal motion control: constant 30fps CFR,
-    // trim to first scene (removes app screenshots / product cuts at end).
     const rawVideoFullPath = await storage.ensureLocalFile(videoPath);
     console.log("[ugc-clone] Normalizing video for motion control (30fps CFR, scene trim)...");
     const videoFullPath = await normalizeVideoForMotionControl(rawVideoFullPath);
@@ -540,8 +302,6 @@ export async function processCloneJob(jobId: string): Promise<void> {
         }
         refLocalPath = collectionAsset.localPath;
       } else {
-        // Reference image already has the avatar composited into the scene.
-        // We only need the reference image + the TikTok video — no separate avatar upload.
         const refFile = await prisma.generatedFile.findUnique({
           where: { id: request.referenceImageFileId },
         });
@@ -560,20 +320,17 @@ export async function processCloneJob(jobId: string): Promise<void> {
         uploadToFalStorage(videoFullPath),
       ]);
     } else {
-      // No reference image — fall back to extracting a frame + sending avatar separately
       const referenceFramePath = await extractReferenceFrame(videoFullPath);
       [sceneImageUrl, videoUrl] = await Promise.all([
         uploadToFalStorage(referenceFramePath),
         uploadToFalStorage(videoFullPath),
       ]);
 
-      // Clean up temp reference frame
       fs.unlink(referenceFramePath).catch((err) => {
         console.warn(`[ugc-clone] Failed to cleanup reference frame: ${referenceFramePath}`, err);
       });
     }
 
-    // Clean up temp normalized video (already uploaded to fal storage)
     if (videoFullPath !== rawVideoFullPath) {
       fs.unlink(videoFullPath).catch((err) => {
         console.warn(`[ugc-clone] Failed to cleanup normalized video: ${videoFullPath}`, err);
@@ -592,11 +349,6 @@ export async function processCloneJob(jobId: string): Promise<void> {
     };
     await updateCloneJobInput(job.id, persistedInput);
 
-    // Build fal input for motion-control endpoint.
-    // NOTE: The motion control endpoint only accepts: image_url, video_url,
-    // character_orientation, prompt, keep_original_sound, elements.
-    // Parameters like cfg_scale, duration, aspect_ratio, negative_prompt
-    // are silently ignored — output duration/aspect come from the reference video.
     const falInput: Record<string, unknown> = {
       image_url: sceneImageUrl,
       video_url: videoUrl,
@@ -612,7 +364,6 @@ export async function processCloneJob(jobId: string): Promise<void> {
       falInput.keep_original_sound = request.keepOriginalSound;
     }
 
-    // Submit to queue
     const queueResult = await submitToQueue(model.endpoint, falInput);
     const requestId = queueResult.request_id;
 
