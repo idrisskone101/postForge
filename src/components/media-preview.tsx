@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -14,8 +15,7 @@ interface MediaPreviewProps {
   height?: number;
   alt?: string;
   className?: string;
-  /** Use object-cover to fill container (grid thumbnails). Defaults to object-contain (lightbox). */
-  fill?: boolean;
+  cover?: boolean;
 }
 
 interface MediaPreviewFrameProps extends MediaPreviewProps {
@@ -33,7 +33,7 @@ export function MediaPreview({
   height,
   alt = "",
   className,
-  fill = false,
+  cover = false,
 }: MediaPreviewProps) {
   return (
     <MediaPreviewFrame
@@ -43,8 +43,8 @@ export function MediaPreview({
       height={height}
       alt={alt}
       className={className}
-      fill={fill}
-      variant={fill ? "card" : "work"}
+      cover={cover}
+      variant={cover ? "card" : "work"}
     />
   );
 }
@@ -101,7 +101,7 @@ export function MediaPreviewFrame({
   height,
   alt = "",
   className,
-  fill = false,
+  cover = false,
   variant = "work",
   actions,
   showMetadata = false,
@@ -130,10 +130,11 @@ export function MediaPreviewFrame({
   const aspectRatio = getAspectRatio(width, height);
   const metadata = getMetadata(width, height);
   const shouldUseAspectRatio = variant !== "detail" && (frameAspectRatio || aspectRatio);
+  const fillFrame = cover || !width || !height;
   const mediaClass = cn(
     "rounded-lg transition-opacity",
     isLoading ? "opacity-0" : "opacity-100",
-    fill ? "size-full object-cover" : "max-h-full max-w-full object-contain",
+    cover ? "size-full object-cover" : "max-h-full max-w-full object-contain",
     mediaClassName
   );
 
@@ -157,13 +158,15 @@ export function MediaPreviewFrame({
             <span className="text-xs">Failed to load</span>
           </div>
         ) : type === "image" ? (
-          <img
+          <Image
             ref={setImageRef}
             src={src}
             alt={alt}
-            width={width}
-            height={height}
-            loading="lazy"
+            fill={fillFrame}
+            width={fillFrame ? undefined : width}
+            height={fillFrame ? undefined : height}
+            sizes={fillFrame ? "100vw" : undefined}
+            unoptimized
             onLoad={markLoaded}
             onError={() => {
               setIsLoading(false);

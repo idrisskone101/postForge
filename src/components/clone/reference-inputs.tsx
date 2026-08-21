@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { Loader2, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { FileImage } from "@/components/file-image";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
 import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
@@ -81,11 +82,11 @@ export function CloneReferenceInputs({
           {selectedCollectionAssetId ? (
             <>
               <ReferencePortraitFrame>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <FileImage
                   src={`/api/files/${encodeURIComponent(selectedCollectionAssetId)}`}
                   alt="Selected collection reference"
-                  className="size-full object-contain"
+                  sizes="220px"
+                  fit="contain"
                 />
               </ReferencePortraitFrame>
               <div className="mt-3 flex items-center justify-between">
@@ -102,11 +103,11 @@ export function CloneReferenceInputs({
           ) : selectedSavedReference ? (
             <>
               <ReferencePortraitFrame>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <FileImage
                   src={selectedSavedReference.previewUrl}
                   alt="Selected reference"
-                  className="size-full object-contain"
+                  sizes="220px"
+                  fit="contain"
                 />
               </ReferencePortraitFrame>
               <div className="mt-3 flex items-center justify-between">
@@ -144,11 +145,11 @@ export function CloneReferenceInputs({
           ) : selectedRef?.status === "completed" && selectedRef.fileId ? (
             <>
               <ReferencePortraitFrame>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <FileImage
                   src={`/api/files/${selectedRef.fileId}`}
                   alt="Generated reference"
-                  className="size-full object-contain"
+                  sizes="220px"
+                  fit="contain"
                 />
               </ReferencePortraitFrame>
               <div className="mt-3 flex items-center justify-between gap-3">
@@ -166,11 +167,11 @@ export function CloneReferenceInputs({
           ) : primaryAvatarReference ? (
             <>
               <ReferencePortraitFrame>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <FileImage
                   src={primaryAvatarReference.previewUrl}
                   alt={primaryAvatarReference.label}
-                  className="size-full object-contain"
+                  sizes="220px"
+                  fit="contain"
                 />
               </ReferencePortraitFrame>
               <div className="mt-3 flex items-center justify-between gap-3">
@@ -216,7 +217,7 @@ function ReferencePortraitFrame({
     <div
       data-reference-portrait-frame="true"
       className={cn(
-        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
+        "relative mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
         className
       )}
     >

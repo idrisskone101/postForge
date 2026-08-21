@@ -68,7 +68,6 @@ export function UGCCloneQueue() {
   useEffect(() => {
     fetchJobs();
 
-    // Poll while there are active jobs
     const interval = setInterval(() => {
       fetchJobs();
     }, hasActiveJobs ? 5000 : 30000);

@@ -122,7 +122,7 @@ export function JobPreviewBody({
             height={featured.height ?? undefined}
             alt={job.prompt}
             variant="detail"
-            fill={cropMode}
+            cover={cropMode}
             showMetadata
             className="w-full rounded-lg shadow-[var(--pf-shadow-lg)]"
           />
@@ -260,7 +260,7 @@ export function JobVariationStrip({
             src={`/api/files/${output.id}`}
             width={output.width ?? undefined}
             height={output.height ?? undefined}
-            fill
+            cover
             className="size-full rounded-lg"
           />
           <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[12px] font-semibold text-white">

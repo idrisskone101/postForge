@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
+import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -62,34 +63,27 @@ export function Sidebar() {
     activeItem?.primaryAction ?? workspaceNavigationGroups.primary[0].primaryAction;
 
   useEffect(() => {
-    try {
+    const frame = window.requestAnimationFrame(() => {
       setDesktopCollapsed(
-        window.localStorage.getItem("postforge-sidebar-collapsed") === "true"
+        readOptionalStorage("postforge-sidebar-collapsed") === "true"
       );
-    } catch {
-      setDesktopCollapsed(false);
-    } finally {
       setDesktopPreferenceReady(true);
-    }
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
     if (!desktopPreferenceReady) return;
 
-    try {
-      window.localStorage.setItem(
-        "postforge-sidebar-collapsed",
-        String(desktopCollapsed)
-      );
-    } catch {
-      // The responsive rail still works when storage is unavailable.
-    }
+    writeOptionalStorage(
+      "postforge-sidebar-collapsed",
+      String(desktopCollapsed)
+    );
     if (desktopCollapsed) {
       document.documentElement.dataset.sidebarCollapsed = "true";
     } else {
       delete document.documentElement.dataset.sidebarCollapsed;
     }
-
   }, [desktopCollapsed, desktopPreferenceReady]);
 
   useEffect(() => {
@@ -121,7 +115,7 @@ export function Sidebar() {
           }
         }
       } catch {
-        // Navigation remains available if optional workspace status is offline.
+        return;
       }
     }
 

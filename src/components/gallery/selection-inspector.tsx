@@ -128,7 +128,7 @@ export function GallerySelectionInspector({
             width={item.width}
             height={item.height}
             alt="Selected generated asset"
-            fill
+            cover
             variant="card"
             className="aspect-[4/3] rounded-none border-0 bg-muted sm:h-full sm:min-h-[290px] sm:aspect-auto min-[1360px]:aspect-[4/5] min-[1360px]:h-auto min-[1360px]:min-h-0"
             mediaClassName="object-contain"

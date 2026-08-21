@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { SPEND_PERIODS } from "@/lib/costs/spend-period";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { SpendAnalysisGrid } from "./spend-analysis-grid";
 import { SpendGenerationLog } from "./spend-generation-log";
 import {
@@ -35,15 +36,11 @@ export function SpendPageContent({
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      try {
-        const stored = window.localStorage.getItem(BUDGET_STORAGE_KEY);
-        const parsed = stored ? Number(stored) : Number.NaN;
-        if (Number.isFinite(parsed) && parsed > 0) {
-          setBudget(parsed);
-          setBudgetInput(String(parsed));
-        }
-      } catch {
-        // Local budget preferences are optional; the spend dashboard still works.
+      const stored = readOptionalStorage(BUDGET_STORAGE_KEY);
+      const parsed = stored ? Number(stored) : Number.NaN;
+      if (Number.isFinite(parsed) && parsed > 0) {
+        setBudget(parsed);
+        setBudgetInput(String(parsed));
       }
     });
     return () => window.cancelAnimationFrame(frame);
@@ -100,11 +97,7 @@ export function SpendPageContent({
     const nextBudget = Number(budgetInput);
     if (!Number.isFinite(nextBudget) || nextBudget <= 0) return;
     setBudget(nextBudget);
-    try {
-      window.localStorage.setItem(BUDGET_STORAGE_KEY, String(nextBudget));
-    } catch {
-      // Keep the in-session preference even if storage is unavailable.
-    }
+    writeOptionalStorage(BUDGET_STORAGE_KEY, String(nextBudget));
     setBudgetOpen(false);
     setFeedback(`Production budget updated to ${formatCost(nextBudget)}.`);
   };
