@@ -23,17 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
 
-export function JobPreviewToolbar({
-  previewZoom,
-  cropMode,
-  isFullscreen,
-  isCompleted,
-  featured,
-  onZoomOut,
-  onZoomIn,
-  onToggleCrop,
-  onFullscreen,
-}: {
+export type JobPreviewToolbarView = {
   previewZoom: number;
   cropMode: boolean;
   isFullscreen: boolean;
@@ -43,7 +33,25 @@ export function JobPreviewToolbar({
   onZoomIn: () => void;
   onToggleCrop: () => void;
   onFullscreen: () => void;
+};
+
+export function JobPreviewToolbar({
+  view,
+}: {
+  view: JobPreviewToolbarView;
 }) {
+  const {
+    previewZoom,
+    cropMode,
+    isFullscreen,
+    isCompleted,
+    featured,
+    onZoomOut,
+    onZoomIn,
+    onToggleCrop,
+    onFullscreen,
+  } = view;
+
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
       <div className="flex items-center gap-1">

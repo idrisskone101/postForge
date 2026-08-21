@@ -11,8 +11,6 @@ import { cn } from "@/lib/utils";
 export function GenerateIdentitySection({
   show,
   isVideo,
-  videoDescription,
-  imageDescription,
   avatarId,
   identityStatus,
   identityError,
@@ -20,8 +18,6 @@ export function GenerateIdentitySection({
 }: {
   show: boolean;
   isVideo: boolean;
-  videoDescription: string;
-  imageDescription: string;
   avatarId: string | null;
   identityStatus: {
     label: string;
@@ -45,7 +41,9 @@ export function GenerateIdentitySection({
             </span>
           </div>
           <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
-            {isVideo ? videoDescription : imageDescription}
+            {isVideo
+              ? "Create an identity-locked opening frame, then bind the same character through the video."
+              : "Reuse a saved identity. A compatible image model is selected automatically."}
           </p>
         </div>
         {avatarId && (

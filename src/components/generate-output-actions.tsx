@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface GenerateOutputActionsProps {
+export type GenerateOutputActionsView = {
   canDownload: boolean;
   isRetrying: boolean;
   isDownloading?: boolean;
@@ -24,22 +24,28 @@ interface GenerateOutputActionsProps {
   onUseInClone?: () => void;
   onGenerateSimilar?: () => void;
   onAddToAutomation?: () => void;
-}
+};
 
 export function GenerateOutputActions({
-  canDownload,
-  isRetrying,
-  isDownloading = false,
-  showRetry = true,
-  actionError = null,
-  actionNotice = null,
-  onDownload,
-  onRetry,
-  onSaveToGallery,
-  onUseInClone,
-  onGenerateSimilar,
-  onAddToAutomation,
-}: GenerateOutputActionsProps) {
+  view,
+}: {
+  view: GenerateOutputActionsView;
+}) {
+  const {
+    canDownload,
+    isRetrying,
+    isDownloading = false,
+    showRetry = true,
+    actionError = null,
+    actionNotice = null,
+    onDownload,
+    onRetry,
+    onSaveToGallery,
+    onUseInClone,
+    onGenerateSimilar,
+    onAddToAutomation,
+  } = view;
+
   return (
     <div className="grid gap-2.5">
       {(actionError || actionNotice) && (
