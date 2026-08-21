@@ -3,41 +3,32 @@
 
 import { Check, ExternalLink, Images, LoaderCircle } from "lucide-react";
 
-import type { PinterestCandidate } from "@/lib/collections-client";
+import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 import { cn } from "@/lib/utils";
 
 export function PinterestImportResults({
-  source,
-  query,
-  candidates,
-  selected,
-  failedImages,
-  searching,
-  loadingMore,
-  importing,
-  hasSearched,
-  hasMore,
-  error,
-  onToggleSelected,
-  onCandidateImageError,
-  onLoadMore,
+  workspace,
 }: {
-  source: "search" | "board";
-  query: string;
-  candidates: PinterestCandidate[];
-  selected: string[];
-  failedImages: string[];
-  searching: boolean;
-  loadingMore: boolean;
-  importing: boolean;
-  hasSearched: boolean;
-  hasMore: boolean;
-  error: string | null;
-  onToggleSelected: (id: string) => void;
-  onCandidateImageError: (id: string) => void;
-  onLoadMore: () => void;
+  workspace: PinterestImportWorkspace;
 }) {
+  const {
+    source,
+    query,
+    candidates,
+    selected,
+    failedImages,
+    searching,
+    loadingMore,
+    importing,
+    hasSearched,
+    hasMore,
+    error,
+    toggleSelected,
+    markCandidateImageFailed,
+    loadMore,
+  } = workspace;
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:min-h-72 sm:p-5">
       {searching ? (
@@ -88,7 +79,7 @@ export function PinterestImportResults({
                 <article key={candidate.imageUrl} className="group relative mb-2 break-inside-avoid">
                   <button
                     type="button"
-                    onClick={() => onToggleSelected(candidate.id)}
+                    onClick={() => toggleSelected(candidate.id)}
                     disabled={failedImages.includes(candidate.id) || importing}
                     aria-label={
                       failedImages.includes(candidate.id)
@@ -122,7 +113,7 @@ export function PinterestImportResults({
                         alt={candidate.altText ?? ""}
                         loading="lazy"
                         referrerPolicy="no-referrer"
-                        onError={() => onCandidateImageError(candidate.id)}
+                        onError={() => markCandidateImageFailed(candidate.id)}
                         className={cn(
                           "w-full object-cover",
                           index % 3 === 0
@@ -158,7 +149,7 @@ export function PinterestImportResults({
                 <>
                   <button
                     type="button"
-                    onClick={onLoadMore}
+                    onClick={loadMore}
                     disabled={loadingMore || importing}
                     className="pf-button-secondary h-11 min-w-36 sm:h-10"
                   >
