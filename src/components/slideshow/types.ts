@@ -99,6 +99,53 @@ export interface SlideshowPublishOptions {
   scheduledFor?: string | null;
 }
 
+export type SlideshowStoryGenerateInput = {
+  idea: string;
+  slideCount: number;
+  language: string;
+  includeCta: boolean;
+  model?: string;
+};
+
+export type SlideshowCreatorGenerateInput = {
+  title: string;
+  hook: string;
+  slides: string[];
+  template: unknown;
+  collectionAssetIds: string[];
+  directImageAssetIds: Array<string | null>;
+  model?: string;
+  aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
+};
+
+export type CreatorImagePickerTarget =
+  | { kind: "hook" }
+  | { kind: "slide"; index: number };
+
+export interface SlideshowEditorProps {
+  project: SlideshowProject;
+  onBack: () => void;
+  onProjectChange: (project: SlideshowProject) => void;
+  onSaveProject: (
+    project: SlideshowProject,
+  ) => Promise<SlideshowProject | void>;
+  onRegenerateSlide: (
+    project: SlideshowProject,
+    slide: SlideshowSlide,
+  ) => Promise<SlideshowProject | Partial<SlideshowSlide> | void>;
+  onRegenerateImage: (
+    project: SlideshowProject,
+    slide: SlideshowSlide,
+    onQueuedRevision: (revision: number) => void,
+  ) => Promise<SlideshowImageGenerationResult | void>;
+  collections: SlideshowCollection[];
+  onPublish: (project: SlideshowProject) => void;
+  imageModels?: Array<{ id: string; name: string }>;
+  selectedImageModel?: string | null;
+  onSelectImageModel?: (modelId: string) => void;
+  initialViewMode?: SlideshowViewMode;
+}
+
 export interface SlideshowStudioProps {
   initialProjects?: SlideshowProjectListItem[];
   initialProject?: SlideshowProject | null;
