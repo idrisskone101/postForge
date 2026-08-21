@@ -4,7 +4,6 @@
   "src/app/characters/new/character-builder-client.tsx": 637,
   "src/app/costs/costs-page-client.tsx": 797,
   "src/app/generate/[id]/page.tsx": 1070,
-  "src/app/settings/settings-page-client.tsx": 1420,
   "src/app/ugc-inspiration/inspiration-page-client.tsx": 1561,
   "src/components/avatar-picker.tsx": 1197,
   "src/components/clone-output-review-detail.tsx": 681,
@@ -20,8 +19,6 @@
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633,
-  "src/lib/integrations/publishing.ts": 1366,
-  "src/lib/integrations/store.ts": 707,
   "src/lib/slideshow/client.ts": 810,
   "src/lib/ugc/avatar-identity-pack.ts": 674,
   "src/lib/ugc/generate-clone.ts": 626
