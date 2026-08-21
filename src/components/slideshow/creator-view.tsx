@@ -13,16 +13,17 @@ import { SAMPLE_CREATOR_TEMPLATE } from "./creator-template-sample";
 import { alignCreatorDirectImages } from "./model";
 import { MAX_CREATOR_SLIDES } from "./studio-ui";
 import type { CreatorImagePickerTarget } from "./types";
-import type { CreatorDraft, StudioHomeView } from "./view-models";
+import { useSlideshowHome } from "./slideshow-home-provider";
+import type { CreatorDraft } from "./view-models";
 
-export function CreatorView({ home }: { home: StudioHomeView }) {
+export function CreatorView() {
   const {
     imageModels,
     selectedImageModel,
     onSelectImageModel,
     creatorGenerating: generating,
     onGenerateCreator,
-  } = home;
+  } = useSlideshowHome();
   const [title, setTitle] = useState("");
   const [hook, setHook] = useState("");
   const [hookImageAssetId, setHookImageAssetId] = useState<string | null>(null);

@@ -4,14 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { FileImage } from "@/components/file-image";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
-import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
+import { useCloneReference } from "@/components/clone/clone-reference-provider";
 import { cn } from "@/lib/utils";
 
-export function CloneReferenceInputs({
-  workspace,
-}: {
-  workspace: CloneReferenceWorkspace;
-}) {
+export function CloneReferenceInputs() {
   const {
     sourceReady,
     videoInfo,
@@ -26,7 +22,7 @@ export function CloneReferenceInputs({
     isStartingIdentityPack,
     onClearCollection,
     onClearSavedReference,
-  } = workspace;
+  } = useCloneReference();
   return (
     <div
       data-reference-comparison-stage="true"

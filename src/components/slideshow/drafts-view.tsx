@@ -12,16 +12,16 @@ import {
   PREVIEW_ASPECT,
 } from "./studio-ui";
 import type { SlideshowProject } from "./types";
-import type { StudioHomeView } from "./view-models";
+import { useSlideshowHome } from "./slideshow-home-provider";
 
-export function DraftsView({ home }: { home: StudioHomeView }) {
+export function DraftsView() {
   const {
     projects,
     loadingProjects: loading,
     projectsError: error,
     onOpenDraft: onOpen,
     onCreate,
-  } = home;
+  } = useSlideshowHome();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
 

@@ -25,13 +25,9 @@ import type {
   SlideshowTextSettings,
   SlideshowTextStyle,
 } from "./types";
-import type { SlideshowEditorWorkspace } from "./view-models";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 
-export function EditorInspector({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function EditorInspector() {
   const {
     draft,
     activeSlide,
@@ -45,7 +41,7 @@ export function EditorInspector({
     updateActiveSlide,
     onRegenerateText,
     onRegenerateImage,
-  } = workspace;
+  } = useSlideshowEditor();
   return (
         <aside className="border-t border-border bg-white xl:border-l xl:border-t-0">
           <div className="max-h-[700px] space-y-5 overflow-y-auto p-4 xl:max-h-[calc(100vh-170px)]">
