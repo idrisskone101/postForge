@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { canRunPromptImprovement } from "@/lib/ai/prompt-improvement-ui";
 import { cn } from "@/lib/utils";
 import { CREATIVE_SPARKS, RATIO_LABELS } from "./form-constants";
-import type { GenerateFormViewProps } from "./form-types";
+import type { GenerateFormActions, GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
 
 function RatioIcon({ ratio }: { ratio: string }) {
@@ -44,10 +44,12 @@ function RatioIcon({ ratio }: { ratio: string }) {
 }
 
 export function GenerateFormControls({
-  props,
+  form,
+  actions,
   view,
 }: {
-  props: GenerateFormViewProps;
+  form: GenerateFormModel;
+  actions: GenerateFormActions;
   view: GenerateFormViewModel;
 }) {
   const {
@@ -66,6 +68,12 @@ export function GenerateFormControls({
     promptImprovementNotice = null,
     promptEnhancerConfigured = null,
     canUndoPromptImprovement = false,
+    avatarSection,
+    referenceSection,
+    continuitySection,
+    swapSection,
+  } = form;
+  const {
     onModelSelect,
     onPromptChange,
     onAspectRatioChange,
@@ -78,11 +86,7 @@ export function GenerateFormControls({
     onImprovePrompt = () => {},
     onUndoPromptImprovement = () => {},
     onAppendToPrompt,
-    avatarSection,
-    referenceSection,
-    continuitySection,
-    swapSection,
-  } = props;
+  } = actions;
   const {
     model,
     isImage,
