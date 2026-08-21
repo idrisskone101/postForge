@@ -43,6 +43,34 @@ assert.doesNotMatch(clientSource, /filteredLogs/);
 assert.doesNotMatch(clientSource, /logs\.filter/);
 assert.doesNotMatch(clientSource, /filteredLogs\.slice/);
 
+function namedPropCount(source: string, exportName: string): number {
+  const match = source.match(
+    new RegExp(`export function ${exportName}\\(\\{([^}]+)\\}`)
+  );
+  if (!match) {
+    throw new Error(`missing destructured props for ${exportName}`);
+  }
+  return match[1]
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean).length;
+}
+
+for (const exportName of [
+  "SpendPageContent",
+  "SpendStatCards",
+  "SpendAnalysisGrid",
+  "SpendGenerationLog",
+]) {
+  const count = namedPropCount(clientSource, exportName);
+  assert.ok(
+    count < 8,
+    `${exportName} takes ${count} props; pass a named view-model instead`
+  );
+}
+assert.match(clientSource, /dashboard: CostsPageClientProps/);
+assert.match(clientSource, /handlers: SpendPageHandlers/);
+
 assert.match(exportRouteSource, /exportCostLogsCsv/);
 assert.match(exportRouteSource, /text\/csv/);
 assert.doesNotMatch(exportRouteSource, /demo/);
