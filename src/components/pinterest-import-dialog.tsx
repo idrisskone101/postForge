@@ -6,6 +6,11 @@ import { Images } from "lucide-react";
 import { PinterestImportFooter } from "@/components/pinterest-import-footer";
 import { PinterestImportResults } from "@/components/pinterest-import-results";
 import { PinterestImportSearch } from "@/components/pinterest-import-search";
+import type {
+  PinterestImportAction,
+  PinterestImportWorkflow,
+  PinterestImportWorkspace,
+} from "@/components/pinterest-import-workspace";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +25,7 @@ import {
   type PinterestCandidate,
   type PinterestImportResult,
 } from "@/lib/collections-client";
+import type { PinterestCandidateSource } from "@/lib/collections/pinterest-types";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 
 function isPinterestBoardUrl(value: string) {
@@ -36,7 +42,7 @@ function isPinterestBoardUrl(value: string) {
   }
 }
 
-function defaultCollectionName(source: "search" | "board", value: string) {
+function defaultCollectionName(source: PinterestCandidateSource, value: string) {
   let subject = value.trim();
   if (source === "board") {
     try {
@@ -66,14 +72,14 @@ export function PinterestImportDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImported?: (result: PinterestImportResult) => void;
-  workflow?: "collection" | "slideshow";
+  workflow?: PinterestImportWorkflow;
   onUseDirect?: (result: PinterestImportResult) => void | Promise<void>;
   onCreateVibe?: (
     result: PinterestImportResult,
     idempotencyKey: string,
   ) => void | Promise<void>;
 }) {
-  const [source, setSource] = useState<"search" | "board">("search");
+  const [source, setSource] = useState<PinterestCandidateSource>("search");
   const [query, setQuery] = useState("faceless wellness aesthetic");
   const [collectionName, setCollectionName] = useState(() =>
     defaultCollectionName("search", "faceless wellness aesthetic"),
@@ -86,9 +92,9 @@ export function PinterestImportDialog({
   const [loadingMore, setLoadingMore] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const [pendingAction, setPendingAction] = useState<
-    "import" | "direct" | "vibe" | null
-  >(null);
+  const [pendingAction, setPendingAction] = useState<PinterestImportAction | null>(
+    null,
+  );
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const importedSelection = useRef<{
@@ -125,7 +131,7 @@ export function PinterestImportDialog({
     resetResults();
   };
 
-  const changeSource = (nextSource: "search" | "board") => {
+  const changeSource = (nextSource: PinterestCandidateSource) => {
     setSource(nextSource);
     const nextQuery = nextSource === "search" ? "faceless wellness aesthetic" : "";
     setQuery(nextQuery);
@@ -231,7 +237,12 @@ export function PinterestImportDialog({
     setSelected((current) => current.filter((selectedId) => selectedId !== id));
   };
 
-  const runImport = async (action: "import" | "direct" | "vibe") => {
+  const updateCollectionName = (value: string) => {
+    setCollectionName(value);
+    setCollectionNameEdited(true);
+  };
+
+  const runImport = async (action: PinterestImportAction) => {
     const urls = pinterestImageUrlsInSelectionOrder(candidates, selected);
     if (!urls.length || pendingAction) return;
     setPendingAction(action);
@@ -273,6 +284,32 @@ export function PinterestImportDialog({
   };
 
   const importing = pendingAction !== null;
+  const workspace: PinterestImportWorkspace = {
+    source,
+    query,
+    sourceIsValid,
+    workflow,
+    collectionName,
+    candidates,
+    selected,
+    failedImages,
+    searching,
+    loadingMore,
+    importing,
+    hasSearched,
+    hasMore,
+    error,
+    pendingAction,
+    changeSource,
+    updateQuery,
+    runSearch: () => void runSearch(),
+    loadMore: () => void loadMore(),
+    toggleSelected,
+    markCandidateImageFailed,
+    updateCollectionName,
+    setSelected,
+    runImport: (action) => void runImport(action),
+  };
 
   return (
     <Dialog
@@ -296,51 +333,9 @@ export function PinterestImportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <PinterestImportSearch
-          source={source}
-          query={query}
-          sourceIsValid={sourceIsValid}
-          searching={searching}
-          loadingMore={loadingMore}
-          importing={importing}
-          hasCandidates={candidates.length > 0}
-          onChangeSource={changeSource}
-          onQueryChange={updateQuery}
-          onSearch={() => void runSearch()}
-        />
-
-        <PinterestImportResults
-          source={source}
-          query={query}
-          candidates={candidates}
-          selected={selected}
-          failedImages={failedImages}
-          searching={searching}
-          loadingMore={loadingMore}
-          importing={importing}
-          hasSearched={hasSearched}
-          hasMore={hasMore}
-          error={error}
-          onToggleSelected={toggleSelected}
-          onCandidateImageError={markCandidateImageFailed}
-          onLoadMore={() => void loadMore()}
-        />
-
-        <PinterestImportFooter
-          workflow={workflow}
-          collectionName={collectionName}
-          candidates={candidates}
-          selected={selected}
-          failedImages={failedImages}
-          pendingAction={pendingAction}
-          importing={importing}
-          onCollectionNameChange={(value) => {
-            setCollectionName(value);
-            setCollectionNameEdited(true);
-          }}
-          onSelectedChange={setSelected}
-          onImport={(action) => void runImport(action)}
-        />
+        <PinterestImportSearch workspace={workspace} />
+        <PinterestImportResults workspace={workspace} />
+        <PinterestImportFooter workspace={workspace} />
       </DialogContent>
     </Dialog>
   );
