@@ -1,6 +1,4 @@
 "use client";
-
-import type { Ref } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,31 +14,25 @@ import { MAX_SLIDESHOW_SLIDES } from "./model";
 import { SlidePreview, VisualTile } from "./slide-preview";
 import { slideCoverImage } from "./slideshow-view";
 import { ICON_BTN } from "./studio-ui";
-import type { SlideshowProject, SlideshowSlide } from "./types";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 export function EditorPreview({
-  draft,
-  previewIndices,
-  activeIndex,
-  regeneratingImage,
-  activeThumbRef,
-  selectSlide,
-  addSlide,
-  moveSlide,
-  duplicateSlide,
-  deleteSlide,
+  workspace,
 }: {
-  draft: SlideshowProject;
-  previewIndices: number[];
-  activeIndex: number;
-  regeneratingImage: boolean;
-  activeThumbRef: Ref<HTMLButtonElement>;
-  selectSlide: (slide: SlideshowSlide) => void;
-  addSlide: () => void;
-  moveSlide: (direction: -1 | 1) => void;
-  duplicateSlide: () => void;
-  deleteSlide: () => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    draft,
+    previewIndices,
+    activeIndex,
+    regeneratingImage,
+    activeThumbRef,
+    selectSlide,
+    addSlide,
+    moveSlide,
+    duplicateSlide,
+    deleteSlide,
+  } = workspace;
   return (
         <section aria-label="Slideshow preview" className="flex min-w-0 flex-col">
           <div
