@@ -58,6 +58,12 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 - Lint currently passes with warnings only (no errors); do not treat those pre-existing warnings as regressions.
 - The tests are `tsx`-run assertion scripts (not a watch framework); most run without external services, and DB-dependent ones use the running local Postgres.
 
+### pstack models
+
+- The workspace file `.cursor/rules/pstack-models.mdc` is the source of truth. Every pstack role is `inherit-parent` (omit Task `model` so delegates stay on this chat's model).
+- Cloud agents inject that workspace rule. pstack skills still read `~/.cursor/rules/pstack-models.mdc`. If that home copy is missing, run `bash scripts/install-pstack-models.sh` (also run from `pnpm codex:setup` and the `sessionStart` hook) before spawning pstack delegates.
+- If a skill looks only at the home path and the file is still missing, treat `.cursor/rules/pstack-models.mdc` as that file.
+
 ### External integrations
 
 - fal.ai, Ollama, TikTok/Instagram/YouTube, and Railway/S3 storage all require secrets that are absent by default. Core dashboard workflows (characters, collections, slideshow drafts, automation drafts, DB-backed persistence) work without them; only actual media generation and provider publishing/sync need those keys. Missing credentials must stay visibly unavailable — never substitute demo data.
