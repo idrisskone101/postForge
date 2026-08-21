@@ -1,4 +1,3 @@
-import { type ReactNode } from "react";
 import { ArrowLeft, Check, Loader2, PenLine, Sparkles } from "lucide-react";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,61 +6,50 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import type { TikTokVideoInfo } from "@/components/tiktok-input";
-import type { RefImageEntry } from "@/components/clone/types";
+import { CloneProductionStatePanel } from "@/components/clone/production-state";
+import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
 
 export function CloneReferenceReview({
-  modelName,
-  videoInfo,
-  sourcePreviewSrc,
-  durationSec,
-  refImages,
-  selectedRef,
-  selectedRefIndex,
-  selectedRefFileId,
-  refPrompt,
-  totalRefCost,
-  referenceBatchCost,
-  videoCost,
-  textErasureCost,
-  isSubmitting,
-  isGenerating,
-  hasAnyCompleted,
-  submitError,
-  promptUsed,
-  productionStatePanel,
-  onBack,
-  onSelectVariant,
-  onRefPromptChange,
-  onRegenerate,
-  onApprove,
+  workspace,
 }: {
-  modelName: string;
-  videoInfo: TikTokVideoInfo | null;
-  sourcePreviewSrc: string | null;
-  durationSec: number;
-  refImages: RefImageEntry[];
-  selectedRef: RefImageEntry | null;
-  selectedRefIndex: number;
-  selectedRefFileId: string | null;
-  refPrompt: string;
-  totalRefCost: number;
-  referenceBatchCost: number;
-  videoCost: number;
-  textErasureCost: number;
-  isSubmitting: boolean;
-  isGenerating: boolean;
-  hasAnyCompleted: boolean;
-  submitError: string | null;
-  promptUsed: ReactNode;
-  productionStatePanel: ReactNode;
-  onBack: () => void;
-  onSelectVariant: (index: number) => void;
-  onRefPromptChange: (value: string) => void;
-  onRegenerate: () => void;
-  onApprove: () => void;
+  workspace: CloneReferenceWorkspace;
 }) {
+  const {
+    modelName,
+    videoInfo,
+    sourcePreviewSrc,
+    durationSec,
+    refImages,
+    selectedRef,
+    selectedRefIndex,
+    selectedRefFileId,
+    refPrompt,
+    totalRefCost,
+    referenceBatchCost,
+    videoCost,
+    textErasureCost,
+    isSubmitting,
+    isGenerating,
+    hasAnyCompleted,
+    submitError,
+    onBack,
+    onSelectVariant,
+    onRefPromptChange,
+    onRegenerate,
+    onApprove,
+  } = workspace;
   const completedCount = refImages.filter((r) => r.status === "completed").length;
+  const promptUsed =
+    selectedRef && selectedRef.prompt ? (
+      <div className="rounded-lg border border-border bg-muted/50 p-4">
+        <p className="mb-1 text-[12px] uppercase tracking-widest text-muted-foreground">
+          Prompt used for #{selectedRefIndex + 1}
+        </p>
+        <p className="min-w-0 break-words text-xs italic leading-relaxed text-foreground/80 [overflow-wrap:anywhere] line-clamp-3">
+          {selectedRef.prompt || "(no additional prompt)"}
+        </p>
+      </div>
+    ) : null;
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -288,7 +276,7 @@ export function CloneReferenceReview({
         </CardContent>
       </Card>
 
-      {productionStatePanel}
+      <CloneProductionStatePanel production={workspace} />
     </div>
   );
 }

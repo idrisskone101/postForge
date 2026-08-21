@@ -1,27 +1,19 @@
 import { AlertCircle, Check, Loader2, Users, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { OutputReviewStatus } from "@/lib/output-review-status";
-import type {
-  CloneOutputActionFeedback,
-  CloneOutputReviewOutput,
-} from "@/components/clone-output/types";
+import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
 export function CloneOutputReviewActions({
-  featured,
-  pendingReviewStatus,
-  actionFeedback,
-  onReviewStatusChange,
-  onNewClone,
+  review,
 }: {
-  featured: CloneOutputReviewOutput | undefined;
-  pendingReviewStatus: OutputReviewStatus | null;
-  actionFeedback: CloneOutputActionFeedback | null;
-  onReviewStatusChange?: (
-    output: CloneOutputReviewOutput,
-    status: OutputReviewStatus
-  ) => void;
-  onNewClone: () => void;
+  review: CloneOutputReviewView;
 }) {
+  const {
+    featured,
+    pendingReviewStatus = null,
+    actionFeedback = null,
+    onReviewStatusChange,
+    onNewClone,
+  } = review;
   return (
     <>
       {actionFeedback && (

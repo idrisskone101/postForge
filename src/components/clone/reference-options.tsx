@@ -4,33 +4,26 @@ import { formatCost } from "@/lib/utils/format-cost";
 import {
   formatIdentityRole,
   REFERENCE_BATCH_OPTIONS,
-  type ReferenceBatchSize,
 } from "@/components/clone/constants";
-import type { AvatarIdentityPack } from "@/components/clone/types";
+import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
 
 export function CloneReferenceOptions({
-  hairstyleOptions,
-  selectedHairstyleRole,
-  referenceBatchSize,
-  referenceBatchCost,
-  isSubmitting,
-  isGenerating,
-  referenceReady,
-  submitError,
-  onSelectHairstyleRole,
-  onSelectBatchSize,
+  workspace,
 }: {
-  hairstyleOptions: AvatarIdentityPack["images"];
-  selectedHairstyleRole: string | null;
-  referenceBatchSize: ReferenceBatchSize;
-  referenceBatchCost: number;
-  isSubmitting: boolean;
-  isGenerating: boolean;
-  referenceReady: boolean;
-  submitError: string | null;
-  onSelectHairstyleRole: (role: string | null) => void;
-  onSelectBatchSize: (count: ReferenceBatchSize) => void;
+  workspace: CloneReferenceWorkspace;
 }) {
+  const {
+    hairstyleOptions,
+    selectedHairstyleRole,
+    referenceBatchSize,
+    referenceBatchCost,
+    isSubmitting,
+    isGenerating,
+    referenceReady,
+    submitError,
+    onSelectHairstyleRole,
+    onSelectBatchSize,
+  } = workspace;
   return (
     <div className="flex min-w-0 flex-col gap-3 self-start rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
       <div className="mb-1">
