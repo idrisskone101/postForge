@@ -9,58 +9,46 @@ import {
 } from "lucide-react";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
 import { Switch } from "@/components/ui/switch";
+import type {
+  GenerateCollectionActions,
+  GenerateCollectionModel,
+} from "./form-types";
 
 export function GenerateCollectionSection({
-  avatarId,
-  collectionAssetIds,
-  maxSelection,
-  disabled,
-  vibeMode,
-  vibeExtracting,
-  vibeExtractError,
-  vibeStale,
-  vibeEditorActive,
-  vibeJsonText,
-  vibeJsonError,
-  vibeTemplate,
-  foldEnabled,
-  vibeFolding,
-  vibeFoldError,
-  foldStale,
-  foldedPromptValue,
-  prompt,
-  onClear,
-  onCollectionChange,
-  onExtractVibe,
-  onVibeJsonChange,
-  onFoldEnabledChange,
-  onFoldIntoVibe,
+  view,
+  actions,
 }: {
-  avatarId: string | null;
-  collectionAssetIds: string[];
-  maxSelection: number;
-  disabled: boolean;
-  vibeMode: boolean;
-  vibeExtracting: boolean;
-  vibeExtractError: string | null;
-  vibeStale: boolean;
-  vibeEditorActive: boolean;
-  vibeJsonText: string;
-  vibeJsonError: string | null;
-  vibeTemplate: unknown;
-  foldEnabled: boolean;
-  vibeFolding: boolean;
-  vibeFoldError: string | null;
-  foldStale: boolean;
-  foldedPromptValue: string | null;
-  prompt: string;
-  onClear: () => void;
-  onCollectionChange: (assetIds: string[]) => void;
-  onExtractVibe: () => void;
-  onVibeJsonChange: (text: string) => void;
-  onFoldEnabledChange: (enabled: boolean) => void;
-  onFoldIntoVibe: () => void;
+  view: GenerateCollectionModel;
+  actions: GenerateCollectionActions;
 }) {
+  const {
+    avatarId,
+    collectionAssetIds,
+    maxSelection,
+    disabled,
+    vibeMode,
+    vibeExtracting,
+    vibeExtractError,
+    vibeStale,
+    vibeEditorActive,
+    vibeJsonText,
+    vibeJsonError,
+    vibeTemplate,
+    foldEnabled,
+    vibeFolding,
+    vibeFoldError,
+    foldStale,
+    foldedPromptValue,
+    prompt,
+  } = view;
+  const {
+    onClear,
+    onCollectionChange,
+    onExtractVibe,
+    onVibeJsonChange,
+    onFoldEnabledChange,
+    onFoldIntoVibe,
+  } = actions;
   return (
     <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
       <div className="mb-3 flex items-start justify-between gap-3">

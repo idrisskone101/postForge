@@ -4,32 +4,53 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { GenerateFormView } from "../../src/components/generation-form";
 import { VideoReferencePicker } from "../../src/components/video-reference-picker";
 import { getAllModels } from "../../src/lib/ai/models";
+import type {
+  GenerateFormActions,
+  GenerateFormModel,
+} from "../../src/app/generate/form-types";
 
 const models = getAllModels();
 const selectedModel = models.find((model) => model.type === "image") ?? models[0];
 
+const idleActions: GenerateFormActions = {
+  onModelSelect: () => {},
+  onPromptChange: () => {},
+  onAspectRatioChange: () => {},
+  onNumImagesChange: () => {},
+  onDurationChange: () => {},
+  onNegativePromptChange: () => {},
+  onEnableWebSearchChange: () => {},
+  onEnableAudioChange: () => {},
+  onAdvancedOpenChange: () => {},
+  onSubmit: () => {},
+  onAppendToPrompt: () => {},
+};
+
+function formFields(
+  overrides: Partial<GenerateFormModel> &
+    Pick<GenerateFormModel, "selectedModel" | "prompt">
+): GenerateFormModel {
+  return {
+    models,
+    aspectRatio: "9:16",
+    numImages: 1,
+    negativePrompt: "",
+    enableWebSearch: false,
+    enableAudio: false,
+    isSubmitting: false,
+    advancedOpen: false,
+    ...overrides,
+  };
+}
+
 const markup = renderToStaticMarkup(
   <GenerateFormView
-    models={models}
-    selectedModel={selectedModel.id}
-    prompt="Portrait product demo on a kitchen counter"
-    aspectRatio="9:16"
-    numImages={2}
-    negativePrompt=""
-    enableWebSearch={false}
-    enableAudio={false}
-    isSubmitting={false}
-    advancedOpen={false}
-    onModelSelect={() => {}}
-    onPromptChange={() => {}}
-    onAspectRatioChange={() => {}}
-    onNumImagesChange={() => {}}
-    onNegativePromptChange={() => {}}
-    onEnableWebSearchChange={() => {}}
-    onEnableAudioChange={() => {}}
-    onAdvancedOpenChange={() => {}}
-    onSubmit={() => {}}
-    onAppendToPrompt={() => {}}
+    form={formFields({
+      selectedModel: selectedModel.id,
+      prompt: "Portrait product demo on a kitchen counter",
+      numImages: 2,
+    })}
+    actions={idleActions}
   />
 );
 
@@ -56,29 +77,13 @@ const continuitySection = (
 );
 const videoMarkup = renderToStaticMarkup(
   <GenerateFormView
-    models={models}
-    selectedModel={videoModel.id}
-    prompt="Month six progress check"
-    aspectRatio="9:16"
-    numImages={1}
-    duration={5}
-    negativePrompt=""
-    enableWebSearch={false}
-    enableAudio={false}
-    isSubmitting={false}
-    advancedOpen={false}
-    onModelSelect={() => {}}
-    onPromptChange={() => {}}
-    onAspectRatioChange={() => {}}
-    onNumImagesChange={() => {}}
-    onDurationChange={() => {}}
-    onNegativePromptChange={() => {}}
-    onEnableWebSearchChange={() => {}}
-    onEnableAudioChange={() => {}}
-    onAdvancedOpenChange={() => {}}
-    onSubmit={() => {}}
-    onAppendToPrompt={() => {}}
-    continuitySection={continuitySection}
+    form={formFields({
+      selectedModel: videoModel.id,
+      prompt: "Month six progress check",
+      duration: 5,
+      continuitySection,
+    })}
+    actions={idleActions}
   />
 );
 

@@ -9,31 +9,22 @@ import {
   Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { JobStatusBadge } from "./job-status-badge";
-import { getEditorTitle } from "./job-enhancements";
+import {
+  getEditorTitle,
+  type JobDetailActions,
+  type JobDetailViewModel,
+} from "./job-enhancements";
 
 export function JobDetailHeader({
-  job,
-  featured,
-  isCompleted,
-  isDownloading,
-  error,
-  onBack,
-  onShare,
-  onGallery,
-  onDownload,
+  view,
+  actions,
 }: {
-  job: JobDetail;
-  featured: JobOutput | undefined;
-  isCompleted: boolean;
-  isDownloading: boolean;
-  error: Error | null;
-  onBack: () => void;
-  onShare: () => void;
-  onGallery: () => void;
-  onDownload: () => void;
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
 }) {
+  const { job, featured, isCompleted, isDownloading, error } = view;
+  const { onBack, onShare, onGallery, onDownload } = actions;
   return (
     <header className="border-b border-border bg-[var(--pf-canvas)] px-4 py-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">

@@ -21,6 +21,7 @@ import {
   type JobOutput,
 } from "@/lib/generation-editor";
 import { cn } from "@/lib/utils";
+import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
 
 export function JobPreviewToolbar({
   previewZoom,
@@ -98,28 +99,23 @@ export function JobPreviewToolbar({
 }
 
 export function JobPreviewBody({
-  job,
-  featured,
-  isActive,
-  isFailed,
-  isCompleted,
-  isRetrying,
-  cropMode,
-  previewZoom,
-  onRetry,
-  onGenerateSimilar,
+  view,
+  actions,
 }: {
-  job: JobDetail;
-  featured: JobOutput | undefined;
-  isActive: boolean;
-  isFailed: boolean;
-  isCompleted: boolean;
-  isRetrying: boolean;
-  cropMode: boolean;
-  previewZoom: number;
-  onRetry: () => void;
-  onGenerateSimilar: () => void;
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
 }) {
+  const {
+    job,
+    featured,
+    isActive,
+    isFailed,
+    isCompleted,
+    isRetrying,
+    cropMode,
+    previewZoom,
+  } = view;
+  const { onRetry, onGenerateSimilar } = actions;
   const statusCopy = getGenerationStatusCopy(job.status, job.queueStage);
 
   return (
