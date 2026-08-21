@@ -13,20 +13,19 @@ import {
   slideKindFromUnknown,
   slideshowProjectWriteBody,
 } from "@/lib/slideshow/project";
+import {
+  fetchAllSlideshowPages,
+  SlideshowApiError,
+} from "@/lib/slideshow/client";
+
+export {
+  SlideshowApiError,
+  fetchAllSlideshowProjectPages,
+  fetchSlideshowProjectPage,
+  fetchSlideshowProjects,
+} from "@/lib/slideshow/client";
 
 type JsonRecord = Record<string, unknown>;
-
-export class SlideshowApiError extends Error {
-  status: number;
-  code?: string;
-
-  constructor(message: string, status: number, code?: string) {
-    super(message);
-    this.name = "SlideshowApiError";
-    this.status = status;
-    this.code = code;
-  }
-}
 
 function isRecord(value: unknown): value is JsonRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -91,61 +90,6 @@ async function readJsonResponse(response: Response) {
 function unwrapProject(data: unknown) {
   if (isRecord(data) && isRecord(data.project)) return data.project;
   return data;
-}
-
-const SLIDESHOW_PAGE_LIMIT = 100;
-
-function paginatedUrl(endpoint: string, offset: number) {
-  const separator = endpoint.includes("?") ? "&" : "?";
-  return `${endpoint}${separator}limit=${SLIDESHOW_PAGE_LIMIT}&offset=${offset}`;
-}
-
-async function fetchAllSlideshowPages(
-  endpoint: string,
-  collectionKey: "projects" | "automations",
-) {
-  const items: unknown[] = [];
-  let total: number | null = null;
-
-  for (let offset = 0; total === null || offset < total; offset += SLIDESHOW_PAGE_LIMIT) {
-    const response = await fetch(paginatedUrl(endpoint, offset), {
-      cache: "no-store",
-    });
-    const data = await readJsonResponse(response);
-    const page =
-      isRecord(data) && Array.isArray(data[collectionKey])
-        ? data[collectionKey]
-        : [];
-
-    if (total === null) {
-      const reportedTotal = isRecord(data) ? data.total : undefined;
-      if (
-        typeof reportedTotal !== "number" ||
-        !Number.isSafeInteger(reportedTotal) ||
-        reportedTotal < 0
-      ) {
-        throw new SlideshowApiError(
-          "Invalid slideshow pagination response",
-          502,
-          "INVALID_PAGINATION",
-        );
-      }
-      total = reportedTotal;
-    }
-
-    items.push(...page);
-
-    // A trusted endpoint should return every requested page until `total` is
-    // reached. Stop safely if records were concurrently removed between pages.
-    if (page.length === 0) break;
-  }
-
-  return items;
-}
-
-export async function fetchSlideshowProjects(apiBaseUrl = "/api/slideshows") {
-  const rawProjects = await fetchAllSlideshowPages(apiBaseUrl, "projects");
-  return rawProjects.map(deserializeSlideshowProject);
 }
 
 export async function fetchSlideshowProject(

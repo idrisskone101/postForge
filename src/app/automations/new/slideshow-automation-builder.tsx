@@ -15,13 +15,13 @@ import {
 
 import {
   createSlideshowAutomation,
+  fetchAllSlideshowProjectPages,
   fetchSlideshowAutomations,
-  fetchSlideshowProjects,
   updateSlideshowAutomation,
 } from "@/components/slideshow/api";
 import type {
   SlideshowAutomation,
-  SlideshowProject,
+  SlideshowProjectListItem,
 } from "@/components/slideshow/types";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -43,7 +43,7 @@ export function SlideshowAutomationBuilder() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [existing, setExisting] = useState<SlideshowAutomation | null>(null);
-  const [projects, setProjects] = useState<SlideshowProject[]>([]);
+  const [projects, setProjects] = useState<SlideshowProjectListItem[]>([]);
   const [collections, setCollections] = useState<PlatformCollectionSummary[]>([]);
 
   const [name, setName] = useState("Fresh slideshow ideas");
@@ -62,7 +62,7 @@ export function SlideshowAutomationBuilder() {
   useEffect(() => {
     let cancelled = false;
     void Promise.allSettled([
-      fetchSlideshowProjects(),
+      fetchAllSlideshowProjectPages(),
       fetchSlideshowAutomations(),
       fetchPlatformCollections(),
     ]).then(([projectsResult, automationsResult, collectionsResult]) => {

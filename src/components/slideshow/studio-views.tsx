@@ -38,10 +38,11 @@ import {
 import { cn } from "@/lib/utils";
 
 import { alignCreatorDirectImages } from "./model";
-import { SlidePreview, VisualTile } from "./slide-preview";
+import { VisualTile } from "./slide-preview";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import type {
   SlideshowProject,
+  SlideshowProjectListItem,
   SlideshowSection,
   SlideshowTemplate,
 } from "./types";
@@ -114,39 +115,6 @@ export function StudioSectionNav({
         ))}
       </div>
     </nav>
-  );
-}
-
-function SlideMini({
-  slide,
-  aspectRatio,
-  phaseSettings,
-  textSettings,
-  label,
-  fallbackText,
-}: {
-  slide: SlideshowProject["slides"][number];
-  aspectRatio: SlideshowProject["aspectRatio"];
-  phaseSettings: SlideshowProject["phaseSettings"][keyof SlideshowProject["phaseSettings"]];
-  textSettings: SlideshowProject["textSettings"];
-  label?: string;
-  fallbackText: string;
-}) {
-  return (
-    <div className="relative">
-      <SlidePreview
-        slide={{ ...slide, headline: slide.headline || fallbackText }}
-        aspectRatio={aspectRatio}
-        phaseSettings={phaseSettings}
-        textSettings={textSettings}
-        className="w-full rounded-lg"
-      />
-      {label ? (
-        <span className="absolute left-1 top-1 z-10 rounded-full bg-black/45 px-1.5 py-px text-[8px] font-semibold uppercase tracking-[0.08em] text-white/90">
-          {label}
-        </span>
-      ) : null}
-    </div>
   );
 }
 
@@ -1410,10 +1378,10 @@ export function DraftsView({
   onOpen,
   onCreate,
 }: {
-  projects: SlideshowProject[];
+  projects: SlideshowProjectListItem[];
   loading: boolean;
   error: string | null;
-  onOpen: (project: SlideshowProject) => void;
+  onOpen: (project: SlideshowProjectListItem) => void;
   onCreate: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -1512,17 +1480,40 @@ export function DraftsView({
                 aria-label={`Open ${project.title}`}
               >
                 <div className="grid grid-cols-3 gap-1 p-3 pb-0">
-                  {project.slides.slice(0, 3).map((slide, index) => (
-                    <SlideMini
-                      key={slide.id}
-                      slide={slide}
-                      aspectRatio={project.aspectRatio}
-                      phaseSettings={project.phaseSettings[slide.kind]}
-                      textSettings={project.textSettings}
-                      label={index === 0 ? `${project.slides.length} slides` : undefined}
-                      fallbackText="Untitled slide"
-                    />
-                  ))}
+                  {[0, 1, 2].map((index) => {
+                    const imageUrl = project.previewImageUrls[index];
+                    const aspectClass =
+                      project.aspectRatio === "1:1"
+                        ? "aspect-square"
+                        : project.aspectRatio === "16:9"
+                          ? "aspect-video"
+                          : project.aspectRatio === "4:5"
+                            ? "aspect-[4/5]"
+                            : "aspect-[9/16]";
+                    return (
+                      <div key={index} className="relative">
+                        <div
+                          className={cn(
+                            "overflow-hidden rounded-lg bg-[var(--pf-active)]",
+                            aspectClass,
+                          )}
+                        >
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt=""
+                              className="size-full object-cover"
+                            />
+                          ) : null}
+                        </div>
+                        {index === 0 ? (
+                          <span className="absolute left-1 top-1 z-10 rounded-full bg-black/45 px-1.5 py-px text-[8px] font-semibold uppercase tracking-[0.08em] text-white/90">
+                            {project.slideCount} slides
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </button>
               <div className="p-4">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, LoaderCircle, Plus } from "lucide-react";
 
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
@@ -9,7 +9,7 @@ import {
   fetchPlatformCollections,
   platformCollectionAssetUrl,
 } from "@/lib/collections-client";
-import { fetchModelsCatalog } from "@/lib/ai/models-client";
+import { slideshowProjectListItemFromDetail } from "@/lib/slideshow/client";
 
 import {
   downloadSlideshowExport,
@@ -41,26 +41,27 @@ import type {
   SlideshowCollection,
   SlideshowImageGenerationResult,
   SlideshowProject,
+  SlideshowProjectListItem,
   SlideshowPublishOptions,
   SlideshowSlide,
   SlideshowStudioProps,
   SlideshowTemplate,
 } from "./types";
+import { isLocalSlideshowId } from "./types";
 
-function upsertById<T extends { id: string }>(items: T[], item: T) {
-  const candidateWithClient = item as T & { clientId?: string };
-  const index = items.findIndex(
-    (candidate) => {
-      const current = candidate as T & { clientId?: string };
-      return (
-        current.id === item.id ||
-        (candidateWithClient.clientId !== undefined &&
-          (current.id === candidateWithClient.clientId ||
-            current.clientId === candidateWithClient.clientId)) ||
-        (current.clientId !== undefined && current.clientId === item.id)
-      );
-    },
-  );
+function upsertById<T extends { id: string; clientId?: string }>(
+  items: T[],
+  item: T,
+) {
+  const index = items.findIndex((candidate) => {
+    return (
+      candidate.id === item.id ||
+      (item.clientId !== undefined &&
+        (candidate.id === item.clientId ||
+          candidate.clientId === item.clientId)) ||
+      (candidate.clientId !== undefined && candidate.clientId === item.id)
+    );
+  });
   if (index < 0) return [item, ...items];
   const next = [...items];
   next[index] = item;
@@ -83,7 +84,9 @@ export function SlideshowStudio({
   initialViewMode = "edit",
 }: SlideshowStudioProps) {
   const [section, setSection] = useState(initialSection);
-  const [projects, setProjects] = useState(initialProjects ?? []);
+  const [projects, setProjects] = useState<SlideshowProjectListItem[]>(
+    initialProjects ?? [],
+  );
   const [collections, setCollections] = useState<SlideshowCollection[]>([]);
   const [activeProject, setActiveProject] = useState(initialProject);
   const [editorSession, setEditorSession] = useState(0);
@@ -95,6 +98,7 @@ export function SlideshowStudio({
   );
   const [projectsError, setProjectsError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const draftDetails = useRef(new Map<string, SlideshowProject>());
   const [imageModels, setImageModels] = useState<
     Array<{ id: string; name: string }>
   >([]);
@@ -195,11 +199,50 @@ export function SlideshowStudio({
     window.setTimeout(() => setToast(null), 3200);
   }, []);
 
-  const openEditor = useCallback((project: SlideshowProject) => {
-    setProjects((current) => upsertById(current, project));
-    setActiveProject(project);
-    setEditorSession((current) => current + 1);
+  const rememberDraft = useCallback((project: SlideshowProject) => {
+    draftDetails.current.set(project.id, project);
+    if (project.clientId) draftDetails.current.set(project.clientId, project);
   }, []);
+
+  const upsertDraft = useCallback(
+    (project: SlideshowProject) => {
+      rememberDraft(project);
+      setProjects((current) =>
+        upsertById(current, slideshowProjectListItemFromDetail(project)),
+      );
+    },
+    [rememberDraft],
+  );
+
+  const openEditor = useCallback(
+    (project: SlideshowProject) => {
+      upsertDraft(project);
+      setActiveProject(project);
+      setEditorSession((current) => current + 1);
+    },
+    [upsertDraft],
+  );
+
+  const openDraft = useCallback(
+    async (item: SlideshowProjectListItem) => {
+      const cached = draftDetails.current.get(item.id);
+      if (cached && isLocalSlideshowId(item.id)) {
+        openEditor(cached);
+        return;
+      }
+      try {
+        const detail = await fetchSlideshowProject(item.id, apiBaseUrl);
+        openEditor(detail);
+      } catch (error) {
+        setProjectsError(
+          error instanceof Error
+            ? error.message
+            : "Could not open slideshow draft.",
+        );
+      }
+    },
+    [apiBaseUrl, openEditor],
+  );
 
   const startCustom = useCallback(() => {
     setTemplateOpen(false);
@@ -316,7 +359,8 @@ export function SlideshowStudio({
             updatedAt: new Date().toISOString(),
           } as NonNullable<SlideshowProject["creator"]>,
         };
-        setProjects((current) => upsertById(current, generating));
+        rememberDraft(generating);
+        setProjects((current) => upsertById(current, slideshowProjectListItemFromDetail(generating)));
 
         // 3. Show a loading screen while the visuals are generated, so the
         // operator isn't dropped into an empty editor before their images
@@ -342,8 +386,6 @@ export function SlideshowStudio({
           const refreshed = await fetchSlideshowProject(saved.id, apiBaseUrl).catch(
             () => generating,
           );
-          setActiveProject(refreshed);
-          setProjects((current) => upsertById(current, refreshed));
           openEditor(refreshed);
 
           if (failed.length > 0) {
@@ -366,13 +408,13 @@ export function SlideshowStudio({
         setCreatorProgress(null);
       }
     },
-    [apiBaseUrl, openEditor, showToast],
+    [apiBaseUrl, openEditor, rememberDraft, showToast],
   );
 
   const handleProjectChange = useCallback((project: SlideshowProject) => {
     setActiveProject(project);
-    setProjects((current) => upsertById(current, project));
-  }, []);
+    upsertDraft(project);
+  }, [upsertDraft]);
 
   const handleSaveProject = useCallback(
     async (project: SlideshowProject) => {
@@ -388,13 +430,14 @@ export function SlideshowStudio({
       setProjects((current) =>
         upsertById(
           current.filter((candidate) => candidate.id !== project.id),
-          resolved,
+          slideshowProjectListItemFromDetail(resolved),
         ),
       );
+      rememberDraft(resolved);
       setActiveProject(resolved);
       return resolved;
     },
-    [apiBaseUrl, onSaveProject],
+    [apiBaseUrl, onSaveProject, rememberDraft],
   );
 
   const handleRegenerateSlide = useCallback(
@@ -437,21 +480,29 @@ export function SlideshowStudio({
           options.caption,
         );
         if (receipt) {
-          const withReceipt = (candidate: SlideshowProject) =>
-            candidate.id === project.id
+          setProjects((current) =>
+            current.map((candidate) =>
+              candidate.id === project.id
+                ? {
+                    ...candidate,
+                    successfulExportCount: receipt.successfulExportCount,
+                    lastExportedAt: receipt.exportedAt,
+                  }
+                : candidate,
+            ),
+          );
+          setActiveProject((current) =>
+            current && current.id === project.id
               ? {
-                  ...candidate,
+                  ...current,
                   successfulExportCount: receipt.successfulExportCount,
                   lastExportedAt: receipt.exportedAt,
                   exportHistory: [
-                    ...(candidate.exportHistory ?? []),
+                    ...(current.exportHistory ?? []),
                     receipt.exportedAt,
                   ].slice(-500),
                 }
-              : candidate;
-          setProjects((current) => current.map(withReceipt));
-          setActiveProject((current) =>
-            current ? withReceipt(current) : current,
+              : current,
           );
         }
       } else {
@@ -525,7 +576,7 @@ export function SlideshowStudio({
                 projects={projects}
                 loading={loadingProjects}
                 error={projectsError}
-                onOpen={openEditor}
+                onOpen={openDraft}
                 onCreate={() => setTemplateOpen(true)}
               />
             ) : null}
