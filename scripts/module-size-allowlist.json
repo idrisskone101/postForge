@@ -37,7 +37,6 @@
   "src/lib/slideshow/project.ts": 631,
   "src/lib/slideshow/service.ts": 1434,
   "src/lib/slideshow/text-overlay-satori.tsx": 409,
-  "src/lib/storage.ts": 672,
   "src/lib/ugc/avatar-identity-pack.ts": 674,
   "src/lib/ugc/generate-clone.ts": 626
 }
