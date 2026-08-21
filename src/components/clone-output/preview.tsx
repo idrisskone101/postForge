@@ -67,8 +67,8 @@ export function CloneOutputReviewPreview({
             <MediaPreviewFrame
               type={featured.type === "image" ? "image" : "video"}
               src={`/api/files/${featured.id}`}
-              width={previewWidth}
-              height={previewHeight}
+              width={previewWidth ?? undefined}
+              height={previewHeight ?? undefined}
               alt={job.prompt}
               variant="detail"
               showMetadata
