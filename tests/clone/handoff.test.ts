@@ -15,6 +15,14 @@ const cloneFormSource = readFileSync(
   new URL("../../src/components/ugc-clone-form.tsx", import.meta.url),
   "utf8"
 );
+const cloneRefImagesSource = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-ref-images.ts", import.meta.url),
+  "utf8"
+);
+const cloneRequestsSource = readFileSync(
+  new URL("../../src/app/ugc-clone/clone-requests.ts", import.meta.url),
+  "utf8"
+);
 const cloneRouteSource = readFileSync(
   new URL("../../src/app/api/ugc-clone/generate/route.ts", import.meta.url),
   "utf8"
@@ -33,12 +41,13 @@ const cloneReferenceLibrarySource = readFileSync(
 );
 
 assert.match(cloneReferenceLibrarySource, /CollectionReferencePicker/);
-assert.match(cloneFormSource, /collectionAssetId: selectedCollectionAssetId/);
+assert.match(cloneRequestsSource, /collectionAssetId: input\.target\.collectionAssetId/);
+assert.match(cloneFormSource, /kind: "collection"/);
 assert.match(cloneRouteSource, /Choose only one clone reference source/);
 assert.match(cloneServiceSource, /findCollectionAsset/);
-assert.match(cloneFormSource, /let shouldConsumeQuery = false/);
-assert.match(cloneFormSource, /\[400, 404, 410, 415, 422\]\.includes\(response\.status\)/);
-assert.match(cloneFormSource, /if \(!cancelled && shouldConsumeQuery\)/);
+assert.match(cloneRefImagesSource, /let shouldConsumeQuery = false/);
+assert.match(cloneRefImagesSource, /\[400, 404, 410, 415, 422\]\.includes\(response\.status\)/);
+assert.match(cloneRefImagesSource, /if \(!cancelled && shouldConsumeQuery\)/);
 assert.match(sourcePickerSource, /status: "missing"/);
 assert.match(sourcePickerSource, /isLoadingSources \|\| sourcesError/);
 assert.match(sourcePickerSource, /handed-off saved source is no longer available/);
