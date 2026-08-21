@@ -15,17 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { SocialIntegrationCard } from "./social-integration-card";
 
-export function IntegrationsPanel({
-  providers,
-  loading,
-  error,
-  busyProvider,
-  onRefresh,
-  onConnect,
-  onSync,
-  onDisconnect,
-  onOpenWebhooks,
-}: {
+export type IntegrationsWorkspace = {
   providers: PublicIntegrationStatus[];
   loading: boolean;
   error: string | null;
@@ -38,7 +28,24 @@ export function IntegrationsPanel({
   onSync: (status: PublicIntegrationStatus, accountId: string) => void;
   onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
   onOpenWebhooks: () => void;
+};
+
+export function IntegrationsPanel({
+  workspace,
+}: {
+  workspace: IntegrationsWorkspace;
 }) {
+  const {
+    providers,
+    loading,
+    error,
+    busyProvider,
+    onRefresh,
+    onConnect,
+    onSync,
+    onDisconnect,
+    onOpenWebhooks,
+  } = workspace;
   const connectedCount = providers.reduce(
     (sum, provider) => sum + provider.accounts.length,
     0
