@@ -35,6 +35,7 @@ const files = [
   "src/lib/ugc/generate-clone.ts",
   ...listFiles("src/components/clone/"),
   ...listFiles("src/components/clone-output/"),
+  ...listFiles("src/app/ugc-clone/"),
   "src/components/tiktok-saved-sources.tsx",
   "src/components/video-trim-range.ts",
   "src/components/video-trim-range-fields.tsx",
@@ -51,7 +52,6 @@ assert.equal(
 );
 
 for (const file of files) {
-  if (file === "src/components/ugc-clone-form.tsx") continue;
   const count = lineCount(file);
   assert.ok(
     count <= CAP,
@@ -60,8 +60,8 @@ for (const file of files) {
 }
 
 assert.ok(
-  lineCount("src/components/ugc-clone-form.tsx") < 2663,
-  "ugc-clone-form.tsx must shrink"
+  lineCount("src/components/ugc-clone-form.tsx") <= CAP,
+  "ugc-clone-form.tsx must drop under cap"
 );
 assert.ok(
   lineCount("src/components/clone-output-review-detail.tsx") <= CAP,
