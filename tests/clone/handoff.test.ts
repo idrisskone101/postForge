@@ -27,8 +27,12 @@ const sourcePickerSource = readFileSync(
   new URL("../../src/components/tiktok-input.tsx", import.meta.url),
   "utf8"
 );
+const cloneReferenceLibrarySource = readFileSync(
+  new URL("../../src/components/clone/reference-library.tsx", import.meta.url),
+  "utf8"
+);
 
-assert.match(cloneFormSource, /CollectionReferencePicker/);
+assert.match(cloneReferenceLibrarySource, /CollectionReferencePicker/);
 assert.match(cloneFormSource, /collectionAssetId: selectedCollectionAssetId/);
 assert.match(cloneRouteSource, /Choose only one clone reference source/);
 assert.match(cloneServiceSource, /findCollectionAsset/);
