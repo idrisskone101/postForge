@@ -107,7 +107,7 @@ export function GalleryListTable({
                 width={item.width}
                 height={item.height}
                 alt="Generated Output"
-                fill
+                cover
                 variant="card"
                 className="rounded-none border-0 bg-[var(--pf-active)]"
                 mediaClassName="object-cover"

@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import Image from "next/image";
 import {
   AlertCircle,
   Check,
@@ -6,6 +7,7 @@ import {
   PlayCircle,
   Users,
 } from "lucide-react";
+import { FileImage } from "@/components/file-image";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { formatDuration } from "@/components/clone-output/parse";
@@ -82,12 +84,13 @@ export function CloneOutputReviewSidebar({
       <DetailSection title="Identity Used">
         <div className="flex items-center gap-4">
           {avatarPreviewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarPreviewUrl}
-              alt={`${identityName} avatar`}
-              className="size-12 shrink-0 rounded-full border border-border bg-white/[0.05] object-cover"
-            />
+            <span className="relative size-12 shrink-0 overflow-hidden rounded-full border border-border bg-white/[0.05]">
+              <FileImage
+                src={avatarPreviewUrl}
+                alt={`${identityName} avatar`}
+                sizes="48px"
+              />
+            </span>
           ) : (
             <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-white/[0.05]">
               <Users className="size-5 shrink-0 text-muted-foreground" />
@@ -182,12 +185,14 @@ export function CloneOutputReviewSidebar({
             href={reference.previewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block overflow-hidden rounded-lg border border-border bg-black"
+            className="relative block max-h-56 overflow-hidden rounded-lg border border-border bg-black"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={reference.previewUrl}
               alt={`${reference.label} used for this clone`}
+              width={720}
+              height={1280}
+              unoptimized
               className="max-h-56 w-full object-contain transition-opacity hover:opacity-90"
             />
           </a>

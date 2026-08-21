@@ -31,6 +31,15 @@ assert.ok(
 assert.equal(existsSync(new URL("src/app/home/index.ts", repoRoot)), false);
 assert.equal(existsSync(new URL("src/app/index.ts", repoRoot)), false);
 
+const reviewQueue = readFileSync(new URL("src/app/home-review-queue.tsx", repoRoot), "utf8");
+assert.doesNotMatch(reviewQueue, /useRouter/);
+assert.doesNotMatch(reviewQueue, /rules-of-hooks/);
+assert.match(reviewQueue, /onReviewSaved\?/);
+
+const homePage = readFileSync(new URL("src/app/page.tsx", repoRoot), "utf8");
+assert.match(homePage, /HomeCockpitClient/);
+assert.doesNotMatch(homePage, /<HomeCockpit[\s]/);
+
 console.log(
   files
     .map((file) => `${lineCount(file).toString().padStart(4)} ${file}`)
