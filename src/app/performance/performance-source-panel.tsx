@@ -21,17 +21,7 @@ import {
 } from "@/lib/performance/metrics";
 import { cn } from "@/lib/utils";
 
-export function PerformanceSourcePanel({
-  providers,
-  csvDataset,
-  selectedSource,
-  busyProvider,
-  lastUpdatedAt,
-  onSelect,
-  onSync,
-  onImport,
-  onClearCsv,
-}: {
+export type PerformanceSourceWorkspace = {
   providers: ConnectedAccountView[];
   csvDataset: PerformanceDataset | null;
   selectedSource: string;
@@ -41,7 +31,24 @@ export function PerformanceSourcePanel({
   onSync: (entry: ConnectedAccountView) => void;
   onImport: () => void;
   onClearCsv: () => void;
+};
+
+export function PerformanceSourcePanel({
+  workspace,
+}: {
+  workspace: PerformanceSourceWorkspace;
 }) {
+  const {
+    providers,
+    csvDataset,
+    selectedSource,
+    busyProvider,
+    lastUpdatedAt,
+    onSelect,
+    onSync,
+    onImport,
+    onClearCsv,
+  } = workspace;
   const allowAllConnected = canAggregateConnectedProviders(providers);
   return (
     <section className="pf-card p-4" aria-labelledby="performance-sources-title">
