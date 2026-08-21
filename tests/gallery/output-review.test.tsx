@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import {
-  getFailedGalleryActionIds,
-  GalleryHeaderControls,
-  GalleryLoadErrorState,
-  GalleryPageClient,
-} from "../../src/app/gallery/gallery-page-client";
-import { GallerySelectionInspector } from "../../src/components/gallery-grid";
+import { GalleryPageClient } from "../../src/app/gallery/gallery-page-client";
+import { GalleryHeaderControls } from "../../src/app/gallery/gallery-header-controls";
+import { GalleryLoadErrorState } from "../../src/app/gallery/gallery-load-error-state";
+import { getFailedGalleryActionIds } from "../../src/app/gallery/gallery-models";
+import { GallerySelectionInspector } from "../../src/components/gallery/selection-inspector";
 import {
   buildGalleryWhere,
   normalizeGalleryReviewStatusFilter,
