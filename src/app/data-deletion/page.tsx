@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "How to disconnect social accounts and delete provider data stored by PostForge.",
 };
 
-const orderedListClass = "mt-3 list-decimal space-y-3 pl-5 marker:font-semibold marker:text-[var(--pf-ink)]";
-
 export default function DataDeletionPage() {
   return (
     <PublicPolicyPage
@@ -79,3 +77,6 @@ export default function DataDeletionPage() {
     />
   );
 }
+
+
+const orderedListClass = "mt-3 list-decimal space-y-3 pl-5 marker:font-semibold marker:text-[var(--pf-ink)]";

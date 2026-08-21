@@ -38,25 +38,6 @@ interface TikTokInputProps {
   }) => void;
 }
 
-function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
-}
-
-function toVideoInfo(source: SavedTikTokSource): TikTokVideoInfo {
-  return {
-    id: source.id,
-    label: source.label,
-    originalUrl: source.originalUrl,
-    localPath: source.localPath,
-    filename: source.filename,
-    durationSec: source.durationSec,
-    width: source.width,
-    height: source.height,
-  };
-}
-
 export function TikTokInput({
   onDownloaded,
   videoInfo,
@@ -303,4 +284,24 @@ export function TikTokInput({
       )}
     </div>
   );
+}
+
+
+function formatDuration(sec: number) {
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+}
+
+function toVideoInfo(source: SavedTikTokSource): TikTokVideoInfo {
+  return {
+    id: source.id,
+    label: source.label,
+    originalUrl: source.originalUrl,
+    localPath: source.localPath,
+    filename: source.filename,
+    durationSec: source.durationSec,
+    width: source.width,
+    height: source.height,
+  };
 }

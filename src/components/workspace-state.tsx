@@ -30,42 +30,6 @@ interface WorkspaceStateSkeletonProps {
   className?: string;
 }
 
-function StateActionControl({
-  action,
-  primary,
-}: {
-  action: StateAction;
-  primary?: boolean;
-}) {
-  const className = cn(
-    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
-    primary
-      ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
-      : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"
-  );
-
-  const content = (
-    <>
-      {action.label}
-      {primary && <ArrowRight className="size-4" />}
-    </>
-  );
-
-  if (action.href) {
-    return (
-      <Link href={action.href} className={className}>
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <button type="button" onClick={action.onClick} className={className}>
-      {content}
-    </button>
-  );
-}
-
 export function WorkspaceState({
   tone = "neutral",
   icon: Icon,
@@ -114,6 +78,42 @@ export function WorkspaceState({
         </div>
       )}
     </div>
+  );
+}
+
+function StateActionControl({
+  action,
+  primary,
+}: {
+  action: StateAction;
+  primary?: boolean;
+}) {
+  const className = cn(
+    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+    primary
+      ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
+      : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"
+  );
+
+  const content = (
+    <>
+      {action.label}
+      {primary && <ArrowRight className="size-4" />}
+    </>
+  );
+
+  if (action.href) {
+    return (
+      <Link href={action.href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={action.onClick} className={className}>
+      {content}
+    </button>
   );
 }
 

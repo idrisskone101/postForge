@@ -6,24 +6,6 @@ import { JobsAutoRefresh } from "./jobs-auto-refresh";
 export const metadata = { title: "Jobs - PostForge" };
 export const dynamic = "force-dynamic";
 
-const HISTORY_DAYS = 30;
-const PAGE_SIZE = 40;
-
-function parseStatus(value: string | undefined): JobsStatusFilter {
-  return value === "active" || value === "completed" || value === "failed"
-    ? value
-    : "all";
-}
-
-function parseType(value: string | undefined): JobsTypeFilter {
-  return value === "image" || value === "video" ? value : "all";
-}
-
-function parsePage(value: string | undefined) {
-  const parsed = Number.parseInt(value ?? "1", 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-}
-
 export default async function JobsPage({
   searchParams,
 }: {
@@ -98,19 +80,40 @@ export default async function JobsPage({
     <>
       <JobsAutoRefresh enabled={activeCount > 0} />
       <JobsActivity
-        jobs={jobs}
-        counts={{
-          active: activeCount,
-          completed: completedCount,
-          failed: failedCount,
-          total: totalCreated,
+        activity={{
+          jobs,
+          counts: {
+            active: activeCount,
+            completed: completedCount,
+            failed: failedCount,
+            total: totalCreated,
+          },
+          status,
+          type,
+          page,
+          pageSize: PAGE_SIZE,
+          filteredTotal,
         }}
-        status={status}
-        type={type}
-        page={page}
-        pageSize={PAGE_SIZE}
-        filteredTotal={filteredTotal}
       />
     </>
   );
+}
+
+
+const HISTORY_DAYS = 30;
+const PAGE_SIZE = 40;
+
+function parseStatus(value: string | undefined): JobsStatusFilter {
+  return value === "active" || value === "completed" || value === "failed"
+    ? value
+    : "all";
+}
+
+function parseType(value: string | undefined): JobsTypeFilter {
+  return value === "image" || value === "video" ? value : "all";
+}
+
+function parsePage(value: string | undefined) {
+  const parsed = Number.parseInt(value ?? "1", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 }

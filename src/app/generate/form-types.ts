@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import type { ModelDefinition } from "@/lib/ai/types";
+import type { SwapUploadedAsset } from "@/components/swap-input-section";
+import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 
 export interface GenerationFormProps {
   models: ModelDefinition[];
@@ -78,4 +79,48 @@ export interface GenerateCollectionActions {
   onVibeJsonChange: (text: string) => void;
   onFoldEnabledChange: (enabled: boolean) => void;
   onFoldIntoVibe: () => void;
+}
+
+export interface GenerateContinuityView {
+  show: boolean;
+  videoReferenceFileId: string | null;
+  videoSeedMissing: boolean;
+  disabled: boolean;
+}
+
+export interface GenerateContinuityActions {
+  onClear: () => void;
+  onChange: (fileId: string | null) => void;
+  onSeedMissingChange: (missing: boolean) => void;
+}
+
+export interface GenerateIdentityView {
+  show: boolean;
+  isVideo: boolean;
+  avatarId: string | null;
+  identityStatus: {
+    label: string;
+    tone: "ready" | "working" | "failed";
+  };
+  identityError: string | null;
+}
+
+export interface GenerateIdentityActions {
+  onSelect: (id: string) => void;
+}
+
+export interface GenerateSwapView {
+  show: boolean;
+  modelId: string | undefined;
+  video: SwapUploadedAsset | null;
+  reference: SwapUploadedAsset | null;
+  swapMode: SwapMode;
+}
+
+export interface GenerateSwapActions {
+  onChange: (next: {
+    video: SwapUploadedAsset | null;
+    reference: SwapUploadedAsset | null;
+    swapMode: SwapMode;
+  }) => void;
 }

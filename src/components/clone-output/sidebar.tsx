@@ -11,25 +11,6 @@ import { formatRelativeDate } from "@/lib/utils/format-date";
 import { formatDuration } from "@/components/clone-output/parse";
 import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
-function DetailSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="border-b border-border px-4 py-3">
-        <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-          {title}
-        </h2>
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
-
 export function CloneOutputReviewSidebar({
   review,
 }: {
@@ -213,5 +194,25 @@ export function CloneOutputReviewSidebar({
         </DetailSection>
       )}
     </aside>
+  );
+}
+
+
+function DetailSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+          {title}
+        </h2>
+      </div>
+      <div className="p-4">{children}</div>
+    </section>
   );
 }

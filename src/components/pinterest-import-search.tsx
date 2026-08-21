@@ -5,13 +5,6 @@ import { Link2, LoaderCircle, Search } from "lucide-react";
 import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
 import { cn } from "@/lib/utils";
 
-const suggestions = [
-  "clean desk",
-  "wellness routine",
-  "cozy reading",
-  "founder diary",
-];
-
 export function PinterestImportSearch({
   workspace,
 }: {
@@ -119,3 +112,11 @@ export function PinterestImportSearch({
     </div>
   );
 }
+
+
+const suggestions = [
+  "clean desk",
+  "wellness routine",
+  "cozy reading",
+  "founder diary",
+];

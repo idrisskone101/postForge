@@ -14,92 +14,6 @@ import { patchGalleryReviewStatus } from "./review-api";
 import { ReviewStatePill } from "./review-state-pill";
 import type { GalleryFeedback, GalleryItem } from "./types";
 
-function LightboxReviewControl({
-  outputId,
-  reviewStatus,
-  onStatusChange,
-  onFeedback,
-}: {
-  outputId: string;
-  reviewStatus: SerializedOutputReviewStatus;
-  onStatusChange?: (status: SerializedOutputReviewStatus) => void;
-  onFeedback?: (feedback: GalleryFeedback) => void;
-}) {
-  const [current, setCurrent] = useState(reviewStatus);
-  const [pending, setPending] = useState<OutputReviewStatus | null>(null);
-
-  useEffect(() => setCurrent(reviewStatus), [reviewStatus]);
-
-  const update = async (status: OutputReviewStatus) => {
-    if (pending) return;
-    const next: OutputReviewStatus =
-      current.value === status ? "needs_review" : status;
-    setPending(status);
-    try {
-      const nextReviewStatus = await patchGalleryReviewStatus(outputId, next);
-      setCurrent(nextReviewStatus);
-      onStatusChange?.(nextReviewStatus);
-      onFeedback?.({
-        tone: "success",
-        message:
-          next === "needs_review"
-            ? "Review cleared back to needs review."
-            : `Asset marked ${nextReviewStatus.label.toLowerCase()}.`,
-      });
-    } catch {
-      onFeedback?.({
-        tone: "error",
-        message: "The review status could not be updated. Try again.",
-      });
-    } finally {
-      setPending(null);
-    }
-  };
-
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      <button
-        type="button"
-        disabled={pending !== null}
-        onClick={() => void update("approved_output")}
-        aria-pressed={current.value === "approved_output"}
-        className={cn(
-          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
-          current.value === "approved_output"
-            ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-            : "border-border bg-background text-foreground hover:border-[var(--pf-success)]/40 hover:text-[var(--pf-success)]"
-        )}
-      >
-        {pending === "approved_output" ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Check className="size-4" />
-        )}
-        Approve
-      </button>
-      <button
-        type="button"
-        disabled={pending !== null}
-        onClick={() => void update("rejected_output")}
-        aria-pressed={current.value === "rejected_output"}
-        className={cn(
-          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
-          current.value === "rejected_output"
-            ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-            : "border-border bg-background text-foreground hover:border-[var(--pf-danger)]/40 hover:text-[var(--pf-danger)]"
-        )}
-      >
-        {pending === "rejected_output" ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <X className="size-4" />
-        )}
-        Reject
-      </button>
-    </div>
-  );
-}
-
 export function GalleryLightbox({
   item,
   session,
@@ -265,5 +179,92 @@ export function GalleryLightbox({
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+
+function LightboxReviewControl({
+  outputId,
+  reviewStatus,
+  onStatusChange,
+  onFeedback,
+}: {
+  outputId: string;
+  reviewStatus: SerializedOutputReviewStatus;
+  onStatusChange?: (status: SerializedOutputReviewStatus) => void;
+  onFeedback?: (feedback: GalleryFeedback) => void;
+}) {
+  const [current, setCurrent] = useState(reviewStatus);
+  const [pending, setPending] = useState<OutputReviewStatus | null>(null);
+
+  useEffect(() => setCurrent(reviewStatus), [reviewStatus]);
+
+  const update = async (status: OutputReviewStatus) => {
+    if (pending) return;
+    const next: OutputReviewStatus =
+      current.value === status ? "needs_review" : status;
+    setPending(status);
+    try {
+      const nextReviewStatus = await patchGalleryReviewStatus(outputId, next);
+      setCurrent(nextReviewStatus);
+      onStatusChange?.(nextReviewStatus);
+      onFeedback?.({
+        tone: "success",
+        message:
+          next === "needs_review"
+            ? "Review cleared back to needs review."
+            : `Asset marked ${nextReviewStatus.label.toLowerCase()}.`,
+      });
+    } catch {
+      onFeedback?.({
+        tone: "error",
+        message: "The review status could not be updated. Try again.",
+      });
+    } finally {
+      setPending(null);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        disabled={pending !== null}
+        onClick={() => void update("approved_output")}
+        aria-pressed={current.value === "approved_output"}
+        className={cn(
+          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
+          current.value === "approved_output"
+            ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
+            : "border-border bg-background text-foreground hover:border-[var(--pf-success)]/40 hover:text-[var(--pf-success)]"
+        )}
+      >
+        {pending === "approved_output" ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Check className="size-4" />
+        )}
+        Approve
+      </button>
+      <button
+        type="button"
+        disabled={pending !== null}
+        onClick={() => void update("rejected_output")}
+        aria-pressed={current.value === "rejected_output"}
+        className={cn(
+          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
+          current.value === "rejected_output"
+            ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
+            : "border-border bg-background text-foreground hover:border-[var(--pf-danger)]/40 hover:text-[var(--pf-danger)]"
+        )}
+      >
+        {pending === "rejected_output" ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <X className="size-4" />
+        )}
+        Reject
+      </button>
+    </div>
   );
 }

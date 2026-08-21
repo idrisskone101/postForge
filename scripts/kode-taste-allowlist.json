@@ -1,0 +1,52 @@
+{
+  "fileLayout": [],
+  "propBags": [
+    "src/app/automations/publish-review-dialog.tsx",
+    "src/components/avatar-picker-cards.tsx",
+    "src/components/collection-reference-picker.tsx",
+    "src/components/gallery/delete-dialog.tsx",
+    "src/components/gallery/review-status-control.tsx",
+    "src/components/media-preview.tsx",
+    "src/components/pinterest-import-dialog.tsx",
+    "src/components/public-policy-page.tsx",
+    "src/components/slideshow/editor-controls.tsx",
+    "src/components/slideshow/slide-preview.tsx",
+    "src/components/slideshow/template-dialog.tsx",
+    "src/components/swap-input-section.tsx",
+    "src/components/tiktok-input.tsx",
+    "src/components/tiktok-saved-sources.tsx",
+    "src/components/video-reference-picker.tsx",
+    "src/components/video-trim-range-fields.tsx",
+    "src/components/video-trim-timeline.tsx",
+    "src/components/video-trimmer.tsx",
+    "src/components/workspace-state.tsx"
+  ],
+  "useState": [
+    "src/app/automations/new/slideshow-automation-builder.tsx",
+    "src/app/characters/characters-page-client.tsx",
+    "src/app/collections/collections-page-client.tsx",
+    "src/app/costs/spend-page-content.tsx",
+    "src/app/settings/models-panel.tsx",
+    "src/app/settings/settings-page-client.tsx",
+    "src/components/avatar-picker-generate.tsx",
+    "src/components/avatar-picker-import-mode.tsx",
+    "src/components/avatar-picker.tsx",
+    "src/components/pinterest-import-dialog.tsx",
+    "src/components/sidebar.tsx",
+    "src/components/slideshow/create-view.tsx",
+    "src/components/slideshow/creator-view.tsx",
+    "src/components/slideshow/publish-dialog.tsx",
+    "src/components/slideshow/slideshow-editor.tsx",
+    "src/components/slideshow/slideshow-studio.tsx",
+    "src/components/tiktok-input.tsx",
+    "src/components/video-reference-picker.tsx",
+    "src/components/video-trimmer.tsx"
+  ],
+  "useEffect": [
+    "src/components/sidebar.tsx",
+    "src/components/slideshow/slideshow-editor.tsx",
+    "src/components/slideshow/slideshow-studio.tsx",
+    "src/components/tiktok-input.tsx",
+    "src/components/video-trimmer.tsx"
+  ]
+}

@@ -10,45 +10,6 @@ import type { HomeJob } from "./home-cockpit";
 import { VideoFramePreview } from "@/components/video-frame-preview";
 import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
 
-function getJobHref(job: HomeJob) {
-  const isClone = job.type === "video" && job.tags?.includes("ugc-clone") === true;
-  return isClone ? `/ugc-clone/${job.id}` : `/generate/${job.id}`;
-}
-
-function ReviewThumb({ job }: { job: HomeJob }) {
-  if (job.output) {
-    const source = `/api/files/${encodeURIComponent(job.output.id)}`;
-    if (job.type === "video") {
-      return (
-        <VideoFramePreview
-          src={source}
-          label="Output preview"
-          className="size-full object-cover"
-        />
-      );
-    }
-    return (
-      <Image
-        src={source}
-        alt="Output preview"
-        fill
-        sizes="56px"
-        unoptimized
-        className="object-cover"
-      />
-    );
-  }
-
-  return (
-    <span
-      aria-hidden="true"
-      className="grid size-full place-items-center bg-[var(--pf-active)] text-[var(--pf-muted)]"
-    >
-      {job.type === "video" ? <Play className="size-4" /> : <ImageIcon className="size-4" />}
-    </span>
-  );
-}
-
 export function HomeReviewQueue({ jobs }: { jobs: HomeJob[] }) {
   // useRouter throws outside the Next.js runtime (e.g. static test renders);
   // the queue still works there, it just skips the post-mutation refresh.
@@ -173,5 +134,45 @@ export function HomeReviewQueue({ jobs }: { jobs: HomeJob[] }) {
         })}
       </ul>
     </div>
+  );
+}
+
+
+function getJobHref(job: HomeJob) {
+  const isClone = job.type === "video" && job.tags?.includes("ugc-clone") === true;
+  return isClone ? `/ugc-clone/${job.id}` : `/generate/${job.id}`;
+}
+
+function ReviewThumb({ job }: { job: HomeJob }) {
+  if (job.output) {
+    const source = `/api/files/${encodeURIComponent(job.output.id)}`;
+    if (job.type === "video") {
+      return (
+        <VideoFramePreview
+          src={source}
+          label="Output preview"
+          className="size-full object-cover"
+        />
+      );
+    }
+    return (
+      <Image
+        src={source}
+        alt="Output preview"
+        fill
+        sizes="56px"
+        unoptimized
+        className="object-cover"
+      />
+    );
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className="grid size-full place-items-center bg-[var(--pf-active)] text-[var(--pf-muted)]"
+    >
+      {job.type === "video" ? <Play className="size-4" /> : <ImageIcon className="size-4" />}
+    </span>
   );
 }

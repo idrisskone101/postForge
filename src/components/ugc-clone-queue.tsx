@@ -36,33 +36,6 @@ interface JobsResponse {
   total: number;
 }
 
-const STATUS_CONFIG = {
-  queued: {
-    icon: Clock,
-    label: "Queued",
-    className: "text-amber-500",
-    bgClassName: "bg-amber-500/10",
-  },
-  processing: {
-    icon: Loader2,
-    label: "Processing",
-    className: "text-accent-blue",
-    bgClassName: "bg-accent-blue/10",
-  },
-  completed: {
-    icon: CheckCircle2,
-    label: "Completed",
-    className: "text-accent-green",
-    bgClassName: "bg-accent-green/10",
-  },
-  failed: {
-    icon: XCircle,
-    label: "Failed",
-    className: "text-destructive",
-    bgClassName: "bg-destructive/10",
-  },
-} as const;
-
 export function UGCCloneQueue() {
   const [jobs, setJobs] = useState<CloneJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -223,3 +196,31 @@ export function UGCCloneQueue() {
     </section>
   );
 }
+
+
+const STATUS_CONFIG = {
+  queued: {
+    icon: Clock,
+    label: "Queued",
+    className: "text-amber-500",
+    bgClassName: "bg-amber-500/10",
+  },
+  processing: {
+    icon: Loader2,
+    label: "Processing",
+    className: "text-accent-blue",
+    bgClassName: "bg-accent-blue/10",
+  },
+  completed: {
+    icon: CheckCircle2,
+    label: "Completed",
+    className: "text-accent-green",
+    bgClassName: "bg-accent-green/10",
+  },
+  failed: {
+    icon: XCircle,
+    label: "Failed",
+    className: "text-destructive",
+    bgClassName: "bg-destructive/10",
+  },
+} as const;

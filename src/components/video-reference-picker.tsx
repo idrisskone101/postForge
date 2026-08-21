@@ -23,21 +23,6 @@ interface VideoReferencePickerProps {
   onSeedMissingChange?: (missing: boolean) => void;
 }
 
-const REFERENCE_LIMIT = 8;
-
-function asString(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : null;
-}
-
-interface SelectedSeedFallback {
-  id: string;
-  kind: "video" | "image";
-  filename: string;
-  detail: string;
-}
-
 export function VideoReferencePicker({
   selectedFileId,
   onChange,
@@ -353,4 +338,20 @@ export function VideoReferencePicker({
       </div>
     </div>
   );
+}
+
+
+const REFERENCE_LIMIT = 8;
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
+}
+
+interface SelectedSeedFallback {
+  id: string;
+  kind: "video" | "image";
+  filename: string;
+  detail: string;
 }

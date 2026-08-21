@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "How PostForge handles workspace, media, and connected social-account data.",
 };
 
-const listClass = "mt-3 list-disc space-y-2 pl-5 marker:text-[var(--pf-border-strong)]";
-
 export default function PrivacyPage() {
   return (
     <PublicPolicyPage
@@ -94,3 +92,6 @@ export default function PrivacyPage() {
     />
   );
 }
+
+
+const listClass = "mt-3 list-disc space-y-2 pl-5 marker:text-[var(--pf-border-strong)]";

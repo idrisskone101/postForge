@@ -14,7 +14,6 @@ import type { RefImageEntry } from "@/components/clone/types";
 import { useCloneForm } from "@/app/ugc-clone/use-clone-form";
 
 export type { RefImageEntry };
-export { CloneSourceEmptyState, CloneIdentityStatusPanel, CloneProductionStatePanel };
 
 export function UGCCloneForm() {
   const { phase, draft, workspace, action } = useCloneForm();
@@ -52,3 +51,5 @@ export function UGCCloneForm() {
     </>
   );
 }
+
+export { CloneSourceEmptyState, CloneIdentityStatusPanel, CloneProductionStatePanel };

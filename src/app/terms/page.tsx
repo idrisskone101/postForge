@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "Terms governing use of a PostForge deployment and its connected services.",
 };
 
-const listClass = "mt-3 list-disc space-y-2 pl-5 marker:text-[var(--pf-border-strong)]";
-
 export default function TermsPage() {
   return (
     <PublicPolicyPage
@@ -101,3 +99,6 @@ export default function TermsPage() {
     />
   );
 }
+
+
+const listClass = "mt-3 list-disc space-y-2 pl-5 marker:text-[var(--pf-border-strong)]";

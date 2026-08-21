@@ -10,6 +10,7 @@ corepack enable 2>/dev/null || true
 
 pnpm test
 pnpm check:module-size
+pnpm check:kode-taste
 pnpm typecheck
 pnpm lint
 pnpm build

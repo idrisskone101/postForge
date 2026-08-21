@@ -32,81 +32,6 @@ import { useSettingsIntegrations } from "./use-settings-integrations";
 import { DeveloperSettingsPanel } from "./webhooks-panel";
 import { Billing, SettingsForm, Team } from "./workspace-panels";
 
-export const SETTINGS_NAVIGATION = [
-  { id: "profile", label: "Profile", group: "workspace", icon: UserRound },
-  { id: "models", label: "Available models", group: "workspace", icon: Settings2 },
-  { id: "billing", label: "Billing & usage", group: "workspace", icon: CreditCard },
-  { id: "integrations", label: "Integrations", group: "workspace", icon: Plug },
-  { id: "publishing", label: "Publishing defaults", group: "workspace", icon: Send },
-  { id: "team", label: "Team", group: "workspace", icon: Users },
-  { id: "notifications", label: "Notifications", group: "workspace", icon: Bell },
-  { id: "api-keys", label: "API keys", group: "developer", icon: KeyRound },
-  { id: "webhooks", label: "Webhooks", group: "developer", icon: Webhook },
-] as const;
-
-export type SettingsTab = (typeof SETTINGS_NAVIGATION)[number]["id"];
-
-export function isSettingsTab(value: string): value is SettingsTab {
-  return SETTINGS_NAVIGATION.some((item) => item.id === value);
-}
-
-export function SettingsNavigation({
-  tab,
-  onSelect,
-  connectedIntegrations = 0,
-}: {
-  tab: SettingsTab;
-  onSelect: (tab: SettingsTab) => void;
-  connectedIntegrations?: number;
-}) {
-  return (
-    <aside className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
-      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Workspace</p>
-      {SETTINGS_NAVIGATION.filter((item) => item.group === "workspace").map(
-        ({ id, label, icon: Icon }) => (
-          <button
-            type="button"
-            key={id}
-            onClick={() => onSelect(id)}
-            aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
-              tab === id && "bg-white font-semibold text-foreground shadow-sm"
-            )}
-          >
-            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
-            {label}
-            {id === "integrations" && connectedIntegrations > 0 && (
-              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[var(--pf-orange)] text-[11px] text-white">
-                {connectedIntegrations}
-              </span>
-            )}
-          </button>
-        )
-      )}
-      <div className="my-4 hidden h-px bg-[var(--pf-border)] lg:block" />
-      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Developer</p>
-      {SETTINGS_NAVIGATION.filter((item) => item.group === "developer").map(
-        ({ id, label, icon: Icon }) => (
-          <button
-            type="button"
-            key={id}
-            onClick={() => onSelect(id)}
-            aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
-              tab === id && "bg-white font-semibold text-foreground shadow-sm"
-            )}
-          >
-            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
-            {label}
-          </button>
-        )
-      )}
-    </aside>
-  );
-}
-
 export function SettingsPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -217,11 +142,13 @@ export function SettingsPageClient() {
     case "notifications":
       panel = (
         <SettingsForm
-          tab={tab}
-          settings={settings}
-          setSettings={setSettings}
-          saving={saving}
-          onSave={save}
+          form={{
+            tab,
+            settings,
+            setSettings,
+            saving,
+            onSave: save,
+          }}
         />
       );
       break;
@@ -249,5 +176,81 @@ export function SettingsPageClient() {
 
       {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[var(--pf-success)]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
     </div>
+  );
+}
+
+
+export const SETTINGS_NAVIGATION = [
+  { id: "profile", label: "Profile", group: "workspace", icon: UserRound },
+  { id: "models", label: "Available models", group: "workspace", icon: Settings2 },
+  { id: "billing", label: "Billing & usage", group: "workspace", icon: CreditCard },
+  { id: "integrations", label: "Integrations", group: "workspace", icon: Plug },
+  { id: "publishing", label: "Publishing defaults", group: "workspace", icon: Send },
+  { id: "team", label: "Team", group: "workspace", icon: Users },
+  { id: "notifications", label: "Notifications", group: "workspace", icon: Bell },
+  { id: "api-keys", label: "API keys", group: "developer", icon: KeyRound },
+  { id: "webhooks", label: "Webhooks", group: "developer", icon: Webhook },
+] as const;
+
+export type SettingsTab = (typeof SETTINGS_NAVIGATION)[number]["id"];
+
+export function isSettingsTab(value: string): value is SettingsTab {
+  return SETTINGS_NAVIGATION.some((item) => item.id === value);
+}
+
+export function SettingsNavigation({
+  tab,
+  onSelect,
+  connectedIntegrations = 0,
+}: {
+  tab: SettingsTab;
+  onSelect: (tab: SettingsTab) => void;
+  connectedIntegrations?: number;
+}) {
+  return (
+    <aside className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
+      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Workspace</p>
+      {SETTINGS_NAVIGATION.filter((item) => item.group === "workspace").map(
+        ({ id, label, icon: Icon }) => (
+          <button
+            type="button"
+            key={id}
+            onClick={() => onSelect(id)}
+            aria-current={tab === id ? "page" : undefined}
+            className={cn(
+              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
+              tab === id && "bg-white font-semibold text-foreground shadow-sm"
+            )}
+          >
+            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
+            {label}
+            {id === "integrations" && connectedIntegrations > 0 && (
+              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[var(--pf-orange)] text-[11px] text-white">
+                {connectedIntegrations}
+              </span>
+            )}
+          </button>
+        )
+      )}
+      <div className="my-4 hidden h-px bg-[var(--pf-border)] lg:block" />
+      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Developer</p>
+      {SETTINGS_NAVIGATION.filter((item) => item.group === "developer").map(
+        ({ id, label, icon: Icon }) => (
+          <button
+            type="button"
+            key={id}
+            onClick={() => onSelect(id)}
+            aria-current={tab === id ? "page" : undefined}
+            className={cn(
+              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
+              tab === id && "bg-white font-semibold text-foreground shadow-sm"
+            )}
+          >
+            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
+            {label}
+          </button>
+        )
+      )}
+    </aside>
   );
 }

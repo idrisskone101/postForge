@@ -4,24 +4,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.png";
-
-function characterPhotoSource({
-  avatarId,
-  generatedFileId,
-}: {
-  avatarId?: string | null;
-  generatedFileId?: string | null;
-}) {
-  if (generatedFileId) {
-    return `/api/files/${encodeURIComponent(generatedFileId)}`;
-  }
-  if (avatarId) {
-    return `/api/avatars/${encodeURIComponent(avatarId)}`;
-  }
-  return DEFAULT_CHARACTER_PHOTO;
-}
-
 export function CharacterPhoto({
   avatarId,
   generatedFileId,
@@ -65,3 +47,22 @@ export function CharacterPhoto({
   );
 }
 
+
+
+const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.png";
+
+function characterPhotoSource({
+  avatarId,
+  generatedFileId,
+}: {
+  avatarId?: string | null;
+  generatedFileId?: string | null;
+}) {
+  if (generatedFileId) {
+    return `/api/files/${encodeURIComponent(generatedFileId)}`;
+  }
+  if (avatarId) {
+    return `/api/avatars/${encodeURIComponent(avatarId)}`;
+  }
+  return DEFAULT_CHARACTER_PHOTO;
+}

@@ -32,29 +32,6 @@ export type GalleryGridSession = {
   onFeedback?: (feedback: GalleryFeedback) => void;
 };
 
-function ItemPrompt({ item }: { item: GalleryItem }) {
-  if (!item.prompt) return null;
-  return (
-    <p className="min-w-0 break-words text-[12px] leading-[1.15rem] text-muted-foreground [overflow-wrap:anywhere] line-clamp-3">
-      {item.prompt}
-    </p>
-  );
-}
-
-function LightboxPrompt({ lightbox }: { lightbox: GalleryItem }) {
-  if (!lightbox.prompt) return null;
-  return (
-    <div className="min-w-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-        Prompt
-      </p>
-      <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-foreground/80 [overflow-wrap:anywhere] line-clamp-5">
-        {lightbox.prompt}
-      </p>
-    </div>
-  );
-}
-
 export function GalleryGrid({ session }: { session: GalleryGridSession }) {
   const {
     items,
@@ -213,5 +190,29 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
         onClose={() => setLightbox(null)}
       />
     </>
+  );
+}
+
+
+function ItemPrompt({ item }: { item: GalleryItem }) {
+  if (!item.prompt) return null;
+  return (
+    <p className="min-w-0 break-words text-[12px] leading-[1.15rem] text-muted-foreground [overflow-wrap:anywhere] line-clamp-3">
+      {item.prompt}
+    </p>
+  );
+}
+
+function LightboxPrompt({ lightbox }: { lightbox: GalleryItem }) {
+  if (!lightbox.prompt) return null;
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        Prompt
+      </p>
+      <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-foreground/80 [overflow-wrap:anywhere] line-clamp-5">
+        {lightbox.prompt}
+      </p>
+    </div>
   );
 }

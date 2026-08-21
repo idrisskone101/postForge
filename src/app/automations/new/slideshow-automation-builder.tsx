@@ -30,11 +30,6 @@ import {
 } from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
 
-const INPUT =
-  "w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground outline-none transition placeholder:text-muted-foreground focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10";
-const FIELD_LABEL = "mb-1.5 block text-[12px] font-semibold text-muted-foreground";
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 export function SlideshowAutomationBuilder() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -390,3 +385,9 @@ export function SlideshowAutomationBuilder() {
     </div>
   );
 }
+
+
+const INPUT =
+  "w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground outline-none transition placeholder:text-muted-foreground focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10";
+const FIELD_LABEL = "mb-1.5 block text-[12px] font-semibold text-muted-foreground";
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

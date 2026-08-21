@@ -1,19 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-function RowSkeleton() {
-  return (
-    <div className="border-t border-border py-2.5 first:border-t-0">
-      <div className="flex items-center gap-2.5">
-        <Skeleton className="h-[42px] w-9 rounded-md" />
-        <div className="min-w-0 flex-1">
-          <Skeleton className="h-3.5 w-full max-w-[240px]" />
-          <Skeleton className="mt-1.5 h-3 w-32 max-w-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function HomeLoading() {
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-3.5 px-4 pb-6 pt-5 sm:px-6 lg:px-8 lg:pb-8 lg:pt-7">
@@ -72,6 +58,21 @@ export default function HomeLoading() {
             ))}
           </div>
         </aside>
+      </div>
+    </div>
+  );
+}
+
+
+function RowSkeleton() {
+  return (
+    <div className="border-t border-border py-2.5 first:border-t-0">
+      <div className="flex items-center gap-2.5">
+        <Skeleton className="h-[42px] w-9 rounded-md" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-3.5 w-full max-w-[240px]" />
+          <Skeleton className="mt-1.5 h-3 w-32 max-w-full" />
+        </div>
       </div>
     </div>
   );
