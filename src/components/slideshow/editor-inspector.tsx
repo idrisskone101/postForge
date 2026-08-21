@@ -15,47 +15,37 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
-import { NativeSelect, sliderNumber, type EditorSaveState } from "./editor-controls";
+import { NativeSelect, sliderNumber } from "./editor-controls";
 import { MAX_SLIDESHOW_SLIDES } from "./model";
 import { phaseLabel } from "./slideshow-view";
 import { FIELD_LABEL, INPUT } from "./studio-ui";
 import type {
-  SlideshowProject,
-  SlideshowSlide,
-  SlideshowSlideKind,
   SlideshowTextAlign,
   SlideshowTextPosition,
   SlideshowTextSettings,
   SlideshowTextStyle,
 } from "./types";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 export function EditorInspector({
-  draft,
-  activeSlide,
-  activePhase,
-  activeIndex,
-  layerCount,
-  regenerating,
-  regeneratingImage,
-  saveState,
-  updateTextSettings,
-  updateActiveSlide,
-  onRegenerateText,
-  onRegenerateImage,
+  workspace,
 }: {
-  draft: SlideshowProject;
-  activeSlide: SlideshowSlide;
-  activePhase: SlideshowSlideKind;
-  activeIndex: number;
-  layerCount: number;
-  regenerating: boolean;
-  regeneratingImage: boolean;
-  saveState: EditorSaveState;
-  updateTextSettings: (patch: Partial<SlideshowTextSettings>) => void;
-  updateActiveSlide: (patch: Partial<SlideshowSlide>) => void;
-  onRegenerateText: () => void;
-  onRegenerateImage: () => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    draft,
+    activeSlide,
+    activePhase,
+    activeIndex,
+    layerCount,
+    regenerating,
+    regeneratingImage,
+    saveState,
+    updateTextSettings,
+    updateActiveSlide,
+    onRegenerateText,
+    onRegenerateImage,
+  } = workspace;
   return (
         <aside className="border-t border-border bg-white xl:border-l xl:border-t-0">
           <div className="max-h-[700px] space-y-5 overflow-y-auto p-4 xl:max-h-[calc(100vh-170px)]">

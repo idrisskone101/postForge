@@ -11,10 +11,8 @@ import {
   INPUT,
   PREVIEW_ASPECT,
 } from "./studio-ui";
-import type {
-  SlideshowProject,
-  SlideshowProjectListItem,
-} from "./types";
+import type { SlideshowProject } from "./types";
+import type { StudioHomeView } from "./view-models";
 
 function ProjectStatusPill({ status }: { status: SlideshowProject["status"] }) {
   const map: Record<string, { cls: string; label: string; spinning?: boolean }> = {
@@ -45,19 +43,14 @@ function ProjectStatusPill({ status }: { status: SlideshowProject["status"] }) {
   );
 }
 
-export function DraftsView({
-  projects,
-  loading,
-  error,
-  onOpen,
-  onCreate,
-}: {
-  projects: SlideshowProjectListItem[];
-  loading: boolean;
-  error: string | null;
-  onOpen: (project: SlideshowProjectListItem) => void;
-  onCreate: () => void;
-}) {
+export function DraftsView({ home }: { home: StudioHomeView }) {
+  const {
+    projects,
+    loadingProjects: loading,
+    projectsError: error,
+    onOpenDraft: onOpen,
+    onCreate,
+  } = home;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
 

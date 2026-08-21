@@ -4,13 +4,13 @@ import { CalendarClock, MessageCircle } from "lucide-react";
 
 import { Switch } from "@/components/ui/switch";
 
-import type { SlideshowPublishOptions } from "./types";
+import type { SlideshowPublishWorkspace } from "./view-models";
 
 const VISIBILITY_OPTIONS = ["public", "friends", "private"] as const;
 
 function parseVisibility(
   value: string,
-): SlideshowPublishOptions["visibility"] {
+): SlideshowPublishWorkspace["visibility"] {
   for (const option of VISIBILITY_OPTIONS) {
     if (option === value) return option;
   }
@@ -18,42 +18,29 @@ function parseVisibility(
 }
 
 export function PublishTikTokFields({
-  publishingToTikTok,
-  visibility,
-  onVisibilityChange,
-  scheduledFor,
-  onScheduledForChange,
-  scheduleEnabled,
-  onScheduleEnabledChange,
-  allowComments,
-  onAllowCommentsChange,
-  allowDuet,
-  onAllowDuetChange,
-  allowStitch,
-  onAllowStitchChange,
-  brandedContent,
-  onBrandedContentChange,
-  aiGenerated,
-  onAiGeneratedChange,
+  publish,
 }: {
-  publishingToTikTok: boolean;
-  visibility: SlideshowPublishOptions["visibility"];
-  onVisibilityChange: (value: SlideshowPublishOptions["visibility"]) => void;
-  scheduledFor: string;
-  onScheduledForChange: (value: string) => void;
-  scheduleEnabled: boolean;
-  onScheduleEnabledChange: (value: boolean) => void;
-  allowComments: boolean;
-  onAllowCommentsChange: (value: boolean) => void;
-  allowDuet: boolean;
-  onAllowDuetChange: (value: boolean) => void;
-  allowStitch: boolean;
-  onAllowStitchChange: (value: boolean) => void;
-  brandedContent: boolean;
-  onBrandedContentChange: (value: boolean) => void;
-  aiGenerated: boolean;
-  onAiGeneratedChange: (value: boolean) => void;
+  publish: SlideshowPublishWorkspace;
 }) {
+  const {
+    publishingToTikTok,
+    visibility,
+    onVisibilityChange,
+    scheduledFor,
+    onScheduledForChange,
+    scheduleEnabled,
+    onScheduleEnabledChange,
+    allowComments,
+    onAllowCommentsChange,
+    allowDuet,
+    onAllowDuetChange,
+    allowStitch,
+    onAllowStitchChange,
+    brandedContent,
+    onBrandedContentChange,
+    aiGenerated,
+    onAiGeneratedChange,
+  } = publish;
   if (!publishingToTikTok) return null;
   return (
     <>
