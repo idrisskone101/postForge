@@ -152,15 +152,17 @@ export default async function HomePage() {
 
   return (
     <HomeCockpit
-      todaySummary={todaySummary}
-      monthSummary={monthSummary}
-      activeJobs={activeHomeJobs}
-      activeJobCount={activeJobCount}
-      recentJobs={visibleRecentJobs}
-      completedThisWeek={completedThisWeek}
-      pendingReviewCount={pendingReviewCount}
-      recentMedia={recentMedia}
-      now={now}
+      dashboard={{
+        todaySummary,
+        monthSummary,
+        activeJobs: activeHomeJobs,
+        activeJobCount,
+        recentJobs: visibleRecentJobs,
+        completedThisWeek,
+        pendingReviewCount,
+        recentMedia,
+        now,
+      }}
     />
   );
 }

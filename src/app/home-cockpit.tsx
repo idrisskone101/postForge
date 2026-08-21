@@ -46,7 +46,7 @@ export type HomeMedia = {
   isClone: boolean;
 };
 
-type HomeCockpitProps = {
+export type HomeDashboard = {
   todaySummary: CostSummary;
   monthSummary: CostSummary;
   activeJobs: HomeJob[];
@@ -56,6 +56,10 @@ type HomeCockpitProps = {
   pendingReviewCount: number;
   recentMedia: HomeMedia[];
   now?: Date;
+};
+
+type HomeCockpitProps = {
+  dashboard: HomeDashboard;
 };
 
 function truncateAtWord(value: string, maxLength: number) {
@@ -244,17 +248,17 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
   );
 }
 
-export function HomeCockpit({
-  todaySummary,
-  monthSummary: _monthSummary,
-  activeJobs,
-  activeJobCount = activeJobs.length,
-  recentJobs,
-  completedThisWeek,
-  pendingReviewCount,
-  recentMedia,
-  now = new Date(),
-}: HomeCockpitProps) {
+export function HomeCockpit({ dashboard }: HomeCockpitProps) {
+  const {
+    todaySummary,
+    activeJobs,
+    activeJobCount = activeJobs.length,
+    recentJobs,
+    completedThisWeek,
+    pendingReviewCount,
+    recentMedia,
+    now = new Date(),
+  } = dashboard;
   const visibleReviewJobs = recentJobs.slice(0, 4);
   const isEmpty = activeJobs.length === 0 && recentJobs.length === 0 && recentMedia.length === 0;
   const todayLabel = new Intl.DateTimeFormat("en-US", {
