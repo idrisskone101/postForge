@@ -25,6 +25,7 @@
     "test:integrations": "tsx scripts/run-tests.ts tests/integrations",
     "test:workspace": "tsx scripts/run-tests.ts tests/workspace",
     "test:lib": "tsx scripts/run-tests.ts tests/lib",
+    "check:module-size": "tsx scripts/check-module-size.ts",
     "codex:setup": "bash scripts/codex-setup.sh",
     "codex:check": "bash scripts/codex-check.sh",
     "prune:playwright": "bash scripts/prune-playwright-artifacts.sh",
