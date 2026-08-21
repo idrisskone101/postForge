@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   deleteSlideshowAutomation,
   updateSlideshowAutomation,
-} from "../../src/components/slideshow/api";
+} from "../../src/lib/slideshow/client";
 import type { SlideshowAutomation } from "../../src/components/slideshow/types";
 
 const originalFetch = globalThis.fetch;

@@ -18,7 +18,7 @@ import {
   fetchSlideshowAutomations,
   fetchSlideshowProjects,
   updateSlideshowAutomation,
-} from "@/components/slideshow/api";
+} from "@/lib/slideshow/client";
 import type {
   SlideshowAutomation,
   SlideshowProject,
