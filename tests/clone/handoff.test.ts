@@ -11,8 +11,8 @@ import {
   updateCloneOutputReviewStatus,
 } from "../../src/lib/clone-output-actions";
 
-const cloneFormSource = readFileSync(
-  new URL("../../src/components/ugc-clone-form.tsx", import.meta.url),
+const cloneFormHookSource = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-form.ts", import.meta.url),
   "utf8"
 );
 const cloneRefImagesSource = readFileSync(
@@ -42,7 +42,8 @@ const cloneReferenceLibrarySource = readFileSync(
 
 assert.match(cloneReferenceLibrarySource, /CollectionReferencePicker/);
 assert.match(cloneRequestsSource, /collectionAssetId: input\.target\.collectionAssetId/);
-assert.match(cloneFormSource, /kind: "collection"/);
+assert.match(cloneFormHookSource, /kind: "collection"/);
+assert.match(cloneFormHookSource, /collectionAssetId: selectedCollectionAssetId/);
 assert.match(cloneRouteSource, /Choose only one clone reference source/);
 assert.match(cloneServiceSource, /findCollectionAsset/);
 assert.match(cloneRefImagesSource, /let shouldConsumeQuery = false/);
