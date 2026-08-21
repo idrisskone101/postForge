@@ -13,51 +13,37 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 import { NativeSelect, sliderNumber } from "./editor-controls";
+import { setSlideshowCta } from "./model";
 import { phaseLabel } from "./slideshow-view";
 import { FIELD_LABEL, INPUT } from "./studio-ui";
 import type {
   SlideshowAspectRatio,
-  SlideshowCollection,
   SlideshowGrid,
-  SlideshowProject,
   SlideshowSlideKind,
 } from "./types";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 export function EditorSlideRail({
-  draft,
-  activePhase,
-  collections,
-  phaseSettings,
-  advanced,
-  imageModels,
-  selectedImageModel,
-  selectPhase,
-  applyCollection,
-  updateProject,
-  updatePhaseSettings,
-  onOpenPicker,
-  onToggleAdvanced,
-  onSelectImageModel,
-  onToggleCta,
+  workspace,
 }: {
-  draft: SlideshowProject;
-  activePhase: SlideshowSlideKind;
-  collections: SlideshowCollection[];
-  phaseSettings: SlideshowProject["phaseSettings"][SlideshowSlideKind];
-  advanced: boolean;
-  imageModels: Array<{ id: string; name: string }>;
-  selectedImageModel: string | null;
-  selectPhase: (phase: SlideshowSlideKind) => void;
-  applyCollection: (collectionId: string) => void;
-  updateProject: (update: (current: SlideshowProject) => SlideshowProject) => void;
-  updatePhaseSettings: (
-    patch: Partial<SlideshowProject["phaseSettings"][SlideshowSlideKind]>,
-  ) => void;
-  onOpenPicker: () => void;
-  onToggleAdvanced: () => void;
-  onSelectImageModel?: (modelId: string) => void;
-  onToggleCta: (checked: boolean) => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    draft,
+    activePhase,
+    collections,
+    phaseSettings,
+    advanced,
+    imageModels,
+    selectedImageModel,
+    selectPhase,
+    applyCollection,
+    updateProject,
+    updatePhaseSettings,
+    setPickerOpen,
+    setAdvanced,
+    onSelectImageModel,
+  } = workspace;
   return (
         <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">
@@ -85,7 +71,7 @@ export function EditorSlideRail({
           <div className="max-h-[620px] space-y-5 overflow-y-auto p-4 xl:max-h-[calc(100vh-240px)]">
             <button
               type="button"
-              onClick={onOpenPicker}
+              onClick={() => setPickerOpen(true)}
               className="flex w-full items-center gap-3 rounded-[6px] border border-[var(--pf-orange)]/25 bg-[var(--pf-orange)]/[0.05] p-3 text-left transition hover:border-[var(--pf-orange)]/45 hover:bg-[var(--pf-orange)]/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
             >
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
@@ -197,7 +183,7 @@ export function EditorSlideRail({
 
             <button
               type="button"
-              onClick={onToggleAdvanced}
+              onClick={() => setAdvanced((current) => !current)}
               aria-expanded={advanced}
               className="flex h-9 w-full items-center justify-between text-[12px] font-semibold text-muted-foreground transition hover:text-foreground"
             >
@@ -251,7 +237,9 @@ export function EditorSlideRail({
                   <span>Include CTA slide</span>
                   <Switch
                     checked={draft.includeCta}
-                    onCheckedChange={onToggleCta}
+                    onCheckedChange={(checked) =>
+                      updateProject((current) => setSlideshowCta(current, checked))
+                    }
                     aria-label="Include CTA slide"
                   />
                 </label>

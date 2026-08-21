@@ -2,33 +2,27 @@
 
 import { ChevronLeft, Download, Images } from "lucide-react";
 
-import { AutosaveStatus, type EditorSaveState } from "./editor-controls";
+import { AutosaveStatus } from "./editor-controls";
 import { SlideshowViewSwitcher } from "./slideshow-view-modes";
-import type { SlideshowViewMode } from "./slideshow-view";
 import { SECONDARY_BTN } from "./studio-ui";
-import type { SlideshowProject } from "./types";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 export function EditorHeader({
-  draft,
-  saveState,
-  saveError,
-  viewMode,
-  updateProject,
-  changeViewMode,
-  onOpenPicker,
-  onBack,
-  onPublish,
+  workspace,
 }: {
-  draft: SlideshowProject;
-  saveState: EditorSaveState;
-  saveError: string | null;
-  viewMode: SlideshowViewMode;
-  updateProject: (update: (current: SlideshowProject) => SlideshowProject) => void;
-  changeViewMode: (mode: SlideshowViewMode) => void;
-  onOpenPicker: () => void;
-  onBack: () => void;
-  onPublish: () => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    draft,
+    saveState,
+    saveError,
+    viewMode,
+    updateProject,
+    changeViewMode,
+    setPickerOpen,
+    onBack,
+    onPublish,
+  } = workspace;
   return (
     <>
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
@@ -58,7 +52,7 @@ export function EditorHeader({
         <SlideshowViewSwitcher value={viewMode} onChange={changeViewMode} />
         <div className="ml-auto flex items-center gap-2">
           {viewMode !== "play" ? (
-            <button type="button" className={SECONDARY_BTN} onClick={onOpenPicker}>
+            <button type="button" className={SECONDARY_BTN} onClick={() => setPickerOpen(true)}>
               <Images className="size-3.5" />
               <span className="hidden sm:inline">Images</span>
             </button>

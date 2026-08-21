@@ -27,6 +27,7 @@ import type {
   SlideshowProject,
   SlideshowPublishOptions,
 } from "./types";
+import type { SlideshowPublishWorkspace } from "./view-models";
 
 export function PublishDialog({
   open,
@@ -120,6 +121,37 @@ export function PublishDialog({
     } finally {
       setExporting(false);
     }
+  };
+
+  const publish: SlideshowPublishWorkspace = {
+    publishingToTikTok,
+    visibility,
+    onVisibilityChange: setVisibility,
+    scheduledFor,
+    onScheduledForChange: setScheduledFor,
+    scheduleEnabled,
+    onScheduleEnabledChange: setScheduleEnabled,
+    allowComments,
+    onAllowCommentsChange: setAllowComments,
+    allowDuet,
+    onAllowDuetChange: setAllowDuet,
+    allowStitch,
+    onAllowStitchChange: setAllowStitch,
+    brandedContent,
+    onBrandedContentChange: setBrandedContent,
+    aiGenerated,
+    onAiGeneratedChange: setAiGenerated,
+    project,
+    tiktokConnected,
+    format,
+    destination,
+    formatBlocked,
+    destinationBlocked,
+    canSubmit,
+    exporting,
+    error,
+    exported,
+    onSubmit: () => void handleSubmit(),
   };
 
   return (
@@ -252,42 +284,11 @@ export function PublishDialog({
               </span>
             </div>
 
-            <PublishTikTokFields
-              publishingToTikTok={publishingToTikTok}
-              visibility={visibility}
-              onVisibilityChange={setVisibility}
-              scheduledFor={scheduledFor}
-              onScheduledForChange={setScheduledFor}
-              scheduleEnabled={scheduleEnabled}
-              onScheduleEnabledChange={setScheduleEnabled}
-              allowComments={allowComments}
-              onAllowCommentsChange={setAllowComments}
-              allowDuet={allowDuet}
-              onAllowDuetChange={setAllowDuet}
-              allowStitch={allowStitch}
-              onAllowStitchChange={setAllowStitch}
-              brandedContent={brandedContent}
-              onBrandedContentChange={setBrandedContent}
-              aiGenerated={aiGenerated}
-              onAiGeneratedChange={setAiGenerated}
-            />
+            <PublishTikTokFields publish={publish} />
 
           </div>
 
-          <PublishSidebar
-            project={project}
-            tiktokConnected={tiktokConnected}
-            format={format}
-            destination={destination}
-            formatBlocked={formatBlocked}
-            destinationBlocked={destinationBlocked}
-            canSubmit={canSubmit}
-            exporting={exporting}
-            error={error}
-            exported={exported}
-            scheduleEnabled={scheduleEnabled}
-            onSubmit={handleSubmit}
-          />
+          <PublishSidebar publish={publish} />
         </div>
       </DialogContent>
     </Dialog>

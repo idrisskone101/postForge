@@ -42,20 +42,21 @@ import type {
 } from "./types";
 import { isLocalSlideshowId } from "./types";
 
-export function SlideshowEditor({
-  project,
-  onBack,
-  onProjectChange,
-  onSaveProject,
-  onRegenerateSlide,
-  onRegenerateImage,
-  collections,
-  onPublish,
-  imageModels = [],
-  selectedImageModel = null,
-  onSelectImageModel,
-  initialViewMode = "edit",
-}: SlideshowEditorProps) {
+export function SlideshowEditor(props: SlideshowEditorProps) {
+  const {
+    project,
+    onBack,
+    onProjectChange,
+    onSaveProject,
+    onRegenerateSlide,
+    onRegenerateImage,
+    collections,
+    onPublish,
+    imageModels = [],
+    selectedImageModel = null,
+    onSelectImageModel,
+    initialViewMode = "edit",
+  } = props;
   const [draft, setDraft] = useState(project);
   const [viewMode, setViewMode] = useState<SlideshowViewMode>(() =>
     parseSlideshowViewMode(initialViewMode),
@@ -344,53 +345,53 @@ export function SlideshowEditor({
 
   return (
     <EditorWorkspace
-      draft={draft}
-      draftRef={draftRef}
-      saveState={saveState}
-      saveError={saveError}
-      viewMode={viewMode}
-      selectedSlideId={selectedSlideId}
-      activeSlide={activeSlide}
-      activePhase={activePhase}
-      activeIndex={activeIndex}
-      layerCount={layerCount}
-      collections={collections}
-      phaseSettings={phaseSettings}
-      advanced={advanced}
-      imageModels={imageModels}
-      selectedImageModel={selectedImageModel}
-      regenerating={regenerating}
-      regeneratingImage={regeneratingImage}
-      previewIndices={previewIndices}
-      activeThumbRef={activeThumbRef}
-      pickerOpen={pickerOpen}
-      pickerAssetIds={pickerAssetIds}
-      updateProject={updateProject}
-      updatePhaseSettings={updatePhaseSettings}
-      updateTextSettings={updateTextSettings}
-      updateActiveSlide={updateActiveSlide}
-      changeViewMode={changeViewMode}
-      selectSlide={selectSlide}
-      selectPhase={selectPhase}
-      applyCollection={applyCollection}
-      applyProject={applyProject}
-      applyPickedAssets={applyPickedAssets}
-      addSlide={addSlide}
-      duplicateSlide={duplicateSlide}
-      deleteSlide={deleteSlide}
-      moveSlide={moveSlide}
-      setPickerOpen={setPickerOpen}
-      setPickerAssetIds={setPickerAssetIds}
-      setAdvanced={setAdvanced}
-      onSelectImageModel={onSelectImageModel}
-      onBack={() => {
-        void flushSave().then(onBack).catch(() => undefined);
+      workspace={{
+        draft,
+        saveState,
+        saveError,
+        viewMode,
+        selectedSlideId,
+        activeSlide,
+        activePhase,
+        activeIndex,
+        layerCount,
+        collections,
+        phaseSettings,
+        advanced,
+        imageModels,
+        selectedImageModel,
+        regenerating,
+        regeneratingImage,
+        previewIndices,
+        activeThumbRef,
+        pickerOpen,
+        pickerAssetIds,
+        updateProject,
+        updatePhaseSettings,
+        updateTextSettings,
+        updateActiveSlide,
+        changeViewMode,
+        selectSlide,
+        selectPhase,
+        applyCollection,
+        applyPickedAssets,
+        addSlide,
+        duplicateSlide,
+        deleteSlide,
+        moveSlide,
+        setPickerOpen,
+        setPickerAssetIds,
+        setAdvanced,
+        onSelectImageModel,
+        onBack: () => {
+          void flushSave().then(onBack).catch(() => undefined);
+        },
+        onPublish: () => {
+          void flushSave().then(onPublish).catch(() => undefined);
+        },
+        onRegenerateText: () => void handleRegenerate(),
+        onRegenerateImage: () => void handleRegenerateImage(),
       }}
-      onPublish={() => {
-        void flushSave().then(onPublish).catch(() => undefined);
-      }}
-      onRegenerateText={() => void handleRegenerate()}
-      onRegenerateImage={() => void handleRegenerateImage()}
     />
   );
 }
