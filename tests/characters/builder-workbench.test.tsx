@@ -11,6 +11,14 @@ import {
 } from "../../src/lib/character-attributes";
 
 const workbenchDir = new URL("../../src/app/characters/new/", import.meta.url);
+const headerSource = readFileSync(
+  new URL("character-builder-header.tsx", workbenchDir),
+  "utf8"
+);
+const previewSource = readFileSync(
+  new URL("character-preview-stage.tsx", workbenchDir),
+  "utf8"
+);
 const builderSource = [
   "character-builder-client.tsx",
   "character-builder-header.tsx",
@@ -111,6 +119,30 @@ assert.match(generationRouteSource, /jobTags: body\.characterPreview/);
 assert.match(generationRouteSource, /"character-preview"/);
 assert.match(avatarRouteSource, /avatarIdentityPack\.deleteMany/);
 assert.match(avatarRouteSource, /ugcReferenceImage\.deleteMany/);
+
+function componentPropNames(source: string, exportName: string): string[] {
+  const marker = `export function ${exportName}({`;
+  const start = source.indexOf(marker);
+  assert.ok(start >= 0, `${exportName} should be an exported function`);
+  const open = start + marker.length - 1;
+  const close = source.indexOf("}: {", open);
+  assert.ok(close > open, `${exportName} should destructure typed props`);
+  return source
+    .slice(open + 1, close)
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+const headerProps = componentPropNames(headerSource, "CharacterBuilderHeader");
+const previewProps = componentPropNames(previewSource, "CharacterPreviewStage");
+assert.deepEqual(headerProps, ["view"]);
+assert.deepEqual(previewProps, ["view"]);
+assert.match(headerSource, /export type CharacterBuilderHeaderViewModel/);
+assert.match(previewSource, /export type CharacterPreviewStageViewModel/);
+assert.match(builderSource, /<CharacterBuilderHeader view=\{headerView\} \/>/);
+assert.match(builderSource, /<CharacterPreviewStage view=\{previewView\} \/>/);
+assert.doesNotMatch(builderSource, /createContext|useContext/);
 
 const photoMarkup = renderToStaticMarkup(
   <CharacterPhoto alt="Character preview" />
