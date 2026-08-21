@@ -26,6 +26,7 @@ import {
   projectWithMovedSlide,
 } from "./editor-slides";
 import { EditorWorkspace } from "./editor-workspace";
+import { SlideshowEditorProvider } from "./slideshow-editor-provider";
 import { updateSlideshowSlide } from "./model";
 import {
   parseSlideshowViewMode,
@@ -344,7 +345,7 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
   if (!activeSlide) return null;
 
   return (
-    <EditorWorkspace
+    <SlideshowEditorProvider
       workspace={{
         draft,
         saveState,
@@ -392,6 +393,8 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
         onRegenerateText: () => void handleRegenerate(),
         onRegenerateImage: () => void handleRegenerateImage(),
       }}
-    />
+    >
+      <EditorWorkspace />
+    </SlideshowEditorProvider>
   );
 }

@@ -23,7 +23,7 @@ import {
   stepSlideIndex,
   type SlideshowViewMode,
 } from "./slideshow-view";
-import type { SlideshowEditorWorkspace } from "./view-models";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 
 export function SlideshowViewSwitcher({
   value,
@@ -79,11 +79,7 @@ const VIEW_OPTIONS: Array<{
   { id: "play", label: "Play", icon: Play },
 ];
 
-export function SlideshowBoardView({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function SlideshowBoardView() {
   const {
     draft: project,
     selectedSlideId,
@@ -93,7 +89,7 @@ export function SlideshowBoardView({
     deleteSlide: onDelete,
     moveSlide: onMove,
     changeViewMode,
-  } = workspace;
+  } = useSlideshowEditor();
   const activeIndex = Math.max(
     0,
     project.slides.findIndex((slide) => slide.id === selectedSlideId),
@@ -223,12 +219,8 @@ export function SlideshowBoardView({
   );
 }
 
-export function SlideshowPlayView({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
-  const { draft: project, selectedSlideId, selectSlide: onSelect } = workspace;
+export function SlideshowPlayView() {
+  const { draft: project, selectedSlideId, selectSlide: onSelect } = useSlideshowEditor();
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const touchStartX = useRef<number | null>(null);

@@ -21,13 +21,9 @@ import type {
   SlideshowGrid,
   SlideshowSlideKind,
 } from "./types";
-import type { SlideshowEditorWorkspace } from "./view-models";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 
-export function EditorSlideRail({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function EditorSlideRail() {
   const {
     draft,
     activePhase,
@@ -43,7 +39,7 @@ export function EditorSlideRail({
     setPickerOpen,
     setAdvanced,
     onSelectImageModel,
-  } = workspace;
+  } = useSlideshowEditor();
   return (
         <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">

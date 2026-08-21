@@ -12,7 +12,7 @@ const VIEW_MODEL_PROPS = new Set([
   "production",
   "identity",
 ]);
-const EXTRA_PROPS = new Set(["hidden", "className"]);
+const EXTRA_PROPS = new Set(["hidden", "className", "children"]);
 
 function listTsx(relativeDir: string, files: string[] = []) {
   const dir = new URL(relativeDir, repoRoot);
@@ -104,3 +104,15 @@ for (const file of files) {
     );
   }
 }
+
+const referenceStep = readFileSync(
+  new URL("src/components/clone/reference-step.tsx", repoRoot),
+  "utf8"
+);
+assert.match(referenceStep, /CloneReferenceProvider/);
+assert.doesNotMatch(referenceStep, /workspace=\{workspace\} \/>/);
+const referenceInputs = readFileSync(
+  new URL("src/components/clone/reference-inputs.tsx", repoRoot),
+  "utf8"
+);
+assert.match(referenceInputs, /useCloneReference\(/);

@@ -1,13 +1,9 @@
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
-import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
+import { useCloneReference } from "@/components/clone/clone-reference-provider";
 
-export function CloneReferenceLibrary({
-  workspace,
-}: {
-  workspace: CloneReferenceWorkspace;
-}) {
+export function CloneReferenceLibrary() {
   const {
     selectedCollectionAssetId,
     selectedSavedReference,
@@ -30,7 +26,7 @@ export function CloneReferenceLibrary({
     onSelectSavedReference,
     onLoadMore,
     onToggleAvatarReferences,
-  } = workspace;
+  } = useCloneReference();
 
   return (
     <>

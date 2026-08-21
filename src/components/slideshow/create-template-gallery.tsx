@@ -4,16 +4,16 @@ import { ArrowRight, Workflow } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import { useSlideshowHome } from "./slideshow-home-provider";
 import {
   CARD,
   CARD_HOVER,
   SECONDARY_BTN,
 } from "./studio-ui";
 import { TemplateMinis } from "./template-minis";
-import type { StudioHomeView } from "./view-models";
 
-export function CreateTemplateGallery({ home }: { home: StudioHomeView }) {
-  const { templates, onBrowseTemplates, onUseTemplate } = home;
+export function CreateTemplateGallery() {
+  const { templates, onBrowseTemplates, onUseTemplate } = useSlideshowHome();
   return (
     <>
       <div className="mt-8 flex items-end justify-between gap-4">

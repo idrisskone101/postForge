@@ -5,13 +5,9 @@ import {
   formatIdentityRole,
   REFERENCE_BATCH_OPTIONS,
 } from "@/components/clone/constants";
-import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
+import { useCloneReference } from "@/components/clone/clone-reference-provider";
 
-export function CloneReferenceOptions({
-  workspace,
-}: {
-  workspace: CloneReferenceWorkspace;
-}) {
+export function CloneReferenceOptions() {
   const {
     hairstyleOptions,
     selectedHairstyleRole,
@@ -23,7 +19,7 @@ export function CloneReferenceOptions({
     submitError,
     onSelectHairstyleRole,
     onSelectBatchSize,
-  } = workspace;
+  } = useCloneReference();
   return (
     <div className="flex min-w-0 flex-col gap-3 self-start rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
       <div className="mb-1">

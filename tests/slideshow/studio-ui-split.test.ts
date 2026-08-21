@@ -77,6 +77,32 @@ assert.match(viewModels, /export type CreatorDraft/);
 assert.match(viewModels, /export type StudioHomeView/);
 assert.match(viewModels, /export type SlideshowPublishWorkspace/);
 
+const homeProvider = readFileSync(
+  path.join(slideshowDir, "slideshow-home-provider.tsx"),
+  "utf8",
+);
+const editorProvider = readFileSync(
+  path.join(slideshowDir, "slideshow-editor-provider.tsx"),
+  "utf8",
+);
+assert.match(homeProvider, /createContext/);
+assert.match(homeProvider, /export function useSlideshowHome/);
+assert.match(editorProvider, /createContext/);
+assert.match(editorProvider, /export function useSlideshowEditor/);
+
+const studioHomeSource = readFileSync(path.join(slideshowDir, "studio-home.tsx"), "utf8");
+const createViewSource = readFileSync(path.join(slideshowDir, "create-view.tsx"), "utf8");
+const editorWorkspaceSource = readFileSync(
+  path.join(slideshowDir, "editor-workspace.tsx"),
+  "utf8",
+);
+assert.match(studioHomeSource, /useSlideshowHome\(/);
+assert.doesNotMatch(studioHomeSource, /home=\{home\}/);
+assert.match(createViewSource, /useSlideshowHome\(/);
+assert.doesNotMatch(createViewSource, /home=\{home\}/);
+assert.match(editorWorkspaceSource, /useSlideshowEditor\(/);
+assert.doesNotMatch(editorWorkspaceSource, /workspace=\{workspace\}/);
+
 const PROP_EXTRAS = new Set(["className", "hidden", "children"]);
 const MAX_DATA_PROPS = 7;
 const REQUIRED_VIEW_MODEL: Record<string, string> = {

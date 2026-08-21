@@ -3,15 +3,11 @@
 import { ChevronLeft, Download, Images } from "lucide-react";
 
 import { AutosaveStatus } from "./editor-controls";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 import { SlideshowViewSwitcher } from "./slideshow-view-modes";
 import { SECONDARY_BTN } from "./studio-ui";
-import type { SlideshowEditorWorkspace } from "./view-models";
 
-export function EditorHeader({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function EditorHeader() {
   const {
     draft,
     saveState,
@@ -22,7 +18,7 @@ export function EditorHeader({
     setPickerOpen,
     onBack,
     onPublish,
-  } = workspace;
+  } = useSlideshowEditor();
   return (
     <>
       <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">

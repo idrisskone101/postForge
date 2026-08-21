@@ -14,13 +14,9 @@ import { MAX_SLIDESHOW_SLIDES } from "./model";
 import { SlidePreview, VisualTile } from "./slide-preview";
 import { slideCoverImage } from "./slideshow-view";
 import { ICON_BTN } from "./studio-ui";
-import type { SlideshowEditorWorkspace } from "./view-models";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 
-export function EditorPreview({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function EditorPreview() {
   const {
     draft,
     previewIndices,
@@ -32,7 +28,7 @@ export function EditorPreview({
     moveSlide,
     duplicateSlide,
     deleteSlide,
-  } = workspace;
+  } = useSlideshowEditor();
   return (
         <section aria-label="Slideshow preview" className="flex min-w-0 flex-col">
           <div
