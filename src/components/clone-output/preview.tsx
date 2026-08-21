@@ -1,34 +1,25 @@
 import { AlertCircle, Download, Loader2 } from "lucide-react";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { cn } from "@/lib/utils";
-import type {
-  CloneOutputReviewJob,
-  CloneOutputReviewOutput,
-} from "@/components/clone-output/types";
+import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
 export function CloneOutputReviewPreview({
-  job,
-  featured,
-  featuredSize,
-  previewWidth,
-  previewHeight,
-  isActive,
-  isFailed,
-  isCompleted,
-  onDownload,
-  onSelectVariant,
+  review,
 }: {
-  job: CloneOutputReviewJob;
-  featured: CloneOutputReviewOutput | undefined;
-  featuredSize: string | null;
-  previewWidth: number | null | undefined;
-  previewHeight: number | null | undefined;
-  isActive: boolean;
-  isFailed: boolean;
-  isCompleted: boolean;
-  onDownload: (output: CloneOutputReviewOutput) => void;
-  onSelectVariant: (index: number) => void;
+  review: CloneOutputReviewView;
 }) {
+  const {
+    job,
+    featured,
+    featuredSize,
+    previewWidth,
+    previewHeight,
+    isActive,
+    isFailed,
+    isCompleted,
+    onDownload,
+    onSelectVariant,
+  } = review;
   return (
     <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
       <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>

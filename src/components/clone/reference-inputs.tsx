@@ -1,47 +1,51 @@
+import { type ReactNode } from "react";
 import { Loader2, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import {
-  CloneSourceEmptyState,
-  ReferencePortraitFrame,
-} from "@/components/clone/source-empty-state";
-import type { TikTokVideoInfo } from "@/components/tiktok-input";
-import type {
-  AvatarIdentityPack,
-  AvatarReferencePreview,
-  RefImageEntry,
-  SavedReference,
-} from "@/components/clone/types";
+import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
+import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
+import { cn } from "@/lib/utils";
+
+function ReferencePortraitFrame({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      data-reference-portrait-frame="true"
+      className={cn(
+        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function CloneReferenceInputs({
-  sourceReady,
-  videoInfo,
-  sourcePreviewSrc,
-  durationSec,
-  selectedCollectionAssetId,
-  selectedSavedReference,
-  selectedRef,
-  selectedRefIndex,
-  primaryAvatarReference,
-  identityPack,
-  isStartingIdentityPack,
-  onClearCollection,
-  onClearSavedReference,
+  workspace,
 }: {
-  sourceReady: boolean;
-  videoInfo: TikTokVideoInfo | null;
-  sourcePreviewSrc: string | null;
-  durationSec: number;
-  selectedCollectionAssetId: string | null;
-  selectedSavedReference: SavedReference | null;
-  selectedRef: RefImageEntry | null;
-  selectedRefIndex: number;
-  primaryAvatarReference: AvatarReferencePreview | null;
-  identityPack: AvatarIdentityPack | null;
-  isStartingIdentityPack: boolean;
-  onClearCollection: () => void;
-  onClearSavedReference: () => void;
+  workspace: CloneReferenceWorkspace;
 }) {
+  const {
+    sourceReady,
+    videoInfo,
+    sourcePreviewSrc,
+    durationSec,
+    selectedCollectionAssetId,
+    selectedSavedReference,
+    selectedRef,
+    selectedRefIndex,
+    primaryAvatarReference,
+    identityPack,
+    isStartingIdentityPack,
+    onClearCollection,
+    onClearSavedReference,
+  } = workspace;
   return (
     <div
       data-reference-comparison-stage="true"

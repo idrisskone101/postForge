@@ -1,52 +1,33 @@
 import { cn } from "@/lib/utils";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
+import { TikTokInput } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
+import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSourceStep({
+  draft,
   hidden,
-  sourceReady,
-  videoInfo,
-  originalVideoInfo,
-  sourcePreviewSrc,
-  showTrimmer,
-  sourceToolsOpen,
-  shouldShowSourceTools,
-  sourcesRefreshKey,
-  pendingSourceId,
-  onToggleTrim,
-  onTogglePicker,
-  onTrimmed,
-  onCancelTrim,
-  onVideoDownloaded,
-  onPreselectedSourceResolved,
 }: {
+  draft: CloneDraft;
   hidden: boolean;
-  sourceReady: boolean;
-  videoInfo: TikTokVideoInfo | null;
-  originalVideoInfo: TikTokVideoInfo | null;
-  sourcePreviewSrc: string | null;
-  showTrimmer: boolean;
-  sourceToolsOpen: boolean;
-  shouldShowSourceTools: boolean;
-  sourcesRefreshKey: number;
-  pendingSourceId: string | null;
-  onToggleTrim: () => void;
-  onTogglePicker: () => void;
-  onTrimmed: (info: {
-    localPath: string;
-    filename: string;
-    durationSec: number;
-    width: number;
-    height: number;
-  }) => void;
-  onCancelTrim: () => void;
-  onVideoDownloaded: (info: TikTokVideoInfo | null) => void;
-  onPreselectedSourceResolved: (result: {
-    status: "selected" | "missing";
-    sourceId: string;
-  }) => void;
 }) {
+  const {
+    sourceReady,
+    videoInfo,
+    originalVideoInfo,
+    sourcePreviewSrc,
+    showTrimmer,
+    sourceToolsOpen,
+    shouldShowSourceTools,
+    sourcesRefreshKey,
+    pendingSourceId,
+    onToggleTrim,
+    onTogglePicker,
+    onTrimmed,
+    onCancelTrim,
+    onVideoDownloaded,
+    onPreselectedSourceResolved,
+  } = draft;
   return (
     <section
       data-clone-source-section="true"

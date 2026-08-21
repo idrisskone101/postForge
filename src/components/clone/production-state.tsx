@@ -2,23 +2,9 @@ import { Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { WorkspaceState } from "@/components/workspace-state";
 import { cn } from "@/lib/utils";
-import type { ClonePrimaryAction } from "@/lib/ugc/clone-workflow";
+import type { CloneProductionState } from "@/components/clone/view-models";
 
 type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
-
-interface CloneProductionStatePanelProps {
-  sourceReady: boolean;
-  trimReady: boolean;
-  identityReady: boolean;
-  referenceReady: boolean;
-  canGenerate: boolean;
-  nextAction: ClonePrimaryAction;
-  sourceDetail?: string;
-  trimDetail?: string;
-  identityDetail?: string;
-  referenceDetail?: string;
-  readinessDetail?: string;
-}
 
 function getStepStatus(isReady: boolean, readyStatus: CloneProductionStepStatus = "ready") {
   return isReady ? readyStatus : "required";
@@ -68,18 +54,23 @@ function ProductionStateRow({
 }
 
 export function CloneProductionStatePanel({
-  sourceReady,
-  trimReady,
-  identityReady,
-  referenceReady,
-  canGenerate,
-  nextAction,
-  sourceDetail = sourceReady ? "Source selected and available for preview." : "No TikTok source selected yet.",
-  trimDetail = trimReady ? "Trim/preparation state is set." : "Choose a source before trimming.",
-  identityDetail = identityReady ? "Identity selected for this clone." : "Select an avatar identity.",
-  referenceDetail = referenceReady ? "Reference is ready for generation." : "Generate or choose a reference.",
-  readinessDetail = canGenerate ? "All required production state is ready." : "Complete the required state to generate.",
-}: CloneProductionStatePanelProps) {
+  production,
+}: {
+  production: CloneProductionState;
+}) {
+  const {
+    sourceReady,
+    trimReady,
+    identityReady,
+    referenceReady,
+    canGenerate,
+    nextAction,
+    sourceDetail = sourceReady ? "Source selected and available for preview." : "No TikTok source selected yet.",
+    trimDetail = trimReady ? "Trim/preparation state is set." : "Choose a source before trimming.",
+    identityDetail = identityReady ? "Identity selected for this clone." : "Select an avatar identity.",
+    referenceDetail = referenceReady ? "Reference is ready for generation." : "Generate or choose a reference.",
+    readinessDetail = canGenerate ? "All required production state is ready." : "Complete the required state to generate.",
+  } = production;
   return (
     <aside
       data-clone-production-state="true"
