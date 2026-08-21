@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  filterVideosBySourceUsage,
-  InspirationHeaderControls,
   InspirationPageClient,
 } from "../../src/app/ugc-inspiration/inspiration-page-client";
+import { InspirationHeaderControls } from "../../src/app/ugc-inspiration/inspiration-header-controls";
+import { filterVideosBySourceUsage } from "../../src/app/ugc-inspiration/inspiration-models";
 import {
   emptyInspirationVideoPage,
   INSPIRATION_VIDEO_PAGE_SIZE,

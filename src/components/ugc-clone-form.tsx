@@ -1,25 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { TikTokInput, type TikTokVideoInfo } from "@/components/tiktok-input";
-import { VideoTrimmer } from "@/components/video-trimmer";
-import { AvatarPicker } from "@/components/avatar-picker";
-import { CollectionReferencePicker } from "@/components/collection-reference-picker";
+import { type TikTokVideoInfo } from "@/components/tiktok-input";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import { WorkspaceState } from "@/components/workspace-state";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -43,7 +30,6 @@ import {
 import {
   createReferenceImageBatchEntries,
   getClonePrimaryAction,
-  type ClonePrimaryAction,
 } from "@/lib/ugc/clone-workflow";
 import {
   Loader2,
@@ -51,716 +37,39 @@ import {
   ArrowLeft,
   Sparkles,
   PenLine,
-  Volume2,
-  Video,
-  Users,
-  Layers,
-  Zap,
-  SlidersHorizontal,
-  CheckCircle2,
-  ChevronDown,
-  Eye,
 } from "lucide-react";
+import { CloneActionBar } from "@/components/clone/action-bar";
+import {
+  formatIdentityRole,
+  UGC_CLONE_TIP_INDEX_KEY,
+  UGC_CLONE_TIPS,
+  type ReferenceBatchSize,
+} from "@/components/clone/constants";
+import { CloneIdentityStep } from "@/components/clone/identity-step";
+import { CloneLiveComposition } from "@/components/clone/live-composition";
+import { CloneProductionStatePanel } from "@/components/clone/production-state";
+import { CloneReferenceInputs } from "@/components/clone/reference-inputs";
+import { CloneReferenceLibrary } from "@/components/clone/reference-library";
+import { CloneReferenceOptions } from "@/components/clone/reference-options";
+import { CloneSetupNav } from "@/components/clone/setup-nav";
+import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
+import { CloneIdentityStatusPanel } from "@/components/clone/identity-status";
+import { CloneSourceStep } from "@/components/clone/source-step";
+import type {
+  AvatarIdentityPack,
+  CloneSetupStep,
+  Phase,
+  RefImageEntry,
+  RefJobStatus,
+  SavedReference,
+  SavedReferenceListPage,
+} from "@/components/clone/types";
+
+export type { RefImageEntry };
+export { CloneSourceEmptyState, CloneIdentityStatusPanel, CloneProductionStatePanel };
 
 function getModelCatalogFallback(): ModelDefinition[] {
   return getModelsByType("video").concat(getModelsByType("image"));
-}
-
-const IDENTITY_ROLE_LABELS: Record<string, string> = {
-  front: "Front",
-  threeQuarterLeft: "3/4 Left",
-  threeQuarterRight: "3/4 Right",
-  expressionNeutralOrSmile: "Expression",
-  hairDown: "Hair down",
-  halfUpHalfDown: "Half ponytail",
-  ponytail: "Ponytail",
-  bunUpdo: "Bun / updo",
-};
-
-const UGC_CLONE_TIPS = [
-  {
-    title: "Start with the cleanest hook",
-    body: "Pick a source where the first 1-2 seconds clearly show the face, motion, and spoken setup you want to preserve.",
-  },
-  {
-    title: "Trim before you generate",
-    body: "Cut dead air, jump cuts, and outro moments so motion control focuses on the useful part of the clip.",
-  },
-  {
-    title: "Use a front-facing identity",
-    body: "Choose an avatar with a clear face, even lighting, and minimal accessories for stronger identity transfer.",
-  },
-  {
-    title: "Anchor the visual style",
-    body: "Add a 9:16 reference that matches the lighting and framing you want in the final clone.",
-  },
-  {
-    title: "Keep audio only when it helps",
-    body: "Preserve original sound for timing and delivery; turn it off when the source audio is noisy or off-brand.",
-  },
-  {
-    title: "Remove overlays early",
-    body: "Strip heavy captions or stickers before generation when they cover faces, hands, or product motion.",
-  },
-  {
-    title: "Use Pro for hard motion",
-    body: "Move up to the Pro video model when the source has fast gestures, dance movement, or frequent face turns.",
-  },
-  {
-    title: "Review reference before video",
-    body: "A strong reference still reduces wasted video runs because identity, lighting, and framing are checked first.",
-  },
-] as const;
-
-const UGC_CLONE_TIP_INDEX_KEY = "postforge:ugc-clone:tip-index";
-const REFERENCE_BATCH_OPTIONS = [1, 2, 3] as const;
-type ReferenceBatchSize = (typeof REFERENCE_BATCH_OPTIONS)[number];
-
-function formatIdentityRole(role: string) {
-  return IDENTITY_ROLE_LABELS[role] ?? role;
-}
-
-function CloneModelSelect({
-  label,
-  description,
-  accentClassName,
-  className,
-  models,
-  selectedValue,
-  onValueChange,
-  getCost,
-}: {
-  label: string;
-  description: string;
-  accentClassName: string;
-  className?: string;
-  models: ModelDefinition[];
-  selectedValue: string;
-  onValueChange: (value: string) => void;
-  getCost: (modelId: string) => string;
-}) {
-  const selectedModel = models.find((model) => model.id === selectedValue) ?? models[0];
-  const compactLabel = label === "Final video" ? "Video" : label === "Reference image" ? "Reference" : label;
-  const selectedModelLabel = selectedModel?.name.replace(" Motion Control", "");
-
-  return (
-    <fieldset className={cn("min-w-0", className)}>
-      <legend className="sr-only">
-        {label}
-      </legend>
-      <Select
-        value={selectedValue}
-        onValueChange={(value) => {
-          if (value) onValueChange(value);
-        }}
-      >
-        <SelectTrigger
-          aria-label={label}
-          className="h-10! min-h-10 w-full min-w-0 border-border bg-white px-3 py-2 text-foreground hover:bg-muted dark:bg-muted/50 dark:text-white dark:hover:bg-muted [&>span]:min-w-0 [&>span]:flex-1"
-        >
-          <SelectValue>
-            {() => (
-              <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
-                <span className="min-w-0 flex-1 overflow-hidden text-left">
-                  <span className={cn("block text-[12px] font-bold uppercase tracking-wider", accentClassName)}>
-                    {compactLabel}
-                  </span>
-                  <span className="block truncate text-[13px] font-semibold leading-4">
-                    {selectedModelLabel ?? "Select model"}
-                  </span>
-                </span>
-                {selectedModel ? (
-                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
-                    {getCost(selectedModel.id)}
-                  </span>
-                ) : null}
-              </span>
-            )}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent alignItemWithTrigger={false} className="min-w-[260px]">
-          <SelectGroup>
-            {models.map((model) => (
-              <SelectItem key={model.id} value={model.id}>
-                <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
-                  <span className="min-w-0 flex-1 overflow-hidden">
-                    <span className="block truncate text-xs font-bold">
-                      {model.name}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                      {description}
-                    </span>
-                  </span>
-                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
-                    {getCost(model.id)}
-                  </span>
-                </span>
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </fieldset>
-  );
-}
-
-function ReferencePortraitFrame({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      data-reference-portrait-frame="true"
-      className={cn(
-        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function CloneSourceEmptyState() {
-  return (
-    <WorkspaceState
-      tone="empty"
-      icon={Video}
-      title="Add source"
-      description="Your selected clip appears here."
-      className="min-h-0 border-0 bg-transparent px-0 py-0"
-    />
-  );
-}
-
-type Phase = "input" | "reviewing" | "submitted";
-type CloneSetupStep = "source" | "identity" | "reference";
-
-const CLONE_SETUP_STEPS = [
-  {
-    id: "source",
-    number: "01",
-    label: "Source",
-    shortLabel: "Source",
-    description: "Choose and trim the clip",
-  },
-  {
-    id: "identity",
-    number: "02",
-    label: "Identity",
-    shortLabel: "Who",
-    description: "Choose who appears",
-  },
-  {
-    id: "reference",
-    number: "03",
-    label: "Reference",
-    shortLabel: "Look",
-    description: "Set the final look",
-  },
-] as const satisfies readonly {
-  id: CloneSetupStep;
-  number: string;
-  label: string;
-  shortLabel: string;
-  description: string;
-}[];
-
-interface RefJobStatus {
-  status: "queued" | "processing" | "completed" | "failed";
-  error: string | null;
-  estimatedCost: number;
-  outputs: { id: string }[];
-}
-
-export interface RefImageEntry {
-  jobId: string;
-  fileId: string | null;
-  prompt: string;
-  cost: number;
-  status: "generating" | "completed" | "failed";
-  error?: string;
-}
-
-interface SavedReference {
-  id: string;
-  avatarId: string;
-  prompt: string;
-  createdAt: string;
-  filename: string;
-  mimeType: string;
-  width: number | null;
-  height: number | null;
-  fileSizeBytes: number | null;
-  previewUrl: string;
-  source: {
-    id: string;
-    label: string;
-    originalUrl: string;
-  } | null;
-}
-
-type SavedReferenceListPage = {
-  items: SavedReference[];
-  nextCursor: string | null;
-};
-
-interface AvatarIdentityPack {
-  id: string;
-  avatarId: string;
-  status: "queued" | "processing" | "completed" | "failed";
-  imageModel: string;
-  error: string | null;
-  createdAt: string;
-  updatedAt: string;
-  backfillingHairstyles?: boolean;
-  missingHairstyleRoles?: string[];
-  images: {
-    id: string;
-    role: string;
-    kind?: "core" | "hairstyle";
-    previewUrl: string;
-  }[];
-}
-
-interface CloneIdentityStatusPanelProps {
-  avatarReady: boolean;
-  identityPack: AvatarIdentityPack | null;
-  isStartingIdentityPack: boolean;
-  isGeneratingHairstyles?: boolean;
-  onGenerateHairstyles?: () => void;
-  identityPackError: string | null;
-  onRetry: () => void;
-}
-
-type CloneProductionStepStatus = "ready" | "required" | "working" | "optional";
-
-interface CloneProductionStatePanelProps {
-  sourceReady: boolean;
-  trimReady: boolean;
-  identityReady: boolean;
-  referenceReady: boolean;
-  canGenerate: boolean;
-  nextAction: ClonePrimaryAction;
-  sourceDetail?: string;
-  trimDetail?: string;
-  identityDetail?: string;
-  referenceDetail?: string;
-  readinessDetail?: string;
-}
-
-function getStepStatus(isReady: boolean, readyStatus: CloneProductionStepStatus = "ready") {
-  return isReady ? readyStatus : "required";
-}
-
-function ProductionStateRow({
-  label,
-  status,
-  detail,
-}: {
-  label: string;
-  status: CloneProductionStepStatus;
-  detail: string;
-}) {
-  const statusClassName = {
-    ready: "border-accent-green/30 bg-accent-green/10 text-accent-green",
-    required: "border-accent-coral/30 bg-accent-coral/10 text-accent-coral",
-    working: "border-accent-blue/30 bg-accent-blue/10 text-accent-blue",
-    optional: "border-border bg-muted/45 text-muted-foreground",
-  }[status];
-
-  const statusLabel = {
-    ready: "Ready",
-    required: "Required",
-    working: "Working",
-    optional: "Optional",
-  }[status];
-
-  return (
-    <li className="rounded-lg border border-border bg-background/40 px-3 py-2.5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">{label}</p>
-          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{detail}</p>
-        </div>
-        <span
-          className={cn(
-            "shrink-0 rounded-full border px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
-            statusClassName
-          )}
-        >
-          {statusLabel}
-        </span>
-      </div>
-    </li>
-  );
-}
-
-export function CloneProductionStatePanel({
-  sourceReady,
-  trimReady,
-  identityReady,
-  referenceReady,
-  canGenerate,
-  nextAction,
-  sourceDetail = sourceReady ? "Source selected and available for preview." : "No TikTok source selected yet.",
-  trimDetail = trimReady ? "Trim/preparation state is set." : "Choose a source before trimming.",
-  identityDetail = identityReady ? "Identity selected for this clone." : "Select an avatar identity.",
-  referenceDetail = referenceReady ? "Reference is ready for generation." : "Generate or choose a reference.",
-  readinessDetail = canGenerate ? "All required production state is ready." : "Complete the required state to generate.",
-}: CloneProductionStatePanelProps) {
-  return (
-    <aside
-      data-clone-production-state="true"
-      className="h-fit rounded-lg border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-            Production State
-          </p>
-          <h2 className="mt-1 text-lg font-semibold">Clone readiness</h2>
-        </div>
-        <Badge
-          variant="outline"
-          className={cn(
-            canGenerate
-              ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
-              : "bg-muted/45 text-muted-foreground"
-          )}
-        >
-          {canGenerate ? "Ready" : "In progress"}
-        </Badge>
-      </div>
-
-      <ol className="mt-4 space-y-2">
-        <ProductionStateRow
-          label="Source"
-          status={getStepStatus(sourceReady)}
-          detail={sourceDetail}
-        />
-        <ProductionStateRow
-          label="Trim"
-          status={sourceReady ? (trimReady ? "ready" : "required") : "required"}
-          detail={trimDetail}
-        />
-        <ProductionStateRow
-          label="Identity"
-          status={getStepStatus(identityReady)}
-          detail={identityDetail}
-        />
-        <ProductionStateRow
-          label="Reference"
-          status={getStepStatus(referenceReady)}
-          detail={referenceDetail}
-        />
-        <ProductionStateRow
-          label="Generate readiness"
-          status={canGenerate ? "ready" : "working"}
-          detail={readinessDetail}
-        />
-      </ol>
-
-      {!sourceReady ? (
-        <WorkspaceState
-          tone="empty"
-          icon={Video}
-          title={nextAction.label}
-          description={nextAction.detail}
-          className="mt-4 min-h-40 border-0 bg-muted/25 px-3 py-5"
-        />
-      ) : (
-        <div className="mt-4 rounded-lg border border-border bg-muted/25 p-3">
-          <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-            Next action
-          </p>
-          <p className="mt-1 text-sm font-semibold">{nextAction.label}</p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {nextAction.detail}
-          </p>
-        </div>
-      )}
-    </aside>
-  );
-}
-
-export function CloneIdentityStatusPanel({
-  avatarReady,
-  identityPack,
-  isStartingIdentityPack,
-  isGeneratingHairstyles = false,
-  onGenerateHairstyles,
-  identityPackError,
-  onRetry,
-}: CloneIdentityStatusPanelProps) {
-  const isBackfillingHairstyles =
-    isGeneratingHairstyles || identityPack?.backfillingHairstyles === true;
-  const missingHairstyleCount = identityPack?.missingHairstyleRoles?.length ?? 0;
-  const canGenerateHairstyles =
-    identityPack?.status === "completed" &&
-    missingHairstyleCount > 0 &&
-    !isBackfillingHairstyles;
-
-  const detail = avatarReady
-    ? identityPack?.status === "completed"
-      ? isBackfillingHairstyles
-        ? "Generating extra hairstyle options; existing references stay usable."
-        : `${identityPack.images.length} identity references ready.`
-      : identityPack?.status === "failed"
-        ? "Reference prep failed; the original avatar is still usable."
-        : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
-          ? "Preparing identity references; original avatar remains usable."
-          : "Original avatar is available."
-    : "Choose a saved identity, upload one, or create a new one.";
-  const error = identityPackError || identityPack?.error;
-
-  return (
-    <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
-      <div className="min-w-0 max-w-xl flex-1">
-        <p className="text-xs leading-5 text-muted-foreground">
-          {detail}
-        </p>
-        {error && (
-          <p className="mt-2 min-w-0 break-words text-xs text-destructive [overflow-wrap:anywhere]">
-            {error}
-          </p>
-        )}
-      </div>
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        {(canGenerateHairstyles || isBackfillingHairstyles) && (
-          <button
-            type="button"
-            onClick={onGenerateHairstyles}
-            disabled={!canGenerateHairstyles}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isBackfillingHairstyles ? "Generating hairstyles..." : "Generate hairstyles"}
-          </button>
-        )}
-        {identityPack?.status === "failed" && (
-          <button
-            type="button"
-            onClick={onRetry}
-            disabled={isStartingIdentityPack}
-            className="rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-1.5 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isStartingIdentityPack ? "Retrying..." : "Retry identity prep"}
-          </button>
-        )}
-        {avatarReady && (
-          <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
-            Active
-          </Badge>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function CloneLiveComposition({
-  activeStep,
-  videoInfo,
-  sourcePreviewSrc,
-  avatarId,
-  selectedReference,
-  selectedGeneratedReference,
-  collectionReferenceUrl,
-  sourceReady,
-  identityReady,
-  referenceReady,
-  onJumpToStep,
-}: {
-  activeStep: CloneSetupStep;
-  videoInfo: TikTokVideoInfo | null;
-  sourcePreviewSrc: string | null;
-  avatarId: string | null;
-  selectedReference: SavedReference | null;
-  selectedGeneratedReference: RefImageEntry | null;
-  collectionReferenceUrl: string | null;
-  sourceReady: boolean;
-  identityReady: boolean;
-  referenceReady: boolean;
-  onJumpToStep: (step: CloneSetupStep) => void;
-}) {
-  const referencePreview = collectionReferenceUrl ?? selectedReference?.previewUrl ??
-    (selectedGeneratedReference?.status === "completed" && selectedGeneratedReference.fileId
-      ? `/api/files/${selectedGeneratedReference.fileId}`
-      : null);
-  const avatarPreview = avatarId
-    ? `/api/avatars/${encodeURIComponent(avatarId)}`
-    : null;
-  const hasComposition = Boolean(referencePreview ?? avatarPreview ?? (sourcePreviewSrc && videoInfo));
-  const stageLabel = referencePreview
-    ? "Reference composition"
-    : avatarPreview
-      ? "Selected identity"
-      : sourceReady
-        ? "Source composition"
-        : "Live composition";
-
-  const slots: {
-    id: CloneSetupStep;
-    label: string;
-    ready: boolean;
-    thumb: ReactNode;
-  }[] = [
-    {
-      id: "source",
-      label: "Source",
-      ready: sourceReady,
-      thumb: (
-        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
-          <Video className="size-3.5" />
-        </span>
-      ),
-    },
-    {
-      id: "identity",
-      label: "Identity",
-      ready: identityReady,
-      thumb: avatarPreview ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={avatarPreview} alt="" className="size-full object-cover" />
-      ) : (
-        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
-          <Users className="size-3.5" />
-        </span>
-      ),
-    },
-    {
-      id: "reference",
-      label: "Reference",
-      ready: referenceReady,
-      thumb: referencePreview ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={referencePreview} alt="" className="size-full object-cover" />
-      ) : (
-        <span className="grid size-full place-items-center bg-[var(--pf-active)] text-muted-foreground">
-          <Layers className="size-3.5" />
-        </span>
-      ),
-    },
-  ];
-
-  return (
-    <aside
-      data-clone-live-composition="true"
-      className="min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] lg:sticky lg:top-4"
-    >
-      <div className="flex h-12 items-center justify-between border-b border-border px-4">
-        <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-          {hasComposition && <span className="size-1.5 rounded-full bg-accent-green" />}
-          {stageLabel}
-        </span>
-        <span className="rounded-md border border-border bg-white px-2 py-1 text-[12px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
-          9:16 · Fit
-        </span>
-      </div>
-
-      <div className={hasComposition ? "bg-[#09090B] p-5 sm:p-7" : "bg-[var(--pf-active)] p-5 sm:p-7"}>
-        {hasComposition ? (
-          <div className="mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-lg border border-white/10 bg-[#09090B] shadow-[var(--pf-shadow-lg)]">
-            {referencePreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={referencePreview}
-                alt="Selected clone reference"
-                className="size-full object-contain"
-              />
-            ) : avatarPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={avatarPreview}
-                alt="Selected clone identity"
-                className="size-full object-cover"
-              />
-            ) : sourcePreviewSrc && videoInfo ? (
-              <video
-                src={sourcePreviewSrc}
-                width={videoInfo.width}
-                height={videoInfo.height}
-                muted
-                playsInline
-                controls
-                preload="metadata"
-                className="size-full object-cover"
-              />
-            ) : null}
-          </div>
-        ) : (
-          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] px-8 text-center ">
-            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-white text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
-              <Eye className="size-5" />
-            </span>
-            <p className="mt-4 text-sm font-semibold text-foreground">Your clone takes shape here</p>
-            <p className="mt-1 max-w-[240px] text-xs leading-5 text-muted-foreground">
-              Complete the three inputs and the composition builds live.
-            </p>
-            <div className="mt-5 grid w-full max-w-[240px] gap-1.5">
-              {slots.map((slot) => (
-                <button
-                  key={slot.id}
-                  type="button"
-                  onClick={() => onJumpToStep(slot.id)}
-                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-white px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
-                >
-                  <span className="size-6 shrink-0 overflow-hidden rounded-md">{slot.thumb}</span>
-                  <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-foreground">
-                    {slot.label}
-                  </span>
-                  <span className={cn(
-                    "shrink-0 text-[12px] font-bold uppercase tracking-wider",
-                    slot.ready ? "text-accent-green" : "text-accent-coral"
-                  )}>
-                    {slot.ready ? "Ready" : "Add"}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-px border-t border-border bg-border">
-        {slots.map((slot) => (
-          <button
-            key={slot.id}
-            type="button"
-            onClick={() => onJumpToStep(slot.id)}
-            aria-label={`${slot.label}: ${slot.ready ? "ready" : "required"}. Edit ${slot.label}.`}
-            className="group flex items-center gap-2 bg-white px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[var(--pf-active)]"
-          >
-            <span className="size-7 shrink-0 overflow-hidden rounded-md border border-border shadow-[var(--pf-shadow-2xs)]">
-              {slot.thumb}
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-                {slot.label}
-              </span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-[13px] font-semibold">
-                <span
-                  className={cn(
-                    "size-1.5 shrink-0 rounded-full",
-                    slot.ready ? "bg-accent-green" : "bg-[var(--pf-border-strong)]"
-                  )}
-                />
-                <span className={cn("truncate", !slot.ready && "text-muted-foreground")}>
-                  {slot.ready ? "Ready" : "Required"}
-                </span>
-              </span>
-            </span>
-          </button>
-        ))}
-      </div>
-      <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3 text-[12px] text-muted-foreground">
-        <span className="capitalize">Editing {activeStep}</span>
-        <span>{referenceReady && identityReady && sourceReady ? "All inputs ready" : "Setup in progress"}</span>
-      </div>
-    </aside>
-  );
 }
 
 export function UGCCloneForm() {
@@ -1738,7 +1047,6 @@ export function UGCCloneForm() {
     );
   }
 
-  // ─── Input Phase ────────────────────────────────────────────────────
   return (
     <>
       <div
@@ -1746,202 +1054,69 @@ export function UGCCloneForm() {
         data-active-clone-step={activeSetupStep}
         className="space-y-4 pb-28"
       >
-        <nav
-          aria-label="Clone setup progress"
-          className="grid grid-cols-3 overflow-hidden rounded-lg border border-border bg-[var(--pf-active)] p-1 shadow-[var(--pf-shadow-2xs)]"
-        >
-          {CLONE_SETUP_STEPS.map((step) => {
-            const isActive = activeSetupStep === step.id;
-            const isComplete = completedSetupSteps.has(step.id);
-
-            return (
-              <button
-                key={step.id}
-                type="button"
-                onClick={() => setActiveSetupStep(step.id)}
-                aria-label={`${step.number}. ${step.label}`}
-                aria-current={isActive ? "step" : undefined}
-                className={cn(
-                  "group flex min-w-0 items-center gap-1.5 rounded-md px-2 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] sm:gap-3 sm:px-4",
-                  isActive
-                    ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <span
-                  className={cn(
-                    "flex size-7 shrink-0 items-center justify-center rounded-lg border pf-data text-[12px] font-semibold transition-colors duration-[180ms] sm:size-8",
-                    isComplete
-                      ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-                      : isActive
-                        ? "border-transparent bg-accent-coral text-white shadow-[var(--pf-shadow-2xs)]"
-                        : "border-border bg-card text-muted-foreground"
-                  )}
-                >
-                  {isComplete ? <CheckCircle2 className="size-3.5" /> : step.number}
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-[13px] font-semibold sm:text-sm">
-                    {step.shortLabel}
-                  </span>
-                  <span className="mt-0.5 hidden truncate text-[12px] text-muted-foreground sm:block">
-                    {step.description}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </nav>
+        <CloneSetupNav
+          activeSetupStep={activeSetupStep}
+          completedSetupSteps={completedSetupSteps}
+          onSelectStep={setActiveSetupStep}
+        />
 
         <div className="grid min-w-0 items-start gap-4 lg:grid-cols-[minmax(420px,45fr)_minmax(0,55fr)]">
-          <section
-            data-clone-source-section="true"
-            className={cn(
-              "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
-              activeSetupStep !== "source" && "hidden"
-            )}
-          >
-            <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
-              <div className="flex items-center gap-3">
-                <div>
-                  <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-                    Source &amp; trim
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    Choose the clip and trim the part to clone.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {sourceReady && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (showTrimmer) {
-                        handleCancelTrim();
-                        return;
-                      }
+          <CloneSourceStep
+            hidden={activeSetupStep !== "source"}
+            sourceReady={sourceReady}
+            videoInfo={videoInfo}
+            originalVideoInfo={originalVideoInfo}
+            sourcePreviewSrc={sourcePreviewSrc}
+            showTrimmer={showTrimmer}
+            sourceToolsOpen={sourceToolsOpen}
+            shouldShowSourceTools={shouldShowSourceTools}
+            sourcesRefreshKey={sourcesRefreshKey}
+            pendingSourceId={pendingSourceId}
+            onToggleTrim={() => {
+              if (showTrimmer) {
+                handleCancelTrim();
+                return;
+              }
+              setSourceToolsOpen(false);
+              setShowTrimmer(true);
+            }}
+            onTogglePicker={() => {
+              if (sourceReady) {
+                setShowTrimmer(false);
+                setSourceToolsOpen((value) => !value);
+                return;
+              }
+              setSourceToolsOpen(true);
+            }}
+            onTrimmed={handleTrimmed}
+            onCancelTrim={handleCancelTrim}
+            onVideoDownloaded={handleVideoDownloaded}
+            onPreselectedSourceResolved={handlePreselectedSourceResolved}
+          />
 
-                      setSourceToolsOpen(false);
-                      setShowTrimmer(true);
-                    }}
-                    className="text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {showTrimmer ? "Close trim" : "Trim source"}
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (sourceReady) {
-                      setShowTrimmer(false);
-                      setSourceToolsOpen((value) => !value);
-                      return;
-                    }
-
-                    setSourceToolsOpen(true);
-                  }}
-                  className="text-xs font-semibold text-accent-blue transition-colors hover:text-accent-blue/80"
-                >
-                  {sourceReady
-                    ? sourceToolsOpen
-                      ? "Close picker"
-                      : "Replace source"
-                    : "Choose source"}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {sourceReady && videoInfo && sourcePreviewSrc && (
-                showTrimmer && originalVideoInfo ? (
-                  <VideoTrimmer
-                    key={originalVideoInfo.localPath}
-                    videoPath={originalVideoInfo.localPath}
-                    durationSec={originalVideoInfo.durationSec}
-                    width={originalVideoInfo.width}
-                    height={originalVideoInfo.height}
-                    sourceId={videoInfo.id}
-                    onTrimmed={handleTrimmed}
-                    onCancel={handleCancelTrim}
-                  />
-                ) : (
-                  <div
-                    data-clone-source-selected-preview="true"
-                    className="mx-auto w-full max-w-[320px]"
-                  >
-                    <MediaPreviewFrame
-                      type="video"
-                      src={sourcePreviewSrc}
-                      width={videoInfo.width}
-                      height={videoInfo.height}
-                      alt={videoInfo.label || "Selected source preview"}
-                      variant="card"
-                      frameAspectRatio="9/16"
-                      className="w-full border border-border"
-                      mediaClassName="rounded-none"
-                    />
-                  </div>
-                )
-              )}
-
-              {shouldShowSourceTools && (
-                <div className="rounded-lg border border-dashed border-border bg-muted/25 p-4">
-                  <TikTokInput
-                    onDownloaded={handleVideoDownloaded}
-                    videoInfo={videoInfo}
-                    refreshKey={sourcesRefreshKey}
-                    preselectedSourceId={sourceReady ? null : pendingSourceId}
-                    onPreselectedSourceResolved={handlePreselectedSourceResolved}
-                  />
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section
-            data-clone-identity-section="true"
-            className={cn(
-              "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
-              activeSetupStep !== "identity" && "hidden"
-            )}
-          >
-            <div className="mb-6 flex items-center gap-3">
-              <div>
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-                  Identity
-                </h2>
-                <p className="text-xs text-muted-foreground">Choose who appears in the clone.</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <CloneIdentityStatusPanel
-                avatarReady={avatarReady}
-                identityPack={identityPack}
-                isStartingIdentityPack={isStartingIdentityPack}
-                isGeneratingHairstyles={isGeneratingHairstyles}
-                onGenerateHairstyles={() => {
-                  if (avatarId) {
-                    void generateHairstyleVariants(avatarId);
-                  }
-                }}
-                identityPackError={identityPackError}
-                onRetry={() => {
-                  if (avatarId) {
-                    void startIdentityPack(avatarId, true);
-                  }
-                }}
-              />
-              <AvatarPicker
-                selectedId={avatarId}
-                onSelect={(nextAvatarId) => {
-                  setAvatarId(nextAvatarId);
-                  setActiveSetupStep(sourceReady ? "reference" : "source");
-                }}
-              />
-            </div>
-          </section>
+          <CloneIdentityStep
+            hidden={activeSetupStep !== "identity"}
+            avatarId={avatarId}
+            avatarReady={avatarReady}
+            identityPack={identityPack}
+            isStartingIdentityPack={isStartingIdentityPack}
+            isGeneratingHairstyles={isGeneratingHairstyles}
+            identityPackError={identityPackError}
+            onGenerateHairstyles={() => {
+              if (avatarId) {
+                void generateHairstyleVariants(avatarId);
+              }
+            }}
+            onRetry={() => {
+              if (avatarId) {
+                void startIdentityPack(avatarId, true);
+              }
+            }}
+            onSelectAvatar={(nextAvatarId) => {
+              setAvatarId(nextAvatarId);
+              setActiveSetupStep(sourceReady ? "reference" : "source");
+            }}
+          />
 
           <section
             data-clone-reference-section="true"
@@ -1960,545 +1135,72 @@ export function UGCCloneForm() {
             </div>
 
             <div className="grid items-start gap-4">
-              <div
-                data-reference-comparison-stage="true"
-                className="rounded-lg border border-border bg-muted/40 p-3 sm:p-4"
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">Inputs</p>
-                    <p className="mt-0.5 text-[12px] text-muted-foreground">
-                      Source motion and selected identity
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Side by side
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
-              <div
-                data-reference-source-preview="true"
-                className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3"
-              >
-                {sourceReady && videoInfo && sourcePreviewSrc ? (
-                  <>
-                    <ReferencePortraitFrame>
-                      <MediaPreviewFrame
-                        type="video"
-                        src={sourcePreviewSrc}
-                        width={videoInfo.width}
-                        height={videoInfo.height}
-                        alt={videoInfo.label || "Selected source preview"}
-                        variant="card"
-                        frameAspectRatio="9/16"
-                        className="size-full"
-                        mediaClassName="rounded-none"
-                      />
-                    </ReferencePortraitFrame>
-                    <div className="mt-3 min-w-0">
-                      <span className="block text-[11px] font-medium">Selected source</span>
-                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                        {durationSec.toFixed(1)}s • {videoInfo.width}x{videoInfo.height}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
-                    <CloneSourceEmptyState />
-                  </ReferencePortraitFrame>
-                )}
-              </div>
-
-              <div className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3">
-                {selectedCollectionAssetId ? (
-                  <>
-                    <ReferencePortraitFrame>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/api/files/${encodeURIComponent(selectedCollectionAssetId)}`}
-                        alt="Selected collection reference"
-                        className="size-full object-contain"
-                      />
-                    </ReferencePortraitFrame>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-[11px] font-medium">Collection reference</span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedCollectionAssetId(null)}
-                        className="text-[12px] font-bold text-accent-coral"
-                      >
-                        Change
-                      </button>
-                    </div>
-                  </>
-                ) : selectedSavedReference ? (
-                  <>
-                    <ReferencePortraitFrame>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={selectedSavedReference.previewUrl}
-                        alt="Selected reference"
-                        className="size-full object-contain"
-                      />
-                    </ReferencePortraitFrame>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-[11px] font-medium">Saved reference</span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedSavedReferenceId(null)}
-                        className="text-[12px] font-bold text-accent-coral"
-                      >
-                        Change
-                      </button>
-                    </div>
-                  </>
-                ) : selectedRef?.status === "generating" ? (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-[var(--pf-active)] p-4 text-center">
-                    <Loader2 className="size-7 animate-spin text-accent-coral" />
-                    <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Generating reference
-                    </span>
-                    <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/70">
-                      Creating a still from the selected source and identity.
-                    </span>
-                  </ReferencePortraitFrame>
-                ) : selectedRef?.status === "failed" ? (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center bg-destructive/10 p-4 text-center">
-                    <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
-                      Reference failed
-                    </span>
-                    {selectedRef.error && (
-                      <span className="mt-2 min-w-0 max-w-[220px] break-words text-[12px] leading-4 text-destructive/80 [overflow-wrap:anywhere]">
-                        {selectedRef.error}
-                      </span>
-                    )}
-                  </ReferencePortraitFrame>
-                ) : selectedRef?.status === "completed" && selectedRef.fileId ? (
-                  <>
-                    <ReferencePortraitFrame>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/api/files/${selectedRef.fileId}`}
-                        alt="Generated reference"
-                        className="size-full object-contain"
-                      />
-                    </ReferencePortraitFrame>
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <span className="block text-[11px] font-medium">Generated reference</span>
-                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                          Variant #{selectedRefIndex + 1}
-                        </span>
-                      </div>
-                      <Badge variant="outline" className="border-accent-coral/30 bg-accent-coral/10 text-accent-coral">
-                        Ready
-                      </Badge>
-                    </div>
-                  </>
-                ) : primaryAvatarReference ? (
-                  <>
-                    <ReferencePortraitFrame>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={primaryAvatarReference.previewUrl}
-                        alt={primaryAvatarReference.label}
-                        className="size-full object-contain"
-                      />
-                    </ReferencePortraitFrame>
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <span className="block text-[11px] font-medium">Identity preview</span>
-                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                          {primaryAvatarReference.label} • {primaryAvatarReference.detail}
-                        </span>
-                      </div>
-                      {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-                        <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
-                          Preparing
-                        </Badge>
-                      ) : null}
-                    </div>
-                  </>
-                ) : (
-                  <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
-                    <Users className="size-6 text-muted-foreground/60" />
-                    <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Choose identity
-                    </span>
-                    <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/60">
-                      Identity preview appears here.
-                    </span>
-                  </ReferencePortraitFrame>
-                )}
-              </div>
-                </div>
-              </div>
-
-              <div className="flex min-w-0 flex-col gap-3 self-start rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
-                <div className="mb-1">
-                  <p className="text-xs font-semibold text-foreground">Reference options</p>
-                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
-                    Choose the look for your next reference.
-                  </p>
-                </div>
-                {hairstyleOptions.length > 0 && (
-                  <div className="w-full rounded-lg border border-border bg-muted/30 p-2.5">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Hairstyle
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedHairstyleRole(null)}
-                        disabled={isSubmitting || isGenerating}
-                        className={cn(
-                          "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-                          selectedHairstyleRole === null
-                            ? "border-accent-green bg-accent-green/20 text-accent-green"
-                            : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
-                        )}
-                        aria-pressed={selectedHairstyleRole === null}
-                      >
-                        Original
-                      </button>
-                      {hairstyleOptions.map((option) => (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => setSelectedHairstyleRole(option.role)}
-                          disabled={isSubmitting || isGenerating}
-                          className={cn(
-                            "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-                            selectedHairstyleRole === option.role
-                              ? "border-accent-green bg-accent-green/20 text-accent-green"
-                              : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
-                          )}
-                          aria-pressed={selectedHairstyleRole === option.role}
-                        >
-                          {formatIdentityRole(option.role)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div
-                  data-reference-batch-size={referenceBatchSize}
-                  className="w-full rounded-lg border border-border bg-muted/30 p-2.5"
-                >
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-                      References
-                    </span>
-                    <span className="font-mono text-[12px] text-muted-foreground/80">
-                      {formatCost(referenceBatchCost)}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1">
-                    {REFERENCE_BATCH_OPTIONS.map((count) => (
-                      <button
-                        key={count}
-                        type="button"
-                        data-reference-count-option={count}
-                        onClick={() => setReferenceBatchSize(count)}
-                        disabled={isSubmitting || isGenerating}
-                        className={cn(
-                          "h-8 rounded-lg border text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
-                          referenceBatchSize === count
-                            ? "border-accent-green bg-accent-green/20 text-accent-green"
-                            : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
-                        )}
-                        aria-pressed={referenceBatchSize === count}
-                      >
-                        {count}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  data-reference-generation-summary="true"
-                  className={cn(
-                    "rounded-lg border p-3",
-                    isGenerating
-                      ? "border-accent-blue/25 bg-accent-blue/[0.06]"
-                      : referenceReady
-                        ? "border-accent-green/25 bg-accent-green/[0.06]"
-                        : "border-border bg-muted/30"
-                  )}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span className={cn(
-                      "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg",
-                      isGenerating
-                        ? "bg-accent-blue/10 text-accent-blue"
-                        : referenceReady
-                          ? "bg-accent-green/10 text-accent-green"
-                          : "bg-muted/50 text-muted-foreground"
-                    )}>
-                      {isGenerating ? (
-                        <Loader2 className="size-3.5 animate-spin" />
-                      ) : referenceReady ? (
-                        <Check className="size-3.5" />
-                      ) : (
-                        <Sparkles className="size-3.5" />
-                      )}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-[13px] font-semibold text-foreground/90">
-                          {isGenerating
-                            ? "Generating references"
-                            : referenceReady
-                              ? "Reference ready"
-                              : `Ready for ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
-                        </p>
-                        <span className="shrink-0 font-mono text-[12px] text-muted-foreground/80">
-                          {formatCost(referenceBatchCost)}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-[12px] leading-4 text-muted-foreground/80">
-                        {isGenerating
-                          ? "You can keep reviewing the inputs while this finishes."
-                          : referenceReady
-                            ? "The selected still is ready for clone generation."
-                            : "Use the action bar below when the options look right."}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {submitError && (
-                  <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive [overflow-wrap:anywhere]">
-                    {submitError}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
-                <div>
-                  <p className="text-xs font-semibold text-foreground">Visual collections</p>
-                  <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
-                    Use one owned collection image directly, or keep generating a new reference below.
-                  </p>
-                </div>
-                <CollectionReferencePicker
-                  selectedAssetIds={
-                    selectedCollectionAssetId ? [selectedCollectionAssetId] : []
-                  }
-                  onChange={(assetIds) => {
-                    const nextId = assetIds[0] ?? null;
-                    setSelectedCollectionAssetId(nextId);
-                    if (nextId) {
-                      setSelectedSavedReferenceId(null);
-                      if (!selectedModel.startsWith("kling-3.0")) {
-                        setSelectedModel("kling-3.0-motion");
-                      }
+              <CloneReferenceInputs
+                sourceReady={sourceReady}
+                videoInfo={videoInfo}
+                sourcePreviewSrc={sourcePreviewSrc}
+                durationSec={durationSec}
+                selectedCollectionAssetId={selectedCollectionAssetId}
+                selectedSavedReference={selectedSavedReference}
+                selectedRef={selectedRef}
+                selectedRefIndex={selectedRefIndex}
+                primaryAvatarReference={primaryAvatarReference}
+                identityPack={identityPack}
+                isStartingIdentityPack={isStartingIdentityPack}
+                onClearCollection={() => setSelectedCollectionAssetId(null)}
+                onClearSavedReference={() => setSelectedSavedReferenceId(null)}
+              />
+              <CloneReferenceOptions
+                hairstyleOptions={hairstyleOptions}
+                selectedHairstyleRole={selectedHairstyleRole}
+                referenceBatchSize={referenceBatchSize}
+                referenceBatchCost={referenceBatchCost}
+                isSubmitting={isSubmitting}
+                isGenerating={isGenerating}
+                referenceReady={referenceReady}
+                submitError={submitError}
+                onSelectHairstyleRole={setSelectedHairstyleRole}
+                onSelectBatchSize={setReferenceBatchSize}
+              />
+              <CloneReferenceLibrary
+                selectedCollectionAssetId={selectedCollectionAssetId}
+                selectedSavedReference={selectedSavedReference}
+                selectedSavedReferenceId={selectedSavedReferenceId}
+                selectedRefIndex={selectedRefIndex}
+                refImages={refImages}
+                isLoadingSavedReferences={isLoadingSavedReferences}
+                savedReferencesError={savedReferencesError}
+                savedReferences={savedReferences}
+                savedReferencesNextCursor={savedReferencesNextCursor}
+                isLoadingMoreSavedReferences={isLoadingMoreSavedReferences}
+                referenceLibraryOpen={referenceLibraryOpen}
+                showAvatarReferences={showAvatarReferences}
+                avatarReferencePreviews={avatarReferencePreviews}
+                identityPack={identityPack}
+                isStartingIdentityPack={isStartingIdentityPack}
+                onCollectionChange={(assetIds) => {
+                  const nextId = assetIds[0] ?? null;
+                  setSelectedCollectionAssetId(nextId);
+                  if (nextId) {
+                    setSelectedSavedReferenceId(null);
+                    if (!selectedModel.startsWith("kling-3.0")) {
+                      setSelectedModel("kling-3.0-motion");
                     }
-                    setSubmitError(null);
-                  }}
-                  maxSelection={1}
-                />
-              </div>
-
-                {refImages.length > 0 && (
-                  <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold text-foreground">This run</p>
-                      <span className="font-mono text-[12px] text-muted-foreground/80">
-                        {refImages.length} generated
-                      </span>
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto pb-1">
-                      {refImages.map((entry, index) => (
-                        <button
-                          key={entry.jobId}
-                          type="button"
-                          onClick={() => {
-                            setSelectedSavedReferenceId(null);
-                            setSelectedCollectionAssetId(null);
-                            setSelectedRefIndex(index);
-                          }}
-                          className={cn(
-                            "relative aspect-[9/16] w-24 shrink-0 overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral sm:w-28",
-                            !selectedCollectionAssetId &&
-                            !selectedSavedReference &&
-                            selectedRefIndex === index
-                              ? "border-accent-coral"
-                              : "border-border"
-                          )}
-                        >
-                          {entry.status === "completed" && entry.fileId ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={`/api/files/${entry.fileId}`}
-                              alt={`Generated reference variant ${index + 1}`}
-                              className="size-full object-cover"
-                            />
-                          ) : entry.status === "generating" ? (
-                            <span className="grid size-full place-items-center bg-muted/50 text-accent-coral">
-                              <Loader2 className="size-4 animate-spin" />
-                            </span>
-                          ) : (
-                            <span className="grid size-full place-items-center bg-destructive/10 text-[12px] font-semibold uppercase text-destructive">
-                              Failed
-                            </span>
-                          )}
-                          <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[12px] font-bold text-white">
-                            #{index + 1}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {isLoadingSavedReferences && (
-                  <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                    Loading saved references...
-                  </div>
-                )}
-
-                {savedReferencesError && (
-                  <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive [overflow-wrap:anywhere]">
-                    {savedReferencesError}
-                  </div>
-                )}
-
-                {savedReferences.length > 0 && (
-                  <div className="rounded-lg border border-border bg-muted/40">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setReferenceLibraryOpen((open) => !open);
-                      }}
-                      aria-expanded={referenceLibraryOpen}
-                      aria-controls="reference-library-grid"
-                      className="flex w-full items-center justify-between gap-3 p-3 text-left transition-colors hover:bg-muted/40 sm:p-4"
-                    >
-                      <div>
-                        <p className="text-xs font-semibold text-foreground">Reference library</p>
-                        <p className="mt-0.5 text-[12px] text-muted-foreground">
-                          Browse a saved look only when you need one.
-                        </p>
-                      </div>
-                      <span className="flex shrink-0 items-center gap-2">
-                        <span className="font-mono text-[12px] text-muted-foreground/80">
-                          {savedReferences.length} saved
-                        </span>
-                        <span className="rounded-lg border border-border bg-muted/50 p-1.5 text-muted-foreground">
-                          <ChevronDown className={cn(
-                            "size-3.5 transition-transform",
-                            referenceLibraryOpen && "rotate-180"
-                          )} />
-                        </span>
-                      </span>
-                    </button>
-                    {referenceLibraryOpen && (
-                      <div
-                        id="reference-library-grid"
-                        data-reference-thumbnail-grid="true"
-                        className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 border-t border-border p-3 sm:grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:p-4"
-                      >
-                      {savedReferences.map((reference) => (
-                      <button
-                        key={reference.id}
-                        type="button"
-                        onClick={() => handleSelectSavedReference(reference.id)}
-                        className={cn(
-                          "relative aspect-[9/16] overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
-                          reference.id === selectedSavedReferenceId
-                            ? "border-accent-coral"
-                            : "border-border"
-                        )}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={reference.previewUrl}
-                          alt=""
-                          className="size-full object-cover"
-                        />
-                        {reference.id === selectedSavedReferenceId && (
-                          <span className="absolute inset-0 grid place-items-center bg-accent-coral/15 text-accent-coral">
-                            <Check className="size-4" />
-                          </span>
-                        )}
-                      </button>
-                      ))}
-                      </div>
-                    )}
-                    {referenceLibraryOpen && savedReferencesNextCursor && (
-                      <div className="flex flex-col gap-2 border-t border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-end sm:px-4">
-                        <button
-                          type="button"
-                          onClick={() => void loadMoreSavedReferences()}
-                          disabled={isLoadingMoreSavedReferences}
-                          className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {isLoadingMoreSavedReferences ? "Loading..." : "Load more"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowAvatarReferences((current) => !current)}
-                    disabled={avatarReferencePreviews.length === 0}
-                    aria-expanded={showAvatarReferences}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-left transition-colors hover:bg-muted/60 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Identity references
-                      </span>
-                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground/70">
-                        {avatarReferencePreviews.length > 0
-                          ? `${avatarReferencePreviews.length} available to inspect`
-                          : "Choose an identity to view references"}
-                      </span>
-                    </span>
-                    <span className="shrink-0 rounded-full border border-border px-2 py-1 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {showAvatarReferences ? "Hide" : "Show"}
-                    </span>
-                  </button>
-
-                  {showAvatarReferences && avatarReferencePreviews.length > 0 && (
-                    <div
-                      data-avatar-reference-inspector="true"
-                      className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1"
-                    >
-                      {avatarReferencePreviews.map((reference) => (
-                        <div
-                          key={reference.id}
-                          className="relative aspect-[9/16] overflow-hidden rounded-lg border border-border bg-black"
-                          title={`${reference.label} • ${reference.detail}`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={reference.previewUrl}
-                            alt={reference.label}
-                            className="size-full object-cover"
-                          />
-                          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[12px] font-medium text-white">
-                            <span className="block truncate">{reference.label}</span>
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs text-accent-green">
-                      <Loader2 className="size-3.5 animate-spin" />
-                      Preparing identity references...
-                    </div>
-                  ) : null}
-                </div>
+                  }
+                  setSubmitError(null);
+                }}
+                onSelectGenerated={(index) => {
+                  setSelectedSavedReferenceId(null);
+                  setSelectedCollectionAssetId(null);
+                  setSelectedRefIndex(index);
+                }}
+                onToggleLibrary={() => {
+                  setReferenceLibraryOpen((open) => !open);
+                }}
+                onSelectSavedReference={handleSelectSavedReference}
+                onLoadMore={() => void loadMoreSavedReferences()}
+                onToggleAvatarReferences={() => setShowAvatarReferences((current) => !current)}
+              />
             </div>
           </section>
 
@@ -2520,172 +1222,35 @@ export function UGCCloneForm() {
             onJumpToStep={setActiveSetupStep}
           />
         </div>
-
       </div>
 
-      <section
-        data-clone-primary-action-bar="true"
-        data-clone-generation-settings-bar="true"
-        className="workspace-sidebar-offset-left pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 md:left-[72px] lg:px-8 xl:left-64"
-      >
-        <div
-          className="pointer-events-auto relative mx-auto max-w-[1120px] rounded-2xl border border-border bg-card/96 p-2.5 shadow-[var(--pf-shadow-lg)] backdrop-blur-2xl sm:p-3"
-          title={`${cloneTip.title}: ${cloneTip.body}`}
-        >
-          {mobileSettingsOpen && (
-            <div className="absolute inset-x-0 bottom-[calc(100%+0.5rem)] max-h-[min(70dvh,480px)] space-y-2 overflow-y-auto rounded-2xl border border-border bg-card/98 p-3 shadow-[var(--pf-shadow-lg)] backdrop-blur-2xl lg:hidden">
-              <div className="mb-1 flex items-center justify-between gap-3 px-1">
-                <div>
-                  <p className="text-xs font-semibold text-foreground">Generation settings</p>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">Models, sound, and cleanup</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMobileSettingsOpen(false)}
-                  className="rounded-lg px-2 py-1 text-[12px] font-bold uppercase tracking-wider text-muted-foreground hover:bg-muted/50 hover:text-foreground/80"
-                >
-                  Done
-                </button>
-              </div>
-
-              <CloneModelSelect
-                label="Final video"
-                description="Video model"
-                accentClassName="text-accent-blue"
-                models={cloneVideoModels}
-                selectedValue={selectedModel}
-                onValueChange={(value) => setSelectedModel(value)}
-                getCost={(modelId) =>
-                  formatCost(calculateEstimatedCost(modelId, { durationSec }))
-                }
-              />
-              <CloneModelSelect
-                label="Reference image"
-                description="Image model"
-                accentClassName="text-accent-green"
-                models={referenceImageModels}
-                selectedValue={selectedReferenceImageModel}
-                onValueChange={setSelectedReferenceImageModel}
-                getCost={(modelId) =>
-                  formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
-                }
-              />
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                  <span className="truncate text-[13px] font-semibold text-foreground">Sound</span>
-                  <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
-                </div>
-                <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                  <span className="truncate text-[13px] font-semibold text-foreground">Remove text</span>
-                  <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-[minmax(0,1fr)_44px] gap-2 lg:hidden">
-            <button
-              type="button"
-              onClick={handlePrimaryAction}
-              disabled={primaryActionDisabled}
-              className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
-            >
-              <Zap className="size-3.5 shrink-0" />
-              <span className="truncate">
-                {isSubmitting
-                  ? "Starting..."
-                  : isGenerating
-                    ? "Generating reference..."
-                    : compactActionLabel}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileSettingsOpen((open) => !open)}
-              aria-label="Generation settings"
-              aria-expanded={mobileSettingsOpen}
-              className={cn(
-                "flex size-11 items-center justify-center rounded-lg border transition-colors",
-                mobileSettingsOpen
-                  ? "border-accent-blue/40 bg-accent-blue/12 text-accent-blue"
-                  : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <SlidersHorizontal className="size-4" />
-            </button>
-          </div>
-
-          <div className="hidden gap-2 lg:grid lg:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] lg:items-center">
-              <CloneModelSelect
-                label="Final video"
-                description="Video model"
-                accentClassName="text-accent-blue"
-                className="min-w-0"
-                models={cloneVideoModels}
-                selectedValue={selectedModel}
-                onValueChange={(value) => setSelectedModel(value)}
-                getCost={(modelId) =>
-                  formatCost(calculateEstimatedCost(modelId, { durationSec }))
-                }
-              />
-
-              <CloneModelSelect
-                label="Reference image"
-                description="Image model"
-                accentClassName="text-accent-green"
-                className="min-w-0"
-                models={referenceImageModels}
-                selectedValue={selectedReferenceImageModel}
-                onValueChange={setSelectedReferenceImageModel}
-                getCost={(modelId) =>
-                  formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
-                }
-              />
-
-              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <Volume2 className="size-4 shrink-0 text-muted-foreground" />
-                  <p className="truncate text-[13px] font-semibold text-foreground">
-                    Sound
-                  </p>
-                </div>
-                <Switch checked={keepOriginalSound} onCheckedChange={setKeepOriginalSound} />
-              </div>
-
-              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
-                <p className="truncate text-[13px] font-semibold text-foreground">
-                  Text
-                  {removeTextOverlays && (
-                    <span className="ml-1 font-mono text-[12px] text-accent-green">+{formatCost(textErasureCost)}</span>
-                  )}
-                </p>
-                <Switch checked={removeTextOverlays} onCheckedChange={setRemoveTextOverlays} />
-              </div>
-
-              <button
-                type="button"
-                onClick={handlePrimaryAction}
-                disabled={primaryActionDisabled}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
-              >
-                <Zap className="size-3.5 shrink-0" />
-                <span className="truncate">
-                  {isSubmitting
-                    ? "Starting..."
-                    : isGenerating
-                      ? "Generating reference..."
-                      : compactActionLabel}
-                </span>
-                {!isSubmitting && !isGenerating && (
-                  <span className="shrink-0 rounded-md bg-white/15 px-1.5 py-0.5 pf-data text-[12px] font-semibold">
-                    {formatCost((totalRefCost || referenceBatchCost) + videoCost + textErasureCost)}
-                  </span>
-                )}
-              </button>
-          </div>
-        </div>
-      </section>
+      <CloneActionBar
+        cloneTip={cloneTip}
+        mobileSettingsOpen={mobileSettingsOpen}
+        cloneVideoModels={cloneVideoModels}
+        referenceImageModels={referenceImageModels}
+        selectedModel={selectedModel}
+        selectedReferenceImageModel={selectedReferenceImageModel}
+        keepOriginalSound={keepOriginalSound}
+        removeTextOverlays={removeTextOverlays}
+        durationSec={durationSec}
+        referenceBatchSize={referenceBatchSize}
+        textErasureCost={textErasureCost}
+        totalRefCost={totalRefCost}
+        referenceBatchCost={referenceBatchCost}
+        videoCost={videoCost}
+        isSubmitting={isSubmitting}
+        isGenerating={isGenerating}
+        compactActionLabel={compactActionLabel}
+        primaryActionDisabled={primaryActionDisabled}
+        onToggleMobileSettings={() => setMobileSettingsOpen((open) => !open)}
+        onCloseMobileSettings={() => setMobileSettingsOpen(false)}
+        onSelectModel={setSelectedModel}
+        onSelectReferenceImageModel={setSelectedReferenceImageModel}
+        onToggleSound={setKeepOriginalSound}
+        onToggleTextOverlays={setRemoveTextOverlays}
+        onPrimaryAction={handlePrimaryAction}
+      />
     </>
   );
-
 }
