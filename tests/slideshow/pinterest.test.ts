@@ -380,11 +380,23 @@ const pinterestDialogSource = [
   )
   .join("\n");
 const creatorViewSource = readFileSync(
-  new URL("../../src/components/slideshow/studio-views.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/creator-view.tsx", import.meta.url),
+  "utf8",
+);
+const creatorCopySource = readFileSync(
+  new URL("../../src/components/slideshow/creator-copy-form.tsx", import.meta.url),
+  "utf8",
+);
+const creatorTemplateSource = readFileSync(
+  new URL("../../src/components/slideshow/creator-template-panel.tsx", import.meta.url),
+  "utf8",
+);
+const creatorSlotSource = readFileSync(
+  new URL("../../src/components/slideshow/creator-image-slot.tsx", import.meta.url),
   "utf8",
 );
 const slideshowStudioSource = readFileSync(
-  new URL("../../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
+  new URL("../../src/components/slideshow/studio-creator-generate.ts", import.meta.url),
   "utf8",
 );
 assert.match(pinterestDialogSource, /Use .* as slide image/);
@@ -399,13 +411,13 @@ assert.match(
   /\.slice\(0, MAX_PINTEREST_IMPORT_IMAGES\)/,
 );
 assert.equal(MAX_PINTEREST_IMPORT_IMAGES, 40);
-assert.match(creatorViewSource, /Search Pinterest/);
-assert.match(creatorViewSource, /Copy JSON/);
+assert.match(creatorTemplateSource, /Search Pinterest/);
+assert.match(creatorTemplateSource, /Copy JSON/);
 assert.match(creatorViewSource, /directImageAssetIds/);
-assert.match(creatorViewSource, /Add \$\{label\} image from collections/);
-assert.match(creatorViewSource, /openImagePicker\(\{ kind: "hook" \}\)/);
+assert.match(creatorSlotSource, /Add \$\{label\} image from collections/);
+assert.match(creatorCopySource, /openImagePicker\(\{ kind: "hook" \}\)|onOpenImagePicker\(\{ kind: "hook" \}\)/);
 assert.match(creatorViewSource, /alignCreatorDirectImages/);
-assert.match(creatorViewSource, /These shape generated slides/);
+assert.match(creatorTemplateSource, /These shape generated slides/);
 assert.match(slideshowStudioSource, /slidesToGenerate = saved\.slides\.filter/);
 assert.match(slideshowStudioSource, /applyDirectSlideshowImages/);
 assert.match(slideshowStudioSource, /collection image/);

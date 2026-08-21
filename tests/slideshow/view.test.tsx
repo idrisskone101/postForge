@@ -15,8 +15,16 @@ import {
 } from "../../src/components/slideshow/slideshow-view";
 import type { SlideshowProject } from "../../src/components/slideshow/types";
 
-const editorSource = readFileSync(
-  new URL("../../src/components/slideshow/slideshow-editor.tsx", import.meta.url),
+const editorHeaderSource = readFileSync(
+  new URL("../../src/components/slideshow/editor-header.tsx", import.meta.url),
+  "utf8",
+);
+const editorPreviewSource = readFileSync(
+  new URL("../../src/components/slideshow/editor-preview.tsx", import.meta.url),
+  "utf8",
+);
+const editorWorkspaceSource = readFileSync(
+  new URL("../../src/components/slideshow/editor-workspace.tsx", import.meta.url),
   "utf8",
 );
 const pageSource = readFileSync(
@@ -33,12 +41,12 @@ const studioSource = readFileSync(
   "utf8",
 );
 assert.match(studioSource, /overflow-hidden/);
-assert.match(editorSource, /h-full min-h-0/);
-assert.match(editorSource, /SlideshowViewSwitcher/);
-assert.match(editorSource, /SlideshowBoardView/);
-assert.match(editorSource, /SlideshowPlayView/);
-assert.match(editorSource, /slideCoverImage/);
-assert.match(editorSource, /ArrowLeft/);
+assert.match(editorWorkspaceSource, /h-full min-h-0/);
+assert.match(editorHeaderSource, /SlideshowViewSwitcher/);
+assert.match(editorWorkspaceSource, /SlideshowBoardView/);
+assert.match(editorWorkspaceSource, /SlideshowPlayView/);
+assert.match(editorPreviewSource, /slideCoverImage/);
+assert.match(editorPreviewSource, /ArrowLeft/);
 assert.match(pageSource, /parseSlideshowViewMode\(params\.view\)/);
 assert.match(previewSource, /imageUrl\?:/);
 assert.match(previewSource, /\/api\/slideshows\/overlay/);
