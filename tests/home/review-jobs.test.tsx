@@ -16,15 +16,6 @@ const markup = renderToStaticMarkup(
         },
         byModel: {},
       },
-      monthSummary: {
-        period: "month",
-        totalCost: 0,
-        breakdown: {
-          image: { count: 0, cost: 0 },
-          video: { count: 3, cost: 0 },
-        },
-        byModel: {},
-      },
       activeJobs: [],
       recentJobs: [
         {

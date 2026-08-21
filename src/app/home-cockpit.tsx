@@ -48,7 +48,6 @@ export type HomeMedia = {
 
 export type HomeDashboard = {
   todaySummary: CostSummary;
-  monthSummary: CostSummary;
   activeJobs: HomeJob[];
   activeJobCount?: number;
   recentJobs: HomeJob[];
