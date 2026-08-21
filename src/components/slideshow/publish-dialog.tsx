@@ -23,10 +23,7 @@ import { cn } from "@/lib/utils";
 
 import { PublishSidebar } from "./publish-sidebar";
 import { PublishTikTokFields } from "./publish-tiktok-fields";
-import type {
-  SlideshowProject,
-  SlideshowPublishOptions,
-} from "./types";
+import type { SlideshowPublishOptions } from "./types";
 import type { SlideshowPublishDialog, SlideshowPublishWorkspace } from "./view-models";
 
 export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
