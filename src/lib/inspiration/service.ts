@@ -2,8 +2,6 @@ import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   InspirationSourceDecision,
-  InspirationSourceUsage,
-  InspirationVideoCard,
   SetInspirationRejectionResult,
   TrackedInspirationAccount,
 } from "@/lib/inspiration/types";
@@ -19,22 +17,13 @@ import {
 
 const INSPIRATION_STALE_MS = 12 * 60 * 60 * 1000;
 
-const inspirationAccountInclude = {
-  videos: {
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-  },
+const inspirationAccountListInclude = {
+  _count: { select: { videos: true } },
 } satisfies Prisma.InspirationAccountInclude;
 
-type InspirationAccountRecord = Prisma.InspirationAccountGetPayload<{
-  include: typeof inspirationAccountInclude;
+type InspirationAccountListRecord = Prisma.InspirationAccountGetPayload<{
+  include: typeof inspirationAccountListInclude;
 }>;
-
-type SourceUsageRecord = Pick<
-  Prisma.TikTokSourceGetPayload<{
-    select: { id: true; originalUrl: true; createdAt: true };
-  }>,
-  "id" | "originalUrl" | "createdAt"
->;
 
 interface MappedVideoInput {
   externalVideoId: string;
@@ -302,35 +291,6 @@ function isAccountStale(lastSyncedAt: Date | null): boolean {
   return Date.now() - lastSyncedAt.getTime() > INSPIRATION_STALE_MS;
 }
 
-function getAccountAvatarUrl(account: InspirationAccountRecord): string | null {
-  if (account.avatarUrl) return account.avatarUrl;
-
-  for (const video of account.videos) {
-    const avatarUrl = findAvatarUrlLikeString(video.sourcePayload);
-    if (avatarUrl) return avatarUrl;
-  }
-
-  return null;
-}
-
-function serializeSourceUsage(
-  source: SourceUsageRecord | null
-): InspirationSourceUsage {
-  if (!source) {
-    return {
-      status: "unused",
-      sourceId: null,
-      usedAt: null,
-    };
-  }
-
-  return {
-    status: "used",
-    sourceId: source.id,
-    usedAt: source.createdAt.toISOString(),
-  };
-}
-
 function serializeSourceDecision(rejectedAt: Date | null): InspirationSourceDecision {
   return {
     status: rejectedAt ? "rejected" : "approved",
@@ -338,108 +298,16 @@ function serializeSourceDecision(rejectedAt: Date | null): InspirationSourceDeci
   };
 }
 
-async function getSourceUsageByVideoId(
-  accounts: InspirationAccountRecord[]
-): Promise<Map<string, SourceUsageRecord>> {
-  const videos = accounts.flatMap((account) => account.videos);
-  if (videos.length === 0) return new Map();
-
-  const originalUrls = Array.from(
-    new Set(videos.map((video) => video.originalUrl).filter(Boolean))
-  );
-  const externalVideoIds = Array.from(
-    new Set(videos.map((video) => video.externalVideoId).filter(Boolean))
-  );
-  const clauses: Prisma.TikTokSourceWhereInput[] = [
-    ...(originalUrls.length > 0
-      ? [{ originalUrl: { in: originalUrls } }]
-      : []),
-    ...externalVideoIds.map((externalVideoId) => ({
-      originalUrl: { contains: externalVideoId },
-    })),
-  ];
-
-  if (clauses.length === 0) return new Map();
-
-  const sources = await prisma.tikTokSource.findMany({
-    where: { OR: clauses },
-    select: { id: true, originalUrl: true, createdAt: true },
-  });
-
-  const sourcesByUrl = new Map(
-    sources.map((source) => [source.originalUrl, source])
-  );
-  const sourcesByExternalVideoId = new Map<string, SourceUsageRecord>();
-
-  for (const source of sources) {
-    const externalVideoId = extractTikTokVideoId(source.originalUrl);
-    if (externalVideoId && !sourcesByExternalVideoId.has(externalVideoId)) {
-      sourcesByExternalVideoId.set(externalVideoId, source);
-    }
-  }
-
-  const usageByVideoId = new Map<string, SourceUsageRecord>();
-  for (const video of videos) {
-    const source =
-      sourcesByUrl.get(video.originalUrl) ??
-      sourcesByExternalVideoId.get(video.externalVideoId);
-
-    if (source) {
-      usageByVideoId.set(video.id, source);
-    }
-  }
-
-  return usageByVideoId;
-}
-
-function serializeVideo(
-  account: InspirationAccountRecord,
-  video: InspirationAccountRecord["videos"][number],
-  accountAvatarUrl: string | null,
-  sourceUsageByVideoId: Map<string, SourceUsageRecord>
-): InspirationVideoCard {
-  const source = sourceUsageByVideoId.get(video.id) ?? null;
-
-  return {
-    id: video.id,
-    accountId: video.accountId,
-    platform: "tiktok",
-    externalVideoId: video.externalVideoId,
-    originalUrl: video.originalUrl,
-    embedUrl: video.embedUrl,
-    thumbnailUrl: video.thumbnailUrl,
-    caption: video.caption,
-    durationSec: video.durationSec,
-    publishedAt: video.publishedAt?.toISOString() ?? null,
-    viewCount: video.viewCount,
-    likeCount: video.likeCount,
-    commentCount: video.commentCount,
-    shareCount: video.shareCount,
-    lastSeenAt: video.lastSeenAt.toISOString(),
-    createdAt: video.createdAt.toISOString(),
-    updatedAt: video.updatedAt.toISOString(),
-    creatorHandle: account.handleDisplay,
-    creatorDisplayName: account.displayName,
-    creatorAvatarUrl: accountAvatarUrl,
-    creatorProfileUrl: account.profileUrl,
-    sourceUsage: serializeSourceUsage(source),
-    sourceDecision: serializeSourceDecision(video.rejectedAt),
-  };
-}
-
 function serializeAccount(
-  account: InspirationAccountRecord,
-  sourceUsageByVideoId: Map<string, SourceUsageRecord>
+  account: InspirationAccountListRecord
 ): TrackedInspirationAccount {
-  const accountAvatarUrl = getAccountAvatarUrl(account);
-
   return {
     id: account.id,
     platform: "tiktok",
     handleNormalized: account.handleNormalized,
     handleDisplay: account.handleDisplay,
     displayName: account.displayName,
-    avatarUrl: accountAvatarUrl,
+    avatarUrl: account.avatarUrl,
     profileUrl: account.profileUrl,
     syncStatus: account.syncStatus,
     lastSyncAttemptAt: account.lastSyncAttemptAt?.toISOString() ?? null,
@@ -448,30 +316,26 @@ function serializeAccount(
     createdAt: account.createdAt.toISOString(),
     updatedAt: account.updatedAt.toISOString(),
     isStale: isAccountStale(account.lastSyncedAt),
-    videos: account.videos.map((video) =>
-      serializeVideo(account, video, accountAvatarUrl, sourceUsageByVideoId)
-    ),
+    videoCount: account._count.videos,
   };
 }
 
-async function getTrackedAccountRecord(accountId: string): Promise<InspirationAccountRecord | null> {
+async function getTrackedAccountListRecord(
+  accountId: string
+): Promise<InspirationAccountListRecord | null> {
   return prisma.inspirationAccount.findUnique({
     where: { id: accountId },
-    include: inspirationAccountInclude,
+    include: inspirationAccountListInclude,
   });
 }
 
 export async function listTrackedInspirationAccounts(): Promise<TrackedInspirationAccount[]> {
   const accounts = await prisma.inspirationAccount.findMany({
-    include: inspirationAccountInclude,
+    include: inspirationAccountListInclude,
     orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
   });
 
-  const sourceUsageByVideoId = await getSourceUsageByVideoId(accounts);
-
-  return accounts.map((account) =>
-    serializeAccount(account, sourceUsageByVideoId)
-  );
+  return accounts.map((account) => serializeAccount(account));
 }
 
 export async function createTrackedInspirationAccount(
@@ -486,12 +350,11 @@ export async function createTrackedInspirationAccount(
         handleNormalized,
       },
     },
-    include: inspirationAccountInclude,
+    include: inspirationAccountListInclude,
   });
 
   if (existing) {
-    const sourceUsageByVideoId = await getSourceUsageByVideoId([existing]);
-    return serializeAccount(existing, sourceUsageByVideoId);
+    return serializeAccount(existing);
   }
 
   const account = await prisma.inspirationAccount.create({
@@ -502,11 +365,10 @@ export async function createTrackedInspirationAccount(
       profileUrl: buildTikTokProfileUrl(handleNormalized),
       syncStatus: "idle",
     },
-    include: inspirationAccountInclude,
+    include: inspirationAccountListInclude,
   });
 
-  const sourceUsageByVideoId = await getSourceUsageByVideoId([account]);
-  return serializeAccount(account, sourceUsageByVideoId);
+  return serializeAccount(account);
 }
 
 export async function syncTrackedInspirationAccount(
@@ -615,13 +477,12 @@ export async function syncTrackedInspirationAccount(
     throw error;
   }
 
-  const updated = await getTrackedAccountRecord(accountId);
+  const updated = await getTrackedAccountListRecord(accountId);
   if (!updated) {
     throw new VirloApiError("Tracked creator not found after sync.", 404);
   }
 
-  const sourceUsageByVideoId = await getSourceUsageByVideoId([updated]);
-  return serializeAccount(updated, sourceUsageByVideoId);
+  return serializeAccount(updated);
 }
 
 export async function deleteTrackedInspirationAccount(accountId: string): Promise<void> {

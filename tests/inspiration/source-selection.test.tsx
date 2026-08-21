@@ -5,7 +5,113 @@ import {
   InspirationHeaderControls,
   InspirationPageClient,
 } from "../../src/app/ugc-inspiration/inspiration-page-client";
-import type { TrackedInspirationAccount } from "../../src/lib/inspiration/types";
+import {
+  emptyInspirationVideoPage,
+  INSPIRATION_VIDEO_PAGE_SIZE,
+  inspirationVideoFeedPath,
+  type InspirationVideoCard,
+  type InspirationVideoPage,
+  type TrackedInspirationAccount,
+} from "../../src/lib/inspiration/types";
+
+const videos: InspirationVideoCard[] = [
+  {
+    id: "video-1",
+    accountId: "account-1",
+    platform: "tiktok",
+    externalVideoId: "7350000000000000000",
+    originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000000",
+    embedUrl: null,
+    thumbnailUrl: null,
+    caption: "Three-second hook with a clear first-frame payoff.",
+    durationSec: 13,
+    publishedAt: "2026-06-12T12:00:00Z",
+    viewCount: 125000,
+    likeCount: 18000,
+    commentCount: 230,
+    shareCount: 92,
+    lastSeenAt: "2026-06-12T12:00:00Z",
+    createdAt: "2026-06-12T12:00:00Z",
+    updatedAt: "2026-06-12T12:00:00Z",
+    creatorHandle: "@creator",
+    creatorDisplayName: "Creator",
+    creatorAvatarUrl: null,
+    creatorProfileUrl: "https://www.tiktok.com/@creator",
+    sourceUsage: {
+      status: "unused",
+      sourceId: null,
+      usedAt: null,
+    },
+    sourceDecision: {
+      status: "approved",
+      rejectedAt: null,
+    },
+  },
+  {
+    id: "video-2",
+    accountId: "account-1",
+    platform: "tiktok",
+    externalVideoId: "7350000000000000001",
+    originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000001",
+    embedUrl: null,
+    thumbnailUrl: null,
+    caption: "Already used source with a strong visual payoff.",
+    durationSec: 9,
+    publishedAt: "2026-06-11T12:00:00Z",
+    viewCount: 98000,
+    likeCount: 12000,
+    commentCount: 180,
+    shareCount: 64,
+    lastSeenAt: "2026-06-12T12:00:00Z",
+    createdAt: "2026-06-12T12:00:00Z",
+    updatedAt: "2026-06-12T12:00:00Z",
+    creatorHandle: "@creator",
+    creatorDisplayName: "Creator",
+    creatorAvatarUrl: null,
+    creatorProfileUrl: "https://www.tiktok.com/@creator",
+    sourceUsage: {
+      status: "used",
+      sourceId: "source-1",
+      usedAt: "2026-06-13T12:00:00Z",
+    },
+    sourceDecision: {
+      status: "approved",
+      rejectedAt: null,
+    },
+  },
+  {
+    id: "video-3",
+    accountId: "account-1",
+    platform: "tiktok",
+    externalVideoId: "7350000000000000002",
+    originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000002",
+    embedUrl: null,
+    thumbnailUrl: null,
+    caption: "Rejected source that should stay out of the fresh pile.",
+    durationSec: 11,
+    publishedAt: "2026-06-10T12:00:00Z",
+    viewCount: 54000,
+    likeCount: 6000,
+    commentCount: 90,
+    shareCount: 21,
+    lastSeenAt: "2026-06-12T12:00:00Z",
+    createdAt: "2026-06-12T12:00:00Z",
+    updatedAt: "2026-06-12T12:00:00Z",
+    creatorHandle: "@creator",
+    creatorDisplayName: "Creator",
+    creatorAvatarUrl: null,
+    creatorProfileUrl: "https://www.tiktok.com/@creator",
+    sourceUsage: {
+      status: "unused",
+      sourceId: null,
+      usedAt: null,
+    },
+    sourceDecision: {
+      status: "rejected",
+      rejectedAt: "2026-06-14T12:00:00Z",
+    },
+  },
+];
 
 const accounts: TrackedInspirationAccount[] = [
   {
@@ -23,109 +129,55 @@ const accounts: TrackedInspirationAccount[] = [
     createdAt: "2026-06-12T12:00:00Z",
     updatedAt: "2026-06-12T12:00:00Z",
     isStale: false,
-    videos: [
-      {
-        id: "video-1",
-        accountId: "account-1",
-        platform: "tiktok",
-        externalVideoId: "7350000000000000000",
-        originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000000",
-        embedUrl: null,
-        thumbnailUrl: null,
-        caption: "Three-second hook with a clear first-frame payoff.",
-        durationSec: 13,
-        publishedAt: "2026-06-12T12:00:00Z",
-        viewCount: 125000,
-        likeCount: 18000,
-        commentCount: 230,
-        shareCount: 92,
-        lastSeenAt: "2026-06-12T12:00:00Z",
-        createdAt: "2026-06-12T12:00:00Z",
-        updatedAt: "2026-06-12T12:00:00Z",
-        creatorHandle: "@creator",
-        creatorDisplayName: "Creator",
-        creatorAvatarUrl: null,
-        creatorProfileUrl: "https://www.tiktok.com/@creator",
-        sourceUsage: {
-          status: "unused",
-          sourceId: null,
-          usedAt: null,
-        },
-        sourceDecision: {
-          status: "approved",
-          rejectedAt: null,
-        },
-      },
-      {
-        id: "video-2",
-        accountId: "account-1",
-        platform: "tiktok",
-        externalVideoId: "7350000000000000001",
-        originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000001",
-        embedUrl: null,
-        thumbnailUrl: null,
-        caption: "Already used source with a strong visual payoff.",
-        durationSec: 9,
-        publishedAt: "2026-06-11T12:00:00Z",
-        viewCount: 98000,
-        likeCount: 12000,
-        commentCount: 180,
-        shareCount: 64,
-        lastSeenAt: "2026-06-12T12:00:00Z",
-        createdAt: "2026-06-12T12:00:00Z",
-        updatedAt: "2026-06-12T12:00:00Z",
-        creatorHandle: "@creator",
-        creatorDisplayName: "Creator",
-        creatorAvatarUrl: null,
-        creatorProfileUrl: "https://www.tiktok.com/@creator",
-        sourceUsage: {
-          status: "used",
-          sourceId: "source-1",
-          usedAt: "2026-06-13T12:00:00Z",
-        },
-        sourceDecision: {
-          status: "approved",
-          rejectedAt: null,
-        },
-      },
-      {
-        id: "video-3",
-        accountId: "account-1",
-        platform: "tiktok",
-        externalVideoId: "7350000000000000002",
-        originalUrl: "https://www.tiktok.com/@creator/video/7350000000000000002",
-        embedUrl: null,
-        thumbnailUrl: null,
-        caption: "Rejected source that should stay out of the fresh pile.",
-        durationSec: 11,
-        publishedAt: "2026-06-10T12:00:00Z",
-        viewCount: 54000,
-        likeCount: 6000,
-        commentCount: 90,
-        shareCount: 21,
-        lastSeenAt: "2026-06-12T12:00:00Z",
-        createdAt: "2026-06-12T12:00:00Z",
-        updatedAt: "2026-06-12T12:00:00Z",
-        creatorHandle: "@creator",
-        creatorDisplayName: "Creator",
-        creatorAvatarUrl: null,
-        creatorProfileUrl: "https://www.tiktok.com/@creator",
-        sourceUsage: {
-          status: "unused",
-          sourceId: null,
-          usedAt: null,
-        },
-        sourceDecision: {
-          status: "rejected",
-          rejectedAt: "2026-06-14T12:00:00Z",
-        },
-      },
-    ],
+    videoCount: 3,
   },
 ];
 
+const initialVideoPage: InspirationVideoPage = {
+  items: videos,
+  nextCursor: null,
+  hasMore: false,
+  total: 3,
+  usageCounts: {
+    all: 3,
+    unused: 1,
+    used: 1,
+    rejected: 1,
+  },
+};
+
+const pagedVideos = Array.from({ length: INSPIRATION_VIDEO_PAGE_SIZE }, (_, index) => ({
+  ...videos[0],
+  id: `paged-video-${index}`,
+  externalVideoId: `7350000000000000${String(index).padStart(3, "0")}`,
+  originalUrl: `https://www.tiktok.com/@creator/video/paged-${index}`,
+  publishedAt: new Date(Date.UTC(2026, 5, 30 - index)).toISOString(),
+}));
+const pagedCursor = pagedVideos[pagedVideos.length - 1]?.id ?? "paged-video-23";
+const manySourcesPage: InspirationVideoPage = {
+  items: pagedVideos,
+  nextCursor: pagedCursor,
+  hasMore: true,
+  total: 30,
+  usageCounts: {
+    all: 30,
+    unused: 30,
+    used: 0,
+    rejected: 0,
+  },
+};
+
+assert.equal(
+  JSON.parse(JSON.stringify(accounts[0])).videos,
+  undefined,
+  "account list DTO must not embed videos"
+);
+
 const markup = renderToStaticMarkup(
-  <InspirationPageClient initialAccounts={accounts} />
+  <InspirationPageClient
+    initialAccounts={accounts}
+    initialVideoPage={initialVideoPage}
+  />
 );
 const headerMarkup = renderToStaticMarkup(
   <InspirationHeaderControls
@@ -136,25 +188,17 @@ const headerMarkup = renderToStaticMarkup(
   />
 );
 const emptyMarkup = renderToStaticMarkup(
-  <InspirationPageClient initialAccounts={[]} />
+  <InspirationPageClient
+    initialAccounts={[]}
+    initialVideoPage={emptyInspirationVideoPage()}
+  />
 );
 const manySourcesMarkup = renderToStaticMarkup(
   <InspirationPageClient
-    initialAccounts={[
-      {
-        ...accounts[0],
-        videos: Array.from({ length: 30 }, (_, index) => ({
-          ...accounts[0].videos[0],
-          id: `paged-video-${index}`,
-          externalVideoId: `7350000000000000${String(index).padStart(3, "0")}`,
-          originalUrl: `https://www.tiktok.com/@creator/video/paged-${index}`,
-          publishedAt: new Date(Date.UTC(2026, 5, 30 - index)).toISOString(),
-        })),
-      },
-    ]}
+    initialAccounts={[{ ...accounts[0], videoCount: 30 }]}
+    initialVideoPage={manySourcesPage}
   />
 );
-const allVideos = accounts.flatMap((account) => account.videos);
 
 assert.match(headerMarkup, /Source Selection/);
 assert.match(headerMarkup, /Compare creator posts/);
@@ -214,13 +258,13 @@ assert.match(markup, /max-h-\[440px\]/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-cover/);
 
-assert.equal(filterVideosBySourceUsage(allVideos, "all").length, 3);
-assert.equal(filterVideosBySourceUsage(allVideos, "unused").length, 1);
-assert.equal(filterVideosBySourceUsage(allVideos, "used").length, 1);
-assert.equal(filterVideosBySourceUsage(allVideos, "rejected").length, 1);
-assert.equal(filterVideosBySourceUsage(allVideos, "unused")[0]?.id, "video-1");
-assert.equal(filterVideosBySourceUsage(allVideos, "used")[0]?.id, "video-2");
-assert.equal(filterVideosBySourceUsage(allVideos, "rejected")[0]?.id, "video-3");
+assert.equal(filterVideosBySourceUsage(videos, "all").length, 3);
+assert.equal(filterVideosBySourceUsage(videos, "unused").length, 1);
+assert.equal(filterVideosBySourceUsage(videos, "used").length, 1);
+assert.equal(filterVideosBySourceUsage(videos, "rejected").length, 1);
+assert.equal(filterVideosBySourceUsage(videos, "unused")[0]?.id, "video-1");
+assert.equal(filterVideosBySourceUsage(videos, "used")[0]?.id, "video-2");
+assert.equal(filterVideosBySourceUsage(videos, "rejected")[0]?.id, "video-3");
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
 assert.match(emptyMarkup, /Start your discovery board/);
@@ -233,6 +277,14 @@ assert.equal(
 );
 assert.match(manySourcesMarkup, /Showing 24 of 30 matching sources/);
 assert.match(manySourcesMarkup, /Load 6 more/);
+assert.match(manySourcesMarkup, /data-inspiration-load-more="true"/);
+assert.equal(
+  inspirationVideoFeedPath({
+    cursor: pagedCursor,
+    take: INSPIRATION_VIDEO_PAGE_SIZE,
+  }),
+  `/api/ugc-inspiration/accounts/feed?take=24&cursor=${pagedCursor}`
+);
 
 assert.doesNotMatch(markup, /<aside/);
 assert.match(markup, /<section class="min-w-0 px-4 py-5/);
