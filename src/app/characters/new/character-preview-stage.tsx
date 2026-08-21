@@ -5,20 +5,7 @@ import { CharacterPhoto } from "@/components/character-photo";
 import type { CharacterAttributes } from "@/lib/character-attributes";
 import { cn } from "@/lib/utils";
 
-export function CharacterPreviewStage({
-  name,
-  attributes,
-  avatarId,
-  previewFileId,
-  previewIsPhotographic,
-  rendering,
-  saving,
-  previewRequiresRender,
-  previewSaveBlocked,
-  rerender,
-  randomizeAndRender,
-  onLoadError,
-}: {
+export type CharacterPreviewStageViewModel = {
   name: string;
   attributes: CharacterAttributes;
   avatarId: string | null;
@@ -31,7 +18,27 @@ export function CharacterPreviewStage({
   rerender: () => void;
   randomizeAndRender: () => void;
   onLoadError: () => void;
+};
+
+export function CharacterPreviewStage({
+  view,
+}: {
+  view: CharacterPreviewStageViewModel;
 }) {
+  const {
+    name,
+    attributes,
+    avatarId,
+    previewFileId,
+    previewIsPhotographic,
+    rendering,
+    saving,
+    previewRequiresRender,
+    previewSaveBlocked,
+    rerender,
+    randomizeAndRender,
+    onLoadError,
+  } = view;
   return (
     <section
       data-character-preview-stage="true"
