@@ -179,10 +179,17 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
     /HTTP 503.*original prompt is unchanged/i
   );
 
-  const formSource = readFileSync(
-    new URL("../../src/components/generation-form.tsx", import.meta.url),
-    "utf8"
-  );
+  const formSource = [
+    "../../src/components/generation-form.tsx",
+    "../../src/app/generate/form-controls.tsx",
+    "../../src/app/generate/form-session.tsx",
+    "../../src/app/generate/use-prompt-improvement.ts",
+    "../../src/app/generate/generation-requests.ts",
+  ]
+    .map((relativePath) =>
+      readFileSync(new URL(relativePath, import.meta.url), "utf8")
+    )
+    .join("\n");
   const routeSource = readFileSync(
     new URL("../../src/app/api/prompts/improve/route.ts", import.meta.url),
     "utf8"

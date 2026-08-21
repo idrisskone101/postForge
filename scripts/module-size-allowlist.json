@@ -1,11 +1,9 @@
 {
   "src/app/automations/new/automation-builder-client.tsx": 1372,
   "src/app/costs/costs-page-client.tsx": 797,
-  "src/app/generate/[id]/page.tsx": 1070,
   "src/app/ugc-inspiration/inspiration-page-client.tsx": 1561,
   "src/components/avatar-picker.tsx": 1197,
   "src/components/clone-output-review-detail.tsx": 681,
-  "src/components/generation-form.tsx": 1787,
   "src/components/pinterest-import-dialog.tsx": 667,
   "src/components/tiktok-input.tsx": 452,
   "src/components/ugc-clone-form.tsx": 2691,
@@ -13,7 +11,6 @@
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633,
-  "src/lib/slideshow/client.ts": 810,
   "src/lib/ugc/avatar-identity-pack.ts": 674,
   "src/lib/ugc/generate-clone.ts": 626
 }
