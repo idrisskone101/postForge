@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterPhoto } from "../../src/components/character-photo";
-import { parseImportedCharacterAttributes } from "../../src/app/characters/new/character-builder-client";
+import { parseImportedCharacterAttributes } from "../../src/app/characters/new/character-import";
 import {
   buildCharacterImagePrompt,
   characterRecipeFingerprint,
@@ -10,10 +10,18 @@ import {
   DEFAULT_CHARACTER_ATTRIBUTES,
 } from "../../src/lib/character-attributes";
 
-const builderSource = readFileSync(
-  new URL("../../src/app/characters/new/character-builder-client.tsx", import.meta.url),
-  "utf8"
-);
+const workbenchDir = new URL("../../src/app/characters/new/", import.meta.url);
+const builderSource = [
+  "character-builder-client.tsx",
+  "character-builder-header.tsx",
+  "character-category-rail.tsx",
+  "character-preview-stage.tsx",
+  "character-attribute-editor.tsx",
+  "character-preview.ts",
+  "character-import.ts",
+]
+  .map((file) => readFileSync(new URL(file, workbenchDir), "utf8"))
+  .join("\n");
 const librarySource = readFileSync(
   new URL("../../src/app/characters/characters-page-client.tsx", import.meta.url),
   "utf8"
