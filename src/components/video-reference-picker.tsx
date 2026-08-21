@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AlertCircle, ImageIcon, Loader2, Play, Video } from "lucide-react";
+import { FileImage } from "@/components/file-image";
 import { apiGet } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 
@@ -203,11 +204,10 @@ export function VideoReferencePicker({
                     className="size-full object-cover"
                   />
                 ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <FileImage
                     src={`/api/files/${file.id}`}
                     alt={file.filename}
-                    className="size-full object-cover"
+                    sizes="(max-width: 640px) 25vw, 120px"
                   />
                 )}
                 {file.kind === "video" && (
@@ -317,11 +317,10 @@ export function VideoReferencePicker({
                   className="size-full object-cover"
                 />
               ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <FileImage
                   src={`/api/files/${file.id}`}
                   alt={file.filename}
-                  className="size-full object-cover"
+                  sizes="(max-width: 640px) 25vw, 120px"
                 />
               )}
               {file.kind === "video" && (

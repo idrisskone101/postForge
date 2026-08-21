@@ -99,7 +99,6 @@ function CustomTooltip({
   );
 }
 
-// Pie chart for model split
 interface ModelPieChartProps {
   data: Array<{ name: string; value: number }>;
 }

@@ -1,25 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check, ImageIcon, Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HomeJob } from "./home-cockpit";
+import { FileImage } from "@/components/file-image";
 import { VideoFramePreview } from "@/components/video-frame-preview";
 import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
 
-export function HomeReviewQueue({ jobs }: { jobs: HomeJob[] }) {
-  // useRouter throws outside the Next.js runtime (e.g. static test renders);
-  // the queue still works there, it just skips the post-mutation refresh.
-  let router: ReturnType<typeof useRouter> | null = null;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    router = useRouter();
-  } catch {
-    router = null;
-  }
+export function HomeReviewQueue({
+  jobs,
+  onReviewSaved,
+}: {
+  jobs: HomeJob[];
+  onReviewSaved?: () => void;
+}) {
   const [decided, setDecided] = useState<Record<string, "approved_output" | "rejected_output">>({});
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +36,7 @@ export function HomeReviewQueue({ jobs }: { jobs: HomeJob[] }) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
         throw new Error(body?.error ?? "Review failed");
       }
-      router?.refresh();
+      onReviewSaved?.();
     } catch (cause) {
       setDecided((current) => {
         const next = { ...current };
@@ -156,13 +152,10 @@ function ReviewThumb({ job }: { job: HomeJob }) {
       );
     }
     return (
-      <Image
+      <FileImage
         src={source}
         alt="Output preview"
-        fill
         sizes="56px"
-        unoptimized
-        className="object-cover"
       />
     );
   }
