@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { automationsHubSource } from "./hub-source";
 import {
   claimAutomationPublication,
   claimAutomationPublicationRecovery,
@@ -927,10 +928,7 @@ async function run() {
     uploadRequestStage >= 0 && uploadRequestStage < uploadRequestFetch,
     "YouTube upload boundary is persisted before sending non-empty media bytes"
   );
-  const automationUi = readFileSync(
-    new URL("../../src/app/automations/automations-page-client.tsx", import.meta.url),
-    "utf8"
-  );
+  const automationUi = automationsHubSource();
   assert.match(automationUi, /pf-safe-overlay/);
   assert.match(automationUi, /max-h-full/);
   assert.match(automationUi, /dark:bg-\[var\(--pf-active\)\] dark:text-\[var\(--pf-muted\)\]/);
