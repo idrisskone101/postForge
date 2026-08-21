@@ -3,6 +3,10 @@
   "hooks": {
     "sessionStart": [
       {
+        "command": ".cursor/hooks/install-pstack-models.sh",
+        "timeout": 15
+      },
+      {
         "command": ".cursor/hooks/prune-playwright-artifacts.sh",
         "timeout": 15
       }

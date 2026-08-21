@@ -79,5 +79,8 @@ else
   echo "==> pg_isready is not available; skipping Prisma migrations"
 fi
 
+echo "==> Installing pstack model mapping for this machine"
+bash "$REPO_ROOT/scripts/install-pstack-models.sh"
+
 echo "==> Pruning Playwright CLI/MCP session artifacts"
 bash "$REPO_ROOT/scripts/prune-playwright-artifacts.sh"
