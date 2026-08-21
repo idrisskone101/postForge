@@ -6,7 +6,6 @@
   "src/components/slideshow/slideshow-editor.tsx": 1462,
   "src/components/slideshow/slideshow-studio.tsx": 600,
   "src/components/slideshow/studio-views.tsx": 1600,
-  "src/components/ugc-clone-form.tsx": 1256,
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633
