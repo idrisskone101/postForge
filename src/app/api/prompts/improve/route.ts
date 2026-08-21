@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getModel } from "@/lib/ai/models";
 import { improveGenerationPrompt } from "@/lib/ai/improve-prompt";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 const VALID_ASPECT_RATIOS = new Set(["9:16", "4:5", "1:1", "4:3", "3:2", "16:9"]);
 

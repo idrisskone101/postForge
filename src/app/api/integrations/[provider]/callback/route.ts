@@ -8,7 +8,7 @@ import {
   consumeProviderOAuthState,
   IntegrationNotConfiguredError,
 } from "@/lib/integrations/service";
-import { noStoreJson } from "@/lib/integrations/routes";
+import { noStoreJson } from "@/lib/http";
 import { OAuthStateError, oauthStateCookieName } from "@/lib/integrations/state";
 import type { IntegrationProvider } from "@/lib/integrations/types";
 import { UnresolvedPublicationConflictError } from "@/lib/publication-lifecycle";

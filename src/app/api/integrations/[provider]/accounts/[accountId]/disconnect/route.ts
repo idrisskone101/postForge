@@ -3,8 +3,8 @@ import {
   integrationJsonError,
   isSameOriginMutation,
   noStoreJson,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+} from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 import {
   disconnectIntegrationAccount,
   forceDeleteLocalIntegrationData,

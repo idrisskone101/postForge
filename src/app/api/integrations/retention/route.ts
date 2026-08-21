@@ -1,4 +1,4 @@
-import { noStoreJson } from "@/lib/integrations/routes";
+import { noStoreJson } from "@/lib/http";
 import { runYouTubeDataRetentionSweep } from "@/lib/integrations/retention";
 import { isRetentionCronAuthorized } from "@/lib/integrations/retention-auth";
 

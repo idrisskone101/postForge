@@ -43,11 +43,8 @@ import {
   type YouTubePublishSettings,
 } from "@/lib/integrations/publishing";
 import { IntegrationProviderError } from "@/lib/integrations/providers/http";
-import {
-  isSameOriginMutation,
-  noStoreJson,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation, noStoreJson } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 import { storage } from "@/lib/storage";
 import {
   isWellFormedUnicode,

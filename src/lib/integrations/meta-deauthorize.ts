@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { forceDeleteLocalIntegrationData } from "./service";
-import { noStoreJson } from "./routes";
+import { noStoreJson } from "../http";
 import { UnresolvedPublicationConflictError } from "../publication-lifecycle";
 
 export class MetaSignedRequestError extends Error {}

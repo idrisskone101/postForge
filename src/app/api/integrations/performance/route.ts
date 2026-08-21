@@ -1,5 +1,5 @@
 import { getIntegrationPerformanceResponse } from "@/lib/integrations/service";
-import { integrationJsonError, noStoreJson } from "@/lib/integrations/routes";
+import { integrationJsonError, noStoreJson } from "@/lib/http";
 
 export async function GET() {
   try {

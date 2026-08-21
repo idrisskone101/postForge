@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { foldPromptIntoVibeTemplate } from "@/lib/ai/collection-vibe";
 import { parseSlideshowAestheticTemplate } from "@/lib/ai/slideshow-creator";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 export async function POST(request: NextRequest) {
   if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();
