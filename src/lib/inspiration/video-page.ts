@@ -15,6 +15,7 @@ import {
   type InspirationVideoPageQuery,
 } from "@/lib/inspiration/types";
 
+const NO_MATCH_ID = "00000000-0000-0000-0000-000000000000";
 const MAX_PAGE_SIZE = 60;
 
 type CloneSourceRecord = Pick<
