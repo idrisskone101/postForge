@@ -7,7 +7,8 @@ import {
   PREVIEW_ZOOM_MIN,
   PREVIEW_ZOOM_STEP,
   selectAutomationPreviewAsset,
-} from "../../src/app/automations/new/automation-builder-client";
+} from "../../src/app/automations/new/automation-builder-preview";
+import { automationsBuilderSource } from "./builder-source";
 
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MIN - 100), PREVIEW_ZOOM_MIN);
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MAX + 100), PREVIEW_ZOOM_MAX);
@@ -95,10 +96,7 @@ const collectionPreview = selectAutomationPreviewAsset({
 assert.equal(collectionPreview?.previewUrl, "/api/files/collection%20asset%2F1");
 assert.equal(collectionPreview?.origin, "Visual collection");
 
-const source = readFileSync(
-  new URL("../../src/app/automations/new/automation-builder-client.tsx", import.meta.url),
-  "utf8"
-);
+const source = automationsBuilderSource();
 
 for (const requiredControl of [
   "Favorites",
