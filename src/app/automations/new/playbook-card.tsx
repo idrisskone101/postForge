@@ -6,28 +6,20 @@ import {
   TEMPLATE_VISUALS,
   templateNumber,
   type AutomationTemplate,
-  type TemplateView,
+  type PlaybookPickerState,
 } from "./playbook-model";
 
 export function PlaybookCard({
+  picker,
   template,
-  view,
-  favorite,
-  selected,
-  previewing,
-  onToggleFavorite,
-  onPreview,
-  onSelect,
 }: {
+  picker: PlaybookPickerState;
   template: AutomationTemplate;
-  view: TemplateView;
-  favorite: boolean;
-  selected: boolean;
-  previewing: boolean;
-  onToggleFavorite: () => void;
-  onPreview: () => void;
-  onSelect: () => void;
 }) {
+  const view = picker.view;
+  const favorite = picker.favorites.includes(template.id);
+  const selected = picker.selectedTemplateId === template.id;
+  const previewing = picker.previewTemplate.id === template.id;
   return (
     <article
       className={cn(
@@ -41,7 +33,7 @@ export function PlaybookCard({
         <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[11px] text-white">{template.slides} slides</span>
         <button
           type="button"
-          onClick={onToggleFavorite}
+          onClick={() => picker.onToggleFavorite(template.id)}
           aria-label={favorite ? `Remove ${template.name} from favorites` : `Add ${template.name} to favorites`}
           aria-pressed={favorite}
           className="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-white/90 text-foreground shadow-sm hover:bg-white"
@@ -57,12 +49,12 @@ export function PlaybookCard({
         </div>
         <p className="mt-1 min-h-8 text-[12px] leading-4 text-muted-foreground">{template.description}</p>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
-          <button type="button" onClick={onPreview} className="h-7 flex-1 rounded-lg border border-border text-[12px] font-semibold hover:bg-[var(--pf-active)]">
+          <button type="button" onClick={() => picker.onPreview(template.id)} className="h-7 flex-1 rounded-lg border border-border text-[12px] font-semibold hover:bg-[var(--pf-active)]">
             Preview
           </button>
           <button
             type="button"
-            onClick={onSelect}
+            onClick={() => picker.onSelect(template.id)}
             className={cn("flex h-7 flex-1 items-center justify-center gap-1 rounded-lg text-[12px] font-semibold", selected ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "bg-foreground text-white")}
           >
             {selected && <Check className="size-2.5" />}
