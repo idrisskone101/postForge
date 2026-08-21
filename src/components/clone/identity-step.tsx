@@ -1,30 +1,14 @@
 import { cn } from "@/lib/utils";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { CloneIdentityStatusPanel } from "@/components/clone/identity-status";
-import type { AvatarIdentityPack } from "@/components/clone/types";
+import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneIdentityStep({
+  draft,
   hidden,
-  avatarId,
-  avatarReady,
-  identityPack,
-  isStartingIdentityPack,
-  isGeneratingHairstyles,
-  identityPackError,
-  onGenerateHairstyles,
-  onRetry,
-  onSelectAvatar,
 }: {
+  draft: CloneDraft;
   hidden: boolean;
-  avatarId: string | null;
-  avatarReady: boolean;
-  identityPack: AvatarIdentityPack | null;
-  isStartingIdentityPack: boolean;
-  isGeneratingHairstyles: boolean;
-  identityPackError: string | null;
-  onGenerateHairstyles: () => void;
-  onRetry: () => void;
-  onSelectAvatar: (nextAvatarId: string) => void;
 }) {
   return (
     <section
@@ -44,18 +28,10 @@ export function CloneIdentityStep({
       </div>
 
       <div className="space-y-4">
-        <CloneIdentityStatusPanel
-          avatarReady={avatarReady}
-          identityPack={identityPack}
-          isStartingIdentityPack={isStartingIdentityPack}
-          isGeneratingHairstyles={isGeneratingHairstyles}
-          onGenerateHairstyles={onGenerateHairstyles}
-          identityPackError={identityPackError}
-          onRetry={onRetry}
-        />
+        <CloneIdentityStatusPanel identity={draft} />
         <AvatarPicker
-          selectedId={avatarId}
-          onSelect={onSelectAvatar}
+          selectedId={draft.avatarId}
+          onSelect={draft.onSelectAvatar}
         />
       </div>
     </section>

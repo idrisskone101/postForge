@@ -1,58 +1,37 @@
 import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
-import type {
-  AvatarIdentityPack,
-  AvatarReferencePreview,
-  RefImageEntry,
-  SavedReference,
-} from "@/components/clone/types";
+import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
 
 export function CloneReferenceLibrary({
-  selectedCollectionAssetId,
-  selectedSavedReference,
-  selectedSavedReferenceId,
-  selectedRefIndex,
-  refImages,
-  isLoadingSavedReferences,
-  savedReferencesError,
-  savedReferences,
-  savedReferencesNextCursor,
-  isLoadingMoreSavedReferences,
-  referenceLibraryOpen,
-  showAvatarReferences,
-  avatarReferencePreviews,
-  identityPack,
-  isStartingIdentityPack,
-  onCollectionChange,
-  onSelectGenerated,
-  onToggleLibrary,
-  onSelectSavedReference,
-  onLoadMore,
-  onToggleAvatarReferences,
+  workspace,
 }: {
-  selectedCollectionAssetId: string | null;
-  selectedSavedReference: SavedReference | null;
-  selectedSavedReferenceId: string | null;
-  selectedRefIndex: number;
-  refImages: RefImageEntry[];
-  isLoadingSavedReferences: boolean;
-  savedReferencesError: string | null;
-  savedReferences: SavedReference[];
-  savedReferencesNextCursor: string | null;
-  isLoadingMoreSavedReferences: boolean;
-  referenceLibraryOpen: boolean;
-  showAvatarReferences: boolean;
-  avatarReferencePreviews: AvatarReferencePreview[];
-  identityPack: AvatarIdentityPack | null;
-  isStartingIdentityPack: boolean;
-  onCollectionChange: (assetIds: string[]) => void;
-  onSelectGenerated: (index: number) => void;
-  onToggleLibrary: () => void;
-  onSelectSavedReference: (referenceId: string) => void;
-  onLoadMore: () => void;
-  onToggleAvatarReferences: () => void;
+  workspace: CloneReferenceWorkspace;
 }) {
+  const {
+    selectedCollectionAssetId,
+    selectedSavedReference,
+    selectedSavedReferenceId,
+    selectedRefIndex,
+    refImages,
+    isLoadingSavedReferences,
+    savedReferencesError,
+    savedReferences,
+    savedReferencesNextCursor,
+    isLoadingMoreSavedReferences,
+    referenceLibraryOpen,
+    showAvatarReferences,
+    avatarReferencePreviews,
+    identityPack,
+    isStartingIdentityPack,
+    onCollectionChange,
+    onSelectGenerated,
+    onToggleLibrary,
+    onSelectSavedReference,
+    onLoadMore,
+    onToggleAvatarReferences,
+  } = workspace;
+
   return (
     <>
       <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">

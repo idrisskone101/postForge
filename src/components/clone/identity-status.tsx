@@ -1,23 +1,20 @@
 import { Badge } from "@/components/ui/badge";
-import type { AvatarIdentityPack } from "@/components/clone/types";
+import type { CloneIdentityModel } from "@/components/clone/view-models";
 
 export function CloneIdentityStatusPanel({
-  avatarReady,
-  identityPack,
-  isStartingIdentityPack,
-  isGeneratingHairstyles = false,
-  onGenerateHairstyles,
-  identityPackError,
-  onRetry,
+  identity,
 }: {
-  avatarReady: boolean;
-  identityPack: AvatarIdentityPack | null;
-  isStartingIdentityPack: boolean;
-  isGeneratingHairstyles?: boolean;
-  onGenerateHairstyles?: () => void;
-  identityPackError: string | null;
-  onRetry: () => void;
+  identity: CloneIdentityModel;
 }) {
+  const {
+    avatarReady,
+    identityPack,
+    isStartingIdentityPack,
+    isGeneratingHairstyles = false,
+    onGenerateHairstyles,
+    identityPackError,
+    onRetry,
+  } = identity;
   const isBackfillingHairstyles =
     isGeneratingHairstyles || identityPack?.backfillingHairstyles === true;
   const missingHairstyleCount = identityPack?.missingHairstyleRoles?.length ?? 0;
