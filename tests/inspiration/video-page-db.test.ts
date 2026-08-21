@@ -1,5 +1,6 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
+import { NextRequest } from "next/server";
 import { prisma } from "../../src/lib/db";
 import { listTrackedInspirationAccounts } from "../../src/lib/inspiration/service";
 import { listInspirationVideos } from "../../src/lib/inspiration/video-page";
@@ -13,6 +14,7 @@ async function run() {
     { length: 30 },
     (_, index) => `insp-dto-video-${stamp}-${index}`
   );
+  const pagingIds = [0, 1, 2].map((index) => `insp-dto-page-${stamp}-${index}`);
 
   try {
     await prisma.inspirationAccount.create({
@@ -58,7 +60,19 @@ async function run() {
     });
 
     const listed = await listTrackedInspirationAccounts();
-    const listedAccount = listed.find((item) => item.id === accountId);
+    assert.equal(Array.isArray(listed), false);
+    assert.ok(Array.isArray(listed.items));
+    assert.ok(listed.items.length <= 50);
+    assert.ok(listed.nextCursor === null || typeof listed.nextCursor === "string");
+    let listedAccount = listed.items.find((item) => item.id === accountId);
+    let listedCursor = listed.nextCursor;
+    while (!listedAccount && listedCursor) {
+      const nextListed = await listTrackedInspirationAccounts({
+        cursor: listedCursor,
+      });
+      listedAccount = nextListed.items.find((item) => item.id === accountId);
+      listedCursor = nextListed.nextCursor;
+    }
     assert.ok(listedAccount);
     assert.equal(listedAccount.videoCount, 30);
     assert.equal(
@@ -66,30 +80,103 @@ async function run() {
       false
     );
 
-    const firstPage = await listInspirationVideos({
-      accountId,
-      take: 24,
-    });
-    assert.equal(firstPage.items.length, 24);
-    assert.equal(firstPage.hasMore, true);
-    assert.ok(firstPage.nextCursor);
-    assert.equal(firstPage.total, 30);
-    assert.equal(firstPage.usageCounts.all, 30);
-    assert.equal(firstPage.items[0]?.id, videoIds[0]);
+    await Promise.all(
+      pagingIds.map((id, index) =>
+        prisma.inspirationAccount.create({
+          data: {
+            id,
+            platform: "tiktok",
+            handleNormalized: `insppg${stamp}${index}`.slice(0, 24),
+            handleDisplay: `@insppg${stamp}${index}`.slice(0, 25),
+            displayName: `Page ${index}`,
+            profileUrl: `https://www.tiktok.com/@insppg${stamp}${index}`,
+            syncStatus: "ready",
+            createdAt: new Date(`2099-12-31T00:00:0${3 - index}.000Z`),
+            updatedAt: new Date(`2099-12-31T00:00:0${3 - index}.000Z`),
+          },
+        })
+      )
+    );
+
+    const firstPage = await listTrackedInspirationAccounts({ take: 2 });
+    assert.equal(Array.isArray(firstPage), false);
+    assert.equal(firstPage.items.length, 2);
+    assert.equal(firstPage.items[0]?.id, pagingIds[0]);
+    assert.equal(firstPage.items[1]?.id, pagingIds[1]);
+    assert.equal(firstPage.nextCursor, pagingIds[1]);
     assert.equal(
-      firstPage.items.some((item) => item.id === videoIds[24]),
+      Object.prototype.hasOwnProperty.call(firstPage.items[0], "videos"),
       false
     );
 
-    const secondPage = await listInspirationVideos({
-      accountId,
-      take: 24,
+    const secondPage = await listTrackedInspirationAccounts({
+      take: 2,
       cursor: firstPage.nextCursor,
     });
-    assert.equal(secondPage.items.length, 6);
-    assert.equal(secondPage.hasMore, false);
-    assert.equal(secondPage.nextCursor, null);
-    assert.equal(secondPage.items[0]?.id, videoIds[24]);
+    assert.equal(secondPage.items[0]?.id, pagingIds[2]);
+    assert.ok(
+      secondPage.nextCursor === null || typeof secondPage.nextCursor === "string"
+    );
+    if (secondPage.items.length < 2) {
+      assert.equal(secondPage.nextCursor, null);
+    }
+
+    const uncapped = await listTrackedInspirationAccounts({ take: 500 });
+    assert.ok(uncapped.items.length <= 100);
+
+    const { GET } = await import("../../src/app/api/ugc-inspiration/accounts/route");
+    const firstResponse = await GET(
+      new NextRequest("http://localhost/api/ugc-inspiration/accounts?take=2")
+    );
+    const firstBody = (await firstResponse.json()) as {
+      items: Array<{ id: string; videos?: unknown }>;
+      nextCursor: string | null;
+    };
+    assert.equal(Array.isArray(firstBody), false);
+    assert.equal(firstBody.items.length, 2);
+    assert.equal(firstBody.nextCursor, pagingIds[1]);
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(firstBody.items[0], "videos"),
+      false
+    );
+
+    const defaultResponse = await GET(
+      new NextRequest("http://localhost/api/ugc-inspiration/accounts")
+    );
+    const defaultBody = (await defaultResponse.json()) as {
+      items: Array<{ id: string }>;
+      nextCursor: string | null;
+    };
+    assert.equal(Array.isArray(defaultBody), false);
+    assert.ok(defaultBody.items.length <= 50);
+    assert.ok(
+      defaultBody.nextCursor === null || typeof defaultBody.nextCursor === "string"
+    );
+
+    const firstVideoPage = await listInspirationVideos({
+      accountId,
+      take: 24,
+    });
+    assert.equal(firstVideoPage.items.length, 24);
+    assert.equal(firstVideoPage.hasMore, true);
+    assert.ok(firstVideoPage.nextCursor);
+    assert.equal(firstVideoPage.total, 30);
+    assert.equal(firstVideoPage.usageCounts.all, 30);
+    assert.equal(firstVideoPage.items[0]?.id, videoIds[0]);
+    assert.equal(
+      firstVideoPage.items.some((item) => item.id === videoIds[24]),
+      false
+    );
+
+    const secondVideoPage = await listInspirationVideos({
+      accountId,
+      take: 24,
+      cursor: firstVideoPage.nextCursor,
+    });
+    assert.equal(secondVideoPage.items.length, 6);
+    assert.equal(secondVideoPage.hasMore, false);
+    assert.equal(secondVideoPage.nextCursor, null);
+    assert.equal(secondVideoPage.items[0]?.id, videoIds[24]);
 
     const unusedPage = await listInspirationVideos({
       accountId,
@@ -101,7 +188,9 @@ async function run() {
     assert.ok(unusedPage.total < 30);
   } finally {
     await prisma.tikTokSource.deleteMany({ where: { id: sourceId } });
-    await prisma.inspirationAccount.deleteMany({ where: { id: accountId } });
+    await prisma.inspirationAccount.deleteMany({
+      where: { id: { in: [accountId, ...pagingIds] } },
+    });
     await prisma.$disconnect();
   }
 }

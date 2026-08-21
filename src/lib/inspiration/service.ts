@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
-import type {
-  InspirationSourceDecision,
-  SetInspirationRejectionResult,
-  TrackedInspirationAccount,
+import {
+  clampInspirationAccountTake,
+  type InspirationAccountPage,
+  type InspirationAccountPageQuery,
+  type InspirationSourceDecision,
+  type SetInspirationRejectionResult,
+  type TrackedInspirationAccount,
 } from "@/lib/inspiration/types";
 import { mapVirloCreatorLookup } from "@/lib/inspiration/virlo-payload";
 import {
@@ -66,13 +69,24 @@ async function getTrackedAccountListRecord(
   });
 }
 
-export async function listTrackedInspirationAccounts(): Promise<TrackedInspirationAccount[]> {
+export async function listTrackedInspirationAccounts(
+  input: InspirationAccountPageQuery = {}
+): Promise<InspirationAccountPage> {
+  const take = clampInspirationAccountTake(input.take);
+  const cursor = input.cursor?.trim() ? input.cursor : undefined;
+
   const accounts = await prisma.inspirationAccount.findMany({
     include: inspirationAccountListInclude,
-    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+    take,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
   });
 
-  return accounts.map((account) => serializeAccount(account));
+  return {
+    items: accounts.map((account) => serializeAccount(account)),
+    nextCursor:
+      accounts.length === take ? accounts[accounts.length - 1]?.id ?? null : null,
+  };
 }
 
 export async function createTrackedInspirationAccount(
