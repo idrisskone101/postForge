@@ -24,6 +24,7 @@ assert.equal(emptyView.totalPages, 1);
 assert.equal(emptyView.safeLogPage, 0);
 assert.equal(emptyView.emptyPeriod, true);
 assert.equal(emptyView.workflowPieData.length, 0);
+assert.equal(emptyView.budget, 250);
 assert.equal(emptyView.budgetPercent, 0);
 assert.equal(emptyView.budgetRemaining, 250);
 
@@ -49,6 +50,7 @@ assert.deepEqual(paged.modelOptions, ["kling-3.0-motion", "flux-pro"]);
 assert.equal(paged.imagePct.toFixed(0), "26");
 assert.equal(paged.videoPct.toFixed(0), "74");
 assert.equal(paged.workflowPieData.length, 2);
+assert.equal(paged.budget, 250);
 assert.equal(paged.budgetPercent, 80);
 assert.equal(paged.budgetRemaining, 50);
 assert.equal(paged.changeIsUp, true);

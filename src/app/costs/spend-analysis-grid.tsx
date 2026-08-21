@@ -16,21 +16,11 @@ const ModelPieChart = dynamic(
 );
 
 type SpendAnalysisGridProps = {
-  chartData: CostsPageClientProps["chartData"];
-  breakdown: CostsPageClientProps["breakdown"];
-  period: CostsPageClientProps["period"];
-  view: Pick<
-    SpendDashboardView,
-    "modelEntries" | "totalModelCost" | "imagePct" | "videoPct" | "workflowPieData"
-  >;
+  dashboard: CostsPageClientProps;
+  view: SpendDashboardView;
 };
 
-export function SpendAnalysisGrid({
-  chartData,
-  breakdown,
-  period,
-  view,
-}: SpendAnalysisGridProps) {
+export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
   return (
     <section
       data-spend-analysis-grid="true"
@@ -41,7 +31,7 @@ export function SpendAnalysisGrid({
           <div>
             <h2 className="text-sm font-semibold">Spend Over Time</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Daily image and video cost · {period.toUpperCase()}
+              Daily image and video cost · {dashboard.period.toUpperCase()}
             </p>
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
@@ -55,14 +45,14 @@ export function SpendAnalysisGrid({
             </span>
           </div>
         </header>
-        <CostChart data={chartData} />
+        <CostChart data={dashboard.chartData} />
       </article>
 
       <aside className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
         <header className="border-b border-border pb-3">
           <h2 className="text-sm font-semibold">Spend breakdown</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Workflow type and model mix · {period.toUpperCase()}
+            Workflow type and model mix · {dashboard.period.toUpperCase()}
           </p>
         </header>
 
@@ -86,7 +76,7 @@ export function SpendAnalysisGrid({
                       <strong className="shrink-0 text-foreground">{view.imagePct.toFixed(0)}%</strong>
                     </div>
                     <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                      {formatCost(breakdown.image.cost)} · {breakdown.image.count} {breakdown.image.count === 1 ? "job" : "jobs"}
+                      {formatCost(dashboard.breakdown.image.cost)} · {dashboard.breakdown.image.count} {dashboard.breakdown.image.count === 1 ? "job" : "jobs"}
                     </p>
                   </div>
                   <div className="min-w-0">
@@ -98,7 +88,7 @@ export function SpendAnalysisGrid({
                       <strong className="shrink-0 text-foreground">{view.videoPct.toFixed(0)}%</strong>
                     </div>
                     <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                      {formatCost(breakdown.video.cost)} · {breakdown.video.count} {breakdown.video.count === 1 ? "job" : "jobs"}
+                      {formatCost(dashboard.breakdown.video.cost)} · {dashboard.breakdown.video.count} {dashboard.breakdown.video.count === 1 ? "job" : "jobs"}
                     </p>
                   </div>
                 </div>

@@ -19,11 +19,17 @@ import {
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
 import { CharacterAttributeEditor } from "./character-attribute-editor";
-import { CharacterBuilderHeader } from "./character-builder-header";
+import {
+  CharacterBuilderHeader,
+  type CharacterBuilderHeaderViewModel,
+} from "./character-builder-header";
 import { CharacterCategoryRail } from "./character-category-rail";
 import { parseImportedCharacterAttributes } from "./character-import";
 import { saveCharacterAvatar, waitForCharacterPreview } from "./character-preview";
-import { CharacterPreviewStage } from "./character-preview-stage";
+import {
+  CharacterPreviewStage,
+  type CharacterPreviewStageViewModel,
+} from "./character-preview-stage";
 
 function makeCharacterId() {
   return `character_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -266,53 +272,56 @@ export function CharacterBuilderClient() {
     return <div className="pf-content-viewport grid place-items-center"><Loader2 className="size-7 animate-spin text-[var(--pf-orange)]" /></div>;
   }
 
+  const headerView: CharacterBuilderHeaderViewModel = {
+    editId,
+    name,
+    saving,
+    rendering,
+    missingEditRecord,
+    previewSaveBlocked,
+    readyPreviewFingerprint,
+    onNameChange: setName,
+    randomizeAndRender,
+    onImport: () => setImportOpen(true),
+    copyAttributes,
+    saveCharacter,
+  };
+  const previewView: CharacterPreviewStageViewModel = {
+    name,
+    attributes,
+    avatarId,
+    previewFileId,
+    previewIsPhotographic,
+    rendering,
+    saving,
+    previewRequiresRender,
+    previewSaveBlocked,
+    rerender,
+    randomizeAndRender,
+    onLoadError: () => {
+      if (!previewFileId) return;
+      setPreviewFileId(null);
+      setPreviewFingerprint(null);
+      setError(
+        previewIsPhotographic
+          ? "The generated preview image could not be loaded. Re-render the preview before saving."
+          : "The generated preview image could not be loaded. Re-render it or save this character as a draft."
+      );
+    },
+  };
+
   return (
     <div
       data-character-workbench="true"
       className="pf-content-viewport bg-[var(--pf-canvas)] min-[1280px]:grid min-[1280px]:h-dvh min-[1280px]:min-h-0 min-[1280px]:grid-cols-[200px_minmax(420px,1.2fr)_minmax(360px,0.8fr)] min-[1280px]:grid-rows-[64px_minmax(0,1fr)] min-[1280px]:overflow-hidden"
     >
-      <CharacterBuilderHeader
-        editId={editId}
-        name={name}
-        saving={saving}
-        rendering={rendering}
-        missingEditRecord={missingEditRecord}
-        previewSaveBlocked={previewSaveBlocked}
-        readyPreviewFingerprint={readyPreviewFingerprint}
-        onNameChange={setName}
-        randomizeAndRender={randomizeAndRender}
-        onImport={() => setImportOpen(true)}
-        copyAttributes={copyAttributes}
-        saveCharacter={saveCharacter}
-      />
+      <CharacterBuilderHeader view={headerView} />
       <CharacterCategoryRail
         attributes={attributes}
         activeSection={activeSection}
         onSelectSection={setActiveSection}
       />
-      <CharacterPreviewStage
-        name={name}
-        attributes={attributes}
-        avatarId={avatarId}
-        previewFileId={previewFileId}
-        previewIsPhotographic={previewIsPhotographic}
-        rendering={rendering}
-        saving={saving}
-        previewRequiresRender={previewRequiresRender}
-        previewSaveBlocked={previewSaveBlocked}
-        rerender={rerender}
-        randomizeAndRender={randomizeAndRender}
-        onLoadError={() => {
-          if (!previewFileId) return;
-          setPreviewFileId(null);
-          setPreviewFingerprint(null);
-          setError(
-            previewIsPhotographic
-              ? "The generated preview image could not be loaded. Re-render the preview before saving."
-              : "The generated preview image could not be loaded. Re-render it or save this character as a draft."
-          );
-        }}
-      />
+      <CharacterPreviewStage view={previewView} />
       <CharacterAttributeEditor
         attributes={attributes}
         activeSection={activeSection}
