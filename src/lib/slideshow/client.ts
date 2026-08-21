@@ -8,6 +8,7 @@ import type {
 } from "@/components/slideshow/types";
 import { isLocalSlideshowId } from "@/components/slideshow/types";
 import { formatGenerationPromptForEditing } from "@/lib/ai/prompt-presentation";
+import { fetchSlideshowProjectPage } from "@/lib/slideshow/list-client";
 import {
   parseSlideshowProject,
   slideKindFromUnknown,
@@ -134,9 +135,6 @@ async function fetchAllSlideshowPages(
     }
 
     items.push(...page);
-
-    // A trusted endpoint should return every requested page until `total` is
-    // reached. Stop safely if records were concurrently removed between pages.
     if (page.length === 0) break;
   }
 
@@ -144,8 +142,7 @@ async function fetchAllSlideshowPages(
 }
 
 export async function fetchSlideshowProjects(apiBaseUrl = "/api/slideshows") {
-  const rawProjects = await fetchAllSlideshowPages(apiBaseUrl, "projects");
-  return rawProjects.map(deserializeSlideshowProject);
+  return (await fetchSlideshowProjectPage({ apiBaseUrl })).projects;
 }
 
 export async function fetchSlideshowProject(

@@ -16,12 +16,12 @@ import {
 import {
   createSlideshowAutomation,
   fetchSlideshowAutomations,
-  fetchSlideshowProjects,
   updateSlideshowAutomation,
 } from "@/lib/slideshow/client";
+import { fetchAllSlideshowProjectPages } from "@/lib/slideshow/list-client";
 import type {
   SlideshowAutomation,
-  SlideshowProject,
+  SlideshowProjectListItem,
 } from "@/components/slideshow/types";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -43,7 +43,7 @@ export function SlideshowAutomationBuilder() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [existing, setExisting] = useState<SlideshowAutomation | null>(null);
-  const [projects, setProjects] = useState<SlideshowProject[]>([]);
+  const [projects, setProjects] = useState<SlideshowProjectListItem[]>([]);
   const [collections, setCollections] = useState<PlatformCollectionSummary[]>([]);
 
   const [name, setName] = useState("Fresh slideshow ideas");
@@ -62,7 +62,7 @@ export function SlideshowAutomationBuilder() {
   useEffect(() => {
     let cancelled = false;
     void Promise.allSettled([
-      fetchSlideshowProjects(),
+      fetchAllSlideshowProjectPages(),
       fetchSlideshowAutomations(),
       fetchPlatformCollections(),
     ]).then(([projectsResult, automationsResult, collectionsResult]) => {
@@ -112,7 +112,7 @@ export function SlideshowAutomationBuilder() {
   };
 
   const selectedProject = projects.find((project) => project.id === projectId);
-  const expectedSlideCount = selectedProject?.slides.length || 7;
+  const expectedSlideCount = selectedProject?.slideCount || 7;
   const estimatedImageCost = (expectedSlideCount * 0.08).toFixed(2);
 
   const submit = async () => {
@@ -128,8 +128,7 @@ export function SlideshowAutomationBuilder() {
         status: active ? "active" : "paused",
         nextRunAt: existing?.nextRunAt ?? null,
         projectId: projectId || null,
-        visualKey:
-          selectedProject?.slides[0]?.visualKey ?? existing?.visualKey ?? "coral-glow",
+        visualKey: existing?.visualKey ?? "coral-glow",
         weekdays: days,
         time,
         timezone: existing?.timezone,
