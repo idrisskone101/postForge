@@ -370,6 +370,7 @@ await assert.rejects(
 );
 
 const pinterestDialogSource = [
+  "pinterest-import-workspace.tsx",
   "pinterest-import-dialog.tsx",
   "pinterest-import-search.tsx",
   "pinterest-import-results.tsx",
