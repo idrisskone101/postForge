@@ -290,6 +290,10 @@ async function withSilentConsole<T>(run: () => Promise<T>): Promise<T> {
           duration: 5,
         },
       }),
+      downloadFromUrl: async () => ({
+        buffer: Buffer.from("mp4"),
+        contentType: "video/mp4",
+      }),
       saveFile: async (_kind, filename) => {
         videoCalls.push(`stored:${filename}`);
         return `videos/${filename}`;
