@@ -4,28 +4,11 @@ import { formatCost } from "@/lib/utils/format-cost";
 import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
 
 type SpendStatCardsProps = {
-  totalCost: number;
-  currentPeriodCost: number;
-  changePercent: number;
-  avgCycleCost: number;
-  totalJobs: number;
-  topModel: CostsPageClientProps["topModel"];
-  period: CostsPageClientProps["period"];
-  budget: number;
-  view: Pick<SpendDashboardView, "budgetRemaining" | "changeIsUp">;
+  dashboard: CostsPageClientProps;
+  view: SpendDashboardView;
 };
 
-export function SpendStatCards({
-  totalCost,
-  currentPeriodCost,
-  changePercent,
-  avgCycleCost,
-  totalJobs,
-  topModel,
-  period,
-  budget,
-  view,
-}: SpendStatCardsProps) {
+export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
   return (
     <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
@@ -34,25 +17,25 @@ export function SpendStatCards({
           <span
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
-              changePercent === 0 && "bg-muted text-muted-foreground",
+              dashboard.changePercent === 0 && "bg-muted text-muted-foreground",
               view.changeIsUp && "bg-destructive/10 text-destructive",
-              changePercent < 0 && "bg-accent-green/10 text-accent-green"
+              dashboard.changePercent < 0 && "bg-accent-green/10 text-accent-green"
             )}
           >
-            {changePercent === 0 ? (
+            {dashboard.changePercent === 0 ? (
               "No change"
             ) : view.changeIsUp ? (
-              <><TrendingUp className="size-3" /> {Math.abs(changePercent).toFixed(0)}%</>
+              <><TrendingUp className="size-3" /> {Math.abs(dashboard.changePercent).toFixed(0)}%</>
             ) : (
-              <><TrendingDown className="size-3" /> {Math.abs(changePercent).toFixed(0)}%</>
+              <><TrendingDown className="size-3" /> {Math.abs(dashboard.changePercent).toFixed(0)}%</>
             )}
           </span>
         </div>
         <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
-          {formatCost(currentPeriodCost)}
+          {formatCost(dashboard.currentPeriodCost)}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          {formatCost(totalCost)} all-time spend
+          {formatCost(dashboard.totalCost)} all-time spend
         </p>
       </article>
 
@@ -64,10 +47,10 @@ export function SpendStatCards({
           </span>
         </div>
         <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
-          {totalJobs}
+          {dashboard.totalJobs}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          Avg cost {formatCost(avgCycleCost)} per generation
+          Avg cost {formatCost(dashboard.avgCycleCost)} per generation
         </p>
       </article>
 
@@ -79,11 +62,11 @@ export function SpendStatCards({
           </span>
         </div>
         <strong className="mt-3 block truncate text-[20px] font-semibold tracking-[-0.02em]">
-          {topModel ? topModel.name : "No data yet"}
+          {dashboard.topModel ? dashboard.topModel.name : "No data yet"}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          {topModel
-            ? `${formatCost(topModel.cost)} · ${topModel.pct}% of ${period.toUpperCase()} spend`
+          {dashboard.topModel
+            ? `${formatCost(dashboard.topModel.cost)} · ${dashboard.topModel.pct}% of ${dashboard.period.toUpperCase()} spend`
             : "Model usage appears after your first generation"}
         </p>
       </article>
@@ -99,7 +82,7 @@ export function SpendStatCards({
           {formatCost(view.budgetRemaining)}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          of {formatCost(budget)} production budget
+          of {formatCost(view.budget)} production budget
         </p>
       </article>
     </section>

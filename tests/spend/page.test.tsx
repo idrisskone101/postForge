@@ -2,8 +2,12 @@ import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TooltipProvider } from "../../src/components/ui/tooltip";
 import { SpendPageContent } from "../../src/app/costs/spend-page-content";
+import type {
+  CostsPageClientProps,
+  SpendPageHandlers,
+} from "../../src/app/costs/spend-models";
 
-const filterHandlers = {
+const handlers: SpendPageHandlers = {
   onPeriodChange: () => {},
   onLogPageChange: () => {},
   onSearchChange: () => {},
@@ -12,100 +16,95 @@ const filterHandlers = {
   onExportCsv: async () => 0,
 };
 
+const populatedDashboard: CostsPageClientProps = {
+  totalCost: 12.75,
+  currentPeriodCost: 4.82,
+  changePercent: -12,
+  avgCycleCost: 0.24,
+  totalJobs: 20,
+  topModel: { name: "kling-3.0-motion", cost: 8.5, pct: "67" },
+  chartData: [
+    { date: "Jun 12", image: 0.32, video: 1.2 },
+    { date: "Jun 13", image: 0.42, video: 2.88 },
+  ],
+  byModel: {
+    "kling-3.0-motion": { count: 12, cost: 8.5 },
+    "flux-pro": { count: 8, cost: 4.25 },
+  },
+  breakdown: {
+    image: { count: 8, cost: 1.25 },
+    video: { count: 12, cost: 11.5 },
+  },
+  logs: [
+    {
+      id: "log-1",
+      jobId: "job-1",
+      model: "kling-3.0-motion",
+      type: "video",
+      amount: 1.2,
+      createdAt: "2026-06-12T12:00:00.000Z",
+    },
+  ],
+  logPage: 0,
+  logTotalCount: 1,
+  logHasNext: false,
+  logFilterActive: false,
+  search: "",
+  model: null,
+  period: "30d",
+};
+
+const emptyDashboard: CostsPageClientProps = {
+  ...populatedDashboard,
+  totalCost: 0,
+  currentPeriodCost: 0,
+  changePercent: 0,
+  avgCycleCost: 0,
+  totalJobs: 0,
+  topModel: null,
+  chartData: [],
+  byModel: {},
+  breakdown: {
+    image: { count: 0, cost: 0 },
+    video: { count: 0, cost: 0 },
+  },
+  logs: [],
+  logTotalCount: 0,
+};
+
+const matchingEmptyDashboard: CostsPageClientProps = {
+  ...populatedDashboard,
+  totalCost: 4.82,
+  currentPeriodCost: 4.82,
+  changePercent: 0,
+  avgCycleCost: 0.24,
+  totalJobs: 20,
+  topModel: { name: "flux-pro", cost: 4.82, pct: "100" },
+  chartData: [{ date: "Jun 12", image: 0.32, video: 1.2 }],
+  byModel: { "flux-pro": { count: 20, cost: 4.82 } },
+  breakdown: {
+    image: { count: 20, cost: 4.82 },
+    video: { count: 0, cost: 0 },
+  },
+  logs: [],
+  logTotalCount: 0,
+  logFilterActive: true,
+  search: "missing-job",
+};
+
 const markup = renderToStaticMarkup(
   <TooltipProvider>
-    <SpendPageContent
-      totalCost={12.75}
-      currentPeriodCost={4.82}
-      changePercent={-12}
-      avgCycleCost={0.24}
-      totalJobs={20}
-      topModel={{ name: "kling-3.0-motion", cost: 8.5, pct: "67" }}
-      chartData={[
-        { date: "Jun 12", image: 0.32, video: 1.2 },
-        { date: "Jun 13", image: 0.42, video: 2.88 },
-      ]}
-      byModel={{
-        "kling-3.0-motion": { count: 12, cost: 8.5 },
-        "flux-pro": { count: 8, cost: 4.25 },
-      }}
-      breakdown={{
-        image: { count: 8, cost: 1.25 },
-        video: { count: 12, cost: 11.5 },
-      }}
-      logs={[
-        {
-          id: "log-1",
-          jobId: "job-1",
-          model: "kling-3.0-motion",
-          type: "video",
-          amount: 1.2,
-          createdAt: "2026-06-12T12:00:00.000Z",
-        },
-      ]}
-      logPage={0}
-      logTotalCount={1}
-      logHasNext={false}
-      logFilterActive={false}
-      search=""
-      model={null}
-      period="30d"
-      {...filterHandlers}
-    />
+    <SpendPageContent dashboard={populatedDashboard} handlers={handlers} />
   </TooltipProvider>
 );
 const emptyMarkup = renderToStaticMarkup(
   <TooltipProvider>
-    <SpendPageContent
-      totalCost={0}
-      currentPeriodCost={0}
-      changePercent={0}
-      avgCycleCost={0}
-      totalJobs={0}
-      topModel={null}
-      chartData={[]}
-      byModel={{}}
-      breakdown={{
-        image: { count: 0, cost: 0 },
-        video: { count: 0, cost: 0 },
-      }}
-      logs={[]}
-      logPage={0}
-      logTotalCount={0}
-      logHasNext={false}
-      logFilterActive={false}
-      search=""
-      model={null}
-      period="30d"
-      {...filterHandlers}
-    />
+    <SpendPageContent dashboard={emptyDashboard} handlers={handlers} />
   </TooltipProvider>
 );
 const matchingEmptyMarkup = renderToStaticMarkup(
   <TooltipProvider>
-    <SpendPageContent
-      totalCost={4.82}
-      currentPeriodCost={4.82}
-      changePercent={0}
-      avgCycleCost={0.24}
-      totalJobs={20}
-      topModel={{ name: "flux-pro", cost: 4.82, pct: "100" }}
-      chartData={[{ date: "Jun 12", image: 0.32, video: 1.2 }]}
-      byModel={{ "flux-pro": { count: 20, cost: 4.82 } }}
-      breakdown={{
-        image: { count: 20, cost: 4.82 },
-        video: { count: 0, cost: 0 },
-      }}
-      logs={[]}
-      logPage={0}
-      logTotalCount={0}
-      logHasNext={false}
-      logFilterActive={true}
-      search="missing-job"
-      model={null}
-      period="30d"
-      {...filterHandlers}
-    />
+    <SpendPageContent dashboard={matchingEmptyDashboard} handlers={handlers} />
   </TooltipProvider>
 );
 
@@ -153,7 +152,6 @@ assert.match(matchingEmptyMarkup, /missing-job/);
 assert.doesNotMatch(matchingEmptyMarkup, /No cost log entries yet/);
 assert.doesNotMatch(matchingEmptyMarkup, /Start Clone/);
 
-// Mobile stat cards stay 2-col (canon home parity)
 assert.match(markup, /grid grid-cols-2 gap-3 xl:grid-cols-4/);
 
 const pagedLogs = Array.from({ length: 10 }, (_, index) => ({
@@ -167,27 +165,23 @@ const pagedLogs = Array.from({ length: 10 }, (_, index) => ({
 const pagedMarkup = renderToStaticMarkup(
   <TooltipProvider>
     <SpendPageContent
-      totalCost={12.75}
-      currentPeriodCost={4.82}
-      changePercent={-12}
-      avgCycleCost={0.24}
-      totalJobs={25}
-      topModel={{ name: "flux-pro", cost: 4.82, pct: "100" }}
-      chartData={[{ date: "Jun 12", image: 0.32, video: 1.2 }]}
-      byModel={{ "flux-pro": { count: 25, cost: 4.82 } }}
-      breakdown={{
-        image: { count: 25, cost: 4.82 },
-        video: { count: 0, cost: 0 },
+      dashboard={{
+        ...matchingEmptyDashboard,
+        totalCost: 12.75,
+        changePercent: -12,
+        totalJobs: 25,
+        byModel: { "flux-pro": { count: 25, cost: 4.82 } },
+        breakdown: {
+          image: { count: 25, cost: 4.82 },
+          video: { count: 0, cost: 0 },
+        },
+        logs: pagedLogs,
+        logTotalCount: 25,
+        logHasNext: true,
+        search: "flux",
+        model: "flux-pro",
       }}
-      logs={pagedLogs}
-      logPage={0}
-      logTotalCount={25}
-      logHasNext={true}
-      logFilterActive={true}
-      search="flux"
-      model="flux-pro"
-      period="30d"
-      {...filterHandlers}
+      handlers={handlers}
     />
   </TooltipProvider>
 );
