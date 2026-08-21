@@ -3,6 +3,7 @@ import {
   createTrackedInspirationAccount,
   listTrackedInspirationAccounts,
 } from "@/lib/inspiration/service";
+import { parseInspirationAccountPageQuery } from "@/lib/inspiration/types";
 import { VirloApiError } from "@/lib/inspiration/virlo";
 
 function errorResponse(error: unknown, fallback: string) {
@@ -11,10 +12,12 @@ function errorResponse(error: unknown, fallback: string) {
   return NextResponse.json({ error: message }, { status });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const accounts = await listTrackedInspirationAccounts();
-    return NextResponse.json(accounts);
+    const page = await listTrackedInspirationAccounts(
+      parseInspirationAccountPageQuery(request.nextUrl.searchParams)
+    );
+    return NextResponse.json(page);
   } catch (error) {
     console.error("Failed to list inspiration accounts:", error);
     return errorResponse(error, "Failed to list inspiration accounts.");
