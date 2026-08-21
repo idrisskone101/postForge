@@ -8,18 +8,19 @@ import { GalleryGridCards } from "@/components/gallery/grid-cards";
 import { GalleryLightbox } from "@/components/gallery/lightbox";
 import { GalleryListTable } from "@/components/gallery/list-table";
 import type { GalleryMediaSession } from "@/components/gallery/media-session";
-import { GallerySelectionInspector } from "@/components/gallery/selection-inspector";
+import {
+  GallerySelectionInspector,
+  type GallerySelection,
+} from "@/components/gallery/selection-inspector";
 import type {
   GalleryFeedback,
   GalleryItem,
   GalleryView,
 } from "@/components/gallery/types";
 
-export type { GalleryFeedback, GalleryItem, GalleryView };
-
-interface GalleryGridProps {
+export type GalleryGridSession = {
   items: GalleryItem[];
-  view?: GalleryView;
+  view: GalleryView;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   onDelete: (id: string) => Promise<boolean>;
@@ -29,7 +30,7 @@ interface GalleryGridProps {
   ) => void;
   onHandoff?: (item: GalleryItem) => Promise<boolean>;
   onFeedback?: (feedback: GalleryFeedback) => void;
-}
+};
 
 function ItemPrompt({ item }: { item: GalleryItem }) {
   if (!item.prompt) return null;
@@ -54,16 +55,17 @@ function LightboxPrompt({ lightbox }: { lightbox: GalleryItem }) {
   );
 }
 
-export function GalleryGrid({
-  items,
-  view = "grid",
-  selectedIds,
-  onToggleSelect,
-  onDelete,
-  onReviewStatusChange,
-  onHandoff,
-  onFeedback,
-}: GalleryGridProps) {
+export function GalleryGrid({ session }: { session: GalleryGridSession }) {
+  const {
+    items,
+    view,
+    selectedIds,
+    onToggleSelect,
+    onDelete,
+    onReviewStatusChange,
+    onHandoff,
+    onFeedback,
+  } = session;
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [inspectedId, setInspectedId] = useState<string | null>(null);
@@ -144,7 +146,7 @@ export function GalleryGrid({
     }
   };
 
-  const session: GalleryMediaSession = {
+  const mediaSession: GalleryMediaSession = {
     selectedIds,
     deletingId,
     stampedIds,
@@ -158,6 +160,18 @@ export function GalleryGrid({
     onHandoff,
     onFeedback,
   };
+
+  const selection: GallerySelection | null = selectedItem
+    ? {
+        item: selectedItem,
+        onDeselect: () => toggleSelection(selectedItem.id),
+        onOpenPreview: () => setLightbox(selectedItem),
+        onDelete,
+        onReviewStatusChange,
+        onHandoff,
+        onFeedback,
+      }
+    : null;
 
   if (items.length === 0) {
     return (
@@ -180,29 +194,21 @@ export function GalleryGrid({
         )}
       >
         {view === "list" ? (
-          <GalleryListTable items={items} session={session} />
+          <GalleryListTable items={items} session={mediaSession} />
         ) : (
-          <GalleryGridCards items={items} view={view} session={session} />
+          <GalleryGridCards items={items} view={view} session={mediaSession} />
         )}
 
-        {selectedItem && (
-          <GallerySelectionInspector
-            item={selectedItem}
-            onDeselect={() => toggleSelection(selectedItem.id)}
-            onOpenPreview={() => setLightbox(selectedItem)}
-            onDelete={onDelete}
-            onReviewStatusChange={onReviewStatusChange}
-            onHandoff={onHandoff}
-            onFeedback={onFeedback}
-          >
-            <ItemPrompt item={selectedItem} />
+        {selection && (
+          <GallerySelectionInspector selection={selection}>
+            <ItemPrompt item={selection.item} />
           </GallerySelectionInspector>
         )}
       </div>
 
       <GalleryLightbox
         item={lightbox}
-        session={session}
+        session={mediaSession}
         prompt={lightbox ? <LightboxPrompt lightbox={lightbox} /> : null}
         onClose={() => setLightbox(null)}
       />
