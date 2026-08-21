@@ -59,20 +59,20 @@ export function JobInspectorFooter({
     <div className="min-w-0 border-t border-border p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
       {isCompleted && featured ? (
         <GenerateOutputActions
-          canDownload
-          isRetrying={isRetrying}
-          isDownloading={isDownloading}
-          showRetry={false}
-          actionError={feedback?.tone === "error" ? feedback.message : null}
-          actionNotice={
-            feedback?.tone === "success" ? feedback.message : null
-          }
-          onDownload={onDownload}
-          onRetry={onRetry}
-          onSaveToGallery={onSaveToGallery}
-          onUseInClone={job.type === "image" ? onUseInClone : undefined}
-          onGenerateSimilar={onGenerateSimilar}
-          onAddToAutomation={onAddToAutomation}
+          view={{
+            canDownload: true,
+            isRetrying,
+            isDownloading,
+            showRetry: false,
+            actionError: feedback?.tone === "error" ? feedback.message : null,
+            actionNotice: feedback?.tone === "success" ? feedback.message : null,
+            onDownload,
+            onRetry,
+            onSaveToGallery,
+            onUseInClone: job.type === "image" ? onUseInClone : undefined,
+            onGenerateSimilar,
+            onAddToAutomation,
+          }}
         />
       ) : (
         feedback && (

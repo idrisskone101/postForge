@@ -4,12 +4,14 @@ import { GenerateOutputActions } from "../../src/components/generate-output-acti
 
 const markup = renderToStaticMarkup(
   <GenerateOutputActions
-    canDownload
-    isRetrying={false}
-    onDownload={() => {}}
-    onRetry={() => {}}
-    onSaveToGallery={() => {}}
-    onUseInClone={() => {}}
+    view={{
+      canDownload: true,
+      isRetrying: false,
+      onDownload: () => {},
+      onRetry: () => {},
+      onSaveToGallery: () => {},
+      onUseInClone: () => {},
+    }}
   />
 );
 

@@ -133,15 +133,17 @@ assert.throws(
 
 const actionMarkup = renderToStaticMarkup(
   <GenerateOutputActions
-    canDownload
-    isRetrying={false}
-    actionError="Download failed. Try again."
-    onDownload={() => {}}
-    onRetry={() => {}}
-    onSaveToGallery={() => {}}
-    onUseInClone={() => {}}
-    onGenerateSimilar={() => {}}
-    onAddToAutomation={() => {}}
+    view={{
+      canDownload: true,
+      isRetrying: false,
+      actionError: "Download failed. Try again.",
+      onDownload: () => {},
+      onRetry: () => {},
+      onSaveToGallery: () => {},
+      onUseInClone: () => {},
+      onGenerateSimilar: () => {},
+      onAddToAutomation: () => {},
+    }}
   />
 );
 
