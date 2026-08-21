@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, User } from "lucide-react";
 import { apiDelete, apiGet } from "@/lib/api/client";
 import { getAvatarOptionLabel } from "@/lib/avatar-workflow";
-import type { Avatar, AvatarListPage, AvatarPickerMode } from "@/lib/avatar-picker-model";
+import type {
+  Avatar,
+  AvatarCreatedHandoff,
+  AvatarListPage,
+  AvatarPickerMode,
+} from "@/lib/avatar-picker-model";
 import { userErrorMessage } from "@/lib/user-error-message";
 import {
   AvatarActionErrorNotice,
@@ -126,6 +131,10 @@ export function AvatarPicker({
   };
 
   const backToGrid = () => setMode("grid");
+  const createdHandoff: AvatarCreatedHandoff = {
+    onCreated: handleCreated,
+    onBack: backToGrid,
+  };
 
   if (isLoading) {
     return (
@@ -141,9 +150,9 @@ export function AvatarPicker({
     case "generate":
       return <AvatarGeneratePanel onCreated={handleCreated} onBack={backToGrid} />;
     case "gallery":
-      return <AvatarGalleryPanel onCreated={handleCreated} onBack={backToGrid} />;
+      return <AvatarGalleryPanel handoff={createdHandoff} />;
     case "import":
-      return <AvatarImportMode onCreated={handleCreated} onBack={backToGrid} />;
+      return <AvatarImportMode handoff={createdHandoff} />;
     case "grid":
       break;
     default: {
@@ -184,11 +193,13 @@ export function AvatarPicker({
           return (
             <AvatarOptionCard
               key={avatar.id}
-              avatar={avatar}
-              label={avatarLabel}
-              isSelected={isSelected}
-              onSelect={() => onSelect(avatar.id)}
-              onDelete={(event) => handleDelete(avatar.id, event)}
+              option={{
+                avatar,
+                label: avatarLabel,
+                isSelected,
+                onSelect: () => onSelect(avatar.id),
+                onDelete: (event) => handleDelete(avatar.id, event),
+              }}
             />
           );
         })}
