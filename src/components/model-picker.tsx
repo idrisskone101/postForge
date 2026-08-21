@@ -26,6 +26,84 @@ interface ModelPickerProps {
   recommendedModelId?: string;
 }
 
+export function ModelPicker({
+  selectedModel,
+  onModelSelect,
+  models,
+  recommendedModelId,
+}: ModelPickerProps) {
+  const selected = models.find((model) => model.id === selectedModel);
+  const [requestedType, setRequestedType] = useState<"image" | "video">(
+    selected?.type ?? "image"
+  );
+  const activeType = selected?.type ?? requestedType;
+
+  const visibleModels = models.filter((model) => model.type === activeType);
+
+  const selectType = (type: "image" | "video") => {
+    setRequestedType(type);
+    if (selected?.type !== type) {
+      const firstModel = models.find((model) => model.type === type);
+      if (firstModel) onModelSelect(firstModel.id);
+    }
+  };
+
+  return (
+    <div>
+      <div
+        role="tablist"
+        aria-label="Generation type"
+        className="grid grid-cols-2 rounded-[6px] bg-[var(--pf-active)] p-1"
+      >
+        {(["image", "video"] as const).map((type) => {
+          const active = activeType === type;
+          const Icon = type === "image" ? ImageIcon : Video;
+          return (
+            <button
+              key={type}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => selectType(type)}
+              className={cn(
+                "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
+                active
+                  ? "bg-white text-foreground shadow-[var(--pf-shadow-2xs)]"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="size-3.5" />
+              {type}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        key={activeType}
+        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2"
+      >
+        {visibleModels.map((model) => (
+          <ModelCard
+            key={model.id}
+            model={model}
+            selected={selectedModel === model.id}
+            recommended={recommendedModelId === model.id}
+            onClick={() => onModelSelect(model.id)}
+          />
+        ))}
+      </div>
+
+      {visibleModels.length === 0 && (
+        <div className="mt-3 rounded-lg border border-dashed border-border px-4 py-8 text-center text-[12px] text-muted-foreground">
+          No {activeType} models are configured.
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 const MODEL_ICON_MAP: Record<string, ComponentType<{ className?: string; strokeWidth?: number }>> = {
   "nano-banana-2": Zap,
   "nano-banana-pro": Palette,
@@ -154,82 +232,5 @@ function ModelCard({
         </span>
       )}
     </button>
-  );
-}
-
-export function ModelPicker({
-  selectedModel,
-  onModelSelect,
-  models,
-  recommendedModelId,
-}: ModelPickerProps) {
-  const selected = models.find((model) => model.id === selectedModel);
-  const [requestedType, setRequestedType] = useState<"image" | "video">(
-    selected?.type ?? "image"
-  );
-  const activeType = selected?.type ?? requestedType;
-
-  const visibleModels = models.filter((model) => model.type === activeType);
-
-  const selectType = (type: "image" | "video") => {
-    setRequestedType(type);
-    if (selected?.type !== type) {
-      const firstModel = models.find((model) => model.type === type);
-      if (firstModel) onModelSelect(firstModel.id);
-    }
-  };
-
-  return (
-    <div>
-      <div
-        role="tablist"
-        aria-label="Generation type"
-        className="grid grid-cols-2 rounded-[6px] bg-[var(--pf-active)] p-1"
-      >
-        {(["image", "video"] as const).map((type) => {
-          const active = activeType === type;
-          const Icon = type === "image" ? ImageIcon : Video;
-          return (
-            <button
-              key={type}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => selectType(type)}
-              className={cn(
-                "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
-                active
-                  ? "bg-white text-foreground shadow-[var(--pf-shadow-2xs)]"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Icon className="size-3.5" />
-              {type}
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        key={activeType}
-        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2"
-      >
-        {visibleModels.map((model) => (
-          <ModelCard
-            key={model.id}
-            model={model}
-            selected={selectedModel === model.id}
-            recommended={recommendedModelId === model.id}
-            onClick={() => onModelSelect(model.id)}
-          />
-        ))}
-      </div>
-
-      {visibleModels.length === 0 && (
-        <div className="mt-3 rounded-lg border border-dashed border-border px-4 py-8 text-center text-[12px] text-muted-foreground">
-          No {activeType} models are configured.
-        </div>
-      )}
-    </div>
   );
 }

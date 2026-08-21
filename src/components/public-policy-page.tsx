@@ -7,12 +7,6 @@ type PolicySection = {
   content: ReactNode;
 };
 
-const policyLinks = [
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/data-deletion", label: "Data deletion" },
-] as const;
-
 export function PublicPolicyPage({
   title,
   summary,
@@ -126,3 +120,10 @@ export function PublicPolicyPage({
     </div>
   );
 }
+
+
+const policyLinks = [
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/data-deletion", label: "Data deletion" },
+] as const;

@@ -14,35 +14,6 @@ import {
 import type { SlideshowProject } from "./types";
 import type { StudioHomeView } from "./view-models";
 
-function ProjectStatusPill({ status }: { status: SlideshowProject["status"] }) {
-  const map: Record<string, { cls: string; label: string; spinning?: boolean }> = {
-    ready: { cls: "bg-accent-green/10 text-accent-green", label: "Ready" },
-    exported: { cls: "bg-accent-green/10 text-accent-green", label: "Exported" },
-    published: { cls: "bg-accent-green/10 text-accent-green", label: "Published" },
-    generating: {
-      cls: "bg-accent-blue/10 text-accent-blue",
-      label: "Generating",
-      spinning: true,
-    },
-    scheduled: { cls: "bg-accent-blue/10 text-accent-blue", label: "Scheduled" },
-    failed: { cls: "bg-destructive/10 text-destructive", label: "Failed" },
-    archived: { cls: "bg-[var(--pf-active)] text-muted-foreground", label: "Archived" },
-    draft: { cls: "bg-[var(--pf-active)] text-muted-foreground", label: "Draft" },
-  };
-  const { cls, label, spinning } = map[status] ?? map.draft;
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[12px] font-bold",
-        cls,
-      )}
-    >
-      {spinning ? <LoaderCircle className="size-2.5 animate-spin" /> : null}
-      {label}
-    </span>
-  );
-}
-
 export function DraftsView({ home }: { home: StudioHomeView }) {
   const {
     projects,
@@ -233,5 +204,35 @@ export function DraftsView({ home }: { home: StudioHomeView }) {
         </div>
       )}
     </div>
+  );
+}
+
+
+function ProjectStatusPill({ status }: { status: SlideshowProject["status"] }) {
+  const map: Record<string, { cls: string; label: string; spinning?: boolean }> = {
+    ready: { cls: "bg-accent-green/10 text-accent-green", label: "Ready" },
+    exported: { cls: "bg-accent-green/10 text-accent-green", label: "Exported" },
+    published: { cls: "bg-accent-green/10 text-accent-green", label: "Published" },
+    generating: {
+      cls: "bg-accent-blue/10 text-accent-blue",
+      label: "Generating",
+      spinning: true,
+    },
+    scheduled: { cls: "bg-accent-blue/10 text-accent-blue", label: "Scheduled" },
+    failed: { cls: "bg-destructive/10 text-destructive", label: "Failed" },
+    archived: { cls: "bg-[var(--pf-active)] text-muted-foreground", label: "Archived" },
+    draft: { cls: "bg-[var(--pf-active)] text-muted-foreground", label: "Draft" },
+  };
+  const { cls, label, spinning } = map[status] ?? map.draft;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-[12px] font-bold",
+        cls,
+      )}
+    >
+      {spinning ? <LoaderCircle className="size-2.5 animate-spin" /> : null}
+      {label}
+    </span>
   );
 }

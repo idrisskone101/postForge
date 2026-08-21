@@ -18,27 +18,6 @@ import {
 import { VideoTrimRangeFields } from "@/components/video-trim-range-fields";
 import { VideoTrimTimeline } from "@/components/video-trim-timeline";
 
-export { formatTrimTime, getTrimSummary, normalizeTrimRange };
-
-interface VideoTrimmerProps {
-  videoPath: string;
-  durationSec: number;
-  width: number;
-  height: number;
-  sourceId?: string;
-  onTrimmed: (info: {
-    localPath: string;
-    filename: string;
-    durationSec: number;
-    width: number;
-    height: number;
-  }) => void;
-  onCancel: () => void;
-}
-
-const FILMSTRIP_THUMBNAIL_COUNT = 4;
-const FILMSTRIP_FETCH_DELAY_MS = 700;
-
 export function VideoTrimmer({
   videoPath,
   durationSec,
@@ -319,3 +298,25 @@ export function VideoTrimmer({
     </div>
   );
 }
+
+
+export { formatTrimTime, getTrimSummary, normalizeTrimRange };
+
+interface VideoTrimmerProps {
+  videoPath: string;
+  durationSec: number;
+  width: number;
+  height: number;
+  sourceId?: string;
+  onTrimmed: (info: {
+    localPath: string;
+    filename: string;
+    durationSec: number;
+    width: number;
+    height: number;
+  }) => void;
+  onCancel: () => void;
+}
+
+const FILMSTRIP_THUMBNAIL_COUNT = 4;
+const FILMSTRIP_FETCH_DELAY_MS = 700;

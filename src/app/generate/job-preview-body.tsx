@@ -35,77 +35,6 @@ export type JobPreviewToolbarView = {
   onFullscreen: () => void;
 };
 
-export function JobPreviewToolbar({
-  view,
-}: {
-  view: JobPreviewToolbarView;
-}) {
-  const {
-    previewZoom,
-    cropMode,
-    isFullscreen,
-    isCompleted,
-    featured,
-    onZoomOut,
-    onZoomIn,
-    onToggleCrop,
-    onFullscreen,
-  } = view;
-
-  return (
-    <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          aria-label="Zoom out"
-          onClick={onZoomOut}
-          disabled={previewZoom <= 50}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
-        >
-          <ZoomOut className="size-3.5" />
-        </button>
-        <span className="w-12 text-center text-[12px] font-semibold text-muted-foreground">
-          {previewZoom}%
-        </span>
-        <button
-          type="button"
-          aria-label="Zoom in"
-          onClick={onZoomIn}
-          disabled={previewZoom >= 150}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
-        >
-          <ZoomIn className="size-3.5" />
-        </button>
-      </div>
-      <div className="flex items-center gap-1.5">
-        {isCompleted && featured && (
-          <button
-            type="button"
-            aria-pressed={cropMode}
-            onClick={onToggleCrop}
-            className={cn(
-              "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
-              cropMode
-                ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
-                : "border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)]"
-            )}
-          >
-            <Crop className="size-3.5" /> {cropMode ? "Fit" : "Crop"}
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={onFullscreen}
-          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-border bg-white px-2 text-[12px] font-semibold text-muted-foreground hover:bg-[var(--pf-active)]"
-        >
-          <Maximize2 className="size-3.5" />
-          {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function JobPreviewBody({
   view,
   actions,
@@ -217,6 +146,77 @@ export function JobPreviewBody({
         </div>
       )}
     </>
+  );
+}
+
+export function JobPreviewToolbar({
+  view,
+}: {
+  view: JobPreviewToolbarView;
+}) {
+  const {
+    previewZoom,
+    cropMode,
+    isFullscreen,
+    isCompleted,
+    featured,
+    onZoomOut,
+    onZoomIn,
+    onToggleCrop,
+    onFullscreen,
+  } = view;
+
+  return (
+    <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          aria-label="Zoom out"
+          onClick={onZoomOut}
+          disabled={previewZoom <= 50}
+          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
+        >
+          <ZoomOut className="size-3.5" />
+        </button>
+        <span className="w-12 text-center text-[12px] font-semibold text-muted-foreground">
+          {previewZoom}%
+        </span>
+        <button
+          type="button"
+          aria-label="Zoom in"
+          onClick={onZoomIn}
+          disabled={previewZoom >= 150}
+          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
+        >
+          <ZoomIn className="size-3.5" />
+        </button>
+      </div>
+      <div className="flex items-center gap-1.5">
+        {isCompleted && featured && (
+          <button
+            type="button"
+            aria-pressed={cropMode}
+            onClick={onToggleCrop}
+            className={cn(
+              "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
+              cropMode
+                ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
+                : "border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)]"
+            )}
+          >
+            <Crop className="size-3.5" /> {cropMode ? "Fit" : "Crop"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onFullscreen}
+          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-border bg-white px-2 text-[12px] font-semibold text-muted-foreground hover:bg-[var(--pf-active)]"
+        >
+          <Maximize2 className="size-3.5" />
+          {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+        </button>
+      </div>
+    </div>
   );
 }
 

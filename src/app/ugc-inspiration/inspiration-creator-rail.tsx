@@ -11,37 +11,6 @@ import {
 } from "./inspiration-models";
 import type { InspirationWorkspace } from "./use-inspiration-workspace";
 
-function CreatorSyncAvatar({
-  account,
-}: {
-  account: TrackedInspirationAccount;
-}) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const avatarSrc =
-    account.avatarUrl && !avatarFailed
-      ? getInspirationAvatarSrc(account.id, account.updatedAt)
-      : null;
-  const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
-
-  return (
-    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-[11px] font-medium text-muted-foreground">
-      {avatarSrc ? (
-        <Image
-          src={avatarSrc}
-          alt=""
-          width={32}
-          height={32}
-          unoptimized
-          className="size-full object-cover"
-          onError={() => setAvatarFailed(true)}
-        />
-      ) : (
-        fallback
-      )}
-    </span>
-  );
-}
-
 export function InspirationCreatorRail({
   workspace,
 }: {
@@ -167,5 +136,37 @@ export function InspirationCreatorRail({
         ) : null}
       </div>
     </section>
+  );
+}
+
+
+function CreatorSyncAvatar({
+  account,
+}: {
+  account: TrackedInspirationAccount;
+}) {
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const avatarSrc =
+    account.avatarUrl && !avatarFailed
+      ? getInspirationAvatarSrc(account.id, account.updatedAt)
+      : null;
+  const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
+
+  return (
+    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-[11px] font-medium text-muted-foreground">
+      {avatarSrc ? (
+        <Image
+          src={avatarSrc}
+          alt=""
+          width={32}
+          height={32}
+          unoptimized
+          className="size-full object-cover"
+          onError={() => setAvatarFailed(true)}
+        />
+      ) : (
+        fallback
+      )}
+    </span>
   );
 }

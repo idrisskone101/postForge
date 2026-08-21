@@ -33,33 +33,6 @@ import {
 } from "../job-preview-body";
 import { useJobDetail } from "../use-job-detail";
 
-function EditorLoadingState() {
-  return (
-    <div className="pf-content-viewport animate-fade-in-up">
-      <div className="flex min-h-[92px] flex-col gap-4 border-b border-border px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-8">
-        <div className="flex flex-1 items-center gap-3">
-          <Skeleton className="size-9 rounded-lg" />
-          <div>
-            <Skeleton className="h-3 w-28" />
-            <Skeleton className="mt-2 h-6 w-72 max-w-[60vw]" />
-          </div>
-        </div>
-        <Skeleton className="h-9 w-64 rounded-lg" />
-      </div>
-      <div className="grid gap-4 p-3 sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="overflow-hidden rounded-[8px] border border-border bg-white">
-          <Skeleton className="h-12 w-full rounded-none" />
-          <div className="grid min-h-[620px] place-items-center bg-[var(--pf-active)] p-8">
-            <Skeleton className="h-[560px] w-[315px] max-w-full rounded-lg" />
-          </div>
-          <Skeleton className="h-24 w-full rounded-none" />
-        </div>
-        <Skeleton className="h-[760px] w-full rounded-[8px]" />
-      </div>
-    </div>
-  );
-}
-
 export default function JobDetailPage() {
   const detail = useJobDetail();
   const [activeTab, setActiveTab] = useState<InspectorTab>("enhance");
@@ -302,6 +275,34 @@ export default function JobDetailPage() {
           <JobInspectorFooter view={view} actions={actions} />
         </aside>
       </section>
+    </div>
+  );
+}
+
+
+function EditorLoadingState() {
+  return (
+    <div className="pf-content-viewport animate-fade-in-up">
+      <div className="flex min-h-[92px] flex-col gap-4 border-b border-border px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:px-8">
+        <div className="flex flex-1 items-center gap-3">
+          <Skeleton className="size-9 rounded-lg" />
+          <div>
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="mt-2 h-6 w-72 max-w-[60vw]" />
+          </div>
+        </div>
+        <Skeleton className="h-9 w-64 rounded-lg" />
+      </div>
+      <div className="grid gap-4 p-3 sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
+        <div className="overflow-hidden rounded-[8px] border border-border bg-white">
+          <Skeleton className="h-12 w-full rounded-none" />
+          <div className="grid min-h-[620px] place-items-center bg-[var(--pf-active)] p-8">
+            <Skeleton className="h-[560px] w-[315px] max-w-full rounded-lg" />
+          </div>
+          <Skeleton className="h-24 w-full rounded-none" />
+        </div>
+        <Skeleton className="h-[760px] w-full rounded-[8px]" />
+      </div>
     </div>
   );
 }

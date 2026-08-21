@@ -8,13 +8,6 @@ import { FIELD_LABEL } from "./studio-ui";
 
 export type EditorSaveState = "unsaved" | "saving" | "saved" | "error";
 
-export function sliderNumber(
-  value: number | readonly number[],
-  fallback: number,
-) {
-  return typeof value === "number" ? value : (value[0] ?? fallback);
-}
-
 export function NativeSelect<T extends string>({
   label,
   value,
@@ -49,6 +42,13 @@ export function NativeSelect<T extends string>({
       </span>
     </label>
   );
+}
+
+export function sliderNumber(
+  value: number | readonly number[],
+  fallback: number,
+) {
+  return typeof value === "number" ? value : (value[0] ?? fallback);
 }
 
 export function AutosaveStatus({ state }: { state: EditorSaveState }) {

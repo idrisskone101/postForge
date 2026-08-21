@@ -375,14 +375,16 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         onUseTemplate={startTemplate}
       />
       <PublishDialog
-        open={Boolean(publishProject)}
-        project={publishProject}
-        tiktokConnected={tiktokConnected}
-        supportsMp4Export={supportsMp4Export}
-        onOpenChange={(open) => {
-          if (!open) setPublishProject(null);
+        dialog={{
+          open: Boolean(publishProject),
+          project: publishProject,
+          tiktokConnected,
+          supportsMp4Export,
+          onOpenChange: (open) => {
+            if (!open) setPublishProject(null);
+          },
+          onExport: handleExport,
         }}
-        onExport={handleExport}
       />
 
       {toast ? <StudioToast message={toast} /> : null}

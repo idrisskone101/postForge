@@ -5,27 +5,6 @@ import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "PostForge",
-  description: "Self-hosted AI content generation platform",
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -65,3 +44,25 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </html>
   );
 }
+
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "PostForge",
+  description: "Self-hosted AI content generation platform",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};

@@ -22,20 +22,6 @@ import {
 } from "@/app/generate/generation-requests";
 import { useGenerationForm } from "@/app/generate/use-generation-form";
 
-export function GenerateEmptyState() {
-  return (
-    <WorkspaceState
-      tone="empty"
-      icon={Sparkles}
-      title="No generation models available"
-      description="Model configuration could not be loaded. Use Clone or return Home while the Generate engines are unavailable."
-      action={{ href: "/ugc-clone", label: "Open Clone" }}
-      secondaryAction={{ href: "/", label: "Return Home" }}
-      className="min-h-96"
-    />
-  );
-}
-
 export function GenerationForm({ models }: GenerationFormProps) {
   const router = useRouter();
   const form = useGenerationForm(models);
@@ -159,18 +145,33 @@ export function GenerationForm({ models }: GenerationFormProps) {
         onSubmit: handleSubmit,
         identitySection: (
           <GenerateIdentitySection
-            show={
-              selectedDefinition?.type !== "video" ||
-              Boolean(selectedDefinition.capabilities.characterReference)
-            }
-            isVideo={selectedDefinition?.type === "video"}
-            avatarId={avatarId}
-            identityStatus={form.identityStatus}
-            identityError={form.identityError}
-            onSelect={handleAvatarSelect}
+            view={{
+              show:
+                selectedDefinition?.type !== "video" ||
+                Boolean(selectedDefinition.capabilities.characterReference),
+              isVideo: selectedDefinition?.type === "video",
+              avatarId,
+              identityStatus: form.identityStatus,
+              identityError: form.identityError,
+            }}
+            actions={{ onSelect: handleAvatarSelect }}
           />
         ),
       })}
+    />
+  );
+}
+
+export function GenerateEmptyState() {
+  return (
+    <WorkspaceState
+      tone="empty"
+      icon={Sparkles}
+      title="No generation models available"
+      description="Model configuration could not be loaded. Use Clone or return Home while the Generate engines are unavailable."
+      action={{ href: "/ugc-clone", label: "Open Clone" }}
+      secondaryAction={{ href: "/", label: "Return Home" }}
+      className="min-h-96"
     />
   );
 }

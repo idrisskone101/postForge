@@ -27,18 +27,6 @@ export type SourceListPage = {
   nextCursor: string | null;
 };
 
-function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
-}
-
-function formatSize(bytes: number | null) {
-  if (!bytes) return null;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 export function TikTokSavedSources({
   savedSources,
   selectedSourceId,
@@ -173,4 +161,17 @@ export function TikTokSavedSources({
       )}
     </div>
   );
+}
+
+
+function formatDuration(sec: number) {
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+}
+
+function formatSize(bytes: number | null) {
+  if (!bytes) return null;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

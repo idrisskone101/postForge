@@ -32,10 +32,6 @@ import {
 } from "@/lib/workspace-features-client";
 import { cn } from "@/lib/utils";
 
-function assetUrl(id: string) {
-  return `/api/collection-assets/${encodeURIComponent(id)}`;
-}
-
 export function CollectionsPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -241,4 +237,9 @@ export function CollectionsPageClient() {
       />
     </div>
   );
+}
+
+
+function assetUrl(id: string) {
+  return `/api/collection-assets/${encodeURIComponent(id)}`;
 }

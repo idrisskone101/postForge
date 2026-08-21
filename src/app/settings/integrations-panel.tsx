@@ -90,13 +90,15 @@ export function IntegrationsPanel({
         {SOCIAL_PROVIDERS.map((provider) => (
           <SocialIntegrationCard
             key={provider}
-            provider={provider}
-            status={providers.find((candidate) => candidate.provider === provider) ?? null}
-            loading={loading}
-            busy={busyProvider === provider}
-            onConnect={onConnect}
-            onSync={onSync}
-            onDisconnect={onDisconnect}
+            card={{
+              provider,
+              status: providers.find((candidate) => candidate.provider === provider) ?? null,
+              loading,
+              busy: busyProvider === provider,
+              onConnect,
+              onSync,
+              onDisconnect,
+            }}
           />
         ))}
       </div>

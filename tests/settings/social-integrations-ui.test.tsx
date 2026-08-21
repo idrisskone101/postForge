@@ -12,6 +12,25 @@ import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
 
 const noOp = () => {};
 
+function renderCard(
+  provider: PublicIntegrationStatus["provider"],
+  cardStatus: PublicIntegrationStatus | null
+) {
+  return renderToStaticMarkup(
+    <SocialIntegrationCard
+      card={{
+        provider,
+        status: cardStatus,
+        loading: false,
+        busy: false,
+        onConnect: noOp,
+        onSync: noOp,
+        onDisconnect: noOp,
+      }}
+    />
+  );
+}
+
 function status(
   overrides: Partial<PublicIntegrationStatus> &
     Pick<PublicIntegrationStatus, "provider" | "displayName">
@@ -124,17 +143,7 @@ const notConfiguredYouTube = status({
   configuration: "not_configured",
 });
 
-const instagramMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="instagram"
-    status={notConfiguredInstagram}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
-);
+const instagramMarkup = renderCard("instagram", notConfiguredInstagram);
 assert.match(instagramMarkup, /data-social-provider="instagram"/);
 assert.match(instagramMarkup, /aria-label="Instagram logo"/);
 assert.match(instagramMarkup, /Not configured/);
@@ -144,17 +153,7 @@ assert.match(instagramMarkup, /instagram_business_content_publish/);
 assert.match(instagramMarkup, /Setup required/);
 assert.match(instagramMarkup, /disabled=""/);
 
-const connectedMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="tiktok"
-    status={connectedTikTok}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
-);
+const connectedMarkup = renderCard("tiktok", connectedTikTok);
 assert.match(connectedMarkup, /data-social-provider="tiktok"/);
 assert.match(connectedMarkup, /Real Creator/);
 assert.match(connectedMarkup, /@real_creator/);
@@ -165,45 +164,28 @@ assert.match(connectedMarkup, /> Sync</);
 assert.match(connectedMarkup, /> Disconnect</);
 assert.doesNotMatch(connectedMarkup, /Connect TikTok/);
 
-const instagramRuntimeUnavailableMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="instagram"
-    status={connected(
-      "instagram",
-      {
-        id: "instagram-account",
-        username: "creator",
-        displayName: "Creator",
-        avatarUrl: null,
-        profileUrl: null,
-      },
-      {
-        publishingUnavailableReason:
-          "Instagram publishing requires an executable FFPROBE_PATH on the server before media can be verified.",
-      }
-    )}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
+const instagramRuntimeUnavailableMarkup = renderCard(
+  "instagram",
+  connected(
+    "instagram",
+    {
+      id: "instagram-account",
+      username: "creator",
+      displayName: "Creator",
+      avatarUrl: null,
+      profileUrl: null,
+    },
+    {
+      publishingUnavailableReason:
+        "Instagram publishing requires an executable FFPROBE_PATH on the server before media can be verified.",
+    }
+  )
 );
 assert.match(instagramRuntimeUnavailableMarkup, /Upload runtime/);
 assert.match(instagramRuntimeUnavailableMarkup, /unavailable/);
 assert.match(instagramRuntimeUnavailableMarkup, /FFPROBE_PATH/);
 
-const youtubeMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="youtube"
-    status={readyYouTube}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
-);
+const youtubeMarkup = renderCard("youtube", readyYouTube);
 assert.match(youtubeMarkup, />YouTube</);
 assert.match(youtubeMarkup, /Connect YouTube/);
 assert.match(youtubeMarkup, /PostForge policies for YouTube API Services/);
@@ -215,17 +197,7 @@ assert.match(youtubeMarkup, /using YouTube API Services means/);
 assert.match(youtubeMarkup, /<button[^>]*disabled=""[^>]*>Connect YouTube<\/button>/);
 assert.doesNotMatch(youtubeMarkup, /type="checkbox"[^>]*checked/);
 
-const youtubeSetupMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="youtube"
-    status={notConfiguredYouTube}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
-);
+const youtubeSetupMarkup = renderCard("youtube", notConfiguredYouTube);
 assert.match(youtubeSetupMarkup, /POSTFORGE_PRIVACY_POLICY_URL/);
 assert.match(youtubeSetupMarkup, /POSTFORGE_TERMS_URL/);
 assert.match(youtubeSetupMarkup, /POSTFORGE_DATA_DELETION_URL/);
@@ -237,26 +209,16 @@ assert.match(youtubeSetupMarkup, /Google Privacy Policy/);
 assert.match(youtubeSetupMarkup, /Revoke Google access/);
 assert.match(youtubeSetupMarkup, /does not create legal disclosures/);
 
-const connectedYouTubeMarkup = renderToStaticMarkup(
-  <SocialIntegrationCard
-    provider="youtube"
-    status={{
-      ...readyYouTube,
-      ...connected("youtube", {
-        id: "youtube-account",
-        username: "@channel",
-        displayName: "Channel",
-        avatarUrl: null,
-        profileUrl: "https://www.youtube.com/channel/youtube-account",
-      }),
-    }}
-    loading={false}
-    busy={false}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-  />
-);
+const connectedYouTubeMarkup = renderCard("youtube", {
+  ...readyYouTube,
+  ...connected("youtube", {
+    id: "youtube-account",
+    username: "@channel",
+    displayName: "Channel",
+    avatarUrl: null,
+    profileUrl: "https://www.youtube.com/channel/youtube-account",
+  }),
+});
 assert.match(connectedYouTubeMarkup, /Revoke Google access/);
 
 function componentPropNames(source: string, exportName: string): string[] {

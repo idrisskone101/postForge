@@ -2,8 +2,6 @@ import type { PointerEvent, RefObject } from "react";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const FILMSTRIP_PLACEHOLDER_COUNT = 4;
-
 export function VideoTrimTimeline({
   trackRef,
   thumbnails,
@@ -103,3 +101,6 @@ export function VideoTrimTimeline({
     </div>
   );
 }
+
+
+export const FILMSTRIP_PLACEHOLDER_COUNT = 4;

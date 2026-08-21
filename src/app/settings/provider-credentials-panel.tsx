@@ -16,13 +16,6 @@ type ProviderCredentialStatus = {
   envKey: string;
 };
 
-const PROVIDER_LABELS: Record<string, string> = {
-  fal: "fal.ai",
-  gemini: "Google Gemini",
-  virlo: "Virlo",
-  ollama: "Ollama",
-};
-
 export function ProviderCredentialsPanel() {
   const [statuses, setStatuses] = useState<ProviderCredentialStatus[] | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -211,3 +204,11 @@ export function ProviderCredentialsPanel() {
     </div>
   );
 }
+
+
+const PROVIDER_LABELS: Record<string, string> = {
+  fal: "fal.ai",
+  gemini: "Google Gemini",
+  virlo: "Virlo",
+  ollama: "Ollama",
+};

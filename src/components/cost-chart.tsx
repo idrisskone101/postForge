@@ -18,44 +18,6 @@ interface CostChartProps {
   data: Array<{ date: string; image: number; video: number }>;
 }
 
-const ACCENT_CORAL = "#FF4A20";
-const ACCENT_BLUE = "#378EFF";
-
-function CustomTooltip({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: Array<{ value: number; dataKey: string; color: string }>;
-  label?: string;
-}) {
-  if (!active || !payload) return null;
-
-  return (
-    <div className="rounded-lg border bg-popover px-3 py-2 shadow-lg text-popover-foreground">
-      <p className="text-xs font-medium mb-1">{label}</p>
-      {payload.map((entry) => (
-        <div
-          key={entry.dataKey}
-          className="flex items-center justify-between gap-4 text-xs"
-        >
-          <span className="flex items-center gap-1.5">
-            <span
-              className="inline-block size-2 rounded-full"
-              style={{ backgroundColor: entry.color }}
-            />
-            <span className="capitalize text-muted-foreground">{entry.dataKey}</span>
-          </span>
-          <span className="font-medium">
-            {formatCost(entry.value)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function CostChart({ data }: CostChartProps) {
   return (
     <div role="img" aria-label="Image and video spend over time">
@@ -95,6 +57,44 @@ export function CostChart({ data }: CostChartProps) {
           />
         </BarChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+const ACCENT_CORAL = "#FF4A20";
+const ACCENT_BLUE = "#378EFF";
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string; color: string }>;
+  label?: string;
+}) {
+  if (!active || !payload) return null;
+
+  return (
+    <div className="rounded-lg border bg-popover px-3 py-2 shadow-lg text-popover-foreground">
+      <p className="text-xs font-medium mb-1">{label}</p>
+      {payload.map((entry) => (
+        <div
+          key={entry.dataKey}
+          className="flex items-center justify-between gap-4 text-xs"
+        >
+          <span className="flex items-center gap-1.5">
+            <span
+              className="inline-block size-2 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="capitalize text-muted-foreground">{entry.dataKey}</span>
+          </span>
+          <span className="font-medium">
+            {formatCost(entry.value)}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
