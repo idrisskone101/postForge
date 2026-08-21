@@ -12,19 +12,21 @@ import {
 
 const emptyState = renderToStaticMarkup(
   <CloneProductionStatePanel
-    sourceReady={false}
-    trimReady={false}
-    identityReady={false}
-    referenceReady={false}
-    canGenerate={false}
-    nextAction={getClonePrimaryAction({
+    production={{
       sourceReady: false,
       trimReady: false,
       identityReady: false,
       referenceReady: false,
       canGenerate: false,
-      usesSavedReference: false,
-    })}
+      nextAction: getClonePrimaryAction({
+        sourceReady: false,
+        trimReady: false,
+        identityReady: false,
+        referenceReady: false,
+        canGenerate: false,
+        usesSavedReference: false,
+      }),
+    }}
   />
 );
 
@@ -80,20 +82,22 @@ assert.equal(
 
 const failedIdentityStatus = renderToStaticMarkup(
   <CloneIdentityStatusPanel
-    avatarReady
-    identityPack={{
-      id: "pack-failed",
-      avatarId: "avatar-imported",
-      status: "failed",
-      imageModel: "nano-banana-2",
-      error: "Identity generation failed",
-      createdAt: "2026-06-14T12:00:00.000Z",
-      updatedAt: "2026-06-14T12:00:00.000Z",
-      images: [],
+    identity={{
+      avatarReady: true,
+      identityPack: {
+        id: "pack-failed",
+        avatarId: "avatar-imported",
+        status: "failed",
+        imageModel: "nano-banana-2",
+        error: "Identity generation failed",
+        createdAt: "2026-06-14T12:00:00.000Z",
+        updatedAt: "2026-06-14T12:00:00.000Z",
+        images: [],
+      },
+      isStartingIdentityPack: false,
+      identityPackError: null,
+      onRetry: () => {},
     }}
-    isStartingIdentityPack={false}
-    identityPackError={null}
-    onRetry={() => {}}
   />
 );
 
@@ -103,20 +107,22 @@ assert.match(failedIdentityStatus, /Retry identity prep/);
 
 const preparingIdentityStatus = renderToStaticMarkup(
   <CloneIdentityStatusPanel
-    avatarReady
-    identityPack={{
-      id: "pack-processing",
-      avatarId: "avatar-imported",
-      status: "processing",
-      imageModel: "nano-banana-2",
-      error: null,
-      createdAt: "2026-06-14T12:00:00.000Z",
-      updatedAt: "2026-06-14T12:00:00.000Z",
-      images: [],
+    identity={{
+      avatarReady: true,
+      identityPack: {
+        id: "pack-processing",
+        avatarId: "avatar-imported",
+        status: "processing",
+        imageModel: "nano-banana-2",
+        error: null,
+        createdAt: "2026-06-14T12:00:00.000Z",
+        updatedAt: "2026-06-14T12:00:00.000Z",
+        images: [],
+      },
+      isStartingIdentityPack: false,
+      identityPackError: null,
+      onRetry: () => {},
     }}
-    isStartingIdentityPack={false}
-    identityPackError={null}
-    onRetry={() => {}}
   />
 );
 

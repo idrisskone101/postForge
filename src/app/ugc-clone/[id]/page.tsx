@@ -183,17 +183,19 @@ export default function UGCCloneJobPage() {
 
   return (
     <CloneOutputReviewDetail
-      job={displayedJob}
-      isRetrying={isRetrying}
-      pendingReviewStatus={pendingReviewStatus}
-      handoffState={handoffState}
-      actionFeedback={actionFeedback}
-      onBack={() => router.back()}
-      onRetry={handleRetry}
-      onDownload={handleDownload}
-      onReviewStatusChange={handleReviewStatusChange}
-      onHandoff={handleHandoff}
-      onNewClone={() => router.push("/ugc-clone")}
+      review={{
+        job: displayedJob,
+        isRetrying,
+        pendingReviewStatus,
+        handoffState,
+        actionFeedback,
+        onBack: () => router.back(),
+        onRetry: handleRetry,
+        onDownload: handleDownload,
+        onReviewStatusChange: handleReviewStatusChange,
+        onHandoff: handleHandoff,
+        onNewClone: () => router.push("/ugc-clone"),
+      }}
     />
   );
 }

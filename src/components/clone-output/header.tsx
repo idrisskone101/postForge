@@ -6,35 +6,25 @@ import {
   RefreshCw,
   Send,
 } from "lucide-react";
-import type {
-  CloneOutputHandoffState,
-  CloneOutputReviewJob,
-  CloneOutputReviewOutput,
-} from "@/components/clone-output/types";
+import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
 export function CloneOutputReviewHeader({
-  job,
-  featured,
-  isCompleted,
-  isFailed,
-  isRetrying,
-  handoffState,
-  onBack,
-  onRetry,
-  onDownload,
-  onHandoff,
+  review,
 }: {
-  job: CloneOutputReviewJob;
-  featured: CloneOutputReviewOutput | undefined;
-  isCompleted: boolean;
-  isFailed: boolean;
-  isRetrying: boolean;
-  handoffState: CloneOutputHandoffState;
-  onBack: () => void;
-  onRetry: () => void;
-  onDownload: (output: CloneOutputReviewOutput) => void;
-  onHandoff?: (output: CloneOutputReviewOutput) => void;
+  review: CloneOutputReviewView;
 }) {
+  const {
+    job,
+    featured,
+    isCompleted,
+    isFailed,
+    isRetrying,
+    handoffState = "idle",
+    onBack,
+    onRetry,
+    onDownload,
+    onHandoff,
+  } = review;
   return (
     <div className="min-w-0 border-b border-border bg-background px-5 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex min-w-0 max-w-[1280px] flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
