@@ -1,51 +1,61 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, LoaderCircle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { cn } from "@/lib/utils";
-import {
-  fetchPlatformCollections,
-  platformCollectionAssetUrl,
-} from "@/lib/collections-client";
+import { fetchPlatformCollections } from "@/lib/collections-client";
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
 import {
-  downloadSlideshowExport,
   fetchSlideshowProject,
-  fetchSlideshowProjects,
-  persistSlideshowProject,
-  requestSlideshowCopyVariation,
-  requestSlideshowCreatorVisuals,
-  requestSlideshowImageGeneration,
-  requestSlideshowStory,
-  waitForCreatorVisuals,
 } from "@/lib/slideshow/client";
 import { slideshowProjectListItemFromDetail, upsertById } from "@/lib/slideshow/list-client";
 import {
   createBlankSlideshowProject,
-  createProjectFromCreatorCopy,
   createProjectFromTemplate,
   DEFAULT_SLIDESHOW_TEMPLATES,
 } from "./fixtures";
 import { PublishDialog } from "./publish-dialog";
 import { SlideshowEditor } from "./slideshow-editor";
-import { applyDirectSlideshowImages } from "./model";
 import {
-  CreateView,
-  DraftsView,
-  StudioSectionNav,
-  TemplateDialog,
-} from "./studio-views";
+  generateStudioCreatorProject,
+  type StudioCreatorProgress,
+} from "./studio-creator-generate";
+import {
+  saveStudioProject,
+  mergeSavedStudioProject,
+  regenerateStudioSlide,
+  regenerateStudioSlideImage,
+} from "./studio-editor-actions";
+import {
+  applyStudioExportReceipt,
+  applyStudioExportReceiptToProject,
+  exportStudioSlideshow,
+} from "./studio-export";
+import {
+  watchStudioDrafts,
+  watchStudioDraftsRefresh,
+} from "./studio-drafts-load";
+import { generateStudioStory } from "./studio-story";
+import { StudioHome } from "./studio-home";
+import {
+  StudioCreatorProgressOverlay,
+  StudioDraftsLoading,
+  StudioToast,
+} from "./studio-overlays";
+import { TemplateDialog } from "./template-dialog";
 import {
   isLocalSlideshowId,
   type SlideshowCollection,
+  type SlideshowCreatorGenerateInput,
   type SlideshowImageGenerationResult,
   type SlideshowProject,
   type SlideshowProjectListItem,
   type SlideshowPublishOptions,
   type SlideshowSlide,
+  type SlideshowStoryGenerateInput,
   type SlideshowStudioProps,
   type SlideshowTemplate,
 } from "./types";
@@ -100,25 +110,13 @@ export function SlideshowStudio({
   }, []);
 
   useEffect(() => {
-    if (initialProjects !== undefined) return;
-    let active = true;
-    void fetchSlideshowProjects(apiBaseUrl)
-      .then((loaded) => {
-        if (active) setProjects(loaded);
-      })
-      .catch((error) => {
-        if (active) {
-          setProjectsError(
-            error instanceof Error ? error.message : "Could not load slideshow drafts.",
-          );
-        }
-      })
-      .finally(() => {
-        if (active) setLoadingProjects(false);
-      });
-    return () => {
-      active = false;
-    };
+    return watchStudioDrafts({
+      apiBaseUrl,
+      enabled: initialProjects === undefined,
+      onLoaded: setProjects,
+      onError: setProjectsError,
+      onFinally: () => setLoadingProjects(false),
+    });
   }, [apiBaseUrl, initialProjects]);
 
   useEffect(() => {
@@ -143,33 +141,16 @@ export function SlideshowStudio({
   }, []);
 
   useEffect(() => {
-    if (
-      initialProjects !== undefined ||
-      section !== "drafts" ||
-      activeProject
-    ) {
-      return;
-    }
-    let active = true;
-    void fetchSlideshowProjects(apiBaseUrl)
-      .then((loaded) => {
-        if (active) {
-          setProjects(loaded);
-          setProjectsError(null);
-        }
-      })
-      .catch((error) => {
-        if (active) {
-          setProjectsError(
-            error instanceof Error
-              ? error.message
-              : "Could not refresh slideshow drafts.",
-          );
-        }
-      });
-    return () => {
-      active = false;
-    };
+    return watchStudioDraftsRefresh({
+      apiBaseUrl,
+      enabled:
+        initialProjects === undefined && section === "drafts" && !activeProject,
+      onLoaded: (loaded) => {
+        setProjects(loaded);
+        setProjectsError(null);
+      },
+      onError: setProjectsError,
+    });
   }, [activeProject, apiBaseUrl, initialProjects, section]);
 
   const showToast = useCallback((message: string) => {
@@ -216,26 +197,12 @@ export function SlideshowStudio({
   );
 
   const handleGenerateStory = useCallback(
-    async (input: {
-      idea: string;
-      slideCount: number;
-      language: string;
-      includeCta: boolean;
-      model?: string;
-    }) => {
+    async (input: SlideshowStoryGenerateInput) => {
       setGeneratingStory(true);
       try {
-        const project = await requestSlideshowStory(input, apiBaseUrl);
+        const { project, toast } = await generateStudioStory(input, apiBaseUrl);
         openEditor(project);
-        const providerLabel =
-          project.generationProvider === "ollama"
-            ? project.generationModel || "DeepSeek V4 Flash"
-            : "local fallback";
-        showToast(
-          project.generationWarning
-            ? `Local story fallback used: ${project.generationWarning}`
-            : `Slideshow written with ${providerLabel}.`,
-        );
+        showToast(toast);
       } finally {
         setGeneratingStory(false);
       }
@@ -244,111 +211,20 @@ export function SlideshowStudio({
   );
 
   const [generatingCreator, setGeneratingCreator] = useState(false);
-  const [creatorProgress, setCreatorProgress] = useState<{
-    title: string;
-    completed: number;
-    total: number;
-  } | null>(null);
+  const [creatorProgress, setCreatorProgress] =
+    useState<StudioCreatorProgress | null>(null);
 
   const handleGenerateCreator = useCallback(
-    async (input: {
-      title: string;
-      hook: string;
-      slides: string[];
-      template: unknown;
-      collectionAssetIds: string[];
-      directImageAssetIds: Array<string | null>;
-      model?: string;
-      aspectRatio?: "9:16" | "4:5" | "1:1" | "16:9";
-    }) => {
+    async (input: SlideshowCreatorGenerateInput) => {
       setGeneratingCreator(true);
       try {
-        const creatorDraft = createProjectFromCreatorCopy({
-          hook: input.hook,
-          slides: input.slides,
-          title: input.title,
-          aspectRatio: input.aspectRatio ?? "9:16",
-        });
-        const directImageUrls = input.directImageAssetIds.map((assetId) =>
-          assetId ? platformCollectionAssetUrl(assetId) : null,
-        );
-        const local: SlideshowProject = applyDirectSlideshowImages({
-          ...creatorDraft,
-          creator: {
-            template: input.template,
-            updatedAt: new Date().toISOString(),
-          } as NonNullable<SlideshowProject["creator"]>,
-        }, directImageUrls);
-        const saved = await persistSlideshowProject(local, apiBaseUrl);
-
-        const slidesToGenerate = saved.slides.filter((slide) => !slide.imageUrl);
-        if (!slidesToGenerate.length) {
-          const assignedCount = saved.slides.filter((slide) => slide.imageUrl).length;
-          openEditor(saved);
-          showToast(
-            `${assignedCount} collection image${assignedCount === 1 ? "" : "s"} added directly to the slideshow.`,
-          );
-          return;
-        }
-        const visuals = await requestSlideshowCreatorVisuals(
-          saved,
-          slidesToGenerate.map((slide) => ({
-            slideId: slide.id,
-            text: slide.headline || slide.prompt || "",
-          })),
-          input.template,
+        await generateStudioCreatorProject(input, {
           apiBaseUrl,
-          {
-            model: input.model ?? "gpt-image-2",
-            aspectRatio: input.aspectRatio ?? "9:16",
-          },
-        );
-
-        const generating: SlideshowProject = {
-          ...saved,
-          status: "generating",
-          revision: visuals.projectRevision,
-          creator: {
-            template: input.template,
-            updatedAt: new Date().toISOString(),
-          } as NonNullable<SlideshowProject["creator"]>,
-        };
-        upsertDraft(generating);
-
-        if (visuals.jobs.length > 0) {
-          setCreatorProgress({
-            title: saved.title,
-            completed: 0,
-            total: visuals.jobs.length,
-          });
-          const { failed } = await waitForCreatorVisuals(
-            visuals.jobs,
-            (completed, total) =>
-              setCreatorProgress((current) =>
-                current && current.total === total
-                  ? { ...current, completed }
-                  : current,
-              ),
-          );
-
-          const refreshed = await fetchSlideshowProject(saved.id, apiBaseUrl).catch(
-            () => generating,
-          );
-          openEditor(refreshed);
-
-          if (failed.length > 0) {
-            showToast(
-              `${failed.length} visual${failed.length === 1 ? "" : "s"} failed. Open the slide and tap Regenerate image to retry.`,
-            );
-          } else {
-            showToast(
-              `Generated ${visuals.jobs.length} visual${visuals.jobs.length === 1 ? "" : "s"} with ${visuals.model} (~$${visuals.estimatedCost.toFixed(2)}).`,
-            );
-          }
-        } else {
-          openEditor(generating);
-          showToast("The draft was saved, but no visuals were queued.");
-        }
+          openEditor,
+          showToast,
+          upsertDraft,
+          setCreatorProgress,
+        });
       } finally {
         setGeneratingCreator(false);
         setCreatorProgress(null);
@@ -364,17 +240,13 @@ export function SlideshowStudio({
 
   const handleSaveProject = useCallback(
     async (project: SlideshowProject) => {
-      const saved = onSaveProject
-        ? await onSaveProject(project)
-        : await persistSlideshowProject(project, apiBaseUrl);
-      const resolved = saved
-        ? {
-            ...saved,
-            clientId: saved.clientId ?? project.clientId ?? project.id,
-          }
-        : project;
+      const resolved = await saveStudioProject({
+        project,
+        apiBaseUrl,
+        onSaveProject,
+      });
       setProjects((current) =>
-        upsertById(current.filter((candidate) => candidate.id !== project.id), slideshowProjectListItemFromDetail(resolved)),
+        mergeSavedStudioProject(current, project.id, resolved),
       );
       drafts.current.set(resolved.id, resolved);
       if (resolved.clientId) drafts.current.set(resolved.clientId, resolved);
@@ -386,8 +258,12 @@ export function SlideshowStudio({
 
   const handleRegenerateSlide = useCallback(
     async (project: SlideshowProject, slide: SlideshowSlide) => {
-      if (onRegenerateSlide) return onRegenerateSlide(project, slide);
-      return requestSlideshowCopyVariation(project, slide, apiBaseUrl);
+      return regenerateStudioSlide(
+        project,
+        slide,
+        apiBaseUrl,
+        onRegenerateSlide,
+      );
     },
     [apiBaseUrl, onRegenerateSlide],
   );
@@ -398,15 +274,13 @@ export function SlideshowStudio({
       slide: SlideshowSlide,
       onQueuedRevision: (revision: number) => void,
     ): Promise<SlideshowImageGenerationResult | void> => {
-      if (onRegenerateImage) {
-        return onRegenerateImage(project, slide, onQueuedRevision);
-      }
-      return requestSlideshowImageGeneration(
+      return regenerateStudioSlideImage(
         project,
         slide,
         apiBaseUrl,
         onQueuedRevision,
-        selectedImageModel ?? undefined,
+        selectedImageModel,
+        onRegenerateImage,
       );
     },
     [apiBaseUrl, onRegenerateImage, selectedImageModel],
@@ -414,51 +288,21 @@ export function SlideshowStudio({
 
   const handleExport = useCallback(
     async (project: SlideshowProject, options: SlideshowPublishOptions) => {
-      if (onExportProject) {
-        await onExportProject(project, options);
-      } else if (options.destination === "download") {
-        const receipt = await downloadSlideshowExport(
-          project,
-          apiBaseUrl,
-          options.format,
-          options.caption,
-        );
-        if (receipt) {
+      await exportStudioSlideshow({
+        project,
+        options,
+        apiBaseUrl,
+        onExportProject,
+        applyExportReceipt: (projectId, receipt) => {
           setProjects((current) =>
-            current.map((candidate) =>
-              candidate.id === project.id
-                ? {
-                    ...candidate,
-                    successfulExportCount: receipt.successfulExportCount,
-                    lastExportedAt: receipt.exportedAt,
-                  }
-                : candidate,
-            ),
+            applyStudioExportReceipt(current, projectId, receipt),
           );
           setActiveProject((current) =>
-            current && current.id === project.id
-              ? {
-                  ...current,
-                  successfulExportCount: receipt.successfulExportCount,
-                  lastExportedAt: receipt.exportedAt,
-                  exportHistory: [
-                    ...(current.exportHistory ?? []),
-                    receipt.exportedAt,
-                  ].slice(-500),
-                }
-              : current,
+            applyStudioExportReceiptToProject(current, projectId, receipt),
           );
-        }
-      } else {
-        throw new Error(
-          "TikTok dispatch is not connected. Download the slideshow or connect an approved posting account.",
-        );
-      }
-      showToast(
-        options.destination === "download"
-          ? "Slideshow export started."
-          : "Slideshow sent to the publishing queue.",
-      );
+        },
+        showToast,
+      });
     },
     [apiBaseUrl, onExportProject, showToast],
   );
@@ -498,33 +342,27 @@ export function SlideshowStudio({
         </div>
       ) : (
         <>
-          <StudioSectionNav section={section} onChange={setSection} draftsCount={projects.length} />
-          <div className="mx-auto w-full max-w-[1240px] px-4 pb-16 sm:px-6 lg:px-8">
-            {section === "create" ? (
-              <CreateView
-                templates={templates}
-                generating={generatingStory}
-                onGenerateStory={handleGenerateStory}
-                onCustom={startCustom}
-                onUseTemplate={startTemplate}
-                onBrowseTemplates={() => setTemplateOpen(true)}
-                imageModels={imageModels}
-                selectedImageModel={selectedImageModel}
-                onSelectImageModel={setSelectedImageModel}
-                creatorGenerating={generatingCreator}
-                onGenerateCreator={handleGenerateCreator}
-              />
-            ) : null}
-            {section === "drafts" ? (
-              <DraftsView
-                projects={projects}
-                loading={loadingProjects}
-                error={projectsError}
-                onOpen={openDraft}
-                onCreate={() => setTemplateOpen(true)}
-              />
-            ) : null}
-          </div>
+          <StudioHome
+            section={section}
+            onSectionChange={setSection}
+            draftsCount={projects.length}
+            templates={templates}
+            generatingStory={generatingStory}
+            onGenerateStory={handleGenerateStory}
+            onCustom={startCustom}
+            onUseTemplate={startTemplate}
+            onBrowseTemplates={() => setTemplateOpen(true)}
+            imageModels={imageModels}
+            selectedImageModel={selectedImageModel}
+            onSelectImageModel={setSelectedImageModel}
+            creatorGenerating={generatingCreator}
+            onGenerateCreator={handleGenerateCreator}
+            projects={projects}
+            loadingProjects={loadingProjects}
+            projectsError={projectsError}
+            onOpenDraft={openDraft}
+            onCreate={() => setTemplateOpen(true)}
+          />
         </>
       )}
 
@@ -546,54 +384,12 @@ export function SlideshowStudio({
         onExport={handleExport}
       />
 
-      {toast ? (
-        <div
-          role="status"
-          className="fixed bottom-5 left-1/2 z-[100] flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2.5 rounded-[6px] border border-border bg-white px-4 py-3 text-[13px] font-semibold text-foreground shadow-[0_16px_40px_rgba(35,35,35,0.18)]"
-        >
-          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-green/10 text-accent-green">
-            <Check className="size-3.5" />
-          </span>
-          {toast}
-        </div>
-      ) : null}
-
+      {toast ? <StudioToast message={toast} /> : null}
       {loadingProjects && section === "create" && !activeProject ? (
-        <span className="fixed bottom-5 right-5 flex items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-[12px] text-muted-foreground shadow-lg">
-          <LoaderCircle className="size-3 animate-spin" /> Loading drafts
-        </span>
+        <StudioDraftsLoading />
       ) : null}
-
       {creatorProgress ? (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-[var(--pf-canvas)] px-6"
-        >
-          <div className="flex w-full max-w-sm flex-col items-center text-center">
-            <span className="mb-6 grid size-14 place-items-center rounded-full bg-[var(--pf-active)] text-white">
-              <LoaderCircle className="size-6 animate-spin" />
-            </span>
-            <p className="text-[15px] font-bold text-foreground">Generating your slide visuals</p>
-            <p className="mt-1.5 text-[13px] text-muted-foreground">
-              {creatorProgress.title}
-            </p>
-            <div className="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-border">
-              <div
-                className="h-full rounded-full bg-[var(--pf-active)] transition-all duration-500"
-                style={{
-                  width: `${(creatorProgress.completed / creatorProgress.total) * 100}%`,
-                }}
-              />
-            </div>
-            <p className="mt-3 font-mono text-[12px] tabular-nums text-muted-foreground">
-              {creatorProgress.completed}/{creatorProgress.total} visuals ready
-            </p>
-            <p className="mt-6 text-[12px] leading-5 text-muted-foreground">
-              Keep this tab open. We open your slideshow the moment the images are ready.
-            </p>
-          </div>
-        </div>
+        <StudioCreatorProgressOverlay progress={creatorProgress} />
       ) : null}
     </div>
   );
