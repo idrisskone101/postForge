@@ -14,6 +14,11 @@ import {
   parseInspirationVideoPageQuery,
 } from "../../src/lib/inspiration/video-page";
 
+const videoPageLib = readFileSync(
+  new URL("../../src/lib/inspiration/video-page.ts", import.meta.url),
+  "utf8"
+);
+
 const accountsRoute = readFileSync(
   new URL("../../src/app/api/ugc-inspiration/accounts/route.ts", import.meta.url),
   "utf8"
@@ -112,6 +117,16 @@ const clamped = parseInspirationVideoPageQuery(new URLSearchParams("take=999&usa
 assert.equal(clamped.take, 60);
 assert.equal(clamped.usage, "all");
 assert.equal(clamped.sort, "recent");
+
+assert.match(videoPageLib, /originalUrl: \{ in: originalUrls \}/);
+assert.match(
+  videoPageLib,
+  /originalUrl: \{ contains: `\/video\/\$\{id\}` \}/
+);
+assert.doesNotMatch(
+  videoPageLib,
+  /prisma\.tikTokSource\.findMany\(\{\s*select:/
+);
 
 const unusedWhere = buildInspirationVideoWhere({
   accountId: "account-1",
