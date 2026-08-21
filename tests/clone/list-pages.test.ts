@@ -71,10 +71,10 @@ async function readPage(response: Response): Promise<ListPage> {
 (async () => {
   const { prisma } = await import("../../src/lib/db");
   const { GET: getSources } = await import(
-    "../../src/app/api/ugc-clone/sources/route.ts"
+    "../../src/app/api/ugc-clone/sources/route"
   );
   const { GET: getReferences } = await import(
-    "../../src/app/api/ugc-clone/references/route.ts"
+    "../../src/app/api/ugc-clone/references/route"
   );
 
   const prefix = `pf-d-lists-${randomUUID()}`;

@@ -39,7 +39,7 @@ type ListPage = { items: Array<{ id: string }>; nextCursor: string | null };
 
 (async () => {
   const { prisma } = await import("../../src/lib/db");
-  const { GET } = await import("../../src/app/api/avatars/route.ts");
+  const { GET } = await import("../../src/app/api/avatars/route");
   const prefix = `pf-d-lists-avatar-${randomUUID()}`;
   const ids: string[] = [];
 
