@@ -9,12 +9,12 @@ feature, refactoring: composer-2.5
 bug-fix: composer-2.5
 perf-issue: composer-2.5
 hillclimb: composer-2.5
-judgment and prose: composer-2.5
-hardest tasks: composer-2.5
+judgment and prose: inherit-parent
+hardest tasks: inherit-parent
 how explorer: composer-2.5
 how explainer: composer-2.5
 how critics: composer-2.5
-why investigators: composer-2.5
+why investigators: inherit-parent
 why synthesizer: composer-2.5
 reflect tooling: composer-2.5
 reflect judgment, divergent, synthesizer: composer-2.5
