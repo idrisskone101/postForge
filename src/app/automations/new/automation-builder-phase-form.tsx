@@ -202,16 +202,17 @@ export function AutomationBuilderPhaseForm({
               />
             </Field>
             <DestinationSelector
-              destination={record.destination}
-              accountId={record.accountId ?? null}
-              providers={integrationStatuses}
-              loading={integrationsLoading}
-              error={integrationsError}
-              onSelect={selectDestination}
-              onAccountSelect={(accountId, accountLabel) =>
-                setRecord((current) => ({ ...current, accountId, accountLabel }))
-              }
-              onRetry={refreshIntegrations}
+              selector={{
+                destination: record.destination,
+                accountId: record.accountId ?? null,
+                providers: integrationStatuses,
+                loading: integrationsLoading,
+                error: integrationsError,
+                onSelect: selectDestination,
+                onAccountSelect: (accountId, accountLabel) =>
+                  setRecord((current) => ({ ...current, accountId, accountLabel })),
+                onRetry: refreshIntegrations,
+              }}
             />
             <label className="flex items-center justify-between gap-3 border-t border-border pt-4">
               <span>
