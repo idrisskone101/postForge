@@ -10,20 +10,7 @@ import {
   Upload,
 } from "lucide-react";
 
-export function CharacterBuilderHeader({
-  editId,
-  name,
-  saving,
-  rendering,
-  missingEditRecord,
-  previewSaveBlocked,
-  readyPreviewFingerprint,
-  onNameChange,
-  randomizeAndRender,
-  onImport,
-  copyAttributes,
-  saveCharacter,
-}: {
+export type CharacterBuilderHeaderViewModel = {
   editId: string | null;
   name: string;
   saving: boolean;
@@ -36,7 +23,27 @@ export function CharacterBuilderHeader({
   onImport: () => void;
   copyAttributes: () => void;
   saveCharacter: () => void;
+};
+
+export function CharacterBuilderHeader({
+  view,
+}: {
+  view: CharacterBuilderHeaderViewModel;
 }) {
+  const {
+    editId,
+    name,
+    saving,
+    rendering,
+    missingEditRecord,
+    previewSaveBlocked,
+    readyPreviewFingerprint,
+    onNameChange,
+    randomizeAndRender,
+    onImport,
+    copyAttributes,
+    saveCharacter,
+  } = view;
   return (
     <header
       data-character-workbench-header="true"
