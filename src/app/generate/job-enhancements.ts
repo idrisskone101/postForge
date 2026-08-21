@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import { Expand, ImageUpscale, Paintbrush, Sparkles } from "lucide-react";
-import type { JobDetail } from "@/lib/generation-editor";
+import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 
 export type InspectorTab = "enhance" | "details" | "prompts";
 export type JobFeedback = { tone: "success" | "error"; message: string } | null;
@@ -63,4 +63,44 @@ export function jobDetailFlags(job: JobDetail) {
     canDiscard: job.status === "completed" || job.status === "failed",
     isFailed: job.status === "failed",
   };
+}
+
+export interface JobDetailViewModel {
+  job: JobDetail;
+  featured: JobOutput | undefined;
+  isActive: boolean;
+  isCompleted: boolean;
+  isFailed: boolean;
+  canDiscard: boolean;
+  isRetrying: boolean;
+  isDownloading: boolean;
+  isDiscarding: boolean;
+  isApplying: boolean;
+  cropMode: boolean;
+  previewZoom: number;
+  selectedEnhancement: EnhancementTool["id"];
+  enhancementInstruction: string;
+  editStrength: number;
+  preserveSubject: boolean;
+  feedback: JobFeedback;
+  error: Error | null;
+}
+
+export interface JobDetailActions {
+  onBack: () => void;
+  onShare: () => void;
+  onGallery: () => void;
+  onDownload: () => void;
+  onRetry: () => void;
+  onGenerateSimilar: () => void;
+  onSelectTool: (id: EnhancementTool["id"]) => void;
+  onInstructionChange: (value: string) => void;
+  onEditStrengthChange: (value: number) => void;
+  onPreserveSubjectChange: (value: boolean) => void;
+  onApply: () => void;
+  onSaveToGallery: () => void;
+  onUseInClone: () => void;
+  onAddToAutomation: () => void;
+  onDiscard: () => void;
+  onLeave: () => void;
 }
