@@ -2,7 +2,6 @@
   "src/app/automations/new/automation-builder-client.tsx": 1372,
   "src/app/costs/costs-page-client.tsx": 797,
   "src/components/pinterest-import-dialog.tsx": 667,
-  "src/components/ugc-clone-form.tsx": 1256,
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633

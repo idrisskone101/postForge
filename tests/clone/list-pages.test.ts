@@ -32,6 +32,10 @@ const cloneForm = readFileSync(
   new URL("../../src/components/ugc-clone-form.tsx", import.meta.url),
   "utf8"
 );
+const cloneIdentity = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-identity.ts", import.meta.url),
+  "utf8"
+);
 const cloneReferenceLibrary = readFileSync(
   new URL("../../src/components/clone/reference-library.tsx", import.meta.url),
   "utf8"
@@ -54,17 +58,20 @@ assert.match(
 assert.match(tiktokSavedSources, /Load more/);
 assert.doesNotMatch(tiktokInput, /apiGet<SavedSource\[\]>/);
 assert.match(
-  cloneForm,
+  cloneIdentity,
   /\/api\/ugc-clone\/references\?avatarId=\$\{encodeURIComponent\(nextAvatarId\)\}/
 );
 assert.match(
-  cloneForm,
+  cloneIdentity,
   /\/api\/ugc-clone\/references\?avatarId=\$\{encodeURIComponent\(avatarId\)\}&cursor=\$\{encodeURIComponent\(savedReferencesNextCursor\)\}/
 );
 assert.match(cloneReferenceLibrary, /Load more/);
 assert.doesNotMatch(cloneForm, /savedReferences\.slice\(/);
+assert.doesNotMatch(cloneIdentity, /savedReferences\.slice\(/);
 assert.doesNotMatch(cloneForm, /REFERENCE_LIBRARY_PAGE_SIZE/);
+assert.doesNotMatch(cloneIdentity, /REFERENCE_LIBRARY_PAGE_SIZE/);
 assert.doesNotMatch(cloneForm, /apiGet<SavedReference\[\]>/);
+assert.doesNotMatch(cloneIdentity, /apiGet<SavedReference\[\]>/);
 
 type ListPage = { items: Array<{ id: string }>; nextCursor: string | null };
 
