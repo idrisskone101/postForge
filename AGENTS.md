@@ -4,6 +4,7 @@
 
 - User-scope skills (`~/.agents/skills/`) take priority over project-scope skills (`.agents/skills/`) whenever names or directives conflict.
 - Do not install a project-scope copy of a skill that already exists at user scope; the user-scope copy is the canonical one.
+- `kode-mode` is a user plugin ([idrisskone101/kode-mode](https://github.com/idrisskone101/kode-mode)). Install it at user scope. Do not add a project-scope copy under `.cursor/skills`.
 
 ## Design source of truth
 
