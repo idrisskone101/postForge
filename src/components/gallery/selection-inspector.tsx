@@ -11,16 +11,7 @@ import { GalleryReviewStatusControl } from "./review-status-control";
 import type { GalleryFeedback, GalleryItem } from "./types";
 import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 
-export function GallerySelectionInspector({
-  item,
-  onDeselect,
-  onOpenPreview,
-  onDelete,
-  onReviewStatusChange,
-  onHandoff,
-  onFeedback,
-  children,
-}: {
+export type GallerySelection = {
   item: GalleryItem;
   onDeselect: () => void;
   onOpenPreview: () => void;
@@ -31,8 +22,24 @@ export function GallerySelectionInspector({
   ) => void;
   onHandoff?: (item: GalleryItem) => Promise<boolean>;
   onFeedback?: (feedback: GalleryFeedback) => void;
+};
+
+export function GallerySelectionInspector({
+  selection,
+  children,
+}: {
+  selection: GallerySelection;
   children?: ReactNode;
 }) {
+  const {
+    item,
+    onDeselect,
+    onOpenPreview,
+    onDelete,
+    onReviewStatusChange,
+    onHandoff,
+    onFeedback,
+  } = selection;
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
