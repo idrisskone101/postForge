@@ -13,7 +13,7 @@ import {
   saveIntegrationConnection,
   saveOAuthStateRecord,
 } from "../../src/lib/integrations/store";
-import { isSameOriginMutation } from "../../src/lib/integrations/routes";
+import { isSameOriginMutation } from "../../src/lib/http";
 import {
   createOAuthState,
   verifyOAuthState,

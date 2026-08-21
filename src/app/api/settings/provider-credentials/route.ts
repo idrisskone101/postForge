@@ -7,10 +7,8 @@ import {
   saveProviderCredential,
   type ProviderCredentialId,
 } from "@/lib/providers/credentials";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 function isProviderCredentialId(value: unknown): value is ProviderCredentialId {
   return (

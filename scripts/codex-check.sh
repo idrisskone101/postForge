@@ -9,6 +9,7 @@ cd "$REPO_ROOT"
 corepack enable 2>/dev/null || true
 
 pnpm test
+pnpm check:module-size
 pnpm typecheck
 pnpm lint
 pnpm build

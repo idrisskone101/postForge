@@ -6,10 +6,8 @@ import {
   saveModelAvailability,
 } from "@/lib/ai/model-availability";
 import { getStoryModel } from "@/lib/ai/story-models";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 export async function GET() {
   try {

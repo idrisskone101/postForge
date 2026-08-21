@@ -18,10 +18,8 @@ import {
 } from "@/lib/automations";
 import { isCharacterRecord } from "@/lib/characters";
 import { isCollectionRecord } from "@/lib/collections";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 type StoredRecord = { id: string } & Record<string, unknown>;
 

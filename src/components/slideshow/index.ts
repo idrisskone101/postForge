@@ -33,5 +33,5 @@ export {
   fetchSlideshowProjects,
   persistSlideshowProject,
   serializeSlideshowProject,
-} from "./api";
+} from "@/lib/slideshow/client";
 export type * from "./types";

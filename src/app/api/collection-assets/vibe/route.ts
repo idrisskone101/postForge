@@ -7,10 +7,8 @@ import {
   CollectionAssetRequestError,
   parseCollectionAssetIds,
 } from "@/lib/collection-assets-server";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 export async function POST(request: NextRequest) {
   if (!isSameOriginMutation(request)) return rejectCrossOriginMutation();

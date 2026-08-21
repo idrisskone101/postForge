@@ -11,10 +11,8 @@ import {
   UnresolvedPublicationConflictError,
   withLockedAutomationRecords,
 } from "@/lib/publication-lifecycle";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === "object" && value !== null

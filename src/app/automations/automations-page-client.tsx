@@ -31,7 +31,7 @@ import {
   deleteSlideshowAutomation,
   fetchSlideshowAutomations,
   updateSlideshowAutomationStatus,
-} from "@/components/slideshow/api";
+} from "@/lib/slideshow/client";
 import type { SlideshowAutomation } from "@/components/slideshow/types";
 import {
   automationDestinationLabel,

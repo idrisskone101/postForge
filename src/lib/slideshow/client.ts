@@ -1,12 +1,12 @@
-import { createBlankSlideshowProject } from "./fixtures";
-import { normalizeSlideshowSlides } from "./model";
+import { createBlankSlideshowProject } from "@/components/slideshow/fixtures";
+import { normalizeSlideshowSlides } from "@/components/slideshow/model";
 import type {
   SlideshowAutomation,
   SlideshowAspectRatio,
   SlideshowProject,
   SlideshowSlide,
-} from "./types";
-import { isLocalSlideshowId } from "./types";
+} from "@/components/slideshow/types";
+import { isLocalSlideshowId } from "@/components/slideshow/types";
 import { formatGenerationPromptForEditing } from "@/lib/ai/prompt-presentation";
 import {
   parseSlideshowProject,

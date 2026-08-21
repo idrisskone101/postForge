@@ -8,11 +8,8 @@ import {
   isAutomationRecord,
   type AutomationRecord,
 } from "@/lib/automations";
-import {
-  isSameOriginMutation,
-  noStoreJson,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation, noStoreJson } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 import { updateWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
 
 type ScheduleAction = "activate" | "pause";

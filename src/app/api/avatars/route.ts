@@ -7,10 +7,30 @@ import {
   serializeAvatarApiRecord,
 } from "@/lib/avatar-provenance";
 
-export async function GET() {
+const DEFAULT_LIST_TAKE = 50;
+const MAX_LIST_TAKE = 100;
+
+function readListTake(searchParams: URLSearchParams) {
+  const parsed = Number.parseInt(searchParams.get("limit") ?? String(DEFAULT_LIST_TAKE), 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_LIST_TAKE;
+  return Math.min(MAX_LIST_TAKE, Math.max(1, parsed));
+}
+
+function readListCursor(searchParams: URLSearchParams) {
+  const cursor = searchParams.get("cursor");
+  return cursor && cursor.length > 0 ? cursor : undefined;
+}
+
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = request.nextUrl;
+    const take = readListTake(searchParams);
+    const cursor = readListCursor(searchParams);
+
     const avatars = await prisma.avatar.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       select: {
         id: true,
         name: true,
@@ -38,7 +58,13 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(avatars.map(serializeAvatarApiRecord));
+    const nextCursor =
+      avatars.length === take ? avatars[avatars.length - 1]?.id ?? null : null;
+
+    return NextResponse.json({
+      items: avatars.map(serializeAvatarApiRecord),
+      nextCursor,
+    });
   } catch (error) {
     console.error("Failed to list avatars:", error);
     return NextResponse.json(
