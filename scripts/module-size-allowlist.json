@@ -29,7 +29,6 @@
   "src/lib/inspiration/service.ts": 529,
   "src/lib/integrations/publishing.ts": 1366,
   "src/lib/integrations/store.ts": 707,
-  "src/lib/jobs/poller.ts": 401,
   "src/lib/slideshow/automation-worker.ts": 794,
   "src/lib/slideshow/client.ts": 813,
   "src/lib/slideshow/project.ts": 631,
