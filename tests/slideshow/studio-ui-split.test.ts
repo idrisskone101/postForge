@@ -77,7 +77,7 @@ assert.match(viewModels, /export type CreatorDraft/);
 assert.match(viewModels, /export type StudioHomeView/);
 assert.match(viewModels, /export type SlideshowPublishWorkspace/);
 
-const PROP_EXTRAS = new Set(["className", "hidden"]);
+const PROP_EXTRAS = new Set(["className", "hidden", "children"]);
 const MAX_DATA_PROPS = 7;
 const REQUIRED_VIEW_MODEL: Record<string, string> = {
   EditorWorkspace: "workspace",
@@ -100,6 +100,22 @@ const REQUIRED_VIEW_MODEL: Record<string, string> = {
   PublishTikTokFields: "publish",
   PublishSidebar: "publish",
   PublishDialog: "dialog",
+};
+const CONTEXT_HOOKS: Record<string, string> = {
+  EditorWorkspace: "useSlideshowEditor",
+  EditorHeader: "useSlideshowEditor",
+  EditorSlideRail: "useSlideshowEditor",
+  EditorPreview: "useSlideshowEditor",
+  EditorInspector: "useSlideshowEditor",
+  EditorCollectionPicker: "useSlideshowEditor",
+  SlideshowBoardView: "useSlideshowEditor",
+  SlideshowPlayView: "useSlideshowEditor",
+  StudioHome: "useSlideshowHome",
+  CreateView: "useSlideshowHome",
+  DraftsView: "useSlideshowHome",
+  StudioSectionNav: "useSlideshowHome",
+  CreateTemplateGallery: "useSlideshowHome",
+  CreatorView: "useSlideshowHome",
 };
 
 function skipWs(source: string, index: number) {
@@ -180,7 +196,6 @@ for (const file of files) {
   if (!file.endsWith(".tsx")) continue;
   const rel = path.relative(rootDir, file);
   const source = readFileSync(file, "utf8");
-  assert.doesNotMatch(source, /createContext\(/, `${rel} must not add React Context`);
   for (const component of exportedComponents(source)) {
     const dataKeys = component.keys.filter((key) => !PROP_EXTRAS.has(key));
     assert.ok(
@@ -189,7 +204,18 @@ for (const file of files) {
     );
     const expected = REQUIRED_VIEW_MODEL[component.name];
     if (!expected) continue;
-    assert.equal(component.kind, "destructure", `${component.name} must take a named view-model`);
+    const hook = CONTEXT_HOOKS[component.name];
+    const usesHook = Boolean(
+      hook && new RegExp(String.raw`\b${hook}\s*\(`).test(source),
+    );
+    if (usesHook && dataKeys.length === 0) {
+      continue;
+    }
+    assert.equal(
+      component.kind,
+      "destructure",
+      `${component.name} must take a named view-model or read it from ${hook ?? "context"}`,
+    );
     assert.deepEqual(
       dataKeys,
       [expected],
