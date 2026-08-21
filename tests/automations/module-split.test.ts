@@ -90,8 +90,35 @@ assert.match(
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
 );
 
+const libFiles = listFiles("src/lib/automations/");
+assert.equal(
+  libFiles.some((file) => file.endsWith("/index.ts") || file.endsWith("/index.tsx")),
+  false,
+  "src/lib/automations must not add a barrel"
+);
+for (const file of libFiles) {
+  const count = lineCount(file);
+  assert.ok(count <= CAP, `${file} is ${count} lines (cap ${CAP})`);
+}
+
+const namedLibFiles = [
+  "src/lib/automations.ts",
+  "src/lib/automation-publishing.ts",
+  "src/lib/automation-publish-orchestration.ts",
+];
+for (const file of namedLibFiles) {
+  const count = lineCount(file);
+  assert.ok(count <= CAP, `${file} is ${count} lines (cap ${CAP})`);
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.match(
+    source,
+    /^export (async )?function /m,
+    `${file} must keep an implementation, not become a re-export barrel`
+  );
+}
+
 console.log(
-  files
+  [...files, ...libFiles, ...namedLibFiles]
     .map((file) => `${lineCount(file).toString().padStart(4)} ${file}`)
     .join("\n")
 );

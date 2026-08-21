@@ -861,6 +861,19 @@ async function run() {
     new URL("../../src/lib/automation-publish-orchestration.ts", import.meta.url),
     "utf8"
   );
+  const publishMedia = readFileSync(
+    new URL("../../src/lib/automations/publish-media.ts", import.meta.url),
+    "utf8"
+  );
+  const publishSettings = readFileSync(
+    new URL("../../src/lib/automations/publish-settings.ts", import.meta.url),
+    "utf8"
+  );
+  const publishPreflight = readFileSync(
+    new URL("../../src/lib/automations/publish-preflight.ts", import.meta.url),
+    "utf8"
+  );
+  const publishLib = `${publishRoute}\n${publishMedia}\n${publishSettings}\n${publishPreflight}`;
   const globalClaimLockIndex = publishRoute.indexOf(
     "withLockedAutomationRecords(async (records, transaction)"
   );
@@ -894,8 +907,9 @@ async function run() {
     /keepSubmitted:\s*providerOutcomeMayExist\s*&&\s*!\(cause instanceof IntegrationPublicationTerminalError\)/,
     "authorization loss after a durable irreversible stage stays submitted"
   );
+  assert.match(publishMedia, /await storage\.size\(localPath\)/);
   assert.ok(
-    publishRoute.indexOf("await storage.size(localPath)") <
+    publishRoute.indexOf("await assertStoredPublishMedia") <
       publishRoute.indexOf("const bytes = await storage.read(file.localPath)"),
     "the practical media limit is checked before the full publish buffer read"
   );
@@ -950,19 +964,19 @@ async function run() {
     /youtubeTitle}\s*maxLength=\{100\}/,
     "YouTube title entry must not impose a UTF-16 native maxLength"
   );
-  assert.match(publishRoute, /unicodeCodePointLength\(settings\.title\)/);
-  assert.match(publishRoute, /truncateUtf16Units\(/);
-  assert.match(publishRoute, /!isWellFormedUnicode\(body\.caption\)/);
-  assert.match(publishRoute, /!isWellFormedUnicode\(settings\.description\)/);
+  assert.match(publishLib, /unicodeCodePointLength\(settings\.title\)/);
+  assert.match(publishLib, /truncateUtf16Units\(/);
+  assert.match(publishLib, /!isWellFormedUnicode\(body\.caption\)/);
+  assert.match(publishLib, /!isWellFormedUnicode\(settings\.description\)/);
   assert.match(
-    publishRoute,
+    publishLib,
     /description: truncateUtf8Bytes\(defaultCaption, 5000\)/
   );
-  assert.match(publishRoute, /title: settings\.title,/);
-  assert.match(publishRoute, /body\.caption\.length > 2200/);
-  assert.match(publishRoute, /settings\.audienceConfirmed !== true/);
+  assert.match(publishLib, /title: settings\.title,/);
+  assert.match(publishLib, /body\.caption\.length > 2200/);
+  assert.match(publishLib, /settings\.audienceConfirmed !== true/);
   assert.match(
-    publishRoute,
+    publishLib,
     /settings\.communityGuidelinesConfirmed !== true/
   );
 }
