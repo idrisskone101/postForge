@@ -2,6 +2,10 @@ import type {
   SlideshowProject,
   SlideshowSlide,
 } from "@/lib/slideshow/project";
+import type {
+  SlideshowProjectListItem,
+  SlideshowProjectListPage,
+} from "@/lib/slideshow/list-types";
 
 export type {
   SlideshowAspectRatio,
@@ -16,6 +20,10 @@ export type {
   SlideshowTextSettings,
   SlideshowTextStyle,
 } from "@/lib/slideshow/project";
+export type {
+  SlideshowProjectListItem,
+  SlideshowProjectListPage,
+};
 export {
   isLocalSlideshowId,
   parseSlideshowProject,
@@ -92,7 +100,7 @@ export interface SlideshowPublishOptions {
 }
 
 export interface SlideshowStudioProps {
-  initialProjects?: SlideshowProject[];
+  initialProjects?: SlideshowProjectListItem[];
   initialProject?: SlideshowProject | null;
   initialSection?: SlideshowSection;
   initialCollections?: SlideshowCollection[];

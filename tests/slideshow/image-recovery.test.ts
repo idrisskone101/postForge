@@ -14,7 +14,7 @@ import {
 import {
   pollSingleJob,
   type FalJobPollDependencies,
-} from "../../src/lib/jobs/poller";
+} from "../../src/lib/jobs/poll-fal-job";
 import { runSlideshowMaintenanceTick } from "../../src/lib/slideshow/maintenance";
 
 const now = new Date("2026-08-03T16:00:00.000Z");
