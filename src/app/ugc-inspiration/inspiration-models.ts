@@ -149,6 +149,17 @@ export function mergeAccountIntoState(
   return sortAccounts(merged);
 }
 
+export function appendAccountPage(
+  current: TrackedInspirationAccount[],
+  incoming: TrackedInspirationAccount[]
+) {
+  const seen = new Set(current.map((account) => account.id));
+  return [
+    ...current,
+    ...incoming.filter((account) => !seen.has(account.id)),
+  ];
+}
+
 export function inspirationPageError(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
 }
