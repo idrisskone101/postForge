@@ -34,7 +34,10 @@ import {
 } from "@/lib/performance/metrics";
 import { cn } from "@/lib/utils";
 import { PerformanceEmptyState } from "./performance-empty-state";
-import { PerformanceSourcePanel } from "./performance-source-panel";
+import {
+  PerformanceSourcePanel,
+  type PerformanceSourceWorkspace,
+} from "./performance-source-panel";
 import { usePerformanceWorkspace } from "./use-performance-workspace";
 
 export function PerformancePageClient() {
@@ -103,6 +106,18 @@ export function PerformancePageClient() {
     )
     .join(" ");
 
+  const sourceWorkspace: PerformanceSourceWorkspace = {
+    providers: connectedAccounts,
+    csvDataset,
+    selectedSource: activeSource,
+    busyProvider,
+    lastUpdatedAt: providerData.lastUpdatedAt,
+    onSelect: setSelectedSource,
+    onSync: (entry) => syncAccounts([entry]),
+    onImport: () => inputRef.current?.click(),
+    onClearCsv: clearCsvData,
+  };
+
   return (
     <div className="px-5 py-5 sm:px-7 lg:px-8">
       <input
@@ -129,17 +144,7 @@ export function PerformancePageClient() {
         />
       ) : (
         <>
-          <PerformanceSourcePanel
-            providers={connectedAccounts}
-            csvDataset={csvDataset}
-            selectedSource={activeSource}
-            busyProvider={busyProvider}
-            lastUpdatedAt={providerData.lastUpdatedAt}
-            onSelect={setSelectedSource}
-            onSync={(entry) => syncAccounts([entry])}
-            onImport={() => inputRef.current?.click()}
-            onClearCsv={clearCsvData}
-          />
+          <PerformanceSourcePanel workspace={sourceWorkspace} />
 
           {connectedAccounts.length > 0 && (
             <section className="mt-4" aria-label="Per account performance">
