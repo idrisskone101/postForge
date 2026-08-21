@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { ModelDefinition } from "@/lib/ai/types";
+import type { CloneModelSelectModel } from "@/components/clone/view-models";
 import {
   Select,
   SelectContent,
@@ -10,25 +10,22 @@ import {
 } from "@/components/ui/select";
 
 export function CloneModelSelect({
-  label,
-  description,
-  accentClassName,
+  model,
   className,
-  models,
-  selectedValue,
-  onValueChange,
-  getCost,
 }: {
-  label: string;
-  description: string;
-  accentClassName: string;
+  model: CloneModelSelectModel;
   className?: string;
-  models: ModelDefinition[];
-  selectedValue: string;
-  onValueChange: (value: string) => void;
-  getCost: (modelId: string) => string;
 }) {
-  const selectedModel = models.find((model) => model.id === selectedValue) ?? models[0];
+  const {
+    label,
+    description,
+    accentClassName,
+    models,
+    selectedValue,
+    onValueChange,
+    getCost,
+  } = model;
+  const selectedModel = models.find((entry) => entry.id === selectedValue) ?? models[0];
   const compactLabel = label === "Final video" ? "Video" : label === "Reference image" ? "Reference" : label;
   const selectedModelLabel = selectedModel?.name.replace(" Motion Control", "");
 

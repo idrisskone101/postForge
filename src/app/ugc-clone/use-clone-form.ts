@@ -29,6 +29,12 @@ import {
   type CloneGenerateTarget,
 } from "@/app/ugc-clone/clone-requests";
 import {
+  buildCloneActionModel,
+  buildCloneDraft,
+  buildCloneReferenceWorkspace,
+  type CloneFormSnapshot,
+} from "@/app/ugc-clone/clone-form-models";
+import {
   filterCloneVideoModels,
   filterReferenceImageModels,
   getCloneStudioViewModel,
@@ -323,14 +329,9 @@ export function useCloneForm() {
     );
   };
 
-  return {
-    phase,
+  const snapshot: CloneFormSnapshot = {
     activeSetupStep,
     setActiveSetupStep,
-    mobileSettingsOpen,
-    setMobileSettingsOpen,
-    referenceLibraryOpen,
-    setReferenceLibraryOpen,
     videoInfo,
     originalVideoInfo,
     showTrimmer,
@@ -339,6 +340,12 @@ export function useCloneForm() {
     setSourceToolsOpen,
     sourcesRefreshKey,
     pendingSourceId,
+    selectedCollectionAssetId,
+    setSelectedCollectionAssetId,
+    referenceLibraryOpen,
+    setReferenceLibraryOpen,
+    mobileSettingsOpen,
+    setMobileSettingsOpen,
     keepOriginalSound,
     setKeepOriginalSound,
     removeTextOverlays,
@@ -352,16 +359,14 @@ export function useCloneForm() {
     cloneTip,
     isSubmitting,
     submitError,
-    selectedCollectionAssetId,
-    setSelectedCollectionAssetId,
-    identity,
-    refs,
-    view,
     cloneVideoModels,
     referenceImageModels,
     videoCost,
     referenceBatchCost,
     textErasureCost,
+    identity,
+    refs,
+    view,
     handleVideoDownloaded,
     handlePreselectedSourceResolved,
     handleTrimmed,
@@ -373,5 +378,12 @@ export function useCloneForm() {
     handleSelectAvatar,
     handleSelectSavedReference,
     submitRefImageGeneration,
+  };
+
+  return {
+    phase,
+    draft: buildCloneDraft(snapshot),
+    workspace: buildCloneReferenceWorkspace(snapshot),
+    action: buildCloneActionModel(snapshot),
   };
 }
