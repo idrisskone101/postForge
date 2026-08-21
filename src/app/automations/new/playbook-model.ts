@@ -5,6 +5,28 @@ export type TemplateSort = "recommended" | "name" | "slides";
 export type TemplateView = "grid" | "list";
 export type AutomationTemplate = (typeof AUTOMATION_TEMPLATES)[number];
 
+export type PlaybookPickerState = {
+  templates: readonly AutomationTemplate[];
+  categories: readonly string[];
+  categoryCounts: Record<string, number>;
+  category: string;
+  onCategoryChange: (category: string) => void;
+  search: string;
+  onSearchChange: (search: string) => void;
+  sort: TemplateSort;
+  onSortChange: (sort: TemplateSort) => void;
+  view: TemplateView;
+  onViewChange: (view: TemplateView) => void;
+  favorites: readonly string[];
+  onToggleFavorite: (templateId: string) => void;
+  previewTemplate: AutomationTemplate;
+  onPreview: (templateId: string) => void;
+  selectedTemplateId: string;
+  onSelect: (templateId: string) => void;
+  onBuildFromScratch: () => void;
+  onClose: () => void;
+};
+
 export const PHASES: Phase[] = ["Hook", "Content", "CTA"];
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const FAVORITES_STORAGE_KEY = "postforge.automation-playbook-favorites";
