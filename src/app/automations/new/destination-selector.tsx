@@ -13,16 +13,7 @@ import {
 import type { PublicIntegrationStatus } from "@/lib/integrations/types";
 import { cn } from "@/lib/utils";
 
-export function DestinationSelector({
-  destination,
-  accountId,
-  providers,
-  loading,
-  error,
-  onSelect,
-  onAccountSelect,
-  onRetry,
-}: {
+export type DestinationSelectorState = {
   destination: AutomationDestination;
   accountId: string | null;
   providers: readonly PublicIntegrationStatus[];
@@ -31,7 +22,23 @@ export function DestinationSelector({
   onSelect: (destination: AutomationDestination) => void;
   onAccountSelect: (accountId: string, accountLabel: string) => void;
   onRetry: () => void;
+};
+
+export function DestinationSelector({
+  selector,
+}: {
+  selector: DestinationSelectorState;
 }) {
+  const {
+    destination,
+    accountId,
+    providers,
+    loading,
+    error,
+    onSelect,
+    onAccountSelect,
+    onRetry,
+  } = selector;
   const readiness = resolveAutomationDestination(
     destination,
     providers,
