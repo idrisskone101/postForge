@@ -1,7 +1,10 @@
 import { apiDelete, apiGet, apiPost } from "@/lib/api/client";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
+  inspirationAccountListPath,
   inspirationVideoFeedPath,
+  type InspirationAccountPage,
+  type InspirationAccountPageQuery,
   type InspirationVideoPage,
   type InspirationVideoPageQuery,
   type SetInspirationRejectionResult,
@@ -16,6 +19,10 @@ export function fetchInspirationVideoPage(input: InspirationVideoPageQuery) {
       take: input.take ?? INSPIRATION_VIDEO_PAGE_SIZE,
     })
   );
+}
+
+export function fetchInspirationAccountPage(input: InspirationAccountPageQuery = {}) {
+  return apiGet<InspirationAccountPage>(inspirationAccountListPath(input));
 }
 
 export function trackInspirationAccount(handle: string) {

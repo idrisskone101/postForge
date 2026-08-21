@@ -4,6 +4,8 @@ export type InspirationSourceFeedFilter = "all" | "unused" | "used" | "rejected"
 export type InspirationSourceSort = "recent" | "views" | "engagement";
 
 export const INSPIRATION_VIDEO_PAGE_SIZE = 24;
+export const INSPIRATION_ACCOUNT_PAGE_SIZE = 50;
+export const INSPIRATION_ACCOUNT_PAGE_MAX = 100;
 
 export interface InspirationSourceUsage {
   status: "unused" | "used";
@@ -75,6 +77,11 @@ export interface InspirationVideoPage {
   usageCounts: InspirationSourceUsageCounts;
 }
 
+export interface InspirationAccountPage {
+  items: TrackedInspirationAccount[];
+  nextCursor: string | null;
+}
+
 export interface InspirationVideoPageQuery {
   accountId?: string | null;
   cursor?: string | null;
@@ -82,6 +89,11 @@ export interface InspirationVideoPageQuery {
   usage?: InspirationSourceFeedFilter;
   search?: string;
   sort?: InspirationSourceSort;
+}
+
+export interface InspirationAccountPageQuery {
+  cursor?: string | null;
+  take?: number;
 }
 
 export interface UseInspirationResult {
@@ -134,6 +146,48 @@ export function emptyInspirationVideoPage(): InspirationVideoPage {
       rejected: 0,
     },
   };
+}
+
+export function emptyInspirationAccountPage(): InspirationAccountPage {
+  return {
+    items: [],
+    nextCursor: null,
+  };
+}
+
+export function clampInspirationAccountTake(take?: number) {
+  if (take === undefined || !Number.isFinite(take)) {
+    return INSPIRATION_ACCOUNT_PAGE_SIZE;
+  }
+  return Math.min(INSPIRATION_ACCOUNT_PAGE_MAX, Math.max(1, Math.trunc(take)));
+}
+
+export function parseInspirationAccountPageQuery(
+  searchParams: URLSearchParams
+): InspirationAccountPageQuery {
+  const takeParam = Number.parseInt(
+    searchParams.get("take") ?? String(INSPIRATION_ACCOUNT_PAGE_SIZE),
+    10
+  );
+  const cursor = searchParams.get("cursor");
+  return {
+    cursor: cursor && cursor.length > 0 ? cursor : null,
+    take: clampInspirationAccountTake(
+      Number.isFinite(takeParam) ? takeParam : undefined
+    ),
+  };
+}
+
+export function inspirationAccountListPath(
+  input: InspirationAccountPageQuery = {}
+): string {
+  const params = new URLSearchParams();
+  params.set(
+    "take",
+    String(clampInspirationAccountTake(input.take ?? INSPIRATION_ACCOUNT_PAGE_SIZE))
+  );
+  if (input.cursor) params.set("cursor", input.cursor);
+  return `/api/ugc-inspiration/accounts?${params.toString()}`;
 }
 
 export function inspirationVideoFeedPath(

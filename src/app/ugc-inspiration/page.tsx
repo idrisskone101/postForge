@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function UGCInspirationPage() {
-  const [initialAccounts, initialVideoPage] = await Promise.all([
+  const [initialAccountPage, initialVideoPage] = await Promise.all([
     listTrackedInspirationAccounts(),
     listInspirationVideos(),
   ]);
@@ -15,7 +15,7 @@ export default async function UGCInspirationPage() {
   return (
     <div className="min-w-0 bg-background">
       <InspirationPageClient
-        initialAccounts={initialAccounts}
+        initialAccountPage={initialAccountPage}
         initialVideoPage={initialVideoPage}
       />
     </div>
