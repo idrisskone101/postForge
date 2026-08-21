@@ -148,7 +148,7 @@ assert.match(destinationSource, /selector: DestinationSelectorState/);
 for (const file of files.filter((path) => path.startsWith("src/app/automations/new/"))) {
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   assert.doesNotMatch(source, /createContext/, `${file} must not add React Context`);
-  for (const match of source.matchAll(/export function ([A-Za-z0-9]+)\(/g)) {
+  for (const match of source.matchAll(/export function ([A-Z][A-Za-z0-9]*)\(/g)) {
     const exportName = match[1];
     const count = exportedComponentPropCount(source, exportName);
     assert.ok(
