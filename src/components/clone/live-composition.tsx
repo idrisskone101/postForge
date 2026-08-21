@@ -1,38 +1,27 @@
 import { type ReactNode } from "react";
 import { Eye, Layers, Users, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { TikTokVideoInfo } from "@/components/tiktok-input";
-import type {
-  CloneSetupStep,
-  RefImageEntry,
-  SavedReference,
-} from "@/components/clone/types";
+import type { CloneSetupStep } from "@/components/clone/types";
+import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneLiveComposition({
-  activeStep,
-  videoInfo,
-  sourcePreviewSrc,
-  avatarId,
-  selectedReference,
-  selectedGeneratedReference,
-  collectionReferenceUrl,
-  sourceReady,
-  identityReady,
-  referenceReady,
-  onJumpToStep,
+  draft,
 }: {
-  activeStep: CloneSetupStep;
-  videoInfo: TikTokVideoInfo | null;
-  sourcePreviewSrc: string | null;
-  avatarId: string | null;
-  selectedReference: SavedReference | null;
-  selectedGeneratedReference: RefImageEntry | null;
-  collectionReferenceUrl: string | null;
-  sourceReady: boolean;
-  identityReady: boolean;
-  referenceReady: boolean;
-  onJumpToStep: (step: CloneSetupStep) => void;
+  draft: CloneDraft;
 }) {
+  const {
+    activeSetupStep: activeStep,
+    videoInfo,
+    sourcePreviewSrc,
+    avatarId,
+    selectedSavedReference: selectedReference,
+    selectedGeneratedReference,
+    collectionReferenceUrl,
+    sourceReady,
+    identityReady,
+    referenceReady,
+    onSelectStep: onJumpToStep,
+  } = draft;
   const referencePreview = collectionReferenceUrl ?? selectedReference?.previewUrl ??
     (selectedGeneratedReference?.status === "completed" && selectedGeneratedReference.fileId
       ? `/api/files/${selectedGeneratedReference.fileId}`

@@ -9,11 +9,7 @@ import {
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { formatDuration } from "@/components/clone-output/parse";
-import type {
-  CloneOutputReviewJob,
-  CloneOutputReviewOutput,
-  SourceVideoInput,
-} from "@/components/clone-output/types";
+import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
 function DetailSection({
   title,
@@ -35,28 +31,22 @@ function DetailSection({
 }
 
 export function CloneOutputReviewSidebar({
-  job,
-  featured,
-  sourceVideo,
-  sourceTitle,
-  sourceUrl,
-  sourcePreviewUrl,
-  avatarId,
-  avatarPreviewUrl,
-  identityName,
-  reference,
+  review,
 }: {
-  job: CloneOutputReviewJob;
-  featured: CloneOutputReviewOutput | undefined;
-  sourceVideo: SourceVideoInput | null;
-  sourceTitle: string;
-  sourceUrl: string | null | undefined;
-  sourcePreviewUrl: string | null;
-  avatarId: string | null;
-  avatarPreviewUrl: string | null;
-  identityName: string;
-  reference: { id: string; label: string; previewUrl: string } | null;
+  review: CloneOutputReviewView;
 }) {
+  const {
+    job,
+    featured,
+    sourceVideo,
+    sourceTitle,
+    sourceUrl,
+    sourcePreviewUrl,
+    avatarId,
+    avatarPreviewUrl,
+    identityName,
+    reference,
+  } = review;
   return (
     <aside className="space-y-5">
       <DetailSection title="Source Selection">
