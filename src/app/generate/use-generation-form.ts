@@ -321,6 +321,7 @@ export function useGenerationForm(models: ModelDefinition[]) {
     aspectRatio,
     setAspectRatio,
     numImages,
+    setNumImages,
     duration,
     setDuration,
     negativePrompt,

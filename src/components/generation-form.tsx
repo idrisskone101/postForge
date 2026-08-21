@@ -290,6 +290,7 @@ export function GenerateFormView({
           swapSourceDurationSec={swapSourceDurationSec}
           avatarName={avatarName}
           vibeRequirement={vibeRequirement}
+          desktopBarClassName="sticky bottom-0 hidden gap-3 border-t border-border bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
         />
       </aside>
     </form>

@@ -18,6 +18,7 @@ export function GenerateFormSubmitBars({
   swapSourceDurationSec,
   avatarName,
   vibeRequirement,
+  desktopBarClassName,
 }: {
   view: GenerateFormViewModel;
   aspectRatio: string;
@@ -30,6 +31,7 @@ export function GenerateFormSubmitBars({
   swapSourceDurationSec?: number;
   avatarName?: string | null;
   vibeRequirement: string | null;
+  desktopBarClassName: string;
 }) {
   const {
     model,
@@ -84,7 +86,7 @@ export function GenerateFormSubmitBars({
         </div>
       )}
 
-      <div className="sticky bottom-0 hidden gap-3 border-t border-border bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+      <div className={desktopBarClassName}>
         <div className="min-w-0">
           <span className="block truncate text-[12px] text-muted-foreground">
             {model
