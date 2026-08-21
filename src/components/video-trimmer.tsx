@@ -1,14 +1,24 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, type PointerEvent } from "react";
 import { apiPost } from "@/lib/api/client";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Loader2, Scissors, Film, GripVertical } from "lucide-react";
+import { Loader2, Scissors, Film } from "lucide-react";
 import {
   MAX_MOTION_SOURCE_DURATION_SEC,
   isMotionSourceWithinLimit,
 } from "@/lib/ugc/source-limits";
+import {
+  formatTrimTime,
+  getTrimSummary,
+  MIN_TRIM_DURATION_SEC,
+  normalizeTrimRange,
+  snapTrimTime,
+} from "@/components/video-trim-range";
+import { VideoTrimRangeFields } from "@/components/video-trim-range-fields";
+import { VideoTrimTimeline } from "@/components/video-trim-timeline";
+
+export { formatTrimTime, getTrimSummary, normalizeTrimRange };
 
 interface VideoTrimmerProps {
   videoPath: string;
@@ -26,99 +36,8 @@ interface VideoTrimmerProps {
   onCancel: () => void;
 }
 
-const TRIM_TIME_PRECISION = 100;
-const MIN_TRIM_DURATION_SEC = 0.1;
-const FILMSTRIP_PLACEHOLDER_COUNT = 4;
 const FILMSTRIP_THUMBNAIL_COUNT = 4;
 const FILMSTRIP_FETCH_DELAY_MS = 700;
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
-/** Snap a number to the nearest 0.01 second. */
-function snapTrimTime(value: number): number {
-  return Math.round(value * TRIM_TIME_PRECISION) / TRIM_TIME_PRECISION;
-}
-
-/** Format seconds as "X.XXs" so short social clips can be trimmed precisely. */
-export function formatTrimTime(sec: number): string {
-  return `${snapTrimTime(sec).toFixed(2)}s`;
-}
-
-export function normalizeTrimRange({
-  startTime,
-  endTime,
-  durationSec,
-  minDurationSec = MIN_TRIM_DURATION_SEC,
-  maxDurationSec,
-}: {
-  startTime: number;
-  endTime: number;
-  durationSec: number;
-  minDurationSec?: number;
-  maxDurationSec?: number;
-}) {
-  const safeDuration = Math.max(0, snapTrimTime(durationSec));
-  const safeMinDuration = Math.min(minDurationSec, safeDuration);
-  const safeMaxDuration =
-    typeof maxDurationSec === "number" && Number.isFinite(maxDurationSec)
-      ? Math.max(safeMinDuration, snapTrimTime(maxDurationSec))
-      : null;
-  const maxStart = Math.max(0, safeDuration - safeMinDuration);
-  const normalizedStart = clamp(snapTrimTime(startTime), 0, maxStart);
-  const maxEnd = safeMaxDuration
-    ? Math.min(safeDuration, normalizedStart + safeMaxDuration)
-    : safeDuration;
-  const normalizedEnd = clamp(
-    snapTrimTime(endTime),
-    normalizedStart + safeMinDuration,
-    maxEnd
-  );
-  const trimmedDuration = snapTrimTime(normalizedEnd - normalizedStart);
-  const removedFromStart = snapTrimTime(normalizedStart);
-  const removedFromEnd = snapTrimTime(safeDuration - normalizedEnd);
-
-  return {
-    startTime: normalizedStart,
-    endTime: normalizedEnd,
-    trimmedDuration,
-    removedFromStart,
-    removedFromEnd,
-    hasTrim: removedFromStart > 0 || removedFromEnd > 0,
-  };
-}
-
-export function getTrimSummary({
-  startTime,
-  endTime,
-  durationSec,
-  maxDurationSec,
-}: {
-  startTime: number;
-  endTime: number;
-  durationSec: number;
-  maxDurationSec?: number;
-}): string {
-  const range = normalizeTrimRange({ startTime, endTime, durationSec, maxDurationSec });
-
-  if (!range.hasTrim) {
-    return "Full video selected. No trim will be applied.";
-  }
-
-  const removals = [
-    range.removedFromStart > 0
-      ? `${formatTrimTime(range.removedFromStart)} from start`
-      : null,
-    range.removedFromEnd > 0
-      ? `${formatTrimTime(range.removedFromEnd)} from end`
-      : null,
-  ].filter(Boolean);
-
-  return `Will submit ${formatTrimTime(range.startTime)} - ${formatTrimTime(
-    range.endTime
-  )}. Removes ${removals.join(" and ")}.`;
-}
 
 export function VideoTrimmer({
   videoPath,
@@ -131,26 +50,15 @@ export function VideoTrimmer({
 }: VideoTrimmerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-
-  // Trim range (in seconds)
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(
     Math.min(durationSec, MAX_MOTION_SOURCE_DURATION_SEC)
   );
-
-  // Thumbnails are decorative; the trim controls must be usable before they load.
   const [thumbnails, setThumbnails] = useState<string[]>([]);
-
-  // Active drag handle
   const [dragging, setDragging] = useState<"start" | "end" | null>(null);
-
-  // Trim API state
   const [isTrimming, setIsTrimming] = useState(false);
   const [trimError, setTrimError] = useState<string | null>(null);
 
-  // ---------------------------------------------------------------------------
-  // Fetch filmstrip thumbnails after first paint so opening the trimmer is instant.
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
     const abortController = new AbortController();
@@ -166,9 +74,7 @@ export function VideoTrimmer({
             setThumbnails(data.thumbnails);
           }
         })
-        .catch(() => {
-          // Filmstrip thumbnails are decorative; keep the instant placeholder.
-        });
+        .catch(() => {});
     }, FILMSTRIP_FETCH_DELAY_MS);
 
     return () => {
@@ -178,9 +84,6 @@ export function VideoTrimmer({
     };
   }, [videoPath]);
 
-  // ---------------------------------------------------------------------------
-  // Video loop: keep playback within the trimmed region
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -195,7 +98,6 @@ export function VideoTrimmer({
     return () => video.removeEventListener("timeupdate", onTimeUpdate);
   }, [startTime, endTime]);
 
-  // Seek to startTime whenever it changes so the preview reflects the selection
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -203,9 +105,6 @@ export function VideoTrimmer({
     }
   }, [startTime]);
 
-  // ---------------------------------------------------------------------------
-  // Pointer-based dragging for handles
-  // ---------------------------------------------------------------------------
   const getTimeFromPointer = useCallback(
     (clientX: number): number => {
       const track = trackRef.current;
@@ -233,7 +132,7 @@ export function VideoTrimmer({
   );
 
   const handlePointerDown = useCallback(
-    (handle: "start" | "end") => (e: React.PointerEvent) => {
+    (handle: "start" | "end") => (e: PointerEvent) => {
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       setDragging(handle);
@@ -242,7 +141,7 @@ export function VideoTrimmer({
   );
 
   const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       if (!dragging) return;
       const t = getTimeFromPointer(e.clientX);
       const minGap = MIN_TRIM_DURATION_SEC;
@@ -260,9 +159,6 @@ export function VideoTrimmer({
     setDragging(null);
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // Trim API call
-  // ---------------------------------------------------------------------------
   const handleTrim = async () => {
     const range = normalizeTrimRange({
       startTime,
@@ -299,9 +195,6 @@ export function VideoTrimmer({
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Derived values
-  // ---------------------------------------------------------------------------
   const trimRange = normalizeTrimRange({
     startTime,
     endTime,
@@ -322,13 +215,11 @@ export function VideoTrimmer({
 
   return (
     <div className="space-y-4 animate-fade-in-up">
-      {/* Header */}
       <div className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
         <Scissors className="size-3.5" />
         Trim Video
       </div>
 
-      {/* Video Preview */}
       <div className="flex justify-center">
         <div
           className="relative overflow-hidden rounded-2xl border-2 border-border bg-black"
@@ -347,201 +238,49 @@ export function VideoTrimmer({
             className="h-full w-full object-cover"
             style={{ maxHeight: 300 }}
           />
-          {/* Duration badge */}
           <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-0.5 text-[12px] font-bold text-white backdrop-blur-sm">
             {formatTrimTime(trimmedDuration)}
           </div>
         </div>
       </div>
 
-      {/* Timeline Scrubber */}
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
           <Film className="size-3" />
           Drag handles to select range
         </div>
-
-        <div
-          ref={trackRef}
-          data-trim-timeline="true"
-          className="relative h-20 w-full select-none overflow-hidden rounded-lg border border-border bg-muted"
+        <VideoTrimTimeline
+          trackRef={trackRef}
+          thumbnails={thumbnails}
+          startPct={startPct}
+          endPct={endPct}
+          dragging={dragging}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-        >
-          {/* Filmstrip thumbnails */}
-          <div className="absolute inset-0 flex">
-            {thumbnails.length > 0
-              ? thumbnails.map((thumb, i) => (
-                  <img
-                    key={i}
-                    src={thumb}
-                    alt=""
-                    draggable={false}
-                    className="flex-1 h-full object-cover border-r border-border/30 last:border-r-0"
-                  />
-                ))
-              : Array.from({ length: FILMSTRIP_PLACEHOLDER_COUNT }).map((_, i) => (
-                  <div
-                    key={i}
-                    data-filmstrip-placeholder="true"
-                    className="flex-1 border-r border-border/40 bg-[linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))] last:border-r-0"
-                  />
-                ))}
-          </div>
-
-          {/* Dimmed overlay: before start */}
-          <div
-            className="absolute inset-y-0 left-0 bg-black/75 transition-[width] duration-75"
-            style={{ width: `${startPct}%` }}
-          />
-
-          {/* Dimmed overlay: after end */}
-          <div
-            className="absolute inset-y-0 right-0 bg-black/75 transition-[width] duration-75"
-            style={{ width: `${100 - endPct}%` }}
-          />
-
-          {/* Selected region highlight */}
-          <div
-            className={cn(
-              "absolute inset-y-0 border-y-2 border-accent-green bg-accent-green/10 transition-[left,width] duration-75",
-              dragging && "shadow-[0_0_12px_rgba(22,163,74,0.3)]"
-            )}
-            style={{
-              left: `${startPct}%`,
-              width: `${endPct - startPct}%`,
-            }}
-          />
-
-          {/* Start handle */}
-          <div
-            className={cn(
-              "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
-              "rounded-l-lg bg-accent-green transition-shadow",
-              dragging === "start" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
-            )}
-            style={{ left: `calc(${startPct}% - 12px)` }}
-            onPointerDown={handlePointerDown("start")}
-            aria-label="Trim start handle"
-          >
-            <GripVertical className="size-3 text-white/80" />
-          </div>
-
-          {/* End handle */}
-          <div
-            className={cn(
-              "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
-              "rounded-r-lg bg-accent-green transition-shadow",
-              dragging === "end" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
-            )}
-            style={{ left: `calc(${endPct}% - 12px)` }}
-            onPointerDown={handlePointerDown("end")}
-            aria-label="Trim end handle"
-          >
-            <GripVertical className="size-3 text-white/80" />
-          </div>
-        </div>
+          onStartPointerDown={handlePointerDown("start")}
+          onEndPointerDown={handlePointerDown("end")}
+        />
       </div>
 
-      {/* Precise Range */}
-      <div className="space-y-3 rounded-lg border border-border bg-muted/25 p-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-[12px] font-medium text-muted-foreground">
-            Precise range
-          </div>
-          <div
-            className={cn(
-              "rounded-full px-2.5 py-1 text-[12px] font-bold tabular-nums",
-              trimRange.hasTrim
-                ? "bg-accent-green/10 text-accent-green"
-                : "bg-white/5 text-muted-foreground"
-            )}
-          >
-            {formatTrimTime(trimmedDuration)} selected
-          </div>
-        </div>
+      <VideoTrimRangeFields
+        durationSec={durationSec}
+        startTime={trimRange.startTime}
+        endTime={trimRange.endTime}
+        trimmedDuration={trimmedDuration}
+        removedFromStart={trimRange.removedFromStart}
+        removedFromEnd={trimRange.removedFromEnd}
+        hasTrim={trimRange.hasTrim}
+        trimSummary={trimSummary}
+        onStartChange={(nextStartTime) => applyRange(nextStartTime, endTime)}
+        onEndChange={(nextEndTime) => applyRange(startTime, nextEndTime)}
+      />
 
-        <div className="grid grid-cols-3 gap-2">
-          <label className="space-y-1">
-            <span className="text-[12px] font-semibold text-muted-foreground">Start</span>
-            <Input
-              type="number"
-              min={0}
-              max={Math.max(0, durationSec - MIN_TRIM_DURATION_SEC)}
-              step={0.01}
-              value={trimRange.startTime.toFixed(2)}
-              onChange={(event) => {
-                const nextStartTime = Number.parseFloat(event.currentTarget.value);
-                if (Number.isFinite(nextStartTime)) {
-                  applyRange(nextStartTime, endTime);
-                }
-              }}
-              className="h-9 bg-black/20 font-mono text-xs tabular-nums"
-              aria-label="Trim start time"
-            />
-          </label>
-          <label className="space-y-1">
-            <span className="text-[12px] font-semibold text-muted-foreground">End</span>
-            <Input
-              type="number"
-              min={MIN_TRIM_DURATION_SEC}
-              max={durationSec}
-              step={0.01}
-              value={trimRange.endTime.toFixed(2)}
-              onChange={(event) => {
-                const nextEndTime = Number.parseFloat(event.currentTarget.value);
-                if (Number.isFinite(nextEndTime)) {
-                  applyRange(startTime, nextEndTime);
-                }
-              }}
-              className="h-9 bg-black/20 font-mono text-xs tabular-nums"
-              aria-label="Trim end time"
-            />
-          </label>
-          <div className="space-y-1">
-            <span className="block text-[12px] font-semibold text-muted-foreground">
-              Selected
-            </span>
-            <div className="flex h-9 items-center rounded-lg border border-border bg-black/20 px-2.5 font-mono text-xs font-semibold text-foreground tabular-nums">
-              {formatTrimTime(trimmedDuration)}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 text-[12px]">
-          <div className="rounded-lg border border-border/80 bg-black/20 px-2.5 py-2">
-            <div className="font-semibold text-muted-foreground">Removed from start</div>
-            <div className="mt-0.5 font-mono text-xs font-bold text-foreground tabular-nums">
-              {formatTrimTime(trimRange.removedFromStart)}
-            </div>
-          </div>
-          <div className="rounded-lg border border-border/80 bg-black/20 px-2.5 py-2">
-            <div className="font-semibold text-muted-foreground">Removed from end</div>
-            <div className="mt-0.5 font-mono text-xs font-bold text-foreground tabular-nums">
-              {formatTrimTime(trimRange.removedFromEnd)}
-            </div>
-          </div>
-        </div>
-
-        <p
-          className={cn(
-            "text-[11px] leading-relaxed",
-            trimRange.hasTrim ? "text-accent-green" : "text-muted-foreground"
-          )}
-        >
-          {trimSummary}
-        </p>
-      </div>
-
-      {/* Error */}
       {trimError && (
         <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive [overflow-wrap:anywhere]">
           {trimError}
         </div>
       )}
 
-      {/* Action Buttons */}
       <div className="flex items-center gap-3">
         <button
           type="button"

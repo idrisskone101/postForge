@@ -10,7 +10,6 @@
   "src/app/settings/settings-page-client.tsx": 1420,
   "src/app/ugc-inspiration/inspiration-page-client.tsx": 1490,
   "src/components/avatar-picker.tsx": 1157,
-  "src/components/clone-output-review-detail.tsx": 681,
   "src/components/gallery-grid.tsx": 1301,
   "src/components/generation-form.tsx": 1787,
   "src/components/pinterest-import-dialog.tsx": 667,
@@ -19,9 +18,7 @@
   "src/components/slideshow/slideshow-editor.tsx": 1462,
   "src/components/slideshow/slideshow-studio.tsx": 605,
   "src/components/slideshow/studio-views.tsx": 1607,
-  "src/components/tiktok-input.tsx": 408,
-  "src/components/ugc-clone-form.tsx": 2663,
-  "src/components/video-trimmer.tsx": 582,
+  "src/components/ugc-clone-form.tsx": 1256,
   "src/lib/ai/generate-character-video.ts": 720,
   "src/lib/ai/models.ts": 432,
   "src/lib/ai/slideshow-creator.ts": 913,
@@ -41,6 +38,5 @@
   "src/lib/slideshow/service.ts": 1434,
   "src/lib/slideshow/text-overlay-satori.tsx": 409,
   "src/lib/storage.ts": 672,
-  "src/lib/ugc/avatar-identity-pack.ts": 674,
-  "src/lib/ugc/generate-clone.ts": 626
+  "src/lib/ugc/avatar-identity-pack.ts": 674
 }
