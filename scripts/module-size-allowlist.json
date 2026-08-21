@@ -4,7 +4,6 @@
   "src/app/characters/new/character-builder-client.tsx": 637,
   "src/app/costs/costs-page-client.tsx": 797,
   "src/app/generate/[id]/page.tsx": 1070,
-  "src/app/home-cockpit.tsx": 496,
   "src/app/performance/performance-page-client.tsx": 1033,
   "src/app/settings/settings-page-client.tsx": 1420,
   "src/components/avatar-picker.tsx": 1197,
