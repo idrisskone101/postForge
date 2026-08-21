@@ -1,13 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { apiDelete, apiPost } from "@/lib/api/client";
-import type {
-  InspirationVideoCard,
-  SetInspirationRejectionResult,
-  TrackedInspirationAccount,
-  UseInspirationResult,
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { apiDelete, apiGet, apiPost } from "@/lib/api/client";
+import {
+  INSPIRATION_VIDEO_PAGE_SIZE,
+  inspirationVideoFeedPath,
+  parseInspirationSourceSort,
+  type InspirationSourceFeedFilter,
+  type InspirationSourceSort,
+  type InspirationVideoCard,
+  type InspirationVideoPage,
+  type SetInspirationRejectionResult,
+  type TrackedInspirationAccount,
+  type UseInspirationResult,
 } from "@/lib/inspiration/types";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
@@ -49,13 +55,8 @@ import {
   Users,
 } from "lucide-react";
 
-type SourceFeedFilter = "all" | "unused" | "used" | "rejected";
-type SourceSort = "recent" | "views" | "engagement";
-
-const SOURCE_PAGE_SIZE = 24;
-
 const SOURCE_FEED_FILTERS: Array<{
-  value: SourceFeedFilter;
+  value: InspirationSourceFeedFilter;
   label: string;
   description: string;
 }> = [
@@ -83,6 +84,7 @@ const SOURCE_FEED_FILTERS: Array<{
 
 interface InspirationPageClientProps {
   initialAccounts: TrackedInspirationAccount[];
+  initialVideoPage: InspirationVideoPage;
 }
 
 interface InspirationHeaderControlsProps {
@@ -213,33 +215,34 @@ function sortAccounts(accounts: TrackedInspirationAccount[]) {
   });
 }
 
-function sortVideos(videos: InspirationVideoCard[]) {
-  return [...videos].sort((a, b) => {
-    const aTime = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-    const bTime = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-    if (aTime !== bTime) return bTime - aTime;
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-}
-
 export function filterVideosBySourceUsage(
   videos: InspirationVideoCard[],
-  filter: SourceFeedFilter
+  filter: InspirationSourceFeedFilter
 ) {
-  if (filter === "all") return videos;
-  if (filter === "rejected") {
-    return videos.filter(
-      (video) => video.sourceDecision.status === "rejected"
-    );
+  switch (filter) {
+    case "all":
+      return videos;
+    case "rejected":
+      return videos.filter(
+        (video) => video.sourceDecision.status === "rejected"
+      );
+    case "used":
+      return videos.filter(
+        (video) =>
+          video.sourceDecision.status === "approved" &&
+          video.sourceUsage.status === "used"
+      );
+    case "unused":
+      return videos.filter(
+        (video) =>
+          video.sourceDecision.status === "approved" &&
+          video.sourceUsage.status === "unused"
+      );
+    default: {
+      const _exhaustive: never = filter;
+      return _exhaustive;
+    }
   }
-
-  return videos.filter((video) =>
-    video.sourceDecision.status === "approved" &&
-    (filter === "used"
-      ? video.sourceUsage.status === "used"
-      : video.sourceUsage.status === "unused")
-  );
 }
 
 function mergeAccountIntoState(
@@ -289,15 +292,24 @@ function CreatorSyncAvatar({
 
 export function InspirationPageClient({
   initialAccounts,
+  initialVideoPage,
 }: InspirationPageClientProps) {
   const [accounts, setAccounts] = useState(() => sortAccounts(initialAccounts));
   const [activeFilter, setActiveFilter] = useState<"all" | string>("all");
   const [sourceFeedFilter, setSourceFeedFilter] =
-    useState<SourceFeedFilter>("all");
+    useState<InspirationSourceFeedFilter>("all");
   const [sourceSearch, setSourceSearch] = useState("");
-  const [sourceSort, setSourceSort] = useState<SourceSort>("recent");
+  const [sourceSort, setSourceSort] = useState<InspirationSourceSort>("recent");
   const [compactGrid, setCompactGrid] = useState(false);
-  const [visibleSourceLimit, setVisibleSourceLimit] = useState(SOURCE_PAGE_SIZE);
+  const [videoItems, setVideoItems] = useState(initialVideoPage.items);
+  const [videoCursor, setVideoCursor] = useState(initialVideoPage.nextCursor);
+  const [videoHasMore, setVideoHasMore] = useState(initialVideoPage.hasMore);
+  const [videoTotal, setVideoTotal] = useState(initialVideoPage.total);
+  const [sourceUsageCounts, setSourceUsageCounts] = useState(
+    initialVideoPage.usageCounts
+  );
+  const [isLoadingVideos, setIsLoadingVideos] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [handleInput, setHandleInput] = useState("");
   const [pageError, setPageError] = useState<string | null>(null);
   const [isAddingAccount, setIsAddingAccount] = useState(false);
@@ -309,6 +321,7 @@ export function InspirationPageClient({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
+  const didMountVideos = useRef(false);
 
   const selectedAccount = useMemo(
     () =>
@@ -318,85 +331,98 @@ export function InspirationPageClient({
     [accounts, activeFilter]
   );
 
-  const sourceVideos = useMemo(() => {
-    const sourceAccounts =
-      activeFilter === "all"
-        ? accounts
-        : accounts.filter((account) => account.id === activeFilter);
-
-    return sortVideos(sourceAccounts.flatMap((account) => account.videos));
-  }, [accounts, activeFilter]);
-
-  const sourceUsageCounts = useMemo(() => {
-    const approvedVideos = sourceVideos.filter(
-      (video) => video.sourceDecision.status === "approved"
-    );
-
-    return {
-      all: sourceVideos.length,
-      unused: approvedVideos.filter(
-        (video) => video.sourceUsage.status === "unused"
-      ).length,
-      used: approvedVideos.filter(
-        (video) => video.sourceUsage.status === "used"
-      ).length,
-      rejected: sourceVideos.length - approvedVideos.length,
-    };
-  }, [sourceVideos]);
-
-  const feedVideos = useMemo(
-    () => filterVideosBySourceUsage(sourceVideos, sourceFeedFilter),
-    [sourceVideos, sourceFeedFilter]
+  const applyVideoPage = useCallback(
+    (page: InspirationVideoPage, mode: "replace" | "append") => {
+      setVideoItems((current) =>
+        mode === "append" ? [...current, ...page.items] : page.items
+      );
+      setVideoCursor(page.nextCursor);
+      setVideoHasMore(page.hasMore);
+      setVideoTotal(page.total);
+      setSourceUsageCounts(page.usageCounts);
+    },
+    []
   );
 
-  const visibleFeedVideos = useMemo(() => {
-    const query = sourceSearch.trim().toLowerCase();
-    const matching = query
-      ? feedVideos.filter((video) =>
-          [
-            video.caption,
-            video.creatorHandle,
-            video.creatorDisplayName,
-          ].some((value) => value?.toLowerCase().includes(query))
-        )
-      : feedVideos;
+  const loadVideoPage = useCallback(
+    async (cursor?: string | null) => {
+      return apiGet<InspirationVideoPage>(
+        inspirationVideoFeedPath({
+          accountId: activeFilter === "all" ? null : activeFilter,
+          cursor,
+          take: INSPIRATION_VIDEO_PAGE_SIZE,
+          usage: sourceFeedFilter,
+          search: sourceSearch,
+          sort: sourceSort,
+        })
+      );
+    },
+    [activeFilter, sourceFeedFilter, sourceSearch, sourceSort]
+  );
 
-    return [...matching].sort((a, b) => {
-      if (sourceSort === "views") {
-        return (b.viewCount ?? 0) - (a.viewCount ?? 0);
-      }
-      if (sourceSort === "engagement") {
-        const aEngagement =
-          (a.likeCount ?? 0) + (a.commentCount ?? 0) + (a.shareCount ?? 0);
-        const bEngagement =
-          (b.likeCount ?? 0) + (b.commentCount ?? 0) + (b.shareCount ?? 0);
-        return bEngagement - aEngagement;
-      }
-
-      const aTime = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-      const bTime = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-      return bTime - aTime;
-    });
-  }, [feedVideos, sourceSearch, sourceSort]);
-
-  const renderedFeedVideos = visibleFeedVideos.slice(0, visibleSourceLimit);
+  const replaceVideoPage = useCallback(async () => {
+    setIsLoadingVideos(true);
+    setVideoItems([]);
+    setVideoCursor(null);
+    setVideoHasMore(false);
+    setPageError(null);
+    try {
+      const page = await loadVideoPage();
+      applyVideoPage(page, "replace");
+    } catch (error) {
+      setPageError(
+        error instanceof Error ? error.message : "Failed to load sources."
+      );
+      setVideoTotal(0);
+    } finally {
+      setIsLoadingVideos(false);
+    }
+  }, [applyVideoPage, loadVideoPage]);
 
   useEffect(() => {
-    setVisibleSourceLimit(SOURCE_PAGE_SIZE);
-  }, [activeFilter, sourceFeedFilter, sourceSearch, sourceSort]);
+    if (!didMountVideos.current) {
+      didMountVideos.current = true;
+      return;
+    }
+
+    const delay = sourceSearch.trim() ? 250 : 0;
+    const timer = window.setTimeout(() => {
+      void replaceVideoPage();
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [replaceVideoPage, sourceSearch]);
+
+  async function handleLoadMore() {
+    if (!videoHasMore || !videoCursor || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    setPageError(null);
+    try {
+      const page = await loadVideoPage(videoCursor);
+      applyVideoPage(page, "append");
+    } catch (error) {
+      setPageError(
+        error instanceof Error ? error.message : "Failed to load more sources."
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
 
   const selectedVideo = useMemo(
     () =>
       selectedVideoId
-        ? accounts.flatMap((account) => account.videos).find((video) => video.id === selectedVideoId) ?? null
+        ? videoItems.find((video) => video.id === selectedVideoId) ?? null
         : null,
-    [accounts, selectedVideoId]
+    [videoItems, selectedVideoId]
   );
 
   const trackedVideoCount = accounts.reduce(
-    (sum, account) => sum + account.videos.length,
+    (sum, account) => sum + account.videoCount,
     0
   );
+  const remainingVideoCount = Math.max(0, videoTotal - videoItems.length);
   const activeSourceLabel = selectedAccount
     ? selectedAccount.handleDisplay
     : "Creator Feed";
@@ -449,6 +475,7 @@ export function InspirationPageClient({
       );
       setAccounts((prev) => mergeAccountIntoState(prev, account));
       setHandleInput("");
+      await replaceVideoPage();
     } catch (error) {
       setPageError(
         error instanceof Error ? error.message : "Failed to track creator."
@@ -482,6 +509,7 @@ export function InspirationPageClient({
         {}
       );
       setAccounts((prev) => mergeAccountIntoState(prev, refreshed));
+      await replaceVideoPage();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to refresh creator.";
@@ -516,11 +544,13 @@ export function InspirationPageClient({
     try {
       await apiDelete(`/api/ugc-inspiration/accounts/${account.id}`);
       setAccounts((prev) => prev.filter((item) => item.id !== account.id));
-      if (activeFilter === account.id) {
-        setActiveFilter("all");
-      }
       if (selectedVideo?.accountId === account.id) {
         setSelectedVideoId(null);
+      }
+      if (activeFilter === account.id) {
+        setActiveFilter("all");
+      } else {
+        await replaceVideoPage();
       }
     } catch (error) {
       setPageError(
@@ -566,17 +596,47 @@ export function InspirationPageClient({
         `/api/ugc-inspiration/videos/${video.id}/rejection`,
         { rejected }
       );
+      const nextVideo: InspirationVideoCard = {
+        ...video,
+        sourceDecision: result.sourceDecision,
+      };
+      const staysInView =
+        filterVideosBySourceUsage([nextVideo], sourceFeedFilter).length > 0;
 
-      setAccounts((prev) =>
-        prev.map((account) => ({
-          ...account,
-          videos: account.videos.map((item) =>
-            item.id === result.videoId
-              ? { ...item, sourceDecision: result.sourceDecision }
-              : item
-          ),
-        }))
-      );
+      setVideoItems((current) => {
+        if (!staysInView) {
+          return current.filter((item) => item.id !== result.videoId);
+        }
+        return current.map((item) =>
+          item.id === result.videoId ? nextVideo : item
+        );
+      });
+      if (!staysInView) {
+        setVideoTotal((current) => Math.max(0, current - 1));
+      }
+
+      setSourceUsageCounts((current) => {
+        const wasRejected = video.sourceDecision.status === "rejected";
+        const isRejected = nextVideo.sourceDecision.status === "rejected";
+        if (wasRejected === isRejected) return current;
+
+        const usedDelta = video.sourceUsage.status === "used" ? 1 : 0;
+        const unusedDelta = video.sourceUsage.status === "unused" ? 1 : 0;
+        if (isRejected) {
+          return {
+            ...current,
+            rejected: current.rejected + 1,
+            used: current.used - usedDelta,
+            unused: current.unused - unusedDelta,
+          };
+        }
+        return {
+          ...current,
+          rejected: Math.max(0, current.rejected - 1),
+          used: current.used + usedDelta,
+          unused: current.unused + unusedDelta,
+        };
+      });
     } catch (error) {
       setPageError(
         error instanceof Error
@@ -770,7 +830,7 @@ export function InspirationPageClient({
                           <span className="block truncate text-xs font-semibold">{account.handleDisplay}</span>
                           <span className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}>{syncMeta.label}</span>
                         </span>
-                        <span className="text-[11px] font-semibold text-muted-foreground">{account.videos.length}</span>
+                        <span className="text-[11px] font-semibold text-muted-foreground">{account.videoCount}</span>
                       </button>
                       <span className="flex shrink-0 flex-col gap-0.5">
                         <button
@@ -805,7 +865,7 @@ export function InspirationPageClient({
               <div className="min-w-0">
                 <h3 id="source-library-heading" className="text-[15px] font-semibold tracking-[-0.01em]">Source library</h3>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {activeSourceLabel} · {visibleFeedVideos.length} of {feedVideos.length} {activeFeedFilterLabel.toLowerCase()}
+                  {activeSourceLabel} · {videoItems.length} of {videoTotal} {activeFeedFilterLabel.toLowerCase()}
                 </p>
               </div>
 
@@ -866,7 +926,9 @@ export function InspirationPageClient({
                 <span className="sr-only">Sort source library</span>
                 <select
                   value={sourceSort}
-                  onChange={(event) => setSourceSort(event.target.value as SourceSort)}
+                  onChange={(event) =>
+                    setSourceSort(parseInspirationSourceSort(event.target.value))
+                  }
                   aria-label="Sort source library"
                   className="size-full appearance-none bg-transparent pr-6 text-xs font-medium text-foreground outline-none"
                 >
@@ -908,7 +970,14 @@ export function InspirationPageClient({
                 secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
                 className="min-h-[360px]"
               />
-            ) : sourceVideos.length === 0 ? (
+            ) : isLoadingVideos && videoItems.length === 0 ? (
+              <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/40 px-6 py-14 text-center">
+                <Loader2 className="mb-4 size-6 animate-spin text-muted-foreground" />
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em]">
+                  Loading sources
+                </h2>
+              </div>
+            ) : sourceUsageCounts.all === 0 && videoTotal === 0 ? (
               <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/40 px-6 py-14 text-center">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-[var(--pf-success)]/10 text-[var(--pf-success)]">
                   <CheckCircle2 className="size-6" />
@@ -933,7 +1002,7 @@ export function InspirationPageClient({
                   </a>
                 )}
               </div>
-            ) : visibleFeedVideos.length === 0 ? (
+            ) : videoItems.length === 0 ? (
               <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/40 px-6 py-14 text-center">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <CheckCircle2 className="size-6" />
@@ -966,7 +1035,7 @@ export function InspirationPageClient({
                     : "lg:grid-cols-3 2xl:grid-cols-4",
                 )}
               >
-                {renderedFeedVideos.map((video) => {
+                {videoItems.map((video) => {
                   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
                   const isRejected = video.sourceDecision.status === "rejected";
                   const isUpdatingRejection = updatingRejectionIds.includes(video.id);
@@ -1198,22 +1267,24 @@ export function InspirationPageClient({
               </div>
             )}
 
-            {renderedFeedVideos.length < visibleFeedVideos.length && (
+            {videoHasMore && (
               <div className="flex flex-col items-center gap-2 border-t border-border pt-5 text-center">
                 <p className="text-[11px] text-muted-foreground">
-                  Showing {renderedFeedVideos.length} of {visibleFeedVideos.length} matching sources
+                  Showing {videoItems.length} of {videoTotal} matching sources
                 </p>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() =>
-                    setVisibleSourceLimit((current) =>
-                      Math.min(current + SOURCE_PAGE_SIZE, visibleFeedVideos.length)
-                    )
-                  }
+                  onClick={() => void handleLoadMore()}
+                  disabled={isLoadingMore || !videoCursor}
+                  data-inspiration-load-more="true"
                   className="h-10 rounded-lg px-5 text-xs font-semibold"
                 >
-                  Load {Math.min(SOURCE_PAGE_SIZE, visibleFeedVideos.length - renderedFeedVideos.length)} more
+                  {isLoadingMore ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    `Load ${Math.min(INSPIRATION_VIDEO_PAGE_SIZE, remainingVideoCount)} more`
+                  )}
                 </Button>
               </div>
             )}
