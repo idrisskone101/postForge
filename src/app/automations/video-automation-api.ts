@@ -12,11 +12,10 @@ import {
   removeWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
-import type { PublishPreflight } from "./hub-types";
+import type { PublishDialogState, PublishPreflight } from "./hub-types";
 import {
   buildPublishRequestBody,
   type PublishMutationResponse,
-  type PublishDialogState,
 } from "./publish-dialog-model";
 
 export type AutomationsPageSnapshot = {
