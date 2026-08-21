@@ -43,12 +43,14 @@ import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import { requestSlideshowCreatorDerive } from "@/lib/slideshow/client";
 import type {
   SlideshowProject,
+  SlideshowProjectListItem,
   SlideshowSection,
   SlideshowTemplate,
 } from "./types";
 
 const CARD =
   "rounded-lg border border-border bg-white shadow-[var(--pf-shadow-2xs)]";
+const PREVIEW_ASPECT: Record<string, string> = { "1:1": "aspect-square", "16:9": "aspect-video", "4:5": "aspect-[4/5]" };
 const CARD_HOVER =
   "transition-all duration-200 hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-md)]";
 const SECONDARY_BTN =
@@ -1399,10 +1401,6 @@ export function TemplateDialog({
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Drafts                                                              */
-/* ------------------------------------------------------------------ */
-
 export function DraftsView({
   projects,
   loading,
@@ -1410,10 +1408,10 @@ export function DraftsView({
   onOpen,
   onCreate,
 }: {
-  projects: SlideshowProject[];
+  projects: SlideshowProjectListItem[];
   loading: boolean;
   error: string | null;
-  onOpen: (project: SlideshowProject) => void;
+  onOpen: (project: SlideshowProjectListItem) => void;
   onCreate: () => void;
 }) {
   const [query, setQuery] = useState("");
@@ -1512,16 +1510,11 @@ export function DraftsView({
                 aria-label={`Open ${project.title}`}
               >
                 <div className="grid grid-cols-3 gap-1 p-3 pb-0">
-                  {project.slides.slice(0, 3).map((slide, index) => (
-                    <SlideMini
-                      key={slide.id}
-                      slide={slide}
-                      aspectRatio={project.aspectRatio}
-                      phaseSettings={project.phaseSettings[slide.kind]}
-                      textSettings={project.textSettings}
-                      label={index === 0 ? `${project.slides.length} slides` : undefined}
-                      fallbackText="Untitled slide"
-                    />
+                  {[0, 1, 2].map((index) => (
+                    <div key={index} className={cn("relative overflow-hidden rounded-lg bg-[var(--pf-active)]", PREVIEW_ASPECT[project.aspectRatio] ?? "aspect-[9/16]")}>
+                      {project.previewImageUrls[index] ? <img src={project.previewImageUrls[index] ?? ""} alt="" className="size-full object-cover" /> : null}
+                      {index === 0 ? <span className="absolute left-1 top-1 z-10 rounded-full bg-black/45 px-1.5 py-px text-[8px] font-semibold uppercase tracking-[0.08em] text-white/90">{project.slideCount} slides</span> : null}
+                    </div>
                   ))}
                 </div>
               </button>
