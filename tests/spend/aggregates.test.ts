@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import {
   buildDailyChartSeries,
   costsHref,
+  hasCostLogFilter,
+  parseCostLogModel,
+  parseCostLogSearch,
   parseLogPage,
   parseSpendPeriod,
   periodChangePercent,
@@ -59,5 +62,17 @@ assert.equal(outsideWindow.length, 1);
 assert.equal(outsideWindow[0].image, 0);
 assert.equal(outsideWindow[0].video, 0);
 
-assert.equal(costsHref("30d", 0), "/costs?period=30d");
-assert.equal(costsHref("7d", 2), "/costs?period=7d&logPage=2");
+assert.equal(costsHref({ period: "30d" }), "/costs?period=30d");
+assert.equal(costsHref({ period: "7d", logPage: 2 }), "/costs?period=7d&logPage=2");
+assert.equal(
+  costsHref({ period: "30d", search: " job-1 ", model: "flux-pro" }),
+  "/costs?period=30d&q=job-1&model=flux-pro"
+);
+assert.equal(parseCostLogSearch("  abc  "), "abc");
+assert.equal(parseCostLogSearch(undefined), "");
+assert.equal(parseCostLogModel(undefined), null);
+assert.equal(parseCostLogModel("all"), null);
+assert.equal(parseCostLogModel("flux-pro"), "flux-pro");
+assert.equal(hasCostLogFilter({ search: "", model: null }), false);
+assert.equal(hasCostLogFilter({ search: "job-1", model: null }), true);
+assert.equal(hasCostLogFilter({ search: "", model: "flux-pro" }), true);

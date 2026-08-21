@@ -4,6 +4,8 @@ import type { CostLog } from "@/generated/prisma/client";
 import {
   COST_LOG_PAGE_SIZE,
   buildDailyChartSeries,
+  formatCostLogCsv,
+  type CostLogListFilter,
   type DailyCostRow,
   type SpendChartPoint,
 } from "./spend-period";
@@ -241,12 +243,36 @@ const costLogSelect = {
   model: true,
 } as const;
 
+function costLogWhere(
+  start: Date,
+  end: Date,
+  filter: CostLogListFilter
+): Prisma.CostLogWhereInput {
+  const where: Prisma.CostLogWhereInput = {
+    createdAt: { gte: start, lt: end },
+  };
+  if (filter.model) {
+    where.model = filter.model;
+  }
+  if (filter.search.length > 0) {
+    where.OR = [
+      { jobId: { contains: filter.search, mode: "insensitive" } },
+      { model: { contains: filter.search, mode: "insensitive" } },
+      { type: { contains: filter.search, mode: "insensitive" } },
+      { id: { contains: filter.search, mode: "insensitive" } },
+    ];
+  }
+  return where;
+}
+
 export async function listCostLogsPage(args: {
   start: Date;
   end: Date;
   pageIndex: number;
+  filter?: CostLogListFilter;
 }): Promise<CostLogPage> {
-  const where = { createdAt: { gte: args.start, lt: args.end } };
+  const filter = args.filter ?? { search: "", model: null };
+  const where = costLogWhere(args.start, args.end, filter);
   const totalCount = await prisma.costLog.count({ where });
   const lastPage = Math.max(0, Math.ceil(totalCount / COST_LOG_PAGE_SIZE) - 1);
   const pageIndex = Math.min(Math.max(0, args.pageIndex), lastPage);
@@ -265,5 +291,20 @@ export async function listCostLogsPage(args: {
     pageSize: COST_LOG_PAGE_SIZE,
     totalCount,
     hasNext: (pageIndex + 1) * COST_LOG_PAGE_SIZE < totalCount,
+  };
+}
+
+export async function exportCostLogsCsv(
+  start: Date,
+  end: Date
+): Promise<{ csv: string; rowCount: number }> {
+  const rows = await prisma.costLog.findMany({
+    where: { createdAt: { gte: start, lt: end } },
+    orderBy: { createdAt: "desc" },
+    select: costLogSelect,
+  });
+  return {
+    csv: formatCostLogCsv(rows.map(toCostLogEntry)),
+    rowCount: rows.length,
   };
 }

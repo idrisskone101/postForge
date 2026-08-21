@@ -6,6 +6,9 @@ import {
   listCostLogsPage,
 } from "@/lib/costs/tracker";
 import {
+  hasCostLogFilter,
+  parseCostLogModel,
+  parseCostLogSearch,
   parseLogPage,
   parseSpendPeriod,
   periodChangePercent,
@@ -16,14 +19,28 @@ import { CostsPageClient } from "./costs-page-client";
 export const metadata = { title: "Spend - PostForge" };
 
 interface CostsPageProps {
-  searchParams: Promise<{ period?: string; logPage?: string }>;
+  searchParams: Promise<{
+    period?: string;
+    logPage?: string;
+    q?: string;
+    model?: string;
+  }>;
 }
 
 export default async function CostsPage({ searchParams }: CostsPageProps) {
-  const { period: periodParam, logPage: logPageParam } = await searchParams;
+  const {
+    period: periodParam,
+    logPage: logPageParam,
+    q: searchParam,
+    model: modelParam,
+  } = await searchParams;
   const period = parseSpendPeriod(periodParam);
   const range = spendWindow(period);
   const requestedPage = parseLogPage(logPageParam);
+  const filter = {
+    search: parseCostLogSearch(searchParam),
+    model: parseCostLogModel(modelParam),
+  };
 
   const [allTimeSummary, windowSummary, previousTotal, chartData, logPage] =
     await Promise.all([
@@ -35,6 +52,7 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
         start: range.start,
         end: range.end,
         pageIndex: requestedPage,
+        filter,
       }),
     ]);
 
@@ -70,6 +88,9 @@ export default async function CostsPage({ searchParams }: CostsPageProps) {
       logPage={logPage.pageIndex}
       logTotalCount={logPage.totalCount}
       logHasNext={logPage.hasNext}
+      logFilterActive={hasCostLogFilter(filter)}
+      search={filter.search}
+      model={filter.model}
       period={period}
     />
   );

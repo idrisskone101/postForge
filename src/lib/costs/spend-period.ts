@@ -65,6 +65,50 @@ export function parseLogPage(param: string | undefined): number {
   return Math.floor(parsed);
 }
 
+export type CostLogListFilter = {
+  search: string;
+  model: string | null;
+};
+
+export function parseCostLogSearch(param: string | undefined): string {
+  return param?.trim() ?? "";
+}
+
+export function parseCostLogModel(param: string | undefined): string | null {
+  if (param == null) return null;
+  const model = param.trim();
+  if (model === "" || model === "all") return null;
+  return model;
+}
+
+export function hasCostLogFilter(filter: CostLogListFilter): boolean {
+  return filter.search.length > 0 || filter.model != null;
+}
+
+export type CostLogCsvRow = {
+  createdAt: string;
+  jobId: string;
+  model: string;
+  type: string;
+  amount: number;
+};
+
+function csvCell(value: string | number): string {
+  const text = String(value);
+  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+export function formatCostLogCsv(rows: CostLogCsvRow[]): string {
+  const header = ["Date", "Job", "Model", "Type", "Amount"];
+  const lines = [
+    header.map(csvCell).join(","),
+    ...rows.map((row) =>
+      [row.createdAt, row.jobId, row.model, row.type, row.amount].map(csvCell).join(",")
+    ),
+  ];
+  return lines.join("\n");
+}
+
 export function spendDayKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -111,8 +155,18 @@ export function buildDailyChartSeries(
   }));
 }
 
-export function costsHref(period: SpendPeriod, logPage: number): string {
-  const params = new URLSearchParams({ period });
+export function costsHref(args: {
+  period: SpendPeriod;
+  logPage?: number;
+  search?: string;
+  model?: string | null;
+}): string {
+  const params = new URLSearchParams({ period: args.period });
+  const logPage = args.logPage ?? 0;
   if (logPage > 0) params.set("logPage", String(logPage));
+  const search = args.search?.trim() ?? "";
+  if (search.length > 0) params.set("q", search);
+  const model = args.model ?? null;
+  if (model) params.set("model", model);
   return `/costs?${params.toString()}`;
 }
