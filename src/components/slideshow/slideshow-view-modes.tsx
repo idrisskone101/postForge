@@ -23,7 +23,7 @@ import {
   stepSlideIndex,
   type SlideshowViewMode,
 } from "./slideshow-view";
-import type { SlideshowProject, SlideshowSlide } from "./types";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 const ICON_BTN =
   "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
@@ -80,24 +80,20 @@ export function SlideshowViewSwitcher({
 }
 
 export function SlideshowBoardView({
-  project,
-  selectedSlideId,
-  onSelect,
-  onOpenEdit,
-  onAdd,
-  onDuplicate,
-  onDelete,
-  onMove,
+  workspace,
 }: {
-  project: SlideshowProject;
-  selectedSlideId: string;
-  onSelect: (slide: SlideshowSlide) => void;
-  onOpenEdit: (slide: SlideshowSlide) => void;
-  onAdd: () => void;
-  onDuplicate: () => void;
-  onDelete: () => void;
-  onMove: (direction: -1 | 1) => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    draft: project,
+    selectedSlideId,
+    selectSlide: onSelect,
+    addSlide: onAdd,
+    duplicateSlide: onDuplicate,
+    deleteSlide: onDelete,
+    moveSlide: onMove,
+    changeViewMode,
+  } = workspace;
   const activeIndex = Math.max(
     0,
     project.slides.findIndex((slide) => slide.id === selectedSlideId),
@@ -123,7 +119,10 @@ export function SlideshowBoardView({
                 aria-pressed={selected}
                 aria-label={`${phaseLabel(slide.kind)} slide ${index + 1}: ${slide.headline || "Untitled slide"}`}
                 onClick={() => onSelect(slide)}
-                onDoubleClick={() => onOpenEdit(slide)}
+                onDoubleClick={() => {
+                  onSelect(slide);
+                  changeViewMode("edit");
+                }}
                 className={cn(
                   "group relative min-w-0 rounded-lg border bg-card p-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[var(--pf-ease)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30",
                   selected
@@ -208,7 +207,10 @@ export function SlideshowBoardView({
             type="button"
             onClick={() => {
               const slide = project.slides[activeIndex];
-              if (slide) onOpenEdit(slide);
+              if (slide) {
+                onSelect(slide);
+                changeViewMode("edit");
+              }
             }}
             className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-[13px] font-semibold text-foreground shadow-[var(--pf-shadow-2xs)] transition hover:border-[var(--pf-border-strong)]"
           >
@@ -222,14 +224,11 @@ export function SlideshowBoardView({
 }
 
 export function SlideshowPlayView({
-  project,
-  selectedSlideId,
-  onSelect,
+  workspace,
 }: {
-  project: SlideshowProject;
-  selectedSlideId: string;
-  onSelect: (slide: SlideshowSlide) => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const { draft: project, selectedSlideId, selectSlide: onSelect } = workspace;
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const touchStartX = useRef<number | null>(null);

@@ -12,27 +12,19 @@ import {
 } from "@/components/ui/dialog";
 
 import { SECONDARY_BTN } from "./studio-ui";
-import type { CreatorImagePickerTarget } from "./types";
+import type { CreatorDraft } from "./view-models";
 
-export function CreatorImagePicker({
-  target,
-  pickerLabel,
-  pickerAssetIds,
-  onPickerAssetIdsChange,
-  referenceRefreshKey,
-  preferredReferenceAssetIds,
-  onClose,
-  onApply,
-}: {
-  target: CreatorImagePickerTarget | null;
-  pickerLabel: string;
-  pickerAssetIds: string[];
-  onPickerAssetIdsChange: (ids: string[]) => void;
-  referenceRefreshKey: number;
-  preferredReferenceAssetIds: string[];
-  onClose: () => void;
-  onApply: () => void;
-}) {
+export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
+  const {
+    target,
+    pickerLabel,
+    pickerAssetIds,
+    onPickerAssetIdsChange,
+    referenceRefreshKey,
+    preferredReferenceAssetIds,
+    onClosePicker: onClose,
+    onApplyPicker: onApply,
+  } = draft;
   return (
     <Dialog
       open={target !== null}
@@ -51,7 +43,7 @@ export function CreatorImagePicker({
         </DialogHeader>
         <CollectionReferencePicker
           selectedAssetIds={pickerAssetIds}
-          onChange={onPickerAssetIdsChange}
+            onChange={onPickerAssetIdsChange}
           maxSelection={1}
           refreshKey={referenceRefreshKey}
           preferredAssetIds={preferredReferenceAssetIds}

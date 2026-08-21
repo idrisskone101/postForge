@@ -60,21 +60,22 @@ import {
   type SlideshowTemplate,
 } from "./types";
 
-export function SlideshowStudio({
-  initialProjects,
-  initialProject = null,
-  initialSection = "create",
-  templates = DEFAULT_SLIDESHOW_TEMPLATES,
-  apiBaseUrl = "/api/slideshows",
-  className,
-  tiktokConnected = false,
-  supportsMp4Export = false,
-  onSaveProject,
-  onRegenerateSlide,
-  onRegenerateImage,
-  onExportProject,
-  initialViewMode = "edit",
-}: SlideshowStudioProps) {
+export function SlideshowStudio(props: SlideshowStudioProps) {
+  const {
+    initialProjects,
+    initialProject = null,
+    initialSection = "create",
+    templates = DEFAULT_SLIDESHOW_TEMPLATES,
+    apiBaseUrl = "/api/slideshows",
+    className,
+    tiktokConnected = false,
+    supportsMp4Export = false,
+    onSaveProject,
+    onRegenerateSlide,
+    onRegenerateImage,
+    onExportProject,
+    initialViewMode = "edit",
+  } = props;
   const [section, setSection] = useState(initialSection);
   const [projects, setProjects] = useState<SlideshowProjectListItem[]>(initialProjects ?? []);
   const drafts = useRef(new Map<string, SlideshowProject>());
@@ -341,29 +342,29 @@ export function SlideshowStudio({
           />
         </div>
       ) : (
-        <>
           <StudioHome
-            section={section}
-            onSectionChange={setSection}
-            draftsCount={projects.length}
-            templates={templates}
-            generatingStory={generatingStory}
-            onGenerateStory={handleGenerateStory}
-            onCustom={startCustom}
-            onUseTemplate={startTemplate}
-            onBrowseTemplates={() => setTemplateOpen(true)}
-            imageModels={imageModels}
-            selectedImageModel={selectedImageModel}
-            onSelectImageModel={setSelectedImageModel}
-            creatorGenerating={generatingCreator}
-            onGenerateCreator={handleGenerateCreator}
-            projects={projects}
-            loadingProjects={loadingProjects}
-            projectsError={projectsError}
-            onOpenDraft={openDraft}
-            onCreate={() => setTemplateOpen(true)}
+            home={{
+              section,
+              onSectionChange: setSection,
+              draftsCount: projects.length,
+              templates,
+              generatingStory,
+              onGenerateStory: handleGenerateStory,
+              onCustom: startCustom,
+              onUseTemplate: startTemplate,
+              onBrowseTemplates: () => setTemplateOpen(true),
+              imageModels,
+              selectedImageModel,
+              onSelectImageModel: setSelectedImageModel,
+              creatorGenerating: generatingCreator,
+              onGenerateCreator: handleGenerateCreator,
+              projects,
+              loadingProjects,
+              projectsError,
+              onOpenDraft: openDraft,
+              onCreate: () => setTemplateOpen(true),
+            }}
           />
-        </>
       )}
 
       <TemplateDialog
