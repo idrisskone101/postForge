@@ -11,10 +11,9 @@ export default async function HomePage() {
   const now = new Date();
   const activeJobCutoff = getHomeActiveJobCutoff(now);
   const weekCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const [todaySummary, monthSummary, recentJobs, activeJobs, activeJobCount, completedThisWeek, pendingReviewCount, recentMediaFiles] =
+  const [todaySummary, recentJobs, activeJobs, activeJobCount, completedThisWeek, pendingReviewCount, recentMediaFiles] =
     await Promise.all([
       getCostSummary({ period: "today" }),
-      getCostSummary({ period: "month" }),
       getPendingReviewHomeJobs(12),
       prisma.generationJob.findMany({
         where: {
@@ -154,7 +153,6 @@ export default async function HomePage() {
     <HomeCockpit
       dashboard={{
         todaySummary,
-        monthSummary,
         activeJobs: activeHomeJobs,
         activeJobCount,
         recentJobs: visibleRecentJobs,

@@ -15,16 +15,6 @@ const emptyCosts = {
   byModel: {},
 };
 
-const emptyMonth = {
-  period: "month",
-  totalCost: 0,
-  breakdown: {
-    image: { count: 0, cost: 0 },
-    video: { count: 0, cost: 0 },
-  },
-  byModel: {},
-};
-
 const markup = renderToStaticMarkup(
   <HomeCockpit
     dashboard={{
@@ -34,15 +24,6 @@ const markup = renderToStaticMarkup(
         breakdown: {
           image: { count: 2, cost: 0.18 },
           video: { count: 1, cost: 1.1 },
-        },
-        byModel: {},
-      },
-      monthSummary: {
-        period: "month",
-        totalCost: 18.42,
-        breakdown: {
-          image: { count: 14, cost: 2.12 },
-          video: { count: 8, cost: 16.3 },
         },
         byModel: {},
       },
@@ -148,7 +129,6 @@ const emptyMarkup = renderToStaticMarkup(
   <HomeCockpit
     dashboard={{
       todaySummary: emptyCosts,
-      monthSummary: emptyMonth,
       activeJobs: [],
       recentJobs: [],
       completedThisWeek: 0,
@@ -172,7 +152,6 @@ const ordinaryMarkup = renderToStaticMarkup(
   <HomeCockpit
     dashboard={{
       todaySummary: emptyCosts,
-      monthSummary: emptyMonth,
       activeJobs: [ordinaryGenerateJob],
       recentJobs: [],
       completedThisWeek: 0,
