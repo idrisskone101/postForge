@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  DeveloperSettingsPanel,
   isSettingsTab,
   SETTINGS_NAVIGATION,
   SettingsNavigation,
 } from "../../src/app/settings/settings-page-client";
+import { DeveloperSettingsPanel } from "../../src/app/settings/webhooks-panel";
 
 assert.deepEqual(
   SETTINGS_NAVIGATION.map(({ id, group }) => [id, group]),
@@ -39,7 +39,7 @@ assert.match(navigationMarkup, /aria-current="page"[^>]*>[\s\S]*API keys/);
 assert.doesNotMatch(navigationMarkup, /hidden h-9[^>]*>[\s\S]*API keys/);
 
 const webhooksMarkup = renderToStaticMarkup(
-  <DeveloperSettingsPanel tab="webhooks" />
+  <DeveloperSettingsPanel />
 );
 assert.match(webhooksMarkup, /data-developer-settings-panel="webhooks"/);
 assert.match(webhooksMarkup, /NOT CONFIGURED/);
