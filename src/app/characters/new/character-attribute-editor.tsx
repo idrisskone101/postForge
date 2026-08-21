@@ -8,16 +8,7 @@ import {
 } from "@/lib/character-attributes";
 import { cn } from "@/lib/utils";
 
-export function CharacterAttributeEditor({
-  attributes,
-  activeSection,
-  active,
-  error,
-  onDismissError,
-  onSelectSection,
-  copyPrompt,
-  selectAttribute,
-}: {
+export type CharacterAttributeEditorViewModel = {
   attributes: CharacterAttributes;
   activeSection: string;
   active: CharacterAttributeSection | undefined;
@@ -26,7 +17,23 @@ export function CharacterAttributeEditor({
   onSelectSection: (sectionId: string) => void;
   copyPrompt: () => void;
   selectAttribute: (key: string, value: string) => void;
+};
+
+export function CharacterAttributeEditor({
+  view,
+}: {
+  view: CharacterAttributeEditorViewModel;
 }) {
+  const {
+    attributes,
+    activeSection,
+    active,
+    error,
+    onDismissError,
+    onSelectSection,
+    copyPrompt,
+    selectAttribute,
+  } = view;
   return (
     <section
       aria-label="Character attributes"

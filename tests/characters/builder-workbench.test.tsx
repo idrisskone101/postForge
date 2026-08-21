@@ -19,6 +19,10 @@ const previewSource = readFileSync(
   new URL("character-preview-stage.tsx", workbenchDir),
   "utf8"
 );
+const editorSource = readFileSync(
+  new URL("character-attribute-editor.tsx", workbenchDir),
+  "utf8"
+);
 const builderSource = [
   "character-builder-client.tsx",
   "character-builder-header.tsx",
@@ -136,12 +140,16 @@ function componentPropNames(source: string, exportName: string): string[] {
 
 const headerProps = componentPropNames(headerSource, "CharacterBuilderHeader");
 const previewProps = componentPropNames(previewSource, "CharacterPreviewStage");
+const editorProps = componentPropNames(editorSource, "CharacterAttributeEditor");
 assert.deepEqual(headerProps, ["view"]);
 assert.deepEqual(previewProps, ["view"]);
+assert.deepEqual(editorProps, ["view"]);
 assert.match(headerSource, /export type CharacterBuilderHeaderViewModel/);
 assert.match(previewSource, /export type CharacterPreviewStageViewModel/);
+assert.match(editorSource, /export type CharacterAttributeEditorViewModel/);
 assert.match(builderSource, /<CharacterBuilderHeader view=\{headerView\} \/>/);
 assert.match(builderSource, /<CharacterPreviewStage view=\{previewView\} \/>/);
+assert.match(builderSource, /<CharacterAttributeEditor view=\{attributeView\} \/>/);
 assert.doesNotMatch(builderSource, /createContext|useContext/);
 
 const photoMarkup = renderToStaticMarkup(
