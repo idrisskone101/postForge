@@ -77,7 +77,7 @@ export function GalleryGridCards({
                   width={item.width}
                   height={item.height}
                   alt="Generated Output"
-                  fill
+                  cover
                   variant="card"
                   className="aspect-[4/3] rounded-none border-0 bg-muted"
                   mediaClassName="object-cover transition-transform duration-300 group-hover:scale-[1.025]"

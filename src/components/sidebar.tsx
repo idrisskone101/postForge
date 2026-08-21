@@ -63,10 +63,13 @@ export function Sidebar() {
     activeItem?.primaryAction ?? workspaceNavigationGroups.primary[0].primaryAction;
 
   useEffect(() => {
-    setDesktopCollapsed(
-      readOptionalStorage("postforge-sidebar-collapsed") === "true"
-    );
-    setDesktopPreferenceReady(true);
+    const frame = window.requestAnimationFrame(() => {
+      setDesktopCollapsed(
+        readOptionalStorage("postforge-sidebar-collapsed") === "true"
+      );
+      setDesktopPreferenceReady(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
