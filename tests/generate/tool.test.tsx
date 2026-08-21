@@ -86,10 +86,16 @@ assert.match(videoMarkup, /Character continuity/);
 assert.match(videoMarkup, /5s video/);
 assert.match(videoMarkup, /Loading recent outputs…/);
 
-const formSource = readFileSync(
-  new URL("../../src/components/generation-form.tsx", import.meta.url),
-  "utf8"
-);
+const formSource = [
+  "../../src/components/generation-form.tsx",
+  "../../src/app/generate/form-continuity-section.tsx",
+  "../../src/app/generate/use-generation-form.ts",
+  "../../src/app/generate/generation-requests.ts",
+]
+  .map((relativePath) =>
+    readFileSync(new URL(relativePath, import.meta.url), "utf8")
+  )
+  .join("\n");
 assert.match(formSource, /getContinuityVideoModel\(\)/);
 assert.match(formSource, /referenceFileId/);
 assert.match(formSource, /VideoReferencePicker/);
