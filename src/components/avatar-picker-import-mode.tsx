@@ -9,7 +9,10 @@ import {
   type AvatarCandidateSet,
 } from "@/lib/avatar-workflow";
 import type { Avatar, AvatarCreatedHandoff, AvatarJobResult } from "@/lib/avatar-picker-model";
-import { AvatarImportPanel } from "@/components/avatar-picker-import";
+import {
+  AvatarImportPanel,
+  type AvatarImportWorkspace,
+} from "@/components/avatar-picker-import";
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -26,7 +29,8 @@ function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-export function AvatarImportMode({ onCreated, onBack }: AvatarCreatedHandoff) {
+export function AvatarImportMode({ handoff }: { handoff: AvatarCreatedHandoff }) {
+  const { onCreated, onBack } = handoff;
   const [importRawJson, setImportRawJson] = useState("");
   const [importAvatarName, setImportAvatarName] = useState("Imported Avatar");
   const [seedReferenceImages, setSeedReferenceImages] = useState<File[]>([]);
@@ -153,29 +157,28 @@ export function AvatarImportMode({ onCreated, onBack }: AvatarCreatedHandoff) {
     }
   };
 
-  return (
-    <AvatarImportPanel
-      rawJson={importRawJson}
-      avatarName={importAvatarName}
-      seedReferenceImages={seedReferenceImages}
-      candidateSets={avatarCandidateSets}
-      isGeneratingCandidates={isGeneratingImportCandidates}
-      generationError={importGenerationError}
-      onBack={onBack}
-      onAvatarNameChange={(value) => {
-        setImportGenerationError(null);
-        setImportAvatarName(value.slice(0, 40));
-      }}
-      onRawJsonChange={(value) => {
-        setImportGenerationError(null);
-        setImportRawJson(value);
-        setImportAvatarName(getDefaultAvatarImportName(value));
-      }}
-      onJsonFileChange={handleImportJsonFile}
-      onSeedReferenceImagesChange={handleSeedReferenceImages}
-      onRemoveSeedReferenceImage={handleRemoveSeedReferenceImage}
-      onGenerateCandidates={handleGenerateImportCandidates}
-      onAcceptCandidate={handleAcceptImportCandidate}
-    />
-  );
+  const workspace: AvatarImportWorkspace = {
+    rawJson: importRawJson,
+    avatarName: importAvatarName,
+    seedReferenceImages,
+    candidateSets: avatarCandidateSets,
+    isGeneratingCandidates: isGeneratingImportCandidates,
+    generationError: importGenerationError,
+    onAvatarNameChange: (value) => {
+      setImportGenerationError(null);
+      setImportAvatarName(value.slice(0, 40));
+    },
+    onRawJsonChange: (value) => {
+      setImportGenerationError(null);
+      setImportRawJson(value);
+      setImportAvatarName(getDefaultAvatarImportName(value));
+    },
+    onJsonFileChange: handleImportJsonFile,
+    onSeedReferenceImagesChange: handleSeedReferenceImages,
+    onRemoveSeedReferenceImage: handleRemoveSeedReferenceImage,
+    onGenerateCandidates: handleGenerateImportCandidates,
+    onAcceptCandidate: handleAcceptImportCandidate,
+  };
+
+  return <AvatarImportPanel workspace={workspace} onBack={onBack} />;
 }

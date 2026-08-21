@@ -102,19 +102,16 @@ export function AvatarCreationCard({
   );
 }
 
-export function AvatarOptionCard({
-  avatar,
-  label,
-  isSelected,
-  onSelect,
-  onDelete,
-}: {
+export type AvatarOptionView = {
   avatar: Avatar;
   label: string;
   isSelected: boolean;
   onSelect: () => void;
   onDelete: (event: React.MouseEvent) => void;
-}) {
+};
+
+export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
+  const { avatar, label, isSelected, onSelect, onDelete } = option;
   const originLabel = getAvatarOriginLabel(avatar.origin);
   const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack);
 

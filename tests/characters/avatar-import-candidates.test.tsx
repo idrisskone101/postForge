@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AvatarImportPanel } from "../../src/components/avatar-picker-import";
+import { importWorkspace } from "./avatar-import-workspace";
 import {
   buildAvatarCandidateGenerationRequest,
   getDefaultAvatarImportName,
@@ -130,31 +131,28 @@ assert.equal(getDefaultAvatarImportName('{"name":"Imported Creator"}'), "Importe
 assert.equal(getDefaultAvatarImportName('{"displayName":"Display Creator"}'), "Display Creator");
 assert.equal(getDefaultAvatarImportName("{bad json"), "Imported Avatar");
 
+const candidateSets = [
+  {
+    jobId: "candidate-job",
+    candidates: [
+      { fileId: "candidate-1" },
+      { fileId: "candidate-2" },
+      { fileId: "candidate-3" },
+    ],
+  },
+];
+
 const candidateReviewMarkup = renderToStaticMarkup(
   <AvatarImportPanel
-    rawJson='{"name":"Imported Creator"}'
-    avatarName="Edited Creator"
-    seedReferenceImages={[{ name: "front.jpg", size: 1000, type: "image/jpeg" }]}
-    candidateSets={[
-      {
-        jobId: "candidate-job",
-        candidates: [
-          { fileId: "candidate-1" },
-          { fileId: "candidate-2" },
-          { fileId: "candidate-3" },
-        ],
-      },
-    ]}
-    isGeneratingCandidates={false}
-    generationError={null}
+    workspace={importWorkspace({
+      rawJson: '{"name":"Imported Creator"}',
+      avatarName: "Edited Creator",
+      seedReferenceImages: [{ name: "front.jpg", size: 1000, type: "image/jpeg" }],
+      candidateSets,
+      onAvatarNameChange() {},
+      onAcceptCandidate() {},
+    })}
     onBack={() => {}}
-    onAvatarNameChange={() => {}}
-    onRawJsonChange={() => {}}
-    onJsonFileChange={() => {}}
-    onSeedReferenceImagesChange={() => {}}
-    onRemoveSeedReferenceImage={() => {}}
-    onGenerateCandidates={() => {}}
-    onAcceptCandidate={() => {}}
   />
 );
 
@@ -170,29 +168,16 @@ assert.doesNotMatch(candidateReviewMarkup, /data-avatar-option=/);
 
 const activeRegenerationMarkup = renderToStaticMarkup(
   <AvatarImportPanel
-    rawJson='{"name":"Imported Creator"}'
-    avatarName="Edited Creator"
-    seedReferenceImages={[{ name: "front.jpg", size: 1000, type: "image/jpeg" }]}
-    candidateSets={[
-      {
-        jobId: "candidate-job",
-        candidates: [
-          { fileId: "candidate-1" },
-          { fileId: "candidate-2" },
-          { fileId: "candidate-3" },
-        ],
-      },
-    ]}
-    isGeneratingCandidates
-    generationError={null}
+    workspace={importWorkspace({
+      rawJson: '{"name":"Imported Creator"}',
+      avatarName: "Edited Creator",
+      seedReferenceImages: [{ name: "front.jpg", size: 1000, type: "image/jpeg" }],
+      candidateSets,
+      isGeneratingCandidates: true,
+      onAvatarNameChange() {},
+      onAcceptCandidate() {},
+    })}
     onBack={() => {}}
-    onAvatarNameChange={() => {}}
-    onRawJsonChange={() => {}}
-    onJsonFileChange={() => {}}
-    onSeedReferenceImagesChange={() => {}}
-    onRemoveSeedReferenceImage={() => {}}
-    onGenerateCandidates={() => {}}
-    onAcceptCandidate={() => {}}
   />
 );
 
