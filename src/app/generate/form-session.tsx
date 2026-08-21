@@ -120,27 +120,35 @@ export function buildGenerateFormView({
       ),
       continuitySection: (
         <GenerateContinuitySection
-          show={selectedDefinition?.type === "video" && !isSwapSelected}
-          videoReferenceFileId={videoReferenceFileId}
-          videoSeedMissing={form.videoSeedMissing}
-          disabled={Boolean(avatarId) || collectionAssetIds.length > 0}
-          onClear={() => form.handleVideoReferenceChange(null)}
-          onChange={form.handleVideoReferenceChange}
-          onSeedMissingChange={form.setVideoSeedMissing}
+          view={{
+            show: selectedDefinition?.type === "video" && !isSwapSelected,
+            videoReferenceFileId,
+            videoSeedMissing: form.videoSeedMissing,
+            disabled: Boolean(avatarId) || collectionAssetIds.length > 0,
+          }}
+          actions={{
+            onClear: () => form.handleVideoReferenceChange(null),
+            onChange: form.handleVideoReferenceChange,
+            onSeedMissingChange: form.setVideoSeedMissing,
+          }}
         />
       ),
       swapSection: (
         <GenerateSwapSection
-          show={isSwapSelected}
-          modelId={selectedDefinition?.id}
-          video={form.swapVideo}
-          reference={form.swapReference}
-          swapMode={form.swapMode}
-          onChange={({ video, reference, swapMode: nextSwapMode }) => {
-            improvement.promptImprovementRequestGateRef.current.invalidateInputs();
-            form.setSwapVideo(video);
-            form.setSwapReference(reference);
-            form.setSwapMode(nextSwapMode);
+          view={{
+            show: isSwapSelected,
+            modelId: selectedDefinition?.id,
+            video: form.swapVideo,
+            reference: form.swapReference,
+            swapMode: form.swapMode,
+          }}
+          actions={{
+            onChange: ({ video, reference, swapMode: nextSwapMode }) => {
+              improvement.promptImprovementRequestGateRef.current.invalidateInputs();
+              form.setSwapVideo(video);
+              form.setSwapReference(reference);
+              form.setSwapMode(nextSwapMode);
+            },
           }}
         />
       ),

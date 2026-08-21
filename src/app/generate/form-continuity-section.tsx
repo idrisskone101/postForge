@@ -1,24 +1,20 @@
 "use client";
 
 import { VideoReferencePicker } from "@/components/video-reference-picker";
+import type {
+  GenerateContinuityActions,
+  GenerateContinuityView,
+} from "./form-types";
 
 export function GenerateContinuitySection({
-  show,
-  videoReferenceFileId,
-  videoSeedMissing,
-  disabled,
-  onClear,
-  onChange,
-  onSeedMissingChange,
+  view,
+  actions,
 }: {
-  show: boolean;
-  videoReferenceFileId: string | null;
-  videoSeedMissing: boolean;
-  disabled: boolean;
-  onClear: () => void;
-  onChange: (fileId: string | null) => void;
-  onSeedMissingChange: (missing: boolean) => void;
+  view: GenerateContinuityView;
+  actions: GenerateContinuityActions;
 }) {
+  const { show, videoReferenceFileId, videoSeedMissing, disabled } = view;
+  const { onClear, onChange, onSeedMissingChange } = actions;
   if (!show) return undefined;
 
   return (

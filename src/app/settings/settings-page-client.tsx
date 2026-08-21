@@ -142,11 +142,13 @@ export function SettingsPageClient() {
     case "notifications":
       panel = (
         <SettingsForm
-          tab={tab}
-          settings={settings}
-          setSettings={setSettings}
-          saving={saving}
-          onSave={save}
+          form={{
+            tab,
+            settings,
+            setSettings,
+            saving,
+            onSave: save,
+          }}
         />
       );
       break;

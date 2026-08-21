@@ -99,6 +99,7 @@ const REQUIRED_VIEW_MODEL: Record<string, string> = {
   CreatorView: "home",
   PublishTikTokFields: "publish",
   PublishSidebar: "publish",
+  PublishDialog: "dialog",
 };
 
 function skipWs(source: string, index: number) {

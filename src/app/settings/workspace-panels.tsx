@@ -13,19 +13,16 @@ import {
 } from "lucide-react";
 import type { SettingsRecord } from "./settings-record";
 
-export function SettingsForm({
-  tab,
-  settings,
-  setSettings,
-  saving,
-  onSave,
-}: {
+export type SettingsFormModel = {
   tab: string;
   settings: SettingsRecord;
   setSettings: Dispatch<SetStateAction<SettingsRecord>>;
   saving: boolean;
   onSave: () => void;
-}) {
+};
+
+export function SettingsForm({ form }: { form: SettingsFormModel }) {
+  const { tab, settings, setSettings, saving, onSave } = form;
   const info =
     tab === "profile"
       ? (["Profile", "Workspace identity and timezone.", UserRound] as const)

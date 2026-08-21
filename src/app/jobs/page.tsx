@@ -80,18 +80,20 @@ export default async function JobsPage({
     <>
       <JobsAutoRefresh enabled={activeCount > 0} />
       <JobsActivity
-        jobs={jobs}
-        counts={{
-          active: activeCount,
-          completed: completedCount,
-          failed: failedCount,
-          total: totalCreated,
+        activity={{
+          jobs,
+          counts: {
+            active: activeCount,
+            completed: completedCount,
+            failed: failedCount,
+            total: totalCreated,
+          },
+          status,
+          type,
+          page,
+          pageSize: PAGE_SIZE,
+          filteredTotal,
         }}
-        status={status}
-        type={type}
-        page={page}
-        pageSize={PAGE_SIZE}
-        filteredTotal={filteredTotal}
       />
     </>
   );

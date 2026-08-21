@@ -145,15 +145,16 @@ export function GenerationForm({ models }: GenerationFormProps) {
         onSubmit: handleSubmit,
         identitySection: (
           <GenerateIdentitySection
-            show={
-              selectedDefinition?.type !== "video" ||
-              Boolean(selectedDefinition.capabilities.characterReference)
-            }
-            isVideo={selectedDefinition?.type === "video"}
-            avatarId={avatarId}
-            identityStatus={form.identityStatus}
-            identityError={form.identityError}
-            onSelect={handleAvatarSelect}
+            view={{
+              show:
+                selectedDefinition?.type !== "video" ||
+                Boolean(selectedDefinition.capabilities.characterReference),
+              isVideo: selectedDefinition?.type === "video",
+              avatarId,
+              identityStatus: form.identityStatus,
+              identityError: form.identityError,
+            }}
+            actions={{ onSelect: handleAvatarSelect }}
           />
         ),
       })}

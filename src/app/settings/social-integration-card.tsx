@@ -17,15 +17,7 @@ import type {
 } from "@/lib/integrations-client";
 import { cn } from "@/lib/utils";
 
-export function SocialIntegrationCard({
-  provider,
-  status,
-  loading,
-  busy,
-  onConnect,
-  onSync,
-  onDisconnect,
-}: {
+export type SocialIntegrationCardModel = {
   provider: SocialProvider;
   status: PublicIntegrationStatus | null;
   loading: boolean;
@@ -36,7 +28,18 @@ export function SocialIntegrationCard({
   ) => void;
   onSync: (status: PublicIntegrationStatus, accountId: string) => void;
   onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
-}) {
+};
+
+export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardModel }) {
+  const {
+    provider,
+    status,
+    loading,
+    busy,
+    onConnect,
+    onSync,
+    onDisconnect,
+  } = card;
   const [youtubePolicyConsent, setYouTubePolicyConsent] = useState(false);
   const content = PROVIDER_CONTENT[provider];
   const displayName = status?.displayName ?? provider[0].toUpperCase() + provider.slice(1);

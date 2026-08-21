@@ -1,27 +1,17 @@
 "use client";
 
-import { SwapInputSection, type SwapUploadedAsset } from "@/components/swap-input-section";
-import type { SwapMode } from "@/lib/ai/types";
+import { SwapInputSection } from "@/components/swap-input-section";
+import type { GenerateSwapActions, GenerateSwapView } from "./form-types";
 
 export function GenerateSwapSection({
-  show,
-  modelId,
-  video,
-  reference,
-  swapMode,
-  onChange,
+  view,
+  actions,
 }: {
-  show: boolean;
-  modelId: string | undefined;
-  video: SwapUploadedAsset | null;
-  reference: SwapUploadedAsset | null;
-  swapMode: SwapMode;
-  onChange: (next: {
-    video: SwapUploadedAsset | null;
-    reference: SwapUploadedAsset | null;
-    swapMode: SwapMode;
-  }) => void;
+  view: GenerateSwapView;
+  actions: GenerateSwapActions;
 }) {
+  const { show, modelId, video, reference, swapMode } = view;
+  const { onChange } = actions;
   if (!show) return undefined;
 
   return (

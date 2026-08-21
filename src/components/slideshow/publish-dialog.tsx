@@ -27,26 +27,17 @@ import type {
   SlideshowProject,
   SlideshowPublishOptions,
 } from "./types";
-import type { SlideshowPublishWorkspace } from "./view-models";
+import type { SlideshowPublishDialog, SlideshowPublishWorkspace } from "./view-models";
 
-export function PublishDialog({
-  open,
-  project,
-  tiktokConnected,
-  supportsMp4Export,
-  onOpenChange,
-  onExport,
-}: {
-  open: boolean;
-  project: SlideshowProject | null;
-  tiktokConnected: boolean;
-  supportsMp4Export: boolean;
-  onOpenChange: (open: boolean) => void;
-  onExport: (
-    project: SlideshowProject,
-    options: SlideshowPublishOptions,
-  ) => Promise<void>;
-}) {
+export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
+  const {
+    open,
+    project,
+    tiktokConnected,
+    supportsMp4Export,
+    onOpenChange,
+    onExport,
+  } = dialog;
   const [format, setFormat] = useState<SlideshowPublishOptions["format"]>(
     "photo-carousel",
   );

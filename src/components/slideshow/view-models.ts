@@ -158,3 +158,15 @@ export type SlideshowPublishWorkspace = {
   exported: boolean;
   onSubmit: () => void;
 };
+
+export type SlideshowPublishDialog = {
+  open: boolean;
+  project: SlideshowProject | null;
+  tiktokConnected: boolean;
+  supportsMp4Export: boolean;
+  onOpenChange: (open: boolean) => void;
+  onExport: (
+    project: SlideshowProject,
+    options: SlideshowPublishOptions,
+  ) => Promise<void>;
+};

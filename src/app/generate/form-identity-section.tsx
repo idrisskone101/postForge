@@ -7,25 +7,20 @@ import {
 } from "lucide-react";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { cn } from "@/lib/utils";
+import type {
+  GenerateIdentityActions,
+  GenerateIdentityView,
+} from "./form-types";
 
 export function GenerateIdentitySection({
-  show,
-  isVideo,
-  avatarId,
-  identityStatus,
-  identityError,
-  onSelect,
+  view,
+  actions,
 }: {
-  show: boolean;
-  isVideo: boolean;
-  avatarId: string | null;
-  identityStatus: {
-    label: string;
-    tone: "ready" | "working" | "failed";
-  };
-  identityError: string | null;
-  onSelect: (id: string) => void;
+  view: GenerateIdentityView;
+  actions: GenerateIdentityActions;
 }) {
+  const { show, isVideo, avatarId, identityStatus, identityError } = view;
+  const { onSelect } = actions;
   if (!show) return undefined;
 
   return (

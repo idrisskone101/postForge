@@ -64,13 +64,15 @@ const jobs = [
 
 const markup = renderToStaticMarkup(
   <JobsActivity
-    jobs={jobs}
-    counts={{ active: 1, completed: 2, failed: 1, total: 4 }}
-    status="all"
-    type="all"
-    page={1}
-    pageSize={40}
-    filteredTotal={4}
+    activity={{
+      jobs,
+      counts: { active: 1, completed: 2, failed: 1, total: 4 },
+      status: "all",
+      type: "all",
+      page: 1,
+      pageSize: 40,
+      filteredTotal: 4,
+    }}
   />
 );
 

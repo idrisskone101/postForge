@@ -40,7 +40,7 @@ export type JobActivityItem = {
   completedAt: Date | null;
 };
 
-type JobsActivityProps = {
+export type JobsActivityViewModel = {
   jobs: JobActivityItem[];
   counts: {
     active: number;
@@ -55,15 +55,12 @@ type JobsActivityProps = {
   filteredTotal: number;
 };
 
-export function JobsActivity({
-  jobs,
-  counts,
-  status,
-  type,
-  page,
-  pageSize,
-  filteredTotal,
-}: JobsActivityProps) {
+type JobsActivityProps = {
+  activity: JobsActivityViewModel;
+};
+
+export function JobsActivity({ activity }: JobsActivityProps) {
+  const { jobs, counts, status, type, page, pageSize, filteredTotal } = activity;
   const firstVisible = filteredTotal === 0 ? 0 : (page - 1) * pageSize + 1;
   const lastVisible = Math.min(page * pageSize, filteredTotal);
   const pageCount = Math.max(1, Math.ceil(filteredTotal / pageSize));
