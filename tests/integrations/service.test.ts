@@ -15,7 +15,7 @@ import {
   YouTubePolicyConsentRequiredError,
   youtubeProviderDataIsFresh,
 } from "../../src/lib/integrations/service";
-import { integrationJsonError } from "../../src/lib/integrations/routes";
+import { integrationJsonError } from "../../src/lib/http";
 import {
   createMemoryIntegrationStorage,
   readIntegrationConnection,

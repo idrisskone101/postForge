@@ -10,10 +10,8 @@ import {
   UnresolvedPublicationConflictError,
   withLockedAutomationRecords,
 } from "@/lib/publication-lifecycle";
-import {
-  isSameOriginMutation,
-  rejectCrossOriginMutation,
-} from "@/lib/integrations/routes";
+import { isSameOriginMutation } from "@/lib/http";
+import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
 export async function GET(
   request: NextRequest,
