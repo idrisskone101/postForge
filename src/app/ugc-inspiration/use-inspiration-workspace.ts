@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
+  type InspirationAccountPage,
   type InspirationSourceFeedFilter,
   type InspirationSourceSort,
   type InspirationVideoCard,
@@ -16,7 +17,6 @@ import {
   markAccountSyncError,
   markAccountSyncing,
   mergeAccountIntoState,
-  sortAccounts,
   SOURCE_FEED_FILTERS,
   withId,
   withoutId,
@@ -30,17 +30,21 @@ import {
   setInspirationVideoRejection,
   trackInspirationAccount,
 } from "./inspiration-mutations";
+import { useInspirationAccountList } from "./use-inspiration-account-list";
 
 export interface InspirationPageClientProps {
-  initialAccounts: TrackedInspirationAccount[];
+  initialAccountPage: InspirationAccountPage;
   initialVideoPage: InspirationVideoPage;
 }
 
 export function useInspirationWorkspace({
-  initialAccounts,
+  initialAccountPage,
   initialVideoPage,
 }: InspirationPageClientProps) {
-  const [accounts, setAccounts] = useState(() => sortAccounts(initialAccounts));
+  const [pageError, setPageError] = useState<string | null>(null);
+  const {
+    accounts, setAccounts, accountCursor, isLoadingMoreAccounts, handleLoadMoreAccounts,
+  } = useInspirationAccountList(initialAccountPage, setPageError);
   const [activeFilter, setActiveFilter] = useState<"all" | string>("all");
   const [sourceFeedFilter, setSourceFeedFilter] =
     useState<InspirationSourceFeedFilter>("all");
@@ -57,7 +61,6 @@ export function useInspirationWorkspace({
   const [isLoadingVideos, setIsLoadingVideos] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [handleInput, setHandleInput] = useState("");
-  const [pageError, setPageError] = useState<string | null>(null);
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [refreshingIds, setRefreshingIds] = useState<string[]>([]);
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
@@ -339,6 +342,8 @@ export function useInspirationWorkspace({
 
   return {
     accounts,
+    accountCursor,
+    isLoadingMoreAccounts,
     activeFilter,
     setActiveFilter,
     sourceFeedFilter,
@@ -384,6 +389,7 @@ export function useInspirationWorkspace({
     handleSetVideoRejection,
     handleCopySourceUrl,
     handleLoadMore,
+    handleLoadMoreAccounts,
     markThumbnailError,
     clearThumbnailError,
   };
