@@ -27,12 +27,12 @@ function lineCount(relativePath: string) {
     : text.split("\n").length;
 }
 
-const files = listFiles("src/app/automations/new/");
+const files = listFiles("src/app/automations/");
 
 assert.equal(
   files.some((file) => file.endsWith("/index.ts") || file.endsWith("/index.tsx")),
   false,
-  "automation builder must not add a barrel"
+  "automations hub and builder must not add a barrel"
 );
 
 for (const file of files) {
@@ -41,12 +41,25 @@ for (const file of files) {
 }
 
 assert.ok(
+  lineCount("src/app/automations/automations-page-client.tsx") < 2030,
+  "automations-page-client.tsx must shrink"
+);
+assert.ok(
   lineCount("src/app/automations/new/automation-builder-client.tsx") < 1372,
   "automation-builder-client.tsx must shrink"
 );
 assert.ok(
   lineCount("src/app/automations/new/slideshow-automation-builder.tsx") <= CAP,
   "slideshow-automation-builder.tsx must stay under the cap"
+);
+
+assert.ok(
+  files.includes("src/app/automations/video-automation-list.tsx"),
+  "JSON video automations stay a separate list"
+);
+assert.ok(
+  files.includes("src/app/automations/slideshow-automation-list.tsx"),
+  "Prisma slideshow automations stay a separate list"
 );
 assert.ok(
   files.includes("src/app/automations/new/automation-builder-client.tsx"),
