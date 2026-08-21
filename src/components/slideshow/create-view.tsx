@@ -24,9 +24,10 @@ import {
   INPUT,
   StepChip,
 } from "./studio-ui";
-import type { StudioHomeView } from "./view-models";
+import { useSlideshowHome } from "./slideshow-home-provider";
 
-export function CreateView({ home }: { home: StudioHomeView }) {
+export function CreateView() {
+  const home = useSlideshowHome();
   const {
     templates,
     generatingStory: generating,
@@ -116,7 +117,7 @@ export function CreateView({ home }: { home: StudioHomeView }) {
       </div>
 
       {mode === "own-copy" ? (
-        <CreatorView home={home} />
+        <CreatorView />
       ) : (
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
         <section className={cn(CARD, "p-5")} aria-label="Generate a slideshow with AI">
@@ -304,7 +305,7 @@ export function CreateView({ home }: { home: StudioHomeView }) {
         </div>
       </div>
       )}
-      <CreateTemplateGallery home={home} />
+      <CreateTemplateGallery />
     </div>
   );
 }

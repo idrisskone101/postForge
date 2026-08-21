@@ -4,11 +4,11 @@ import { Archive, Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import { useSlideshowHome } from "./slideshow-home-provider";
 import type { SlideshowSection } from "./types";
-import type { StudioHomeView } from "./view-models";
 
-export function StudioSectionNav({ home }: { home: StudioHomeView }) {
-  const { section, onSectionChange: onChange, draftsCount } = home;
+export function StudioSectionNav() {
+  const { section, onSectionChange: onChange, draftsCount } = useSlideshowHome();
   return (
     <nav
       aria-label="Slideshow studio"

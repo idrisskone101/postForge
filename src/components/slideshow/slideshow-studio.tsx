@@ -8,9 +8,7 @@ import { cn } from "@/lib/utils";
 import { fetchPlatformCollections } from "@/lib/collections-client";
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
-import {
-  fetchSlideshowProject,
-} from "@/lib/slideshow/client";
+import { fetchSlideshowProject } from "@/lib/slideshow/client";
 import { slideshowProjectListItemFromDetail, upsertById } from "@/lib/slideshow/list-client";
 import {
   createBlankSlideshowProject,
@@ -39,6 +37,7 @@ import {
   watchStudioDraftsRefresh,
 } from "./studio-drafts-load";
 import { generateStudioStory } from "./studio-story";
+import { SlideshowHomeProvider } from "./slideshow-home-provider";
 import { StudioHome } from "./studio-home";
 import {
   StudioCreatorProgressOverlay,
@@ -342,7 +341,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
           />
         </div>
       ) : (
-          <StudioHome
+          <SlideshowHomeProvider
             home={{
               section,
               onSectionChange: setSection,
@@ -364,7 +363,9 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
               onOpenDraft: openDraft,
               onCreate: () => setTemplateOpen(true),
             }}
-          />
+          >
+            <StudioHome />
+          </SlideshowHomeProvider>
       )}
 
       <TemplateDialog

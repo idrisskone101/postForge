@@ -12,20 +12,16 @@ import {
 } from "@/components/ui/dialog";
 
 import { SECONDARY_BTN } from "./studio-ui";
-import type { SlideshowEditorWorkspace } from "./view-models";
+import { useSlideshowEditor } from "./slideshow-editor-provider";
 
-export function EditorCollectionPicker({
-  workspace,
-}: {
-  workspace: SlideshowEditorWorkspace;
-}) {
+export function EditorCollectionPicker() {
   const {
     pickerOpen: open,
     pickerAssetIds,
     setPickerOpen,
     setPickerAssetIds,
     applyPickedAssets,
-  } = workspace;
+  } = useSlideshowEditor();
   return (
       <Dialog open={open} onOpenChange={setPickerOpen}>
         <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
