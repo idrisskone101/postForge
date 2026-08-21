@@ -1,15 +1,18 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const pageSource = readFileSync(path.join(repoRoot, "src/app/costs/page.tsx"), "utf8");
+const costsDir = path.join(repoRoot, "src/app/costs");
+const pageSource = readFileSync(path.join(costsDir, "page.tsx"), "utf8");
 const trackerSource = readFileSync(path.join(repoRoot, "src/lib/costs/tracker.ts"), "utf8");
-const clientSource = readFileSync(
-  path.join(repoRoot, "src/app/costs/costs-page-client.tsx"),
-  "utf8"
-);
+const clientSource = readdirSync(costsDir)
+  .filter((name) => name.endsWith(".ts") || name.endsWith(".tsx"))
+  .filter((name) => !["page.tsx", "loading.tsx", "error.tsx"].includes(name))
+  .sort()
+  .map((name) => readFileSync(path.join(costsDir, name), "utf8"))
+  .join("\n");
 const exportRouteSource = readFileSync(
   path.join(repoRoot, "src/app/api/costs/export/route.ts"),
   "utf8"
