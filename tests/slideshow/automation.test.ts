@@ -6,13 +6,15 @@ import {
 } from "../../src/lib/slideshow/automation-schedule";
 import {
   copySlideshowAutomationSourceContent,
-  launchSlideshowAutomationFreshVisuals,
-  queueSlideshowAutomationFreshVisuals,
-  selectSlideshowAutomationHook,
   stripSlideshowClientId,
   stripSlideshowProjectActivity,
+} from "../../src/lib/slideshow/automation-copy";
+import {
+  launchSlideshowAutomationFreshVisuals,
+  queueSlideshowAutomationFreshVisuals,
   type SlideshowAutomationFreshVisualDependencies,
-} from "../../src/lib/slideshow/automation-worker";
+} from "../../src/lib/slideshow/automation-fresh-visuals";
+import { selectSlideshowAutomationHook } from "../../src/lib/slideshow/automation-hooks";
 import {
   readSlideshowAutomationVisualSettings,
   shouldGenerateFreshAutomationVisuals,

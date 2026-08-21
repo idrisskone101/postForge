@@ -1,11 +1,9 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import {
-  IntegrationsPanel,
-  readIntegrationCallbackFeedback,
-  SettingsNavigation,
-  SocialIntegrationCard,
-} from "../../src/app/settings/settings-page-client";
+import { readIntegrationCallbackFeedback } from "../../src/app/settings/integration-callback";
+import { IntegrationsPanel } from "../../src/app/settings/integrations-panel";
+import { SettingsNavigation } from "../../src/app/settings/settings-page-client";
+import { SocialIntegrationCard } from "../../src/app/settings/social-integration-card";
 import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
 
 const noOp = () => {};
