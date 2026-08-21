@@ -1,303 +1,25 @@
-import { randomUUID } from "crypto";
-
-import { submitToQueue } from "./fal-client";
-import {
-  calculateEstimatedCost,
-  getModel,
-  mapAspectRatioToFalFormat,
-} from "./models";
 import { prisma } from "@/lib/db";
-import {
-  submitDurableFalRequest,
-  type DurableFalSubmitOutcome,
-  type DurableFalSubmitResult,
-} from "@/lib/jobs/durable-fal-submit";
-import { ensurePollerRunning } from "@/lib/jobs/poller";
+import { getModel } from "./models";
 import type { GenerationJob } from "@/generated/prisma/client";
+import type { SlideshowImageQueueRequest } from "./slideshow-image-queue";
+import {
+  submitReservedSlideshowImage,
+  productionSlideshowImageSubmissionDependencies,
+  type SlideshowImageSubmissionResult,
+} from "./slideshow-image-submit";
 
-const SLIDESHOW_ASPECT_RATIOS = new Set(["9:16", "4:5", "1:1", "16:9"]);
-// Longer than the cron cadence and ordinary serverless request lifetime, so a
-// slow in-flight Fal submission cannot be reclaimed by the next tick.
-const SLIDESHOW_SUBMISSION_LEASE_MS = 10 * 60 * 1000;
-const slideshowSubmissionWorkerId = `${process.pid}:${randomUUID()}`;
-
-// Legacy sync default; callers resolve the centralized default (when no model
-// is provided) before building the request.
-const DEFAULT_SLIDESHOW_IMAGE_MODEL = "nano-banana-2";
-
-export type QueueSlideshowImageInput = {
-  projectId: string;
-  slideId: string;
-  prompt: string;
-  aspectRatio?: string;
-  model?: string;
-  referenceImageUrls?: string[];
-};
-
-export function buildSlideshowImagePrompt(prompt: string) {
-  const subject = prompt.trim();
-  if (!subject) throw new Error("An image prompt is required.");
-
-  return [
-    subject,
-    "Create an original premium editorial photograph for a social-media slideshow.",
-    "No text, captions, logos, app interfaces, watermarks, borders, or recognizable brand marks.",
-    "Keep the main subject inside the center safe area so overlaid copy remains readable.",
-  ].join(" ");
-}
-
-export function buildSlideshowImageQueueRequest(input: QueueSlideshowImageInput) {
-  const projectId = input.projectId.trim();
-  const slideId = input.slideId.trim();
-  if (!projectId || !slideId) {
-    throw new Error("A slideshow project and slide are required.");
-  }
-
-  const model = input.model?.trim() || DEFAULT_SLIDESHOW_IMAGE_MODEL;
-  const modelDefinition = getModel(model);
-  if (!modelDefinition || modelDefinition.type !== "image") {
-    throw new Error(`Unknown slideshow image model: ${model}`);
-  }
-
-  const aspectRatio = SLIDESHOW_ASPECT_RATIOS.has(input.aspectRatio ?? "")
-    ? input.aspectRatio
-    : "9:16";
-  const referenceImageUrls = (input.referenceImageUrls ?? [])
-    .filter((url) => typeof url === "string" && /^https?:\/\//.test(url))
-    .slice(0, modelDefinition.capabilities.maxReferenceImages ?? 0);
-  const prompt = buildSlideshowImagePrompt(input.prompt);
-  const estimatedCost = calculateEstimatedCost(model, { numImages: 1 });
-  const endpoint = referenceImageUrls.length
-    ? `${modelDefinition.endpoint}/edit`
-    : modelDefinition.endpoint;
-  const falInput: Record<string, unknown> = {
-    prompt,
-    num_images: 1,
-    safety_tolerance: "6",
-    ...(referenceImageUrls.length
-      ? {
-          image_urls: referenceImageUrls,
-          aspect_ratio: aspectRatio,
-          thinking_level: "high",
-        }
-      : {
-          image_size: mapAspectRatioToFalFormat(aspectRatio ?? "9:16", model),
-        }),
-  };
-  const jobInput = {
-    kind: "slideshow-slide-image",
-    projectId,
-    slideId,
-    prompt,
-    aspectRatio,
-    referenceImageUrls,
-    falInput,
-    falEndpoint: endpoint,
-  };
-
-  return {
-    model,
-    prompt,
-    endpoint,
-    falInput,
-    estimatedCost,
-    jobInput,
-    tags: ["slideshow", `slideshow:${projectId}`, `slide:${slideId}`],
-  };
-}
-
-export type SlideshowImageQueueRequest = ReturnType<
-  typeof buildSlideshowImageQueueRequest
->;
-
-export type SlideshowImageSubmissionResult = {
-  submitted: boolean;
-  /** Recovery metadata; optional to preserve the original caller contract. */
-  claimed?: boolean;
-  persisted?: boolean;
-  outcome?: "submitted" | "unclaimed" | "failed" | "error";
-};
-
-export type SlideshowImageSubmissionDependencies = {
-  createLeaseOwner: () => string;
-  now: () => Date;
-  claimQueuedJob: (
-    jobId: string,
-    leaseOwner: string,
-    now: Date,
-    leaseExpiresAt: Date,
-  ) => Promise<boolean>;
-  submitToQueue: (
-    endpoint: string,
-    input: Record<string, unknown>,
-  ) => Promise<{ request_id: string }>;
-  markProcessing: (
-    jobId: string,
-    leaseOwner: string,
-    requestId: string,
-    startedAt: Date,
-  ) => Promise<boolean>;
-  failClaimedJob: (
-    jobId: string,
-    leaseOwner: string,
-    error: string,
-    completedAt: Date,
-  ) => Promise<boolean>;
-  startPoller: () => void;
-};
-
-const productionSubmissionDependencies: SlideshowImageSubmissionDependencies = {
-  createLeaseOwner: () => `${slideshowSubmissionWorkerId}:${randomUUID()}`,
-  now: () => new Date(),
-  claimQueuedJob: async (jobId, leaseOwner, now, leaseExpiresAt) => {
-    const claimed = await prisma.generationJob.updateMany({
-      where: {
-        id: jobId,
-        status: "queued",
-        falRequestId: null,
-        tags: { has: "slideshow" },
-        OR: [
-          { lockOwner: null },
-          { lockExpiresAt: null },
-          { lockExpiresAt: { lt: now } },
-        ],
-      },
-      data: {
-        lockOwner: leaseOwner,
-        lockExpiresAt: leaseExpiresAt,
-        attempts: { increment: 1 },
-      },
-    });
-    return claimed.count === 1;
-  },
-  submitToQueue,
-  markProcessing: async (jobId, leaseOwner, requestId, startedAt) => {
-    const updated = await prisma.generationJob.updateMany({
-      where: {
-        id: jobId,
-        status: "queued",
-        falRequestId: null,
-        lockOwner: leaseOwner,
-      },
-      data: {
-        status: "processing",
-        startedAt,
-        falRequestId: requestId,
-        lockOwner: null,
-        lockExpiresAt: null,
-      },
-    });
-    return updated.count === 1;
-  },
-  failClaimedJob: async (jobId, leaseOwner, error, completedAt) => {
-    const updated = await prisma.generationJob.updateMany({
-      where: {
-        id: jobId,
-        status: "queued",
-        falRequestId: null,
-        lockOwner: leaseOwner,
-      },
-      data: {
-        status: "failed",
-        error,
-        completedAt,
-        lockOwner: null,
-        lockExpiresAt: null,
-      },
-    });
-    return updated.count === 1;
-  },
-  startPoller: ensurePollerRunning,
-};
-
-export async function submitReservedSlideshowImage(
-  jobId: string,
-  request: SlideshowImageQueueRequest,
-  dependencies: SlideshowImageSubmissionDependencies =
-    productionSubmissionDependencies,
-): Promise<SlideshowImageSubmissionResult> {
-  const leaseOwner = dependencies.createLeaseOwner();
-  const claimedAt = dependencies.now();
-
-  try {
-    const result = await submitDurableFalRequest({
-      claim: () =>
-        dependencies.claimQueuedJob(
-          jobId,
-          leaseOwner,
-          claimedAt,
-          new Date(claimedAt.getTime() + SLIDESHOW_SUBMISSION_LEASE_MS),
-        ),
-      submit: () => dependencies.submitToQueue(request.endpoint, request.falInput),
-      persistRequestId: (requestId) =>
-        dependencies.markProcessing(
-          jobId,
-          leaseOwner,
-          requestId,
-          dependencies.now(),
-        ),
-      onRejectedBeforeAccept: async (error) => {
-        const failed = await dependencies
-          .failClaimedJob(jobId, leaseOwner, error.message, dependencies.now())
-          .catch(() => false);
-        return failed ? "failed" : "error";
-      },
-      onAmbiguous: async (error) => {
-        console.error(
-          `[Slideshow images] Fal accepted job ${jobId}, but its request id could not be persisted:`,
-          error,
-        );
-        return "error";
-      },
-      onStarted: () => {
-        dependencies.startPoller();
-      },
-    });
-    return slideshowSubmissionResult(result);
-  } catch (error) {
-    console.error(
-      `[Slideshow images] Failed to claim queued job ${jobId}:`,
-      error,
-    );
-    return {
-      claimed: false,
-      submitted: false,
-      persisted: false,
-      outcome: "error",
-    };
-  }
-}
-
-function slideshowSubmissionResult(
-  result: DurableFalSubmitResult,
-): SlideshowImageSubmissionResult {
-  return {
-    claimed: result.claimed,
-    submitted: result.submitted,
-    persisted: result.persisted,
-    outcome: slideshowOutcome(result.outcome),
-  };
-}
-
-function slideshowOutcome(
-  outcome: DurableFalSubmitOutcome,
-): NonNullable<SlideshowImageSubmissionResult["outcome"]> {
-  switch (outcome) {
-    case "unclaimed":
-      return "unclaimed";
-    case "submitted":
-      return "submitted";
-    case "failed":
-      return "failed";
-    case "error":
-    case "submission-unknown":
-      return "error";
-    default: {
-      const exhaustive: never = outcome;
-      return exhaustive;
-    }
-  }
-}
+export {
+  buildSlideshowImagePrompt,
+  buildSlideshowImageQueueRequest,
+  slideshowImageAspectRatios,
+  type QueueSlideshowImageInput,
+  type SlideshowImageQueueRequest,
+} from "./slideshow-image-queue";
+export {
+  submitReservedSlideshowImage,
+  type SlideshowImageSubmissionDependencies,
+  type SlideshowImageSubmissionResult,
+} from "./slideshow-image-submit";
 
 type PersistedQueuedSlideshowImageJob = Pick<
   GenerationJob,
@@ -419,7 +141,7 @@ const productionRecoveryDependencies: QueuedSlideshowImageRecoveryDependencies =
   // process-local interval here would race that durable polling pass.
   submit: (jobId, request) =>
     submitReservedSlideshowImage(jobId, request, {
-      ...productionSubmissionDependencies,
+      ...productionSlideshowImageSubmissionDependencies,
       startPoller: () => undefined,
     }),
   failQueuedJob: async (jobId, error, completedAt) => {
@@ -529,5 +251,3 @@ export async function recoverQueuedSlideshowImageJobs(
 
   return result;
 }
-
-export const slideshowImageAspectRatios = [...SLIDESHOW_ASPECT_RATIOS] as const;
