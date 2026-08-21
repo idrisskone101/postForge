@@ -1,16 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  Compass,
-  Copy,
-  ImageIcon,
-  Play,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Check, ImageIcon, Play, Sparkles } from "lucide-react";
 import type { CostSummary } from "@/lib/costs/tracker";
-import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
@@ -18,9 +9,10 @@ import {
   getJobActivityLabel,
   getJobDestination,
 } from "@/lib/jobs/presentation";
-import { WorkspaceState } from "@/components/workspace-state";
 import { VideoFramePreview } from "@/components/video-frame-preview";
+import { HomeGlanceStats } from "./home-glance-stats";
 import { HomeReviewQueue } from "./home-review-queue";
+import { HomeEmptyPanel, HomeStartWork } from "./home-start-work";
 
 export type HomeJob = {
   id: string;
@@ -66,20 +58,12 @@ type HomeCockpitProps = {
   now?: Date;
 };
 
-function getJobHref(job: HomeJob) {
-  return getJobDestination(job);
-}
-
 function truncateAtWord(value: string, maxLength: number) {
   if (value.length <= maxLength) return value;
   const trimmed = value.slice(0, maxLength).trimEnd();
   const lastSpace = trimmed.lastIndexOf(" ");
   const text = lastSpace > maxLength * 0.65 ? trimmed.slice(0, lastSpace) : trimmed;
   return `${text}…`;
-}
-
-function getJobTitle(job: HomeJob) {
-  return getJobActivityLabel(job);
 }
 
 function getJobPreview(job: HomeJob, maxLength = 96) {
@@ -120,7 +104,7 @@ function JobMedia({ job, priority = false }: { job: HomeJob; priority?: boolean 
         <span className="absolute inset-0 bg-[var(--pf-active)]">
           <VideoFramePreview
             src={source}
-            label={`${getJobTitle(job)} preview`}
+            label={`${getJobActivityLabel(job)} preview`}
             className="size-full object-cover"
           />
         </span>
@@ -129,7 +113,7 @@ function JobMedia({ job, priority = false }: { job: HomeJob; priority?: boolean 
     return (
       <Image
         src={source}
-        alt={`${getJobTitle(job)} preview`}
+        alt={`${getJobActivityLabel(job)} preview`}
         fill
         sizes="(max-width: 640px) 50vw, 280px"
         priority={priority}
@@ -146,30 +130,6 @@ function JobMedia({ job, priority = false }: { job: HomeJob; priority?: boolean 
     >
       {job.type === "video" ? <Play className="size-5" /> : <ImageIcon className="size-5" />}
     </span>
-  );
-}
-
-function StatCard({
-  href,
-  label,
-  value,
-}: {
-  href: string;
-  label: string;
-  value: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex min-w-0 flex-col gap-1.5 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
-    >
-      <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-        {label}
-      </span>
-      <span className="text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
-        {value}
-      </span>
-    </Link>
   );
 }
 
@@ -256,7 +216,7 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
 
   return (
     <Link
-      href={getJobHref(job)}
+      href={getJobDestination(job)}
       className="group flex min-w-0 items-center gap-3 border-t border-[var(--pf-border)] py-3 first:border-t-0"
     >
       <span
@@ -269,7 +229,7 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
       </span>
       <span className="min-w-0 flex-1">
         <strong className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-          {getJobTitle(job)}
+          {getJobActivityLabel(job)}
         </strong>
         <span className="mt-0.5 line-clamp-1 break-words text-[12px] leading-[1.35] text-[var(--pf-muted)] [overflow-wrap:anywhere]">
           {getJobPreview(job, 88)}
@@ -281,41 +241,6 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
       </span>
       <ArrowRight className="size-4 shrink-0 text-[var(--pf-muted)] transition-transform group-hover:translate-x-0.5" />
     </Link>
-  );
-}
-
-const startActions = [
-  {
-    href: "/ugc-inspiration",
-    icon: Compass,
-    title: "Browse inspiration",
-    detail: "Pull a source clip from TikTok",
-  },
-  {
-    href: "/ugc-clone",
-    icon: Copy,
-    title: "Start a clone",
-    detail: "Recreate a hook with a linked identity",
-  },
-  {
-    href: "/generate",
-    icon: Sparkles,
-    title: "Generate an asset",
-    detail: "Image or video straight from a prompt",
-  },
-];
-
-function EmptyPanel({ className }: { className?: string }) {
-  return (
-    <WorkspaceState
-      tone="empty"
-      icon={Compass}
-      title="Start today's production loop"
-      description="Pull a source from Inspiration or start a Clone when there is no active work to resume."
-      action={{ href: "/ugc-inspiration", label: "Return to Inspiration" }}
-      secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
-      className={cn("min-h-[340px]", className)}
-    />
   );
 }
 
@@ -353,34 +278,15 @@ export function HomeCockpit({
           </Link>
         </header>
 
-        <section
-          aria-label="Today at a glance"
-          className="mt-6 grid grid-cols-2 gap-3 min-[860px]:grid-cols-4"
-        >
-          <StatCard
-            href="/costs"
-            label="Spend today"
-            value={formatCost(todaySummary.totalCost)}
-          />
-          <StatCard
-            href="/jobs?status=active"
-            label="Jobs running"
-            value={String(activeJobCount)}
-          />
-          <StatCard
-            href="/gallery?reviewStatus=needs_review"
-            label="Awaiting review"
-            value={String(pendingReviewCount)}
-          />
-          <StatCard
-            href="/gallery"
-            label="Completed this week"
-            value={String(completedThisWeek)}
-          />
-        </section>
+        <HomeGlanceStats
+          todayCost={todaySummary.totalCost}
+          activeJobCount={activeJobCount}
+          pendingReviewCount={pendingReviewCount}
+          completedThisWeek={completedThisWeek}
+        />
 
         {isEmpty ? (
-          <EmptyPanel className="mt-3" />
+          <HomeEmptyPanel className="mt-3" />
         ) : (
           <>
             <div className="mt-3 grid items-start gap-3 min-[1024px]:grid-cols-[9fr_11fr]">
@@ -463,31 +369,7 @@ export function HomeCockpit({
               )}
             </section>
 
-            <section
-              aria-label="Start new work"
-              className="mt-3 grid gap-3 sm:grid-cols-3"
-            >
-              {startActions.map((action) => (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  className="group flex min-w-0 items-center gap-3 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
-                >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)] transition-colors group-hover:bg-[var(--sidebar-accent)] group-hover:text-[var(--sidebar-accent-foreground)]">
-                    <action.icon className="size-[18px]" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-                      {action.title}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-muted)]">
-                      {action.detail}
-                    </span>
-                  </span>
-                  <ArrowRight className="size-4 shrink-0 text-[var(--pf-muted)] transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              ))}
-            </section>
+            <HomeStartWork />
           </>
         )}
       </div>
