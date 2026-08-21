@@ -1,6 +1,6 @@
 "use client";
 
-import { GalleryGrid } from "@/components/gallery-grid";
+import { GalleryGrid, type GalleryGridSession } from "@/components/gallery-grid";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
 import { WorkspaceState, WorkspaceStateSkeleton } from "@/components/workspace-state";
 import {
@@ -71,6 +71,17 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
     handleLoadMore,
     handleRetryLoad,
   } = workspace;
+
+  const gridSession: GalleryGridSession = {
+    items: filtered,
+    view,
+    selectedIds,
+    onToggleSelect: toggleSelection,
+    onDelete: handleSingleDelete,
+    onReviewStatusChange: handleReviewStatusChange,
+    onHandoff: handleHandoff,
+    onFeedback: setFeedback,
+  };
 
   return (
     <>
@@ -284,16 +295,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
               onRetry={() => void handleRetryLoad()}
             />
           )}
-          <GalleryGrid
-            items={filtered}
-            view={view}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelection}
-            onDelete={handleSingleDelete}
-            onReviewStatusChange={handleReviewStatusChange}
-            onHandoff={handleHandoff}
-            onFeedback={setFeedback}
-          />
+          <GalleryGrid session={gridSession} />
           {hasMore && (
             <div className="flex justify-center pt-3">
               <button

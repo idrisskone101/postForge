@@ -10,6 +10,8 @@ async function run() {
   const handle = `inspdto${stamp}`.slice(0, 24);
   const accountId = `insp-dto-account-${stamp}`;
   const sourceId = `insp-dto-source-${stamp}`;
+  const unrelatedSourceId = `insp-dto-unrelated-${stamp}`;
+  const idMatchSourceId = `insp-dto-idmatch-${stamp}`;
   const videoIds = Array.from(
     { length: 30 },
     (_, index) => `insp-dto-video-${stamp}-${index}`
@@ -53,6 +55,28 @@ async function run() {
         label: "dto fixture",
         originalUrl: `https://www.tiktok.com/@${handle}/video/${stamp}1`,
         filename: "dto-fixture.mp4",
+        durationSec: 8,
+        width: 1080,
+        height: 1920,
+      },
+    });
+    await prisma.tikTokSource.create({
+      data: {
+        id: unrelatedSourceId,
+        label: "unrelated clone",
+        originalUrl: `https://www.tiktok.com/@unrelated${stamp}/video/${stamp}999`,
+        filename: "unrelated.mp4",
+        durationSec: 8,
+        width: 1080,
+        height: 1920,
+      },
+    });
+    await prisma.tikTokSource.create({
+      data: {
+        id: idMatchSourceId,
+        label: "id match clone",
+        originalUrl: `https://www.tiktok.com/@idmatch/video/${stamp}000002`,
+        filename: "id-match.mp4",
         durationSec: 8,
         width: 1080,
         height: 1920,
@@ -163,10 +187,14 @@ async function run() {
     assert.equal(firstVideoPage.total, 30);
     assert.equal(firstVideoPage.usageCounts.all, 30);
     assert.equal(firstVideoPage.items[0]?.id, videoIds[0]);
-    assert.equal(
-      firstVideoPage.items.some((item) => item.id === videoIds[24]),
-      false
-    );
+    assert.equal(firstVideoPage.items[0]?.sourceUsage.status, "unused");
+    assert.equal(firstVideoPage.items[1]?.sourceUsage.status, "used");
+    assert.equal(firstVideoPage.items[1]?.sourceUsage.sourceId, sourceId);
+    assert.equal(firstVideoPage.items[2]?.sourceUsage.status, "used");
+    assert.equal(firstVideoPage.items[2]?.sourceUsage.sourceId, idMatchSourceId);
+    assert.equal(firstVideoPage.usageCounts.used, 2);
+    assert.equal(firstVideoPage.usageCounts.unused, 27);
+    assert.equal(firstVideoPage.usageCounts.rejected, 1);
 
     const secondVideoPage = await listInspirationVideos({
       accountId,
@@ -178,16 +206,35 @@ async function run() {
     assert.equal(secondVideoPage.nextCursor, null);
     assert.equal(secondVideoPage.items[0]?.id, videoIds[24]);
 
+    const usedPage = await listInspirationVideos({
+      accountId,
+      take: 24,
+      usage: "used",
+    });
+    assert.equal(usedPage.total, 2);
+    assert.equal(usedPage.items.length, 2);
+    assert.equal(
+      usedPage.items.every((item) => item.sourceUsage.status === "used"),
+      true
+    );
+
     const unusedPage = await listInspirationVideos({
       accountId,
       take: 24,
       usage: "unused",
     });
     assert.equal(unusedPage.usageCounts.rejected, 1);
-    assert.equal(unusedPage.usageCounts.used, 1);
-    assert.ok(unusedPage.total < 30);
+    assert.equal(unusedPage.usageCounts.used, 2);
+    assert.equal(unusedPage.usageCounts.unused, 27);
+    assert.equal(unusedPage.total, 27);
+    assert.equal(
+      unusedPage.items.some((item) => item.sourceUsage.status === "used"),
+      false
+    );
   } finally {
-    await prisma.tikTokSource.deleteMany({ where: { id: sourceId } });
+    await prisma.tikTokSource.deleteMany({
+      where: { id: { in: [sourceId, unrelatedSourceId, idMatchSourceId] } },
+    });
     await prisma.inspirationAccount.deleteMany({
       where: { id: { in: [accountId, ...pagingIds] } },
     });

@@ -22,13 +22,3 @@ export type GalleryFeedback = {
   tone: "success" | "error";
   message: string;
 };
-
-export type GalleryItemActions = {
-  onDelete: (id: string) => Promise<boolean>;
-  onReviewStatusChange?: (
-    id: string,
-    reviewStatus: SerializedOutputReviewStatus
-  ) => void;
-  onHandoff?: (item: GalleryItem) => Promise<boolean>;
-  onFeedback?: (feedback: GalleryFeedback) => void;
-};

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { GalleryPageClient } from "../../src/app/gallery/gallery-page-client";
 import { GalleryHeaderControls } from "../../src/app/gallery/gallery-header-controls";
@@ -91,18 +92,20 @@ const longErrorMarkup = renderToStaticMarkup(
 );
 const inspectorMarkup = renderToStaticMarkup(
   <GallerySelectionInspector
-    item={{
-      ...initialPage.items[0],
-      type: "video",
-      reviewStatus: {
-        value: "needs_review",
-        label: "Needs Review",
-        tone: "neutral",
+    selection={{
+      item: {
+        ...initialPage.items[0],
+        type: "video",
+        reviewStatus: {
+          value: "needs_review",
+          label: "Needs Review",
+          tone: "neutral",
+        },
       },
+      onDeselect: () => {},
+      onOpenPreview: () => {},
+      onDelete: async () => true,
     }}
-    onDeselect={() => {}}
-    onOpenPreview={() => {}}
-    onDelete={async () => true}
   />
 );
 
@@ -204,3 +207,42 @@ assert.equal(
   normalizeGalleryReviewStatusFilter("not-a-status", "needs_review"),
   "needs_review"
 );
+
+function componentPropNames(source: string, exportName: string): string[] {
+  const marker = `export function ${exportName}({`;
+  const start = source.indexOf(marker);
+  assert.ok(start >= 0, `${exportName} should be an exported function`);
+  const open = start + marker.length - 1;
+  const close = source.indexOf("}: {", open);
+  assert.ok(close > open, `${exportName} should destructure typed props`);
+  return source
+    .slice(open + 1, close)
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+const gridSource = readFileSync(
+  new URL("../../src/components/gallery-grid.tsx", import.meta.url),
+  "utf8"
+);
+const inspectorSource = readFileSync(
+  new URL("../../src/components/gallery/selection-inspector.tsx", import.meta.url),
+  "utf8"
+);
+const pageSource = readFileSync(
+  new URL("../../src/app/gallery/gallery-page-client.tsx", import.meta.url),
+  "utf8"
+);
+
+assert.deepEqual(componentPropNames(gridSource, "GalleryGrid"), ["session"]);
+assert.deepEqual(
+  componentPropNames(inspectorSource, "GallerySelectionInspector"),
+  ["selection", "children"]
+);
+assert.match(gridSource, /export type GalleryGridSession/);
+assert.match(inspectorSource, /export type GallerySelection/);
+assert.match(pageSource, /<GalleryGrid session=\{gridSession\} \/>/);
+assert.doesNotMatch(gridSource, /createContext|useContext/);
+assert.doesNotMatch(inspectorSource, /createContext|useContext/);
+assert.doesNotMatch(pageSource, /createContext|useContext/);
