@@ -195,18 +195,20 @@ export default function JobDetailPage() {
       <section className="grid items-start gap-4 p-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white">
           <JobPreviewToolbar
-            previewZoom={previewZoom}
-            cropMode={cropMode}
-            isFullscreen={isFullscreen}
-            isCompleted={isCompleted}
-            featured={featured}
-            onZoomOut={() => setPreviewZoom((zoom) => clampPreviewZoom(zoom - 10))}
-            onZoomIn={() => setPreviewZoom((zoom) => clampPreviewZoom(zoom + 10))}
-            onToggleCrop={() => {
-              setCropMode((current) => !current);
-              showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
+            view={{
+              previewZoom,
+              cropMode,
+              isFullscreen,
+              isCompleted,
+              featured,
+              onZoomOut: () => setPreviewZoom((zoom) => clampPreviewZoom(zoom - 10)),
+              onZoomIn: () => setPreviewZoom((zoom) => clampPreviewZoom(zoom + 10)),
+              onToggleCrop: () => {
+                setCropMode((current) => !current);
+                showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
+              },
+              onFullscreen: () => void detail.handleFullscreen(),
             }}
-            onFullscreen={() => void detail.handleFullscreen()}
           />
 
           <div

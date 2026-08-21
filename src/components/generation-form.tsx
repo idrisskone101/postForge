@@ -164,8 +164,6 @@ export function GenerationForm({ models }: GenerationFormProps) {
               Boolean(selectedDefinition.capabilities.characterReference)
             }
             isVideo={selectedDefinition?.type === "video"}
-            videoDescription="Create an identity-locked opening frame, then bind the same character through the video."
-            imageDescription="Reuse a saved identity. A compatible image model is selected automatically."
             avatarId={avatarId}
             identityStatus={form.identityStatus}
             identityError={form.identityError}
