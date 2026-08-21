@@ -567,7 +567,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       );
     } catch (error) {
       setVibeExtractError(
-        errorMessage(error, "Vibe extraction failed. Your selection is unchanged.")
+        userErrorMessage(error, "Vibe extraction failed. Your selection is unchanged.")
       );
     } finally {
       setVibeExtracting(false);
@@ -620,7 +620,7 @@ export function GenerationForm({ models }: GenerationFormProps) {
       );
     } catch (error) {
       setVibeFoldError(
-        errorMessage(error, "Folding failed. Your vibe JSON is unchanged.")
+        userErrorMessage(error, "Folding failed. Your vibe JSON is unchanged.")
       );
     } finally {
       setVibeFolding(false);
