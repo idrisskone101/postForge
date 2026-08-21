@@ -21,7 +21,10 @@ import {
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
 import { cn } from "@/lib/utils";
-import { IntegrationsPanel } from "./integrations-panel";
+import {
+  IntegrationsPanel,
+  type IntegrationsWorkspace,
+} from "./integrations-panel";
 import { ModelsPanel } from "./models-panel";
 import { ProviderCredentialsPanel } from "./provider-credentials-panel";
 import { DEFAULT_SETTINGS, type SettingsRecord } from "./settings-record";
@@ -177,22 +180,22 @@ export function SettingsPageClient() {
 
   if (loading) return <div className="grid min-h-[540px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
+  const integrationsWorkspace: IntegrationsWorkspace = {
+    providers,
+    loading: integrationsLoading,
+    error: integrationsError,
+    busyProvider,
+    onRefresh: () => refreshIntegrations(true),
+    onConnect: connectProvider,
+    onSync: syncProvider,
+    onDisconnect: disconnectProvider,
+    onOpenWebhooks: () => selectTab("webhooks"),
+  };
+
   let panel;
   switch (tab) {
     case "integrations":
-      panel = (
-        <IntegrationsPanel
-          providers={providers}
-          loading={integrationsLoading}
-          error={integrationsError}
-          busyProvider={busyProvider}
-          onRefresh={() => refreshIntegrations(true)}
-          onConnect={connectProvider}
-          onSync={syncProvider}
-          onDisconnect={disconnectProvider}
-          onOpenWebhooks={() => selectTab("webhooks")}
-        />
-      );
+      panel = <IntegrationsPanel workspace={integrationsWorkspace} />;
       break;
     case "billing":
       panel = <Billing />;
