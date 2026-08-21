@@ -1,5 +1,14 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/generated/prisma/client";
 import type { CostLog } from "@/generated/prisma/client";
+import {
+  COST_LOG_PAGE_SIZE,
+  buildDailyChartSeries,
+  formatCostLogCsv,
+  type CostLogListFilter,
+  type DailyCostRow,
+  type SpendChartPoint,
+} from "./spend-period";
 
 export async function logCost(
   jobId: string,
@@ -29,6 +38,25 @@ export type CostSummary = {
   byModel: Record<string, { count: number; cost: number }>;
 };
 
+export type CostWindowSummary = Omit<CostSummary, "period">;
+
+export type CostLogEntry = {
+  id: string;
+  jobId: string;
+  model: string;
+  type: string;
+  amount: number;
+  createdAt: string;
+};
+
+export type CostLogPage = {
+  entries: CostLogEntry[];
+  pageIndex: number;
+  pageSize: number;
+  totalCount: number;
+  hasNext: boolean;
+};
+
 function getPeriodStartDate(period: string): Date | null {
   const now = new Date();
   switch (period) {
@@ -50,9 +78,66 @@ function getPeriodStartDate(period: string): Date | null {
       return start;
     }
     case "all":
+      return null;
     default:
       return null;
   }
+}
+
+function costFromSum(amount: number | null, count: number): number {
+  if (count === 0) return 0;
+  if (amount == null) {
+    throw new Error("CostLog amount sum was missing for a non-empty group");
+  }
+  return amount;
+}
+
+async function summarizeCosts(where: Prisma.CostLogWhereInput): Promise<CostWindowSummary> {
+  const [byType, byModel] = await Promise.all([
+    prisma.costLog.groupBy({
+      by: ["type"],
+      where,
+      _sum: { amount: true },
+      _count: { id: true },
+    }),
+    prisma.costLog.groupBy({
+      by: ["model"],
+      where,
+      _sum: { amount: true },
+      _count: { id: true },
+    }),
+  ]);
+
+  const imageStats = byType.find((group) => group.type === "image");
+  const videoStats = byType.find((group) => group.type === "video");
+  const imageCount = imageStats?._count.id ?? 0;
+  const videoCount = videoStats?._count.id ?? 0;
+
+  const breakdown = {
+    image: {
+      count: imageCount,
+      cost: costFromSum(imageStats?._sum.amount ?? null, imageCount),
+    },
+    video: {
+      count: videoCount,
+      cost: costFromSum(videoStats?._sum.amount ?? null, videoCount),
+    },
+  };
+
+  const byModelMap: Record<string, { count: number; cost: number }> = {};
+  for (const group of byModel) {
+    const count = group._count.id;
+    byModelMap[group.model] = {
+      count,
+      cost: costFromSum(group._sum.amount, count),
+    };
+  }
+
+  return {
+    totalCost: breakdown.image.cost + breakdown.video.cost,
+    breakdown,
+    byModel: byModelMap,
+  };
 }
 
 export async function getCostSummary(
@@ -65,7 +150,7 @@ export async function getCostSummary(
   const period = filters.period ?? "all";
   const startDate = getPeriodStartDate(period);
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.CostLogWhereInput = {};
   if (startDate) {
     where.createdAt = { gte: startDate };
   }
@@ -76,48 +161,150 @@ export async function getCostSummary(
     where.type = filters.type;
   }
 
-  // Group by type
-  const byType = await prisma.costLog.groupBy({
-    by: ["type"],
-    where,
+  const summary = await summarizeCosts(where);
+  return { period, ...summary };
+}
+
+export async function getCostSummaryForRange(
+  start: Date,
+  end: Date
+): Promise<CostWindowSummary> {
+  return summarizeCosts({ createdAt: { gte: start, lt: end } });
+}
+
+export async function getCostTotalForRange(start: Date, end: Date): Promise<number> {
+  const aggregated = await prisma.costLog.aggregate({
+    where: { createdAt: { gte: start, lt: end } },
     _sum: { amount: true },
-    _count: { id: true },
+    _count: true,
   });
+  return costFromSum(aggregated._sum.amount, aggregated._count);
+}
 
-  // Group by model
-  const byModel = await prisma.costLog.groupBy({
-    by: ["model"],
-    where,
-    _sum: { amount: true },
-    _count: { id: true },
-  });
+function readSqlAmount(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
 
-  const imageStats = byType.find((g: { type: string; _count: { id: number } | null; _sum: { amount: number | null } | null }) => g.type === "image");
-  const videoStats = byType.find((g: { type: string; _count: { id: number } | null; _sum: { amount: number | null } | null }) => g.type === "video");
+export async function getDailyCostSeries(
+  start: Date,
+  end: Date,
+  periodDays: number
+): Promise<SpendChartPoint[]> {
+  const rawRows = await prisma.$queryRaw<Array<{ day: string; type: string; cost: unknown }>>`
+    SELECT
+      to_char("createdAt", 'YYYY-MM-DD') AS day,
+      "type",
+      SUM("amount") AS cost
+    FROM "CostLog"
+    WHERE "createdAt" >= ${start}
+      AND "createdAt" < ${end}
+    GROUP BY day, "type"
+  `;
 
-  const breakdown = {
-    image: {
-      count: imageStats?._count?.id ?? 0,
-      cost: imageStats?._sum?.amount ?? 0,
-    },
-    video: {
-      count: videoStats?._count?.id ?? 0,
-      cost: videoStats?._sum?.amount ?? 0,
-    },
-  };
-
-  const byModelMap: Record<string, { count: number; cost: number }> = {};
-  for (const group of byModel) {
-    byModelMap[group.model] = {
-      count: group._count?.id ?? 0,
-      cost: group._sum?.amount ?? 0,
-    };
+  const rows: DailyCostRow[] = [];
+  for (const row of rawRows) {
+    const cost = readSqlAmount(row.cost);
+    if (cost == null) continue;
+    rows.push({ day: row.day, type: row.type, cost });
   }
 
+  return buildDailyChartSeries(start, periodDays, rows);
+}
+
+function toCostLogEntry(row: {
+  id: string;
+  jobId: string;
+  model: string;
+  type: string;
+  amount: number;
+  createdAt: Date;
+}): CostLogEntry {
   return {
-    period,
-    totalCost: breakdown.image.cost + breakdown.video.cost,
-    breakdown,
-    byModel: byModelMap,
+    id: row.id,
+    jobId: row.jobId,
+    model: row.model,
+    type: row.type,
+    amount: row.amount,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+const costLogSelect = {
+  id: true,
+  jobId: true,
+  createdAt: true,
+  type: true,
+  amount: true,
+  model: true,
+} as const;
+
+function costLogWhere(
+  start: Date,
+  end: Date,
+  filter: CostLogListFilter
+): Prisma.CostLogWhereInput {
+  const where: Prisma.CostLogWhereInput = {
+    createdAt: { gte: start, lt: end },
+  };
+  if (filter.model) {
+    where.model = filter.model;
+  }
+  if (filter.search.length > 0) {
+    where.OR = [
+      { jobId: { contains: filter.search, mode: "insensitive" } },
+      { model: { contains: filter.search, mode: "insensitive" } },
+      { type: { contains: filter.search, mode: "insensitive" } },
+      { id: { contains: filter.search, mode: "insensitive" } },
+    ];
+  }
+  return where;
+}
+
+export async function listCostLogsPage(args: {
+  start: Date;
+  end: Date;
+  pageIndex: number;
+  filter?: CostLogListFilter;
+}): Promise<CostLogPage> {
+  const filter = args.filter ?? { search: "", model: null };
+  const where = costLogWhere(args.start, args.end, filter);
+  const totalCount = await prisma.costLog.count({ where });
+  const lastPage = Math.max(0, Math.ceil(totalCount / COST_LOG_PAGE_SIZE) - 1);
+  const pageIndex = Math.min(Math.max(0, args.pageIndex), lastPage);
+
+  const rows = await prisma.costLog.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    skip: pageIndex * COST_LOG_PAGE_SIZE,
+    take: COST_LOG_PAGE_SIZE,
+    select: costLogSelect,
+  });
+
+  return {
+    entries: rows.map(toCostLogEntry),
+    pageIndex,
+    pageSize: COST_LOG_PAGE_SIZE,
+    totalCount,
+    hasNext: (pageIndex + 1) * COST_LOG_PAGE_SIZE < totalCount,
+  };
+}
+
+export async function exportCostLogsCsv(
+  start: Date,
+  end: Date
+): Promise<{ csv: string; rowCount: number }> {
+  const rows = await prisma.costLog.findMany({
+    where: { createdAt: { gte: start, lt: end } },
+    orderBy: { createdAt: "desc" },
+    select: costLogSelect,
+  });
+  return {
+    csv: formatCostLogCsv(rows.map(toCostLogEntry)),
+    rowCount: rows.length,
   };
 }

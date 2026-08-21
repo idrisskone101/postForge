@@ -41,6 +41,12 @@ import {
 } from "lucide-react";
 import { PIE_COLORS } from "@/components/cost-chart";
 import { WorkspaceState } from "@/components/workspace-state";
+import {
+  COST_LOG_PAGE_SIZE,
+  SPEND_PERIODS,
+  costsHref,
+  type SpendPeriod,
+} from "@/lib/costs/spend-period";
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.CostChart),
@@ -75,34 +81,100 @@ interface CostsPageClientProps {
     video: { count: number; cost: number };
   };
   logs: LogEntry[];
-  period: string;
+  logPage: number;
+  logTotalCount: number;
+  logHasNext: boolean;
+  logFilterActive: boolean;
+  search: string;
+  model: string | null;
+  period: SpendPeriod;
 }
 
-const LOGS_PAGE_SIZE = 10;
-const PERIOD_OPTIONS = ["7d", "30d", "90d"] as const;
+const PERIOD_OPTIONS = SPEND_PERIODS;
 const BUDGET_STORAGE_KEY = "postforge-production-budget";
 
 interface SpendPageContentProps extends CostsPageClientProps {
-  onPeriodChange: (period: string) => void;
+  onPeriodChange: (period: SpendPeriod) => void;
+  onLogPageChange: (page: number) => void;
+  onSearchChange: (search: string) => void;
+  onModelChange: (model: string | null) => void;
+  onClearFilters: () => void;
+  onExportCsv: () => Promise<number>;
 }
 
-export function CostsPageClient({ period, ...props }: CostsPageClientProps) {
+export function CostsPageClient({
+  period,
+  logPage,
+  search,
+  model,
+  ...props
+}: CostsPageClientProps) {
   const router = useRouter();
+  const [queryDraft, setQueryDraft] = useState(search);
+
+  useEffect(() => {
+    setQueryDraft(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (queryDraft.trim() === search.trim()) return;
+    const timeout = window.setTimeout(() => {
+      router.push(
+        costsHref({ period, logPage: 0, search: queryDraft, model })
+      );
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [queryDraft, search, period, model, router]);
+
+  const exportCsv = async (): Promise<number> => {
+    const response = await fetch(`/api/costs/export?period=${period}`);
+    if (!response.ok) {
+      throw new Error("Failed to export cost logs");
+    }
+    const rowCount = Number(response.headers.get("X-Row-Count") ?? "0");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `postforge-spend-${period}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    return Number.isFinite(rowCount) ? rowCount : 0;
+  };
 
   return (
     <SpendPageContent
       {...props}
       period={period}
+      logPage={logPage}
+      search={queryDraft}
+      model={model}
       onPeriodChange={(value) => {
-        if (value) router.push(`/costs?period=${value}`);
+        router.push(
+          costsHref({ period: value, logPage: 0, search: queryDraft, model })
+        );
       }}
+      onLogPageChange={(nextPage) => {
+        router.push(costsHref({ period, logPage: nextPage, search, model }));
+      }}
+      onSearchChange={setQueryDraft}
+      onModelChange={(nextModel) => {
+        router.push(
+          costsHref({
+            period,
+            logPage: 0,
+            search: queryDraft,
+            model: nextModel,
+          })
+        );
+      }}
+      onClearFilters={() => {
+        setQueryDraft("");
+        router.push(costsHref({ period, logPage: 0 }));
+      }}
+      onExportCsv={exportCsv}
     />
   );
-}
-
-function csvValue(value: string | number) {
-  const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
 export function SpendPageContent({
@@ -116,16 +188,25 @@ export function SpendPageContent({
   byModel,
   breakdown,
   logs,
+  logPage,
+  logTotalCount,
+  logHasNext,
+  logFilterActive,
+  search,
+  model,
   period,
   onPeriodChange,
+  onLogPageChange,
+  onSearchChange,
+  onModelChange,
+  onClearFilters,
+  onExportCsv,
 }: SpendPageContentProps) {
-  const [logPage, setLogPage] = useState(0);
-  const [query, setQuery] = useState("");
-  const [modelFilter, setModelFilter] = useState("all");
   const [budget, setBudget] = useState(250);
   const [budgetInput, setBudgetInput] = useState("250");
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -155,40 +236,23 @@ export function SpendPageContent({
   );
 
   const totalModelCost = modelEntries.reduce((sum, [, data]) => sum + data.cost, 0);
+  const modelNames = modelEntries.map(([name]) => name);
+  const modelOptions =
+    model && !modelNames.includes(model) ? [model, ...modelNames] : modelNames;
 
-  const filteredLogs = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    return logs.filter((log) => {
-      const matchesModel = modelFilter === "all" || log.model === modelFilter;
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        [log.jobId, log.model, log.type, log.id].some((value) =>
-          value.toLowerCase().includes(normalizedQuery)
-        );
-      return matchesModel && matchesQuery;
-    });
-  }, [logs, modelFilter, query]);
-
-  const exportCSV = () => {
-    const header = ["Date", "Job", "Model", "Type", "Amount"];
-    const rows = logs.map((log) => [
-      log.createdAt,
-      log.jobId,
-      log.model,
-      log.type,
-      log.amount,
-    ]);
-    const csv = [header, ...rows]
-      .map((row) => row.map(csvValue).join(","))
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `postforge-spend-${period}.csv`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setFeedback(`Exported ${logs.length} cost log ${logs.length === 1 ? "entry" : "entries"}.`);
+  const exportCsv = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const count = await onExportCsv();
+      setFeedback(
+        `Exported ${count} cost log ${count === 1 ? "entry" : "entries"}.`
+      );
+    } catch {
+      return;
+    } finally {
+      setExporting(false);
+    }
   };
 
   const saveBudget = () => {
@@ -204,12 +268,9 @@ export function SpendPageContent({
     setFeedback(`Production budget updated to ${formatCost(nextBudget)}.`);
   };
 
-  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / LOGS_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(logTotalCount / COST_LOG_PAGE_SIZE));
   const safeLogPage = Math.min(logPage, totalPages - 1);
-  const pagedLogs = filteredLogs.slice(
-    safeLogPage * LOGS_PAGE_SIZE,
-    (safeLogPage + 1) * LOGS_PAGE_SIZE
-  );
+  const emptyPeriod = logTotalCount === 0 && !logFilterActive;
   const formatTotal = breakdown.image.cost + breakdown.video.cost;
   const imagePct = formatTotal > 0 ? (breakdown.image.cost / formatTotal) * 100 : 0;
   const videoPct = formatTotal > 0 ? (breakdown.video.cost / formatTotal) * 100 : 0;
@@ -244,7 +305,6 @@ export function SpendPageContent({
                 type="button"
                 aria-pressed={period === option}
                 onClick={() => {
-                  setLogPage(0);
                   onPeriodChange(option);
                 }}
                 className={cn(
@@ -264,8 +324,11 @@ export function SpendPageContent({
               render={
                 <button
                   type="button"
-                  onClick={exportCSV}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted"
+                  onClick={() => {
+                    void exportCsv();
+                  }}
+                  disabled={exporting}
+                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
                 />
               }
             >
@@ -541,7 +604,7 @@ export function SpendPageContent({
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">Generation Log</h2>
             <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">
-              {filteredLogs.length} {filteredLogs.length === 1 ? "entry" : "entries"}
+              {logTotalCount} {logTotalCount === 1 ? "entry" : "entries"}
             </span>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -550,26 +613,25 @@ export function SpendPageContent({
               <span className="sr-only">Search cost log</span>
               <input
                 type="search"
-                value={query}
+                value={search}
                 onChange={(event) => {
-                  setQuery(event.target.value);
-                  setLogPage(0);
+                  onSearchChange(event.target.value);
                 }}
                 placeholder="Search generations"
                 className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
               />
             </label>
             <select
-              value={modelFilter}
+              value={model ?? "all"}
               onChange={(event) => {
-                setModelFilter(event.target.value);
-                setLogPage(0);
+                const next = event.target.value;
+                onModelChange(next === "all" ? null : next);
               }}
               aria-label="Filter cost log by model"
               className="h-9 rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
             >
               <option value="all">All models</option>
-              {modelEntries.map(([name]) => (
+              {modelOptions.map((name) => (
                 <option key={name} value={name}>
                   {name}
                 </option>
@@ -600,25 +662,25 @@ export function SpendPageContent({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pagedLogs.length === 0 ? (
+              {logs.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="py-2">
                     <WorkspaceState
                       tone="empty"
                       icon={DollarSign}
-                      title={logs.length === 0 ? "No cost log entries yet" : "No matching cost log entries"}
+                      title={emptyPeriod ? "No cost log entries yet" : "No matching cost log entries"}
                       description={
-                        logs.length === 0
+                        emptyPeriod
                           ? "Create production work to populate Spend with cost entries."
                           : "Try a different model filter or search term."
                       }
                       action={
-                        logs.length === 0
+                        emptyPeriod
                           ? { href: "/ugc-clone", label: "Start Clone" }
-                          : { label: "Clear filters", onClick: () => { setQuery(""); setModelFilter("all"); } }
+                          : { label: "Clear filters", onClick: onClearFilters }
                       }
                       secondaryAction={
-                        logs.length === 0
+                        emptyPeriod
                           ? { href: "/generate", label: "Open Generate" }
                           : undefined
                       }
@@ -627,7 +689,7 @@ export function SpendPageContent({
                   </TableCell>
                 </TableRow>
               ) : (
-                pagedLogs.map((log) => (
+                logs.map((log) => (
                   <TableRow key={log.id} className="hover:bg-muted/40">
                     <TableCell>
                       <strong className="block max-w-52 truncate text-xs font-semibold">
@@ -663,7 +725,7 @@ export function SpendPageContent({
           </Table>
         </div>
 
-        {filteredLogs.length > LOGS_PAGE_SIZE && (
+        {logTotalCount > COST_LOG_PAGE_SIZE && (
           <footer className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
             <span className="text-[11px] text-muted-foreground">
               Page <strong className="text-foreground">{safeLogPage + 1}</strong> of {totalPages}
@@ -673,7 +735,7 @@ export function SpendPageContent({
                 type="button"
                 aria-label="Previous cost log page"
                 disabled={safeLogPage === 0}
-                onClick={() => setLogPage((page) => Math.max(0, page - 1))}
+                onClick={() => onLogPageChange(Math.max(0, safeLogPage - 1))}
                 className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronLeft className="size-3.5" />
@@ -681,8 +743,8 @@ export function SpendPageContent({
               <button
                 type="button"
                 aria-label="Next cost log page"
-                disabled={safeLogPage >= totalPages - 1}
-                onClick={() => setLogPage((page) => Math.min(totalPages - 1, page + 1))}
+                disabled={!logHasNext}
+                onClick={() => onLogPageChange(safeLogPage + 1)}
                 className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronRight className="size-3.5" />
