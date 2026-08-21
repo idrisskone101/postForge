@@ -18,55 +18,33 @@ import {
   MAX_CREATOR_SLIDES,
   StepChip,
 } from "./studio-ui";
-import type { CreatorImagePickerTarget } from "./types";
+import type { CreatorDraft } from "./view-models";
 
-export function CreatorCopyForm({
-  title,
-  onTitleChange,
-  hook,
-  onHookChange,
-  hookImageAssetId,
-  onClearHookImage,
-  slideLines,
-  slideImageAssetIds,
-  onUpdateLine,
-  onAddSlideLine,
-  onRemoveSlideLine,
-  onClearSlideImage,
-  onOpenImagePicker,
-  aspectRatio,
-  onAspectRatioChange,
-  imageModels,
-  selectedImageModel,
-  onSelectImageModel,
-  needsGeneration,
-  generating,
-  error,
-  onSubmit,
-}: {
-  title: string;
-  onTitleChange: (value: string) => void;
-  hook: string;
-  onHookChange: (value: string) => void;
-  hookImageAssetId: string | null;
-  onClearHookImage: () => void;
-  slideLines: string[];
-  slideImageAssetIds: Array<string | null>;
-  onUpdateLine: (index: number, value: string) => void;
-  onAddSlideLine: () => void;
-  onRemoveSlideLine: (index: number) => void;
-  onClearSlideImage: (index: number) => void;
-  onOpenImagePicker: (target: CreatorImagePickerTarget) => void;
-  aspectRatio: "9:16" | "4:5" | "1:1" | "16:9";
-  onAspectRatioChange: (value: "9:16" | "4:5" | "1:1" | "16:9") => void;
-  imageModels?: Array<{ id: string; name: string }>;
-  selectedImageModel?: string | null;
-  onSelectImageModel?: (id: string) => void;
-  needsGeneration: boolean;
-  generating: boolean;
-  error: string | null;
-  onSubmit: () => void;
-}) {
+export function CreatorCopyForm({ draft }: { draft: CreatorDraft }) {
+  const {
+    title,
+    onTitleChange,
+    hook,
+    onHookChange,
+    hookImageAssetId,
+    onClearHookImage,
+    slideLines,
+    slideImageAssetIds,
+    onUpdateLine,
+    onAddSlideLine,
+    onRemoveSlideLine,
+    onClearSlideImage,
+    onOpenImagePicker,
+    aspectRatio,
+    onAspectRatioChange,
+    imageModels,
+    selectedImageModel,
+    onSelectImageModel,
+    needsGeneration,
+    generating,
+    error,
+    onSubmit,
+  } = draft;
   return (
       <section className={cn(CARD, "p-5")} aria-label="Bring your own copy">
         <div className="flex items-center gap-2.5">

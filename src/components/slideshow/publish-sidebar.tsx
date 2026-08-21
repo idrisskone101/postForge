@@ -14,35 +14,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import type { SlideshowProject, SlideshowPublishOptions } from "./types";
+import type { SlideshowPublishWorkspace } from "./view-models";
 
 export function PublishSidebar({
-  project,
-  tiktokConnected,
-  format,
-  destination,
-  formatBlocked,
-  destinationBlocked,
-  canSubmit,
-  exporting,
-  error,
-  exported,
-  scheduleEnabled,
-  onSubmit,
+  publish,
 }: {
-  project: SlideshowProject;
-  tiktokConnected: boolean;
-  format: SlideshowPublishOptions["format"];
-  destination: SlideshowPublishOptions["destination"];
-  formatBlocked: boolean;
-  destinationBlocked: boolean;
-  canSubmit: boolean;
-  exporting: boolean;
-  error: string | null;
-  exported: boolean;
-  scheduleEnabled: boolean;
-  onSubmit: () => void;
+  publish: SlideshowPublishWorkspace;
 }) {
+  const {
+    project,
+    tiktokConnected,
+    format,
+    destination,
+    formatBlocked,
+    destinationBlocked,
+    canSubmit,
+    exporting,
+    error,
+    exported,
+    scheduleEnabled,
+    onSubmit,
+  } = publish;
   return (
           <aside className="space-y-4">
             <div

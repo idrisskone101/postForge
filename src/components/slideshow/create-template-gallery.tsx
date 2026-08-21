@@ -10,17 +10,10 @@ import {
   SECONDARY_BTN,
 } from "./studio-ui";
 import { TemplateMinis } from "./template-minis";
-import type { SlideshowTemplate } from "./types";
+import type { StudioHomeView } from "./view-models";
 
-export function CreateTemplateGallery({
-  templates,
-  onBrowseTemplates,
-  onUseTemplate,
-}: {
-  templates: SlideshowTemplate[];
-  onBrowseTemplates: () => void;
-  onUseTemplate: (template: SlideshowTemplate) => void;
-}) {
+export function CreateTemplateGallery({ home }: { home: StudioHomeView }) {
+  const { templates, onBrowseTemplates, onUseTemplate } = home;
   return (
     <>
       <div className="mt-8 flex items-end justify-between gap-4">
