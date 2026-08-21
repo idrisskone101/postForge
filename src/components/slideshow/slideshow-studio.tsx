@@ -9,6 +9,7 @@ import {
   fetchPlatformCollections,
   platformCollectionAssetUrl,
 } from "@/lib/collections-client";
+import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import { slideshowProjectListItemFromDetail } from "@/lib/slideshow/client";
 
 import {

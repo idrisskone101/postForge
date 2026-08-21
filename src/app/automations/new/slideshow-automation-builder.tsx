@@ -112,7 +112,7 @@ export function SlideshowAutomationBuilder() {
   };
 
   const selectedProject = projects.find((project) => project.id === projectId);
-  const expectedSlideCount = selectedProject?.slides.length || 7;
+  const expectedSlideCount = selectedProject?.slideCount || 7;
   const estimatedImageCost = (expectedSlideCount * 0.08).toFixed(2);
 
   const submit = async () => {
@@ -128,8 +128,7 @@ export function SlideshowAutomationBuilder() {
         status: active ? "active" : "paused",
         nextRunAt: existing?.nextRunAt ?? null,
         projectId: projectId || null,
-        visualKey:
-          selectedProject?.slides[0]?.visualKey ?? existing?.visualKey ?? "coral-glow",
+        visualKey: existing?.visualKey ?? "coral-glow",
         weekdays: days,
         time,
         timezone: existing?.timezone,
