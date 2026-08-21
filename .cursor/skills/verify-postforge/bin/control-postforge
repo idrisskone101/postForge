@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+# control-postforge — launch / doctor / browser / cleanup for verify-postforge
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+STATE_DIR="${POSTFORGE_VERIFY_STATE_DIR:-/tmp/postforge-verify-state}"
+PID_FILE="$STATE_DIR/server.pid"
+LOG_FILE="$STATE_DIR/server.log"
+META_FILE="$STATE_DIR/meta.env"
+PORT="${PORT:-3000}"
+BASE_URL="${POSTFORGE_VERIFY_BASE_URL:-http://127.0.0.1:${PORT}}"
+BROWSER_JS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/browser.mjs"
+
+mkdir -p "$STATE_DIR"
+
+die() { echo "control-postforge: $*" >&2; exit 1; }
+
+ensure_postgres() {
+  if command -v pg_isready >/dev/null 2>&1; then
+    if ! pg_isready -h 127.0.0.1 -p 5432 >/dev/null 2>&1; then
+      if command -v pg_ctlcluster >/dev/null 2>&1; then
+        sudo pg_ctlcluster 16 main start || true
+      elif command -v docker >/dev/null 2>&1; then
+        (cd "$ROOT" && docker compose up -d postgres) || true
+      fi
+    fi
+    pg_isready -h 127.0.0.1 -p 5432 >/dev/null 2>&1 || die "Postgres is not accepting connections on 127.0.0.1:5432"
+  else
+    echo "control-postforge: pg_isready missing; skipping Postgres probe" >&2
+  fi
+}
+
+cmd_launch() {
+  ensure_postgres
+  cd "$ROOT"
+
+  if [ ! -f .env ]; then
+    cp .env.example .env
+    if grep -q 'STORAGE_LOCAL_PATH=' .env; then
+      sed -i 's|STORAGE_LOCAL_PATH=.*|STORAGE_LOCAL_PATH="/workspace/data/outputs"|' .env || true
+    fi
+  fi
+
+  pnpm exec prisma migrate deploy >/dev/null
+
+  if [ ! -d .next ] || [ "${POSTFORGE_VERIFY_FORCE_BUILD:-0}" = "1" ]; then
+    pnpm build
+  fi
+
+  if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+    echo "control-postforge: already running pid=$(cat "$PID_FILE") url=$BASE_URL"
+    return 0
+  fi
+
+  if command -v lsof >/dev/null 2>&1; then
+    if lsof -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+      die "port $PORT is already in use; stop that process or set PORT=… before launch"
+    fi
+  fi
+
+  : >"$LOG_FILE"
+  (
+    cd "$ROOT"
+    export PORT
+    export NEXT_PUBLIC_BASE_URL="${NEXT_PUBLIC_BASE_URL:-$BASE_URL}"
+    export POSTFORGE_PUBLIC_URL="${POSTFORGE_PUBLIC_URL:-$BASE_URL}"
+    exec setsid pnpm start
+  ) >>"$LOG_FILE" 2>&1 &
+  echo $! >"$PID_FILE"
+  cat >"$META_FILE" <<EOF
+PORT=$PORT
+BASE_URL=$BASE_URL
+STARTED_AT=$(date -Iseconds)
+ROOT=$ROOT
+EOF
+
+  for _ in $(seq 1 90); do
+    if grep -q 'EADDRINUSE' "$LOG_FILE" 2>/dev/null; then
+      die "server failed to bind port $PORT; see $LOG_FILE"
+    fi
+    if curl -sf "$BASE_URL/api/health" >/dev/null 2>&1; then
+      if command -v lsof >/dev/null 2>&1; then
+        listen_pid="$(lsof -t -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -n1 || true)"
+        if [ -n "${listen_pid:-}" ]; then
+          echo "$listen_pid" >"$STATE_DIR/listen.pid"
+        fi
+      fi
+      # Confirm launcher still alive (avoids treating a foreign listener as ours)
+      if ! kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        die "launcher exited after bind; see $LOG_FILE"
+      fi
+      echo "control-postforge: ready $BASE_URL (pid=$(cat "$PID_FILE") listen=$(cat "$STATE_DIR/listen.pid" 2>/dev/null || echo unknown))"
+      return 0
+    fi
+    sleep 1
+  done
+  die "server did not become ready; see $LOG_FILE"
+}
+
+cmd_doctor() {
+  ensure_postgres
+  local health code
+  health="$(curl -sf "$BASE_URL/api/health" || true)"
+  echo "$health" | grep -q '"status":"ok"' || die "health check failed at $BASE_URL/api/health (got: ${health:-empty})"
+  code="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE_URL/" || true)"
+  [ "$code" = "200" ] || die "GET / returned HTTP $code (expected 200; is POSTFORGE_API_KEY set?)"
+
+  if [ -f "$PID_FILE" ]; then
+    local pid
+    pid="$(cat "$PID_FILE")"
+    kill -0 "$pid" 2>/dev/null || die "PID file $PID_FILE points at dead pid $pid"
+    echo "control-postforge: doctor ok url=$BASE_URL pid=$pid"
+  else
+    echo "control-postforge: doctor ok url=$BASE_URL (no launch PID file — refuse mutations that assume ownership)" >&2
+    echo "control-postforge: doctor ok url=$BASE_URL"
+  fi
+
+  # Shell presence via browser helper (best-effort if playwright available)
+  if [ -f "$BROWSER_JS" ]; then
+    node "$BROWSER_JS" doctor --base-url "$BASE_URL" || die "workspace shell not detected at $BASE_URL"
+  fi
+}
+
+stop_pid() {
+  local pid="$1"
+  [ -n "$pid" ] || return 0
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
+    for _ in $(seq 1 20); do
+      kill -0 "$pid" 2>/dev/null || break
+      sleep 0.25
+    done
+    if kill -0 "$pid" 2>/dev/null; then
+      kill -9 -- "-$pid" 2>/dev/null || kill -9 "$pid" 2>/dev/null || true
+    fi
+  fi
+}
+
+cmd_cleanup() {
+  local port="${PORT}"
+  if [ -f "$META_FILE" ]; then
+    # shellcheck disable=SC1090
+    . "$META_FILE"
+    port="${PORT:-$port}"
+  fi
+
+  if [ -f "$PID_FILE" ]; then
+    stop_pid "$(cat "$PID_FILE")"
+    echo "control-postforge: stopped launcher pid=$(cat "$PID_FILE" 2>/dev/null || echo unknown)"
+    rm -f "$PID_FILE"
+  else
+    echo "control-postforge: no launcher PID file"
+  fi
+  if [ -f "$STATE_DIR/listen.pid" ]; then
+    stop_pid "$(cat "$STATE_DIR/listen.pid")"
+    rm -f "$STATE_DIR/listen.pid"
+  fi
+  if command -v lsof >/dev/null 2>&1; then
+    for listen_pid in $(lsof -t -iTCP:"${port}" -sTCP:LISTEN 2>/dev/null || true); do
+      # Only kill listeners whose cwd/cmdline looks like this repo's next server when META existed
+      stop_pid "$listen_pid"
+      echo "control-postforge: stopped listener pid=$listen_pid on port $port"
+    done
+  fi
+  rm -f "$META_FILE"
+}
+
+cmd_browser() {
+  [ -f "$BROWSER_JS" ] || die "missing $BROWSER_JS"
+  node "$BROWSER_JS" --base-url "$BASE_URL" "$@"
+}
+
+usage() {
+  cat <<EOF
+Usage: control-postforge <launch|doctor|cleanup|browser> …
+
+  launch              Start Postgres (if needed), migrate, build, pnpm start
+  doctor              Health + shell presence
+  cleanup             Stop only the PID from launch (keeps proof artifacts)
+  browser <args>      Drive the UI (see browser.mjs --help)
+EOF
+}
+
+main() {
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    launch) cmd_launch "$@" ;;
+    doctor) cmd_doctor "$@" ;;
+    cleanup) cmd_cleanup "$@" ;;
+    browser) cmd_browser "$@" ;;
+    -h|--help|help|"") usage ;;
+    *) die "unknown command: $cmd" ;;
+  esac
+}
+
+main "$@"
