@@ -21,7 +21,7 @@ import {
   requestSlideshowImageGeneration,
   requestSlideshowStory,
   waitForCreatorVisuals,
-} from "./api";
+} from "@/lib/slideshow/client";
 import {
   createBlankSlideshowProject,
   createProjectFromCreatorCopy,

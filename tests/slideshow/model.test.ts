@@ -3,7 +3,7 @@ import { createBlankSlideshowProject } from "../../src/components/slideshow/fixt
 import {
   deserializeSlideshowProject,
   serializeSlideshowProject,
-} from "../../src/components/slideshow/api";
+} from "../../src/lib/slideshow/client";
 import {
   MAX_SLIDESHOW_SLIDES,
   addSlideshowSlide,
