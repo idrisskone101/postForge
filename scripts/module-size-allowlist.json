@@ -15,7 +15,6 @@
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633,
-  "src/lib/slideshow/client.ts": 810,
   "src/lib/ugc/avatar-identity-pack.ts": 674,
   "src/lib/ugc/generate-clone.ts": 626
 }
