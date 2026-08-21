@@ -16,6 +16,8 @@ import {
   asString,
   jobDetailFlags,
   type InspectorTab,
+  type JobDetailActions,
+  type JobDetailViewModel,
 } from "../job-enhancements";
 import { JobDetailHeader } from "../job-header";
 import {
@@ -123,6 +125,55 @@ export default function JobDetailPage() {
   const input = job.input ?? {};
   const negativePrompt = asString(input.negativePrompt);
 
+  const view: JobDetailViewModel = {
+    job,
+    featured,
+    isActive,
+    isCompleted,
+    isFailed,
+    canDiscard,
+    isRetrying: detail.isRetrying,
+    isDownloading: detail.isDownloading,
+    isDiscarding: detail.isDiscarding,
+    isApplying: detail.isApplying,
+    cropMode,
+    previewZoom,
+    selectedEnhancement,
+    enhancementInstruction,
+    editStrength,
+    preserveSubject,
+    feedback,
+    error,
+  };
+
+  const actions: JobDetailActions = {
+    onBack: () => router.back(),
+    onShare: () => void detail.handleShare(featured),
+    onGallery: () => router.push(`/gallery?type=${job.type}`),
+    onDownload: () => featured && void detail.handleDownload(featured),
+    onRetry: () => void detail.handleRetry(),
+    onGenerateSimilar: () => router.push(buildGenerateSimilarHref(job)),
+    onSelectTool: (id) => {
+      setSelectedEnhancement(id);
+      const tool = ENHANCEMENT_TOOLS.find((item) => item.id === id);
+      if (tool) setEnhancementInstruction(tool.instruction);
+    },
+    onInstructionChange: setEnhancementInstruction,
+    onEditStrengthChange: setEditStrength,
+    onPreserveSubjectChange: setPreserveSubject,
+    onApply: () => featured && void detail.handleApplyEnhancement(featured),
+    onSaveToGallery: () => router.push(`/gallery?type=${job.type}`),
+    onUseInClone: () =>
+      featured && router.push(buildCloneHandoffHref(featured.id)),
+    onAddToAutomation: () =>
+      featured &&
+      router.push(
+        `/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`
+      ),
+    onDiscard: () => void detail.handleDiscard(),
+    onLeave: () => router.push("/generate"),
+  };
+
   const setTab = (tab: InspectorTab) => {
     switch (tab) {
       case "enhance":
@@ -139,17 +190,7 @@ export default function JobDetailPage() {
 
   return (
     <div className="pf-content-viewport min-w-0 animate-fade-in-up">
-      <JobDetailHeader
-        job={job}
-        featured={featured}
-        isCompleted={isCompleted}
-        isDownloading={detail.isDownloading}
-        error={error}
-        onBack={() => router.back()}
-        onShare={() => void detail.handleShare(featured)}
-        onGallery={() => router.push(`/gallery?type=${job.type}`)}
-        onDownload={() => featured && void detail.handleDownload(featured)}
-      />
+      <JobDetailHeader view={view} actions={actions} />
 
       <section className="grid items-start gap-4 p-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white">
@@ -175,18 +216,7 @@ export default function JobDetailPage() {
               isCompleted && featured ? "bg-[#09090B]" : "bg-[var(--pf-active)]"
             )}
           >
-            <JobPreviewBody
-              job={job}
-              featured={featured}
-              isActive={isActive}
-              isFailed={isFailed}
-              isCompleted={isCompleted}
-              isRetrying={detail.isRetrying}
-              cropMode={cropMode}
-              previewZoom={previewZoom}
-              onRetry={() => void detail.handleRetry()}
-              onGenerateSimilar={() => router.push(buildGenerateSimilarHref(job))}
-            />
+            <JobPreviewBody view={view} actions={actions} />
           </div>
 
           {isCompleted && (
@@ -203,25 +233,7 @@ export default function JobDetailPage() {
           <JobInspectorTabs activeTab={activeTab} onTabChange={setTab} />
 
           {activeTab === "enhance" && (
-            <JobEnhancePanel
-              job={job}
-              featured={featured}
-              selectedEnhancement={selectedEnhancement}
-              enhancementInstruction={enhancementInstruction}
-              editStrength={editStrength}
-              preserveSubject={preserveSubject}
-              isCompleted={isCompleted}
-              isApplying={detail.isApplying}
-              onSelectTool={(id) => {
-                setSelectedEnhancement(id);
-                const tool = ENHANCEMENT_TOOLS.find((item) => item.id === id);
-                if (tool) setEnhancementInstruction(tool.instruction);
-              }}
-              onInstructionChange={setEnhancementInstruction}
-              onEditStrengthChange={setEditStrength}
-              onPreserveSubjectChange={setPreserveSubject}
-              onApply={() => featured && void detail.handleApplyEnhancement(featured)}
-            />
+            <JobEnhancePanel view={view} actions={actions} />
           )}
 
           {activeTab === "details" && (
@@ -285,31 +297,7 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          <JobInspectorFooter
-            job={job}
-            featured={featured}
-            isCompleted={isCompleted}
-            canDiscard={canDiscard}
-            isRetrying={detail.isRetrying}
-            isDownloading={detail.isDownloading}
-            isDiscarding={detail.isDiscarding}
-            feedback={feedback}
-            onDownload={() => featured && void detail.handleDownload(featured)}
-            onRetry={() => void detail.handleRetry()}
-            onSaveToGallery={() => router.push(`/gallery?type=${job.type}`)}
-            onUseInClone={() =>
-              featured && router.push(buildCloneHandoffHref(featured.id))
-            }
-            onGenerateSimilar={() => router.push(buildGenerateSimilarHref(job))}
-            onAddToAutomation={() =>
-              featured &&
-              router.push(
-                `/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`
-              )
-            }
-            onDiscard={() => void detail.handleDiscard()}
-            onLeave={() => router.push("/generate")}
-          />
+          <JobInspectorFooter view={view} actions={actions} />
         </aside>
       </section>
     </div>

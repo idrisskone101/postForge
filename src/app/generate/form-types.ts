@@ -5,7 +5,7 @@ export interface GenerationFormProps {
   models: ModelDefinition[];
 }
 
-export interface GenerateFormViewProps {
+export interface GenerateFormModel {
   models: ModelDefinition[];
   selectedModel: string | null;
   prompt: string;
@@ -24,6 +24,17 @@ export interface GenerateFormViewProps {
   promptImprovementNotice?: string | null;
   promptEnhancerConfigured?: boolean | null;
   canUndoPromptImprovement?: boolean;
+  avatarSection?: ReactNode;
+  referenceSection?: ReactNode;
+  continuitySection?: ReactNode;
+  swapSection?: ReactNode;
+  swapReady?: boolean;
+  swapSourceDurationSec?: number;
+  avatarName?: string | null;
+  vibeRequirement?: string | null;
+}
+
+export interface GenerateFormActions {
   onModelSelect: (modelId: string) => void;
   onPromptChange: (prompt: string) => void;
   onAspectRatioChange: (ratio: string) => void;
@@ -37,13 +48,34 @@ export interface GenerateFormViewProps {
   onImprovePrompt?: () => void;
   onUndoPromptImprovement?: () => void;
   onAppendToPrompt: (text: string) => void;
-  avatarSection?: ReactNode;
-  referenceSection?: ReactNode;
-  continuitySection?: ReactNode;
-  swapSection?: ReactNode;
-  swapReady?: boolean;
-  swapSourceDurationSec?: number;
-  avatarName?: string | null;
-  /** When set, generation is blocked until the vibe JSON requirement is met. */
-  vibeRequirement?: string | null;
+}
+
+export interface GenerateCollectionModel {
+  avatarId: string | null;
+  collectionAssetIds: string[];
+  maxSelection: number;
+  disabled: boolean;
+  vibeMode: boolean;
+  vibeExtracting: boolean;
+  vibeExtractError: string | null;
+  vibeStale: boolean;
+  vibeEditorActive: boolean;
+  vibeJsonText: string;
+  vibeJsonError: string | null;
+  vibeTemplate: unknown;
+  foldEnabled: boolean;
+  vibeFolding: boolean;
+  vibeFoldError: string | null;
+  foldStale: boolean;
+  foldedPromptValue: string | null;
+  prompt: string;
+}
+
+export interface GenerateCollectionActions {
+  onClear: () => void;
+  onCollectionChange: (assetIds: string[]) => void;
+  onExtractVibe: () => void;
+  onVibeJsonChange: (text: string) => void;
+  onFoldEnabledChange: (enabled: boolean) => void;
+  onFoldIntoVibe: () => void;
 }
