@@ -39,6 +39,11 @@ interface SavedSource {
   createdAt: string;
 }
 
+type SourceListPage = {
+  items: SavedSource[];
+  nextCursor: string | null;
+};
+
 interface TikTokInputProps {
   onDownloaded: (info: TikTokVideoInfo | null) => void;
   videoInfo: TikTokVideoInfo | null;
@@ -61,7 +66,9 @@ export function TikTokInput({
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedSources, setSavedSources] = useState<SavedSource[]>([]);
+  const [sourcesNextCursor, setSourcesNextCursor] = useState<string | null>(null);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
+  const [isLoadingMoreSources, setIsLoadingMoreSources] = useState(false);
   const [sourcesError, setSourcesError] = useState<string | null>(null);
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -72,10 +79,11 @@ export function TikTokInput({
     setIsLoadingSources(true);
     setSourcesError(null);
 
-    apiGet<SavedSource[]>("/api/ugc-clone/sources")
-      .then((sources) => {
+    apiGet<SourceListPage>("/api/ugc-clone/sources")
+      .then((page) => {
         if (!isActive) return;
-        setSavedSources(sources);
+        setSavedSources(page.items);
+        setSourcesNextCursor(page.nextCursor);
       })
       .catch((err) => {
         if (!isActive) return;
@@ -95,12 +103,36 @@ export function TikTokInput({
     };
   }, [refreshKey]);
 
+  const loadMoreSources = async () => {
+    if (!sourcesNextCursor || isLoadingMoreSources) return;
+    setIsLoadingMoreSources(true);
+    setSourcesError(null);
+    try {
+      const page = await apiGet<SourceListPage>(
+        `/api/ugc-clone/sources?cursor=${encodeURIComponent(sourcesNextCursor)}`
+      );
+      setSavedSources((current) => {
+        const seen = new Set(current.map((source) => source.id));
+        return [...current, ...page.items.filter((source) => !seen.has(source.id))];
+      });
+      setSourcesNextCursor(page.nextCursor);
+    } catch (err) {
+      console.error("Failed to load saved sources:", err);
+      setSourcesError(
+        err instanceof Error ? err.message : "Failed to load saved sources"
+      );
+    } finally {
+      setIsLoadingMoreSources(false);
+    }
+  };
+
   useEffect(() => {
     if (!preselectedSourceId || isLoadingSources || sourcesError) return;
     if (autoSelectedIdRef.current === preselectedSourceId) return;
 
     const source = savedSources.find((item) => item.id === preselectedSourceId);
     if (!source) {
+      if (sourcesNextCursor) return;
       autoSelectedIdRef.current = preselectedSourceId;
       setError("The handed-off saved source is no longer available. Choose another source.");
       onPreselectedSourceResolved?.({
@@ -133,6 +165,7 @@ export function TikTokInput({
     preselectedSourceId,
     savedSources,
     sourcesError,
+    sourcesNextCursor,
   ]);
 
   useEffect(() => {
@@ -300,7 +333,7 @@ export function TikTokInput({
       )}
 
       {/* Saved sources */}
-      {!isLoadingSources && savedSources.length > 0 && (
+      {!isLoadingSources && (savedSources.length > 0 || sourcesNextCursor) && (
         <div>
           {/* Divider toggle */}
           <button
@@ -399,6 +432,17 @@ export function TikTokInput({
                   </div>
                 );
               })}
+              {sourcesNextCursor && (
+                <button
+                  type="button"
+                  onClick={() => void loadMoreSources()}
+                  disabled={isLoadingMoreSources}
+                  className="col-span-full inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isLoadingMoreSources && <Loader2 className="size-3.5 animate-spin" />}
+                  {isLoadingMoreSources ? "Loading..." : "Load more"}
+                </button>
+              )}
             </div>
           )}
         </div>
