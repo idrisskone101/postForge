@@ -198,15 +198,44 @@ function serializeVideo(
   };
 }
 
-async function loadCloneSourceIndex(): Promise<{
+async function loadCloneSourceIndex(
+  videos: Array<Pick<InspirationVideoRecord, "originalUrl" | "externalVideoId">>
+): Promise<{
   byUrl: Map<string, CloneSourceRecord>;
   byExternalVideoId: Map<string, CloneSourceRecord>;
   originalUrls: string[];
   externalVideoIds: string[];
 }> {
-  const sources = await prisma.tikTokSource.findMany({
-    select: { id: true, originalUrl: true, createdAt: true },
-  });
+  const originalUrls = [
+    ...new Set(
+      videos.map((video) => video.originalUrl).filter((url) => url.length > 0)
+    ),
+  ];
+  const externalVideoIds = [
+    ...new Set(
+      videos
+        .map((video) => video.externalVideoId)
+        .filter((id) => id.length > 0)
+    ),
+  ];
+  const sources: CloneSourceRecord[] = [];
+  if (originalUrls.length > 0 || externalVideoIds.length > 0) {
+    sources.push(
+      ...(await prisma.tikTokSource.findMany({
+        where: {
+          OR: [
+            ...(originalUrls.length > 0
+              ? [{ originalUrl: { in: originalUrls } }]
+              : []),
+            ...externalVideoIds.map((id) => ({
+              originalUrl: { contains: `/video/${id}` },
+            })),
+          ],
+        },
+        select: { id: true, originalUrl: true, createdAt: true },
+      }))
+    );
+  }
   const byUrl = new Map(
     sources.map((source) => [source.originalUrl, source])
   );
@@ -315,7 +344,11 @@ export async function listInspirationVideos(
     }
   }
 
-  const sourceIndex = await loadCloneSourceIndex();
+  const lookupKeys = await prisma.inspirationVideo.findMany({
+    where: accountId ? { accountId } : {},
+    select: { originalUrl: true, externalVideoId: true },
+  });
+  const sourceIndex = await loadCloneSourceIndex(lookupKeys);
   const where = buildInspirationVideoWhere({
     accountId,
     usage,
