@@ -25,6 +25,7 @@ const editorSource = readFileSync(
 );
 const builderSource = [
   "character-builder-client.tsx",
+  "use-character-builder.ts",
   "character-builder-header.tsx",
   "character-category-rail.tsx",
   "character-preview-stage.tsx",

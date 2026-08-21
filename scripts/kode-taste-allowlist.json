@@ -24,7 +24,6 @@
   "useState": [
     "src/app/automations/new/slideshow-automation-builder.tsx",
     "src/app/characters/characters-page-client.tsx",
-    "src/app/characters/new/character-builder-client.tsx",
     "src/app/collections/collections-page-client.tsx",
     "src/app/costs/spend-page-content.tsx",
     "src/app/settings/models-panel.tsx",
