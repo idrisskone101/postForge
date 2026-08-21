@@ -1,4 +1,5 @@
 import { type CollectionFeatureRecord } from "@/lib/collections";
+import type { PinterestImageCandidate } from "@/lib/collections/pinterest-types";
 import {
   platformCollectionAssetUrl,
   summarizePlatformCollections,
@@ -6,7 +7,6 @@ import {
 } from "@/lib/collections-read-model";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
-import type { PinterestImageCandidate } from "@/lib/pinterest";
 
 export type { PlatformCollectionSummary, PinterestImageCandidate };
 export type PinterestCandidate = PinterestImageCandidate;

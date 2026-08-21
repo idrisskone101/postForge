@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-import { SlideshowApiError } from "../../src/lib/slideshow/errors";
+import { findPinterestCandidates } from "../../src/lib/collections/pinterest-candidates";
 import {
-  buildPinterestSourceUrl,
   extractPinterestImageUrls,
   extractPinterestSearchCandidates,
-  findPinterestCandidates,
-} from "../../src/lib/pinterest";
+} from "../../src/lib/collections/pinterest-extract";
+import { buildPinterestSourceUrl } from "../../src/lib/collections/pinterest-source-url";
+import { SlideshowApiError } from "../../src/lib/slideshow/errors";
 import {
   assertPinImageUrl,
   downloadPinterestImage,
