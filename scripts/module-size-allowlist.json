@@ -20,14 +20,9 @@
   "src/lib/automation-publish-orchestration.ts": 906,
   "src/lib/automation-publishing.ts": 646,
   "src/lib/automations.ts": 633,
-  "src/lib/inspiration/service.ts": 529,
   "src/lib/integrations/publishing.ts": 1366,
   "src/lib/integrations/store.ts": 707,
-  "src/lib/slideshow/automation-worker.ts": 794,
   "src/lib/slideshow/client.ts": 810,
-  "src/lib/slideshow/project.ts": 631,
-  "src/lib/slideshow/service.ts": 1404,
-  "src/lib/slideshow/text-overlay-satori.tsx": 409,
   "src/lib/ugc/avatar-identity-pack.ts": 674,
   "src/lib/ugc/generate-clone.ts": 626
 }
