@@ -35,7 +35,6 @@ import {
   platformCollectionAssetUrl,
   type PinterestImportResult,
 } from "@/lib/collections-client";
-import { requestSlideshowCreatorDerive } from "@/lib/slideshow/client";
 import { cn } from "@/lib/utils";
 
 import { alignCreatorDirectImages } from "./model";
