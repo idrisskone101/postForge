@@ -42,46 +42,6 @@ import {
 } from "@/lib/workspace-navigation";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
-const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
-  Home: House,
-  Jobs: ListChecks,
-  Inspiration: Compass,
-  Clone: Copy,
-  Slideshow: GalleryHorizontal,
-  Gallery: Images,
-  Automations: Workflow,
-  Performance: BarChart3,
-  Spend: DollarSign,
-  Generate: Sparkles,
-  Collections: FolderOpen,
-  Characters: UserRoundPen,
-  Settings,
-};
-
-type WorkspaceSidebarSettings = {
-  id: string;
-  workspaceName?: string;
-  emailFailures?: boolean;
-  emailApprovals?: boolean;
-};
-
-type WorkspaceNotificationCounts = {
-  generationFailures: number;
-  approvalsWaiting: number;
-  latestFailedJobId?: string | null;
-};
-
-function PostForgeBrand({ name }: { name: string }) {
-  return (
-    <Link href="/" className="sidebar-brand flex min-w-0 items-center gap-2.5 px-2" aria-label="PostForge home">
-      <span className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
-        P
-      </span>
-      <span className="sidebar-expanded-only min-w-0 truncate text-[15px] font-bold tracking-[-0.02em] text-[var(--pf-rail-ink)]">{name}</span>
-    </Link>
-  );
-}
-
 export function Sidebar() {
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
@@ -340,5 +300,46 @@ export function Sidebar() {
         </div>
       </aside>
     </>
+  );
+}
+
+
+const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
+  Home: House,
+  Jobs: ListChecks,
+  Inspiration: Compass,
+  Clone: Copy,
+  Slideshow: GalleryHorizontal,
+  Gallery: Images,
+  Automations: Workflow,
+  Performance: BarChart3,
+  Spend: DollarSign,
+  Generate: Sparkles,
+  Collections: FolderOpen,
+  Characters: UserRoundPen,
+  Settings,
+};
+
+type WorkspaceSidebarSettings = {
+  id: string;
+  workspaceName?: string;
+  emailFailures?: boolean;
+  emailApprovals?: boolean;
+};
+
+type WorkspaceNotificationCounts = {
+  generationFailures: number;
+  approvalsWaiting: number;
+  latestFailedJobId?: string | null;
+};
+
+function PostForgeBrand({ name }: { name: string }) {
+  return (
+    <Link href="/" className="sidebar-brand flex min-w-0 items-center gap-2.5 px-2" aria-label="PostForge home">
+      <span className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
+        P
+      </span>
+      <span className="sidebar-expanded-only min-w-0 truncate text-[15px] font-bold tracking-[-0.02em] text-[var(--pf-rail-ink)]">{name}</span>
+    </Link>
   );
 }

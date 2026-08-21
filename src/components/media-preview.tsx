@@ -26,6 +26,30 @@ interface MediaPreviewFrameProps extends MediaPreviewProps {
   mediaClassName?: string;
 }
 
+export function MediaPreview({
+  type,
+  src,
+  width,
+  height,
+  alt = "",
+  className,
+  fill = false,
+}: MediaPreviewProps) {
+  return (
+    <MediaPreviewFrame
+      type={type}
+      src={src}
+      width={width}
+      height={height}
+      alt={alt}
+      className={className}
+      fill={fill}
+      variant={fill ? "card" : "work"}
+    />
+  );
+}
+
+
 function getAspectRatio(width?: number, height?: number) {
   if (!width || !height) {
     return undefined;
@@ -190,28 +214,5 @@ export function MediaPreviewFrame({
         </figcaption>
       )}
     </figure>
-  );
-}
-
-export function MediaPreview({
-  type,
-  src,
-  width,
-  height,
-  alt = "",
-  className,
-  fill = false,
-}: MediaPreviewProps) {
-  return (
-    <MediaPreviewFrame
-      type={type}
-      src={src}
-      width={width}
-      height={height}
-      alt={alt}
-      className={className}
-      fill={fill}
-      variant={fill ? "card" : "work"}
-    />
   );
 }

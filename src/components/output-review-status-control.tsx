@@ -9,25 +9,6 @@ import {
 } from "@/lib/output-review-status";
 import { cn } from "@/lib/utils";
 
-const statusIcons = {
-  needs_review: CircleDashed,
-  approved_output: CheckCircle2,
-  rejected_output: XCircle,
-} satisfies Record<OutputReviewStatus, typeof CircleDashed>;
-
-const statusClasses = {
-  needs_review: "border-border text-muted-foreground hover:text-foreground",
-  approved_output:
-    "border-accent-green/40 text-accent-green hover:bg-accent-green/10",
-  rejected_output: "border-red-400/40 text-red-400 hover:bg-red-500/10",
-} satisfies Record<OutputReviewStatus, string>;
-
-const activeStatusClasses = {
-  needs_review: "bg-muted text-foreground",
-  approved_output: "bg-accent-green/15 text-accent-green",
-  rejected_output: "bg-red-500/15 text-red-400",
-} satisfies Record<OutputReviewStatus, string>;
-
 export function OutputReviewStatusControl({
   outputId,
   reviewStatus,
@@ -136,3 +117,23 @@ export function OutputReviewStatusControl({
     </div>
   );
 }
+
+
+const statusIcons = {
+  needs_review: CircleDashed,
+  approved_output: CheckCircle2,
+  rejected_output: XCircle,
+} satisfies Record<OutputReviewStatus, typeof CircleDashed>;
+
+const statusClasses = {
+  needs_review: "border-border text-muted-foreground hover:text-foreground",
+  approved_output:
+    "border-accent-green/40 text-accent-green hover:bg-accent-green/10",
+  rejected_output: "border-red-400/40 text-red-400 hover:bg-red-500/10",
+} satisfies Record<OutputReviewStatus, string>;
+
+const activeStatusClasses = {
+  needs_review: "bg-muted text-foreground",
+  approved_output: "bg-accent-green/15 text-accent-green",
+  rejected_output: "bg-red-500/15 text-red-400",
+} satisfies Record<OutputReviewStatus, string>;

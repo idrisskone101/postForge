@@ -25,19 +25,6 @@ import {
 } from "./slideshow-view";
 import type { SlideshowEditorWorkspace } from "./view-models";
 
-const ICON_BTN =
-  "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
-
-const VIEW_OPTIONS: Array<{
-  id: SlideshowViewMode;
-  label: string;
-  icon: typeof Pencil;
-}> = [
-  { id: "edit", label: "Edit", icon: Pencil },
-  { id: "board", label: "All slides", icon: LayoutGrid },
-  { id: "play", label: "Play", icon: Play },
-];
-
 export function SlideshowViewSwitcher({
   value,
   onChange,
@@ -78,6 +65,19 @@ export function SlideshowViewSwitcher({
     </div>
   );
 }
+
+const ICON_BTN =
+  "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
+
+const VIEW_OPTIONS: Array<{
+  id: SlideshowViewMode;
+  label: string;
+  icon: typeof Pencil;
+}> = [
+  { id: "edit", label: "Edit", icon: Pencil },
+  { id: "board", label: "All slides", icon: LayoutGrid },
+  { id: "play", label: "Play", icon: Play },
+];
 
 export function SlideshowBoardView({
   workspace,

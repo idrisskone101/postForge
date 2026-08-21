@@ -7,15 +7,6 @@ import { cn } from "@/lib/utils";
 import type { SlideshowSection } from "./types";
 import type { StudioHomeView } from "./view-models";
 
-const sections: Array<{
-  id: SlideshowSection;
-  label: string;
-  icon: typeof Sparkles;
-}> = [
-  { id: "create", label: "Create", icon: Sparkles },
-  { id: "drafts", label: "Drafts", icon: Archive },
-];
-
 export function StudioSectionNav({ home }: { home: StudioHomeView }) {
   const { section, onSectionChange: onChange, draftsCount } = home;
   return (
@@ -59,3 +50,13 @@ export function StudioSectionNav({ home }: { home: StudioHomeView }) {
     </nav>
   );
 }
+
+
+const sections: Array<{
+  id: SlideshowSection;
+  label: string;
+  icon: typeof Sparkles;
+}> = [
+  { id: "create", label: "Create", icon: Sparkles },
+  { id: "drafts", label: "Drafts", icon: Archive },
+];

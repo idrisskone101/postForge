@@ -5,21 +5,6 @@ import { WorkspaceState } from "@/components/workspace-state";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
 
-const CostChart = dynamic(
-  () => import("@/components/cost-chart").then((module) => module.CostChart),
-  { ssr: false }
-);
-
-const ModelPieChart = dynamic(
-  () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
-  { ssr: false }
-);
-
-type SpendAnalysisGridProps = {
-  dashboard: CostsPageClientProps;
-  view: SpendDashboardView;
-};
-
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
   return (
     <section
@@ -144,3 +129,19 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
     </section>
   );
 }
+
+
+const CostChart = dynamic(
+  () => import("@/components/cost-chart").then((module) => module.CostChart),
+  { ssr: false }
+);
+
+const ModelPieChart = dynamic(
+  () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
+  { ssr: false }
+);
+
+type SpendAnalysisGridProps = {
+  dashboard: CostsPageClientProps;
+  view: SpendDashboardView;
+};

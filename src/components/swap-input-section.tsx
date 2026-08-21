@@ -30,42 +30,6 @@ export type SwapInputSectionProps = {
   requireReference?: boolean;
 };
 
-const SWAP_MODES: Array<{ id: SwapMode; label: string }> = [
-  { id: "person", label: "Person" },
-  { id: "object", label: "Object" },
-  { id: "background", label: "Background" },
-];
-
-function formatBytes(bytes: number) {
-  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-async function uploadAsset(
-  field: "video" | "reference",
-  file: File
-): Promise<SwapUploadedAsset> {
-  const formData = new FormData();
-  formData.append(field, file);
-  const response = await fetch("/api/swap-assets", {
-    method: "POST",
-    body: formData,
-  });
-  if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as {
-      error?: string;
-    } | null;
-    throw new Error(
-      body?.error ?? (field === "video" ? "Video upload failed." : "Reference image upload failed.")
-    );
-  }
-  const data = (await response.json()) as {
-    video?: SwapUploadedAsset | null;
-    reference?: SwapUploadedAsset | null;
-  };
-  return (field === "video" ? data.video : data.reference) as SwapUploadedAsset;
-}
-
 export function SwapInputSection({
   value,
   onChange,
@@ -243,4 +207,41 @@ export function SwapInputSection({
       )}
     </div>
   );
+}
+
+
+const SWAP_MODES: Array<{ id: SwapMode; label: string }> = [
+  { id: "person", label: "Person" },
+  { id: "object", label: "Object" },
+  { id: "background", label: "Background" },
+];
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+async function uploadAsset(
+  field: "video" | "reference",
+  file: File
+): Promise<SwapUploadedAsset> {
+  const formData = new FormData();
+  formData.append(field, file);
+  const response = await fetch("/api/swap-assets", {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(
+      body?.error ?? (field === "video" ? "Video upload failed." : "Reference image upload failed.")
+    );
+  }
+  const data = (await response.json()) as {
+    video?: SwapUploadedAsset | null;
+    reference?: SwapUploadedAsset | null;
+  };
+  return (field === "video" ? data.video : data.reference) as SwapUploadedAsset;
 }

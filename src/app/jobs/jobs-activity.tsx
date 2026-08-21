@@ -55,112 +55,6 @@ type JobsActivityProps = {
   filteredTotal: number;
 };
 
-const STATUS_FILTERS: Array<{ value: JobsStatusFilter; label: string }> = [
-  { value: "all", label: "All activity" },
-  { value: "active", label: "Active" },
-  { value: "completed", label: "Completed" },
-  { value: "failed", label: "Failed" },
-];
-
-const TYPE_FILTERS: Array<{ value: JobsTypeFilter; label: string }> = [
-  { value: "all", label: "All media" },
-  { value: "image", label: "Images" },
-  { value: "video", label: "Videos" },
-];
-
-function buildJobsHref(
-  status: JobsStatusFilter,
-  type: JobsTypeFilter,
-  page = 1
-) {
-  const params = new URLSearchParams();
-  if (status !== "all") params.set("status", status);
-  if (type !== "all") params.set("type", type);
-  if (page > 1) params.set("page", String(page));
-  const query = params.toString();
-  return query ? `/jobs?${query}` : "/jobs";
-}
-
-function formatJobDate(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(date);
-}
-
-function formatDuration(durationMs: number | null) {
-  if (durationMs === null) return "—";
-  if (durationMs < 60_000) return `${Math.max(1, Math.round(durationMs / 1_000))}s`;
-  const minutes = Math.floor(durationMs / 60_000);
-  const seconds = Math.round((durationMs % 60_000) / 1_000);
-  return `${minutes}m ${seconds}s`;
-}
-
-function StatusPill({ job }: { job: JobActivityItem }) {
-  const label = getJobStatusLabel(job);
-  const active = isActiveGenerationJob(job);
-
-  return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold",
-        active &&
-          "border-[var(--pf-lamp-amber)]/30 bg-[var(--pf-lamp-amber)]/10 text-[var(--pf-lamp-amber)]",
-        job.status === "completed" &&
-          "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
-        job.status === "failed" &&
-          "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-      )}
-    >
-      {active ? (
-        <span className="pf-lamp" />
-      ) : job.status === "completed" ? (
-        <Check className="size-3" />
-      ) : (
-        <CircleX className="size-3" />
-      )}
-      {label}
-    </span>
-  );
-}
-
-function SummaryCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)]">
-      <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-        {label}
-      </span>
-      <strong className="mt-1.5 block text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
-        {value}
-      </strong>
-    </div>
-  );
-}
-
-function EmptyJobs({ status }: { status: JobsStatusFilter }) {
-  const active = status === "active";
-  return (
-    <div className="flex min-h-[300px] flex-col items-center justify-center px-5 py-10 text-center">
-      <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
-        {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
-      </span>
-      <h2 className="mt-3 text-[15px] font-semibold text-[var(--pf-ink)]">
-        {active ? "No jobs are running" : "No jobs match these filters"}
-      </h2>
-      <p className="mt-1 max-w-sm text-[12px] leading-5 text-[var(--pf-muted)]">
-        {active
-          ? "New image, video, reference, slideshow, and identity generations will appear here as soon as they start."
-          : "Try another status or media type. This view keeps completed and failed activity for 30 days."}
-      </p>
-      <Link href="/generate" className="pf-button-primary mt-4">
-        Create asset <ArrowRight className="size-3.5" />
-      </Link>
-    </div>
-  );
-}
-
 export function JobsActivity({
   jobs,
   counts,
@@ -337,6 +231,113 @@ export function JobsActivity({
           </footer>
         </section>
       </div>
+    </div>
+  );
+}
+
+
+const STATUS_FILTERS: Array<{ value: JobsStatusFilter; label: string }> = [
+  { value: "all", label: "All activity" },
+  { value: "active", label: "Active" },
+  { value: "completed", label: "Completed" },
+  { value: "failed", label: "Failed" },
+];
+
+const TYPE_FILTERS: Array<{ value: JobsTypeFilter; label: string }> = [
+  { value: "all", label: "All media" },
+  { value: "image", label: "Images" },
+  { value: "video", label: "Videos" },
+];
+
+function buildJobsHref(
+  status: JobsStatusFilter,
+  type: JobsTypeFilter,
+  page = 1
+) {
+  const params = new URLSearchParams();
+  if (status !== "all") params.set("status", status);
+  if (type !== "all") params.set("type", type);
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `/jobs?${query}` : "/jobs";
+}
+
+function formatJobDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function formatDuration(durationMs: number | null) {
+  if (durationMs === null) return "—";
+  if (durationMs < 60_000) return `${Math.max(1, Math.round(durationMs / 1_000))}s`;
+  const minutes = Math.floor(durationMs / 60_000);
+  const seconds = Math.round((durationMs % 60_000) / 1_000);
+  return `${minutes}m ${seconds}s`;
+}
+
+function StatusPill({ job }: { job: JobActivityItem }) {
+  const label = getJobStatusLabel(job);
+  const active = isActiveGenerationJob(job);
+
+  return (
+    <span
+      className={cn(
+        "inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold",
+        active &&
+          "border-[var(--pf-lamp-amber)]/30 bg-[var(--pf-lamp-amber)]/10 text-[var(--pf-lamp-amber)]",
+        job.status === "completed" &&
+          "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
+        job.status === "failed" &&
+          "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
+      )}
+    >
+      {active ? (
+        <span className="pf-lamp" />
+      ) : job.status === "completed" ? (
+        <Check className="size-3" />
+      ) : (
+        <CircleX className="size-3" />
+      )}
+      {label}
+    </span>
+  );
+}
+
+function SummaryCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)]">
+      <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
+        {label}
+      </span>
+      <strong className="mt-1.5 block text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
+        {value}
+      </strong>
+    </div>
+  );
+}
+
+function EmptyJobs({ status }: { status: JobsStatusFilter }) {
+  const active = status === "active";
+  return (
+    <div className="flex min-h-[300px] flex-col items-center justify-center px-5 py-10 text-center">
+      <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
+        {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
+      </span>
+      <h2 className="mt-3 text-[15px] font-semibold text-[var(--pf-ink)]">
+        {active ? "No jobs are running" : "No jobs match these filters"}
+      </h2>
+      <p className="mt-1 max-w-sm text-[12px] leading-5 text-[var(--pf-muted)]">
+        {active
+          ? "New image, video, reference, slideshow, and identity generations will appear here as soon as they start."
+          : "Try another status or media type. This view keeps completed and failed activity for 30 days."}
+      </p>
+      <Link href="/generate" className="pf-button-primary mt-4">
+        Create asset <ArrowRight className="size-3.5" />
+      </Link>
     </div>
   );
 }

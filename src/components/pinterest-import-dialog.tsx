@@ -28,39 +28,6 @@ import {
 import type { PinterestCandidateSource } from "@/lib/collections/pinterest-types";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 
-function isPinterestBoardUrl(value: string) {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase().replace(/\.$/, "");
-    const isPinterestHost =
-      host === "pin.it" ||
-      host === "pinterest.com" ||
-      host.endsWith(".pinterest.com");
-    return url.protocol === "https:" && !url.username && !url.password && isPinterestHost;
-  } catch {
-    return false;
-  }
-}
-
-function defaultCollectionName(source: PinterestCandidateSource, value: string) {
-  let subject = value.trim();
-  if (source === "board") {
-    try {
-      subject = new URL(subject).pathname.split("/").filter(Boolean).at(-1) ?? "";
-    } catch {
-      subject = "";
-    }
-  }
-  subject = subject
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  const titled = subject
-    ? `${subject.charAt(0).toUpperCase()}${subject.slice(1)}`
-    : "Pinterest";
-  return `${titled} references`.slice(0, 160);
-}
-
 export function PinterestImportDialog({
   open,
   onOpenChange,
@@ -339,4 +306,38 @@ export function PinterestImportDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+
+function isPinterestBoardUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/\.$/, "");
+    const isPinterestHost =
+      host === "pin.it" ||
+      host === "pinterest.com" ||
+      host.endsWith(".pinterest.com");
+    return url.protocol === "https:" && !url.username && !url.password && isPinterestHost;
+  } catch {
+    return false;
+  }
+}
+
+function defaultCollectionName(source: PinterestCandidateSource, value: string) {
+  let subject = value.trim();
+  if (source === "board") {
+    try {
+      subject = new URL(subject).pathname.split("/").filter(Boolean).at(-1) ?? "";
+    } catch {
+      subject = "";
+    }
+  }
+  subject = subject
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const titled = subject
+    ? `${subject.charAt(0).toUpperCase()}${subject.slice(1)}`
+    : "Pinterest";
+  return `${titled} references`.slice(0, 160);
 }

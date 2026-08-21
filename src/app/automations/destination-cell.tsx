@@ -16,33 +16,6 @@ import {
 } from "@/lib/automations";
 import type { PublicIntegrationStatus } from "@/lib/integrations/types";
 
-function destinationWarningLabel(
-  code: AutomationDestinationReadiness["code"]
-) {
-  switch (code) {
-    case "not_configured":
-      return "Provider not configured";
-    case "missing_publish":
-      return "Upload scope missing";
-    case "reauthorization_required":
-      return "Reconnect required";
-    case "account_unbound":
-      return "Choose the connected account";
-    case "account_changed":
-      return "Connected account changed";
-    case "disconnected":
-      return "Account disconnected";
-    case "unavailable":
-    case "manual":
-    case "ready":
-      return "Connection status unavailable";
-    default: {
-      const _exhaustive: never = code;
-      return _exhaustive;
-    }
-  }
-}
-
 export function AutomationDestinationCell({
   record,
   providers,
@@ -111,4 +84,32 @@ export function AutomationDestinationCell({
       </span>
     </div>
   );
+}
+
+
+function destinationWarningLabel(
+  code: AutomationDestinationReadiness["code"]
+) {
+  switch (code) {
+    case "not_configured":
+      return "Provider not configured";
+    case "missing_publish":
+      return "Upload scope missing";
+    case "reauthorization_required":
+      return "Reconnect required";
+    case "account_unbound":
+      return "Choose the connected account";
+    case "account_changed":
+      return "Connected account changed";
+    case "disconnected":
+      return "Account disconnected";
+    case "unavailable":
+    case "manual":
+    case "ready":
+      return "Connection status unavailable";
+    default: {
+      const _exhaustive: never = code;
+      return _exhaustive;
+    }
+  }
 }

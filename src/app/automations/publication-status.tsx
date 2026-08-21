@@ -3,15 +3,6 @@
 import { cn } from "@/lib/utils";
 import type { AutomationPublication } from "@/lib/automations";
 
-function publicationVisibilityLabel(publication: AutomationPublication) {
-  if (publication.providerVisibility) {
-    return publication.providerVisibility.replaceAll("_", " ").toLowerCase();
-  }
-  return publication.visibility
-    ? `${publication.visibility} requested · provider privacy readback unavailable`
-    : "provider privacy pending";
-}
-
 export function PublicationStatus({
   publication,
 }: {
@@ -55,4 +46,14 @@ export function PublicationStatus({
       )}
     </div>
   );
+}
+
+
+function publicationVisibilityLabel(publication: AutomationPublication) {
+  if (publication.providerVisibility) {
+    return publication.providerVisibility.replaceAll("_", " ").toLowerCase();
+  }
+  return publication.visibility
+    ? `${publication.visibility} requested · provider privacy readback unavailable`
+    : "provider privacy pending";
 }

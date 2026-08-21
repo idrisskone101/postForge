@@ -6,26 +6,6 @@ import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
 import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
 import { cn } from "@/lib/utils";
 
-function ReferencePortraitFrame({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      data-reference-portrait-frame="true"
-      className={cn(
-        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function CloneReferenceInputs({
   workspace,
 }: {
@@ -220,6 +200,27 @@ export function CloneReferenceInputs({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+
+function ReferencePortraitFrame({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      data-reference-portrait-frame="true"
+      className={cn(
+        "mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
+        className
+      )}
+    >
+      {children}
     </div>
   );
 }

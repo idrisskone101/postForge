@@ -6,17 +6,6 @@ import { Switch } from "@/components/ui/switch";
 
 import type { SlideshowPublishWorkspace } from "./view-models";
 
-const VISIBILITY_OPTIONS = ["public", "friends", "private"] as const;
-
-function parseVisibility(
-  value: string,
-): SlideshowPublishWorkspace["visibility"] {
-  for (const option of VISIBILITY_OPTIONS) {
-    if (option === value) return option;
-  }
-  return "public";
-}
-
 export function PublishTikTokFields({
   publish,
 }: {
@@ -141,4 +130,16 @@ export function PublishTikTokFields({
       </div>
     </>
   );
+}
+
+
+const VISIBILITY_OPTIONS = ["public", "friends", "private"] as const;
+
+function parseVisibility(
+  value: string,
+): SlideshowPublishWorkspace["visibility"] {
+  for (const option of VISIBILITY_OPTIONS) {
+    if (option === value) return option;
+  }
+  return "public";
 }

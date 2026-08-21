@@ -23,8 +23,6 @@ import {
 } from "./spend-models";
 import { SpendStatCards } from "./spend-stat-cards";
 
-const BUDGET_STORAGE_KEY = "postforge-production-budget";
-
 export function SpendPageContent({
   dashboard,
   handlers,
@@ -281,3 +279,6 @@ export function SpendPageContent({
     </div>
   );
 }
+
+
+const BUDGET_STORAGE_KEY = "postforge-production-budget";

@@ -11,12 +11,6 @@ import { CheckCircle2, CircleDashed, Loader2, XCircle } from "lucide-react";
 import { patchGalleryReviewStatus } from "./review-api";
 import type { GalleryFeedback } from "./types";
 
-const reviewStatusIcons = {
-  needs_review: CircleDashed,
-  approved_output: CheckCircle2,
-  rejected_output: XCircle,
-} satisfies Record<OutputReviewStatus, typeof CircleDashed>;
-
 export function GalleryReviewStatusControl({
   outputId,
   reviewStatus,
@@ -116,3 +110,10 @@ export function GalleryReviewStatusControl({
     </div>
   );
 }
+
+
+const reviewStatusIcons = {
+  needs_review: CircleDashed,
+  approved_output: CheckCircle2,
+  rejected_output: XCircle,
+} satisfies Record<OutputReviewStatus, typeof CircleDashed>;

@@ -10,13 +10,6 @@ type SocialProviderIconProps = {
   youtubeVariant?: "provider" | "shorts";
 };
 
-const BRAND_ASSETS = {
-  tiktok: "/brands/tiktok.svg",
-  instagram: "/brands/instagram.svg",
-  youtube: "/brands/youtube.svg",
-  shorts: "/brands/youtube-shorts.svg",
-} as const;
-
 export function SocialProviderIcon({
   provider,
   className,
@@ -53,3 +46,11 @@ export function SocialProviderIcon({
     </span>
   );
 }
+
+
+const BRAND_ASSETS = {
+  tiktok: "/brands/tiktok.svg",
+  instagram: "/brands/instagram.svg",
+  youtube: "/brands/youtube.svg",
+  shorts: "/brands/youtube-shorts.svg",
+} as const;

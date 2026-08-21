@@ -13,6 +13,39 @@ import {
 } from "@/lib/workspace-navigation";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
+export function WorkspaceShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (isPublicPolicyPath(pathname)) {
+    return (
+      <div id="workspace-shell" className="min-h-dvh min-w-0 bg-[var(--pf-canvas)]">
+        {children}
+      </div>
+    );
+  }
+
+  const activeItem =
+    getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
+  const hideHeader = routeOwnsHeader(pathname);
+  const hasHeaderAccessory = routeProvidesHeaderAccessory(pathname);
+
+  return (
+    <main
+      id="workspace-shell"
+      className="min-h-dvh min-w-0 overflow-x-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:ml-[72px] md:pt-0 xl:ml-64"
+    >
+      {!hideHeader && (
+        <WorkspaceRouteHeader
+          activeItem={activeItem}
+          hasAccessory={hasHeaderAccessory}
+        />
+      )}
+
+      {children}
+    </main>
+  );
+}
+
+
 export function WorkspaceHeaderAccessory({ children }: { children: ReactNode }) {
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
@@ -94,37 +127,5 @@ export function WorkspaceRouteHeader({
         </div>
       </div>
     </div>
-  );
-}
-
-export function WorkspaceShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  if (isPublicPolicyPath(pathname)) {
-    return (
-      <div id="workspace-shell" className="min-h-dvh min-w-0 bg-[var(--pf-canvas)]">
-        {children}
-      </div>
-    );
-  }
-
-  const activeItem =
-    getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
-  const hideHeader = routeOwnsHeader(pathname);
-  const hasHeaderAccessory = routeProvidesHeaderAccessory(pathname);
-
-  return (
-    <main
-      id="workspace-shell"
-      className="min-h-dvh min-w-0 overflow-x-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:ml-[72px] md:pt-0 xl:ml-64"
-    >
-      {!hideHeader && (
-        <WorkspaceRouteHeader
-          activeItem={activeItem}
-          hasAccessory={hasHeaderAccessory}
-        />
-      )}
-
-      {children}
-    </main>
   );
 }
