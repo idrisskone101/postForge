@@ -369,10 +369,16 @@ await assert.rejects(
     error.code === "pinterest_response_too_large",
 );
 
-const pinterestDialogSource = readFileSync(
-  new URL("../../src/components/pinterest-import-dialog.tsx", import.meta.url),
-  "utf8",
-);
+const pinterestDialogSource = [
+  "pinterest-import-dialog.tsx",
+  "pinterest-import-search.tsx",
+  "pinterest-import-results.tsx",
+  "pinterest-import-footer.tsx",
+]
+  .map((file) =>
+    readFileSync(new URL(`../../src/components/${file}`, import.meta.url), "utf8"),
+  )
+  .join("\n");
 const creatorViewSource = readFileSync(
   new URL("../../src/components/slideshow/creator-view.tsx", import.meta.url),
   "utf8",
