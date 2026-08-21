@@ -11,10 +11,8 @@ import {
   type ProviderPublicationStatus,
   type ProviderPublishProgress,
   type ProviderShortPublishRequest,
-  type ProviderShortPublishResult,
   type ShortPublishMedia,
 } from "./publishing-types";
-import { resumeYouTubeUpload } from "./publishing-youtube-resume";
 
 function validateYouTubeShortMedia(media: ShortPublishMedia) {
   const metadata = validateCommonMedia(media);
@@ -89,12 +87,15 @@ export async function queryYouTubePublishStatus(
   };
 }
 
-export async function publishYouTubeShort(
+export async function initializeYouTubeShortUpload(
   request: ProviderShortPublishRequest,
   fetchImpl: ProviderFetch,
   onProgress: (progress: ProviderPublishProgress) => Promise<void>,
   onRecoverySession: (uploadUrl: string) => Promise<void>
-): Promise<ProviderShortPublishResult> {
+): Promise<{
+  uploadUrl: string;
+  visibility: "private" | "unlisted" | "public";
+}> {
   validateYouTubeShortMedia(request.media);
   const settings = request.youtubeSettings;
   if (!settings) {
@@ -193,13 +194,5 @@ export async function publishYouTubeShort(
     visibility,
     providerVisibility: null,
   });
-  return resumeYouTubeUpload(
-    {
-      uploadUrl,
-      accessToken: request.accessToken,
-      media: request.media,
-      visibility,
-    },
-    { fetch: fetchImpl, onProgress }
-  );
+  return { uploadUrl, visibility };
 }
