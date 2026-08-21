@@ -26,29 +26,8 @@ import { SpendStatCards } from "./spend-stat-cards";
 const BUDGET_STORAGE_KEY = "postforge-production-budget";
 
 export function SpendPageContent({
-  totalCost,
-  currentPeriodCost,
-  changePercent,
-  avgCycleCost,
-  totalJobs,
-  topModel,
-  chartData,
-  byModel,
-  breakdown,
-  logs,
-  logPage,
-  logTotalCount,
-  logHasNext,
-  logFilterActive,
-  search,
-  model,
-  period,
-  onPeriodChange,
-  onLogPageChange,
-  onSearchChange,
-  onModelChange,
-  onClearFilters,
-  onExportCsv,
+  dashboard,
+  handlers,
 }: SpendPageContentProps) {
   const [budget, setBudget] = useState(250);
   const [budgetInput, setBudgetInput] = useState("250");
@@ -81,26 +60,26 @@ export function SpendPageContent({
   const view = useMemo(
     () =>
       buildSpendDashboardView({
-        byModel,
-        model,
-        logPage,
-        logTotalCount,
-        logFilterActive,
-        breakdown,
-        currentPeriodCost,
+        byModel: dashboard.byModel,
+        model: dashboard.model,
+        logPage: dashboard.logPage,
+        logTotalCount: dashboard.logTotalCount,
+        logFilterActive: dashboard.logFilterActive,
+        breakdown: dashboard.breakdown,
+        currentPeriodCost: dashboard.currentPeriodCost,
         budget,
-        changePercent,
+        changePercent: dashboard.changePercent,
       }),
     [
-      byModel,
-      model,
-      logPage,
-      logTotalCount,
-      logFilterActive,
-      breakdown,
-      currentPeriodCost,
+      dashboard.byModel,
+      dashboard.model,
+      dashboard.logPage,
+      dashboard.logTotalCount,
+      dashboard.logFilterActive,
+      dashboard.breakdown,
+      dashboard.currentPeriodCost,
       budget,
-      changePercent,
+      dashboard.changePercent,
     ]
   );
 
@@ -108,7 +87,7 @@ export function SpendPageContent({
     if (exporting) return;
     setExporting(true);
     try {
-      const count = await onExportCsv();
+      const count = await handlers.onExportCsv();
       setFeedback(
         `Exported ${count} cost log ${count === 1 ? "entry" : "entries"}.`
       );
@@ -153,13 +132,13 @@ export function SpendPageContent({
               <button
                 key={option}
                 type="button"
-                aria-pressed={period === option}
+                aria-pressed={dashboard.period === option}
                 onClick={() => {
-                  onPeriodChange(option);
+                  handlers.onPeriodChange(option);
                 }}
                 className={cn(
                   "h-8 rounded-md px-3 transition-colors",
-                  period === option
+                  dashboard.period === option
                     ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                 )}
@@ -201,17 +180,7 @@ export function SpendPageContent({
         </div>
       )}
 
-      <SpendStatCards
-        totalCost={totalCost}
-        currentPeriodCost={currentPeriodCost}
-        changePercent={changePercent}
-        avgCycleCost={avgCycleCost}
-        totalJobs={totalJobs}
-        topModel={topModel}
-        period={period}
-        budget={budget}
-        view={view}
-      />
+      <SpendStatCards dashboard={dashboard} view={view} />
 
       <section
         className={cn(
@@ -250,7 +219,7 @@ export function SpendPageContent({
             />
           </div>
           <span className="shrink-0 text-[11px] font-medium text-muted-foreground">
-            {formatCost(currentPeriodCost)} / {formatCost(budget)}
+            {formatCost(dashboard.currentPeriodCost)} / {formatCost(view.budget)}
           </span>
         </div>
         <button
@@ -263,24 +232,12 @@ export function SpendPageContent({
         </button>
       </section>
 
-      <SpendAnalysisGrid
-        chartData={chartData}
-        breakdown={breakdown}
-        period={period}
-        view={view}
-      />
+      <SpendAnalysisGrid dashboard={dashboard} view={view} />
 
       <SpendGenerationLog
-        logs={logs}
-        logTotalCount={logTotalCount}
-        logHasNext={logHasNext}
-        search={search}
-        model={model}
+        dashboard={dashboard}
         view={view}
-        onLogPageChange={onLogPageChange}
-        onSearchChange={onSearchChange}
-        onModelChange={onModelChange}
-        onClearFilters={onClearFilters}
+        handlers={handlers}
       />
 
       <Dialog open={budgetOpen} onOpenChange={setBudgetOpen}>

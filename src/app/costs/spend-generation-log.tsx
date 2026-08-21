@@ -9,39 +9,25 @@ import {
 } from "@/components/ui/table";
 import { WorkspaceState } from "@/components/workspace-state";
 import { COST_LOG_PAGE_SIZE } from "@/lib/costs/spend-period";
-import type { CostLogEntry } from "@/lib/costs/tracker";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import type { SpendDashboardView, SpendPageHandlers } from "./spend-models";
+import type {
+  CostsPageClientProps,
+  SpendDashboardView,
+  SpendPageHandlers,
+} from "./spend-models";
 
 type SpendGenerationLogProps = {
-  logs: CostLogEntry[];
-  logTotalCount: number;
-  logHasNext: boolean;
-  search: string;
-  model: string | null;
-  view: Pick<
-    SpendDashboardView,
-    "modelOptions" | "totalPages" | "safeLogPage" | "emptyPeriod"
-  >;
-  onLogPageChange: SpendPageHandlers["onLogPageChange"];
-  onSearchChange: SpendPageHandlers["onSearchChange"];
-  onModelChange: SpendPageHandlers["onModelChange"];
-  onClearFilters: SpendPageHandlers["onClearFilters"];
+  dashboard: CostsPageClientProps;
+  view: SpendDashboardView;
+  handlers: SpendPageHandlers;
 };
 
 export function SpendGenerationLog({
-  logs,
-  logTotalCount,
-  logHasNext,
-  search,
-  model,
+  dashboard,
   view,
-  onLogPageChange,
-  onSearchChange,
-  onModelChange,
-  onClearFilters,
+  handlers,
 }: SpendGenerationLogProps) {
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]">
@@ -49,7 +35,7 @@ export function SpendGenerationLog({
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold">Generation Log</h2>
           <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">
-            {logTotalCount} {logTotalCount === 1 ? "entry" : "entries"}
+            {dashboard.logTotalCount} {dashboard.logTotalCount === 1 ? "entry" : "entries"}
           </span>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -58,19 +44,19 @@ export function SpendGenerationLog({
             <span className="sr-only">Search cost log</span>
             <input
               type="search"
-              value={search}
+              value={dashboard.search}
               onChange={(event) => {
-                onSearchChange(event.target.value);
+                handlers.onSearchChange(event.target.value);
               }}
               placeholder="Search generations"
               className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
             />
           </label>
           <select
-            value={model ?? "all"}
+            value={dashboard.model ?? "all"}
             onChange={(event) => {
               const next = event.target.value;
-              onModelChange(next === "all" ? null : next);
+              handlers.onModelChange(next === "all" ? null : next);
             }}
             aria-label="Filter cost log by model"
             className="h-9 rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -107,7 +93,7 @@ export function SpendGenerationLog({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs.length === 0 ? (
+            {dashboard.logs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="py-2">
                   <WorkspaceState
@@ -122,7 +108,7 @@ export function SpendGenerationLog({
                     action={
                       view.emptyPeriod
                         ? { href: "/ugc-clone", label: "Start Clone" }
-                        : { label: "Clear filters", onClick: onClearFilters }
+                        : { label: "Clear filters", onClick: handlers.onClearFilters }
                     }
                     secondaryAction={
                       view.emptyPeriod
@@ -134,7 +120,7 @@ export function SpendGenerationLog({
                 </TableCell>
               </TableRow>
             ) : (
-              logs.map((log) => (
+              dashboard.logs.map((log) => (
                 <TableRow key={log.id} className="hover:bg-muted/40">
                   <TableCell>
                     <strong className="block max-w-52 truncate text-xs font-semibold">
@@ -170,7 +156,7 @@ export function SpendGenerationLog({
         </Table>
       </div>
 
-      {logTotalCount > COST_LOG_PAGE_SIZE && (
+      {dashboard.logTotalCount > COST_LOG_PAGE_SIZE && (
         <footer className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
           <span className="text-[11px] text-muted-foreground">
             Page <strong className="text-foreground">{view.safeLogPage + 1}</strong> of {view.totalPages}
@@ -180,7 +166,7 @@ export function SpendGenerationLog({
               type="button"
               aria-label="Previous cost log page"
               disabled={view.safeLogPage === 0}
-              onClick={() => onLogPageChange(Math.max(0, view.safeLogPage - 1))}
+              onClick={() => handlers.onLogPageChange(Math.max(0, view.safeLogPage - 1))}
               className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronLeft className="size-3.5" />
@@ -188,8 +174,8 @@ export function SpendGenerationLog({
             <button
               type="button"
               aria-label="Next cost log page"
-              disabled={!logHasNext}
-              onClick={() => onLogPageChange(view.safeLogPage + 1)}
+              disabled={!dashboard.logHasNext}
+              onClick={() => handlers.onLogPageChange(view.safeLogPage + 1)}
               className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronRight className="size-3.5" />

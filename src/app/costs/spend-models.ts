@@ -42,7 +42,10 @@ export type SpendPageHandlers = {
   onExportCsv: () => Promise<number>;
 };
 
-export type SpendPageContentProps = CostsPageClientProps & SpendPageHandlers;
+export type SpendPageContentProps = {
+  dashboard: CostsPageClientProps;
+  handlers: SpendPageHandlers;
+};
 
 export type SpendWorkflowSlice = {
   name: string;
@@ -59,6 +62,7 @@ export type SpendDashboardView = {
   imagePct: number;
   videoPct: number;
   workflowPieData: SpendWorkflowSlice[];
+  budget: number;
   budgetPercent: number;
   budgetRemaining: number;
   changeIsUp: boolean;
@@ -108,6 +112,7 @@ export function buildSpendDashboardView(input: {
       { name: "Image", value: input.breakdown.image.cost },
       { name: "Video", value: input.breakdown.video.cost },
     ].filter((entry) => entry.value > 0),
+    budget: input.budget,
     budgetPercent:
       input.budget > 0
         ? Math.min(100, (input.currentPeriodCost / input.budget) * 100)
