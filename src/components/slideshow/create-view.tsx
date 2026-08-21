@@ -24,37 +24,16 @@ import {
   INPUT,
   StepChip,
 } from "./studio-ui";
-import type {
-  SlideshowCreatorGenerateInput,
-  SlideshowStoryGenerateInput,
-  SlideshowTemplate,
-} from "./types";
+import type { StudioHomeView } from "./view-models";
 
-export function CreateView({
-  templates,
-  generating,
-  onGenerateStory,
-  onCustom,
-  onUseTemplate,
-  onBrowseTemplates,
-  onGenerateCreator,
-  imageModels = [],
-  selectedImageModel,
-  onSelectImageModel,
-  creatorGenerating = false,
-}: {
-  templates: SlideshowTemplate[];
-  generating: boolean;
-  onGenerateStory: (input: SlideshowStoryGenerateInput) => Promise<void>;
-  onCustom: () => void;
-  onUseTemplate: (template: SlideshowTemplate) => void;
-  onBrowseTemplates: () => void;
-  onGenerateCreator: (input: SlideshowCreatorGenerateInput) => Promise<void>;
-  imageModels?: Array<{ id: string; name: string }>;
-  selectedImageModel?: string | null;
-  onSelectImageModel?: (id: string) => void;
-  creatorGenerating?: boolean;
-}) {
+export function CreateView({ home }: { home: StudioHomeView }) {
+  const {
+    templates,
+    generatingStory: generating,
+    onGenerateStory,
+    onCustom,
+    onBrowseTemplates,
+  } = home;
   const [mode, setMode] = useState<"one-idea" | "own-copy">("one-idea");
   const [idea, setIdea] = useState("");
   const [slideCount, setSlideCount] = useState(7);
@@ -137,13 +116,7 @@ export function CreateView({
       </div>
 
       {mode === "own-copy" ? (
-        <CreatorView
-          imageModels={imageModels}
-          selectedImageModel={selectedImageModel}
-          onSelectImageModel={onSelectImageModel}
-          generating={creatorGenerating}
-          onGenerateCreator={onGenerateCreator}
-        />
+        <CreatorView home={home} />
       ) : (
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
         <section className={cn(CARD, "p-5")} aria-label="Generate a slideshow with AI">
@@ -331,11 +304,7 @@ export function CreateView({
         </div>
       </div>
       )}
-      <CreateTemplateGallery
-        templates={templates}
-        onBrowseTemplates={onBrowseTemplates}
-        onUseTemplate={onUseTemplate}
-      />
+      <CreateTemplateGallery home={home} />
     </div>
   );
 }

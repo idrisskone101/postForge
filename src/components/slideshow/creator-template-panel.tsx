@@ -17,34 +17,23 @@ import {
   INPUT,
   SECONDARY_BTN,
 } from "./studio-ui";
+import type { CreatorDraft } from "./view-models";
 
-export function CreatorTemplatePanel({
-  onOpenPinterest,
-  referenceAssetIds,
-  onReferenceAssetIdsChange,
-  referenceRefreshKey,
-  preferredReferenceAssetIds,
-  deriving,
-  onDeriveFromReferences,
-  templateText,
-  onTemplateTextChange,
-  copiedJson,
-  onCopyTemplateJson,
-  templateError,
-}: {
-  onOpenPinterest: () => void;
-  referenceAssetIds: string[];
-  onReferenceAssetIdsChange: (ids: string[]) => void;
-  referenceRefreshKey: number;
-  preferredReferenceAssetIds: string[];
-  deriving: boolean;
-  onDeriveFromReferences: () => void;
-  templateText: string;
-  onTemplateTextChange: (value: string) => void;
-  copiedJson: boolean;
-  onCopyTemplateJson: () => void;
-  templateError: string | null;
-}) {
+export function CreatorTemplatePanel({ draft }: { draft: CreatorDraft }) {
+  const {
+    onOpenPinterest,
+    referenceAssetIds,
+    onReferenceAssetIdsChange,
+    referenceRefreshKey,
+    preferredReferenceAssetIds,
+    deriving,
+    onDeriveFromReferences,
+    templateText,
+    onTemplateTextChange,
+    copiedJson,
+    onCopyTemplateJson,
+    templateError,
+  } = draft;
   return (
         <section className={cn(CARD, "p-5")} aria-label="Visual template">
           <div className="flex items-center gap-2.5">

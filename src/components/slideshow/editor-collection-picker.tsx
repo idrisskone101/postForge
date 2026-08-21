@@ -12,24 +12,22 @@ import {
 } from "@/components/ui/dialog";
 
 import { SECONDARY_BTN } from "./studio-ui";
+import type { SlideshowEditorWorkspace } from "./view-models";
 
 export function EditorCollectionPicker({
-  open,
-  pickerAssetIds,
-  onOpenChange,
-  onPickerAssetIdsChange,
-  onCancel,
-  onApply,
+  workspace,
 }: {
-  open: boolean;
-  pickerAssetIds: string[];
-  onOpenChange: (open: boolean) => void;
-  onPickerAssetIdsChange: (ids: string[]) => void;
-  onCancel: () => void;
-  onApply: () => void;
+  workspace: SlideshowEditorWorkspace;
 }) {
+  const {
+    pickerOpen: open,
+    pickerAssetIds,
+    setPickerOpen,
+    setPickerAssetIds,
+    applyPickedAssets,
+  } = workspace;
   return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={setPickerOpen}>
         <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
           <DialogHeader>
             <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
@@ -41,7 +39,7 @@ export function EditorCollectionPicker({
           </DialogHeader>
           <CollectionReferencePicker
             selectedAssetIds={pickerAssetIds}
-            onChange={onPickerAssetIdsChange}
+            onChange={(ids) => setPickerAssetIds(ids)}
             maxSelection={4}
           />
           <div className="flex items-center justify-between border-t border-border pt-4">
@@ -52,7 +50,10 @@ export function EditorCollectionPicker({
               <button
                 type="button"
                 className={SECONDARY_BTN}
-                onClick={onCancel}
+                onClick={() => {
+                  setPickerOpen(false);
+                  setPickerAssetIds([]);
+                }}
               >
                 Cancel
               </button>
@@ -60,7 +61,7 @@ export function EditorCollectionPicker({
                 type="button"
                 className="pf-button-primary"
                 disabled={!pickerAssetIds.length}
-                onClick={onApply}
+                onClick={applyPickedAssets}
               >
                 <Check className="size-3.5" />
                 Apply to slide

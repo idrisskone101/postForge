@@ -5,6 +5,7 @@ import { Archive, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import type { SlideshowSection } from "./types";
+import type { StudioHomeView } from "./view-models";
 
 const sections: Array<{
   id: SlideshowSection;
@@ -15,15 +16,8 @@ const sections: Array<{
   { id: "drafts", label: "Drafts", icon: Archive },
 ];
 
-export function StudioSectionNav({
-  section,
-  onChange,
-  draftsCount,
-}: {
-  section: SlideshowSection;
-  onChange: (section: SlideshowSection) => void;
-  draftsCount?: number;
-}) {
+export function StudioSectionNav({ home }: { home: StudioHomeView }) {
+  const { section, onSectionChange: onChange, draftsCount } = home;
   return (
     <nav
       aria-label="Slideshow studio"

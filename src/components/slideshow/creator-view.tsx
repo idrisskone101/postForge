@@ -12,24 +12,17 @@ import { CreatorTemplatePanel } from "./creator-template-panel";
 import { SAMPLE_CREATOR_TEMPLATE } from "./creator-template-sample";
 import { alignCreatorDirectImages } from "./model";
 import { MAX_CREATOR_SLIDES } from "./studio-ui";
-import type {
-  CreatorImagePickerTarget,
-  SlideshowCreatorGenerateInput,
-} from "./types";
+import type { CreatorImagePickerTarget } from "./types";
+import type { CreatorDraft, StudioHomeView } from "./view-models";
 
-export function CreatorView({
-  imageModels,
-  selectedImageModel,
-  onSelectImageModel,
-  generating,
-  onGenerateCreator,
-}: {
-  imageModels?: Array<{ id: string; name: string }>;
-  selectedImageModel?: string | null;
-  onSelectImageModel?: (id: string) => void;
-  generating: boolean;
-  onGenerateCreator: (input: SlideshowCreatorGenerateInput) => Promise<void>;
-}) {
+export function CreatorView({ home }: { home: StudioHomeView }) {
+  const {
+    imageModels,
+    selectedImageModel,
+    onSelectImageModel,
+    creatorGenerating: generating,
+    onGenerateCreator,
+  } = home;
   const [title, setTitle] = useState("");
   const [hook, setHook] = useState("");
   const [hookImageAssetId, setHookImageAssetId] = useState<string | null>(null);
@@ -274,52 +267,58 @@ export function CreatorView({
     slideAssetIds: slideImageAssetIds,
   }).some((assetId) => !assetId);
 
+  const draft: CreatorDraft = {
+    title,
+    onTitleChange: setTitle,
+    hook,
+    onHookChange: setHook,
+    hookImageAssetId,
+    onClearHookImage: () => setHookImageAssetId(null),
+    slideLines,
+    slideImageAssetIds,
+    onUpdateLine: updateLine,
+    onAddSlideLine: addSlideLine,
+    onRemoveSlideLine: removeSlideLine,
+    onClearSlideImage: (index) =>
+      setSlideImageAssetIds((current) =>
+        current.map((id, slideIndex) => (slideIndex === index ? null : id)),
+      ),
+    onOpenImagePicker: openImagePicker,
+    aspectRatio,
+    onAspectRatioChange: setAspectRatio,
+    imageModels,
+    selectedImageModel,
+    onSelectImageModel,
+    needsGeneration,
+    generating,
+    error,
+    onSubmit: () => void submit(),
+    onOpenPinterest: () => setPinterestOpen(true),
+    referenceAssetIds,
+    onReferenceAssetIdsChange: setReferenceAssetIds,
+    referenceRefreshKey,
+    preferredReferenceAssetIds,
+    deriving,
+    onDeriveFromReferences: () => void deriveFromReferences(),
+    templateText,
+    onTemplateTextChange: setTemplateText,
+    copiedJson,
+    onCopyTemplateJson: () => void copyTemplateJson(),
+    templateError,
+    target: imagePickerTarget,
+    pickerLabel,
+    pickerAssetIds,
+    onPickerAssetIdsChange: setPickerAssetIds,
+    onClosePicker: closeImagePicker,
+    onApplyPicker: applyPickedSlideImage,
+  };
+
   return (
     <>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
-        <CreatorCopyForm
-          title={title}
-          onTitleChange={setTitle}
-          hook={hook}
-          onHookChange={setHook}
-          hookImageAssetId={hookImageAssetId}
-          onClearHookImage={() => setHookImageAssetId(null)}
-          slideLines={slideLines}
-          slideImageAssetIds={slideImageAssetIds}
-          onUpdateLine={updateLine}
-          onAddSlideLine={addSlideLine}
-          onRemoveSlideLine={removeSlideLine}
-          onClearSlideImage={(index) =>
-            setSlideImageAssetIds((current) =>
-              current.map((id, slideIndex) => (slideIndex === index ? null : id)),
-            )
-          }
-          onOpenImagePicker={openImagePicker}
-          aspectRatio={aspectRatio}
-          onAspectRatioChange={setAspectRatio}
-          imageModels={imageModels}
-          selectedImageModel={selectedImageModel}
-          onSelectImageModel={onSelectImageModel}
-          needsGeneration={needsGeneration}
-          generating={generating}
-          error={error}
-          onSubmit={() => void submit()}
-        />
+        <CreatorCopyForm draft={draft} />
         <div className="grid gap-4">
-          <CreatorTemplatePanel
-            onOpenPinterest={() => setPinterestOpen(true)}
-            referenceAssetIds={referenceAssetIds}
-            onReferenceAssetIdsChange={setReferenceAssetIds}
-            referenceRefreshKey={referenceRefreshKey}
-            preferredReferenceAssetIds={preferredReferenceAssetIds}
-            deriving={deriving}
-            onDeriveFromReferences={() => void deriveFromReferences()}
-            templateText={templateText}
-            onTemplateTextChange={setTemplateText}
-            copiedJson={copiedJson}
-            onCopyTemplateJson={() => void copyTemplateJson()}
-            templateError={templateError}
-          />
+          <CreatorTemplatePanel draft={draft} />
         </div>
       </div>
       <PinterestImportDialog
@@ -333,16 +332,7 @@ export function CreatorView({
         }}
         onCreateVibe={createPinterestVibe}
       />
-      <CreatorImagePicker
-        target={imagePickerTarget}
-        pickerLabel={pickerLabel}
-        pickerAssetIds={pickerAssetIds}
-        onPickerAssetIdsChange={setPickerAssetIds}
-        referenceRefreshKey={referenceRefreshKey}
-        preferredReferenceAssetIds={preferredReferenceAssetIds}
-        onClose={closeImagePicker}
-        onApply={applyPickedSlideImage}
-      />
+      <CreatorImagePicker draft={draft} />
     </>
   );
 }
