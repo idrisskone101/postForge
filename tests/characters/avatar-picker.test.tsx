@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   AvatarActionErrorNotice,
   AvatarCreationCard,
   AvatarOptionCard,
+  type AvatarOptionView,
 } from "../../src/components/avatar-picker-cards";
 import { AvatarImportPanel } from "../../src/components/avatar-picker-import";
+import type { Avatar } from "../../src/lib/avatar-picker-model";
+import { importWorkspace } from "./avatar-import-workspace";
 import {
   buildAvatarGenerationPrompt,
   getAvatarImportReadiness,
@@ -79,21 +85,36 @@ assert.deepEqual(getAvatarImportReadiness("{bad json", 1), {
 assert.equal(getAvatarImportReadiness("[]", 0).seedError, "Add at least 1 Seed Reference Image.");
 assert.equal(getAvatarImportReadiness("[]", 6).seedError, "Use no more than 5 Seed Reference Images.");
 
+function optionView(
+  overrides: Partial<AvatarOptionView> & Pick<AvatarOptionView, "avatar" | "label">
+): AvatarOptionView {
+  return {
+    isSelected: false,
+    onSelect() {},
+    onDelete() {},
+    ...overrides,
+  };
+}
+
+const importedAvatar = (id: string, name: string, pack: Avatar["identityPack"]): Avatar => ({
+  id,
+  name,
+  createdAt: "2026-06-14T12:00:00.000Z",
+  origin: "imported",
+  identityPack: pack,
+});
+
 const importMarkup = renderToStaticMarkup(
   <AvatarImportPanel
-    rawJson="{bad json"
-    seedReferenceImages={[
-      { name: "front.jpg", size: 1000, type: "image/jpeg" },
-      { name: "side.jpg", size: 1200, type: "image/jpeg" },
-    ]}
-    isGeneratingCandidates={false}
-    generationError="Candidate generation failed. Your inputs are still available for retry."
+    workspace={importWorkspace({
+      rawJson: "{bad json",
+      seedReferenceImages: [
+        { name: "front.jpg", size: 1000, type: "image/jpeg" },
+        { name: "side.jpg", size: 1200, type: "image/jpeg" },
+      ],
+      generationError: "Candidate generation failed. Your inputs are still available for retry.",
+    })}
     onBack={() => {}}
-    onRawJsonChange={() => {}}
-    onJsonFileChange={() => {}}
-    onSeedReferenceImagesChange={() => {}}
-    onRemoveSeedReferenceImage={() => {}}
-    onGenerateCandidates={() => {}}
   />
 );
 
@@ -111,16 +132,11 @@ assert.match(importMarkup, /<button[^>]*disabled=""/);
 
 const readyImportMarkup = renderToStaticMarkup(
   <AvatarImportPanel
-    rawJson='{"anything":true}'
-    seedReferenceImages={[{ name: "front.jpg", size: 1000, type: "image/jpeg" }]}
-    isGeneratingCandidates={false}
-    generationError={null}
+    workspace={importWorkspace({
+      rawJson: '{"anything":true}',
+      seedReferenceImages: [{ name: "front.jpg", size: 1000, type: "image/jpeg" }],
+    })}
     onBack={() => {}}
-    onRawJsonChange={() => {}}
-    onJsonFileChange={() => {}}
-    onSeedReferenceImagesChange={() => {}}
-    onRemoveSeedReferenceImage={() => {}}
-    onGenerateCandidates={() => {}}
   />
 );
 
@@ -134,17 +150,14 @@ assert.doesNotMatch(
 
 const importedPreparingMarkup = renderToStaticMarkup(
   <AvatarOptionCard
-    avatar={{
-      id: "avatar-imported",
-      name: "Imported Creator",
-      createdAt: "2026-06-14T12:00:00.000Z",
-      origin: "imported",
-      identityPack: { id: "pack-queued", status: "queued", error: null },
-    }}
-    label="Identity 1"
-    isSelected={false}
-    onSelect={() => {}}
-    onDelete={() => {}}
+    option={optionView({
+      avatar: importedAvatar("avatar-imported", "Imported Creator", {
+        id: "pack-queued",
+        status: "queued",
+        error: null,
+      }),
+      label: "Identity 1",
+    })}
   />
 );
 
@@ -153,17 +166,14 @@ assert.match(importedPreparingMarkup, /Identity preparing/);
 
 const importedReadyMarkup = renderToStaticMarkup(
   <AvatarOptionCard
-    avatar={{
-      id: "avatar-ready",
-      name: "Ready Creator",
-      createdAt: "2026-06-14T12:00:00.000Z",
-      origin: "imported",
-      identityPack: { id: "pack-ready", status: "completed", error: null },
-    }}
-    label="Identity 2"
-    isSelected={false}
-    onSelect={() => {}}
-    onDelete={() => {}}
+    option={optionView({
+      avatar: importedAvatar("avatar-ready", "Ready Creator", {
+        id: "pack-ready",
+        status: "completed",
+        error: null,
+      }),
+      label: "Identity 2",
+    })}
   />
 );
 
@@ -172,20 +182,48 @@ assert.match(importedReadyMarkup, /Identity ready/);
 
 const importedFailedMarkup = renderToStaticMarkup(
   <AvatarOptionCard
-    avatar={{
-      id: "avatar-failed",
-      name: "Failed Creator",
-      createdAt: "2026-06-14T12:00:00.000Z",
-      origin: "imported",
-      identityPack: { id: "pack-failed", status: "failed", error: "Generation failed" },
-    }}
-    label="Identity 3"
-    isSelected={false}
-    onSelect={() => {}}
-    onDelete={() => {}}
+    option={optionView({
+      avatar: importedAvatar("avatar-failed", "Failed Creator", {
+        id: "pack-failed",
+        status: "failed",
+        error: "Generation failed",
+      }),
+      label: "Identity 3",
+    })}
   />
 );
 
 assert.match(importedFailedMarkup, /Imported/);
 assert.match(importedFailedMarkup, /Identity failed - retry available/);
 assert.match(importedFailedMarkup, /Identity 3/);
+
+const componentsDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../src/components"
+);
+
+function listedProps(fileName: string, exportName: string): string[] {
+  const source = readFileSync(path.join(componentsDir, fileName), "utf8");
+  const needle = `export function ${exportName}({`;
+  const start = source.indexOf(needle);
+  assert.notEqual(start, -1, exportName);
+  const bodyStart = start + needle.length;
+  const bodyEnd = source.indexOf("}", bodyStart);
+  return source
+    .slice(bodyStart, bodyEnd)
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+assert.deepEqual(listedProps("avatar-picker-import.tsx", "AvatarImportPanel"), [
+  "workspace",
+  "onBack",
+]);
+assert.deepEqual(listedProps("avatar-picker-gallery.tsx", "AvatarGalleryPanel"), [
+  "handoff",
+]);
+assert.deepEqual(listedProps("avatar-picker-import-mode.tsx", "AvatarImportMode"), [
+  "handoff",
+]);
+assert.deepEqual(listedProps("avatar-picker-cards.tsx", "AvatarOptionCard"), ["option"]);
