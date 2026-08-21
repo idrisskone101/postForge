@@ -91,7 +91,6 @@ const creator = mapVirloCreatorLookup(
         id: "1",
         url: "https://www.tiktok.com/@mapped.handle/video/1",
       },
-      "skip-me",
       { title: "missing ids" },
     ],
   },
