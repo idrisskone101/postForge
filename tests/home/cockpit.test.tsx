@@ -27,131 +27,135 @@ const emptyMonth = {
 
 const markup = renderToStaticMarkup(
   <HomeCockpit
-    todaySummary={{
-      period: "today",
-      totalCost: 1.28,
-      breakdown: {
-        image: { count: 2, cost: 0.18 },
-        video: { count: 1, cost: 1.1 },
-      },
-      byModel: {},
-    }}
-    monthSummary={{
-      period: "month",
-      totalCost: 18.42,
-      breakdown: {
-        image: { count: 14, cost: 2.12 },
-        video: { count: 8, cost: 16.3 },
-      },
-      byModel: {},
-    }}
-    activeJobs={[
-      {
-        id: "job-processing",
-        prompt: "Clone the creator hook with a new first frame",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "processing",
-        tags: ["ugc-clone"],
-        createdAt: now,
-        productionContext: {
-          sourceDetail: "Creator launch clip",
-          identityDetail: "Avery Chen",
+    dashboard={{
+      todaySummary: {
+        period: "today",
+        totalCost: 1.28,
+        breakdown: {
+          image: { count: 2, cost: 0.18 },
+          video: { count: 1, cost: 1.1 },
         },
+        byModel: {},
       },
-    ]}
-    recentJobs={[
-      {
-        id: "job-completed",
-        prompt: "Cycle syncing creator reaction clip",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "completed",
-        tags: ["ugc-clone"],
-        createdAt: now,
-        output: {
-          id: "output-1",
-          width: 1080,
-          height: 1920,
+      monthSummary: {
+        period: "month",
+        totalCost: 18.42,
+        breakdown: {
+          image: { count: 14, cost: 2.12 },
+          video: { count: 8, cost: 16.3 },
+        },
+        byModel: {},
+      },
+      activeJobs: [
+        {
+          id: "job-processing",
+          prompt: "Clone the creator hook with a new first frame",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "processing",
+          tags: ["ugc-clone"],
+          createdAt: now,
+          productionContext: {
+            sourceDetail: "Creator launch clip",
+            identityDetail: "Avery Chen",
+          },
+        },
+      ],
+      recentJobs: [
+        {
+          id: "job-completed",
+          prompt: "Cycle syncing creator reaction clip",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "completed",
+          tags: ["ugc-clone"],
+          createdAt: now,
+          output: {
+            id: "output-1",
+            width: 1080,
+            height: 1920,
+            durationSec: 12,
+          },
+        },
+        {
+          id: "job-completed-2",
+          prompt: "Second creator reaction clip",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "completed",
+          tags: ["ugc-clone"],
+          createdAt: now,
+        },
+        {
+          id: "job-completed-3",
+          prompt: "Third creator reaction clip",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "completed",
+          tags: ["ugc-clone"],
+          createdAt: now,
+        },
+        {
+          id: "job-completed-4",
+          prompt: "Fourth creator reaction clip",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "completed",
+          tags: ["ugc-clone"],
+          createdAt: now,
+        },
+        {
+          id: "job-completed-5",
+          prompt: "Fifth creator reaction clip",
+          type: "video",
+          model: "kling-3.0-motion",
+          status: "completed",
+          tags: ["ugc-clone"],
+          createdAt: now,
+        },
+      ],
+      completedThisWeek: 7,
+      pendingReviewCount: 1286,
+      recentMedia: [
+        {
+          id: "media-1",
+          jobId: "job-completed",
+          type: "image",
+          jobType: "image",
+          reviewStatus: "approved_output",
+          model: "nano-banana-2",
+          prompt: "Gradient landscape study",
+          isClone: false,
+        },
+        {
+          id: "media-2",
+          jobId: "job-completed-2",
+          type: "video",
+          jobType: "video",
           durationSec: 12,
+          reviewStatus: "needs_review",
+          model: "kling-3.0-motion",
+          prompt: "Creator reaction take two",
+          isClone: true,
         },
-      },
-      {
-        id: "job-completed-2",
-        prompt: "Second creator reaction clip",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "completed",
-        tags: ["ugc-clone"],
-        createdAt: now,
-      },
-      {
-        id: "job-completed-3",
-        prompt: "Third creator reaction clip",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "completed",
-        tags: ["ugc-clone"],
-        createdAt: now,
-      },
-      {
-        id: "job-completed-4",
-        prompt: "Fourth creator reaction clip",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "completed",
-        tags: ["ugc-clone"],
-        createdAt: now,
-      },
-      {
-        id: "job-completed-5",
-        prompt: "Fifth creator reaction clip",
-        type: "video",
-        model: "kling-3.0-motion",
-        status: "completed",
-        tags: ["ugc-clone"],
-        createdAt: now,
-      },
-    ]}
-    completedThisWeek={7}
-    pendingReviewCount={1286}
-    recentMedia={[
-      {
-        id: "media-1",
-        jobId: "job-completed",
-        type: "image",
-        jobType: "image",
-        reviewStatus: "approved_output",
-        model: "nano-banana-2",
-        prompt: "Gradient landscape study",
-        isClone: false,
-      },
-      {
-        id: "media-2",
-        jobId: "job-completed-2",
-        type: "video",
-        jobType: "video",
-        durationSec: 12,
-        reviewStatus: "needs_review",
-        model: "kling-3.0-motion",
-        prompt: "Creator reaction take two",
-        isClone: true,
-      },
-    ]}
-    now={now}
+      ],
+      now,
+    }}
   />
 );
 
 const emptyMarkup = renderToStaticMarkup(
   <HomeCockpit
-    todaySummary={emptyCosts}
-    monthSummary={emptyMonth}
-    activeJobs={[]}
-    recentJobs={[]}
-    completedThisWeek={0}
-    pendingReviewCount={0}
-    recentMedia={[]}
-    now={now}
+    dashboard={{
+      todaySummary: emptyCosts,
+      monthSummary: emptyMonth,
+      activeJobs: [],
+      recentJobs: [],
+      completedThisWeek: 0,
+      pendingReviewCount: 0,
+      recentMedia: [],
+      now,
+    }}
   />
 );
 
@@ -166,14 +170,16 @@ const ordinaryGenerateJob = {
 };
 const ordinaryMarkup = renderToStaticMarkup(
   <HomeCockpit
-    todaySummary={emptyCosts}
-    monthSummary={emptyMonth}
-    activeJobs={[ordinaryGenerateJob]}
-    recentJobs={[]}
-    completedThisWeek={0}
-    pendingReviewCount={0}
-    recentMedia={[]}
-    now={now}
+    dashboard={{
+      todaySummary: emptyCosts,
+      monthSummary: emptyMonth,
+      activeJobs: [ordinaryGenerateJob],
+      recentJobs: [],
+      completedThisWeek: 0,
+      pendingReviewCount: 0,
+      recentMedia: [],
+      now,
+    }}
   />
 );
 
