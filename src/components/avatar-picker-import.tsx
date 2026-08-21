@@ -9,29 +9,13 @@ import {
 } from "@/lib/avatar-workflow";
 import { Textarea } from "@/components/ui/textarea";
 
-export function AvatarImportPanel({
-  rawJson,
-  avatarName,
-  seedReferenceImages,
-  candidateSets = [],
-  isGeneratingCandidates,
-  generationError,
-  onBack,
-  onAvatarNameChange,
-  onRawJsonChange,
-  onJsonFileChange,
-  onSeedReferenceImagesChange,
-  onRemoveSeedReferenceImage,
-  onGenerateCandidates,
-  onAcceptCandidate,
-}: {
+export type AvatarImportWorkspace = {
   rawJson: string;
   avatarName?: string;
   seedReferenceImages: AvatarSeedReferenceImage[];
   candidateSets?: AvatarCandidateSet[];
   isGeneratingCandidates: boolean;
   generationError: string | null;
-  onBack: () => void;
   onAvatarNameChange?: (value: string) => void;
   onRawJsonChange: (value: string) => void;
   onJsonFileChange: (files: FileList | null) => void;
@@ -39,7 +23,30 @@ export function AvatarImportPanel({
   onRemoveSeedReferenceImage: (index: number) => void;
   onGenerateCandidates: () => void;
   onAcceptCandidate?: (fileId: string) => void;
+};
+
+export function AvatarImportPanel({
+  workspace,
+  onBack,
+}: {
+  workspace: AvatarImportWorkspace;
+  onBack: () => void;
 }) {
+  const {
+    rawJson,
+    avatarName,
+    seedReferenceImages,
+    candidateSets = [],
+    isGeneratingCandidates,
+    generationError,
+    onAvatarNameChange,
+    onRawJsonChange,
+    onJsonFileChange,
+    onSeedReferenceImagesChange,
+    onRemoveSeedReferenceImage,
+    onGenerateCandidates,
+    onAcceptCandidate,
+  } = workspace;
   const readiness = getAvatarImportReadiness(rawJson, seedReferenceImages.length);
   const resolvedAvatarName = avatarName ?? getDefaultAvatarImportName(rawJson);
   const candidateCount = candidateSets.reduce(

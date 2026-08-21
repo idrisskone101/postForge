@@ -11,7 +11,8 @@ import type {
 import { userErrorMessage } from "@/lib/user-error-message";
 import { AvatarActionErrorNotice } from "@/components/avatar-picker-cards";
 
-export function AvatarGalleryPanel({ onCreated, onBack }: AvatarCreatedHandoff) {
+export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff }) {
+  const { onCreated, onBack } = handoff;
   const [galleryFiles, setGalleryFiles] = useState<AvatarGalleryFile[]>([]);
   const [isLoadingGallery, setIsLoadingGallery] = useState(true);
   const [savingFileId, setSavingFileId] = useState<string | null>(null);
