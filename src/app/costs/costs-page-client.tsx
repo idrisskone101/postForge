@@ -41,6 +41,12 @@ import {
 } from "lucide-react";
 import { PIE_COLORS } from "@/components/cost-chart";
 import { WorkspaceState } from "@/components/workspace-state";
+import {
+  COST_LOG_PAGE_SIZE,
+  SPEND_PERIODS,
+  costsHref,
+  type SpendPeriod,
+} from "@/lib/costs/spend-period";
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.CostChart),
@@ -75,26 +81,33 @@ interface CostsPageClientProps {
     video: { count: number; cost: number };
   };
   logs: LogEntry[];
-  period: string;
+  logPage: number;
+  logTotalCount: number;
+  logHasNext: boolean;
+  period: SpendPeriod;
 }
 
-const LOGS_PAGE_SIZE = 10;
-const PERIOD_OPTIONS = ["7d", "30d", "90d"] as const;
+const PERIOD_OPTIONS = SPEND_PERIODS;
 const BUDGET_STORAGE_KEY = "postforge-production-budget";
 
 interface SpendPageContentProps extends CostsPageClientProps {
-  onPeriodChange: (period: string) => void;
+  onPeriodChange: (period: SpendPeriod) => void;
+  onLogPageChange: (page: number) => void;
 }
 
-export function CostsPageClient({ period, ...props }: CostsPageClientProps) {
+export function CostsPageClient({ period, logPage, ...props }: CostsPageClientProps) {
   const router = useRouter();
 
   return (
     <SpendPageContent
       {...props}
       period={period}
+      logPage={logPage}
       onPeriodChange={(value) => {
-        if (value) router.push(`/costs?period=${value}`);
+        router.push(costsHref(value, 0));
+      }}
+      onLogPageChange={(nextPage) => {
+        router.push(costsHref(period, nextPage));
       }}
     />
   );
@@ -116,10 +129,13 @@ export function SpendPageContent({
   byModel,
   breakdown,
   logs,
+  logPage,
+  logTotalCount,
+  logHasNext,
   period,
   onPeriodChange,
+  onLogPageChange,
 }: SpendPageContentProps) {
-  const [logPage, setLogPage] = useState(0);
   const [query, setQuery] = useState("");
   const [modelFilter, setModelFilter] = useState("all");
   const [budget, setBudget] = useState(250);
@@ -204,12 +220,11 @@ export function SpendPageContent({
     setFeedback(`Production budget updated to ${formatCost(nextBudget)}.`);
   };
 
-  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / LOGS_PAGE_SIZE));
+  const isLogFilterActive = query.trim().length > 0 || modelFilter !== "all";
+  const logEntryCount = isLogFilterActive ? filteredLogs.length : logTotalCount;
+  const totalPages = Math.max(1, Math.ceil(logTotalCount / COST_LOG_PAGE_SIZE));
   const safeLogPage = Math.min(logPage, totalPages - 1);
-  const pagedLogs = filteredLogs.slice(
-    safeLogPage * LOGS_PAGE_SIZE,
-    (safeLogPage + 1) * LOGS_PAGE_SIZE
-  );
+  const pagedLogs = filteredLogs;
   const formatTotal = breakdown.image.cost + breakdown.video.cost;
   const imagePct = formatTotal > 0 ? (breakdown.image.cost / formatTotal) * 100 : 0;
   const videoPct = formatTotal > 0 ? (breakdown.video.cost / formatTotal) * 100 : 0;
@@ -244,7 +259,6 @@ export function SpendPageContent({
                 type="button"
                 aria-pressed={period === option}
                 onClick={() => {
-                  setLogPage(0);
                   onPeriodChange(option);
                 }}
                 className={cn(
@@ -541,7 +555,7 @@ export function SpendPageContent({
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold">Generation Log</h2>
             <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">
-              {filteredLogs.length} {filteredLogs.length === 1 ? "entry" : "entries"}
+              {logEntryCount} {logEntryCount === 1 ? "entry" : "entries"}
             </span>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -553,7 +567,6 @@ export function SpendPageContent({
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);
-                  setLogPage(0);
                 }}
                 placeholder="Search generations"
                 className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
@@ -563,7 +576,6 @@ export function SpendPageContent({
               value={modelFilter}
               onChange={(event) => {
                 setModelFilter(event.target.value);
-                setLogPage(0);
               }}
               aria-label="Filter cost log by model"
               className="h-9 rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -663,7 +675,7 @@ export function SpendPageContent({
           </Table>
         </div>
 
-        {filteredLogs.length > LOGS_PAGE_SIZE && (
+        {!isLogFilterActive && logTotalCount > COST_LOG_PAGE_SIZE && (
           <footer className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
             <span className="text-[11px] text-muted-foreground">
               Page <strong className="text-foreground">{safeLogPage + 1}</strong> of {totalPages}
@@ -673,7 +685,7 @@ export function SpendPageContent({
                 type="button"
                 aria-label="Previous cost log page"
                 disabled={safeLogPage === 0}
-                onClick={() => setLogPage((page) => Math.max(0, page - 1))}
+                onClick={() => onLogPageChange(Math.max(0, safeLogPage - 1))}
                 className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronLeft className="size-3.5" />
@@ -681,8 +693,8 @@ export function SpendPageContent({
               <button
                 type="button"
                 aria-label="Next cost log page"
-                disabled={safeLogPage >= totalPages - 1}
-                onClick={() => setLogPage((page) => Math.min(totalPages - 1, page + 1))}
+                disabled={!logHasNext}
+                onClick={() => onLogPageChange(safeLogPage + 1)}
                 className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
               >
                 <ChevronRight className="size-3.5" />

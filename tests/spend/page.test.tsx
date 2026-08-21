@@ -34,8 +34,12 @@ const markup = renderToStaticMarkup(
           createdAt: "2026-06-12T12:00:00.000Z",
         },
       ]}
+      logPage={0}
+      logTotalCount={1}
+      logHasNext={false}
       period="30d"
       onPeriodChange={() => {}}
+      onLogPageChange={() => {}}
     />
   </TooltipProvider>
 );
@@ -55,8 +59,12 @@ const emptyMarkup = renderToStaticMarkup(
         video: { count: 0, cost: 0 },
       }}
       logs={[]}
+      logPage={0}
+      logTotalCount={0}
+      logHasNext={false}
       period="30d"
       onPeriodChange={() => {}}
+      onLogPageChange={() => {}}
     />
   </TooltipProvider>
 );
@@ -100,3 +108,42 @@ assert.match(emptyMarkup, /Open Generate/);
 
 // Mobile stat cards stay 2-col (canon home parity)
 assert.match(markup, /grid grid-cols-2 gap-3 xl:grid-cols-4/);
+
+const pagedLogs = Array.from({ length: 10 }, (_, index) => ({
+  id: `log-${index}`,
+  jobId: `job-${index}`,
+  model: "flux-pro",
+  type: "image" as const,
+  amount: 0.25,
+  createdAt: "2026-06-12T12:00:00.000Z",
+}));
+const pagedMarkup = renderToStaticMarkup(
+  <TooltipProvider>
+    <SpendPageContent
+      totalCost={12.75}
+      currentPeriodCost={4.82}
+      changePercent={-12}
+      avgCycleCost={0.24}
+      totalJobs={25}
+      topModel={{ name: "flux-pro", cost: 4.82, pct: "100" }}
+      chartData={[{ date: "Jun 12", image: 0.32, video: 1.2 }]}
+      byModel={{ "flux-pro": { count: 25, cost: 4.82 } }}
+      breakdown={{
+        image: { count: 25, cost: 4.82 },
+        video: { count: 0, cost: 0 },
+      }}
+      logs={pagedLogs}
+      logPage={0}
+      logTotalCount={25}
+      logHasNext={true}
+      period="30d"
+      onPeriodChange={() => {}}
+      onLogPageChange={() => {}}
+    />
+  </TooltipProvider>
+);
+assert.match(pagedMarkup, /25 entries/);
+assert.match(pagedMarkup, /Page/);
+assert.match(pagedMarkup, /of 3/);
+assert.match(pagedMarkup, /aria-label="Next cost log page"/);
+assert.match(pagedMarkup, /aria-label="Previous cost log page"/);
