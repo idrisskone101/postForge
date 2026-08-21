@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import {
-  AvatarImportPanel,
-} from "../../src/components/avatar-picker";
+import { AvatarImportPanel } from "../../src/components/avatar-picker-import";
 import {
   buildAvatarCandidateGenerationRequest,
   getDefaultAvatarImportName,

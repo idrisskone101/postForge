@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  AvatarOptionCard,
-  AvatarCreationCard,
   AvatarActionErrorNotice,
-  AvatarImportPanel,
-} from "../../src/components/avatar-picker";
+  AvatarCreationCard,
+  AvatarOptionCard,
+} from "../../src/components/avatar-picker-cards";
+import { AvatarImportPanel } from "../../src/components/avatar-picker-import";
 import {
   buildAvatarGenerationPrompt,
   getAvatarImportReadiness,
