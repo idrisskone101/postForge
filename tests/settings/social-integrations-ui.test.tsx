@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readIntegrationCallbackFeedback } from "../../src/app/settings/integration-callback";
-import { IntegrationsPanel } from "../../src/app/settings/integrations-panel";
+import {
+  IntegrationsPanel,
+  type IntegrationsWorkspace,
+} from "../../src/app/settings/integrations-panel";
 import { SettingsNavigation } from "../../src/app/settings/settings-page-client";
 import { SocialIntegrationCard } from "../../src/app/settings/social-integration-card";
 import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
@@ -255,23 +259,61 @@ const connectedYouTubeMarkup = renderToStaticMarkup(
 );
 assert.match(connectedYouTubeMarkup, /Revoke Google access/);
 
+function componentPropNames(source: string, exportName: string): string[] {
+  const marker = `export function ${exportName}({`;
+  const start = source.indexOf(marker);
+  assert.ok(start >= 0, `${exportName} should be an exported function`);
+  const open = start + marker.length - 1;
+  const close = source.indexOf("}: {", open);
+  assert.ok(close > open, `${exportName} should destructure typed props`);
+  return source
+    .slice(open + 1, close)
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+const settingsDir = new URL("../../src/app/settings/", import.meta.url);
+const panelSource = readFileSync(
+  new URL("integrations-panel.tsx", settingsDir),
+  "utf8"
+);
+const pageSource = readFileSync(
+  new URL("settings-page-client.tsx", settingsDir),
+  "utf8"
+);
+assert.deepEqual(componentPropNames(panelSource, "IntegrationsPanel"), [
+  "workspace",
+]);
+assert.match(panelSource, /export type IntegrationsWorkspace/);
+assert.match(
+  pageSource,
+  /<IntegrationsPanel workspace=\{integrationsWorkspace\} \/>/
+);
+assert.doesNotMatch(panelSource, /createContext|useContext/);
+assert.doesNotMatch(pageSource, /createContext|useContext/);
+
+const panelWorkspace: IntegrationsWorkspace = {
+  providers: [connectedTikTok, notConfiguredInstagram, readyYouTube],
+  loading: false,
+  error: null,
+  busyProvider: null,
+  onRefresh: noOp,
+  onConnect: noOp,
+  onSync: noOp,
+  onDisconnect: noOp,
+  onOpenWebhooks: noOp,
+};
+
 const panelMarkup = renderToStaticMarkup(
-  <IntegrationsPanel
-    providers={[connectedTikTok, notConfiguredInstagram, readyYouTube]}
-    loading={false}
-    error={null}
-    busyProvider={null}
-    onRefresh={noOp}
-    onConnect={noOp}
-    onSync={noOp}
-    onDisconnect={noOp}
-    onOpenWebhooks={noOp}
-  />
+  <IntegrationsPanel workspace={panelWorkspace} />
 );
 assert.match(panelMarkup, /Refresh status/);
 assert.equal((panelMarkup.match(/data-social-provider=/g) ?? []).length, 3);
 assert.match(panelMarkup, /Social accounts/);
 assert.match(panelMarkup, /Connect another/);
+assert.match(panelMarkup, /Not configured/);
+assert.match(panelMarkup, /Ready to connect/);
 
 const navigationMarkup = renderToStaticMarkup(
   <SettingsNavigation
