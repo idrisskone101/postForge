@@ -114,7 +114,6 @@ const UGC_CLONE_TIPS = [
 
 const UGC_CLONE_TIP_INDEX_KEY = "postforge:ugc-clone:tip-index";
 const REFERENCE_BATCH_OPTIONS = [1, 2, 3] as const;
-const REFERENCE_LIBRARY_PAGE_SIZE = 24;
 type ReferenceBatchSize = (typeof REFERENCE_BATCH_OPTIONS)[number];
 
 function formatIdentityRole(role: string) {
@@ -303,6 +302,11 @@ interface SavedReference {
     originalUrl: string;
   } | null;
 }
+
+type SavedReferenceListPage = {
+  items: SavedReference[];
+  nextCursor: string | null;
+};
 
 interface AvatarIdentityPack {
   id: string;
@@ -770,9 +774,6 @@ export function UGCCloneForm() {
   const [activeSetupStep, setActiveSetupStep] = useState<CloneSetupStep>("source");
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
   const [referenceLibraryOpen, setReferenceLibraryOpen] = useState(false);
-  const [visibleSavedReferenceCount, setVisibleSavedReferenceCount] = useState(
-    REFERENCE_LIBRARY_PAGE_SIZE
-  );
 
   // Reference image iterations
   const [refImages, setRefImages] = useState<RefImageEntry[]>([]);
@@ -794,7 +795,11 @@ export function UGCCloneForm() {
   const [selectedHairstyleRole, setSelectedHairstyleRole] = useState<string | null>(null);
   const [identityPackError, setIdentityPackError] = useState<string | null>(null);
   const [savedReferences, setSavedReferences] = useState<SavedReference[]>([]);
+  const [savedReferencesNextCursor, setSavedReferencesNextCursor] = useState<string | null>(
+    null
+  );
   const [isLoadingSavedReferences, setIsLoadingSavedReferences] = useState(false);
+  const [isLoadingMoreSavedReferences, setIsLoadingMoreSavedReferences] = useState(false);
   const [savedReferencesError, setSavedReferencesError] = useState<string | null>(null);
   const [selectedSavedReferenceId, setSelectedSavedReferenceId] = useState<string | null>(null);
   const [selectedCollectionAssetId, setSelectedCollectionAssetId] = useState<
@@ -875,18 +880,20 @@ export function UGCCloneForm() {
     setSavedReferencesError(null);
 
     try {
-      const references = await apiGet<SavedReference[]>(
+      const page = await apiGet<SavedReferenceListPage>(
         `/api/ugc-clone/references?avatarId=${encodeURIComponent(nextAvatarId)}`
       );
-      setSavedReferences(references);
+      setSavedReferences(page.items);
+      setSavedReferencesNextCursor(page.nextCursor);
       setSelectedSavedReferenceId((current) =>
-        current && references.some((reference) => reference.id === current)
+        current && page.items.some((reference) => reference.id === current)
           ? current
           : null
       );
     } catch (err) {
       console.error("Failed to load saved references:", err);
       setSavedReferences([]);
+      setSavedReferencesNextCursor(null);
       setSelectedSavedReferenceId(null);
       setSavedReferencesError(
         err instanceof Error ? err.message : "Failed to load saved references"
@@ -895,6 +902,36 @@ export function UGCCloneForm() {
       setIsLoadingSavedReferences(false);
     }
   }, []);
+
+  const loadMoreSavedReferences = useCallback(async () => {
+    if (!avatarId || !savedReferencesNextCursor || isLoadingMoreSavedReferences) {
+      return;
+    }
+
+    setIsLoadingMoreSavedReferences(true);
+    setSavedReferencesError(null);
+
+    try {
+      const page = await apiGet<SavedReferenceListPage>(
+        `/api/ugc-clone/references?avatarId=${encodeURIComponent(avatarId)}&cursor=${encodeURIComponent(savedReferencesNextCursor)}`
+      );
+      setSavedReferences((current) => {
+        const seen = new Set(current.map((reference) => reference.id));
+        return [
+          ...current,
+          ...page.items.filter((reference) => !seen.has(reference.id)),
+        ];
+      });
+      setSavedReferencesNextCursor(page.nextCursor);
+    } catch (err) {
+      console.error("Failed to load saved references:", err);
+      setSavedReferencesError(
+        err instanceof Error ? err.message : "Failed to load saved references"
+      );
+    } finally {
+      setIsLoadingMoreSavedReferences(false);
+    }
+  }, [avatarId, isLoadingMoreSavedReferences, savedReferencesNextCursor]);
 
   const fetchIdentityPack = useCallback(async (nextAvatarId: string) => {
     try {
@@ -1091,6 +1128,7 @@ export function UGCCloneForm() {
       setIdentityPackError(null);
       setIsStartingIdentityPack(false);
       setSavedReferences([]);
+      setSavedReferencesNextCursor(null);
       setSavedReferencesError(null);
       setSelectedSavedReferenceId(null);
       return;
@@ -2334,9 +2372,6 @@ export function UGCCloneForm() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (referenceLibraryOpen) {
-                          setVisibleSavedReferenceCount(REFERENCE_LIBRARY_PAGE_SIZE);
-                        }
                         setReferenceLibraryOpen((open) => !open);
                       }}
                       aria-expanded={referenceLibraryOpen}
@@ -2367,7 +2402,7 @@ export function UGCCloneForm() {
                         data-reference-thumbnail-grid="true"
                         className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 border-t border-border p-3 sm:grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:p-4"
                       >
-                      {savedReferences.slice(0, visibleSavedReferenceCount).map((reference) => (
+                      {savedReferences.map((reference) => (
                       <button
                         key={reference.id}
                         type="button"
@@ -2394,22 +2429,15 @@ export function UGCCloneForm() {
                       ))}
                       </div>
                     )}
-                    {referenceLibraryOpen && savedReferences.length > visibleSavedReferenceCount && (
-                      <div className="flex flex-col gap-2 border-t border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-                        <p className="text-[12px] text-muted-foreground">
-                          Showing {visibleSavedReferenceCount} of {savedReferences.length} saved references
-                        </p>
+                    {referenceLibraryOpen && savedReferencesNextCursor && (
+                      <div className="flex flex-col gap-2 border-t border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-end sm:px-4">
                         <button
                           type="button"
-                          onClick={() => setVisibleSavedReferenceCount((count) =>
-                            Math.min(count + REFERENCE_LIBRARY_PAGE_SIZE, savedReferences.length)
-                          )}
-                          className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                          onClick={() => void loadMoreSavedReferences()}
+                          disabled={isLoadingMoreSavedReferences}
+                          className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          Show {Math.min(
-                            REFERENCE_LIBRARY_PAGE_SIZE,
-                            savedReferences.length - visibleSavedReferenceCount
-                          )} more
+                          {isLoadingMoreSavedReferences ? "Loading..." : "Load more"}
                         </button>
                       </div>
                     )}

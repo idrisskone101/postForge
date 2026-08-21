@@ -58,6 +58,11 @@ interface Avatar {
   } | null;
 }
 
+type AvatarListPage = {
+  items: Avatar[];
+  nextCursor: string | null;
+};
+
 interface AvatarPickerProps {
   selectedId: string | null;
   onSelect: (id: string) => void;
@@ -510,7 +515,9 @@ interface JobResult {
 
 export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const [avatars, setAvatars] = useState<Avatar[]>([]);
+  const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMoreAvatars, setIsLoadingMoreAvatars] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [mode, setMode] = useState<Mode>("grid");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -545,13 +552,35 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
   const fetchAvatars = async () => {
     try {
       setActionError(null);
-      const data = await apiGet<Avatar[]>("/api/avatars");
-      setAvatars(data);
+      const page = await apiGet<AvatarListPage>("/api/avatars");
+      setAvatars(page.items);
+      setAvatarsNextCursor(page.nextCursor);
     } catch (err) {
       console.error("Failed to load avatars:", err);
       setActionError(userErrorMessage(err, "Failed to load saved identities."));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadMoreAvatars = async () => {
+    if (!avatarsNextCursor || isLoadingMoreAvatars) return;
+    setIsLoadingMoreAvatars(true);
+    setActionError(null);
+    try {
+      const page = await apiGet<AvatarListPage>(
+        `/api/avatars?cursor=${encodeURIComponent(avatarsNextCursor)}`
+      );
+      setAvatars((current) => {
+        const seen = new Set(current.map((avatar) => avatar.id));
+        return [...current, ...page.items.filter((avatar) => !seen.has(avatar.id))];
+      });
+      setAvatarsNextCursor(page.nextCursor);
+    } catch (err) {
+      console.error("Failed to load avatars:", err);
+      setActionError(userErrorMessage(err, "Failed to load saved identities."));
+    } finally {
+      setIsLoadingMoreAvatars(false);
     }
   };
 
@@ -1152,6 +1181,17 @@ export function AvatarPicker({ selectedId, onSelect }: AvatarPickerProps) {
           onImport={() => setMode("import")}
         />
       </div>
+      {avatarsNextCursor && (
+        <button
+          type="button"
+          onClick={() => void loadMoreAvatars()}
+          disabled={isLoadingMoreAvatars}
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoadingMoreAvatars && <Loader2 className="size-3.5 animate-spin" />}
+          {isLoadingMoreAvatars ? "Loading..." : "Load more"}
+        </button>
+      )}
     </div>
   );
 }
