@@ -2,33 +2,28 @@
 
 import { FileJson, Images, LoaderCircle } from "lucide-react";
 
+import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
 import { Button } from "@/components/ui/button";
-import type { PinterestCandidate } from "@/lib/collections-client";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 
 export function PinterestImportFooter({
-  workflow,
-  collectionName,
-  candidates,
-  selected,
-  failedImages,
-  pendingAction,
-  importing,
-  onCollectionNameChange,
-  onSelectedChange,
-  onImport,
+  workspace,
 }: {
-  workflow: "collection" | "slideshow";
-  collectionName: string;
-  candidates: PinterestCandidate[];
-  selected: string[];
-  failedImages: string[];
-  pendingAction: "import" | "direct" | "vibe" | null;
-  importing: boolean;
-  onCollectionNameChange: (value: string) => void;
-  onSelectedChange: (ids: string[]) => void;
-  onImport: (action: "import" | "direct" | "vibe") => void;
+  workspace: PinterestImportWorkspace;
 }) {
+  const {
+    workflow,
+    collectionName,
+    candidates,
+    selected,
+    failedImages,
+    pendingAction,
+    importing,
+    updateCollectionName,
+    setSelected,
+    runImport,
+  } = workspace;
+
   return (
     <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-[var(--pf-active)] p-4 sm:flex-row sm:items-center sm:p-5">
       <label className="min-w-0 flex-1">
@@ -37,7 +32,7 @@ export function PinterestImportFooter({
         </span>
         <input
           value={collectionName}
-          onChange={(event) => onCollectionNameChange(event.target.value)}
+          onChange={(event) => updateCollectionName(event.target.value)}
           placeholder="Collection name"
           maxLength={160}
           disabled={importing}
@@ -50,7 +45,7 @@ export function PinterestImportFooter({
           variant="ghost"
           size="sm"
           onClick={() =>
-            onSelectedChange(
+            setSelected(
               candidates
                 .filter((candidate) => !failedImages.includes(candidate.id))
                 .slice(0, MAX_PINTEREST_IMPORT_IMAGES)
@@ -67,7 +62,7 @@ export function PinterestImportFooter({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => onSelectedChange([])}
+          onClick={() => setSelected([])}
           disabled={!selected.length || importing}
         >
           Clear
@@ -77,7 +72,7 @@ export function PinterestImportFooter({
         <div className="grid gap-2 sm:grid-cols-2">
           <button
             type="button"
-            onClick={() => onImport("direct")}
+            onClick={() => runImport("direct")}
             disabled={!selected.length || importing}
             className="pf-button-secondary h-10"
           >
@@ -92,7 +87,7 @@ export function PinterestImportFooter({
           </button>
           <button
             type="button"
-            onClick={() => onImport("vibe")}
+            onClick={() => runImport("vibe")}
             disabled={!selected.length || importing}
             className="pf-button-primary h-10"
           >
@@ -109,7 +104,7 @@ export function PinterestImportFooter({
       ) : (
         <button
           type="button"
-          onClick={() => onImport("import")}
+          onClick={() => runImport("import")}
           disabled={!selected.length || importing}
           className="pf-button-primary h-10"
         >

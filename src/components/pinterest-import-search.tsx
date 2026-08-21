@@ -2,6 +2,7 @@
 
 import { Link2, LoaderCircle, Search } from "lucide-react";
 
+import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
 import { cn } from "@/lib/utils";
 
 const suggestions = [
@@ -12,35 +13,31 @@ const suggestions = [
 ];
 
 export function PinterestImportSearch({
-  source,
-  query,
-  sourceIsValid,
-  searching,
-  loadingMore,
-  importing,
-  hasCandidates,
-  onChangeSource,
-  onQueryChange,
-  onSearch,
+  workspace,
 }: {
-  source: "search" | "board";
-  query: string;
-  sourceIsValid: boolean;
-  searching: boolean;
-  loadingMore: boolean;
-  importing: boolean;
-  hasCandidates: boolean;
-  onChangeSource: (source: "search" | "board") => void;
-  onQueryChange: (value: string) => void;
-  onSearch: () => void;
+  workspace: PinterestImportWorkspace;
 }) {
+  const {
+    source,
+    query,
+    sourceIsValid,
+    searching,
+    loadingMore,
+    importing,
+    candidates,
+    changeSource,
+    updateQuery,
+    runSearch,
+  } = workspace;
+  const hasCandidates = candidates.length > 0;
+
   return (
     <div className="shrink-0 border-b border-border p-4 sm:p-5">
       <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
         <div className="inline-flex h-10 rounded-lg bg-[var(--pf-active)] p-1">
           <button
             type="button"
-            onClick={() => onChangeSource("search")}
+            onClick={() => changeSource("search")}
             disabled={importing}
             className={cn(
               "rounded-lg px-3 text-[11px] font-semibold transition",
@@ -53,7 +50,7 @@ export function PinterestImportSearch({
           </button>
           <button
             type="button"
-            onClick={() => onChangeSource("board")}
+            onClick={() => changeSource("board")}
             disabled={importing}
             className={cn(
               "rounded-lg px-3 text-[11px] font-semibold transition",
@@ -73,10 +70,10 @@ export function PinterestImportSearch({
           )}
           <input
             value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
+            onChange={(event) => updateQuery(event.target.value)}
             disabled={importing}
             onKeyDown={(event) => {
-              if (event.key === "Enter") onSearch();
+              if (event.key === "Enter") runSearch();
             }}
             placeholder={
               source === "search"
@@ -89,7 +86,7 @@ export function PinterestImportSearch({
         </label>
         <button
           type="button"
-          onClick={onSearch}
+          onClick={runSearch}
           disabled={!sourceIsValid || searching || loadingMore || importing}
           className={cn(hasCandidates ? "pf-button-secondary" : "pf-button-primary", "h-10")}
         >
@@ -110,7 +107,7 @@ export function PinterestImportSearch({
             <button
               key={suggestion}
               type="button"
-              onClick={() => onQueryChange(suggestion)}
+              onClick={() => updateQuery(suggestion)}
               disabled={importing}
               className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition hover:bg-[var(--pf-active)] hover:text-foreground"
             >
