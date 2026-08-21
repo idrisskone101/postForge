@@ -4,11 +4,25 @@ import {
   DEFAULT_PROJECT_LAYOUT,
   DEFAULT_PROJECT_SETTINGS,
   MAX_SLIDES_PER_PROJECT,
-  SLIDESHOW_PROJECT_STATUSES,
   type SlideshowProjectStatusValue,
   type SlideshowSlideKindValue,
 } from "@/lib/slideshow/constants";
-import { slideshowOverlayTextColor } from "@/lib/slideshow/text-overlay";
+import {
+  asBoolean,
+  asDateHistory,
+  asNonNegativeInteger,
+  asString,
+  canonicalizePhaseSettings,
+  defaultTextSettings,
+  isRecord,
+  normalizeAspectRatio,
+  normalizeStatus,
+  readPhaseSettingsFromProject,
+  readTextSettings,
+  slideshowTextColorHex,
+  stringList,
+} from "@/lib/slideshow/project-settings";
+
 export type SlideshowSlideKind = SlideshowSlideKindValue;
 export type SlideshowProjectStatus = SlideshowProjectStatusValue;
 export type SlideshowAspectRatio = "9:16" | "4:5" | "1:1" | "16:9";
@@ -102,48 +116,13 @@ export type SlideshowProject = {
   updatedAt: string;
 };
 
-type JsonRecord = Record<string, unknown>;
-
 const SERVER_OWNED_STATUSES = ["generating", "exported", "failed"] as const;
-const LEGACY_CORAL_HEX = "#ff7a59";
-const LEGACY_BLUE_HEX = "#4f9fd9";
 
-function isRecord(value: unknown): value is JsonRecord {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
-function asString(value: unknown, fallback = "") {
-  return typeof value === "string" ? value : fallback;
-}
-
-function asNumber(value: unknown, fallback: number) {
-  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
-}
-
-function asBoolean(value: unknown, fallback: boolean) {
-  return typeof value === "boolean" ? value : fallback;
-}
-
-function asNonNegativeInteger(value: unknown, fallback = 0) {
-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0
-    ? value
-    : fallback;
-}
-
-function asDateHistory(value: unknown) {
-  return Array.isArray(value)
-    ? value.filter(
-        (item): item is string =>
-          typeof item === "string" && Number.isFinite(Date.parse(item)),
-      )
-    : [];
-}
-
-function stringList(value: unknown) {
-  return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string")
-    : undefined;
-}
+export {
+  canonicalizePhaseSettings,
+  slideshowTextColorHex,
+  slideshowTextColorToken,
+} from "@/lib/slideshow/project-settings";
 
 export function isLocalSlideshowId(id: string) {
   return id.startsWith("local-");
@@ -164,220 +143,6 @@ export function slideKindFromUnknown(
 
 export function slideKindFromStoryRole(role: unknown): SlideshowSlideKind {
   return slideKindFromUnknown(role, "content");
-}
-
-export function canonicalizePhaseSettings(
-  value: unknown,
-  fallback?: SlideshowKindSettings,
-): Record<SlideshowSlideKind, SlideshowKindSettings> {
-  const stored = isRecord(value) ? value : {};
-  const base: SlideshowKindSettings = fallback ?? {
-    grid: "none",
-    overlayEnabled: true,
-    overlayOpacity: 45,
-    displayText: true,
-  };
-  const read = (kind: SlideshowSlideKind): SlideshowKindSettings => {
-    const legacyKey = kind === "content" ? "body" : kind;
-    const raw = isRecord(stored[kind])
-      ? stored[kind]
-      : isRecord(stored[legacyKey])
-        ? stored[legacyKey]
-        : {};
-    return {
-      grid: normalizeGrid(raw.grid ?? base.grid),
-      overlayEnabled: asBoolean(raw.overlayEnabled, base.overlayEnabled),
-      overlayOpacity: asNumber(raw.overlayOpacity, base.overlayOpacity),
-      displayText: asBoolean(raw.displayText, base.displayText),
-    };
-  };
-  return { hook: read("hook"), content: read("content"), cta: read("cta") };
-}
-
-function normalizeGrid(value: unknown): SlideshowGrid {
-  return value === "1:2" ||
-    value === "1:3" ||
-    value === "2:1" ||
-    value === "2:2"
-    ? value
-    : "none";
-}
-
-function normalizeAspectRatio(value: unknown): SlideshowAspectRatio {
-  return value === "4:5" || value === "1:1" || value === "16:9"
-    ? value
-    : "9:16";
-}
-
-function normalizeStatus(value: unknown): SlideshowProjectStatus {
-  return (SLIDESHOW_PROJECT_STATUSES as readonly string[]).includes(
-    asString(value),
-  )
-    ? (value as SlideshowProjectStatus)
-    : "draft";
-}
-
-function normalizeFont(value: unknown): SlideshowTextSettings["font"] {
-  return value === "Inter" ||
-    value === "Serif" ||
-    value === "SerifItalic" ||
-    value === "Editorial" ||
-    value === "Condensed" ||
-    value === "Mono" ||
-    value === "Rounded"
-    ? value
-    : "Poppins";
-}
-
-function hexKey(value: string) {
-  return value.trim().toLowerCase();
-}
-
-export function slideshowTextColorToken(value: unknown): SlideshowTextColorToken {
-  const raw = asString(value, "white");
-  const key = hexKey(raw);
-  if (key === "black" || key === "#000" || key === "#000000" || key === "#111111") {
-    return "black";
-  }
-  if (
-    key === "coral" ||
-    key === hexKey(slideshowOverlayTextColor("coral")) ||
-    key === LEGACY_CORAL_HEX
-  ) {
-    return "coral";
-  }
-  if (
-    key === "blue" ||
-    key === hexKey(slideshowOverlayTextColor("blue")) ||
-    key === LEGACY_BLUE_HEX
-  ) {
-    return "blue";
-  }
-  if (
-    key === "yellow" ||
-    key === hexKey(slideshowOverlayTextColor("yellow"))
-  ) {
-    return "yellow";
-  }
-  if (key === "white" || key === "#fff" || key === "#ffffff") return "white";
-  if (key === "custom" || /^#[0-9a-f]{3,8}$/i.test(raw)) return "custom";
-  return "white";
-}
-
-export function slideshowTextColorHex(settings: SlideshowTextSettings) {
-  if (settings.color === "custom") {
-    return settings.customColor ?? "#ffffff";
-  }
-  return slideshowOverlayTextColor(settings.color);
-}
-
-function defaultKindSettings(): SlideshowKindSettings {
-  const hook = DEFAULT_PROJECT_SETTINGS.phaseSettings.hook;
-  return {
-    grid: normalizeGrid(hook.grid),
-    overlayEnabled: hook.overlayEnabled,
-    overlayOpacity: hook.overlayOpacity,
-    displayText: hook.displayText,
-  };
-}
-
-function defaultTextSettings(): SlideshowTextSettings {
-  const stored = DEFAULT_PROJECT_SETTINGS.textSettings;
-  return {
-    font: normalizeFont(stored.font),
-    color: slideshowTextColorToken(stored.color),
-    style:
-      stored.style === "solid" ||
-      stored.style === "light" ||
-      stored.style === "translucent" ||
-      stored.style === "plain"
-        ? stored.style
-        : "outline",
-    size: stored.size,
-    position:
-      stored.position === "top" || stored.position === "bottom"
-        ? stored.position
-        : "center",
-    width: stored.width,
-    align:
-      stored.align === "left" || stored.align === "right" ? stored.align : "center",
-    padding: stored.padding === "flush" ? "flush" : "padded",
-    backgroundRadius: stored.backgroundRadius,
-  };
-}
-
-function readTextSettings(
-  settings: JsonRecord,
-  firstSlide?: JsonRecord,
-): SlideshowTextSettings {
-  const stored = isRecord(settings.textSettings) ? settings.textSettings : {};
-  const slideSettings = isRecord(firstSlide?.settings) ? firstSlide.settings : {};
-  const defaults = defaultTextSettings();
-  const font = asString(stored.font ?? slideSettings.fontFamily, defaults.font);
-  const colorValue = asString(
-    stored.color ?? slideSettings.textColor,
-    defaults.color,
-  );
-  const token = slideshowTextColorToken(colorValue);
-  const customColorValue = asString(
-    stored.customColor,
-    /^#[0-9a-f]{3,8}$/i.test(colorValue) ? colorValue : "#ffffff",
-  );
-  const styleValue = asString(
-    stored.style ?? slideSettings.textStyle,
-    defaults.style,
-  );
-  const positionValue = asString(
-    stored.position ?? slideSettings.verticalPosition,
-    defaults.position,
-  );
-  const alignValue = asString(
-    stored.align ?? slideSettings.textAlign,
-    defaults.align,
-  );
-  const paddingValue = asString(stored.padding, defaults.padding);
-
-  return {
-    font: normalizeFont(font),
-    color: token,
-    customColor: token === "custom" ? customColorValue : undefined,
-    style:
-      styleValue === "solid" ||
-      styleValue === "light" ||
-      styleValue === "translucent" ||
-      styleValue === "plain"
-        ? styleValue
-        : "outline",
-    size: asNumber(stored.size ?? slideSettings.fontSize, defaults.size),
-    position:
-      positionValue === "top" || positionValue === "bottom"
-        ? positionValue
-        : "center",
-    width: asNumber(stored.width ?? slideSettings.textWidth, defaults.width),
-    align:
-      alignValue === "left" || alignValue === "right" ? alignValue : "center",
-    padding: paddingValue === "flush" ? "flush" : "padded",
-    backgroundRadius: Math.max(
-      0,
-      Math.min(20, asNumber(stored.backgroundRadius, defaults.backgroundRadius)),
-    ),
-  };
-}
-
-function readPhaseSettingsFromProject(
-  project: JsonRecord,
-  settings: JsonRecord,
-): Record<SlideshowSlideKind, SlideshowKindSettings> {
-  const overlay = isRecord(settings.darkOverlay) ? settings.darkOverlay : {};
-  const fallback: SlideshowKindSettings = {
-    ...defaultKindSettings(),
-    grid: normalizeGrid(settings.imageGrid),
-    overlayEnabled: asBoolean(overlay.enabled, true),
-    overlayOpacity: asNumber(overlay.opacity, 45),
-    displayText: asBoolean(settings.displayText, true),
-  };
-  const stored = project.phaseSettings ?? settings.phaseSettings;
-  return canonicalizePhaseSettings(stored, fallback);
 }
 
 function parseSlide(value: unknown, index: number): SlideshowSlide {
