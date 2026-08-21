@@ -68,7 +68,7 @@ async function readPage(response: Response): Promise<ListPage> {
   return body;
 }
 
-await (async () => {
+(async () => {
   const { prisma } = await import("../../src/lib/db");
   const { GET: getSources } = await import(
     "../../src/app/api/ugc-clone/sources/route.ts"
@@ -250,4 +250,7 @@ await (async () => {
     }
     await prisma.$disconnect();
   }
-})();
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

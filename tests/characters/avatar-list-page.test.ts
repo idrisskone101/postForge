@@ -37,7 +37,7 @@ assert.doesNotMatch(avatarPicker, /apiGet<Avatar\[\]>\("\/api\/avatars"\)/);
 
 type ListPage = { items: Array<{ id: string }>; nextCursor: string | null };
 
-await (async () => {
+(async () => {
   const { prisma } = await import("../../src/lib/db");
   const { GET } = await import("../../src/app/api/avatars/route.ts");
   const prefix = `pf-d-lists-avatar-${randomUUID()}`;
@@ -107,4 +107,7 @@ await (async () => {
     }
     await prisma.$disconnect();
   }
-})();
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
