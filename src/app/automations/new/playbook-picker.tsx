@@ -4,54 +4,25 @@ import { useEffect } from "react";
 import { Grid2X2, Heart, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaybookCard } from "./playbook-card";
-import {
-  isTemplateSort,
-  type AutomationTemplate,
-  type TemplateSort,
-  type TemplateView,
-} from "./playbook-model";
+import { isTemplateSort, type PlaybookPickerState } from "./playbook-model";
 
-export function PlaybookPicker({
-  templates,
-  categories,
-  categoryCounts,
-  category,
-  onCategoryChange,
-  search,
-  onSearchChange,
-  sort,
-  onSortChange,
-  view,
-  onViewChange,
-  favorites,
-  onToggleFavorite,
-  previewTemplate,
-  onPreview,
-  selectedTemplateId,
-  onSelect,
-  onBuildFromScratch,
-  onClose,
-}: {
-  templates: readonly AutomationTemplate[];
-  categories: string[];
-  categoryCounts: Record<string, number>;
-  category: string;
-  onCategoryChange: (category: string) => void;
-  search: string;
-  onSearchChange: (search: string) => void;
-  sort: TemplateSort;
-  onSortChange: (sort: TemplateSort) => void;
-  view: TemplateView;
-  onViewChange: (view: TemplateView) => void;
-  favorites: string[];
-  onToggleFavorite: (templateId: string) => void;
-  previewTemplate: AutomationTemplate;
-  onPreview: (templateId: string) => void;
-  selectedTemplateId: string;
-  onSelect: (templateId: string) => void;
-  onBuildFromScratch: () => void;
-  onClose: () => void;
-}) {
+export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
+  const {
+    templates,
+    categories,
+    categoryCounts,
+    category,
+    onCategoryChange,
+    search,
+    onSearchChange,
+    sort,
+    onSortChange,
+    view,
+    onViewChange,
+    onBuildFromScratch,
+    onClose,
+  } = picker;
+
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
@@ -222,17 +193,7 @@ export function PlaybookPicker({
           ) : (
             <div className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}>
               {templates.map((template) => (
-                <PlaybookCard
-                  key={template.id}
-                  template={template}
-                  view={view}
-                  favorite={favorites.includes(template.id)}
-                  selected={selectedTemplateId === template.id}
-                  previewing={previewTemplate.id === template.id}
-                  onToggleFavorite={() => onToggleFavorite(template.id)}
-                  onPreview={() => onPreview(template.id)}
-                  onSelect={() => onSelect(template.id)}
-                />
+                <PlaybookCard key={template.id} picker={picker} template={template} />
               ))}
             </div>
           )}

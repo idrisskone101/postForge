@@ -89,6 +89,74 @@ assert.match(
   clientSource,
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
 );
+assert.match(clientSource, /<PlaybookPicker picker=\{playbookPicker\} \/>/);
+assert.doesNotMatch(
+  clientSource,
+  /createContext/,
+  "builder client must not hide picker props behind React Context"
+);
+
+const PROP_BAG_LIMIT = 7;
+
+function exportedComponentPropCount(source: string, exportName: string) {
+  const start = source.indexOf(`export function ${exportName}(`);
+  assert.ok(start >= 0, `missing export function ${exportName}`);
+  const rest = source.slice(start + `export function ${exportName}(`.length);
+  if (rest.startsWith(")")) return 0;
+  assert.equal(rest[0], "{", `${exportName} must take a destructured props object`);
+  const close = rest.indexOf("}:");
+  assert.ok(close >= 0, `${exportName} props object must use an inline type`);
+  return rest
+    .slice(1, close)
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0).length;
+}
+
+const builderDir = "src/app/automations/new/";
+const namedComponents: Array<[string, string, number]> = [
+  ["playbook-picker.tsx", "PlaybookPicker", 1],
+  ["playbook-card.tsx", "PlaybookCard", 2],
+  ["destination-selector.tsx", "DestinationSelector", 1],
+  ["automation-builder-phase-form.tsx", "AutomationBuilderPhaseForm", 1],
+  ["automation-builder-preview-pane.tsx", "AutomationBuilderPreviewPane", 1],
+  ["automation-builder-client.tsx", "AutomationBuilderClient", 0],
+  ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 0],
+];
+for (const [file, exportName, expected] of namedComponents) {
+  const source = readFileSync(new URL(`${builderDir}${file}`, repoRoot), "utf8");
+  const count = exportedComponentPropCount(source, exportName);
+  assert.equal(count, expected, `${exportName} takes ${count} props`);
+  assert.ok(
+    count <= PROP_BAG_LIMIT,
+    `${exportName} is a ${count}-field prop bag (limit ${PROP_BAG_LIMIT})`
+  );
+}
+
+const pickerModel = readFileSync(
+  new URL("src/app/automations/new/playbook-model.ts", repoRoot),
+  "utf8"
+);
+assert.match(pickerModel, /export type PlaybookPickerState/);
+const destinationSource = readFileSync(
+  new URL("src/app/automations/new/destination-selector.tsx", repoRoot),
+  "utf8"
+);
+assert.match(destinationSource, /export type DestinationSelectorState/);
+assert.match(destinationSource, /selector: DestinationSelectorState/);
+
+for (const file of files.filter((path) => path.startsWith("src/app/automations/new/"))) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(source, /createContext/, `${file} must not add React Context`);
+  for (const match of source.matchAll(/export function ([A-Za-z0-9]+)\(/g)) {
+    const exportName = match[1];
+    const count = exportedComponentPropCount(source, exportName);
+    assert.ok(
+      count <= PROP_BAG_LIMIT,
+      `${file} ${exportName} is a ${count}-field prop bag (limit ${PROP_BAG_LIMIT})`
+    );
+  }
+}
 
 const libFiles = listFiles("src/lib/automations/");
 assert.equal(
