@@ -12,10 +12,16 @@ import {
   type JobDetail,
 } from "../../src/lib/generation-editor";
 
-const generationFormSource = readFileSync(
-  new URL("../../src/components/generation-form.tsx", import.meta.url),
-  "utf8"
-);
+const generationFormSource = [
+  "../../src/components/generation-form.tsx",
+  "../../src/app/generate/form-collection-section.tsx",
+  "../../src/app/generate/form-session.tsx",
+  "../../src/app/generate/use-generation-form.ts",
+]
+  .map((relativePath) =>
+    readFileSync(new URL(relativePath, import.meta.url), "utf8")
+  )
+  .join("\n");
 const generationDetailSource = readFileSync(
   new URL("../../src/app/generate/[id]/page.tsx", import.meta.url),
   "utf8"
