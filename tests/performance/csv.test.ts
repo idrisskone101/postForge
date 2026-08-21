@@ -1,15 +1,16 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { parsePerformanceCsv } from "../../src/lib/performance/csv";
 import {
   aggregateEngagementRate,
   aggregateMetric,
   aggregatePerformanceSource,
   canAggregateConnectedProviders,
   canDerivePerformanceMetrics,
-  parsePerformanceCsv,
   postEngagementRate,
   type PerformancePostView,
-} from "../../src/app/performance/performance-page-client";
+} from "../../src/lib/performance/metrics";
 
 const parsed = parsePerformanceCsv(
   '\uFEFFtitle,views,likes,comments,shares,saves,publishedAt\r\n"Launch day, part one","12.5k",840,62,91,430,2026-08-01\r\n"A quote: ""ship it""",2m,10,2,3,4,2026-08-02'
@@ -163,10 +164,28 @@ assert.equal(
   "YouTube must not hide the valid TikTok plus Instagram aggregate"
 );
 
-const performanceSource = readFileSync(
-  new URL("../../src/app/performance/performance-page-client.tsx", import.meta.url),
-  "utf8"
-);
+const repoRoot = new URL("../../", import.meta.url);
+
+function listFiles(relativeDir: string, files: string[] = []) {
+  const dir = new URL(relativeDir, repoRoot);
+  for (const entry of readdirSync(dir)) {
+    const relative = `${relativeDir}${entry}`;
+    const full = join(dir.pathname, entry);
+    if (statSync(full).isDirectory()) {
+      listFiles(`${relative}/`, files);
+      continue;
+    }
+    if (entry.endsWith(".ts") || entry.endsWith(".tsx")) files.push(relative);
+  }
+  return files;
+}
+
+const performanceSource = [
+  ...listFiles("src/app/performance/"),
+  ...listFiles("src/lib/performance/"),
+]
+  .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
+  .join("\n");
 assert.match(performanceSource, /min-\[1180px\]:grid-cols-2/);
 assert.match(performanceSource, /sm:hidden/);
 assert.match(performanceSource, /hidden overflow-x-auto sm:block/);

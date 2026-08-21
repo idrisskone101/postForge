@@ -556,36 +556,6 @@ async function replaceProjectSlides(
   }
 }
 
-export async function listSlideshowProjects(options: {
-  status?: string | null;
-  limit: number;
-  offset: number;
-}) {
-  const status = options.status
-    ? optionalEnum({ status: options.status }, "status", SLIDESHOW_PROJECT_STATUSES)
-    : undefined;
-  const where = status
-    ? { status: status as SlideshowProjectStatus }
-    : undefined;
-  const [projects, total] = await Promise.all([
-    prisma.slideshowProject.findMany({
-      where,
-      include: projectInclude,
-      orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
-      take: options.limit,
-      skip: options.offset,
-    }),
-    prisma.slideshowProject.count({ where }),
-  ]);
-
-  return {
-    projects: projects.map(toSlideshowProjectDto),
-    total,
-    limit: options.limit,
-    offset: options.offset,
-  };
-}
-
 export async function getSlideshowProject(id: string) {
   return toSlideshowProjectDto(await getProjectRecord(id));
 }

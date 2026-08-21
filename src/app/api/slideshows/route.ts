@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { paginationFrom, readJsonRequest, slideshowErrorResponse } from "@/lib/slideshow/http";
-import {
-  createSlideshowProject,
-  listSlideshowProjects,
-} from "@/lib/slideshow/service";
+import { listSlideshowProjects } from "@/lib/slideshow/list";
+import { createSlideshowProject } from "@/lib/slideshow/service";
 
 export async function GET(request: NextRequest) {
   try {
