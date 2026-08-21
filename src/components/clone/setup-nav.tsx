@@ -1,17 +1,14 @@
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CLONE_SETUP_STEPS } from "@/components/clone/constants";
-import type { CloneSetupStep } from "@/components/clone/types";
+import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSetupNav({
-  activeSetupStep,
-  completedSetupSteps,
-  onSelectStep,
+  draft,
 }: {
-  activeSetupStep: CloneSetupStep;
-  completedSetupSteps: Set<CloneSetupStep>;
-  onSelectStep: (step: CloneSetupStep) => void;
+  draft: CloneDraft;
 }) {
+  const { activeSetupStep, completedSetupSteps, onSelectStep } = draft;
   return (
     <nav
       aria-label="Clone setup progress"
