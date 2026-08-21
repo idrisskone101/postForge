@@ -1,6 +1,5 @@
 {
   "src/app/automations/automations-page-client.tsx": 2030,
-  "src/app/automations/new/automation-builder-client.tsx": 1372,
   "src/app/characters/new/character-builder-client.tsx": 637,
   "src/app/costs/costs-page-client.tsx": 797,
   "src/app/generate/[id]/page.tsx": 1070,
