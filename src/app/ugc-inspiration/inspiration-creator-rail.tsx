@@ -54,8 +54,11 @@ export function InspirationCreatorRail({
     refreshingIds,
     deletingIds,
     trackedVideoCount,
+    accountCursor,
+    isLoadingMoreAccounts,
     handleRefreshAccount,
     handleDeleteAccount,
+    handleLoadMoreAccounts,
   } = workspace;
 
   return (
@@ -146,6 +149,22 @@ export function InspirationCreatorRail({
             </div>
           );
         })}
+        {accountCursor ? (
+          <button
+            type="button"
+            onClick={() => void handleLoadMoreAccounts()}
+            disabled={isLoadingMoreAccounts}
+            data-inspiration-load-more-accounts="true"
+            title="Load more tracked creators"
+            className="flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/60 disabled:opacity-50"
+          >
+            {isLoadingMoreAccounts ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <span className="whitespace-nowrap text-[13px] font-semibold">Load more</span>
+            )}
+          </button>
+        ) : null}
       </div>
     </section>
   );

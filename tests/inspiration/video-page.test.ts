@@ -1,12 +1,62 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
+  clampInspirationAccountTake,
+  INSPIRATION_ACCOUNT_PAGE_MAX,
+  INSPIRATION_ACCOUNT_PAGE_SIZE,
   INSPIRATION_VIDEO_PAGE_SIZE,
+  inspirationAccountListPath,
   inspirationVideoFeedPath,
+  parseInspirationAccountPageQuery,
 } from "../../src/lib/inspiration/types";
 import {
   buildInspirationVideoWhere,
   parseInspirationVideoPageQuery,
 } from "../../src/lib/inspiration/video-page";
+
+const accountsRoute = readFileSync(
+  new URL("../../src/app/api/ugc-inspiration/accounts/route.ts", import.meta.url),
+  "utf8"
+);
+const pageSource = readFileSync(
+  new URL("../../src/app/ugc-inspiration/page.tsx", import.meta.url),
+  "utf8"
+);
+const workspaceSource = readFileSync(
+  new URL("../../src/app/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
+  "utf8"
+);
+const accountListHook = readFileSync(
+  new URL("../../src/app/ugc-inspiration/use-inspiration-account-list.ts", import.meta.url),
+  "utf8"
+);
+const mutationsSource = readFileSync(
+  new URL("../../src/app/ugc-inspiration/inspiration-mutations.ts", import.meta.url),
+  "utf8"
+);
+const serviceSource = readFileSync(
+  new URL("../../src/lib/inspiration/service.ts", import.meta.url),
+  "utf8"
+);
+
+assert.match(accountsRoute, /parseInspirationAccountPageQuery/);
+assert.match(accountsRoute, /NextResponse\.json\(page\)/);
+assert.doesNotMatch(accountsRoute, /NextResponse\.json\(accounts\)/);
+assert.match(serviceSource, /InspirationAccountPage/);
+assert.match(serviceSource, /nextCursor:/);
+assert.match(serviceSource, /clampInspirationAccountTake/);
+assert.doesNotMatch(
+  serviceSource,
+  /export async function listTrackedInspirationAccounts\(\): Promise<TrackedInspirationAccount\[\]>/
+);
+assert.match(pageSource, /initialAccountPage/);
+assert.match(pageSource, /listTrackedInspirationAccounts\(\)/);
+assert.doesNotMatch(pageSource, /initialAccounts=/);
+assert.match(workspaceSource, /useInspirationAccountList/);
+assert.match(workspaceSource, /handleLoadMoreAccounts/);
+assert.match(accountListHook, /fetchInspirationAccountPage\(\{ cursor: accountCursor \}\)/);
+assert.match(mutationsSource, /fetchInspirationAccountPage/);
+assert.doesNotMatch(mutationsSource, /apiGet<TrackedInspirationAccount\[\]>/);
 
 const feedPath = inspirationVideoFeedPath({
   take: INSPIRATION_VIDEO_PAGE_SIZE,
@@ -26,6 +76,28 @@ assert.equal(
   accountPath,
   "/api/ugc-inspiration/accounts/account-1/videos?take=24&cursor=video-24&usage=unused&search=hook&sort=views"
 );
+
+assert.equal(
+  inspirationAccountListPath(),
+  "/api/ugc-inspiration/accounts?take=50"
+);
+assert.equal(
+  inspirationAccountListPath({ cursor: "account-50" }),
+  "/api/ugc-inspiration/accounts?take=50&cursor=account-50"
+);
+
+const parsedAccounts = parseInspirationAccountPageQuery(new URLSearchParams());
+assert.equal(parsedAccounts.take, INSPIRATION_ACCOUNT_PAGE_SIZE);
+assert.equal(parsedAccounts.cursor, null);
+
+const clampedAccounts = parseInspirationAccountPageQuery(
+  new URLSearchParams("take=500&cursor=account-2")
+);
+assert.equal(clampedAccounts.take, INSPIRATION_ACCOUNT_PAGE_MAX);
+assert.equal(clampedAccounts.cursor, "account-2");
+assert.equal(clampInspirationAccountTake(undefined), 50);
+assert.equal(clampInspirationAccountTake(0), 1);
+assert.equal(clampInspirationAccountTake(500), 100);
 
 const parsed = parseInspirationVideoPageQuery(
   new URLSearchParams("take=24&cursor=video-24&usage=used&search=payoff&sort=engagement")
