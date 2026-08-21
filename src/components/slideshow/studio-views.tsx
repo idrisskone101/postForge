@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { alignCreatorDirectImages } from "./model";
 import { SlidePreview, VisualTile } from "./slide-preview";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
+import { requestSlideshowCreatorDerive } from "@/lib/slideshow/client";
 import type {
   SlideshowProject,
   SlideshowSection,
@@ -814,7 +815,6 @@ function CreatorView({
     assetIds: string[],
     idempotencyKey?: string,
   ) => {
-    const { requestSlideshowCreatorDerive } = await import("./api");
     const result = await requestSlideshowCreatorDerive("/api/slideshows", {
       collectionAssetIds: assetIds,
       idempotencyKey,
