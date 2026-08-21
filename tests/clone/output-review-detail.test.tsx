@@ -63,12 +63,14 @@ const completedJob = {
 
 const markup = renderToStaticMarkup(
   <CloneOutputReviewDetail
-    job={completedJob}
-    isRetrying={false}
-    onBack={() => {}}
-    onRetry={() => {}}
-    onDownload={() => {}}
-    onNewClone={() => {}}
+    review={{
+      job: completedJob,
+      isRetrying: false,
+      onBack: () => {},
+      onRetry: () => {},
+      onDownload: () => {},
+      onNewClone: () => {},
+    }}
   />
 );
 
@@ -102,18 +104,20 @@ assert.match(markup, /\$0\.31/);
 const longFailureToken = `request_${"x".repeat(512)}`;
 const longFailureMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
-    job={{
-      ...completedJob,
-      status: "failed",
-      error: longFailureToken,
-      outputs: [],
+    review={{
+      job: {
+        ...completedJob,
+        status: "failed",
+        error: longFailureToken,
+        outputs: [],
+      },
+      isRetrying: false,
+      actionFeedback: { tone: "error", message: longFailureToken },
+      onBack: () => {},
+      onRetry: () => {},
+      onDownload: () => {},
+      onNewClone: () => {},
     }}
-    isRetrying={false}
-    actionFeedback={{ tone: "error", message: longFailureToken }}
-    onBack={() => {}}
-    onRetry={() => {}}
-    onDownload={() => {}}
-    onNewClone={() => {}}
   />
 );
 
@@ -124,21 +128,23 @@ assert.match(longFailureMarkup, /\[overflow-wrap:anywhere\]/);
 
 const portraitSourceFallbackMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
-    job={{
-      ...completedJob,
-      outputs: [
-        {
-          ...completedJob.outputs[0],
-          width: null,
-          height: null,
-        },
-      ],
+    review={{
+      job: {
+        ...completedJob,
+        outputs: [
+          {
+            ...completedJob.outputs[0],
+            width: null,
+            height: null,
+          },
+        ],
+      },
+      isRetrying: false,
+      onBack: () => {},
+      onRetry: () => {},
+      onDownload: () => {},
+      onNewClone: () => {},
     }}
-    isRetrying={false}
-    onBack={() => {}}
-    onRetry={() => {}}
-    onDownload={() => {}}
-    onNewClone={() => {}}
   />
 );
 
@@ -148,20 +154,22 @@ assert.match(portraitSourceFallbackMarkup, /1080 x 1920/);
 const uuidOnlyAvatarId = "8e18566f-49cf-4607-ace1-15b6161d00cc";
 const avatarFallbackMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
-    job={{
-      ...completedJob,
-      input: {
-        ...completedJob.input,
-        avatarId: uuidOnlyAvatarId,
-        avatarName: undefined,
-        identityName: undefined,
+    review={{
+      job: {
+        ...completedJob,
+        input: {
+          ...completedJob.input,
+          avatarId: uuidOnlyAvatarId,
+          avatarName: undefined,
+          identityName: undefined,
+        },
       },
+      isRetrying: false,
+      onBack: () => {},
+      onRetry: () => {},
+      onDownload: () => {},
+      onNewClone: () => {},
     }}
-    isRetrying={false}
-    onBack={() => {}}
-    onRetry={() => {}}
-    onDownload={() => {}}
-    onNewClone={() => {}}
   />
 );
 
@@ -177,20 +185,22 @@ assert.doesNotMatch(
 
 const collectionReferenceMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
-    job={{
-      ...completedJob,
-      input: {
-        ...completedJob.input,
-        savedReferenceId: undefined,
-        referenceImageFileId: undefined,
-        collectionAssetId: "collection asset/portrait-1",
+    review={{
+      job: {
+        ...completedJob,
+        input: {
+          ...completedJob.input,
+          savedReferenceId: undefined,
+          referenceImageFileId: undefined,
+          collectionAssetId: "collection asset/portrait-1",
+        },
       },
+      isRetrying: false,
+      onBack: () => {},
+      onRetry: () => {},
+      onDownload: () => {},
+      onNewClone: () => {},
     }}
-    isRetrying={false}
-    onBack={() => {}}
-    onRetry={() => {}}
-    onDownload={() => {}}
-    onNewClone={() => {}}
   />
 );
 

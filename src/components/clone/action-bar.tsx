@@ -3,63 +3,62 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { calculateEstimatedCost } from "@/lib/ai/models";
-import type { ModelDefinition } from "@/lib/ai/types";
 import { CloneModelSelect } from "@/components/clone/model-select";
-import type { ReferenceBatchSize } from "@/components/clone/constants";
+import type { CloneActionModel, CloneModelSelectModel } from "@/components/clone/view-models";
 
 export function CloneActionBar({
-  cloneTip,
-  mobileSettingsOpen,
-  cloneVideoModels,
-  referenceImageModels,
-  selectedModel,
-  selectedReferenceImageModel,
-  keepOriginalSound,
-  removeTextOverlays,
-  durationSec,
-  referenceBatchSize,
-  textErasureCost,
-  totalRefCost,
-  referenceBatchCost,
-  videoCost,
-  isSubmitting,
-  isGenerating,
-  compactActionLabel,
-  primaryActionDisabled,
-  onToggleMobileSettings,
-  onCloseMobileSettings,
-  onSelectModel,
-  onSelectReferenceImageModel,
-  onToggleSound,
-  onToggleTextOverlays,
-  onPrimaryAction,
+  action,
 }: {
-  cloneTip: { title: string; body: string };
-  mobileSettingsOpen: boolean;
-  cloneVideoModels: ModelDefinition[];
-  referenceImageModels: ModelDefinition[];
-  selectedModel: string;
-  selectedReferenceImageModel: string;
-  keepOriginalSound: boolean;
-  removeTextOverlays: boolean;
-  durationSec: number;
-  referenceBatchSize: ReferenceBatchSize;
-  textErasureCost: number;
-  totalRefCost: number;
-  referenceBatchCost: number;
-  videoCost: number;
-  isSubmitting: boolean;
-  isGenerating: boolean;
-  compactActionLabel: string;
-  primaryActionDisabled: boolean;
-  onToggleMobileSettings: () => void;
-  onCloseMobileSettings: () => void;
-  onSelectModel: (value: string) => void;
-  onSelectReferenceImageModel: (value: string) => void;
-  onToggleSound: (checked: boolean) => void;
-  onToggleTextOverlays: (checked: boolean) => void;
-  onPrimaryAction: () => void;
+  action: CloneActionModel;
 }) {
+  const {
+    cloneTip,
+    mobileSettingsOpen,
+    cloneVideoModels,
+    referenceImageModels,
+    selectedModel,
+    selectedReferenceImageModel,
+    keepOriginalSound,
+    removeTextOverlays,
+    durationSec,
+    referenceBatchSize,
+    textErasureCost,
+    totalRefCost,
+    referenceBatchCost,
+    videoCost,
+    isSubmitting,
+    isGenerating,
+    compactActionLabel,
+    primaryActionDisabled,
+    onToggleMobileSettings,
+    onCloseMobileSettings,
+    onSelectModel,
+    onSelectReferenceImageModel,
+    onToggleSound,
+    onToggleTextOverlays,
+    onPrimaryAction,
+  } = action;
+
+  const videoSelect: CloneModelSelectModel = {
+    label: "Final video",
+    description: "Video model",
+    accentClassName: "text-accent-blue",
+    models: cloneVideoModels,
+    selectedValue: selectedModel,
+    onValueChange: onSelectModel,
+    getCost: (modelId) => formatCost(calculateEstimatedCost(modelId, { durationSec })),
+  };
+  const referenceSelect: CloneModelSelectModel = {
+    label: "Reference image",
+    description: "Image model",
+    accentClassName: "text-accent-green",
+    models: referenceImageModels,
+    selectedValue: selectedReferenceImageModel,
+    onValueChange: onSelectReferenceImageModel,
+    getCost: (modelId) =>
+      formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize })),
+  };
+
   return (
     <section
       data-clone-primary-action-bar="true"
@@ -86,28 +85,8 @@ export function CloneActionBar({
               </button>
             </div>
 
-            <CloneModelSelect
-              label="Final video"
-              description="Video model"
-              accentClassName="text-accent-blue"
-              models={cloneVideoModels}
-              selectedValue={selectedModel}
-              onValueChange={onSelectModel}
-              getCost={(modelId) =>
-                formatCost(calculateEstimatedCost(modelId, { durationSec }))
-              }
-            />
-            <CloneModelSelect
-              label="Reference image"
-              description="Image model"
-              accentClassName="text-accent-green"
-              models={referenceImageModels}
-              selectedValue={selectedReferenceImageModel}
-              onValueChange={onSelectReferenceImageModel}
-              getCost={(modelId) =>
-                formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
-              }
-            />
+            <CloneModelSelect model={videoSelect} />
+            <CloneModelSelect model={referenceSelect} />
             <div className="grid grid-cols-2 gap-2">
               <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
                 <span className="truncate text-[13px] font-semibold text-foreground">Sound</span>
@@ -154,31 +133,9 @@ export function CloneActionBar({
         </div>
 
         <div className="hidden gap-2 lg:grid lg:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] lg:items-center">
-          <CloneModelSelect
-            label="Final video"
-            description="Video model"
-            accentClassName="text-accent-blue"
-            className="min-w-0"
-            models={cloneVideoModels}
-            selectedValue={selectedModel}
-            onValueChange={onSelectModel}
-            getCost={(modelId) =>
-              formatCost(calculateEstimatedCost(modelId, { durationSec }))
-            }
-          />
+          <CloneModelSelect model={videoSelect} className="min-w-0" />
 
-          <CloneModelSelect
-            label="Reference image"
-            description="Image model"
-            accentClassName="text-accent-green"
-            className="min-w-0"
-            models={referenceImageModels}
-            selectedValue={selectedReferenceImageModel}
-            onValueChange={onSelectReferenceImageModel}
-            getCost={(modelId) =>
-              formatCost(calculateEstimatedCost(modelId, { numImages: referenceBatchSize }))
-            }
-          />
+          <CloneModelSelect model={referenceSelect} className="min-w-0" />
 
           <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
             <div className="flex min-w-0 items-center gap-2">
