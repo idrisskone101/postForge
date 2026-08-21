@@ -59,7 +59,7 @@ export interface SourceVideoInput {
 
 export type CloneOutputHandoffState = "idle" | "pending" | "success" | "error";
 
-export type CloneOutputReviewDetailProps = {
+export type CloneOutputReviewModel = {
   job: CloneOutputReviewJob;
   isRetrying: boolean;
   pendingReviewStatus?: OutputReviewStatus | null;
@@ -74,4 +74,23 @@ export type CloneOutputReviewDetailProps = {
   ) => void;
   onHandoff?: (output: CloneOutputReviewOutput) => void;
   onNewClone: () => void;
+};
+
+export type CloneOutputReviewView = CloneOutputReviewModel & {
+  featured: CloneOutputReviewOutput | undefined;
+  featuredSize: string | null;
+  previewWidth: number | null | undefined;
+  previewHeight: number | null | undefined;
+  isActive: boolean;
+  isFailed: boolean;
+  isCompleted: boolean;
+  sourceVideo: SourceVideoInput | null;
+  sourceTitle: string;
+  sourceUrl: string | null | undefined;
+  sourcePreviewUrl: string | null;
+  avatarId: string | null;
+  avatarPreviewUrl: string | null;
+  identityName: string;
+  reference: { id: string; label: string; previewUrl: string } | null;
+  onSelectVariant: (index: number) => void;
 };
