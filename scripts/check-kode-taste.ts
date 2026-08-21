@@ -562,7 +562,7 @@ export function formatKodeTasteViolations(
         break;
       case "prop-bag":
         lines.push(
-          `${violation.path}: ${violation.component} takes ${violation.props.length} props (${violation.props.join(", ")}); pass a named view-model`
+          `${violation.path}: ${violation.component} takes ${violation.props.length} props (${violation.props.join(", ")}); pass a named view-model, or a feature-root Context when the same bag is threaded through layers`
         );
         break;
       case "use-state":
