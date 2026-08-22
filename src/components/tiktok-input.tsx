@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import type { ClonePreselectedSourceResult } from "@/components/clone/view-models";
+import {
+  TikTokSavedSources,
+  type SavedTikTokSource,
+  type SourceListPage,
+} from "@/components/tiktok-saved-sources";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
+import { savedSourceMatchesHandoffUrl } from "@/lib/ugc-clone-handoff";
 import { cn } from "@/lib/utils";
 import {
   Loader2,
@@ -10,11 +17,6 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import {
-  TikTokSavedSources,
-  type SavedTikTokSource,
-  type SourceListPage,
-} from "@/components/tiktok-saved-sources";
 
 export interface TikTokVideoInfo {
   id: string;
@@ -32,10 +34,8 @@ interface TikTokInputProps {
   videoInfo: TikTokVideoInfo | null;
   refreshKey?: number;
   preselectedSourceId?: string | null;
-  onPreselectedSourceResolved?: (result: {
-    status: "selected" | "missing";
-    sourceId: string;
-  }) => void;
+  handoffSourceUrl?: string | null;
+  onPreselectedSourceResolved?: (result: ClonePreselectedSourceResult) => void;
 }
 
 export function TikTokInput({
@@ -43,6 +43,7 @@ export function TikTokInput({
   videoInfo,
   refreshKey,
   preselectedSourceId,
+  handoffSourceUrl,
   onPreselectedSourceResolved,
 }: TikTokInputProps) {
   const [url, setUrl] = useState("");
@@ -56,6 +57,7 @@ export function TikTokInput({
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
+  const autoImportedUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -109,34 +111,101 @@ export function TikTokInput({
     }
   };
 
+  const importFromUrl = useCallback(async (nextUrl: string) => {
+    const trimmed = nextUrl.trim();
+    if (!trimmed) return null;
+
+    setIsDownloading(true);
+    setError(null);
+
+    try {
+      const result = await apiPost<SavedTikTokSource>("/api/ugc-clone/download", {
+        url: trimmed,
+      });
+
+      setSavedSources((prev) => {
+        const exists = prev.some((s) => s.id === result.id);
+        return exists ? prev : [result, ...prev];
+      });
+
+      onDownloaded(toVideoInfo(result));
+      return result;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Import failed");
+      return null;
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [onDownloaded]);
+
   useEffect(() => {
     if (!preselectedSourceId) {
       autoSelectedIdRef.current = null;
-      return;
     }
-    if (isLoadingSources || sourcesError) return;
-    if (autoSelectedIdRef.current === preselectedSourceId) return;
+    if (!handoffSourceUrl) {
+      autoImportedUrlRef.current = null;
+    }
 
-    const source = savedSources.find((item) => item.id === preselectedSourceId);
-    if (!source) {
-      if (sourcesNextCursor) return;
+    if (preselectedSourceId) {
+      if (isLoadingSources || sourcesError) return;
+      if (autoSelectedIdRef.current === preselectedSourceId) return;
+
+      const source = savedSources.find((item) => item.id === preselectedSourceId);
+      if (!source) {
+        if (sourcesNextCursor) return;
+        autoSelectedIdRef.current = preselectedSourceId;
+        setError("The handed-off saved source is no longer available. Choose another source.");
+        onPreselectedSourceResolved?.({
+          handoff: "sourceId",
+          status: "missing",
+          sourceId: preselectedSourceId,
+        });
+        return;
+      }
+
       autoSelectedIdRef.current = preselectedSourceId;
-      setError("The handed-off saved source is no longer available. Choose another source.");
+      onDownloaded(toVideoInfo(source));
+      setError(null);
       onPreselectedSourceResolved?.({
-        status: "missing",
+        handoff: "sourceId",
+        status: "selected",
         sourceId: preselectedSourceId,
       });
       return;
     }
 
-    autoSelectedIdRef.current = preselectedSourceId;
-    onDownloaded(toVideoInfo(source));
-    setError(null);
-    onPreselectedSourceResolved?.({
-      status: "selected",
-      sourceId: preselectedSourceId,
+    if (!handoffSourceUrl || isLoadingSources || isDownloading) return;
+    if (autoImportedUrlRef.current === handoffSourceUrl) return;
+
+    const existing = savedSources.find((item) =>
+      savedSourceMatchesHandoffUrl(item.originalUrl, handoffSourceUrl)
+    );
+    if (existing) {
+      autoImportedUrlRef.current = handoffSourceUrl;
+      onDownloaded(toVideoInfo(existing));
+      setUrl(handoffSourceUrl);
+      setError(null);
+      onPreselectedSourceResolved?.({
+        handoff: "sourceUrl",
+        status: "selected",
+        sourceUrl: handoffSourceUrl,
+      });
+      return;
+    }
+
+    autoImportedUrlRef.current = handoffSourceUrl;
+    setUrl(handoffSourceUrl);
+    void importFromUrl(handoffSourceUrl).then((result) => {
+      onPreselectedSourceResolved?.({
+        handoff: "sourceUrl",
+        status: result ? "selected" : "missing",
+        sourceUrl: handoffSourceUrl,
+      });
     });
   }, [
+    handoffSourceUrl,
+    importFromUrl,
+    isDownloading,
     isLoadingSources,
     onDownloaded,
     onPreselectedSourceResolved,
@@ -146,28 +215,8 @@ export function TikTokInput({
     sourcesNextCursor,
   ]);
 
-  const handleDownload = async () => {
-    if (!url.trim()) return;
-
-    setIsDownloading(true);
-    setError(null);
-
-    try {
-      const result = await apiPost<SavedTikTokSource>("/api/ugc-clone/download", {
-        url: url.trim(),
-      });
-
-      setSavedSources((prev) => {
-        const exists = prev.some((s) => s.id === result.id);
-        return exists ? prev : [result, ...prev];
-      });
-
-      onDownloaded(toVideoInfo(result));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Import failed");
-    } finally {
-      setIsDownloading(false);
-    }
+  const handleDownload = () => {
+    void importFromUrl(url);
   };
 
   const handleDeleteSource = async (id: string, e: MouseEvent) => {

@@ -44,7 +44,6 @@ export function InspirationPreviewDialog({
     setEmbedState,
     thumbnailErrorIds,
     updatingRejectionIds,
-    usingVideoId,
     copiedVideoId,
     handleSetVideoRejection,
     handleUseInClone,
@@ -240,21 +239,11 @@ export function InspirationPreviewDialog({
                 ) : (
                   <Button
                     type="button"
-                    onClick={() => void handleUseInClone(selectedVideo)}
-                    disabled={usingVideoId === selectedVideo.id}
+                    onClick={() => handleUseInClone(selectedVideo)}
                     className="pf-button-primary h-10"
                   >
-                    {usingVideoId === selectedVideo.id ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        Sending to Clone...
-                      </>
-                    ) : (
-                      <>
-                        Use in Clone
-                        <Sparkles className="size-4" />
-                      </>
-                    )}
+                    Use in Clone
+                    <Sparkles className="size-4" />
                   </Button>
                 )}
 

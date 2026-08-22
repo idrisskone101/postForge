@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
   type InspirationAccountPage,
@@ -25,7 +26,6 @@ import {
   copyInspirationSourceUrl,
   deleteInspirationAccount,
   fetchInspirationVideoPage,
-  postInspirationVideoUse,
   refreshInspirationAccount,
   setInspirationVideoRejection,
   trackInspirationAccount,
@@ -71,7 +71,6 @@ export function useInspirationWorkspace({
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [refreshingIds, setRefreshingIds] = useState<string[]>([]);
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
-  const [usingVideoId, setUsingVideoId] = useState<string | null>(null);
   const [updatingRejectionIds, setUpdatingRejectionIds] = useState<string[]>([]);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
@@ -311,18 +310,8 @@ export function useInspirationWorkspace({
     }
   }
 
-  async function handleUseInClone(video: InspirationVideoCard) {
-    setUsingVideoId(video.id);
-    setPageError(null);
-
-    try {
-      const result = await postInspirationVideoUse(video.id);
-      window.location.assign(result.redirectTo);
-    } catch (error) {
-      setPageError(inspirationPageError(error, "Failed to send video to Clone."));
-    } finally {
-      setUsingVideoId(null);
-    }
+  function handleUseInClone(video: InspirationVideoCard) {
+    window.location.assign(buildCloneSourceUrlHandoffHref(video.originalUrl));
   }
 
   async function handleSetVideoRejection(
@@ -413,7 +402,6 @@ export function useInspirationWorkspace({
     isAddingAccount,
     refreshingIds,
     deletingIds,
-    usingVideoId,
     updatingRejectionIds,
     selectedVideoId,
     setSelectedVideoId,

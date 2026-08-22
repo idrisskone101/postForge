@@ -11,10 +11,8 @@ import {
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import type { ModelDefinition } from "@/lib/ai/types";
 import { apiPost } from "@/lib/api/client";
-import {
-  consumeCloneHandoffQuery,
-  readCloneHandoffQuery,
-} from "@/lib/ugc-clone-handoff";
+import type { ClonePreselectedSourceResult } from "@/components/clone/view-models";
+import { readCloneHandoffQuery } from "@/lib/ugc-clone-handoff";
 import { isMotionSourceWithinLimit } from "@/lib/ugc/source-limits";
 import { createReferenceImageBatchEntries } from "@/lib/ugc/clone-workflow";
 import {
@@ -32,6 +30,7 @@ import {
   buildCloneActionModel,
   buildCloneDraft,
   buildCloneReferenceWorkspace,
+  cloneHandoffAfterPreselect,
   type CloneFormSnapshot,
 } from "@/app/ugc-clone/clone-form-models";
 import {
@@ -46,7 +45,7 @@ import { useCloneRefImages } from "@/app/ugc-clone/use-clone-ref-images";
 export function useCloneForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { sourceId: sourceIdParam, referenceFileId: referenceFileIdParam } =
+  const { sourceId: sourceIdParam, referenceFileId: referenceFileIdParam, sourceUrl: sourceUrlParam } =
     readCloneHandoffQuery(searchParams);
 
   const [phase, setPhase] = useState<Phase>("input");
@@ -166,21 +165,17 @@ export function useCloneForm() {
     }
   };
 
-  const handlePreselectedSourceResolved = (result: {
-    status: "selected" | "missing";
-    sourceId: string;
-  }) => {
-    if (!pendingSourceId || pendingSourceId !== result.sourceId) return;
-    setPendingSourceId(null);
-    if (result.status === "missing") {
-      setSubmitError(
-        "The handed-off saved source is no longer available. Choose or import another source."
-      );
-    } else {
-      setSubmitError(null);
-    }
-    const nextQuery = consumeCloneHandoffQuery(searchParams.toString(), "sourceId");
-    router.replace(nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone");
+  const handlePreselectedSourceResolved = (result: ClonePreselectedSourceResult) => {
+    const next = cloneHandoffAfterPreselect({
+      result,
+      sourceUrlParam,
+      pendingSourceId,
+      search: searchParams.toString(),
+    });
+    if (!next) return;
+    if (next.clearPendingSourceId) setPendingSourceId(null);
+    setSubmitError(next.error);
+    router.replace(next.path);
   };
 
   const handleTrimmed = (info: {
@@ -341,6 +336,7 @@ export function useCloneForm() {
     setSourceToolsOpen,
     sourcesRefreshKey,
     pendingSourceId,
+    pendingSourceUrl: sourceUrlParam,
     selectedCollectionAssetId,
     setSelectedCollectionAssetId,
     referenceLibraryOpen,

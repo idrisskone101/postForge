@@ -1,8 +1,9 @@
-export type CloneHandoffQueryKey = "sourceId" | "referenceFileId";
+export type CloneHandoffQueryKey = "sourceId" | "referenceFileId" | "sourceUrl";
 
 export interface CloneHandoffQuery {
   sourceId: string | null;
   referenceFileId: string | null;
+  sourceUrl: string | null;
 }
 
 export interface CloneReferenceFileMetadata {
@@ -31,13 +32,28 @@ export function readCloneHandoffQuery(
   return {
     sourceId: normalizeQueryValue(searchParams.get("sourceId")),
     referenceFileId: normalizeQueryValue(searchParams.get("referenceFileId")),
+    sourceUrl: normalizeQueryValue(searchParams.get("sourceUrl")),
   };
 }
 
-/**
- * Consumes only the handoff that has been resolved. Other handoffs and any
- * campaign/debug query parameters are intentionally preserved.
- */
+export function buildCloneSourceUrlHandoffHref(originalUrl: string) {
+  const params = new URLSearchParams();
+  params.set("sourceUrl", originalUrl);
+  return `/ugc-clone?${params.toString()}`;
+}
+
+export function tikTokVideoIdFromUrl(url: string) {
+  return url.match(/\/video\/(\d+)/)?.[1] ?? null;
+}
+
+export function savedSourceMatchesHandoffUrl(originalUrl: string, handoffUrl: string) {
+  if (originalUrl === handoffUrl) return true;
+  const handoffVideoId = tikTokVideoIdFromUrl(handoffUrl);
+  return (
+    handoffVideoId !== null && tikTokVideoIdFromUrl(originalUrl) === handoffVideoId
+  );
+}
+
 export function consumeCloneHandoffQuery(
   search: string,
   key: CloneHandoffQueryKey
@@ -45,4 +61,12 @@ export function consumeCloneHandoffQuery(
   const nextParams = new URLSearchParams(search);
   nextParams.delete(key);
   return nextParams.toString();
+}
+
+export function clonePathAfterHandoffConsume(
+  search: string,
+  key: CloneHandoffQueryKey
+) {
+  const nextQuery = consumeCloneHandoffQuery(search, key);
+  return nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone";
 }

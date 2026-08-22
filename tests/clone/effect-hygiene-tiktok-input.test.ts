@@ -35,18 +35,21 @@ const tiktokInput = readFileSync(
 assert.equal(
   countUseEffect(tiktokInput),
   2,
-  "tiktok-input keeps sources fetch plus one preselect effect"
+  "tiktok-input keeps sources fetch plus one handoff resolve effect"
 );
 assert.match(tiktokInput, /apiGet<SourceListPage>\("\/api\/ugc-clone\/sources"\)/);
 assert.match(tiktokInput, /if \(!preselectedSourceId\) \{\s*autoSelectedIdRef\.current = null;/);
+assert.match(tiktokInput, /if \(!handoffSourceUrl\) \{\s*autoImportedUrlRef\.current = null;/);
 assert.equal(
-  callRanges(tiktokInput, "useEffect").filter((range) =>
-    /autoSelectedIdRef\.current = null/.test(
-      tiktokInput.slice(range.start, range.end)
-    )
-  ).length,
+  callRanges(tiktokInput, "useEffect").filter((range) => {
+    const body = tiktokInput.slice(range.start, range.end);
+    return (
+      /autoSelectedIdRef\.current = null/.test(body) &&
+      /autoImportedUrlRef\.current = null/.test(body)
+    );
+  }).length,
   1,
-  "ref reset belongs in the preselect effect, not a second effect"
+  "id and url handoff ref resets belong in the same resolve effect"
 );
 
 console.log("tiktok-input effect hygiene pins passed");

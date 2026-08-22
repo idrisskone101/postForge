@@ -59,6 +59,12 @@ assert.match(pageSource, /listTrackedInspirationAccounts\(\)/);
 assert.doesNotMatch(pageSource, /initialAccounts=/);
 assert.match(workspaceSource, /useInspirationAccountList/);
 assert.match(workspaceSource, /handleLoadMoreAccounts/);
+const useInClone = workspaceSource.slice(
+  workspaceSource.indexOf("function handleUseInClone"),
+  workspaceSource.indexOf("function handleSetVideoRejection")
+);
+assert.match(useInClone, /buildCloneSourceUrlHandoffHref\(video\.originalUrl\)/);
+assert.doesNotMatch(useInClone, /postInspirationVideoUse/);
 assert.equal(
   (workspaceSource.match(/useEffect\(/g) ?? []).length,
   3,

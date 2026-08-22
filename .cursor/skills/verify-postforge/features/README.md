@@ -24,6 +24,7 @@ This directory is the maintained source for verifying user-facing PostForge beha
 ## Proof and skip reporting
 
 - Capture the user action and the resulting state, not only the final screen.
+- Handoff and navigation recipes need temporal proof (`waitForURL` or `RecordScreen`), not a destination screenshot after a separate goto.
 - UI proof includes an ARIA snapshot and a screenshot with PostForge identity visible (`PostForge home` brand or route `h1`).
 - Mutation proof includes a second user-facing read of the stored value.
 - Record the feature ID and entry point used with every artifact.
@@ -42,6 +43,7 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 ## Features
 
 - [Home cockpit](./home.md) — glance stats, start-work cards, shell identity.
+- [Inspiration](./inspiration.md) — tracked sources, Use in Clone handoff to Clone.
 - [Characters](./characters.md) — library empty/populated, builder open/save path.
 - [Collections](./collections.md) — library empty state and upload entry.
 - [Slideshow drafts](./slideshow.md) — studio Create/Drafts tabs and new slideshow entry.

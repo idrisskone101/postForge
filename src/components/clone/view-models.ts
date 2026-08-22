@@ -18,10 +18,17 @@ export type CloneTrimResult = {
   height: number;
 };
 
-export type ClonePreselectedSourceResult = {
-  status: "selected" | "missing";
-  sourceId: string;
-};
+export type ClonePreselectedSourceResult =
+  | {
+      handoff: "sourceId";
+      status: "selected" | "missing";
+      sourceId: string;
+    }
+  | {
+      handoff: "sourceUrl";
+      status: "selected" | "missing";
+      sourceUrl: string;
+    };
 
 export type CloneProductionState = {
   sourceReady: boolean;
@@ -60,6 +67,7 @@ export type CloneDraft = CloneProductionState &
     shouldShowSourceTools: boolean;
     sourcesRefreshKey: number;
     pendingSourceId: string | null;
+    pendingSourceUrl: string | null;
     onToggleTrim: () => void;
     onTogglePicker: () => void;
     onTrimmed: (info: CloneTrimResult) => void;
