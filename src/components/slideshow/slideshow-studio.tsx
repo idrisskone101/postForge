@@ -84,6 +84,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   const [templateOpen, setTemplateOpen] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
   const [publishProject, setPublishProject] = useState<SlideshowProject | null>(null);
+  const [publishOpen, setPublishOpen] = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(
     initialProjects === undefined,
   );
@@ -95,35 +96,18 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   const [selectedImageModel, setSelectedImageModel] = useState<string | null>(null);
 
   useEffect(() => {
-    let active = true;
+    const controller = new AbortController();
     void fetchModelsCatalog()
       .then((catalog) => {
-        if (!active) return;
+        if (controller.signal.aborted) return;
         const models = catalog.models.filter((model) => model.type === "image");
         setImageModels(models.map((model) => ({ id: model.id, name: model.name })));
         setSelectedImageModel((current) => current ?? catalog.defaults.image ?? models[0]?.id ?? null);
       })
       .catch(() => undefined);
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    return watchStudioDrafts({
-      apiBaseUrl,
-      enabled: initialProjects === undefined,
-      onLoaded: setProjects,
-      onError: setProjectsError,
-      onFinally: () => setLoadingProjects(false),
-    });
-  }, [apiBaseUrl, initialProjects]);
-
-  useEffect(() => {
-    let active = true;
     void fetchPlatformCollections()
       .then((loaded) => {
-        if (!active) return;
+        if (controller.signal.aborted) return;
         setCollections(
           loaded.map((collection) => ({
             id: collection.id,
@@ -135,10 +119,20 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         );
       })
       .catch(() => undefined);
+    const stopDrafts = watchStudioDrafts({
+      apiBaseUrl,
+      enabled: initialProjects === undefined,
+      onLoaded: setProjects,
+      onError: setProjectsError,
+      onFinally: () => {
+        if (!controller.signal.aborted) setLoadingProjects(false);
+      },
+    });
     return () => {
-      active = false;
+      controller.abort();
+      stopDrafts();
     };
-  }, []);
+  }, [apiBaseUrl, initialProjects]);
 
   useEffect(() => {
     return watchStudioDraftsRefresh({
@@ -333,7 +327,10 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
             onSaveProject={handleSaveProject}
             onRegenerateSlide={handleRegenerateSlide}
             onRegenerateImage={handleRegenerateImage}
-            onPublish={setPublishProject}
+            onPublish={(project) => {
+              setPublishProject(project);
+              setPublishOpen(true);
+            }}
             imageModels={imageModels}
             selectedImageModel={selectedImageModel}
             onSelectImageModel={setSelectedImageModel}
@@ -376,14 +373,13 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         onUseTemplate={startTemplate}
       />
       <PublishDialog
+        key={publishProject?.id}
         dialog={{
-          open: Boolean(publishProject),
+          open: publishOpen,
           project: publishProject,
           tiktokConnected,
           supportsMp4Export,
-          onOpenChange: (open) => {
-            if (!open) setPublishProject(null);
-          },
+          onOpenChange: setPublishOpen,
           onExport: handleExport,
         }}
       />

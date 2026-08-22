@@ -87,10 +87,22 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
   const inFlightSaveRef = useRef<Promise<void> | null>(null);
   const pendingSaveRef = useRef(false);
 
+  const scrollSelectedThumbIntoView = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      if (viewModeRef.current !== "edit") return;
+      activeThumbRef.current?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    });
+  }, []);
+
   const setSelection = useCallback((id: string) => {
     selectedSlideIdRef.current = id;
     setSelectedSlideId(id);
-  }, []);
+    scrollSelectedThumbIntoView();
+  }, [scrollSelectedThumbIntoView]);
 
   const activeIndex = Math.max(
     0,
@@ -174,10 +186,6 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
   );
 
   useEffect(() => {
-    viewModeRef.current = viewMode;
-  }, [viewMode]);
-
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       handleEditorKeyDown(event, {
         viewMode: viewModeRef.current,
@@ -188,15 +196,6 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [changeViewMode, stepSelectedSlide]);
-
-  useEffect(() => {
-    if (viewMode !== "edit") return;
-    activeThumbRef.current?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
-  }, [selectedSlideId, viewMode]);
 
   const selectPhase = (phase: SlideshowSlideKind) => {
     const result = projectForPhaseSelection(draft, phase);

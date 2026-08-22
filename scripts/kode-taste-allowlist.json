@@ -58,8 +58,6 @@
   "useEffect": [
     "src/app/ugc-inspiration/use-inspiration-workspace.ts",
     "src/components/sidebar.tsx",
-    "src/components/slideshow/slideshow-editor.tsx",
-    "src/components/slideshow/slideshow-studio.tsx",
     "src/components/tiktok-input.tsx",
     "src/components/video-trimmer.tsx"
   ]
