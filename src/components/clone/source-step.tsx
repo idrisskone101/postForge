@@ -21,6 +21,7 @@ export function CloneSourceStep({
     shouldShowSourceTools,
     sourcesRefreshKey,
     pendingSourceId,
+    pendingSourceUrl,
     onToggleTrim,
     onTogglePicker,
     onTrimmed,
@@ -111,6 +112,7 @@ export function CloneSourceStep({
               videoInfo={videoInfo}
               refreshKey={sourcesRefreshKey}
               preselectedSourceId={sourceReady ? null : pendingSourceId}
+              handoffSourceUrl={sourceReady ? null : pendingSourceUrl}
               onPreselectedSourceResolved={onPreselectedSourceResolved}
             />
           </div>

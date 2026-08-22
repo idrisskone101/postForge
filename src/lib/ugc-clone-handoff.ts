@@ -1,8 +1,9 @@
-export type CloneHandoffQueryKey = "sourceId" | "referenceFileId";
+export type CloneHandoffQueryKey = "sourceId" | "referenceFileId" | "sourceUrl";
 
 export interface CloneHandoffQuery {
   sourceId: string | null;
   referenceFileId: string | null;
+  sourceUrl: string | null;
 }
 
 export interface CloneReferenceFileMetadata {
@@ -31,7 +32,14 @@ export function readCloneHandoffQuery(
   return {
     sourceId: normalizeQueryValue(searchParams.get("sourceId")),
     referenceFileId: normalizeQueryValue(searchParams.get("referenceFileId")),
+    sourceUrl: normalizeQueryValue(searchParams.get("sourceUrl")),
   };
+}
+
+export function buildCloneSourceUrlHandoffHref(originalUrl: string) {
+  const params = new URLSearchParams();
+  params.set("sourceUrl", originalUrl);
+  return `/ugc-clone?${params.toString()}`;
 }
 
 /**
@@ -45,4 +53,12 @@ export function consumeCloneHandoffQuery(
   const nextParams = new URLSearchParams(search);
   nextParams.delete(key);
   return nextParams.toString();
+}
+
+export function clonePathAfterHandoffConsume(
+  search: string,
+  key: CloneHandoffQueryKey
+) {
+  const nextQuery = consumeCloneHandoffQuery(search, key);
+  return nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone";
 }

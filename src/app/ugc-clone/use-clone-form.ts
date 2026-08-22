@@ -12,7 +12,7 @@ import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import type { ModelDefinition } from "@/lib/ai/types";
 import { apiPost } from "@/lib/api/client";
 import {
-  consumeCloneHandoffQuery,
+  clonePathAfterHandoffConsume,
   readCloneHandoffQuery,
 } from "@/lib/ugc-clone-handoff";
 import { isMotionSourceWithinLimit } from "@/lib/ugc/source-limits";
@@ -46,7 +46,7 @@ import { useCloneRefImages } from "@/app/ugc-clone/use-clone-ref-images";
 export function useCloneForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { sourceId: sourceIdParam, referenceFileId: referenceFileIdParam } =
+  const { sourceId: sourceIdParam, referenceFileId: referenceFileIdParam, sourceUrl: sourceUrlParam } =
     readCloneHandoffQuery(searchParams);
 
   const [phase, setPhase] = useState<Phase>("input");
@@ -167,19 +167,26 @@ export function useCloneForm() {
 
   const handlePreselectedSourceResolved = (result: {
     status: "selected" | "missing";
-    sourceId: string;
+    sourceId?: string;
+    sourceUrl?: string;
   }) => {
+    if (sourceUrlParam && result.sourceUrl === sourceUrlParam) {
+      setSubmitError(
+        result.status === "missing"
+          ? "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source."
+          : null
+      );
+      router.replace(clonePathAfterHandoffConsume(searchParams.toString(), "sourceUrl"));
+      return;
+    }
     if (!pendingSourceId || pendingSourceId !== result.sourceId) return;
     setPendingSourceId(null);
-    if (result.status === "missing") {
-      setSubmitError(
-        "The handed-off saved source is no longer available. Choose or import another source."
-      );
-    } else {
-      setSubmitError(null);
-    }
-    const nextQuery = consumeCloneHandoffQuery(searchParams.toString(), "sourceId");
-    router.replace(nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone");
+    setSubmitError(
+      result.status === "missing"
+        ? "The handed-off saved source is no longer available. Choose or import another source."
+        : null
+    );
+    router.replace(clonePathAfterHandoffConsume(searchParams.toString(), "sourceId"));
   };
 
   const handleTrimmed = (info: {
@@ -340,6 +347,7 @@ export function useCloneForm() {
     setSourceToolsOpen,
     sourcesRefreshKey,
     pendingSourceId,
+    pendingSourceUrl: sourceUrlParam,
     selectedCollectionAssetId,
     setSelectedCollectionAssetId,
     referenceLibraryOpen,

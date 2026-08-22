@@ -20,7 +20,8 @@ export type CloneTrimResult = {
 
 export type ClonePreselectedSourceResult = {
   status: "selected" | "missing";
-  sourceId: string;
+  sourceId?: string;
+  sourceUrl?: string;
 };
 
 export type CloneProductionState = {
@@ -60,6 +61,7 @@ export type CloneDraft = CloneProductionState &
     shouldShowSourceTools: boolean;
     sourcesRefreshKey: number;
     pendingSourceId: string | null;
+    pendingSourceUrl: string | null;
     onToggleTrim: () => void;
     onTogglePicker: () => void;
     onTrimmed: (info: CloneTrimResult) => void;

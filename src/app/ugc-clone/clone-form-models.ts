@@ -28,6 +28,7 @@ export type CloneFormSnapshot = {
   setSourceToolsOpen: Dispatch<SetStateAction<boolean>>;
   sourcesRefreshKey: number;
   pendingSourceId: string | null;
+  pendingSourceUrl: string | null;
   selectedCollectionAssetId: string | null;
   setSelectedCollectionAssetId: (id: string | null) => void;
   referenceLibraryOpen: boolean;
@@ -100,6 +101,7 @@ export function buildCloneDraft(snapshot: CloneFormSnapshot): CloneDraft {
     shouldShowSourceTools: view.shouldShowSourceTools,
     sourcesRefreshKey: snapshot.sourcesRefreshKey,
     pendingSourceId: snapshot.pendingSourceId,
+    pendingSourceUrl: snapshot.pendingSourceUrl,
     onToggleTrim: () => {
       if (snapshot.showTrimmer) {
         snapshot.handleCancelTrim();

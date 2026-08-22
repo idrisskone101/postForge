@@ -41,7 +41,6 @@ export function InspirationVideoCard({
   const {
     thumbnailErrorIds,
     updatingRejectionIds,
-    usingVideoId,
     copiedVideoId,
     setSelectedVideoId,
     handleSetVideoRejection,
@@ -183,21 +182,11 @@ export function InspirationVideoCard({
         ) : (
           <Button
             type="button"
-            onClick={() => void handleUseInClone(video)}
-            disabled={usingVideoId === video.id}
+            onClick={() => handleUseInClone(video)}
             className="mt-auto h-9 w-full rounded-md bg-[var(--pf-orange)] text-xs font-semibold text-white hover:brightness-[0.93]"
           >
-            {usingVideoId === video.id ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                Use in Clone
-                <Sparkles className="size-4" />
-              </>
-            )}
+            Use in Clone
+            <Sparkles className="size-4" />
           </Button>
         )}
 

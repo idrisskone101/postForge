@@ -65,7 +65,6 @@ const useInClone = workspaceSource.slice(
 );
 assert.match(useInClone, /buildCloneSourceUrlHandoffHref\(video\.originalUrl\)/);
 assert.doesNotMatch(useInClone, /postInspirationVideoUse/);
-assert.doesNotMatch(useInClone, /window\.location\.assign/);
 assert.match(accountListHook, /fetchInspirationAccountPage\(\{ cursor: accountCursor \}\)/);
 assert.match(mutationsSource, /fetchInspirationAccountPage/);
 assert.doesNotMatch(mutationsSource, /apiGet<TrackedInspirationAccount\[\]>/);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import {
@@ -32,9 +32,11 @@ interface TikTokInputProps {
   videoInfo: TikTokVideoInfo | null;
   refreshKey?: number;
   preselectedSourceId?: string | null;
+  handoffSourceUrl?: string | null;
   onPreselectedSourceResolved?: (result: {
     status: "selected" | "missing";
-    sourceId: string;
+    sourceId?: string;
+    sourceUrl?: string;
   }) => void;
 }
 
@@ -43,6 +45,7 @@ export function TikTokInput({
   videoInfo,
   refreshKey,
   preselectedSourceId,
+  handoffSourceUrl,
   onPreselectedSourceResolved,
 }: TikTokInputProps) {
   const [url, setUrl] = useState("");
@@ -56,6 +59,7 @@ export function TikTokInput({
   const [showSavedSources, setShowSavedSources] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
+  const autoImportedUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -148,15 +152,22 @@ export function TikTokInput({
     }
   }, [preselectedSourceId]);
 
-  const handleDownload = async () => {
-    if (!url.trim()) return;
+  useEffect(() => {
+    if (!handoffSourceUrl) {
+      autoImportedUrlRef.current = null;
+    }
+  }, [handoffSourceUrl]);
+
+  const importFromUrl = useCallback(async (nextUrl: string) => {
+    const trimmed = nextUrl.trim();
+    if (!trimmed) return null;
 
     setIsDownloading(true);
     setError(null);
 
     try {
       const result = await apiPost<SavedTikTokSource>("/api/ugc-clone/download", {
-        url: url.trim(),
+        url: trimmed,
       });
 
       setSavedSources((prev) => {
@@ -165,11 +176,59 @@ export function TikTokInput({
       });
 
       onDownloaded(toVideoInfo(result));
+      return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Import failed");
+      return null;
     } finally {
       setIsDownloading(false);
     }
+  }, [onDownloaded]);
+
+  useEffect(() => {
+    if (!handoffSourceUrl || isLoadingSources || isDownloading) return;
+    if (autoImportedUrlRef.current === handoffSourceUrl) return;
+
+    const videoId = handoffSourceUrl.match(/\/video\/(\d+)/)?.[1] ?? null;
+    const existing = savedSources.find(
+      (item) =>
+        item.originalUrl === handoffSourceUrl ||
+        (videoId !== null && item.originalUrl.includes(videoId))
+    );
+    if (existing) {
+      autoImportedUrlRef.current = handoffSourceUrl;
+      onDownloaded(toVideoInfo(existing));
+      setUrl(handoffSourceUrl);
+      setError(null);
+      onPreselectedSourceResolved?.({
+        status: "selected",
+        sourceId: existing.id,
+        sourceUrl: handoffSourceUrl,
+      });
+      return;
+    }
+
+    autoImportedUrlRef.current = handoffSourceUrl;
+    setUrl(handoffSourceUrl);
+    void importFromUrl(handoffSourceUrl).then((result) => {
+      onPreselectedSourceResolved?.({
+        status: result ? "selected" : "missing",
+        sourceId: result?.id,
+        sourceUrl: handoffSourceUrl,
+      });
+    });
+  }, [
+    handoffSourceUrl,
+    importFromUrl,
+    isDownloading,
+    isLoadingSources,
+    onDownloaded,
+    onPreselectedSourceResolved,
+    savedSources,
+  ]);
+
+  const handleDownload = () => {
+    void importFromUrl(url);
   };
 
   const handleDeleteSource = async (id: string, e: MouseEvent) => {
