@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Check,
   Copy,
@@ -57,18 +57,22 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
   const [exported, setExported] = useState(false);
   const [captionCopied, setCaptionCopied] = useState(false);
 
-  useEffect(() => {
-    if (!open || !project) return;
-    setCaption(
-      project.caption?.trim() ||
-        (project.slides[0]?.headline
-          ? `${project.slides[0].headline}\n\n#creator #slideshow`
-          : ""),
-    );
-    setError(null);
-    setExported(false);
-    setCaptionCopied(false);
-  }, [open, project]);
+  const resetKey = open && project ? project.id : null;
+  const [appliedResetKey, setAppliedResetKey] = useState<string | null>(null);
+  if (resetKey !== appliedResetKey) {
+    setAppliedResetKey(resetKey);
+    if (open && project) {
+      setCaption(
+        project.caption?.trim() ||
+          (project.slides[0]?.headline
+            ? `${project.slides[0].headline}\n\n#creator #slideshow`
+            : ""),
+      );
+      setError(null);
+      setExported(false);
+      setCaptionCopied(false);
+    }
+  }
 
   if (!project) return null;
 
