@@ -38,7 +38,6 @@ export function InspirationPreviewDialog({
   workspace: InspirationWorkspace;
 }) {
   const {
-    selectedVideoId,
     setSelectedVideoId,
     selectedVideo,
     embedState,
@@ -59,7 +58,7 @@ export function InspirationPreviewDialog({
   const isRejected = selectedVideo?.sourceDecision.status === "rejected";
 
   return (
-    <Dialog open={!!selectedVideoId} onOpenChange={(open) => !open && setSelectedVideoId(null)}>
+    <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideoId(null)}>
       <DialogContent
         showCloseButton
         data-source-preview-drawer="true"
