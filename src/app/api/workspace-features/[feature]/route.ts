@@ -5,6 +5,7 @@ import {
   readWorkspaceFeatureRecords,
   updateWorkspaceFeatureRecords,
   upsertWorkspaceFeatureRecord,
+  type WorkspaceFeature,
 } from "@/lib/workspace-feature-store";
 import {
   isModelAvailabilityState,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/automations";
 import { isCharacterRecord } from "@/lib/characters";
 import { isCollectionRecord } from "@/lib/collections";
+import { isPromptTemplateRecord } from "@/lib/prompt-templates";
 import { isSameOriginMutation } from "@/lib/http";
 import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
@@ -69,19 +71,31 @@ function isConnectionRecord(value: unknown): value is StoredRecord {
 }
 
 function isWritableFeatureRecord(
-  feature: "automations" | "characters" | "collections" | "connections" | "models",
+  feature: WorkspaceFeature,
   value: unknown
 ): value is StoredRecord {
-  if (feature === "automations") return isAutomationRecord(value);
-  if (feature === "characters") return isCharacterRecord(value);
-  // Asset metadata is server-owned and can only be created by the upload route.
-  if (feature === "collections") return isCollectionRecord(value);
-  if (feature === "models") {
-    if (!isModelAvailabilityState(value)) return false;
-    const record = value as unknown as StoredRecord;
-    return record.id === MODEL_AVAILABILITY_RECORD_ID;
+  switch (feature) {
+    case "automations":
+      return isAutomationRecord(value);
+    case "characters":
+      return isCharacterRecord(value);
+    // Asset metadata is server-owned and can only be created by the upload route.
+    case "collections":
+      return isCollectionRecord(value);
+    case "connections":
+      return isConnectionRecord(value);
+    case "models": {
+      if (!isModelAvailabilityState(value)) return false;
+      const record = value as unknown as StoredRecord;
+      return record.id === MODEL_AVAILABILITY_RECORD_ID;
+    }
+    case "prompt-templates":
+      return isPromptTemplateRecord(value);
+    default: {
+      const exhaustive: never = feature;
+      return exhaustive;
+    }
   }
-  return isConnectionRecord(value);
 }
 
 function invalidFeature() {
