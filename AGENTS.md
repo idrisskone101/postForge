@@ -46,7 +46,8 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 
 ### Services and startup
 
-- Postgres is installed on the VM as the local `postgresql-16` cluster (not Docker; `docker` is not available here). It does not auto-start on a fresh boot. Start it before running the app, tests that hit the DB, or migrations: `sudo pg_ctlcluster 16 main start` (check with `pg_isready -h 127.0.0.1 -p 5432`). The `postforge` role/database and applied migrations persist in the VM snapshot.
+- Postgres is installed on the VM as the local `postgresql-16` cluster (not Docker; `docker` is not available here). It does not auto-start on a fresh boot. Start it before running the app, tests that hit the DB, or migrations: `sudo pg_ctlcluster 16 main start` (check with `pg_isready -h 127.0.0.1 -p 5432`). The `postforge` role/database and applied migrations persist in the VM snapshot. Cloud Agent boot uses `.cursor/environment.json` (`scripts/cloud-agent-install.sh` / `scripts/cloud-agent-start.sh`).
+- `yt-dlp` is installed at `/usr/local/bin/yt-dlp` during Cloud Agent install so Clone can import TikTok URLs. Missing `yt-dlp` is a real Clone error, not a reason to stay on Inspiration. `ffmpeg` is already on the Cloud image.
 - `.env` is gitignored and already created on the VM from `.env.example` with `DATABASE_URL=postgresql://postforge:postforge@localhost:5432/postforge` and `STORAGE_DRIVER="database"`. If `.env` is missing, recreate it: `cp .env.example .env`, then set `STORAGE_LOCAL_PATH` to a path under `/workspace` (the default in the example is a macOS path).
 - After pulling new migrations, apply them with `pnpm exec prisma migrate deploy` (Postgres must be running first). `pnpm install` runs `prisma generate` automatically via `postinstall`.
 - Dev server: `pnpm dev` (Turbopack, http://localhost:3000). The "middleware is deprecated" warning is expected and harmless. Production: `pnpm build` then `pnpm start`.
