@@ -59,6 +59,22 @@ assert.match(pageSource, /listTrackedInspirationAccounts\(\)/);
 assert.doesNotMatch(pageSource, /initialAccounts=/);
 assert.match(workspaceSource, /useInspirationAccountList/);
 assert.match(workspaceSource, /handleLoadMoreAccounts/);
+assert.equal(
+  (workspaceSource.match(/useEffect\(/g) ?? []).length,
+  3,
+  "inspiration workspace keeps debounce, embed timeout, and copy toast effects only"
+);
+assert.match(workspaceSource, /setActiveFilterAndReload/);
+assert.match(workspaceSource, /setSourceFeedFilterAndReload/);
+assert.match(workspaceSource, /setSourceSortAndReload/);
+assert.doesNotMatch(
+  workspaceSource,
+  /if \(selectedVideo\) return;\s*setSelectedVideoId\(null\)/
+);
+assert.match(
+  workspaceSource,
+  /selectedVideoId === result\.videoId/
+);
 assert.match(accountListHook, /fetchInspirationAccountPage\(\{ cursor: accountCursor \}\)/);
 assert.match(mutationsSource, /fetchInspirationAccountPage/);
 assert.doesNotMatch(mutationsSource, /apiGet<TrackedInspirationAccount\[\]>/);

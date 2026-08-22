@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   InspirationPageClient,
@@ -14,6 +15,21 @@ import {
   type InspirationVideoPage,
   type TrackedInspirationAccount,
 } from "../../src/lib/inspiration/types";
+
+const workspaceSource = readFileSync(
+  new URL("../../src/app/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
+  "utf8"
+);
+const previewDialogSource = readFileSync(
+  new URL("../../src/app/ugc-inspiration/inspiration-preview-dialog.tsx", import.meta.url),
+  "utf8"
+);
+
+assert.doesNotMatch(
+  workspaceSource,
+  /if \(selectedVideo\) return;\s*setSelectedVideoId\(null\)/
+);
+assert.match(previewDialogSource, /open=\{!!selectedVideo\}/);
 
 const videos: InspirationVideoCard[] = [
   {
