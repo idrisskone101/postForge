@@ -2,6 +2,10 @@
   "mcpServers": {
     "Linear": {
       "url": "https://mcp.linear.app/mcp"
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
     }
   }
 }
