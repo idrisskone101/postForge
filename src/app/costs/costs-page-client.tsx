@@ -9,11 +9,13 @@ import { SpendPageContent } from "./spend-page-content";
 export function CostsPageClient(dashboard: CostsPageClientProps) {
   const { period, logPage, search, model } = dashboard;
   const router = useRouter();
+  const [prevSearch, setPrevSearch] = useState(search);
   const [queryDraft, setQueryDraft] = useState(search);
 
-  useEffect(() => {
+  if (search !== prevSearch) {
+    setPrevSearch(search);
     setQueryDraft(search);
-  }, [search]);
+  }
 
   useEffect(() => {
     if (queryDraft.trim() === search.trim()) return;

@@ -24,6 +24,7 @@ import {
   patchGalleryReviewStatuses,
   replaceGalleryRouteFilters,
 } from "./gallery-mutations";
+import { useGalleryFilterReload } from "./gallery-filter-reload";
 
 export function useGalleryWorkspace({
   initialPage,
@@ -60,7 +61,7 @@ export function useGalleryWorkspace({
   const [isBulkDownloading, setIsBulkDownloading] = useState(false);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [feedback, setFeedback] = useState<GalleryFeedback | null>(null);
-  const didMountRef = useRef(false);
+  const reloadRequestRef = useRef(0);
 
   useEffect(() => {
     if (!feedback) return;
@@ -68,12 +69,30 @@ export function useGalleryWorkspace({
     return () => window.clearTimeout(timeout);
   }, [feedback]);
 
-  const applyPage = (page: GalleryPage) => {
+  const applyPage = useCallback((page: GalleryPage) => {
     setItems(page.items);
     setNextCursor(page.nextCursor);
     setHasMore(page.hasMore);
     if (page.reviewCounts) setReviewCounts(page.reviewCounts);
-  };
+  }, []);
+
+  const {
+    setReviewFilterAndReload,
+    setTypeFilterAndReload,
+    setSortOrderAndReload,
+  } = useGalleryFilterReload({
+    typeFilter,
+    sortOrder,
+    reviewFilter,
+    setReviewFilter,
+    setTypeFilter,
+    setSortOrder,
+    applyPage,
+    setIsReloading,
+    setLoadError,
+    setSelectedIds,
+    requestRef: reloadRequestRef,
+  });
 
   const loadPage = useCallback(
     async (cursor?: string | null) => {
@@ -86,35 +105,6 @@ export function useGalleryWorkspace({
     },
     [reviewFilter, sortOrder, typeFilter]
   );
-
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
-    }
-
-    let isCurrent = true;
-    setIsReloading(true);
-    setLoadError(null);
-    setSelectedIds(new Set());
-
-    loadPage()
-      .then((page) => {
-        if (!isCurrent) return;
-        applyPage(page);
-      })
-      .catch((error) => {
-        if (!isCurrent) return;
-        setLoadError(galleryLoadError(error));
-      })
-      .finally(() => {
-        if (isCurrent) setIsReloading(false);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [loadPage]);
 
   const activeItems = useMemo(
     () => items.filter((item) => !deletedIds.has(item.id)),
@@ -372,9 +362,9 @@ export function useGalleryWorkspace({
     isGalleryEmpty,
     totalCount,
     activeItems,
-    setReviewFilter,
-    setTypeFilter,
-    setSortOrder,
+    setReviewFilter: setReviewFilterAndReload,
+    setTypeFilter: setTypeFilterAndReload,
+    setSortOrder: setSortOrderAndReload,
     setView,
     setQuery,
     setSelectedIds,
