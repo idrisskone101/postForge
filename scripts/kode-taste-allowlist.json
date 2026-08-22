@@ -56,8 +56,6 @@
     "src/components/video-trimmer.tsx"
   ],
   "useEffect": [
-    "src/app/automations/new/use-automation-builder-resources.ts",
-    "src/app/automations/new/use-automation-builder.ts",
     "src/app/ugc-inspiration/use-inspiration-workspace.ts",
     "src/components/sidebar.tsx",
     "src/components/slideshow/slideshow-editor.tsx",
