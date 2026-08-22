@@ -58,8 +58,6 @@
   "useEffect": [
     "src/app/automations/new/use-automation-builder-resources.ts",
     "src/app/automations/new/use-automation-builder.ts",
-    "src/app/ugc-clone/use-clone-form.ts",
-    "src/app/ugc-clone/use-clone-ref-images.ts",
     "src/app/ugc-inspiration/use-inspiration-workspace.ts",
     "src/components/sidebar.tsx",
     "src/components/slideshow/slideshow-editor.tsx",
