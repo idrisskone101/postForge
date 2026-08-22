@@ -1,16 +1,16 @@
 ---
 name: Kode Mode
 description: >-
-  kode's structure taste layered on poteto-mode workflow. Use for kode,
-  /kode-mode, portable structure taste, a taste pass, or requests to work
-  in this style.
+  kode's structure taste on poteto-mode. Use for kode, /kode-mode, a taste
+  pass, user-visible bug-fix video demos, RecordScreen walkthroughs at verify
+  (not only post-merge), or portable structure taste.
 disable-model-invocation: true
 mode: true
 ---
 
 # Kode mode
 
-Primary mode for this human. **Poteto-mode owns the workflow.** Read and follow the poteto-mode skill first (playbooks, principles, subagents, verification, shipping). This skill only adds structure taste and a post-merge demo. When the two conflict on process, shipping, verification, or structure, poteto-mode wins. Kode only adds taste inside poteto playbooks.
+Primary mode for this human. **Poteto-mode owns the workflow.** Read and follow the poteto-mode skill first (playbooks, principles, subagents, verification, shipping). This skill only adds structure taste and a video demo at verify. When the two conflict on process, shipping, verification, or structure, poteto-mode wins. Kode only adds taste inside poteto playbooks.
 
 Poteto-mode path (plugin cache may differ by install): the `poteto-mode` skill under the pstack / poteto plugin. Prefer the installed skill name `/poteto-mode` rather than hard-coding a cache path.
 
@@ -18,7 +18,7 @@ Poteto-mode path (plugin cache may differ by install): the `poteto-mode` skill u
 
 - Multi-step work still starts with poteto-mode: todolist, matched playbook, principles named in the reply.
 - New or changed code follows the structure taste section below. React files also follow the React adapter.
-- After a full run lands (all PRs for that run merged, or the human says the program is done), produce a short video demo of the new behavior or the key surfaces they should look at. Don't end with "merged" alone.
+- After a user-visible bug fix is verified, and again after a full run lands (all PRs merged, or the human says the program is done), produce a short video demo of the new behavior. Don't end a UI bug fix with screenshots alone, and don't end a merged run with "merged" alone.
 
 ## Structure taste
 
@@ -92,13 +92,18 @@ React files stay mostly JSX and light glue. Non-UI logic goes in a sibling `foo-
 
 If the repo has `pnpm check:kode-taste`, run it as an adapter for these React thresholds. It is not the portable lesson.
 
-## Demo after the run
+## Demo after verify (and after the run)
 
-When the work for a request is fully merged (orchestrate/autopilot predicate met, or the human closes the run):
+Record a short walkthrough when either of these is true:
 
-1. Record a short walkthrough of the new or changed surfaces (desktop and, if UI, one mobile pass when relevant).
+- You just verified a user-visible bug fix (poteto-mode Bug fix step 4). Do this before you call the fix done.
+- The work for a request is fully merged (orchestrate/autopilot predicate met, or the human closes the run).
+
+Then:
+
+1. Walk the new or changed surfaces (desktop and, if UI, one mobile pass when relevant).
 2. Prefer the repo's UI harness / `RecordScreen` / computerUse against a production build when that matches poteto-mode shipping rules.
-3. Put the video under `/tmp/...` or the artifact path the environment expects. Link it in the final reply. Don't commit large videos into the repo unless asked.
+3. Put the video under `/tmp/...` or `/opt/cursor/artifacts`. Link it in the final reply. Don't commit large videos into the repo unless asked.
 
 If the change is non-visual (lib-only), show the key CLI/test proof or a minimal UI path that exercises the change instead of a fake tour.
 

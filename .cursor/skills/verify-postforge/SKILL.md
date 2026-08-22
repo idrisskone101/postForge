@@ -1,6 +1,6 @@
 ---
 name: verify-postforge
-description: "Drive the PostForge Next.js dashboard the way a user does — launch production, doctor health, exercise mapped routes with Playwright against ARIA handles, and capture proof under /tmp. Use when proving UI changes, regressions, or adversarial review claims for PostForge."
+description: "Drive PostForge production UI with Playwright/ARIA, seed empty feature tables, and capture temporal proof for navigation handoffs (waitForURL or RecordScreen). Use when proving UI changes, Inspiration Use in Clone, regressions, or adversarial review."
 ---
 
 # Verify PostForge
@@ -53,6 +53,8 @@ control-postforge doctor          # must exit 0 before driving
 
 Dev shortcut (`pnpm dev`) is fine for iterate-only checks; treat `pnpm build` + `pnpm start` as the proof standard.
 
+If the feature table is empty, seed minimal fixtures before UI repro. An empty Inspiration feed is indistinguishable from "can't reproduce." Run seed scripts with `cd /workspace && pnpm exec tsx <script.ts>` so `@/` imports resolve. Until `scripts/seed-inspiration-fixtures.ts` lands (KS-10), Prisma-insert two shapes: a video with a stored `TikTokSource`, and a video with no stored source.
+
 ## Doctor
 
 ```bash
@@ -64,6 +66,8 @@ Confirms: Postgres accepting connections, `/api/health` is `ok`, `/` returns 200
 ## Drive
 
 Use Playwright via the helper (Chrome channel when available). Prefer ARIA roles, `aria-label`, and nav hrefs — the app has **no `data-testid`**.
+
+On pages with repeated CTAs (Inspiration cards all expose `Use in Clone`), do not use undifferentiated `control-postforge browser click --role button --name "Use in Clone"`. That helper resolves page-wide `.first()` and can click the wrong card or print the pre-navigation URL. Scope the click to the card (`article` / `[data-inspiration-video-id]` filter, then `.getByRole('button', { name: /^Use in Clone$/i })`) and wait for the route (`page.waitForURL(/\/ugc-clone/)`). Treat a click that still shows the origin URL as inconclusive.
 
 ```bash
 control-postforge browser goto /
@@ -106,6 +110,7 @@ Proof standards:
 
 - Exercise the real user path (sidebar / header CTA / in-page CTA), not internal setters or test-only endpoints.
 - Capture the action and the resulting state (ARIA snapshot + screenshot), not only the final screen.
+- Handoff and navigation bugs need **temporal** proof: the click, then `waitForURL` or a `RecordScreen` walkthrough of the route change. A screenshot of the destination (or of the origin) after the fact is not enough.
 - Confirm side effects when the feature mutates (reload / second view / list row).
 - Viewports: desktop `1440x1024`, mobile `390x844`; responsive widths `1280`, `1024`, `768` when layout is in scope.
 - Never write screenshots to the repo root (pruned and forbidden by `AGENTS.md`). Prefer `$PROOF_DIR` under `/tmp`. `.playwright-cli/` / `.playwright-mcp/` are allowed but auto-pruned.
