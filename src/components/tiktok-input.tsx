@@ -110,7 +110,11 @@ export function TikTokInput({
   };
 
   useEffect(() => {
-    if (!preselectedSourceId || isLoadingSources || sourcesError) return;
+    if (!preselectedSourceId) {
+      autoSelectedIdRef.current = null;
+      return;
+    }
+    if (isLoadingSources || sourcesError) return;
     if (autoSelectedIdRef.current === preselectedSourceId) return;
 
     const source = savedSources.find((item) => item.id === preselectedSourceId);
@@ -141,12 +145,6 @@ export function TikTokInput({
     sourcesError,
     sourcesNextCursor,
   ]);
-
-  useEffect(() => {
-    if (!preselectedSourceId) {
-      autoSelectedIdRef.current = null;
-    }
-  }, [preselectedSourceId]);
 
   const handleDownload = async () => {
     if (!url.trim()) return;

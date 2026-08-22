@@ -56,7 +56,6 @@
     "src/components/video-trimmer.tsx"
   ],
   "useEffect": [
-    "src/app/ugc-inspiration/use-inspiration-workspace.ts",
-    "src/components/tiktok-input.tsx"
+    "src/app/ugc-inspiration/use-inspiration-workspace.ts"
   ]
 }
