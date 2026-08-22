@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Images } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
@@ -45,8 +45,17 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
   } = session;
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const [preferredInspectedId, setPreferredInspectedId] = useState<string | null>(
+    null
+  );
   const [stampedIds, setStampedIds] = useState<ReadonlySet<string>>(new Set());
+
+  const inspectedId =
+    selectedIds.size === 0
+      ? null
+      : preferredInspectedId && selectedIds.has(preferredInspectedId)
+        ? preferredInspectedId
+        : items.find((item) => selectedIds.has(item.id))?.id ?? null;
 
   const markStamped = (id: string) => {
     setStampedIds((prev) => new Set(prev).add(id));
@@ -65,28 +74,16 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
     items.find((item) => selectedIds.has(item.id)) ??
     null;
 
-  useEffect(() => {
-    if (selectedIds.size === 0) {
-      setInspectedId(null);
-      return;
-    }
-    if (!inspectedId || !selectedIds.has(inspectedId)) {
-      setInspectedId(
-        items.find((item) => selectedIds.has(item.id))?.id ?? null
-      );
-    }
-  }, [inspectedId, items, selectedIds]);
-
   const toggleSelection = (id: string) => {
     if (selectedIds.has(id)) {
-      if (inspectedId === id) {
-        setInspectedId(
+      if (preferredInspectedId === id) {
+        setPreferredInspectedId(
           items.find((item) => item.id !== id && selectedIds.has(item.id))?.id ??
             null
         );
       }
     } else {
-      setInspectedId(id);
+      setPreferredInspectedId(id);
     }
     onToggleSelect(id);
   };

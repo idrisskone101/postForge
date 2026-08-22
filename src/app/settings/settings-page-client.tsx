@@ -36,17 +36,17 @@ export function SettingsPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requested = searchParams.get("tab") ?? "integrations";
-  const [tab, setTab] = useState<SettingsTab>(
-    isSettingsTab(requested) ? requested : "integrations"
-  );
+  const tab: SettingsTab = isSettingsTab(requested) ? requested : "integrations";
   const [settings, setSettings] = useState<SettingsRecord>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const onOAuthCallback = useCallback(() => {
-    setTab("integrations");
-  }, []);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", "integrations");
+    router.replace(`/settings?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
   const {
     providers,
     integrationsLoading,
@@ -63,10 +63,6 @@ export function SettingsPageClient() {
   });
 
   useEffect(() => {
-    setTab(isSettingsTab(requested) ? requested : "integrations");
-  }, [requested]);
-
-  useEffect(() => {
     let cancelled = false;
     fetchWorkspaceFeature<SettingsRecord>("connections")
       .then(({ records }) => {
@@ -81,7 +77,6 @@ export function SettingsPageClient() {
   }, []);
 
   function selectTab(next: SettingsTab) {
-    setTab(next);
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", next);
     router.replace(`/settings?${params.toString()}`, { scroll: false });

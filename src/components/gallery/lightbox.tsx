@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { MediaPreviewFrame } from "@/components/media-preview";
@@ -194,19 +194,15 @@ function LightboxReviewControl({
   onStatusChange?: (status: SerializedOutputReviewStatus) => void;
   onFeedback?: (feedback: GalleryFeedback) => void;
 }) {
-  const [current, setCurrent] = useState(reviewStatus);
   const [pending, setPending] = useState<OutputReviewStatus | null>(null);
-
-  useEffect(() => setCurrent(reviewStatus), [reviewStatus]);
 
   const update = async (status: OutputReviewStatus) => {
     if (pending) return;
     const next: OutputReviewStatus =
-      current.value === status ? "needs_review" : status;
+      reviewStatus.value === status ? "needs_review" : status;
     setPending(status);
     try {
       const nextReviewStatus = await patchGalleryReviewStatus(outputId, next);
-      setCurrent(nextReviewStatus);
       onStatusChange?.(nextReviewStatus);
       onFeedback?.({
         tone: "success",
@@ -231,10 +227,10 @@ function LightboxReviewControl({
         type="button"
         disabled={pending !== null}
         onClick={() => void update("approved_output")}
-        aria-pressed={current.value === "approved_output"}
+        aria-pressed={reviewStatus.value === "approved_output"}
         className={cn(
           "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
-          current.value === "approved_output"
+          reviewStatus.value === "approved_output"
             ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
             : "border-border bg-background text-foreground hover:border-[var(--pf-success)]/40 hover:text-[var(--pf-success)]"
         )}
@@ -250,10 +246,10 @@ function LightboxReviewControl({
         type="button"
         disabled={pending !== null}
         onClick={() => void update("rejected_output")}
-        aria-pressed={current.value === "rejected_output"}
+        aria-pressed={reviewStatus.value === "rejected_output"}
         className={cn(
           "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
-          current.value === "rejected_output"
+          reviewStatus.value === "rejected_output"
             ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
             : "border-border bg-background text-foreground hover:border-[var(--pf-danger)]/40 hover:text-[var(--pf-danger)]"
         )}
