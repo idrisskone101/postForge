@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+  buildCloneSourceUrlHandoffHref,
   consumeCloneHandoffQuery,
   isSupportedCloneReferenceFile,
   readCloneHandoffQuery,
@@ -52,6 +53,8 @@ assert.match(cloneRefImagesSource, /if \(!cancelled && shouldConsumeQuery\)/);
 assert.match(sourcePickerSource, /status: "missing"/);
 assert.match(sourcePickerSource, /isLoadingSources \|\| sourcesError/);
 assert.match(sourcePickerSource, /handed-off saved source is no longer available/);
+assert.match(cloneFormHookSource, /sourceUrl: sourceUrlParam/);
+assert.match(sourcePickerSource, /handoffSourceUrl/);
 
 const handoffQuery = new URLSearchParams(
   "sourceId=source-1&referenceFileId=file-2&utm_source=gallery&debug=1"
@@ -59,7 +62,18 @@ const handoffQuery = new URLSearchParams(
 assert.deepEqual(readCloneHandoffQuery(handoffQuery), {
   sourceId: "source-1",
   referenceFileId: "file-2",
+  sourceUrl: null,
 });
+assert.equal(
+  readCloneHandoffQuery(
+    new URLSearchParams("sourceUrl=https://www.tiktok.com/@creator/video/1")
+  ).sourceUrl,
+  "https://www.tiktok.com/@creator/video/1"
+);
+assert.equal(
+  buildCloneSourceUrlHandoffHref("https://www.tiktok.com/@creator/video/1"),
+  "/ugc-clone?sourceUrl=https%3A%2F%2Fwww.tiktok.com%2F%40creator%2Fvideo%2F1"
+);
 assert.equal(
   consumeCloneHandoffQuery(handoffQuery.toString(), "sourceId"),
   "referenceFileId=file-2&utm_source=gallery&debug=1"

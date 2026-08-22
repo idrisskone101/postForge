@@ -59,6 +59,13 @@ assert.match(pageSource, /listTrackedInspirationAccounts\(\)/);
 assert.doesNotMatch(pageSource, /initialAccounts=/);
 assert.match(workspaceSource, /useInspirationAccountList/);
 assert.match(workspaceSource, /handleLoadMoreAccounts/);
+const useInClone = workspaceSource.slice(
+  workspaceSource.indexOf("function handleUseInClone"),
+  workspaceSource.indexOf("function handleSetVideoRejection")
+);
+assert.match(useInClone, /buildCloneSourceUrlHandoffHref\(video\.originalUrl\)/);
+assert.doesNotMatch(useInClone, /postInspirationVideoUse/);
+assert.doesNotMatch(useInClone, /window\.location\.assign/);
 assert.match(accountListHook, /fetchInspirationAccountPage\(\{ cursor: accountCursor \}\)/);
 assert.match(mutationsSource, /fetchInspirationAccountPage/);
 assert.doesNotMatch(mutationsSource, /apiGet<TrackedInspirationAccount\[\]>/);
