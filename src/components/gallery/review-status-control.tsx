@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   OUTPUT_REVIEW_STATUSES,
   type OutputReviewStatus,
@@ -24,22 +24,18 @@ export function GalleryReviewStatusControl({
   onStatusChange?: (status: SerializedOutputReviewStatus) => void;
   onFeedback?: (feedback: GalleryFeedback) => void;
 }) {
-  const [current, setCurrent] = useState(reviewStatus);
   const [pendingStatus, setPendingStatus] = useState<OutputReviewStatus | null>(
     null
   );
 
-  useEffect(() => setCurrent(reviewStatus), [reviewStatus]);
-
   const updateStatus = async (nextStatus: OutputReviewStatus) => {
-    if (pendingStatus || nextStatus === current.value) return;
+    if (pendingStatus || nextStatus === reviewStatus.value) return;
     setPendingStatus(nextStatus);
     try {
       const nextReviewStatus = await patchGalleryReviewStatus(
         outputId,
         nextStatus
       );
-      setCurrent(nextReviewStatus);
       onStatusChange?.(nextReviewStatus);
       onFeedback?.({
         tone: "success",
@@ -61,17 +57,17 @@ export function GalleryReviewStatusControl({
         "flex items-center rounded-lg border border-border bg-background p-1",
         compact ? "w-fit gap-1" : "justify-between gap-2"
       )}
-      aria-label={`Output review status: ${current.label}`}
+      aria-label={`Output review status: ${reviewStatus.label}`}
     >
       {!compact && (
         <span className="min-w-0 truncate px-2 text-[13px] font-semibold">
-          {current.label}
+          {reviewStatus.label}
         </span>
       )}
       <div className="flex items-center gap-1">
         {OUTPUT_REVIEW_STATUSES.map((status) => {
           const Icon = reviewStatusIcons[status.value];
-          const isActive = current.value === status.value;
+          const isActive = reviewStatus.value === status.value;
           const isPending = pendingStatus === status.value;
           return (
             <button

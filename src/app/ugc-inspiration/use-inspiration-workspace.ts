@@ -32,6 +32,13 @@ import {
 } from "./inspiration-mutations";
 import { useInspirationAccountList } from "./use-inspiration-account-list";
 
+type VideoPageQuery = {
+  accountId?: string | null;
+  usage?: InspirationSourceFeedFilter;
+  search?: string;
+  sort?: InspirationSourceSort;
+};
+
 export interface InspirationPageClientProps {
   initialAccountPage: InspirationAccountPage;
   initialVideoPage: InspirationVideoPage;
@@ -69,7 +76,10 @@ export function useInspirationWorkspace({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
-  const didMountVideos = useRef(false);
+  const didMountSearch = useRef(false);
+  const replaceVideoPageRef = useRef<
+    (query?: VideoPageQuery) => Promise<void>
+  >(() => Promise.resolve());
 
   const selectedAccount = useMemo(
     () =>
@@ -93,49 +103,87 @@ export function useInspirationWorkspace({
   );
 
   const loadVideoPage = useCallback(
-    async (cursor?: string | null) => {
+    async (cursor?: string | null, query: VideoPageQuery = {}) => {
+      const accountId =
+        query.accountId !== undefined
+          ? query.accountId
+          : activeFilter === "all"
+            ? null
+            : activeFilter;
+
       return fetchInspirationVideoPage({
-        accountId: activeFilter === "all" ? null : activeFilter,
+        accountId,
         cursor,
         take: INSPIRATION_VIDEO_PAGE_SIZE,
-        usage: sourceFeedFilter,
-        search: sourceSearch,
-        sort: sourceSort,
+        usage: query.usage ?? sourceFeedFilter,
+        search: query.search ?? sourceSearch,
+        sort: query.sort ?? sourceSort,
       });
     },
     [activeFilter, sourceFeedFilter, sourceSearch, sourceSort]
   );
 
-  const replaceVideoPage = useCallback(async () => {
-    setIsLoadingVideos(true);
-    setVideoItems([]);
-    setVideoCursor(null);
-    setVideoHasMore(false);
-    setPageError(null);
-    try {
-      const page = await loadVideoPage();
-      applyVideoPage(page, "replace");
-    } catch (error) {
-      setPageError(inspirationPageError(error, "Failed to load sources."));
-      setVideoTotal(0);
-    } finally {
-      setIsLoadingVideos(false);
-    }
-  }, [applyVideoPage, loadVideoPage]);
+  const replaceVideoPage = useCallback(
+    async (query: VideoPageQuery = {}) => {
+      setIsLoadingVideos(true);
+      setVideoItems([]);
+      setVideoCursor(null);
+      setVideoHasMore(false);
+      setPageError(null);
+      try {
+        const page = await loadVideoPage(undefined, query);
+        applyVideoPage(page, "replace");
+      } catch (error) {
+        setPageError(inspirationPageError(error, "Failed to load sources."));
+        setVideoTotal(0);
+      } finally {
+        setIsLoadingVideos(false);
+      }
+    },
+    [applyVideoPage, loadVideoPage]
+  );
+
+  replaceVideoPageRef.current = replaceVideoPage;
+
+  const setActiveFilterAndReload = useCallback(
+    (filter: "all" | string) => {
+      setActiveFilter(filter);
+      void replaceVideoPage({
+        accountId: filter === "all" ? null : filter,
+      });
+    },
+    [replaceVideoPage]
+  );
+
+  const setSourceFeedFilterAndReload = useCallback(
+    (filter: InspirationSourceFeedFilter) => {
+      setSourceFeedFilter(filter);
+      void replaceVideoPage({ usage: filter });
+    },
+    [replaceVideoPage]
+  );
+
+  const setSourceSortAndReload = useCallback(
+    (sort: InspirationSourceSort) => {
+      setSourceSort(sort);
+      void replaceVideoPage({ sort });
+    },
+    [replaceVideoPage]
+  );
 
   useEffect(() => {
-    if (!didMountVideos.current) {
-      didMountVideos.current = true;
+    if (!didMountSearch.current) {
+      didMountSearch.current = true;
       return;
     }
 
     const delay = sourceSearch.trim() ? 250 : 0;
     const timer = window.setTimeout(() => {
-      void replaceVideoPage();
+      void replaceVideoPageRef.current();
     }, delay);
 
     return () => window.clearTimeout(timer);
-  }, [replaceVideoPage, sourceSearch]);
+  }, [sourceSearch]);
 
   async function handleLoadMore() {
     if (!videoHasMore || !videoCursor || isLoadingMore) return;
@@ -173,7 +221,7 @@ export function useInspirationWorkspace({
       ?.label ?? "All";
 
   useEffect(() => {
-    if (!selectedVideoId) {
+    if (!selectedVideo) {
       setEmbedState("idle");
       return;
     }
@@ -184,13 +232,7 @@ export function useInspirationWorkspace({
     }, 4500);
 
     return () => window.clearTimeout(timer);
-  }, [selectedVideoId]);
-
-  useEffect(() => {
-    if (!selectedVideoId) return;
-    if (selectedVideo) return;
-    setSelectedVideoId(null);
-  }, [selectedVideoId, selectedVideo]);
+  }, [selectedVideo]);
 
   useEffect(() => {
     if (!copiedVideoId) return;
@@ -257,7 +299,7 @@ export function useInspirationWorkspace({
         setSelectedVideoId(null);
       }
       if (activeFilter === account.id) {
-        setActiveFilter("all");
+        setActiveFilterAndReload("all");
       } else {
         await replaceVideoPage();
       }
@@ -296,6 +338,9 @@ export function useInspirationWorkspace({
       );
       if (!staysInView) {
         setVideoTotal((current) => Math.max(0, current - 1));
+        if (selectedVideoId === result.videoId) {
+          setSelectedVideoId(null);
+        }
       }
       setSourceUsageCounts((current) =>
         applySourceDecisionToCounts(current, video, result.sourceDecision)
@@ -334,13 +379,13 @@ export function useInspirationWorkspace({
     accountCursor,
     isLoadingMoreAccounts,
     activeFilter,
-    setActiveFilter,
+    setActiveFilter: setActiveFilterAndReload,
     sourceFeedFilter,
-    setSourceFeedFilter,
+    setSourceFeedFilter: setSourceFeedFilterAndReload,
     sourceSearch,
     setSourceSearch,
     sourceSort,
-    setSourceSort,
+    setSourceSort: setSourceSortAndReload,
     compactGrid,
     setCompactGrid,
     videoItems,

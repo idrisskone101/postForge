@@ -111,53 +111,6 @@ export function TikTokInput({
     }
   };
 
-  useEffect(() => {
-    if (!preselectedSourceId || isLoadingSources || sourcesError) return;
-    if (autoSelectedIdRef.current === preselectedSourceId) return;
-
-    const source = savedSources.find((item) => item.id === preselectedSourceId);
-    if (!source) {
-      if (sourcesNextCursor) return;
-      autoSelectedIdRef.current = preselectedSourceId;
-      setError("The handed-off saved source is no longer available. Choose another source.");
-      onPreselectedSourceResolved?.({
-        handoff: "sourceId",
-        status: "missing",
-        sourceId: preselectedSourceId,
-      });
-      return;
-    }
-
-    autoSelectedIdRef.current = preselectedSourceId;
-    onDownloaded(toVideoInfo(source));
-    setError(null);
-    onPreselectedSourceResolved?.({
-      handoff: "sourceId",
-      status: "selected",
-      sourceId: preselectedSourceId,
-    });
-  }, [
-    isLoadingSources,
-    onDownloaded,
-    onPreselectedSourceResolved,
-    preselectedSourceId,
-    savedSources,
-    sourcesError,
-    sourcesNextCursor,
-  ]);
-
-  useEffect(() => {
-    if (!preselectedSourceId) {
-      autoSelectedIdRef.current = null;
-    }
-  }, [preselectedSourceId]);
-
-  useEffect(() => {
-    if (!handoffSourceUrl) {
-      autoImportedUrlRef.current = null;
-    }
-  }, [handoffSourceUrl]);
-
   const importFromUrl = useCallback(async (nextUrl: string) => {
     const trimmed = nextUrl.trim();
     if (!trimmed) return null;
@@ -186,6 +139,41 @@ export function TikTokInput({
   }, [onDownloaded]);
 
   useEffect(() => {
+    if (!preselectedSourceId) {
+      autoSelectedIdRef.current = null;
+    }
+    if (!handoffSourceUrl) {
+      autoImportedUrlRef.current = null;
+    }
+
+    if (preselectedSourceId) {
+      if (isLoadingSources || sourcesError) return;
+      if (autoSelectedIdRef.current === preselectedSourceId) return;
+
+      const source = savedSources.find((item) => item.id === preselectedSourceId);
+      if (!source) {
+        if (sourcesNextCursor) return;
+        autoSelectedIdRef.current = preselectedSourceId;
+        setError("The handed-off saved source is no longer available. Choose another source.");
+        onPreselectedSourceResolved?.({
+          handoff: "sourceId",
+          status: "missing",
+          sourceId: preselectedSourceId,
+        });
+        return;
+      }
+
+      autoSelectedIdRef.current = preselectedSourceId;
+      onDownloaded(toVideoInfo(source));
+      setError(null);
+      onPreselectedSourceResolved?.({
+        handoff: "sourceId",
+        status: "selected",
+        sourceId: preselectedSourceId,
+      });
+      return;
+    }
+
     if (!handoffSourceUrl || isLoadingSources || isDownloading) return;
     if (autoImportedUrlRef.current === handoffSourceUrl) return;
 
@@ -221,7 +209,10 @@ export function TikTokInput({
     isLoadingSources,
     onDownloaded,
     onPreselectedSourceResolved,
+    preselectedSourceId,
     savedSources,
+    sourcesError,
+    sourcesNextCursor,
   ]);
 
   const handleDownload = () => {

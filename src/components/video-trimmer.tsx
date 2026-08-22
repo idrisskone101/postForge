@@ -67,6 +67,8 @@ export function VideoTrimmer({
     const video = videoRef.current;
     if (!video) return;
 
+    video.currentTime = startTime;
+
     const onTimeUpdate = () => {
       if (video.currentTime >= endTime || video.currentTime < startTime) {
         video.currentTime = startTime;
@@ -76,13 +78,6 @@ export function VideoTrimmer({
     video.addEventListener("timeupdate", onTimeUpdate);
     return () => video.removeEventListener("timeupdate", onTimeUpdate);
   }, [startTime, endTime]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.currentTime = startTime;
-    }
-  }, [startTime]);
 
   const getTimeFromPointer = useCallback(
     (clientX: number): number => {

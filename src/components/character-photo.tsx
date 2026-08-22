@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function CharacterPhoto({
@@ -18,11 +18,11 @@ export function CharacterPhoto({
   onLoadError?: () => void;
 }) {
   const requestedSource = characterPhotoSource({ avatarId, generatedFileId });
-  const [source, setSource] = useState(requestedSource);
-
-  useEffect(() => {
-    setSource(requestedSource);
-  }, [requestedSource]);
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  const source =
+    failedSource === requestedSource
+      ? DEFAULT_CHARACTER_PHOTO
+      : requestedSource;
 
   return (
     <span
@@ -39,7 +39,7 @@ export function CharacterPhoto({
         onError={() => {
           if (source !== DEFAULT_CHARACTER_PHOTO) {
             onLoadError?.();
-            setSource(DEFAULT_CHARACTER_PHOTO);
+            setFailedSource(requestedSource);
           }
         }}
       />

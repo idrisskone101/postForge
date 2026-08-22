@@ -115,11 +115,6 @@ export function usePerformanceWorkspace() {
     return options;
   }, [connectedAccounts, csvDataset]);
 
-  useEffect(() => {
-    if (sourceOptions.includes(selectedSource)) return;
-    setSelectedSource(sourceOptions[0] ?? "");
-  }, [selectedSource, sourceOptions]);
-
   const activeSource = sourceOptions.includes(selectedSource)
     ? selectedSource
     : sourceOptions[0] ?? "";

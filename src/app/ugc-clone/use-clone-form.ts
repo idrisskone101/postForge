@@ -68,6 +68,13 @@ export function useCloneForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pendingSourceId, setPendingSourceId] = useState<string | null>(sourceIdParam);
+  const [prevSourceIdParam, setPrevSourceIdParam] = useState(sourceIdParam);
+  if (sourceIdParam !== prevSourceIdParam) {
+    setPrevSourceIdParam(sourceIdParam);
+    if (sourceIdParam) {
+      setPendingSourceId(sourceIdParam);
+    }
+  }
   const [selectedCollectionAssetId, setSelectedCollectionAssetId] = useState<string | null>(
     null
   );
@@ -132,12 +139,6 @@ export function useCloneForm() {
       setCloneTip(UGC_CLONE_TIPS[Math.floor(Math.random() * UGC_CLONE_TIPS.length)]);
     }
   }, []);
-
-  useEffect(() => {
-    if (sourceIdParam) {
-      setPendingSourceId(sourceIdParam);
-    }
-  }, [sourceIdParam]);
 
   const view = getCloneStudioViewModel({
     videoInfo,

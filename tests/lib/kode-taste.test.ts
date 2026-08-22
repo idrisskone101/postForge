@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   checkKodeTaste,
+  collectReactModules,
   findFileLayoutIssue,
   PROP_BAG_LIMIT,
   reorderMainExport,
@@ -158,6 +159,42 @@ export function Button() { return <button>{glyph()}</button>; }
   assert.equal(
     violations.some((item) => item.path === "src/components/ui/button.tsx"),
     false
+  );
+});
+
+withTempRoot((rootDir) => {
+  writeModule(
+    rootDir,
+    "src/use-too-many-effects.ts",
+    `"use client";
+import { useEffect } from "react";
+export function useTooManyEffects() {
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+  useEffect(() => {}, []);
+  return null;
+}
+`
+  );
+  writeModule(
+    rootDir,
+    "src/card.tsx",
+    `export function Card() { return <h1>ok</h1>; }`
+  );
+
+  const files = collectReactModules(rootDir);
+  assert.equal(files.includes("src/use-too-many-effects.ts"), true);
+  assert.equal(files.includes("src/card.tsx"), true);
+
+  const violations = checkKodeTaste({ rootDir });
+  assert.equal(
+    violations.some(
+      (item) =>
+        item.kind === "use-effect" &&
+        item.path === "src/use-too-many-effects.ts" &&
+        item.count >= USE_EFFECT_LIMIT
+    ),
+    true
   );
 });
 
