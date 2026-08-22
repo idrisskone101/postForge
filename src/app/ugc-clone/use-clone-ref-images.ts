@@ -39,9 +39,7 @@ export function useCloneRefImages({
   const [refPrompt, setRefPrompt] = useState("");
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const refImagesRef = useRef(refImages);
-  useEffect(() => {
-    refImagesRef.current = refImages;
-  });
+  refImagesRef.current = refImages;
 
   useEffect(() => {
     if (!referenceFileIdParam) return;

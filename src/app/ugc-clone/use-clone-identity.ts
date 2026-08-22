@@ -26,6 +26,21 @@ export function useCloneIdentity() {
     null
   );
   const [showAvatarReferences, setShowAvatarReferences] = useState(false);
+  const [prevAvatarId, setPrevAvatarId] = useState<string | null>(avatarId);
+  if (avatarId !== prevAvatarId) {
+    setPrevAvatarId(avatarId);
+    setShowAvatarReferences(false);
+    setSelectedHairstyleRole(null);
+    if (!avatarId) {
+      setIdentityPack(null);
+      setIdentityPackError(null);
+      setIsStartingIdentityPack(false);
+      setSavedReferences([]);
+      setSavedReferencesNextCursor(null);
+      setSavedReferencesError(null);
+      setSelectedSavedReferenceId(null);
+    }
+  }
 
   const fetchSavedReferences = useCallback(async (nextAvatarId: string) => {
     setIsLoadingSavedReferences(true);
@@ -142,19 +157,7 @@ export function useCloneIdentity() {
   }, []);
 
   useEffect(() => {
-    setShowAvatarReferences(false);
-    setSelectedHairstyleRole(null);
-
-    if (!avatarId) {
-      setIdentityPack(null);
-      setIdentityPackError(null);
-      setIsStartingIdentityPack(false);
-      setSavedReferences([]);
-      setSavedReferencesNextCursor(null);
-      setSavedReferencesError(null);
-      setSelectedSavedReferenceId(null);
-      return;
-    }
+    if (!avatarId) return;
 
     void fetchSavedReferences(avatarId);
     void (async () => {
