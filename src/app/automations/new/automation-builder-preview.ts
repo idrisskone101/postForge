@@ -24,6 +24,20 @@ export function clampPreviewZoom(value: number) {
   return Math.max(PREVIEW_ZOOM_MIN, Math.min(PREVIEW_ZOOM_MAX, value));
 }
 
+export function clampPreviewSlide(slideIndex: number, slideCount: number) {
+  return Math.max(0, Math.min(slideIndex, Math.max(0, slideCount - 1)));
+}
+
+export function nextPreviewSlide(
+  current: number,
+  next: number | ((current: number) => number),
+  slideCount: number
+) {
+  const resolved =
+    typeof next === "function" ? next(clampPreviewSlide(current, slideCount)) : next;
+  return clampPreviewSlide(resolved, slideCount);
+}
+
 export function selectAutomationPreviewAsset({
   sourceFileId,
   sourceFile,

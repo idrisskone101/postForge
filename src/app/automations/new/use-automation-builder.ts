@@ -12,7 +12,11 @@ import {
   type AutomationRecord,
 } from "@/lib/automations";
 import { fetchWorkspaceFeature, saveWorkspaceFeature } from "@/lib/workspace-features-client";
-import { selectAutomationPreviewAsset } from "./automation-builder-preview";
+import {
+  clampPreviewSlide,
+  nextPreviewSlide,
+  selectAutomationPreviewAsset,
+} from "./automation-builder-preview";
 import {
   applyPlaybookToRecord,
   destinationSelectionPatch,
@@ -93,63 +97,60 @@ export function useAutomationBuilder() {
   });
 
   useEffect(() => {
-    setPreviewSlide((current) =>
-      Math.min(current, Math.max(0, record.content.slideCount - 1))
-    );
-  }, [record.content.slideCount]);
-
-  useEffect(() => {
-    if (editId) return;
     let cancelled = false;
-    fetchWorkspaceFeature<WorkspaceSettingsDefaults>("connections")
-      .then(({ records }) => {
-        const defaults = records.find(
-          (candidate) => candidate.id === "workspace-settings"
-        );
-        if (
-          cancelled ||
-          !defaults ||
-          typeof defaults.timezone !== "string" ||
-          typeof defaults.approvalDefault !== "boolean"
-        ) {
-          return;
-        }
-        setRecord((current) => ({
-          ...current,
-          approvalRequired: defaults.approvalDefault,
-          schedule: {
-            ...current.schedule,
-            timezone: defaults.timezone,
-          },
-        }));
-      })
-      .catch(() => {
-        // New plans retain safe built-in defaults when workspace settings fail.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [editId]);
-
-  useEffect(() => {
-    if (!editId) return;
-    let cancelled = false;
-    setLoading(true);
-    fetchWorkspaceFeature<AutomationRecord>("automations")
-      .then(({ records }) => {
-        const existing = records.find((candidate) => candidate.id === editId);
-        if (!cancelled && existing && isAutomationRecord(existing)) {
-          setRecord(existing);
-          setSavedRecordSignature(JSON.stringify(existing));
-          if (AUTOMATION_TEMPLATES.some((template) => template.id === existing.template)) {
-            setPreviewTemplateId(existing.template);
-            setSelectedTemplateId(existing.template);
+    if (editId) {
+      setLoading(true);
+      fetchWorkspaceFeature<AutomationRecord>("automations")
+        .then(({ records }) => {
+          const existing = records.find((candidate) => candidate.id === editId);
+          if (!cancelled && existing && isAutomationRecord(existing)) {
+            setRecord(existing);
+            setSavedRecordSignature(JSON.stringify(existing));
+            if (
+              AUTOMATION_TEMPLATES.some((template) => template.id === existing.template)
+            ) {
+              setPreviewTemplateId(existing.template);
+              setSelectedTemplateId(existing.template);
+            }
           }
-        }
-        if (!cancelled && !existing) setError("That automation could not be found.");
-      })
-      .catch((cause) => !cancelled && setError(cause instanceof Error ? cause.message : "Unable to load automation"))
-      .finally(() => !cancelled && setLoading(false));
+          if (!cancelled && !existing) {
+            setError("That automation could not be found.");
+          }
+        })
+        .catch(
+          (cause) =>
+            !cancelled &&
+            setError(
+              cause instanceof Error ? cause.message : "Unable to load automation"
+            )
+        )
+        .finally(() => !cancelled && setLoading(false));
+    } else {
+      fetchWorkspaceFeature<WorkspaceSettingsDefaults>("connections")
+        .then(({ records }) => {
+          const defaults = records.find(
+            (candidate) => candidate.id === "workspace-settings"
+          );
+          if (
+            cancelled ||
+            !defaults ||
+            typeof defaults.timezone !== "string" ||
+            typeof defaults.approvalDefault !== "boolean"
+          ) {
+            return;
+          }
+          setRecord((current) => ({
+            ...current,
+            approvalRequired: defaults.approvalDefault,
+            schedule: {
+              ...current.schedule,
+              timezone: defaults.timezone,
+            },
+          }));
+        })
+        .catch(() => {});
+    }
+
     return () => {
       cancelled = true;
     };
@@ -215,6 +216,7 @@ export function useAutomationBuilder() {
         : "Unsaved changes";
   const phaseIndex = PHASES.indexOf(phase);
   const slideCopy = [record.hook.selected, record.content.structure, "One concrete point per slide", record.content.guidance, record.cta.style];
+  const slideCount = record.content.slideCount;
   const socialApprovalMissing =
     isAutomationSocialDestination(record.destination) &&
     !record.approvalRequired;
@@ -347,8 +349,9 @@ export function useAutomationBuilder() {
     error,
     setError,
     toast,
-    previewSlide,
-    setPreviewSlide,
+    previewSlide: clampPreviewSlide(previewSlide, slideCount),
+    setPreviewSlide: (next: number | ((current: number) => number)) =>
+      setPreviewSlide((current) => nextPreviewSlide(current, next, slideCount)),
     previewZoom,
     setPreviewZoom,
     collections,

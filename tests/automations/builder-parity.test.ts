@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { automationsHubSource } from "./hub-source";
 import {
+  clampPreviewSlide,
   clampPreviewZoom,
   PREVIEW_ZOOM_MAX,
   PREVIEW_ZOOM_MIN,
@@ -13,6 +14,11 @@ import { automationsBuilderSource } from "./builder-source";
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MIN - 100), PREVIEW_ZOOM_MIN);
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MAX + 100), PREVIEW_ZOOM_MAX);
 assert.equal(clampPreviewZoom(58), 58);
+
+assert.equal(clampPreviewSlide(4, 3), 2);
+assert.equal(clampPreviewSlide(-1, 5), 0);
+assert.equal(clampPreviewSlide(2, 5), 2);
+assert.equal(clampPreviewSlide(0, 0), 0);
 
 let zoom = 58;
 for (let index = 0; index < 20; index += 1) {
