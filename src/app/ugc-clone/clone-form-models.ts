@@ -9,6 +9,7 @@ import type {
   CloneTrimResult,
 } from "@/components/clone/view-models";
 import type { ModelDefinition } from "@/lib/ai/types";
+import { clonePathAfterHandoffConsume } from "@/lib/ugc-clone-handoff";
 import { getCloneStudioViewModel } from "@/app/ugc-clone/clone-view-model";
 import type { useCloneIdentity } from "@/app/ugc-clone/use-clone-identity";
 import type { useCloneRefImages } from "@/app/ugc-clone/use-clone-ref-images";
@@ -68,6 +69,46 @@ export type CloneFormSnapshot = {
   handleSelectSavedReference: (referenceId: string) => void;
   submitRefImageGeneration: (prompt: string) => Promise<void>;
 };
+
+export function cloneHandoffAfterPreselect(input: {
+  result: ClonePreselectedSourceResult;
+  sourceUrlParam: string | null;
+  pendingSourceId: string | null;
+  search: string;
+}) {
+  switch (input.result.handoff) {
+    case "sourceUrl": {
+      if (!input.sourceUrlParam || input.result.sourceUrl !== input.sourceUrlParam) {
+        return null;
+      }
+      return {
+        path: clonePathAfterHandoffConsume(input.search, "sourceUrl"),
+        error:
+          input.result.status === "missing"
+            ? "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source."
+            : null,
+        clearPendingSourceId: false,
+      };
+    }
+    case "sourceId": {
+      if (!input.pendingSourceId || input.pendingSourceId !== input.result.sourceId) {
+        return null;
+      }
+      return {
+        path: clonePathAfterHandoffConsume(input.search, "sourceId"),
+        error:
+          input.result.status === "missing"
+            ? "The handed-off saved source is no longer available. Choose or import another source."
+            : null,
+        clearPendingSourceId: true,
+      };
+    }
+    default: {
+      const _exhaustive: never = input.result;
+      return _exhaustive;
+    }
+  }
+}
 
 function productionState(snapshot: CloneFormSnapshot) {
   const { view } = snapshot;

@@ -18,11 +18,17 @@ export type CloneTrimResult = {
   height: number;
 };
 
-export type ClonePreselectedSourceResult = {
-  status: "selected" | "missing";
-  sourceId?: string;
-  sourceUrl?: string;
-};
+export type ClonePreselectedSourceResult =
+  | {
+      handoff: "sourceId";
+      status: "selected" | "missing";
+      sourceId: string;
+    }
+  | {
+      handoff: "sourceUrl";
+      status: "selected" | "missing";
+      sourceUrl: string;
+    };
 
 export type CloneProductionState = {
   sourceReady: boolean;

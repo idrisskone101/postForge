@@ -11,10 +11,8 @@ import {
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import type { ModelDefinition } from "@/lib/ai/types";
 import { apiPost } from "@/lib/api/client";
-import {
-  clonePathAfterHandoffConsume,
-  readCloneHandoffQuery,
-} from "@/lib/ugc-clone-handoff";
+import type { ClonePreselectedSourceResult } from "@/components/clone/view-models";
+import { readCloneHandoffQuery } from "@/lib/ugc-clone-handoff";
 import { isMotionSourceWithinLimit } from "@/lib/ugc/source-limits";
 import { createReferenceImageBatchEntries } from "@/lib/ugc/clone-workflow";
 import {
@@ -32,6 +30,7 @@ import {
   buildCloneActionModel,
   buildCloneDraft,
   buildCloneReferenceWorkspace,
+  cloneHandoffAfterPreselect,
   type CloneFormSnapshot,
 } from "@/app/ugc-clone/clone-form-models";
 import {
@@ -165,28 +164,17 @@ export function useCloneForm() {
     }
   };
 
-  const handlePreselectedSourceResolved = (result: {
-    status: "selected" | "missing";
-    sourceId?: string;
-    sourceUrl?: string;
-  }) => {
-    if (sourceUrlParam && result.sourceUrl === sourceUrlParam) {
-      setSubmitError(
-        result.status === "missing"
-          ? "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source."
-          : null
-      );
-      router.replace(clonePathAfterHandoffConsume(searchParams.toString(), "sourceUrl"));
-      return;
-    }
-    if (!pendingSourceId || pendingSourceId !== result.sourceId) return;
-    setPendingSourceId(null);
-    setSubmitError(
-      result.status === "missing"
-        ? "The handed-off saved source is no longer available. Choose or import another source."
-        : null
-    );
-    router.replace(clonePathAfterHandoffConsume(searchParams.toString(), "sourceId"));
+  const handlePreselectedSourceResolved = (result: ClonePreselectedSourceResult) => {
+    const next = cloneHandoffAfterPreselect({
+      result,
+      sourceUrlParam,
+      pendingSourceId,
+      search: searchParams.toString(),
+    });
+    if (!next) return;
+    if (next.clearPendingSourceId) setPendingSourceId(null);
+    setSubmitError(next.error);
+    router.replace(next.path);
   };
 
   const handleTrimmed = (info: {

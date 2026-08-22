@@ -5,7 +5,10 @@ import {
   consumeCloneHandoffQuery,
   isSupportedCloneReferenceFile,
   readCloneHandoffQuery,
+  savedSourceMatchesHandoffUrl,
+  tikTokVideoIdFromUrl,
 } from "../../src/lib/ugc-clone-handoff";
+import { cloneHandoffAfterPreselect } from "../../src/app/ugc-clone/clone-form-models";
 import {
   buildCloneOutputHandoffUrl,
   handoffCloneOutput,
@@ -55,6 +58,8 @@ assert.match(sourcePickerSource, /isLoadingSources \|\| sourcesError/);
 assert.match(sourcePickerSource, /handed-off saved source is no longer available/);
 assert.match(cloneFormHookSource, /sourceUrl: sourceUrlParam/);
 assert.match(sourcePickerSource, /handoffSourceUrl/);
+assert.match(sourcePickerSource, /savedSourceMatchesHandoffUrl/);
+assert.doesNotMatch(sourcePickerSource, /originalUrl\.includes\(videoId\)/);
 
 const handoffQuery = new URLSearchParams(
   "sourceId=source-1&referenceFileId=file-2&utm_source=gallery&debug=1"
@@ -104,6 +109,48 @@ assert.equal(
 assert.equal(
   consumeCloneHandoffQuery(handoffQuery.toString(), "referenceFileId"),
   "sourceId=source-1&utm_source=gallery&debug=1"
+);
+assert.equal(tikTokVideoIdFromUrl("https://www.tiktok.com/@creator/video/123"), "123");
+assert.equal(
+  savedSourceMatchesHandoffUrl(
+    "https://www.tiktok.com/@creator/video/123",
+    "https://www.tiktok.com/@other/video/123"
+  ),
+  true
+);
+assert.equal(
+  savedSourceMatchesHandoffUrl(
+    "https://www.tiktok.com/@creator/video/1234",
+    "https://www.tiktok.com/@creator/video/123"
+  ),
+  false
+);
+assert.deepEqual(
+  cloneHandoffAfterPreselect({
+    result: {
+      handoff: "sourceUrl",
+      status: "missing",
+      sourceUrl: "https://www.tiktok.com/@creator/video/1",
+    },
+    sourceUrlParam: "https://www.tiktok.com/@creator/video/1",
+    pendingSourceId: null,
+    search: "sourceUrl=https%3A%2F%2Fwww.tiktok.com%2F%40creator%2Fvideo%2F1&utm_source=gallery",
+  }),
+  {
+    path: "/ugc-clone?utm_source=gallery",
+    error:
+      "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source.",
+    clearPendingSourceId: false,
+  }
+);
+assert.equal(
+  cloneHandoffAfterPreselect({
+    result: { handoff: "sourceId", status: "selected", sourceId: "source-2" },
+    sourceUrlParam: null,
+    pendingSourceId: "source-1",
+    search: "sourceId=source-1",
+  }),
+  null
 );
 
 assert.equal(

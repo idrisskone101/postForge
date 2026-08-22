@@ -42,10 +42,18 @@ export function buildCloneSourceUrlHandoffHref(originalUrl: string) {
   return `/ugc-clone?${params.toString()}`;
 }
 
-/**
- * Consumes only the handoff that has been resolved. Other handoffs and any
- * campaign/debug query parameters are intentionally preserved.
- */
+export function tikTokVideoIdFromUrl(url: string) {
+  return url.match(/\/video\/(\d+)/)?.[1] ?? null;
+}
+
+export function savedSourceMatchesHandoffUrl(originalUrl: string, handoffUrl: string) {
+  if (originalUrl === handoffUrl) return true;
+  const handoffVideoId = tikTokVideoIdFromUrl(handoffUrl);
+  return (
+    handoffVideoId !== null && tikTokVideoIdFromUrl(originalUrl) === handoffVideoId
+  );
+}
+
 export function consumeCloneHandoffQuery(
   search: string,
   key: CloneHandoffQueryKey

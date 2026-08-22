@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import type { ClonePreselectedSourceResult } from "@/components/clone/view-models";
+import {
+  TikTokSavedSources,
+  type SavedTikTokSource,
+  type SourceListPage,
+} from "@/components/tiktok-saved-sources";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
+import { savedSourceMatchesHandoffUrl } from "@/lib/ugc-clone-handoff";
 import { cn } from "@/lib/utils";
 import {
   Loader2,
@@ -10,11 +17,6 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import {
-  TikTokSavedSources,
-  type SavedTikTokSource,
-  type SourceListPage,
-} from "@/components/tiktok-saved-sources";
 
 export interface TikTokVideoInfo {
   id: string;
@@ -33,11 +35,7 @@ interface TikTokInputProps {
   refreshKey?: number;
   preselectedSourceId?: string | null;
   handoffSourceUrl?: string | null;
-  onPreselectedSourceResolved?: (result: {
-    status: "selected" | "missing";
-    sourceId?: string;
-    sourceUrl?: string;
-  }) => void;
+  onPreselectedSourceResolved?: (result: ClonePreselectedSourceResult) => void;
 }
 
 export function TikTokInput({
@@ -123,6 +121,7 @@ export function TikTokInput({
       autoSelectedIdRef.current = preselectedSourceId;
       setError("The handed-off saved source is no longer available. Choose another source.");
       onPreselectedSourceResolved?.({
+        handoff: "sourceId",
         status: "missing",
         sourceId: preselectedSourceId,
       });
@@ -133,6 +132,7 @@ export function TikTokInput({
     onDownloaded(toVideoInfo(source));
     setError(null);
     onPreselectedSourceResolved?.({
+      handoff: "sourceId",
       status: "selected",
       sourceId: preselectedSourceId,
     });
@@ -189,11 +189,8 @@ export function TikTokInput({
     if (!handoffSourceUrl || isLoadingSources || isDownloading) return;
     if (autoImportedUrlRef.current === handoffSourceUrl) return;
 
-    const videoId = handoffSourceUrl.match(/\/video\/(\d+)/)?.[1] ?? null;
-    const existing = savedSources.find(
-      (item) =>
-        item.originalUrl === handoffSourceUrl ||
-        (videoId !== null && item.originalUrl.includes(videoId))
+    const existing = savedSources.find((item) =>
+      savedSourceMatchesHandoffUrl(item.originalUrl, handoffSourceUrl)
     );
     if (existing) {
       autoImportedUrlRef.current = handoffSourceUrl;
@@ -201,8 +198,8 @@ export function TikTokInput({
       setUrl(handoffSourceUrl);
       setError(null);
       onPreselectedSourceResolved?.({
+        handoff: "sourceUrl",
         status: "selected",
-        sourceId: existing.id,
         sourceUrl: handoffSourceUrl,
       });
       return;
@@ -212,8 +209,8 @@ export function TikTokInput({
     setUrl(handoffSourceUrl);
     void importFromUrl(handoffSourceUrl).then((result) => {
       onPreselectedSourceResolved?.({
+        handoff: "sourceUrl",
         status: result ? "selected" : "missing",
-        sourceId: result?.id,
         sourceUrl: handoffSourceUrl,
       });
     });
