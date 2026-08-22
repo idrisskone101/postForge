@@ -35,7 +35,9 @@ export function useAutomationBuilderResources({
   const [integrationRefreshKey, setIntegrationRefreshKey] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
     let cancelled = false;
+
     fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
       .then(({ records }) => {
         if (!cancelled) {
@@ -52,45 +54,42 @@ export function useAutomationBuilderResources({
       .finally(() => {
         if (!cancelled) setCollectionsLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [editId]);
 
-  useEffect(() => {
-    if (!sourceFileId) return;
-    const controller = new AbortController();
-    fetch(`/api/files/${encodeURIComponent(sourceFileId)}/metadata`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Source asset could not be found");
-        return (await response.json()) as { file: AutomationSourceFile };
+    if (sourceFileId) {
+      fetch(`/api/files/${encodeURIComponent(sourceFileId)}/metadata`, {
+        cache: "no-store",
+        signal: controller.signal,
       })
-      .then(({ file }) => {
-        setLoadedSourceFile(file);
-        setSourceFailedId(null);
-      })
-      .catch((cause) => {
-        if (controller.signal.aborted) return;
-        setLoadedSourceFile(null);
-        setSourceFailedId(sourceFileId);
-        setError(
-          cause instanceof Error
-            ? cause.message
-            : "Source asset could not be loaded"
-        );
-      });
-    return () => controller.abort();
-  }, [setError, sourceFileId]);
+        .then(async (response) => {
+          if (!response.ok) throw new Error("Source asset could not be found");
+          return (await response.json()) as { file: AutomationSourceFile };
+        })
+        .then(({ file }) => {
+          if (cancelled) return;
+          setLoadedSourceFile(file);
+          setSourceFailedId(null);
+        })
+        .catch((cause) => {
+          if (controller.signal.aborted || cancelled) return;
+          setLoadedSourceFile(null);
+          setSourceFailedId(sourceFileId);
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : "Source asset could not be loaded"
+          );
+        });
+    } else {
+      setLoadedSourceFile(null);
+      setSourceFailedId(null);
+    }
 
-  useEffect(() => {
-    const controller = new AbortController();
     fetchIntegrations({ signal: controller.signal })
-      .then(({ providers }) => setIntegrationStatuses(providers))
+      .then(({ providers }) => {
+        if (!cancelled) setIntegrationStatuses(providers);
+      })
       .catch((cause) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || cancelled) return;
         setIntegrationStatuses([]);
         setIntegrationsError(
           cause instanceof Error
@@ -99,10 +98,16 @@ export function useAutomationBuilderResources({
         );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setIntegrationsLoading(false);
+        if (!controller.signal.aborted && !cancelled) {
+          setIntegrationsLoading(false);
+        }
       });
-    return () => controller.abort();
-  }, [integrationRefreshKey]);
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [editId, integrationRefreshKey, setError, sourceFileId]);
 
   function refreshIntegrations() {
     setIntegrationsLoading(true);
