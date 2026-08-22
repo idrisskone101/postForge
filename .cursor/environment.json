@@ -1,0 +1,6 @@
+{
+  "name": "PostForge",
+  "snapshot": "bld-20260822-22d05ab1-0cfc-4b99-92ab-88ab77dc67d0",
+  "install": "bash scripts/cloud-agent-install.sh",
+  "start": "bash scripts/cloud-agent-start.sh"
+}
