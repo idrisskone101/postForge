@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { canRunPromptImprovement } from "@/lib/ai/prompt-improvement-ui";
 import { cn } from "@/lib/utils";
 import { CREATIVE_SPARKS, RATIO_LABELS } from "./form-constants";
+import { PromptTemplatesControl } from "./prompt-templates-control";
 import type { GenerateFormActions, GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
 
@@ -99,6 +100,7 @@ export function GenerateFormControls({
                 <Undo2 className="size-3" /> Undo
               </button>
             )}
+            <PromptTemplatesControl prompt={prompt} onApply={onPromptChange} />
             <button
               type="button"
               onClick={onImprovePrompt}

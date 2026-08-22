@@ -17,6 +17,7 @@ Single-operator, self-hosted marketing pipeline. One owner generates media, pack
 | **Identity pack** | The set of generated stills that belong to an Avatar. | Reference set (when you mean pack images) |
 | **Clone** | A motion-transfer production: TikTok source + Avatar/references → UGC output. | UGC (unqualified), replica |
 | **Collection** | An owner-curated set of images used as references across Generate, Clone, and Slideshow. | Folder, album, library |
+| **Prompt Template** | A named reusable Generate prompt stored as workspace JSON. | Preset (when you mean the prompt only), snippet |
 | **Connection** | A server-owned OAuth account for TikTok, Instagram, or YouTube. Settings writes it; Performance and Automations read it. | Social account, integration (in product copy) |
 | **Workspace Automation** | A review-draft loop with an optional Connection destination; publishing is always approval-gated. | Automation (unqualified) |
 | **Slideshow Automation** | A Prisma-backed generator that ticks Slideshow Projects on a schedule. It is not a Connection publisher. | Automation (unqualified) |
