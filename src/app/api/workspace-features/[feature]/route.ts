@@ -89,7 +89,7 @@ function isWritableFeatureRecord(
       const record = value as unknown as StoredRecord;
       return record.id === MODEL_AVAILABILITY_RECORD_ID;
     }
-    case "prompts":
+    case "prompt-templates":
       return isPromptTemplateRecord(value);
     default: {
       const exhaustive: never = feature;
