@@ -11,36 +11,34 @@ import {
   describeGenerateIdentityStatus,
   type GenerateIdentityPackSummary,
 } from "@/lib/generation-workflow";
+import { resolveGenerationFormInitialState } from "./use-generation-form-helpers";
 import { useGenerationVibe } from "./use-generation-vibe";
 import { usePromptImprovement } from "./use-prompt-improvement";
 
 export function useGenerationForm(models: ModelDefinition[]) {
   const searchParams = useSearchParams();
-  const requestedModel = searchParams.get("model");
-  const initialModel = models.find((model) => model.id === requestedModel) ?? null;
+  const [initialState] = useState(() =>
+    resolveGenerationFormInitialState(models, searchParams)
+  );
 
   const [selectedModel, setSelectedModel] = useState<string | null>(
-    initialModel?.id ?? null
+    initialState.selectedModelId
   );
-  const [prompt, setPrompt] = useState(searchParams.get("prompt") ?? "");
-  const [aspectRatio, setAspectRatio] = useState(
-    initialModel?.defaults.aspectRatio ?? "9:16"
-  );
-  const [numImages, setNumImages] = useState(
-    initialModel?.defaults.numImages ?? 1
-  );
-  const [duration, setDuration] = useState(initialModel?.defaults.duration ?? 5);
+  const [prompt, setPrompt] = useState(initialState.prompt);
+  const [aspectRatio, setAspectRatio] = useState(initialState.aspectRatio);
+  const [numImages, setNumImages] = useState(initialState.numImages);
+  const [duration, setDuration] = useState(initialState.duration);
   const [negativePrompt, setNegativePrompt] = useState("");
   const [enableWebSearch, setEnableWebSearch] = useState(false);
   const [enableAudio, setEnableAudio] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(initialState.submitError);
   const [notice, setNotice] = useState<string | null>(null);
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [collectionAssetIds, setCollectionAssetIds] = useState<string[]>([]);
   const [videoReferenceFileId, setVideoReferenceFileId] = useState<string | null>(
-    searchParams.get("referenceFileId") ?? null
+    initialState.videoReferenceFileId
   );
   const [videoSeedMissing, setVideoSeedMissing] = useState(false);
   const [identityPack, setIdentityPack] =
@@ -163,22 +161,6 @@ export function useGenerationForm(models: ModelDefinition[]) {
       }
     }
   };
-
-  useEffect(() => {
-    if (!videoReferenceFileId) return;
-
-    const continuityModel = getContinuityVideoModel();
-    if (!continuityModel) {
-      setVideoReferenceFileId(null);
-      setSubmitError("No configured video model supports a video seed reference.");
-      return;
-    }
-
-    if (selectedDefinition?.capabilities.videoToVideo !== true) {
-      handleModelSelect(continuityModel.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleCollectionAssetChange = (assetIds: string[]) => {
     setSubmitError(null);
