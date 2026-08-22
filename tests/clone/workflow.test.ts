@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import {
   getClonePrimaryAction,
@@ -7,6 +8,37 @@ import {
   describeGenerateIdentityStatus,
 } from "../../src/lib/generation-workflow";
 import { userErrorMessage } from "../../src/lib/user-error-message";
+
+function countUseEffects(source: string) {
+  return (source.match(/useEffect\(/g) ?? []).length;
+}
+
+const cloneFormHookSource = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-form.ts", import.meta.url),
+  "utf8"
+);
+const cloneIdentityHookSource = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-identity.ts", import.meta.url),
+  "utf8"
+);
+const cloneRefImagesHookSource = readFileSync(
+  new URL("../../src/app/ugc-clone/use-clone-ref-images.ts", import.meta.url),
+  "utf8"
+);
+
+assert.equal(countUseEffects(cloneFormHookSource), 2);
+assert.match(cloneFormHookSource, /prevSourceIdParam/);
+assert.doesNotMatch(
+  cloneFormHookSource,
+  /useEffect\(\(\) => \{[\s\S]*sourceIdParam[\s\S]*setPendingSourceId/
+);
+assert.equal(countUseEffects(cloneIdentityHookSource), 2);
+assert.match(cloneIdentityHookSource, /prevAvatarId/);
+assert.equal(countUseEffects(cloneRefImagesHookSource), 2);
+assert.doesNotMatch(
+  cloneRefImagesHookSource,
+  /useEffect\(\(\) => \{[\s\S]*refImagesRef\.current = refImages/
+);
 
 assert.equal(
   getClonePrimaryAction({
