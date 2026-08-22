@@ -79,7 +79,10 @@ export function collectReactModules(rootDir: string): string[] {
         visit(absPath);
         continue;
       }
-      if (!entry.isFile() || !relPath.endsWith(".tsx")) {
+      if (
+        !entry.isFile() ||
+        (!relPath.endsWith(".tsx") && !relPath.endsWith(".ts"))
+      ) {
         continue;
       }
       if (isExemptPath(relPath)) {
@@ -166,7 +169,9 @@ function kebabToPascal(value: string): string {
 }
 
 function expectedMainName(relPath: string): string {
-  const base = path.basename(relPath, ".tsx");
+  const base = relPath.endsWith(".tsx")
+    ? path.basename(relPath, ".tsx")
+    : path.basename(relPath, ".ts");
   if (
     base === "page" ||
     base === "layout" ||
@@ -242,12 +247,15 @@ function helperName(statement: ts.Statement): string | null {
 }
 
 function parseSource(relPath: string, source: string): ts.SourceFile {
+  const scriptKind = relPath.endsWith(".tsx")
+    ? ts.ScriptKind.TSX
+    : ts.ScriptKind.TS;
   return ts.createSourceFile(
     relPath,
     source,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TSX
+    scriptKind
   );
 }
 
@@ -490,17 +498,20 @@ export function checkKodeTaste(options: {
   for (const relPath of files) {
     const absPath = path.join(options.rootDir, relPath);
     const source = readFileSync(absPath, "utf8");
-    const layout = findFileLayoutIssue(relPath, source);
-    if (layout) {
-      seenLayout.add(relPath);
-      if (!allowlistSet(allowlist.fileLayout).has(relPath)) {
-        violations.push(layout);
+    const isTsx = relPath.endsWith(".tsx");
+    if (isTsx) {
+      const layout = findFileLayoutIssue(relPath, source);
+      if (layout) {
+        seenLayout.add(relPath);
+        if (!allowlistSet(allowlist.fileLayout).has(relPath)) {
+          violations.push(layout);
+        }
       }
-    }
-    for (const bag of findPropBags(relPath, source)) {
-      seenBags.add(relPath);
-      if (!allowlistSet(allowlist.propBags).has(relPath)) {
-        violations.push(bag);
+      for (const bag of findPropBags(relPath, source)) {
+        seenBags.add(relPath);
+        if (!allowlistSet(allowlist.propBags).has(relPath)) {
+          violations.push(bag);
+        }
       }
     }
     for (const pressure of findHookPressure(relPath, source)) {
