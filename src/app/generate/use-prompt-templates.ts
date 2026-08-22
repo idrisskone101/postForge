@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  parsePromptTemplateRecords,
   PROMPT_TEMPLATE_FEATURE,
   promptTemplateToSave,
   type PromptTemplateRecord,
@@ -27,15 +28,17 @@ export function usePromptTemplates() {
     error: null,
     saving: false,
   });
+  const templatesRef = useRef(state.templates);
+  templatesRef.current = state.templates;
 
   useEffect(() => {
     let active = true;
-    void fetchWorkspaceFeature<PromptTemplateRecord>(PROMPT_TEMPLATE_FEATURE)
+    void fetchWorkspaceFeature(PROMPT_TEMPLATE_FEATURE)
       .then(({ records }) => {
         if (!active) return;
         setState((current) => ({
           ...current,
-          templates: records,
+          templates: parsePromptTemplateRecords(records),
           loading: false,
           error: null,
         }));
@@ -58,7 +61,7 @@ export function usePromptTemplates() {
       setState((current) => ({ ...current, saving: true, error: null }));
       try {
         const record = promptTemplateToSave(
-          state.templates,
+          templatesRef.current,
           { name, prompt },
           new Date()
         );
@@ -66,8 +69,9 @@ export function usePromptTemplates() {
           PROMPT_TEMPLATE_FEATURE,
           record
         );
+        const templates = parsePromptTemplateRecords(records);
         setState({
-          templates: records,
+          templates,
           loading: false,
           error: null,
           saving: false,
@@ -82,19 +86,19 @@ export function usePromptTemplates() {
         return null;
       }
     },
-    [state.templates]
+    []
   );
 
   const remove = useCallback(async (id: string) => {
     setState((current) => ({ ...current, error: null }));
     try {
-      const { records } = await removeWorkspaceFeature<PromptTemplateRecord>(
+      const { records } = await removeWorkspaceFeature(
         PROMPT_TEMPLATE_FEATURE,
         id
       );
       setState((current) => ({
         ...current,
-        templates: records,
+        templates: parsePromptTemplateRecords(records),
       }));
     } catch (error: unknown) {
       setState((current) => ({

@@ -8,15 +8,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PROMPT_TEMPLATE_MAX_LENGTH } from "@/lib/prompt-templates";
+import {
+  PROMPT_TEMPLATE_NAME_MAX_LENGTH,
+  PROMPT_TEMPLATE_PROMPT_MAX_LENGTH,
+  truncatePromptPreview,
+} from "@/lib/prompt-templates";
 import { usePromptTemplates } from "./use-prompt-templates";
 
 export function PromptTemplatesControl({
   prompt,
-  onApply,
+  onPromptChange,
 }: {
   prompt: string;
-  onApply: (prompt: string) => void;
+  onPromptChange: (prompt: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -34,8 +38,8 @@ export function PromptTemplatesControl({
     }
   }
 
-  function handleUse(templatePrompt: string) {
-    onApply(templatePrompt.slice(0, PROMPT_TEMPLATE_MAX_LENGTH));
+  function handleApply(templatePrompt: string) {
+    onPromptChange(templatePrompt.slice(0, PROMPT_TEMPLATE_PROMPT_MAX_LENGTH));
     setOpen(false);
   }
 
@@ -43,6 +47,7 @@ export function PromptTemplatesControl({
     <>
       <button
         type="button"
+        aria-label="Prompt templates"
         onClick={() => setOpen(true)}
         className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-muted-foreground hover:bg-[var(--pf-active)] hover:text-foreground"
       >
@@ -63,6 +68,7 @@ export function PromptTemplatesControl({
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Template name"
+                maxLength={PROMPT_TEMPLATE_NAME_MAX_LENGTH}
                 className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground shadow-none outline-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
               />
             </label>
@@ -111,7 +117,7 @@ export function PromptTemplatesControl({
                       <div className="flex shrink-0 items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => handleUse(template.prompt)}
+                          onClick={() => handleApply(template.prompt)}
                           className="pf-button-secondary h-8 px-2.5 text-[11px] font-semibold"
                         >
                           Use
@@ -134,13 +140,4 @@ export function PromptTemplatesControl({
       </Dialog>
     </>
   );
-}
-
-function truncatePromptPreview(prompt: string) {
-  const previewLength = 96;
-  const normalized = prompt.trim();
-  if (normalized.length <= previewLength) {
-    return normalized;
-  }
-  return `${normalized.slice(0, previewLength - 1)}…`;
 }

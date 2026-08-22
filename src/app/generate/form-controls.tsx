@@ -100,7 +100,7 @@ export function GenerateFormControls({
                 <Undo2 className="size-3" /> Undo
               </button>
             )}
-            <PromptTemplatesControl prompt={prompt} onApply={onPromptChange} />
+            <PromptTemplatesControl prompt={prompt} onPromptChange={onPromptChange} />
             <button
               type="button"
               onClick={onImprovePrompt}

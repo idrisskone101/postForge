@@ -22,11 +22,12 @@ globalThis.fetch = async () =>
 const markup = renderToStaticMarkup(
   <PromptTemplatesControl
     prompt="Handheld kitchen demo with window light"
-    onApply={() => {}}
+    onPromptChange={() => {}}
   />
 );
 
 assert.match(markup, /Templates/);
+assert.match(markup, /aria-label="Prompt templates"/);
 assert.doesNotMatch(markup, /Save prompt/, "dialog content stays closed in static render");
 
 globalThis.fetch = originalFetch;
@@ -36,10 +37,15 @@ const formControlsSource = readFileSync(
   "utf8"
 );
 assert.match(formControlsSource, /PromptTemplatesControl/);
+assert.match(formControlsSource, /onPromptChange={onPromptChange}/);
 assert.match(formControlsSource, /aria-label="Creative prompt"/);
 
 const controlSource = readFileSync(
   new URL("../../src/app/generate/prompt-templates-control.tsx", import.meta.url),
+  "utf8"
+);
+const hookSource = readFileSync(
+  new URL("../../src/app/generate/use-prompt-templates.ts", import.meta.url),
   "utf8"
 );
 assert.match(controlSource, /Prompt templates/);
@@ -50,3 +56,15 @@ assert.match(controlSource, /No templates yet\. Name this prompt and save it\./)
 assert.match(controlSource, /pf-button-primary/);
 assert.match(controlSource, /pf-button-secondary/);
 assert.match(controlSource, /Delete/);
+assert.match(controlSource, /aria-label="Prompt templates"/);
+assert.match(controlSource, /onPromptChange/);
+assert.match(controlSource, /Dialog/);
+assert.doesNotMatch(controlSource, /Popover/);
+assert.match(hookSource, /parsePromptTemplateRecords/);
+assert.match(hookSource, /PROMPT_TEMPLATE_FEATURE/);
+assert.match(hookSource, /fetchWorkspaceFeature/);
+assert.match(hookSource, /saveWorkspaceFeature/);
+assert.match(hookSource, /removeWorkspaceFeature/);
+assert.doesNotMatch(hookSource, /prompt-templates-client/);
+
+console.log("prompt templates control tests passed");
