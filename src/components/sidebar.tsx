@@ -48,7 +48,6 @@ export function Sidebar() {
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
-  const [desktopPreferenceReady, setDesktopPreferenceReady] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("PostForge");
   const [notificationPreferences, setNotificationPreferences] = useState({
     failures: false,
@@ -64,27 +63,13 @@ export function Sidebar() {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      setDesktopCollapsed(
-        readOptionalStorage("postforge-sidebar-collapsed") === "true"
-      );
-      setDesktopPreferenceReady(true);
+      const collapsed =
+        readOptionalStorage("postforge-sidebar-collapsed") === "true";
+      setDesktopCollapsed(collapsed);
+      applySidebarCollapsedDataset(collapsed);
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
-
-  useEffect(() => {
-    if (!desktopPreferenceReady) return;
-
-    writeOptionalStorage(
-      "postforge-sidebar-collapsed",
-      String(desktopCollapsed)
-    );
-    if (desktopCollapsed) {
-      document.documentElement.dataset.sidebarCollapsed = "true";
-    } else {
-      delete document.documentElement.dataset.sidebarCollapsed;
-    }
-  }, [desktopCollapsed, desktopPreferenceReady]);
 
   useEffect(() => {
     if (publicPolicyPage) return;
@@ -280,7 +265,12 @@ export function Sidebar() {
             <PostForgeBrand name={workspaceName} />
             <button
               type="button"
-              onClick={() => setDesktopCollapsed((current) => !current)}
+              onClick={() => {
+                const nextCollapsed = !desktopCollapsed;
+                setDesktopCollapsed(nextCollapsed);
+                writeOptionalStorage("postforge-sidebar-collapsed", String(nextCollapsed));
+                applySidebarCollapsedDataset(nextCollapsed);
+              }}
               aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -326,6 +316,14 @@ type WorkspaceNotificationCounts = {
   approvalsWaiting: number;
   latestFailedJobId?: string | null;
 };
+
+function applySidebarCollapsedDataset(collapsed: boolean) {
+  if (collapsed) {
+    document.documentElement.dataset.sidebarCollapsed = "true";
+  } else {
+    delete document.documentElement.dataset.sidebarCollapsed;
+  }
+}
 
 function PostForgeBrand({ name }: { name: string }) {
   return (
