@@ -74,3 +74,12 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 - Linear's official HTTP MCP is declared in `.cursor/mcp.json` at `https://mcp.linear.app/mcp`. Use that Streamable HTTP URL. Do not wrap it with `npx mcp-remote`; Cloud Agents do not support that transport.
 - Cloud Agents load Linear from the MCP dropdown on [cursor.com/agents](https://cursor.com/agents), not automatically from desktop MCP settings. Desktop OAuth and the Linear issue-delegation integration (`@Cursor` on issues) do not authorize Linear MCP tools inside a cloud VM.
 - If Linear shows `needsAuth`, authenticate it from that Cloud Agents MCP dropdown. Interactive OAuth cannot run inside the cloud VM. Re-auth from desktop Settings → MCP is not enough.
+
+### Chrome DevTools MCP
+
+- Chrome DevTools MCP is declared in `.cursor/mcp.json` for Lighthouse audits, performance traces, network inspection, and browser debugging. The config launches an isolated headless Chrome with sandbox flags suited to Cloud Agent VMs.
+- Cloud Agents must enable **chrome-devtools** from the MCP dropdown on [cursor.com/agents](https://cursor.com/agents), the same as Linear. The repo config alone does not attach it to a running agent session.
+- Google Chrome is preinstalled on the Cloud image. `scripts/cloud-agent-install.sh` pre-caches `chrome-devtools-mcp@latest` via `npx`. Verify with `bash scripts/verify-chrome-devtools-mcp.sh`.
+- Key tools for site-wide performance work: `lighthouse_audit`, `performance_start_trace`, `performance_stop_trace`, and `performance_analyze_insight`. Keep `categoryPerformance` enabled (default).
+- Example prompts once enabled: "Run a Lighthouse audit on http://localhost:3000" (with `pnpm build && pnpm start` running) or "Check the performance of https://example.com and suggest concrete improvements."
+- For local PostForge audits, start the production server first (`pnpm build && pnpm start`). Lighthouse and trace tools need a reachable URL; the dev server (`pnpm dev`) also works but production builds give more realistic scores.
