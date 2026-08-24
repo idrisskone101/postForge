@@ -3,7 +3,7 @@ import { SettingsPageClient } from "./settings-page-client";
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div className="px-5 py-8"><h1 className="text-[28px] font-semibold">Settings</h1></div>}>
+    <Suspense fallback={<div data-settings-pending="true" />}>
       <SettingsPageClient />
     </Suspense>
   );

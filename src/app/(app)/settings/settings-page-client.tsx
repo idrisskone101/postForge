@@ -149,7 +149,7 @@ export function SettingsPageClient() {
   }
 
   return (
-    <div className="grid min-h-[calc(100dvh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]">
+    <div data-settings-page="true" className="grid min-h-[calc(100dvh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]">
       <SettingsNavigation
         tab={tab}
         onSelect={selectTab}

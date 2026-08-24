@@ -551,6 +551,18 @@ body {
   box-sizing: border-box;
 }
 
+[data-spend-stats="true"] strong {
+  display: block;
+  margin-top: 0.75rem;
+  height: 28px;
+  overflow: hidden;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #18181b;
+}
+
 [data-spend-chart-slot="true"] {
   height: 276px;
   box-sizing: border-box;
@@ -583,6 +595,20 @@ body {
   font-size: 12px;
   line-height: 1rem;
   color: #52525b;
+}
+
+[data-settings-pending="true"],
+[data-settings-page="true"] {
+  height: 36rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.pf-empty-stage [data-empty-chips] {
+  height: 24px;
+  max-width: 16rem;
+  overflow: hidden;
+  font-size: 10px;
 }
 
 [data-jobs-board="true"] {
@@ -1211,9 +1237,12 @@ body {
   margin: 1rem 0 0;
   font-size: 20px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 25px;
   letter-spacing: -0.02em;
   color: #18181b;
+  height: 50px;
+  max-width: 20rem;
+  overflow: hidden;
 }
 
 .pf-empty-stage p {

@@ -181,7 +181,7 @@ export function CharactersPageClient({
           <p className="sr-only">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
           <p aria-hidden="true" data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts." />
           <Link href="/characters/new" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
-          <div className="mt-7 flex flex-wrap justify-center gap-2 text-[11px] text-muted-foreground"><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">36 attribute groups</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Prompt + JSON export</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Database-backed</span></div>
+          <div data-empty-chips="true" className="mt-7 flex flex-wrap justify-center gap-2 text-[11px] text-muted-foreground"><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">36 attribute groups</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Prompt + JSON export</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Database-backed</span></div>
         </section>
       ) : (
         <>
