@@ -1435,3 +1435,9 @@
     height: 4.5625rem !important;
   }
 }
+
+[data-generate-model-grid="true"] > button {
+  height: 8.125rem !important;
+  min-height: 8.125rem !important;
+  overflow: hidden !important;
+}

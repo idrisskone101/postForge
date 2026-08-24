@@ -153,7 +153,7 @@ export function CreateView() {
             value={idea}
             onChange={(event) => setIdea(event.target.value)}
             rows={3}
-            placeholder="Example: the small reminder habit that made my mornings calmer"
+            placeholder="A small morning habit"
             aria-label="What is the story about?"
             className={cn(INPUT, "mt-4 h-[5.125rem] resize-none py-2.5 leading-5")}
           />

@@ -82,7 +82,7 @@ export function ModelPicker({
       <div
         key={activeType}
         data-generate-model-grid="true"
-        className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2"
+        className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"
       >
         {visibleModels.map((model) => (
           <ModelCard
@@ -180,7 +180,7 @@ function ModelCard({
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        "group relative min-w-0 rounded-lg border bg-card p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+        "group relative h-[8.125rem] min-w-0 overflow-hidden rounded-lg border bg-card p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
         selected
           ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25 shadow-[var(--pf-shadow-2xs)]"
           : "border-border hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-2xs)]"

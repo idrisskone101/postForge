@@ -369,8 +369,10 @@ body {
 }
 
 [data-generate-model-grid="true"] > button {
-  min-height: 6.75rem;
+  height: 8.125rem;
+  min-height: 8.125rem;
   padding: 0.625rem;
+  overflow: hidden;
   border: 1px solid var(--pf-border);
   border-radius: 0.5rem;
   background: #fff;
