@@ -428,8 +428,30 @@ body {
   overflow: hidden;
 }
 
+[data-slideshow-home-body="true"] {
+  width: 100%;
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem 4rem;
+}
+
 [data-slideshow-create="true"] {
   min-height: 52rem;
+}
+
+[data-slideshow-create="true"] > div:first-child {
+  height: 2.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+[data-slideshow-create="true"] textarea {
+  display: block;
+  width: 100%;
+  height: 5.125rem;
+  box-sizing: border-box;
+  margin: 1rem 0 0;
 }
 
 @media (max-width: 767.98px) {

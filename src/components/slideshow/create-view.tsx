@@ -93,7 +93,7 @@ export function CreateView() {
 
   return (
     <div data-slideshow-create="true">
-      <div className="mb-4 flex items-center gap-1 rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
+      <div className="mb-4 flex h-10 items-center gap-1 overflow-hidden rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
         <button
           type="button"
           onClick={() => setMode("one-idea")}
@@ -145,7 +145,7 @@ export function CreateView() {
             rows={3}
             placeholder="Example: the small reminder habit that made my mornings calmer"
             aria-label="What is the story about?"
-            className={cn(INPUT, "mt-4 resize-none py-2.5 leading-5")}
+            className={cn(INPUT, "mt-4 h-[5.125rem] resize-none py-2.5 leading-5")}
           />
 
           <div className="mt-3 flex flex-wrap items-center gap-3">

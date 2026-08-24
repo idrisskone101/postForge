@@ -245,6 +245,8 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt-meta="true"\][\s\S]*?height:\s*3\.5rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-workspace-state\] p[\s\S]*?height:\s*10px/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-create="true"\][\s\S]*?height:\s*52rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-home-body="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-create="true"\] textarea/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /Suspense/);

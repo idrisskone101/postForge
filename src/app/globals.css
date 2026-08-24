@@ -1310,3 +1310,24 @@
     overflow: hidden !important;
   }
 }
+
+[data-slideshow-home-body="true"] {
+  width: 100% !important;
+  max-width: 1240px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 0 1rem 4rem !important;
+}
+
+[data-slideshow-create="true"] > div:first-child {
+  height: 2.5rem !important;
+  margin-bottom: 1rem !important;
+  overflow: hidden !important;
+}
+
+[data-slideshow-create="true"] textarea {
+  display: block !important;
+  width: 100% !important;
+  height: 5.125rem !important;
+  margin: 1rem 0 0 !important;
+}
