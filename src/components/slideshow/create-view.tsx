@@ -16,7 +16,6 @@ import { Switch } from "@/components/ui/switch";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
 
-import { CreateTemplateGallery } from "./create-template-gallery";
 import { VisualTile } from "./slide-preview";
 import {
   CARD,
@@ -28,6 +27,14 @@ import { useSlideshowHome } from "./slideshow-home-provider";
 
 const CreatorView = dynamic(() =>
   import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
+);
+
+const CreateTemplateGallery = dynamic(
+  () =>
+    import("./create-template-gallery").then((mod) => ({
+      default: mod.CreateTemplateGallery,
+    })),
+  { ssr: true },
 );
 
 export function CreateView() {

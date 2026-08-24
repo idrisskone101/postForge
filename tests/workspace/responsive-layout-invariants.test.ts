@@ -230,8 +230,12 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
 assert.match(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
-assert.match(appLayout, /FIRST_PAINT_CSS/);
+assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
 assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
+assert.ok(
+  appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
+  "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
+);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{height:29\.625rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]\{height:340px/);
