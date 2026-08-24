@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterPhoto } from "../../src/components/character-photo";
-import { parseImportedCharacterAttributes } from "../../src/app/characters/new/character-import";
+import { parseImportedCharacterAttributes } from "../../src/app/(app)/characters/new/character-import";
 import {
   buildCharacterImagePrompt,
   characterRecipeFingerprint,
@@ -10,7 +10,7 @@ import {
   DEFAULT_CHARACTER_ATTRIBUTES,
 } from "../../src/lib/character-attributes";
 
-const workbenchDir = new URL("../../src/app/characters/new/", import.meta.url);
+const workbenchDir = new URL("../../src/app/(app)/characters/new/", import.meta.url);
 const headerSource = readFileSync(
   new URL("character-builder-header.tsx", workbenchDir),
   "utf8"
@@ -36,7 +36,7 @@ const builderSource = [
   .map((file) => readFileSync(new URL(file, workbenchDir), "utf8"))
   .join("\n");
 const librarySource = readFileSync(
-  new URL("../../src/app/characters/characters-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/characters/characters-page-client.tsx", import.meta.url),
   "utf8"
 );
 const avatarRouteSource = readFileSync(

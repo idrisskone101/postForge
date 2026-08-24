@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { readIntegrationCallbackFeedback } from "../../src/app/settings/integration-callback";
+import { readIntegrationCallbackFeedback } from "../../src/app/(app)/settings/integration-callback";
 import {
   IntegrationsPanel,
   type IntegrationsWorkspace,
-} from "../../src/app/settings/integrations-panel";
-import { SettingsNavigation } from "../../src/app/settings/settings-page-client";
-import { SocialIntegrationCard } from "../../src/app/settings/social-integration-card";
+} from "../../src/app/(app)/settings/integrations-panel";
+import { SettingsNavigation } from "../../src/app/(app)/settings/settings-page-client";
+import { SocialIntegrationCard } from "../../src/app/(app)/settings/social-integration-card";
 import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
 
 const noOp = () => {};
@@ -235,7 +235,7 @@ function componentPropNames(source: string, exportName: string): string[] {
     .filter((part) => part.length > 0);
 }
 
-const settingsDir = new URL("../../src/app/settings/", import.meta.url);
+const settingsDir = new URL("../../src/app/(app)/settings/", import.meta.url);
 const panelSource = readFileSync(
   new URL("integrations-panel.tsx", settingsDir),
   "utf8"

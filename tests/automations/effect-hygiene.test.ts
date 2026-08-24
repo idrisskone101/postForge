@@ -7,14 +7,14 @@ function countUseEffect(source: string) {
 
 const builderHook = readFileSync(
   new URL(
-    "../../src/app/automations/new/use-automation-builder.ts",
+    "../../src/app/(app)/automations/new/use-automation-builder.ts",
     import.meta.url
   ),
   "utf8"
 );
 const resourcesHook = readFileSync(
   new URL(
-    "../../src/app/automations/new/use-automation-builder-resources.ts",
+    "../../src/app/(app)/automations/new/use-automation-builder-resources.ts",
     import.meta.url
   ),
   "utf8"

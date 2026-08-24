@@ -3,7 +3,7 @@ import {
   applyRefImageJobUpdate,
   getCloneStudioViewModel,
   mergeRefImagePollUpdates,
-} from "../../src/app/ugc-clone/clone-view-model";
+} from "../../src/app/(app)/ugc-clone/clone-view-model";
 import type { RefImageEntry, RefJobStatus } from "../../src/components/clone/types";
 
 const generating: RefImageEntry = {

@@ -14,15 +14,15 @@ function countUseEffects(source: string) {
 }
 
 const cloneFormHookSource = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-form.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-form.ts", import.meta.url),
   "utf8"
 );
 const cloneIdentityHookSource = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-identity.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-identity.ts", import.meta.url),
   "utf8"
 );
 const cloneRefImagesHookSource = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-ref-images.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-ref-images.ts", import.meta.url),
   "utf8"
 );
 

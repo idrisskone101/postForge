@@ -28,7 +28,7 @@ const editorWorkspaceSource = readFileSync(
   "utf8",
 );
 const pageSource = readFileSync(
-  new URL("../../src/app/slideshow/page.tsx", import.meta.url),
+  new URL("../../src/app/(app)/slideshow/page.tsx", import.meta.url),
   "utf8",
 );
 const previewSource = readFileSync(

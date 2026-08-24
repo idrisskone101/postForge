@@ -1,9 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -11,18 +6,14 @@ import {
   workspaceNavigationGroups,
   type WorkspaceNavigationItem,
 } from "@/lib/workspace-navigation";
-import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
-export function WorkspaceShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  if (isPublicPolicyPath(pathname)) {
-    return (
-      <div id="workspace-shell" className="min-h-dvh min-w-0 bg-[var(--pf-canvas)]">
-        {children}
-      </div>
-    );
-  }
-
+export function WorkspaceShell({
+  children,
+  pathname,
+}: {
+  children: React.ReactNode;
+  pathname: string;
+}) {
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
   const hideHeader = routeOwnsHeader(pathname);
@@ -43,24 +34,6 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       {children}
     </main>
   );
-}
-
-
-export function WorkspaceHeaderAccessory({ children }: { children: ReactNode }) {
-  const [target, setTarget] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const frameId = window.requestAnimationFrame(() => {
-      setTarget(document.getElementById("workspace-header-accessory"));
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      setTarget(null);
-    };
-  }, []);
-
-  return target ? createPortal(children, target) : null;
 }
 
 function routeOwnsHeader(pathname: string) {
@@ -102,7 +75,7 @@ export function WorkspaceRouteHeader({
           <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)] sm:text-[30px]">
             {activeItem.label}
           </h1>
-          <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-[var(--pf-muted)]">
+          <p className="mt-1.5 line-clamp-1 max-w-[14rem] text-[10px] leading-3 text-[var(--pf-muted)]">
             {activeItem.description}
           </p>
         </div>

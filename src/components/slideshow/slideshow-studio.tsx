@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 
-import { WorkspaceHeaderAccessory } from "@/components/workspace-shell";
+import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { cn } from "@/lib/utils";
 import { fetchPlatformCollections } from "@/lib/collections-client";
 import { fetchModelsCatalog } from "@/lib/ai/models-client";

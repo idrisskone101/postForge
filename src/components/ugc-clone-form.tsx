@@ -11,7 +11,7 @@ import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
 import { CloneIdentityStatusPanel } from "@/components/clone/identity-status";
 import { CloneSourceStep } from "@/components/clone/source-step";
 import type { RefImageEntry } from "@/components/clone/types";
-import { useCloneForm } from "@/app/ugc-clone/use-clone-form";
+import { useCloneForm } from "@/app/(app)/ugc-clone/use-clone-form";
 
 export type { RefImageEntry };
 

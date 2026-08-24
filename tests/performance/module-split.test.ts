@@ -28,7 +28,7 @@ function lineCount(relativePath: string) {
 }
 
 const files = [
-  ...listFiles("src/app/performance/"),
+  ...listFiles("src/app/(app)/performance/"),
   ...listFiles("src/lib/performance/"),
 ];
 
@@ -42,19 +42,19 @@ assert.ok(
   "src/lib/performance must not grow an index barrel"
 );
 assert.ok(
-  !existsSync(new URL("src/app/performance/index.ts", repoRoot)),
-  "src/app/performance must not grow an index barrel"
+  !existsSync(new URL("src/app/(app)/performance/index.ts", repoRoot)),
+  "src/app/(app)/performance must not grow an index barrel"
 );
 const panelSource = readFileSync(
-  new URL("src/app/performance/performance-source-panel.tsx", repoRoot),
+  new URL("src/app/(app)/performance/performance-source-panel.tsx", repoRoot),
   "utf8"
 );
 const pageSource = readFileSync(
-  new URL("src/app/performance/performance-page-client.tsx", repoRoot),
+  new URL("src/app/(app)/performance/performance-page-client.tsx", repoRoot),
   "utf8"
 );
 const hookSource = readFileSync(
-  new URL("src/app/performance/use-performance-workspace.ts", repoRoot),
+  new URL("src/app/(app)/performance/use-performance-workspace.ts", repoRoot),
   "utf8"
 );
 const allowlist = JSON.parse(

@@ -88,7 +88,7 @@ export function HomeStartWork() {
   return <a href={startActions[0]?.href}>start</a>;
 }
 `;
-const startWork = reorderMainExport(twoExports, "src/app/home-start-work.tsx");
+const startWork = reorderMainExport(twoExports, "src/app/(app)/home-start-work.tsx");
 assert.ok(startWork);
 assert.match(
   startWork,

@@ -8,7 +8,7 @@ import {
   PREVIEW_ZOOM_MIN,
   PREVIEW_ZOOM_STEP,
   selectAutomationPreviewAsset,
-} from "../../src/app/automations/new/automation-builder-preview";
+} from "../../src/app/(app)/automations/new/automation-builder-preview";
 import { automationsBuilderSource } from "./builder-source";
 
 assert.equal(clampPreviewZoom(PREVIEW_ZOOM_MIN - 100), PREVIEW_ZOOM_MIN);

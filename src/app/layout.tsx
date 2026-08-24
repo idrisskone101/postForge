@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar";
-import { WorkspaceShell } from "@/components/workspace-shell";
 
 export default function RootLayout({
   children,
@@ -33,10 +31,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 -->`,
           }}
         />
-        <div className="min-h-dvh">
-          <Sidebar />
-          <WorkspaceShell>{children}</WorkspaceShell>
-        </div>
+        {children}
       </body>
     </html>
   );
@@ -47,6 +42,7 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "optional",
+  preload: false,
 });
 
 const geistMono = Geist_Mono({

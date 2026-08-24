@@ -13,10 +13,10 @@ function lineCount(relativePath: string) {
 }
 
 const files = [
-  "src/app/home-cockpit.tsx",
-  "src/app/home-glance-stats.tsx",
-  "src/app/home-start-work.tsx",
-  "src/app/home-review-queue.tsx",
+  "src/app/(app)/home-cockpit.tsx",
+  "src/app/(app)/home-glance-stats.tsx",
+  "src/app/(app)/home-start-work.tsx",
+  "src/app/(app)/home-review-queue.tsx",
 ];
 
 for (const file of files) {
@@ -25,23 +25,24 @@ for (const file of files) {
 }
 
 assert.ok(
-  lineCount("src/app/home-cockpit.tsx") < 496,
+  lineCount("src/app/(app)/home-cockpit.tsx") < 496,
   "home-cockpit.tsx must shrink"
 );
 assert.equal(existsSync(new URL("src/app/home/index.ts", repoRoot)), false);
 assert.equal(existsSync(new URL("src/app/index.ts", repoRoot)), false);
 
-const reviewQueue = readFileSync(new URL("src/app/home-review-queue.tsx", repoRoot), "utf8");
+const reviewQueue = readFileSync(new URL("src/app/(app)/home-review-queue.tsx", repoRoot), "utf8");
 assert.doesNotMatch(reviewQueue, /useRouter/);
 assert.doesNotMatch(reviewQueue, /rules-of-hooks/);
 assert.match(reviewQueue, /onReviewSaved\?/);
 
-const homePage = readFileSync(new URL("src/app/page.tsx", repoRoot), "utf8");
+const homePage = readFileSync(new URL("src/app/(app)/page.tsx", repoRoot), "utf8");
 assert.match(homePage, /<HomeCockpit/);
 assert.doesNotMatch(homePage, /HomeCockpitClient/);
-assert.match(homePage, /<Suspense fallback=\{<HomeLoading/);
+assert.match(homePage, /export default async function HomePage/);
+assert.doesNotMatch(homePage, /Suspense/);
 
-const homeCockpit = readFileSync(new URL("src/app/home-cockpit.tsx", repoRoot), "utf8");
+const homeCockpit = readFileSync(new URL("src/app/(app)/home-cockpit.tsx", repoRoot), "utf8");
 assert.match(homeCockpit, /<Link href="\/ugc-clone" prefetch=\{false\}/);
 
 console.log(

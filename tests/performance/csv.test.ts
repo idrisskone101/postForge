@@ -181,7 +181,7 @@ function listFiles(relativeDir: string, files: string[] = []) {
 }
 
 const performanceSource = [
-  ...listFiles("src/app/performance/"),
+  ...listFiles("src/app/(app)/performance/"),
   ...listFiles("src/lib/performance/"),
 ]
   .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))

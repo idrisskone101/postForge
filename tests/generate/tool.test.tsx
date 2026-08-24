@@ -7,7 +7,7 @@ import { getAllModels } from "../../src/lib/ai/models";
 import type {
   GenerateFormActions,
   GenerateFormModel,
-} from "../../src/app/generate/form-types";
+} from "../../src/app/(app)/generate/form-types";
 
 const models = getAllModels();
 const selectedModel = models.find((model) => model.type === "image") ?? models[0];
@@ -93,9 +93,9 @@ assert.match(videoMarkup, /Loading recent outputs…/);
 
 const formSource = [
   "../../src/components/generation-form.tsx",
-  "../../src/app/generate/form-continuity-section.tsx",
-  "../../src/app/generate/use-generation-form.ts",
-  "../../src/app/generate/generation-requests.ts",
+  "../../src/app/(app)/generate/form-continuity-section.tsx",
+  "../../src/app/(app)/generate/use-generation-form.ts",
+  "../../src/app/(app)/generate/generation-requests.ts",
 ]
   .map((relativePath) =>
     readFileSync(new URL(relativePath, import.meta.url), "utf8")

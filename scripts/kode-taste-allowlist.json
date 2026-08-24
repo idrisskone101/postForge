@@ -1,7 +1,7 @@
 {
   "fileLayout": [],
   "propBags": [
-    "src/app/automations/publish-review-dialog.tsx",
+    "src/app/(app)/automations/publish-review-dialog.tsx",
     "src/components/avatar-picker-cards.tsx",
     "src/components/collection-reference-picker.tsx",
     "src/components/gallery/delete-dialog.tsx",
@@ -22,25 +22,25 @@
     "src/components/workspace-state.tsx"
   ],
   "useState": [
-    "src/app/automations/new/slideshow-automation-builder.tsx",
-    "src/app/automations/new/use-automation-builder-resources.ts",
-    "src/app/automations/new/use-automation-builder.ts",
-    "src/app/automations/use-automations-workspace.ts",
-    "src/app/characters/characters-page-client.tsx",
-    "src/app/characters/new/use-character-builder.ts",
-    "src/app/collections/collections-page-client.tsx",
-    "src/app/costs/spend-page-content.tsx",
-    "src/app/gallery/use-gallery-workspace.ts",
-    "src/app/generate/use-generation-form.ts",
-    "src/app/generate/use-generation-vibe.ts",
-    "src/app/generate/use-job-detail.ts",
-    "src/app/generate/use-prompt-improvement.ts",
-    "src/app/performance/use-performance-workspace.ts",
-    "src/app/settings/models-panel.tsx",
-    "src/app/settings/settings-page-client.tsx",
-    "src/app/ugc-clone/use-clone-form.ts",
-    "src/app/ugc-clone/use-clone-identity.ts",
-    "src/app/ugc-inspiration/use-inspiration-workspace.ts",
+    "src/app/(app)/automations/new/slideshow-automation-builder.tsx",
+    "src/app/(app)/automations/new/use-automation-builder-resources.ts",
+    "src/app/(app)/automations/new/use-automation-builder.ts",
+    "src/app/(app)/automations/use-automations-workspace.ts",
+    "src/app/(app)/characters/characters-page-client.tsx",
+    "src/app/(app)/characters/new/use-character-builder.ts",
+    "src/app/(app)/collections/collections-page-client.tsx",
+    "src/app/(app)/costs/spend-page-content.tsx",
+    "src/app/(app)/gallery/use-gallery-workspace.ts",
+    "src/app/(app)/generate/use-generation-form.ts",
+    "src/app/(app)/generate/use-generation-vibe.ts",
+    "src/app/(app)/generate/use-job-detail.ts",
+    "src/app/(app)/generate/use-prompt-improvement.ts",
+    "src/app/(app)/performance/use-performance-workspace.ts",
+    "src/app/(app)/settings/models-panel.tsx",
+    "src/app/(app)/settings/settings-page-client.tsx",
+    "src/app/(app)/ugc-clone/use-clone-form.ts",
+    "src/app/(app)/ugc-clone/use-clone-identity.ts",
+    "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts",
     "src/components/avatar-picker-generate.tsx",
     "src/components/avatar-picker-import-mode.tsx",
     "src/components/avatar-picker.tsx",
@@ -56,7 +56,7 @@
     "src/components/video-trimmer.tsx"
   ],
   "useEffect": [
-    "src/app/ugc-inspiration/use-inspiration-workspace.ts"
+    "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "innerHtml": [
     "src/app/layout.tsx"

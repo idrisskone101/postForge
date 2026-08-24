@@ -35,7 +35,7 @@ const files = [
   "src/lib/ugc/generate-clone.ts",
   ...listFiles("src/components/clone/"),
   ...listFiles("src/components/clone-output/"),
-  ...listFiles("src/app/ugc-clone/"),
+  ...listFiles("src/app/(app)/ugc-clone/"),
   "src/components/tiktok-saved-sources.tsx",
   "src/components/video-trim-range.ts",
   "src/components/video-trim-range-fields.tsx",

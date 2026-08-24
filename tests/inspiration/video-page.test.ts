@@ -24,19 +24,19 @@ const accountsRoute = readFileSync(
   "utf8"
 );
 const pageSource = readFileSync(
-  new URL("../../src/app/ugc-inspiration/page.tsx", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/page.tsx", import.meta.url),
   "utf8"
 );
 const workspaceSource = readFileSync(
-  new URL("../../src/app/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
   "utf8"
 );
 const accountListHook = readFileSync(
-  new URL("../../src/app/ugc-inspiration/use-inspiration-account-list.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/use-inspiration-account-list.ts", import.meta.url),
   "utf8"
 );
 const mutationsSource = readFileSync(
-  new URL("../../src/app/ugc-inspiration/inspiration-mutations.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/inspiration-mutations.ts", import.meta.url),
   "utf8"
 );
 const serviceSource = readFileSync(

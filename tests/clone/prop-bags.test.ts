@@ -74,7 +74,7 @@ const files = [
   "src/components/clone-output-review-detail.tsx",
   ...listTsx("src/components/clone/"),
   ...listTsx("src/components/clone-output/"),
-  ...listTsx("src/app/ugc-clone/"),
+  ...listTsx("src/app/(app)/ugc-clone/"),
 ];
 
 for (const file of files) {

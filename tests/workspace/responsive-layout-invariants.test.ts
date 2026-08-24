@@ -9,39 +9,40 @@ const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
 const layout = source("src/app/layout.tsx");
+const appLayout = source("src/app/(app)/layout.tsx");
 const globalStyles = source("src/app/globals.css");
 const generationStudio = source("src/components/generation-form.tsx");
-const generationEditor = source("src/app/generate/[id]/page.tsx");
+const generationEditor = source("src/app/(app)/generate/[id]/page.tsx");
 const cloneStudio = source("src/components/ugc-clone-form.tsx");
 const cloneReferenceReview = source("src/components/clone/reference-review.tsx");
-const gallery = source("src/app/gallery/gallery-page-client.tsx");
-const collections = source("src/app/collections/collections-page-client.tsx");
-const characters = source("src/app/characters/characters-page-client.tsx");
+const gallery = source("src/app/(app)/gallery/gallery-page-client.tsx");
+const collections = source("src/app/(app)/collections/collections-page-client.tsx");
+const characters = source("src/app/(app)/characters/characters-page-client.tsx");
 const characterBuilder = source(
-  "src/app/characters/new/character-builder-client.tsx"
+  "src/app/(app)/characters/new/character-builder-client.tsx"
 );
-const performance = source("src/app/performance/performance-page-client.tsx");
-const settings = source("src/app/settings/settings-page-client.tsx");
-const automations = source("src/app/automations/automations-page-client.tsx");
+const performance = source("src/app/(app)/performance/performance-page-client.tsx");
+const settings = source("src/app/(app)/settings/settings-page-client.tsx");
+const automations = source("src/app/(app)/automations/automations-page-client.tsx");
 const automationBuilder = source(
-  "src/app/automations/new/automation-builder-client.tsx"
+  "src/app/(app)/automations/new/automation-builder-client.tsx"
 );
 const alertDialog = source("src/components/ui/alert-dialog.tsx");
 const dialog = source("src/components/ui/dialog.tsx");
-const homeLoading = source("src/app/loading.tsx");
-const inspirationLoading = source("src/app/ugc-inspiration/loading.tsx");
-const galleryLoading = source("src/app/gallery/loading.tsx");
-const spendLoading = source("src/app/costs/loading.tsx");
-const generationLoading = source("src/app/generate/loading.tsx");
-const cloneLoading = source("src/app/ugc-clone/loading.tsx");
-const clonePage = source("src/app/ugc-clone/page.tsx");
-const cloneDetailPage = source("src/app/ugc-clone/[id]/page.tsx");
-const generationDetailLoading = source("src/app/generate/[id]/loading.tsx");
-const automationBuilderPage = source("src/app/automations/new/page.tsx");
-const characterBuilderPage = source("src/app/characters/new/page.tsx");
-const inspirationPage = source("src/app/ugc-inspiration/page.tsx");
+const homeLoading = source("src/app/(app)/home-loading.tsx");
+const inspirationLoading = source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx");
+const galleryLoading = source("src/app/(app)/gallery/gallery-page-client.tsx");
+const spendLoading = source("src/app/(app)/costs/spend-page-content.tsx");
+const generationLoading = source("src/app/(app)/generate/form-controls.tsx");
+const cloneLoading = source("src/app/(app)/ugc-clone/page.tsx");
+const clonePage = source("src/app/(app)/ugc-clone/page.tsx");
+const cloneDetailPage = source("src/app/(app)/ugc-clone/[id]/page.tsx");
+const generationDetailLoading = source("src/app/(app)/generate/[id]/page.tsx");
+const automationBuilderPage = source("src/app/(app)/automations/new/page.tsx");
+const characterBuilderPage = source("src/app/(app)/characters/new/page.tsx");
+const inspirationPage = source("src/app/(app)/ugc-inspiration/page.tsx");
 const inspiration = source(
-  "src/app/ugc-inspiration/inspiration-page-client.tsx"
+  "src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"
 );
 const tiktokInput = source("src/components/tiktok-input.tsx");
 const cloneQueue = source("src/components/ugc-clone-queue.tsx");
@@ -50,11 +51,11 @@ const avatarPicker = source("src/components/avatar-picker.tsx");
 const avatarPickerImport = source("src/components/avatar-picker-import.tsx");
 const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx");
 const galleryGrid = source("src/components/gallery-grid.tsx");
-const home = source("src/app/home-cockpit.tsx");
+const home = source("src/app/(app)/home-cockpit.tsx");
 
 const routeSurfaces = [
-  source("src/app/home-cockpit.tsx"),
-  source("src/app/ugc-inspiration/inspiration-page-client.tsx"),
+  source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"),
   cloneStudio,
   source("src/components/clone-output-review-detail.tsx"),
   gallery,
@@ -62,7 +63,7 @@ const routeSurfaces = [
   automations,
   automationBuilder,
   performance,
-  source("src/app/costs/costs-page-client.tsx"),
+  source("src/app/(app)/costs/costs-page-client.tsx"),
   generationStudio,
   generationEditor,
   collections,
@@ -72,7 +73,8 @@ const routeSurfaces = [
 ].join("\n");
 
 // One responsive shell owns document overflow and every route inherits it.
-assert.match(layout, /<WorkspaceShell>\{children\}<\/WorkspaceShell>/);
+assert.match(appLayout, /<WorkspaceShell pathname=\{pathname\}>\{children\}<\/WorkspaceShell>/);
+assert.doesNotMatch(layout, /WorkspaceShell|Sidebar/);
 assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);
 assert.match(globalStyles, /\.pf-content-viewport\s*\{[\s\S]*?100dvh/);
@@ -156,19 +158,18 @@ assert.match(globalStyles, /safe-area-inset-top/);
 assert.match(globalStyles, /\.pf-safe-dialog-viewport\s*\{/);
 
 // Loading and failure states must not widen their containing cards.
-assert.match(generationEditor, /h-\[560px\] w-\[315px\] max-w-full/);
+assert.match(generationEditor, /max-w-md/);
+assert.match(generationEditor, /max-w-full/);
 assert.match(routeSurfaces, /\[overflow-wrap:anywhere\]/);
 
 // Loading views reflow inside their cards instead of relying on shell clipping.
-assert.match(inspirationLoading, /w-\[28rem\] max-w-full/);
-assert.match(generationLoading, /w-\[282px\] max-w-full/);
-assert.match(generationLoading, /mt-3 flex flex-wrap gap-2/);
-assert.match(homeLoading, /w-72 max-w-full/);
-assert.match(galleryLoading, /flex flex-wrap gap-2/);
-assert.match(spendLoading, /w-72 max-w-full/);
-assert.match(spendLoading, /flex flex-wrap gap-2/);
-assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
 assert.match(inspirationLoading, /max-w-\[1280px\]/);
+assert.match(generationLoading, /mt-3 flex flex-wrap gap-1\.5/);
+assert.match(homeLoading, /w-72 max-w-full/);
+assert.match(galleryLoading, /flex-wrap/);
+assert.match(spendLoading, /lg:w-72/);
+assert.match(spendLoading, /flex flex-wrap items-center gap-2/);
+assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
 assert.match(inspirationLoading, /px-4 py-5[^"\n]*lg:py-7/);
 assert.match(cloneLoading, /max-w-\[1280px\][^"\n]*px-4 py-6[^"\n]*lg:py-7/);
 

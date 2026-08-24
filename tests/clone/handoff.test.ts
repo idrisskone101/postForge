@@ -8,7 +8,7 @@ import {
   savedSourceMatchesHandoffUrl,
   tikTokVideoIdFromUrl,
 } from "../../src/lib/ugc-clone-handoff";
-import { cloneHandoffAfterPreselect } from "../../src/app/ugc-clone/clone-form-models";
+import { cloneHandoffAfterPreselect } from "../../src/app/(app)/ugc-clone/clone-form-models";
 import {
   buildCloneOutputHandoffUrl,
   handoffCloneOutput,
@@ -16,15 +16,15 @@ import {
 } from "../../src/lib/clone-output-actions";
 
 const cloneFormHookSource = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-form.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-form.ts", import.meta.url),
   "utf8"
 );
 const cloneRefImagesSource = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-ref-images.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-ref-images.ts", import.meta.url),
   "utf8"
 );
 const cloneRequestsSource = readFileSync(
-  new URL("../../src/app/ugc-clone/clone-requests.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/clone-requests.ts", import.meta.url),
   "utf8"
 );
 const cloneRouteSource = readFileSync(

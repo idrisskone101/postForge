@@ -30,7 +30,7 @@ function lineCount(relativePath: string) {
 const files = [
   "src/components/gallery-grid.tsx",
   ...listFiles("src/components/gallery/"),
-  ...listFiles("src/app/gallery/"),
+  ...listFiles("src/app/(app)/gallery/"),
 ];
 
 for (const file of files) {
@@ -46,7 +46,7 @@ assert.ok(
   "gallery-grid.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/gallery/gallery-page-client.tsx") < 933,
+  lineCount("src/app/(app)/gallery/gallery-page-client.tsx") < 933,
   "gallery-page-client.tsx must shrink"
 );
 

@@ -5,22 +5,22 @@ import { useRouter } from "next/navigation";
 import { WorkspaceState } from "@/components/workspace-state";
 import { userErrorMessage } from "@/lib/user-error-message";
 import { cn } from "@/lib/utils";
-import { GenerateFormControls } from "@/app/generate/form-controls";
-import { GenerateIdentitySection } from "@/app/generate/form-identity-section";
-import { buildGenerateFormView } from "@/app/generate/form-session";
-import { GenerateFormSubmitBars } from "@/app/generate/form-submit-bars";
+import { GenerateFormControls } from "@/app/(app)/generate/form-controls";
+import { GenerateIdentitySection } from "@/app/(app)/generate/form-identity-section";
+import { buildGenerateFormView } from "@/app/(app)/generate/form-session";
+import { GenerateFormSubmitBars } from "@/app/(app)/generate/form-submit-bars";
 import type {
   GenerateFormActions,
   GenerateFormModel,
   GenerationFormProps,
-} from "@/app/generate/form-types";
-import { getGenerateFormViewModel } from "@/app/generate/form-view-model";
+} from "@/app/(app)/generate/form-types";
+import { getGenerateFormViewModel } from "@/app/(app)/generate/form-view-model";
 import {
   postImageGeneration,
   postSwapGeneration,
   postVideoGeneration,
-} from "@/app/generate/generation-requests";
-import { useGenerationForm } from "@/app/generate/use-generation-form";
+} from "@/app/(app)/generate/generation-requests";
+import { useGenerationForm } from "@/app/(app)/generate/use-generation-form";
 
 export function GenerationForm({ models }: GenerationFormProps) {
   const router = useRouter();

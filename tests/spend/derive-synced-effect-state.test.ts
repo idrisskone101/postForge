@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const costsPageClient = readFileSync(
-  new URL("../../src/app/costs/costs-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/costs/costs-page-client.tsx", import.meta.url),
   "utf8"
 );
 

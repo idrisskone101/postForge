@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const costsDir = path.join(repoRoot, "src/app/costs");
+const costsDir = path.join(repoRoot, "src/app/(app)/costs");
 const pageSource = readFileSync(path.join(costsDir, "page.tsx"), "utf8");
 const trackerSource = readFileSync(path.join(repoRoot, "src/lib/costs/tracker.ts"), "utf8");
 const clientSource = readdirSync(costsDir)

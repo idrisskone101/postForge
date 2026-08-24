@@ -27,7 +27,7 @@ function lineCount(relativePath: string) {
     : text.split("\n").length;
 }
 
-const files = listFiles("src/app/automations/");
+const files = listFiles("src/app/(app)/automations/");
 
 assert.equal(
   files.some((file) => file.endsWith("/index.ts") || file.endsWith("/index.tsx")),
@@ -41,37 +41,37 @@ for (const file of files) {
 }
 
 assert.ok(
-  lineCount("src/app/automations/automations-page-client.tsx") < 2030,
+  lineCount("src/app/(app)/automations/automations-page-client.tsx") < 2030,
   "automations-page-client.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/automations/new/automation-builder-client.tsx") < 1372,
+  lineCount("src/app/(app)/automations/new/automation-builder-client.tsx") < 1372,
   "automation-builder-client.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/automations/new/slideshow-automation-builder.tsx") <= CAP,
+  lineCount("src/app/(app)/automations/new/slideshow-automation-builder.tsx") <= CAP,
   "slideshow-automation-builder.tsx must stay under the cap"
 );
 
 assert.ok(
-  files.includes("src/app/automations/video-automation-list.tsx"),
+  files.includes("src/app/(app)/automations/video-automation-list.tsx"),
   "JSON video automations stay a separate list"
 );
 assert.ok(
-  files.includes("src/app/automations/slideshow-automation-list.tsx"),
+  files.includes("src/app/(app)/automations/slideshow-automation-list.tsx"),
   "Prisma slideshow automations stay a separate list"
 );
 assert.ok(
-  files.includes("src/app/automations/new/automation-builder-client.tsx"),
+  files.includes("src/app/(app)/automations/new/automation-builder-client.tsx"),
   "JSON video automations keep their builder"
 );
 assert.ok(
-  files.includes("src/app/automations/new/slideshow-automation-builder.tsx"),
+  files.includes("src/app/(app)/automations/new/slideshow-automation-builder.tsx"),
   "Prisma slideshow automations keep a separate builder"
 );
 
 const clientSource = readFileSync(
-  new URL("src/app/automations/new/automation-builder-client.tsx", repoRoot),
+  new URL("src/app/(app)/automations/new/automation-builder-client.tsx", repoRoot),
   "utf8"
 );
 assert.doesNotMatch(
@@ -113,7 +113,7 @@ function exportedComponentPropCount(source: string, exportName: string) {
     .filter((part) => part.length > 0).length;
 }
 
-const builderDir = "src/app/automations/new/";
+const builderDir = "src/app/(app)/automations/new/";
 const namedComponents: Array<[string, string, number]> = [
   ["playbook-picker.tsx", "PlaybookPicker", 1],
   ["playbook-card.tsx", "PlaybookCard", 2],
@@ -134,18 +134,18 @@ for (const [file, exportName, expected] of namedComponents) {
 }
 
 const pickerModel = readFileSync(
-  new URL("src/app/automations/new/playbook-model.ts", repoRoot),
+  new URL("src/app/(app)/automations/new/playbook-model.ts", repoRoot),
   "utf8"
 );
 assert.match(pickerModel, /export type PlaybookPickerState/);
 const destinationSource = readFileSync(
-  new URL("src/app/automations/new/destination-selector.tsx", repoRoot),
+  new URL("src/app/(app)/automations/new/destination-selector.tsx", repoRoot),
   "utf8"
 );
 assert.match(destinationSource, /export type DestinationSelectorState/);
 assert.match(destinationSource, /selector: DestinationSelectorState/);
 
-for (const file of files.filter((path) => path.startsWith("src/app/automations/new/"))) {
+for (const file of files.filter((path) => path.startsWith("src/app/(app)/automations/new/"))) {
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   assert.doesNotMatch(source, /createContext/, `${file} must not add React Context`);
   for (const match of source.matchAll(/export function ([A-Z][A-Za-z0-9]*)\(/g)) {
