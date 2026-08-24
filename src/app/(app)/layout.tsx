@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import "../dashboard-critical.css";
 
 export default async function AppLayout({
   children,

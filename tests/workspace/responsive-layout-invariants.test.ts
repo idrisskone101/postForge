@@ -228,7 +228,7 @@ assert.match(generationEditor, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
-assert.match(appLayout, /dashboard-critical\.css/);
+assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
 assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
 assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
@@ -252,6 +252,12 @@ assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gall
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-filters="true"\]\{display:grid/);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-generate-form="true"\]\{display:grid;gap:1rem\}/,
+);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
 assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
 assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
@@ -298,7 +304,10 @@ assert.doesNotMatch(layout, /next\/font/);
 assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
 assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
 assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
-assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs"/);
+assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
+assert.match(pkg, /"build:first-paint-css": "node scripts\/build-first-paint-css\.mjs"/);
 assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/);
+assert.match(source("scripts/build-first-paint-css.mjs"), /dashboard-critical\.css/);
+assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
 
 console.log("responsive layout invariant tests passed");
