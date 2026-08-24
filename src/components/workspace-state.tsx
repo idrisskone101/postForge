@@ -72,7 +72,10 @@ export function WorkspaceState({
         {description}
       </p>
       {(action || secondaryAction) && (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <div
+          data-workspace-state-actions="true"
+          className="mt-5 flex flex-nowrap items-center justify-center gap-2"
+        >
           {action && <StateActionControl action={action} primary />}
           {secondaryAction && <StateActionControl action={secondaryAction} />}
         </div>

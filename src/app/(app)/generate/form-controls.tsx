@@ -134,7 +134,7 @@ export function GenerateFormControls({
           value={prompt}
           maxLength={1500}
           onChange={(event) => onPromptChange(event.target.value.slice(0, 1500))}
-          className="min-h-[118px] resize-none rounded-lg border-border bg-card px-3 py-3 text-[12px] leading-5 text-foreground shadow-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
+          className="field-sizing-fixed min-h-[118px] h-[118px] resize-none rounded-lg border-border bg-card px-3 py-3 text-[12px] leading-5 text-foreground shadow-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
         />
         <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
           <span>{prompt.length}/1,500</span>

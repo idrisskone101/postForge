@@ -306,8 +306,11 @@ body {
 [data-generate-prompt="true"] textarea {
   display: block;
   width: 100%;
+  height: 118px;
   min-height: 118px;
   margin: 0;
+  field-sizing: fixed;
+  resize: none;
   border: 1px solid var(--pf-border);
   border-radius: 0.5rem;
 }
@@ -418,6 +421,17 @@ body {
   white-space: nowrap;
 }
 
+[data-workspace-state-actions="true"] {
+  display: flex;
+  height: 2.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  overflow: hidden;
+}
+
 [data-character-workbench-header="true"] {
   display: flex;
   flex-direction: column;
@@ -482,6 +496,11 @@ body {
   min-height: 620px;
   padding: 1.25rem;
   background: #09090b;
+}
+
+[data-character-preview-stage="true"] > div:first-child {
+  height: 5.25rem;
+  overflow: hidden;
 }
 
 [data-character-preview-stage="true"] > div:nth-child(2) {
