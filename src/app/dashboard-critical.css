@@ -119,6 +119,31 @@ body {
   padding-top: 1.75rem;
 }
 
+.pf-content-viewport header > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pf-content-viewport header .pf-button-primary {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+#workspace-header-grid > div:first-child {
+  min-width: 0;
+}
+
+#workspace-mobile-bar > a:last-of-type {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-left: auto;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--pf-orange);
+  color: #fff;
+}
+
 .pf-button-primary {
   display: inline-flex;
   min-height: 2.375rem;
