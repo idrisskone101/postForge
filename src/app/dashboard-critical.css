@@ -142,7 +142,6 @@ body {
 #workspace-header-grid h1,
 .pf-content-viewport header h1 {
   margin: 0;
-  width: 12rem;
   max-width: 12rem;
   font-weight: 600;
   line-height: 1.1;
@@ -634,7 +633,7 @@ body {
 [data-jobs-empty="true"] h2 {
   margin: 0.75rem 0 0;
   height: 19px;
-  max-width: 12rem;
+  max-width: 8rem;
   overflow: hidden;
   font-size: 15px;
   line-height: 19px;
@@ -1361,6 +1360,17 @@ body {
   height: 4.5rem;
   margin-top: 1.75rem;
   overflow: hidden;
+}
+
+.pf-empty-stage [data-empty-steps="true"] p,
+.pf-empty-stage [data-empty-steps="true"] b {
+  max-width: 8rem;
+  height: 10px;
+  margin: 0;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .pf-empty-stage [data-empty-note="true"] {

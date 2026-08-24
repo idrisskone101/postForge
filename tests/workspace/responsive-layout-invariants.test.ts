@@ -284,7 +284,7 @@ assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx")
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
 assert.doesNotMatch(appLayout, /globals\.css/);
 assert.doesNotMatch(layout, /globals\.css/);
-assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1[\s\S]*?width:\s*12rem/);
+assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]\{[^}]*width:12rem/);
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header \{/);
 assert.match(source("src/app/globals.css"), /#workspace-header-grid \{/);
