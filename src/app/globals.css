@@ -127,7 +127,7 @@
   --muted-foreground: #52525b;
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
-  --destructive: #dc2626;
+  --destructive: #b91c1c;
   --border: #e4e4e7;
   --input: #e4e4e7;
   --ring: #c2410c;
@@ -148,7 +148,7 @@
 
   /* Accent colors - light */
   --accent-blue: #1d4ed8;
-  --accent-green: #22c55e;
+  --accent-green: #166534;
   --accent-coral: #c2410c;
   --glass-bg: rgba(255, 255, 255, 0.92);
   --glass-border: rgba(35, 35, 35, 0.08);
@@ -167,8 +167,8 @@
   --pf-orange: #c2410c;
   --pf-link: #2563eb;
   --pf-success: #166534;
-  --pf-danger: #dc2626;
-  --pf-lamp-amber: #d97706;
+  --pf-danger: #b91c1c;
+  --pf-lamp-amber: #b45309;
   --pf-lamp-green: #16a34a;
   --pf-masthead: #fafafa;
   --pf-masthead-ink: #18181b;

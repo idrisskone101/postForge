@@ -127,7 +127,7 @@ export function GenerateFormControls({
 
         <Textarea
           aria-label="Creative prompt"
-          placeholder="Describe the scene, subject, action, lighting, and camera framing..."
+          placeholder="Scene, subject, lighting, camera…"
           value={prompt}
           maxLength={1500}
           onChange={(event) => onPromptChange(event.target.value.slice(0, 1500))}

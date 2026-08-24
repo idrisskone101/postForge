@@ -48,10 +48,10 @@ export function CharacterPreviewStage({
     >
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[12px] text-muted-foreground">Photographic recipe preview</p>
+          <p className="text-[12px] text-white/70">Photographic recipe preview</p>
           <p id="character-preview-generation-cost" className="mt-1 max-w-[310px] text-[12px] leading-4 text-white/60">{previewRequiresRender ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe." : "Save as a draft without generating. Render a preview when you want to make this identity reusable."}</p>
         </div>
-        <span role="status" aria-live="polite" className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",rendering ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]" : previewSaveBlocked ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]" : previewRequiresRender ? "bg-[var(--pf-success)]/15 text-[var(--pf-success)]" : "bg-[var(--pf-active)] text-muted-foreground")}>{rendering ? <Loader2 aria-hidden="true" className="size-3 animate-spin" /> : previewSaveBlocked ? <RefreshCw aria-hidden="true" className="size-3" /> : <Check aria-hidden="true" className="size-3" />}{rendering ? "Rendering" : previewSaveBlocked ? "Changes pending" : previewRequiresRender ? "Preview ready" : "Draft — preview optional"}</span>
+        <span role="status" aria-live="polite" className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",rendering ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]" : previewSaveBlocked ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]" : previewRequiresRender ? "bg-[var(--pf-success)]/15 text-[var(--pf-success)]" : "bg-white/10 text-white/80")}>{rendering ? <Loader2 aria-hidden="true" className="size-3 animate-spin" /> : previewSaveBlocked ? <RefreshCw aria-hidden="true" className="size-3" /> : <Check aria-hidden="true" className="size-3" />}{rendering ? "Rendering" : previewSaveBlocked ? "Changes pending" : previewRequiresRender ? "Preview ready" : "Draft — preview optional"}</span>
       </div>
 
       <div className="relative z-10 grid min-h-0 flex-1 place-items-center py-4 min-[1280px]:py-3">

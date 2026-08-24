@@ -156,7 +156,7 @@ export function CharactersPageClient() {
     notify("Character prompt copied");
   }
 
-  if (loading) {
+  if (loading && records.length > 0) {
     return <div className="grid min-h-[520px] place-items-center"><div className="text-center"><Loader2 className="mx-auto size-6 animate-spin text-[var(--pf-orange)]" /><p className="mt-3 text-[12px] text-muted-foreground">Loading identity library…</p></div></div>;
   }
 
@@ -171,7 +171,7 @@ export function CharactersPageClient() {
           </div>
 
           <h2 className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Create a reusable character</h2>
-          <p className="mt-2 max-w-md text-[12px] leading-5 text-muted-foreground">Define identity, skin, face, hair, body, style, and marks once. Save the blueprint for consistent prompts across future work.</p>
+          <p className="mt-2 max-w-xs text-[11px] leading-4 text-muted-foreground">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
           <Link href="/characters/new" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
           <div className="mt-7 flex flex-wrap justify-center gap-2 text-[11px] text-muted-foreground"><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">36 attribute groups</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Prompt + JSON export</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Database-backed</span></div>
         </section>
