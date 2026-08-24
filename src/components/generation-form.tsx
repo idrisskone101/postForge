@@ -188,6 +188,7 @@ export function GenerateFormView({
 
   return (
     <form
+      data-generate-form="true"
       onSubmit={(event) => {
         event.preventDefault();
         actions.onSubmit();

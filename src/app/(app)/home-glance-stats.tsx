@@ -14,6 +14,7 @@ export function HomeGlanceStats({
 }) {
   return (
     <section
+      data-home-glance="true"
       aria-label="Today at a glance"
       className="mt-6 grid grid-cols-2 gap-3 min-[860px]:grid-cols-4"
     >

@@ -302,7 +302,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   );
 
   return (
-    <div className={cn("min-h-[calc(100vh-105px)]", className)}>
+    <div data-slideshow-studio="true" className={cn("min-h-[calc(100vh-105px)]", className)}>
       <WorkspaceHeaderAccessory>
         <button
           type="button"
