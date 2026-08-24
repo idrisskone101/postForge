@@ -76,3 +76,33 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 - Linear's official HTTP MCP is declared in `.cursor/mcp.json` at `https://mcp.linear.app/mcp`. Use that Streamable HTTP URL. Do not wrap it with `npx mcp-remote`; Cloud Agents do not support that transport.
 - Cloud Agents load Linear from the MCP dropdown on [cursor.com/agents](https://cursor.com/agents), not automatically from desktop MCP settings. Desktop OAuth and the Linear issue-delegation integration (`@Cursor` on issues) do not authorize Linear MCP tools inside a cloud VM.
 - If Linear shows `needsAuth`, authenticate it from that Cloud Agents MCP dropdown. Interactive OAuth cannot run inside the cloud VM. Re-auth from desktop Settings → MCP is not enough.
+
+### Chrome DevTools MCP
+
+- Chrome DevTools MCP is **not** loaded from `.cursor/mcp.json` on Cloud Agents. That file is for the local IDE only. Cloud Agents read MCP servers from the [Cloud Agents dashboard](https://cursor.com/agents) (personal) or [Dashboard → Integrations & MCP](https://cursor.com/dashboard/integrations) (team).
+- Add a **stdio** server named `chrome-devtools` in the dashboard with this config:
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--headless=true",
+        "--isolated=true",
+        "--chrome-arg=--no-sandbox",
+        "--chrome-arg=--disable-setuid-sandbox",
+        "--chrome-arg=--disable-dev-shm-usage"
+      ]
+    }
+  }
+}
+```
+
+- After saving, start or reopen a Cloud Agent run and enable **chrome-devtools** in the MCP dropdown for that run.
+- Google Chrome is preinstalled on the Cloud image. `scripts/cloud-agent-install.sh` pre-caches `chrome-devtools-mcp@latest` via `npx`. Verify with `bash scripts/verify-chrome-devtools-mcp.sh`.
+- Key tools for site-wide performance work: `lighthouse_audit`, `performance_start_trace`, `performance_stop_trace`, and `performance_analyze_insight`.
+- Example prompts once enabled: "Run a Lighthouse audit on http://localhost:3000" (with `pnpm build && pnpm start` running) or "Check the performance of https://example.com and suggest concrete improvements."

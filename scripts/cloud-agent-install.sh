@@ -13,3 +13,6 @@ sudo curl -fsSL -o /usr/local/bin/yt-dlp \
   https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp
 sudo chmod a+rx /usr/local/bin/yt-dlp
 yt-dlp --version
+
+echo "==> Pre-caching chrome-devtools-mcp for Lighthouse and performance audits"
+npx -y chrome-devtools-mcp@latest --version
