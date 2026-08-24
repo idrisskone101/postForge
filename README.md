@@ -20,21 +20,21 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Generated media defaults to database-backed storage (`STORAGE_DRIVER="database"`), so gallery items, avatars, TikTok source clips, and UGC clone outputs persist with Postgres instead of depending on a local output folder. Legacy files already stored on disk are backfilled into Postgres automatically on server boot.
 
-## Codex Worktrees
+## Kode setup
 
-Codex setup is centralized in `scripts/codex-setup.sh`. It copies local env files from the foreground checkout when available, installs with pnpm, generates the Prisma client, and applies existing migrations when Postgres is reachable.
+Kode setup is centralized in `scripts/kode-setup.sh`. It copies local env files from the foreground checkout when available, installs with pnpm, generates the Prisma client, and applies existing migrations when Postgres is reachable.
 
-Use these commands in Codex environment settings:
+Use these commands in environment settings:
 
 ```bash
-bash scripts/codex-setup.sh
+bash scripts/kode-setup.sh
 ```
 
 Use these actions:
 
 ```bash
 pnpm dev
-pnpm codex:check
+pnpm kode:check
 pnpm exec prisma migrate status
 ```
 

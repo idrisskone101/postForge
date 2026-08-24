@@ -30,7 +30,7 @@ The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI w
 
 ## Playwright session artifacts
 
-`.playwright-cli/` and `.playwright-mcp/` are gitignored dumps from Playwright CLI/MCP (snapshots, screenshots, videos). Agent screenshots dropped in the repo root (`ugc-clone-*.png`, `pf-canon-*.png`, and similar) are also not app data. `scripts/prune-playwright-artifacts.sh` removes videos after 1 day, other Playwright files after 7 days, caps those folders at 20 MB, and deletes untracked image/video files from the repo root. It runs from `pnpm prune:playwright`, `codex:setup`, and Cursor `sessionStart`/`sessionEnd` hooks. Do not write review screenshots into the repository root.
+`.playwright-cli/` and `.playwright-mcp/` are gitignored dumps from Playwright CLI/MCP (snapshots, screenshots, videos). Agent screenshots dropped in the repo root (`ugc-clone-*.png`, `pf-canon-*.png`, and similar) are also not app data. `scripts/prune-playwright-artifacts.sh` removes videos after 1 day, other Playwright files after 7 days, caps those folders at 20 MB, and deletes untracked image/video files from the repo root. It runs from `pnpm prune:playwright`, `kode:setup`, and Cursor `sessionStart`/`sessionEnd` hooks. Do not write review screenshots into the repository root.
 
 ## Integration system invariant
 
@@ -55,14 +55,14 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 ### Lint / typecheck / test / build
 
 - Standard commands live in `package.json` scripts: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm dev`, `pnpm start`.
-- `pnpm codex:check` (`scripts/codex-check.sh`) is the canonical full gate: it runs the entire `test:*` suite, then typecheck, lint, and a production build. It requires a running Postgres. Individual tests are the `test:*` scripts.
+- `pnpm kode:check` (`scripts/kode-check.sh`) is the canonical full gate: it runs the entire `test:*` suite, then typecheck, lint, and a production build. It requires a running Postgres. Individual tests are the `test:*` scripts.
 - Lint currently passes with warnings only (no errors); do not treat those pre-existing warnings as regressions.
 - The tests are `tsx`-run assertion scripts (not a watch framework); most run without external services, and DB-dependent ones use the running local Postgres.
 
 ### pstack models
 
 - The workspace file `.cursor/rules/pstack-models.mdc` is the source of truth. Every pstack role is `inherit-parent` (omit Task `model` so delegates stay on this chat's model).
-- Cloud agents inject that workspace rule. pstack skills still read `~/.cursor/rules/pstack-models.mdc`. If that home copy is missing, run `bash scripts/install-pstack-models.sh` (also run from `pnpm codex:setup` and the `sessionStart` hook) before spawning pstack delegates.
+- Cloud agents inject that workspace rule. pstack skills still read `~/.cursor/rules/pstack-models.mdc`. If that home copy is missing, run `bash scripts/install-pstack-models.sh` (also run from `pnpm kode:setup` and the `sessionStart` hook) before spawning pstack delegates.
 - If a skill looks only at the home path and the file is still missing, treat `.cursor/rules/pstack-models.mdc` as that file.
 
 ### External integrations
