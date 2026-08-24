@@ -80,6 +80,13 @@ body {
   padding: 1.5rem 1.25rem;
 }
 
+@media (max-width: 1023.98px) {
+  #workspace-header-grid {
+    height: 9.1875rem;
+    overflow: hidden;
+  }
+}
+
 #workspace-header-grid h1,
 .pf-content-viewport header h1 {
   margin: 0;
@@ -262,15 +269,72 @@ body {
 }
 
 [data-generate-controls="true"] {
+  display: flex;
   min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
+[data-generate-prompt="true"],
 [data-generate-controls="true"] > section:first-child {
   min-height: 20rem;
   padding: 1rem;
   border: 1px solid var(--pf-border);
   border-radius: 0.5rem;
   background: #fff;
+}
+
+[data-generate-prompt="true"] textarea {
+  display: block;
+  width: 100%;
+  min-height: 118px;
+  margin: 0;
+  border: 1px solid var(--pf-border);
+  border-radius: 0.5rem;
+}
+
+[data-generate-models="true"] {
+  padding: 1rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+[data-generate-models="true"] [role="tablist"] {
+  display: grid;
+  height: 2.75rem;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.25rem;
+  border-radius: 6px;
+  background: #f4f4f5;
+}
+
+[data-generate-model-grid="true"] {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+[data-generate-model-grid="true"] > button {
+  min-height: 6.75rem;
+  padding: 0.625rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 0.5rem;
+  background: #fff;
+  text-align: left;
+}
+
+@media (max-width: 767.98px) {
+  [data-generate-prompt="true"] {
+    height: 25.625rem;
+    overflow: hidden;
+  }
+
+  [data-generate-models="true"] {
+    height: 48.125rem;
+    overflow: hidden;
+  }
 }
 
 [data-slideshow-studio="true"] {
@@ -303,6 +367,29 @@ body {
   font-weight: 600;
   line-height: 1.2;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-workspace-state] > div:first-child {
+  display: flex;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+[data-workspace-state] a,
+[data-workspace-state] button {
+  display: inline-flex;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 

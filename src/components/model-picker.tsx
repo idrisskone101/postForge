@@ -81,6 +81,7 @@ export function ModelPicker({
 
       <div
         key={activeType}
+        data-generate-model-grid="true"
         className="mt-3 grid animate-content-enter grid-cols-1 gap-2 sm:grid-cols-2"
       >
         {visibleModels.map((model) => (

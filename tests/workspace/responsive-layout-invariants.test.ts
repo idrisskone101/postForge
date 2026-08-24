@@ -233,6 +233,9 @@ assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt="true"\]/);
+assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);

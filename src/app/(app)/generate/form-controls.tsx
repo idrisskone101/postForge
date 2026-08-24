@@ -82,8 +82,11 @@ export function GenerateFormControls({
   } = view;
 
   return (
-    <div data-generate-controls="true" className="min-w-0 space-y-3">
-      <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
+    <div data-generate-controls="true" className="flex min-w-0 flex-col gap-3">
+      <section
+        data-generate-prompt="true"
+        className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
+      >
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
@@ -148,17 +151,19 @@ export function GenerateFormControls({
           </div>
         )}
 
-        {promptEnhancerConfigured === false && !promptImprovementError && (
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] leading-4 text-muted-foreground">
-            <span>Prompt improvement needs a Gemini API key.</span>
-            <Link
-              href="/settings?tab=api-keys"
-              className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"
-            >
-              Add key in Settings
-            </Link>
-          </div>
-        )}
+        <div className="mt-2 min-h-9 text-[12px] leading-4 text-muted-foreground">
+          {promptEnhancerConfigured === false && !promptImprovementError ? (
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span>Prompt improvement needs a Gemini API key.</span>
+              <Link
+                href="/settings?tab=api-keys"
+                className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"
+              >
+                Add key in Settings
+              </Link>
+            </div>
+          ) : null}
+        </div>
 
         {promptImprovementNotice && (
           <div
@@ -184,7 +189,10 @@ export function GenerateFormControls({
         </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
+      <section
+        data-generate-models="true"
+        className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
+      >
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">

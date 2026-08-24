@@ -83,7 +83,7 @@ export function HomeCockpit({ dashboard }: HomeCockpitProps) {
   return (
     <div className="pf-content-viewport bg-[var(--pf-canvas)]">
       <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
-        <header className="flex flex-wrap items-end justify-between gap-3 pt-7">
+        <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
           <div className="min-w-0">
             <h1 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)]">
               Home
