@@ -1,0 +1,86 @@
+name: kode
+
+"on":
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: kode-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  kode:
+    name: kode
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: postgresql://postforge:postforge@localhost:5432/postforge
+      STORAGE_DRIVER: database
+      STORAGE_LOCAL_PATH: ${{ runner.temp }}/postforge-outputs
+      NEXT_PUBLIC_BASE_URL: http://127.0.0.1:3000
+      POSTFORGE_PUBLIC_URL: http://127.0.0.1:3000
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postforge
+          POSTGRES_PASSWORD: postforge
+          POSTGRES_DB: postforge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postforge -d postforge"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Prepare env and database
+        run: |
+          cp .env.example .env
+          mkdir -p "$STORAGE_LOCAL_PATH"
+          pnpm exec prisma migrate deploy
+      - name: kode:check
+        run: pnpm kode:check
+
+  # Merge in this workflow. Do not use a "checks completed" trigger;
+  # those skip cursor[bot] PRs. This job is the merge signal.
+  merge:
+    name: merge
+    needs: kode
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+    steps:
+      - name: Squash-merge pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if gh pr merge "$PR_NUMBER" --squash --match-head-commit "$HEAD_SHA" --repo "$GITHUB_REPOSITORY"; then
+              exit 0
+            fi
+            echo "merge attempt ${attempt} failed; retrying in 10s"
+            sleep 10
+          done
+          echo "Could not squash-merge PR ${PR_NUMBER}."
+          echo "Require the status check named 'kode' on main if protection is available."
+          exit 1
