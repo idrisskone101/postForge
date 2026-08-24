@@ -306,7 +306,14 @@ body {
   padding: 1rem;
 }
 
-[data-home-glance="true"] a span:first-child {
+[data-home-glance="true"] a [data-home-glance-label] {
+  height: 17px;
+  overflow: hidden;
+}
+
+[data-home-glance="true"] a [data-home-glance-label]::before {
+  content: attr(data-home-glance-label);
+  display: block;
   height: 17px;
   overflow: hidden;
   font-size: 11px;

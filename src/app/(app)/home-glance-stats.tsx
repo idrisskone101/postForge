@@ -58,9 +58,8 @@ function StatCard({
       prefetch={false}
       className="flex min-w-0 flex-col gap-1.5 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
     >
-      <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-        {label}
-      </span>
+      <span className="sr-only">{label}</span>
+      <span aria-hidden="true" data-home-glance-label={label} />
       <span className="text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
         {value}
       </span>

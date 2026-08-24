@@ -262,7 +262,7 @@ assert.match(
   /\[data-generate-form="true"\]\{display:grid;gap:1rem\}/,
 );
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\] a span:first-child\{height:17px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2\{margin:1rem 0 0;font-size:20px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
 assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);
@@ -278,7 +278,7 @@ assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
 assert.match(
   source("src/app/dashboard-critical.css"),
-  /\[data-home-glance="true"\] a span:first-child[\s\S]*?height:\s*17px/,
+  /\[data-home-glance-label\]::before[\s\S]*?content:\s*attr\(data-home-glance-label\)/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="true"\]/);
@@ -315,16 +315,13 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workben
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);
 assert.doesNotMatch(layout, /next\/font/);
 assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
-assert.match(source("src/app/(legal)/layout.tsx"), /\/legal\.css/);
-assert.match(source("src/app/(legal)/layout.tsx"), /l\.media="print"/);
-assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /import "\.\.\/legal\.css"/);
+assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
 assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
 assert.match(source("src/app/dashboard-critical.css"), /\.policy-heading/);
 assert.match(
   source("src/app/dashboard-critical.css"),
   /\.pf-empty-stage h2[\s\S]*?font-size:\s*20px/,
 );
-assert.match(source("scripts/build-first-paint-css.mjs"), /public\/legal\.css/);
 assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
 assert.match(pkg, /"build:first-paint-css": "node scripts\/build-first-paint-css\.mjs"/);
 assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/);

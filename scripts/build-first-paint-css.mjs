@@ -39,11 +39,3 @@ await writeFile(outputPath, `export const FIRST_PAINT_CSS = \`${css}\`;\n`);
 process.stdout.write(
   `wrote ${path.relative(repoRoot, outputPath)} (${Buffer.byteLength(css)} bytes)\n`,
 );
-
-const legalCss = minifyCss(
-  await readFile(path.join(repoRoot, "src/app/legal.css"), "utf8"),
-);
-await writeFile(path.join(repoRoot, "public/legal.css"), legalCss);
-process.stdout.write(
-  `wrote public/legal.css (${Buffer.byteLength(legalCss)} bytes)\n`,
-);

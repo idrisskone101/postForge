@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Check,
   CircleAlert,
-  Loader2,
   Plus,
   RefreshCw,
 } from "lucide-react";
@@ -48,7 +47,18 @@ export function AutomationsPageClient() {
     busy,
   } = hub;
 
-  if (loading) return <div className="grid min-h-[520px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
+  if (loading) {
+    return (
+      <section className="pf-card pf-empty-stage flex min-h-[650px] min-w-0 flex-col items-center justify-center p-6 text-center">
+        <h2>Build your first reviewed content plan</h2>
+        <p>
+          Choose a playbook and save a schedule. Manual plans can create local review drafts;
+          connected social plans can publish an approved Gallery video only after a separate
+          review and explicit confirmation.
+        </p>
+      </section>
+    );
+  }
 
   const weekDates = currentWeekDates();
   const todayKey = localDateKey(new Date());
