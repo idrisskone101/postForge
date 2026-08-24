@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ffmpegBinaryExists } from "@/lib/ai/slideshow-renderer";
 import {
   createBlankSlideshowProject,
@@ -12,18 +13,33 @@ type SlideshowPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function SlideshowPage({
-  searchParams,
-}: SlideshowPageProps) {
-  const params = await searchParams;
-  const startNew = params.new === "true" || params.new === "1";
+export default function SlideshowPage({ searchParams }: SlideshowPageProps) {
+  return (
+    <Suspense fallback={<SlideshowStudioShell />}>
+      <SlideshowPageInner searchParams={searchParams} />
+    </Suspense>
+  );
+}
 
+function SlideshowStudioShell({
+  startNew = false,
+  view,
+}: {
+  startNew?: boolean;
+  view?: string | string[];
+}) {
   return (
     <SlideshowStudio
       initialProjects={[]}
       initialProject={startNew ? createBlankSlideshowProject() : null}
-      initialViewMode={parseSlideshowViewMode(params.view)}
+      initialViewMode={parseSlideshowViewMode(view)}
       supportsMp4Export={ffmpegBinaryExists()}
     />
   );
+}
+
+async function SlideshowPageInner({ searchParams }: SlideshowPageProps) {
+  const params = await searchParams;
+  const startNew = params.new === "true" || params.new === "1";
+  return <SlideshowStudioShell startNew={startNew} view={params.view} />;
 }

@@ -1,21 +1,23 @@
-import type { CollectionFeatureRecord } from "@/lib/collections";
-import { readWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
+import { Suspense } from "react";
 import { CollectionsPageClient } from "./collections-page-client";
 
-export default async function CollectionsPage({
+export default function CollectionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ upload?: string }>;
 }) {
-  const [records, params] = await Promise.all([
-    readWorkspaceFeatureRecords<CollectionFeatureRecord>("collections"),
-    searchParams,
-  ]);
-
   return (
-    <CollectionsPageClient
-      initialRecords={records}
-      openUploader={params.upload === "1"}
-    />
+    <Suspense fallback={<CollectionsPageClient initialRecords={[]} openUploader={false} />}>
+      <CollectionsPageWithParams searchParams={searchParams} />
+    </Suspense>
   );
+}
+
+async function CollectionsPageWithParams({
+  searchParams,
+}: {
+  searchParams: Promise<{ upload?: string }>;
+}) {
+  const params = await searchParams;
+  return <CollectionsPageClient initialRecords={[]} openUploader={params.upload === "1"} />;
 }

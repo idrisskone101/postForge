@@ -1,12 +1,30 @@
+import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { JobsActivity, type JobsStatusFilter, type JobsTypeFilter } from "./jobs-activity";
+import {
+  EMPTY_JOBS_ACTIVITY,
+  JobsActivity,
+  type JobsStatusFilter,
+  type JobsTypeFilter,
+} from "./jobs-activity";
 import { JobsAutoRefresh } from "./jobs-auto-refresh";
 
 export const metadata = { title: "Jobs - PostForge" };
 export const dynamic = "force-dynamic";
 
-export default async function JobsPage({
+export default function JobsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; type?: string; page?: string }>;
+}) {
+  return (
+    <Suspense fallback={<JobsActivity activity={EMPTY_JOBS_ACTIVITY} />}>
+      <JobsPageData searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function JobsPageData({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; type?: string; page?: string }>;

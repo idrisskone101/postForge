@@ -33,6 +33,29 @@ export type CostsPageClientProps = {
   period: SpendPeriod;
 };
 
+export const EMPTY_COSTS_DASHBOARD: CostsPageClientProps = {
+  totalCost: 0,
+  currentPeriodCost: 0,
+  changePercent: 0,
+  avgCycleCost: 0,
+  totalJobs: 0,
+  topModel: null,
+  chartData: [],
+  byModel: {},
+  breakdown: {
+    image: { count: 0, cost: 0 },
+    video: { count: 0, cost: 0 },
+  },
+  logs: [],
+  logPage: 0,
+  logTotalCount: 0,
+  logHasNext: false,
+  logFilterActive: false,
+  search: "",
+  model: null,
+  period: "30d",
+};
+
 export type SpendPageHandlers = {
   onPeriodChange: (period: SpendPeriod) => void;
   onLogPageChange: (page: number) => void;

@@ -263,6 +263,7 @@ assert.match(
 );
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:center;height:650px/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2\{margin:1rem 0 0;font-size:20px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
 assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);

@@ -165,7 +165,7 @@ export function CharactersPageClient({
   }
 
   return (
-    <div className="px-5 py-5 sm:px-7 lg:px-8">
+    <div data-page-inset="true" className="px-5 py-5 sm:px-7 lg:px-8">
       {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
       {records.length === 0 ? (
         <section
@@ -173,12 +173,13 @@ export function CharactersPageClient({
           className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-center overflow-hidden px-5 text-center"
         >
           <div className="relative h-32 w-44">
-            <div className="absolute left-1/2 top-0 h-28 w-20 -translate-x-1/2 overflow-hidden rounded-lg border-4 border-white bg-[var(--pf-active)] shadow-lg"><CharacterPhoto alt="Example photographic character" /></div>
+            <div className="absolute left-1/2 top-0 h-28 w-20 -translate-x-1/2 overflow-hidden rounded-lg border-4 border-white bg-[var(--pf-active)] shadow-lg" />
             <span className="absolute bottom-0 right-6 grid size-9 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-lg"><Plus className="size-4" /></span>
           </div>
 
           <h2 className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Create a reusable character</h2>
-          <p className="mt-2 max-w-xs text-[11px] leading-4 text-muted-foreground">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
+          <p className="sr-only">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
+          <p aria-hidden="true" data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts." />
           <Link href="/characters/new" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
           <div className="mt-7 flex flex-wrap justify-center gap-2 text-[11px] text-muted-foreground"><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">36 attribute groups</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Prompt + JSON export</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Database-backed</span></div>
         </section>

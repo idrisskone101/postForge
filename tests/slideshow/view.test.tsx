@@ -47,7 +47,7 @@ assert.match(editorWorkspaceSource, /SlideshowBoardView/);
 assert.match(editorWorkspaceSource, /SlideshowPlayView/);
 assert.match(editorPreviewSource, /slideCoverImage/);
 assert.match(editorPreviewSource, /ArrowLeft/);
-assert.match(pageSource, /parseSlideshowViewMode\(params\.view\)/);
+assert.match(pageSource, /parseSlideshowViewMode\((?:params\.)?view\)/);
 assert.match(previewSource, /imageUrl\?:/);
 assert.match(previewSource, /\/api\/slideshows\/overlay/);
 assert.match(previewSource, /getSlideshowDimensions/);

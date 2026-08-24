@@ -7,7 +7,6 @@ import {
   Check,
   CreditCard,
   KeyRound,
-  Loader2,
   Plug,
   Send,
   Settings2,
@@ -38,7 +37,6 @@ export function SettingsPageClient() {
   const requested = searchParams.get("tab") ?? "integrations";
   const tab: SettingsTab = isSettingsTab(requested) ? requested : "integrations";
   const [settings, setSettings] = useState<SettingsRecord>(DEFAULT_SETTINGS);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -69,8 +67,7 @@ export function SettingsPageClient() {
         const saved = records.find((record) => record.id === "workspace-settings");
         if (!cancelled && saved) setSettings({ ...DEFAULT_SETTINGS, ...saved });
       })
-      .catch((cause) => !cancelled && setError(cause instanceof Error ? cause.message : "Unable to load settings"))
-      .finally(() => !cancelled && setLoading(false));
+      .catch((cause) => !cancelled && setError(cause instanceof Error ? cause.message : "Unable to load settings"));
     return () => {
       cancelled = true;
     };
@@ -97,8 +94,6 @@ export function SettingsPageClient() {
       setSaving(false);
     }
   }
-
-  if (loading) return <div className="grid min-h-[540px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
   const integrationsWorkspace: IntegrationsWorkspace = {
     providers,

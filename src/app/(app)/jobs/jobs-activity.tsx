@@ -350,3 +350,13 @@ function EmptyJobs({ status }: { status: JobsStatusFilter }) {
     </div>
   );
 }
+
+export const EMPTY_JOBS_ACTIVITY: JobsActivityViewModel = {
+  jobs: [],
+  counts: { active: 0, completed: 0, failed: 0, total: 0 },
+  status: "all",
+  type: "all",
+  page: 1,
+  pageSize: 40,
+  filteredTotal: 0,
+};

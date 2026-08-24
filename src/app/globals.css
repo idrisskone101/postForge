@@ -1610,6 +1610,19 @@
   overflow: hidden !important;
 }
 
+.pf-empty-stage {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 650px !important;
+  min-height: 650px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 1.5rem !important;
+  text-align: center !important;
+}
+
 .pf-empty-stage h2 {
   margin: 1rem 0 0 !important;
   font-size: 20px !important;

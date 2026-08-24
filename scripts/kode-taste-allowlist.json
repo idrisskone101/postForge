@@ -37,7 +37,6 @@
     "src/app/(app)/generate/use-prompt-improvement.ts",
     "src/app/(app)/performance/use-performance-workspace.ts",
     "src/app/(app)/settings/models-panel.tsx",
-    "src/app/(app)/settings/settings-page-client.tsx",
     "src/app/(app)/ugc-clone/use-clone-form.ts",
     "src/app/(app)/ugc-clone/use-clone-identity.ts",
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts",

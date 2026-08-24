@@ -569,6 +569,22 @@ body {
   overflow: hidden;
 }
 
+[data-jobs-empty="true"] p {
+  margin: 0.25rem 0 0;
+  max-width: 24rem;
+  font-size: 12px;
+  line-height: 1.25rem;
+  color: #52525b;
+}
+
+[data-settings-intro="true"] {
+  margin-top: 0.25rem;
+  max-width: 36rem;
+  font-size: 12px;
+  line-height: 1rem;
+  color: #52525b;
+}
+
 [data-jobs-board="true"] {
   margin-top: 0.75rem;
 }
@@ -1148,8 +1164,47 @@ body {
   color: #18181b;
 }
 
+.pf-card {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+[data-page-inset="true"] {
+  padding: 1.25rem;
+}
+
 .pf-empty-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 650px;
   min-height: 650px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.pf-empty-stage [data-empty-copy] {
+  height: 40px;
+  max-width: 8rem;
+  margin: 0.5rem 0 0;
+  overflow: hidden;
+}
+
+.pf-empty-stage [data-empty-copy]::before {
+  content: attr(data-empty-copy);
+  display: block;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+  color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pf-empty-stage h2 {
