@@ -556,11 +556,18 @@ body {
   margin-top: 0.75rem;
   height: 28px;
   overflow: hidden;
-  font-size: 28px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
   color: #18181b;
+}
+
+[data-spend-value="true"] {
+  font-size: 28px;
+}
+
+[data-spend-model="true"] {
+  font-size: 20px;
 }
 
 [data-spend-stats="true"] p {
@@ -613,8 +620,9 @@ body {
   box-sizing: border-box;
 }
 
-  height: 24px;
-  max-width: 16rem;
+.pf-empty-stage [data-empty-chips] {
+  height: 16px;
+  max-width: 8rem;
   overflow: hidden;
   font-size: 10px;
 }
@@ -1289,6 +1297,8 @@ body {
   width: 66px;
   height: 66px;
   box-sizing: border-box;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .pf-empty-stage [data-empty-actions="true"] {
@@ -1310,9 +1320,23 @@ body {
 
 [data-settings-setup="true"] {
   margin-top: 0.25rem;
-  height: 48px;
+  height: 16px;
+  max-width: 16rem;
   overflow: hidden;
   font-size: 11px;
   line-height: 16px;
   color: #71717a;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-settings-heading="true"] {
+  margin: 0.25rem 0 0;
+  height: 25px;
+  overflow: hidden;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  letter-spacing: -0.02em;
+  color: #18181b;
 }

@@ -54,7 +54,7 @@ export function IntegrationsPanel({
     <>
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div>
-          <h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">Integrations</h2>
+          <h2 data-settings-heading="true" className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">Integrations</h2>
           <p data-settings-intro="true" className="mt-1 text-[12px] text-muted-foreground">Connect every account you publish or measure. Each account keeps its own scope and sync state.</p>
         </div>
         <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0">

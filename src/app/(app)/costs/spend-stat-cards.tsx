@@ -31,7 +31,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             )}
           </span>
         </div>
-        <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
+        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
           {formatCost(dashboard.currentPeriodCost)}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
@@ -46,7 +46,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <Sparkles className="size-3.5" />
           </span>
         </div>
-        <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
+        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
           {dashboard.totalJobs}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
@@ -61,7 +61,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <Gauge className="size-3.5" />
           </span>
         </div>
-        <strong className="mt-3 block truncate text-[20px] font-semibold tracking-[-0.02em]">
+        <strong data-spend-model="true" className="mt-3 block truncate text-[20px] font-semibold tracking-[-0.02em]">
           {dashboard.topModel ? dashboard.topModel.name : "No data yet"}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
@@ -78,7 +78,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <WalletCards className="size-3.5" />
           </span>
         </div>
-        <strong className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
+        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
           {formatCost(view.budgetRemaining)}
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
