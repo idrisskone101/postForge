@@ -1691,23 +1691,32 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   height: 650px !important;
   min-height: 650px !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-  padding: 1.5rem !important;
+  padding: 4.5rem 1.5rem 1.5rem !important;
   text-align: center !important;
 }
 
-.pf-empty-stage [data-empty-stack="true"] {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  width: 100% !important;
-  height: 25rem !important;
+.pf-empty-stage [data-empty-copy] {
+  height: 40px !important;
+  max-width: 8rem !important;
+  margin: 0.5rem 0 0 !important;
   overflow: hidden !important;
+}
+
+.pf-empty-stage [data-empty-copy]::before {
+  content: attr(data-empty-copy) !important;
+  display: block !important;
+  overflow: hidden !important;
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 .pf-empty-stage h2,
@@ -1780,6 +1789,18 @@
   height: 4.5rem !important;
   margin-top: 1.75rem !important;
   overflow: hidden !important;
+}
+
+.pf-empty-stage [data-empty-note="true"] {
+  display: block !important;
+  height: 1rem !important;
+  max-width: 20rem !important;
+  margin-top: 0.75rem !important;
+  overflow: hidden !important;
+  font-size: 12px !important;
+  line-height: 1rem !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
 }
 
 .pf-empty-stage [data-empty-chips] {

@@ -170,9 +170,8 @@ export function CharactersPageClient({
       {records.length === 0 ? (
         <section
           data-characters-empty="true"
-          className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-center overflow-hidden px-5 text-center"
+          className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-start overflow-hidden px-5 text-center"
         >
-          <div data-empty-stack="true">
           <div data-empty-figure="true" className="relative h-32 w-44">
             <div className="absolute left-1/2 top-0 h-28 w-20 -translate-x-1/2 overflow-hidden rounded-lg border-4 border-white bg-[var(--pf-active)] shadow-lg" />
             <span className="absolute bottom-0 right-6 grid size-9 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-lg"><Plus className="size-4" /></span>
@@ -181,9 +180,8 @@ export function CharactersPageClient({
           <h2 data-empty-heading="true" className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Create a reusable character</h2>
           <p className="sr-only">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
           <p aria-hidden="true" data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts." />
-          <Link href="/characters/new" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
+          <Link href="/characters/new" data-empty-actions="true" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
           <div data-empty-chips="true" className="mt-7 flex flex-wrap justify-center gap-2 text-[11px] text-muted-foreground"><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">36 attribute groups</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Prompt + JSON export</span><span className="rounded-full bg-[var(--pf-active)] px-2.5 py-1">Database-backed</span></div>
-          </div>
         </section>
       ) : (
         <>

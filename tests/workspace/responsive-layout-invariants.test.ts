@@ -265,10 +265,12 @@ assert.match(
 );
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:center;height:650px/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-stack="true"\]\{display:flex/);
-assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /data-empty-stack="true"/);
-assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-stack="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:650px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-note="true"\]\{display:block;height:1rem/);
+assert.match(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-empty-copy=/);
+assert.doesNotMatch(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-workspace-state="empty"/);
+assert.doesNotMatch(source("src/app/first-paint-css.ts"), /data-empty-stack/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-owned="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]/);
@@ -337,6 +339,7 @@ assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /d
 assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
 assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
+assert.match(source("src/app/globals.css"), /\[data-empty-copy\]::before[\s\S]*?content:\s*attr\(data-empty-copy\)/);
 assert.match(settings, /data-settings-nav="true"/);
 assert.match(settings, /data-settings-panel="true"/);
 assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-owned="true"/);
