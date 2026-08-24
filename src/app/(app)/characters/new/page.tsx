@@ -1,7 +1,16 @@
-import { Suspense } from "react";
 import { CharacterBuilderClient } from "./character-builder-client";
 
-export default function CharacterBuilderPage() {
+type CharacterBuilderPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function CharacterBuilderPage({
+  searchParams,
+}: CharacterBuilderPageProps) {
+  const params = await searchParams;
+  const rawId = params.id;
+  const editId = Array.isArray(rawId) ? rawId[0] ?? null : rawId ?? null;
+
   return (
     <>
       <link
@@ -10,9 +19,7 @@ export default function CharacterBuilderPage() {
         href="/character-builder/default-portrait.webp"
         fetchPriority="high"
       />
-      <Suspense fallback={<div className="pf-content-viewport animate-pulse bg-[var(--pf-canvas)]" />}>
-        <CharacterBuilderClient />
-      </Suspense>
+      <CharacterBuilderClient editId={editId} />
     </>
   );
 }

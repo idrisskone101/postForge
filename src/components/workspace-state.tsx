@@ -74,7 +74,7 @@ export function WorkspaceState({
       {(action || secondaryAction) && (
         <div
           data-workspace-state-actions="true"
-          className="mt-5 flex flex-nowrap items-center justify-center gap-2"
+          className="mt-5 flex h-10 flex-nowrap items-center justify-center gap-2 overflow-hidden"
         >
           {action && <StateActionControl action={action} primary />}
           {secondaryAction && <StateActionControl action={secondaryAction} />}
@@ -92,7 +92,7 @@ function StateActionControl({
   primary?: boolean;
 }) {
   const className = cn(
-    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+    "inline-flex h-10 max-w-[13.5rem] items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
     primary
       ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
       : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"

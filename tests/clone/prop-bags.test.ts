@@ -78,6 +78,9 @@ const files = [
 ];
 
 for (const file of files) {
+  if (file.endsWith("/page.tsx")) {
+    continue;
+  }
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   for (const exported of parseExportedProps(source)) {
     const viewModels = exported.props.filter((prop) => VIEW_MODEL_PROPS.has(prop));

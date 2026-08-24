@@ -165,7 +165,10 @@ assert.match(routeSurfaces, /\[overflow-wrap:anywhere\]/);
 
 // Loading views reflow inside their cards instead of relying on shell clipping.
 assert.match(inspirationLoading, /max-w-\[1280px\]/);
-assert.match(generationLoading, /mt-3 flex flex-wrap gap-1\.5/);
+assert.match(
+  generationLoading,
+  /mt-3 flex h-\[6\.75rem\] flex-wrap gap-1\.5 overflow-hidden/,
+);
 assert.match(homeLoading, /w-72 max-w-full/);
 assert.match(galleryLoading, /flex-wrap/);
 assert.match(spendLoading, /lg:w-72/);
@@ -235,7 +238,12 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?height:\s*6\.75rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?overflow:\s*hidden/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
+assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /Suspense/);
+assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
+assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);

@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { canRunPromptImprovement } from "@/lib/ai/prompt-improvement-ui";
 import { cn } from "@/lib/utils";
 import { CREATIVE_SPARKS, RATIO_LABELS } from "./form-constants";
+import { RatioIcon } from "./form-ratio-icon";
 import { PromptTemplatesControl } from "./prompt-templates-control";
 import type { GenerateFormActions, GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
@@ -175,7 +176,7 @@ export function GenerateFormControls({
           </div>
         )}
 
-        <div data-generate-sparks="true" className="mt-3 flex flex-wrap gap-1.5">
+        <div data-generate-sparks="true" className="mt-3 flex h-[6.75rem] flex-wrap gap-1.5 overflow-hidden">
           {CREATIVE_SPARKS.map((spark) => (
             <button
               key={spark}
@@ -381,23 +382,5 @@ export function GenerateFormControls({
       {continuitySection}
       {swapSection}
     </div>
-  );
-}
-
-
-function RatioIcon({ ratio }: { ratio: string }) {
-  const [width, height] = ratio.split(":").map(Number);
-  const safeWidth = Number.isFinite(width) ? width : 1;
-  const safeHeight = Number.isFinite(height) ? height : 1;
-  const max = Math.max(safeWidth, safeHeight);
-
-  return (
-    <span
-      className="block rounded-[2px] border-[1.5px] border-current"
-      style={{
-        width: `${Math.max(7, Math.round((safeWidth / max) * 13))}px`,
-        height: `${Math.max(7, Math.round((safeHeight / max) * 13))}px`,
-      }}
-    />
   );
 }

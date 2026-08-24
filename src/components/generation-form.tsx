@@ -22,9 +22,9 @@ import {
 } from "@/app/(app)/generate/generation-requests";
 import { useGenerationForm } from "@/app/(app)/generate/use-generation-form";
 
-export function GenerationForm({ models }: GenerationFormProps) {
+export function GenerationForm({ models, initialQuery = "" }: GenerationFormProps) {
   const router = useRouter();
-  const form = useGenerationForm(models);
+  const form = useGenerationForm(models, initialQuery);
   const { selectedDefinition, avatarId, videoReferenceFileId, collectionAssetIds, prompt, vibe, improvement } =
     form;
 

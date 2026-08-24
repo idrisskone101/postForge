@@ -7,7 +7,7 @@ import { CharacterCategoryRail } from "./character-category-rail";
 import { CharacterPreviewStage } from "./character-preview-stage";
 import { useCharacterBuilder } from "./use-character-builder";
 
-export function CharacterBuilderClient() {
+export function CharacterBuilderClient({ editId = null }: { editId?: string | null }) {
   const {
     loading,
     attributes,
@@ -22,7 +22,7 @@ export function CharacterBuilderClient() {
     setImportValue,
     applyImport,
     toast,
-  } = useCharacterBuilder();
+  } = useCharacterBuilder(editId);
   if (loading) {
     return <div className="pf-content-viewport grid place-items-center"><Loader2 className="size-7 animate-spin text-[var(--pf-orange)]" /></div>;
   }

@@ -15,8 +15,6 @@ import {
   createProjectFromTemplate,
   DEFAULT_SLIDESHOW_TEMPLATES,
 } from "./fixtures";
-import { PublishDialog } from "./publish-dialog";
-import { SlideshowEditor } from "./slideshow-editor";
 import {
   generateStudioCreatorProject,
   type StudioCreatorProgress,
@@ -44,7 +42,11 @@ import {
   StudioDraftsLoading,
   StudioToast,
 } from "./studio-overlays";
-import { TemplateDialog } from "./template-dialog";
+import {
+  PublishDialog,
+  SlideshowEditor,
+  TemplateDialog,
+} from "./slideshow-studio-islands";
 import {
   isLocalSlideshowId,
   type SlideshowCollection,

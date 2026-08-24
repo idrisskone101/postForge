@@ -4,6 +4,7 @@ import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
 
 export interface GenerationFormProps {
   models: ModelDefinition[];
+  initialQuery?: string;
 }
 
 export interface GenerateFormModel {

@@ -1,8 +1,14 @@
-import { Suspense } from "react";
 import { UGCCloneForm } from "@/components/ugc-clone-form";
 import { UGCCloneQueue } from "@/components/ugc-clone-queue";
+import { CloneHandoffQueryProvider } from "@/lib/clone-handoff-query-context";
+import { appSearchParamsToQuery } from "@/lib/search-params-query";
 
-export default function UGCClonePage() {
+type UGCClonePageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function UGCClonePage({ searchParams }: UGCClonePageProps) {
+  const initialQuery = appSearchParamsToQuery(await searchParams);
   return (
     <div className="pf-content-viewport overflow-x-hidden bg-background">
       <div className="border-b border-border bg-[var(--pf-canvas)]">
@@ -18,12 +24,12 @@ export default function UGCClonePage() {
         </div>
       </div>
       <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-        <Suspense fallback={null}>
+        <CloneHandoffQueryProvider query={initialQuery}>
           <UGCCloneForm />
           <div className="mt-6 pb-24">
             <UGCCloneQueue />
           </div>
-        </Suspense>
+        </CloneHandoffQueryProvider>
       </div>
     </div>
   );

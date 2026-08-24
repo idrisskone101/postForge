@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { apiGet } from "@/lib/api/client";
 import {
   consumeCloneHandoffQuery,
@@ -19,6 +19,7 @@ export function useCloneRefImages({
   avatarId,
   fetchSavedReferences,
   referenceFileIdParam,
+  initialQuery = "",
   setSubmitError,
   setSelectedSavedReferenceId,
   setSelectedCollectionAssetId,
@@ -27,13 +28,13 @@ export function useCloneRefImages({
   avatarId: string | null;
   fetchSavedReferences: (nextAvatarId: string) => Promise<void>;
   referenceFileIdParam: string | null;
+  initialQuery?: string;
   setSubmitError: (message: string | null) => void;
   setSelectedSavedReferenceId: (value: string | null) => void;
   setSelectedCollectionAssetId: (value: string | null) => void;
   setActiveSetupStep: (step: CloneSetupStep) => void;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [refImages, setRefImages] = useState<RefImageEntry[]>([]);
   const [selectedRefIndex, setSelectedRefIndex] = useState<number>(0);
   const [refPrompt, setRefPrompt] = useState("");
@@ -113,7 +114,7 @@ export function useCloneRefImages({
       } finally {
         if (!cancelled && shouldConsumeQuery) {
           const nextQuery = consumeCloneHandoffQuery(
-            searchParams.toString(),
+            initialQuery,
             "referenceFileId"
           );
           router.replace(nextQuery ? `/ugc-clone?${nextQuery}` : "/ugc-clone");
@@ -127,7 +128,7 @@ export function useCloneRefImages({
   }, [
     referenceFileIdParam,
     router,
-    searchParams,
+    initialQuery,
     setActiveSetupStep,
     setSelectedCollectionAssetId,
     setSelectedSavedReferenceId,

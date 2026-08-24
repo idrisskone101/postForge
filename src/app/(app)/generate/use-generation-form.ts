@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import type { SwapUploadedAsset } from "@/components/swap-input-section";
 import { getContinuityVideoModel } from "@/lib/ai/models";
 import type { ModelDefinition, SwapMode } from "@/lib/ai/types";
@@ -15,10 +14,9 @@ import { resolveGenerationFormInitialState } from "./use-generation-form-helpers
 import { useGenerationVibe } from "./use-generation-vibe";
 import { usePromptImprovement } from "./use-prompt-improvement";
 
-export function useGenerationForm(models: ModelDefinition[]) {
-  const searchParams = useSearchParams();
+export function useGenerationForm(models: ModelDefinition[], initialQuery = "") {
   const [initialState] = useState(() =>
-    resolveGenerationFormInitialState(models, searchParams)
+    resolveGenerationFormInitialState(models, new URLSearchParams(initialQuery))
   );
 
   const [selectedModel, setSelectedModel] = useState<string | null>(

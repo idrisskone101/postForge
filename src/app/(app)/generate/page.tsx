@@ -1,12 +1,20 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { CircleHelp, History } from "lucide-react";
 import { GenerationForm } from "@/components/generation-form";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { getAvailableModels } from "@/lib/ai/model-availability";
+import { appSearchParamsToQuery } from "@/lib/search-params-query";
 
-export default async function GeneratePage() {
-  const models = await getAvailableModels();
+type GeneratePageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function GeneratePage({ searchParams }: GeneratePageProps) {
+  const [models, params] = await Promise.all([
+    getAvailableModels(),
+    searchParams,
+  ]);
+  const initialQuery = appSearchParamsToQuery(params);
 
   return (
     <div data-workspace-page="true" className="min-w-0 px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:pb-8">
@@ -29,20 +37,7 @@ export default async function GeneratePage() {
           </Link>
         </div>
       </WorkspaceHeaderAccessory>
-      <Suspense
-        fallback={
-          <div className="px-1 py-6">
-            <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em]">
-              Generate
-            </h1>
-            <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
-              Loading the studio.
-            </p>
-          </div>
-        }
-      >
-        <GenerationForm models={models} />
-      </Suspense>
+      <GenerationForm models={models} initialQuery={initialQuery} />
     </div>
   );
 }

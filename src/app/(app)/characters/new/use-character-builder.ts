@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildCharacterImagePrompt,
@@ -27,10 +27,8 @@ function makeCharacterId() {
   return `character_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function useCharacterBuilder() {
+export function useCharacterBuilder(editId: string | null = null) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams.get("id");
   const [recordId, setRecordId] = useState(() => editId ?? makeCharacterId());
   const [name, setName] = useState("Untitled character");
   const [attributes, setAttributes] = useState<CharacterAttributes>({

@@ -46,7 +46,7 @@ export function CharacterPreviewStage({
       aria-busy={rendering}
       className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-border bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
     >
-      <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
+      <div className="relative z-10 flex flex-nowrap items-start justify-between gap-3 overflow-hidden">
         <div>
           <p className="text-[12px] text-white/70">Photographic recipe preview</p>
           <p id="character-preview-generation-cost" className="mt-1 max-w-[310px] text-[12px] leading-4 text-white/60">{previewRequiresRender ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe." : "Save as a draft without generating. Render a preview when you want to make this identity reusable."}</p>

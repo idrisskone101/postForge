@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useCloneHandoffQuery } from "@/lib/clone-handoff-query-context";
 import { type TikTokVideoInfo } from "@/components/tiktok-input";
 import {
   calculateEstimatedCost,
@@ -44,7 +45,8 @@ import { useCloneRefImages } from "@/app/(app)/ugc-clone/use-clone-ref-images";
 
 export function useCloneForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const initialQuery = useCloneHandoffQuery();
+  const searchParams = new URLSearchParams(initialQuery);
   const { sourceId: sourceIdParam, referenceFileId: referenceFileIdParam, sourceUrl: sourceUrlParam } =
     readCloneHandoffQuery(searchParams);
 
@@ -85,6 +87,7 @@ export function useCloneForm() {
     avatarId: identity.avatarId,
     fetchSavedReferences: identity.fetchSavedReferences,
     referenceFileIdParam,
+    initialQuery,
     setSubmitError,
     setSelectedSavedReferenceId: identity.setSelectedSavedReferenceId,
     setSelectedCollectionAssetId,
