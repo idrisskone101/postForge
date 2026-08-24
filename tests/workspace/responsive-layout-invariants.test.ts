@@ -245,6 +245,10 @@ assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-automation-overlay="true"/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /position: "fixed"/);
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-filters="true"\]\{display:grid/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
 assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);

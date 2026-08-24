@@ -72,7 +72,7 @@ export function JobsActivity({ activity }: JobsActivityProps) {
           data-jobs-summary="true"
           aria-label="Job activity summary"
           className="grid grid-cols-2 gap-3 min-[860px]:grid-cols-4"
-          style={{ minHeight: "10.75rem" }}
+          style={{ height: "10.75rem", overflow: "hidden" }}
         >
           <SummaryCard label="Running now" value={counts.active} />
           <SummaryCard label="Completed · 30 days" value={counts.completed} />
@@ -80,8 +80,14 @@ export function JobsActivity({ activity }: JobsActivityProps) {
           <SummaryCard label="Created · 30 days" value={counts.total} />
         </section>
 
-        <section className="mt-3 overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] shadow-[var(--pf-shadow-2xs)]">
-          <div className="flex flex-col gap-3 border-b border-[var(--pf-border)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
+        <section
+          data-jobs-board="true"
+          className="mt-3 overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] shadow-[var(--pf-shadow-2xs)]"
+        >
+          <div
+            data-jobs-filters="true"
+            className="flex flex-col gap-3 border-b border-[var(--pf-border)] p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+          >
             <div className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-[var(--pf-active)] p-1" aria-label="Filter jobs by status">
               {STATUS_FILTERS.map((filter) => (
                 <Link
@@ -324,8 +330,8 @@ function EmptyJobs({ status }: { status: JobsStatusFilter }) {
   return (
     <div
       data-jobs-empty="true"
-      className="flex min-h-[300px] flex-col items-center justify-center px-5 py-10 text-center"
-      style={{ minHeight: 300 }}
+      className="flex h-[300px] flex-col items-center justify-center overflow-hidden px-5 py-10 text-center"
+      style={{ height: 300, overflow: "hidden" }}
     >
       <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
         {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}

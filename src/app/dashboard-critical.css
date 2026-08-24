@@ -517,11 +517,38 @@ body {
 }
 
 [data-jobs-summary="true"] {
-  min-height: 10.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  height: 10.75rem;
+  overflow: hidden;
 }
 
 [data-jobs-empty="true"] {
-  min-height: 18.75rem;
+  height: 18.75rem;
+  overflow: hidden;
+}
+
+[data-jobs-board="true"] {
+  margin-top: 0.75rem;
+}
+
+[data-jobs-filters="true"] {
+  height: 7.75rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-spend-page="true"] > * + * {
+  margin-top: 1rem;
+}
+
+[data-automation-footer="true"] {
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  height: 3.25rem;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 [data-gallery-page="true"] {
@@ -540,10 +567,38 @@ body {
   box-sizing: border-box;
 }
 
+[data-gallery-toolbar="true"] > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+[data-gallery-filters="true"] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+}
+
+[data-gallery-tools="true"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 @media (min-width: 768px) {
   [data-gallery-toolbar="true"] {
     height: auto;
     overflow: visible;
+  }
+
+  [data-gallery-tools="true"] {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  [data-gallery-filters="true"] {
+    display: flex;
+    width: fit-content;
   }
 }
 

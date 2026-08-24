@@ -132,6 +132,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
       >
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <div
+            data-gallery-filters="true"
             className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--pf-active)] p-1 sm:flex sm:w-fit sm:items-center"
             aria-label="Output review status filters"
           >
@@ -164,7 +165,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
             ))}
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div data-gallery-tools="true" className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-56">
               <Search className="size-4 shrink-0" />
               <span className="sr-only">Search gallery</span>

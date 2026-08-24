@@ -302,7 +302,10 @@ export function AutomationBuilderPhaseForm({
           </div>
         </fieldset>
       </div>
-      <div className="mt-7 flex justify-between border-t border-border pt-4">
+      <div
+        data-automation-footer="true"
+        className="mt-7 flex justify-between border-t border-border pt-4"
+      >
         <button
           onClick={() => setPhase(PHASES[Math.max(0, phaseIndex - 1)])}
           disabled={phaseIndex === 0}
