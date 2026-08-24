@@ -72,6 +72,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
+          # Retry briefly so a newly finished `kode` check is visible to protection.
           for attempt in 1 2 3 4 5 6; do
             if gh pr merge "$PR_NUMBER" --squash --match-head-commit "$HEAD_SHA" --repo "$GITHUB_REPOSITORY"; then
               exit 0
