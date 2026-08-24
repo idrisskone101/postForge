@@ -79,9 +79,6 @@ export function useAutomationBuilderResources({
               : "Source asset could not be loaded"
           );
         });
-    } else {
-      setLoadedSourceFile(null);
-      setSourceFailedId(null);
     }
 
     fetchIntegrations({ signal: controller.signal })
