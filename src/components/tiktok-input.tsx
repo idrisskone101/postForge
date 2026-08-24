@@ -242,7 +242,7 @@ export function TikTokInput({
           <input
             type="url"
             aria-label="TikTok video URL"
-            placeholder="https://www.tiktok.com/@user/video/..."
+            placeholder="Paste TikTok URL"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={isDownloading}

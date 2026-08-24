@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/client", "satori"],
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
-    inlineCss: true,
   },
   outputFileTracingIncludes: {
     "/api/slideshows/overlay": ["./src/lib/slideshow/fonts/**/*"],

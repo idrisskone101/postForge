@@ -950,7 +950,7 @@
 @layer components {
   .policy-copy p,
   .policy-copy li {
-    text-wrap: pretty;
+    text-wrap: wrap;
   }
 
   .policy-copy strong {

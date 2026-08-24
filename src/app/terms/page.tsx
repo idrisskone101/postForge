@@ -19,7 +19,9 @@ export default function TermsPage() {
           title: "Acceptance and deployment ownership",
           content: (
             <>
-              <p>By using PostForge, you agree to these terms. PostForge is currently designed as self-hosted, single-operator software. The operator controls the deployment, infrastructure, credentials, configured providers, and any access granted to another person.</p>
+              <p>By using PostForge, you agree to these terms.</p>
+              <p className="mt-3">PostForge is currently designed as self-hosted, single-operator software.</p>
+              <p className="mt-3">The operator controls the deployment, infrastructure, credentials, configured providers, and any access granted to another person.</p>
             </>
           ),
         },

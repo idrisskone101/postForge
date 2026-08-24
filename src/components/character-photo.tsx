@@ -37,6 +37,7 @@ export function CharacterPhoto({
         className="object-cover"
         unoptimized
         priority={source === DEFAULT_CHARACTER_PHOTO}
+        fetchPriority={source === DEFAULT_CHARACTER_PHOTO ? "high" : "auto"}
         onError={() => {
           if (source !== DEFAULT_CHARACTER_PHOTO) {
             onLoadError?.();

@@ -88,14 +88,22 @@ export function CloneActionBar({
             <CloneModelSelect model={videoSelect} />
             <CloneModelSelect model={referenceSelect} />
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
+              <label className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
                 <span className="truncate text-[13px] font-semibold text-foreground">Sound</span>
-                <Switch checked={keepOriginalSound} onCheckedChange={onToggleSound} />
-              </div>
-              <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
+                <Switch
+                  checked={keepOriginalSound}
+                  onCheckedChange={onToggleSound}
+                  aria-label="Keep original sound"
+                />
+              </label>
+              <label className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
                 <span className="truncate text-[13px] font-semibold text-foreground">Remove text</span>
-                <Switch checked={removeTextOverlays} onCheckedChange={onToggleTextOverlays} />
-              </div>
+                <Switch
+                  checked={removeTextOverlays}
+                  onCheckedChange={onToggleTextOverlays}
+                  aria-label="Remove on-screen text"
+                />
+              </label>
             </div>
           </div>
         )}
@@ -137,25 +145,33 @@ export function CloneActionBar({
 
           <CloneModelSelect model={referenceSelect} className="min-w-0" />
 
-          <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
+          <label className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
             <div className="flex min-w-0 items-center gap-2">
               <Volume2 className="size-4 shrink-0 text-muted-foreground" />
               <p className="truncate text-[13px] font-semibold text-foreground">
                 Sound
               </p>
             </div>
-            <Switch checked={keepOriginalSound} onCheckedChange={onToggleSound} />
-          </div>
+            <Switch
+              checked={keepOriginalSound}
+              onCheckedChange={onToggleSound}
+              aria-label="Keep original sound"
+            />
+          </label>
 
-          <div className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
+          <label className="flex h-10 min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3">
             <p className="truncate text-[13px] font-semibold text-foreground">
               Text
               {removeTextOverlays && (
                 <span className="ml-1 font-mono text-[12px] text-accent-green">+{formatCost(textErasureCost)}</span>
               )}
             </p>
-            <Switch checked={removeTextOverlays} onCheckedChange={onToggleTextOverlays} />
-          </div>
+            <Switch
+              checked={removeTextOverlays}
+              onCheckedChange={onToggleTextOverlays}
+              aria-label="Remove on-screen text"
+            />
+          </label>
 
           <button
             type="button"
