@@ -87,10 +87,10 @@ while (( SECONDS < deadline )); do
     if [[ "$http_code" == "200" ]]; then
       exit 0
     fi
-    if [[ "$http_code" == "503" ]]; then
+    echo "kode:smoke: expected HTTP 200 from ${url}, got ${http_code}" >&2
+    if [[ "$http_code" == 5* ]]; then
       echo "kode:smoke: /api/health pings Postgres (SELECT 1). Set DATABASE_URL and start Postgres (same requirement as kode:check)." >&2
     fi
-    echo "kode:smoke: expected HTTP 200 from ${url}" >&2
     exit 1
   fi
 
