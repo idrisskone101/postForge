@@ -15,29 +15,22 @@ import {
   applySourceDecisionToCounts,
   filterVideosBySourceUsage,
   inspirationPageError,
-  markAccountSyncError,
-  markAccountSyncing,
-  mergeAccountIntoState,
   SOURCE_FEED_FILTERS,
+  type VideoPageQuery,
   withId,
   withoutId,
 } from "./inspiration-models";
 import {
+  refreshWorkspaceAccount,
+  deleteWorkspaceAccount,
+  trackWorkspaceAccount,
+} from "./inspiration-account-commands";
+import {
   copyInspirationSourceUrl,
-  deleteInspirationAccount,
   fetchInspirationVideoPage,
-  refreshInspirationAccount,
   setInspirationVideoRejection,
-  trackInspirationAccount,
 } from "./inspiration-mutations";
 import { useInspirationAccountList } from "./use-inspiration-account-list";
-
-type VideoPageQuery = {
-  accountId?: string | null;
-  usage?: InspirationSourceFeedFilter;
-  search?: string;
-  sort?: InspirationSourceSort;
-};
 
 export interface InspirationPageClientProps {
   initialAccountPage: InspirationAccountPage;
@@ -247,67 +240,38 @@ export function useInspirationWorkspace({
   }, [copiedVideoId]);
 
   async function handleTrackAccount() {
-    if (!handleInput.trim()) return;
-
-    setIsAddingAccount(true);
-    setPageError(null);
-
-    try {
-      const account = await trackInspirationAccount(handleInput.trim());
-      setAccounts((prev) => mergeAccountIntoState(prev, account));
-      setHandleInput("");
-      await replaceVideoPage();
-    } catch (error) {
-      setPageError(inspirationPageError(error, "Failed to track creator."));
-    } finally {
-      setIsAddingAccount(false);
-    }
+    await trackWorkspaceAccount({
+      handle: handleInput,
+      setHandleInput,
+      setIsAddingAccount,
+      setPageError,
+      setAccounts,
+      replaceVideoPage,
+    });
   }
 
   async function handleRefreshAccount(accountId: string) {
-    const attemptAt = new Date().toISOString();
-    setRefreshingIds((prev) => withId(prev, accountId));
-    setAccounts((prev) => markAccountSyncing(prev, accountId, attemptAt));
-
-    try {
-      const refreshed = await refreshInspirationAccount(accountId);
-      setAccounts((prev) => mergeAccountIntoState(prev, refreshed));
-      await replaceVideoPage();
-    } catch (error) {
-      const message = inspirationPageError(error, "Failed to refresh creator.");
-      setPageError(message);
-      setAccounts((prev) =>
-        markAccountSyncError(prev, accountId, attemptAt, message)
-      );
-    } finally {
-      setRefreshingIds((prev) => withoutId(prev, accountId));
-    }
+    await refreshWorkspaceAccount({
+      accountId,
+      setRefreshingIds,
+      setAccounts,
+      setPageError,
+      replaceVideoPage,
+    });
   }
 
   async function handleDeleteAccount(account: TrackedInspirationAccount) {
-    if (!window.confirm(`Remove ${account.handleDisplay} from Inspiration?`)) {
-      return;
-    }
-
-    setDeletingIds((prev) => withId(prev, account.id));
-    setPageError(null);
-
-    try {
-      await deleteInspirationAccount(account.id);
-      setAccounts((prev) => prev.filter((item) => item.id !== account.id));
-      if (selectedVideo?.accountId === account.id) {
-        setSelectedVideoId(null);
-      }
-      if (activeFilter === account.id) {
-        setActiveFilterAndReload("all");
-      } else {
-        await replaceVideoPage();
-      }
-    } catch (error) {
-      setPageError(inspirationPageError(error, "Failed to remove creator."));
-    } finally {
-      setDeletingIds((prev) => withoutId(prev, account.id));
-    }
+    await deleteWorkspaceAccount({
+      account,
+      selectedVideoAccountId: selectedVideo?.accountId,
+      activeFilter,
+      setDeletingIds,
+      setAccounts,
+      setPageError,
+      setSelectedVideoId,
+      setActiveFilterAndReload,
+      replaceVideoPage,
+    });
   }
 
   function handleUseInClone(video: InspirationVideoCard) {

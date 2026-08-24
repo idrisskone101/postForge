@@ -2,10 +2,18 @@ import { formatRelativeDate } from "@/lib/utils/format-date";
 import type {
   InspirationSourceDecision,
   InspirationSourceFeedFilter,
+  InspirationSourceSort,
   InspirationSourceUsageCounts,
   InspirationVideoCard,
   TrackedInspirationAccount,
 } from "@/lib/inspiration/types";
+
+export type VideoPageQuery = {
+  accountId?: string | null;
+  usage?: InspirationSourceFeedFilter;
+  search?: string;
+  sort?: InspirationSourceSort;
+};
 
 export const SOURCE_FEED_FILTERS: Array<{
   value: InspirationSourceFeedFilter;
