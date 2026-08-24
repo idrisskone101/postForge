@@ -88,7 +88,9 @@ export function HomeCockpit({ dashboard }: HomeCockpitProps) {
             <h1 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)]">
               Home
             </h1>
-            <p className="mt-1 text-[13px] text-[var(--pf-muted)]">{todayLabel}</p>
+            <p className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
+              {todayLabel}
+            </p>
           </div>
           <Link href="/ugc-clone" prefetch={false} className="pf-button-primary shrink-0">
             <span className="text-base leading-none">+</span> New Clone

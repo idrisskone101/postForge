@@ -55,7 +55,10 @@ export function CharacterPreviewStage({
       </div>
 
       <div className="relative z-10 grid min-h-0 flex-1 place-items-center py-4 min-[1280px]:py-3">
-        <div className="aspect-[3/4] h-auto max-h-full w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]">
+        <div
+          data-character-lcp-frame="true"
+          className="aspect-[3/4] h-auto max-h-full w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
+        >
           <CharacterPhoto
             generatedFileId={previewFileId}
             avatarId={!previewFileId && previewIsPhotographic ? avatarId : null}

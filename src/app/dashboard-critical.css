@@ -1,0 +1,150 @@
+/* First-paint dashboard chrome. Full utilities load from /dashboard.css after paint. */
+:root {
+  color-scheme: light;
+  --pf-canvas: #fafafa;
+  --pf-surface: #ffffff;
+  --pf-ink: #18181b;
+  --pf-muted: #52525b;
+  --pf-border: #e4e4e7;
+  --pf-rail: #ffffff;
+  --pf-rail-ink: #18181b;
+  --pf-rail-muted: #52525b;
+  --pf-rail-border: #e4e4e7;
+  --pf-orange: #c2410c;
+}
+
+.dark {
+  color-scheme: dark;
+  --pf-canvas: #0a0a0b;
+  --pf-surface: #131316;
+  --pf-ink: #fafafa;
+  --pf-muted: #a1a1aa;
+  --pf-border: #26262b;
+  --pf-rail: #0a0a0b;
+  --pf-rail-ink: #fafafa;
+  --pf-rail-muted: #a1a1aa;
+  --pf-rail-border: #26262b;
+  --pf-orange: #c2410c;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  min-width: 320px;
+  background: var(--pf-canvas);
+  color: var(--pf-ink);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+#workspace-root {
+  min-height: 100dvh;
+}
+
+#workspace-mobile-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  height: calc(58px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 0.75rem 0;
+  border-bottom: 1px solid var(--pf-rail-border);
+  background: var(--pf-rail);
+}
+
+#workspace-sidebar {
+  display: none;
+}
+
+#workspace-shell {
+  min-height: 100dvh;
+  min-width: 0;
+  overflow-x: hidden;
+  background: var(--pf-canvas);
+  padding-top: calc(58px + env(safe-area-inset-top));
+}
+
+#workspace-header-grid {
+  min-height: 120px;
+  padding: 1.5rem 1.25rem;
+}
+
+#workspace-header-grid h1,
+.pf-content-viewport header h1 {
+  margin: 0;
+  max-width: 12rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--pf-ink);
+}
+
+#workspace-header-grid h1 {
+  font-size: 28px;
+}
+
+.pf-content-viewport header h1 {
+  font-size: 30px;
+}
+
+[data-character-preview-stage="true"] {
+  min-height: 620px;
+  background: #09090b;
+}
+
+[data-character-lcp-frame="true"] {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+[data-character-lcp-frame="true"] span,
+[data-character-lcp-frame="true"] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 768px) {
+  #workspace-mobile-bar {
+    display: none;
+  }
+
+  #workspace-sidebar {
+    display: flex;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: 72px;
+    border-right: 1px solid var(--pf-rail-border);
+    background: var(--pf-rail);
+  }
+
+  #workspace-shell {
+    margin-left: 72px;
+    padding-top: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  #workspace-sidebar {
+    width: 16rem;
+  }
+
+  #workspace-shell {
+    margin-left: 16rem;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar {
+    width: 72px;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-shell {
+    margin-left: 72px;
+  }
+}

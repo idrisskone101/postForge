@@ -5,6 +5,7 @@ function source(relativePath: string) {
   return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
+const pkg = source("package.json");
 const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
@@ -222,5 +223,16 @@ assert.match(generationStudio, /bg-\[#09090B\]/);
 assert.match(generationEditor, /bg-\[#09090B\]/);
 assert.match(generationEditor, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
+
+// Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
+assert.match(appLayout, /dashboard-critical\.css/);
+assert.match(appLayout, /\/dashboard\.css/);
+assert.doesNotMatch(appLayout, /globals\.css/);
+assert.doesNotMatch(layout, /globals\.css/);
+assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);
+assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
+assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
+assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs"/);
+assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/);
 
 console.log("responsive layout invariant tests passed");
