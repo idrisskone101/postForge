@@ -1298,6 +1298,32 @@
   }
 }
 
+#workspace-header-grid h1 {
+  margin: 0 !important;
+  max-width: 12rem !important;
+  height: 31px !important;
+  overflow: hidden !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+.pf-content-viewport header h1 {
+  margin: 0 !important;
+  max-width: 12rem !important;
+  height: 33px !important;
+  overflow: hidden !important;
+  font-size: 30px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
 @media (max-width: 767.98px) {
   [data-slideshow-create="true"] {
     height: 52rem !important;
@@ -1566,6 +1592,11 @@
   gap: 0.25rem !important;
 }
 
+[data-gallery-filters="true"] button {
+  height: 2.25rem !important;
+  box-sizing: border-box !important;
+}
+
 [data-gallery-tools="true"] {
   display: flex !important;
   flex-direction: column !important;
@@ -1605,10 +1636,17 @@
   box-sizing: border-box !important;
 }
 
+[data-spend-stats="true"] {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.75rem !important;
+}
+
 [data-spend-stats="true"] > article {
   height: 158px !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+  padding: 1rem !important;
 }
 
 [data-spend-stats="true"] strong {
@@ -1632,11 +1670,15 @@
 
 [data-spend-stats="true"] p {
   margin-top: 0.25rem !important;
+  width: 9.125rem !important;
+  max-width: 100% !important;
   height: 11px !important;
   overflow: hidden !important;
   font-size: 11px !important;
   line-height: 1 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;
+  white-space: nowrap !important;
 }
 
 [data-automation-fields="true"] {
@@ -1656,6 +1698,16 @@
   box-sizing: border-box !important;
   padding: 1.5rem !important;
   text-align: center !important;
+}
+
+.pf-empty-stage [data-empty-stack="true"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  height: 25rem !important;
+  overflow: hidden !important;
 }
 
 .pf-empty-stage h2,

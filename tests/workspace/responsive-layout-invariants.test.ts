@@ -266,6 +266,9 @@ assert.match(
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:center;height:650px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-stack="true"\]\{display:flex/);
+assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /data-empty-stack="true"/);
+assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-stack="true"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-owned="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]/);
