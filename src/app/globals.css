@@ -1474,3 +1474,18 @@
     flex-direction: column !important;
   }
 }
+
+[data-automation-form="true"] {
+  padding: 1.25rem !important;
+}
+
+[data-spend-page="true"] {
+  padding: 1.25rem !important;
+}
+
+@media (max-width: 767.98px) {
+  [data-gallery-toolbar="true"] {
+    height: 15.375rem !important;
+    overflow: hidden !important;
+  }
+}

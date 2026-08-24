@@ -104,7 +104,7 @@ export function SpendPageContent({
 
   return (
     <TooltipProvider>
-    <div className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
+    <div data-spend-page="true" className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">

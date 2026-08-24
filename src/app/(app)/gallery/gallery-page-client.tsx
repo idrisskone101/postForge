@@ -123,7 +123,10 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
         </div>
       )}
 
-      <section className="rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-2xs)]">
+      <section
+        data-gallery-toolbar="true"
+        className="rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-2xs)]"
+      >
         <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
           <div
             className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--pf-active)] p-1 sm:flex sm:w-fit sm:items-center"

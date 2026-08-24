@@ -38,7 +38,10 @@ export function AutomationBuilderPhaseForm({
   } = workspace;
 
   return (
-    <aside className="relative border-b border-[var(--pf-border)] bg-card p-5 lg:border-b-0 lg:border-r">
+    <aside
+      data-automation-form="true"
+      className="relative border-b border-[var(--pf-border)] bg-card p-5 lg:border-b-0 lg:border-r"
+    >
       <div className="flex gap-3">
         <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--pf-active)] text-[13px] font-semibold text-muted-foreground">
           0{phaseIndex + 1}
