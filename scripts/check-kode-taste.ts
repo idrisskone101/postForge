@@ -9,11 +9,19 @@ export const PROP_BAG_LIMIT = 5;
 
 const EXEMPT_PROP_KEYS = new Set(["children", "className", "key", "hidden"]);
 
+export type KodeTasteAllowlistRule =
+  | "fileLayout"
+  | "propBags"
+  | "useState"
+  | "useEffect"
+  | "innerHtml";
+
 export type KodeTasteAllowlist = {
   fileLayout: string[];
   propBags: string[];
   useState: string[];
   useEffect: string[];
+  innerHtml: string[];
 };
 
 export type KodeTasteViolation =
@@ -32,15 +40,16 @@ export type KodeTasteViolation =
     }
   | { kind: "use-state"; path: string; count: number }
   | { kind: "use-effect"; path: string; count: number }
+  | { kind: "inner-html"; path: string }
   | {
       kind: "stale-allowlist";
       path: string;
-      rule: "fileLayout" | "propBags" | "useState" | "useEffect";
+      rule: KodeTasteAllowlistRule;
     }
   | {
       kind: "missing-allowlist";
       path: string;
-      rule: "fileLayout" | "propBags" | "useState" | "useEffect";
+      rule: KodeTasteAllowlistRule;
     };
 
 const EMPTY_ALLOWLIST: KodeTasteAllowlist = {
@@ -48,7 +57,20 @@ const EMPTY_ALLOWLIST: KodeTasteAllowlist = {
   propBags: [],
   useState: [],
   useEffect: [],
+  innerHtml: [],
 };
+
+function normalizeAllowlist(
+  raw?: Partial<KodeTasteAllowlist>
+): KodeTasteAllowlist {
+  return {
+    fileLayout: raw?.fileLayout ?? [],
+    propBags: raw?.propBags ?? [],
+    useState: raw?.useState ?? [],
+    useEffect: raw?.useEffect ?? [],
+    innerHtml: raw?.innerHtml ?? [],
+  };
+}
 
 function posixRel(rootDir: string, absPath: string): string {
   return path.relative(rootDir, absPath).split(path.sep).join("/");
@@ -479,21 +501,32 @@ export function findHookPressure(
   return violations;
 }
 
+export function findInnerHtml(
+  relPath: string,
+  source: string
+): Extract<KodeTasteViolation, { kind: "inner-html" }> | null {
+  if (!/\bdangerouslySetInnerHTML\b/.test(source)) {
+    return null;
+  }
+  return { kind: "inner-html", path: relPath };
+}
+
 function allowlistSet(paths: readonly string[]): Set<string> {
   return new Set(paths);
 }
 
 export function checkKodeTaste(options: {
   rootDir: string;
-  allowlist?: KodeTasteAllowlist;
+  allowlist?: Partial<KodeTasteAllowlist>;
 }): KodeTasteViolation[] {
-  const allowlist = options.allowlist ?? EMPTY_ALLOWLIST;
+  const allowlist = normalizeAllowlist(options.allowlist);
   const files = collectReactModules(options.rootDir);
   const violations: KodeTasteViolation[] = [];
   const seenLayout = new Set<string>();
   const seenBags = new Set<string>();
   const seenState = new Set<string>();
   const seenEffect = new Set<string>();
+  const seenInnerHtml = new Set<string>();
 
   for (const relPath of files) {
     const absPath = path.join(options.rootDir, relPath);
@@ -514,6 +547,13 @@ export function checkKodeTaste(options: {
         }
       }
     }
+    const innerHtml = findInnerHtml(relPath, source);
+    if (innerHtml) {
+      seenInnerHtml.add(relPath);
+      if (!allowlistSet(allowlist.innerHtml).has(relPath)) {
+        violations.push(innerHtml);
+      }
+    }
     for (const pressure of findHookPressure(relPath, source)) {
       if (pressure.kind === "use-state") {
         seenState.add(relPath);
@@ -530,7 +570,7 @@ export function checkKodeTaste(options: {
   }
 
   const stale = (
-    rule: "fileLayout" | "propBags" | "useState" | "useEffect",
+    rule: KodeTasteAllowlistRule,
     listed: readonly string[],
     seen: Set<string>
   ): void => {
@@ -549,6 +589,7 @@ export function checkKodeTaste(options: {
   stale("propBags", allowlist.propBags, seenBags);
   stale("useState", allowlist.useState, seenState);
   stale("useEffect", allowlist.useEffect, seenEffect);
+  stale("innerHtml", allowlist.innerHtml, seenInnerHtml);
 
   violations.sort((left, right) => {
     const pathOrder = left.path.localeCompare(right.path);
@@ -586,6 +627,11 @@ export function formatKodeTasteViolations(
           `${violation.path}: ${violation.count} useEffect calls (limit ${USE_EFFECT_LIMIT})`
         );
         break;
+      case "inner-html":
+        lines.push(
+          `${violation.path}: dangerouslySetInnerHTML is banned; render React nodes or text instead`
+        );
+        break;
       case "stale-allowlist":
         lines.push(
           `${violation.path}: allowlisted for ${violation.rule} but no longer violates; remove it`
@@ -610,7 +656,9 @@ export function loadKodeTasteAllowlist(rootDir: string): KodeTasteAllowlist {
   if (!existsSync(allowlistPath)) {
     return EMPTY_ALLOWLIST;
   }
-  return JSON.parse(readFileSync(allowlistPath, "utf8")) as KodeTasteAllowlist;
+  return normalizeAllowlist(
+    JSON.parse(readFileSync(allowlistPath, "utf8")) as Partial<KodeTasteAllowlist>
+  );
 }
 
 export function fixFileLayout(options: {

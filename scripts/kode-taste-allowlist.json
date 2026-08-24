@@ -57,5 +57,8 @@
   ],
   "useEffect": [
     "src/app/ugc-inspiration/use-inspiration-workspace.ts"
+  ],
+  "innerHtml": [
+    "src/app/layout.tsx"
   ]
 }
