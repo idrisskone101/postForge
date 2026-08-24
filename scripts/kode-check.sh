@@ -14,3 +14,4 @@ pnpm check:kode-taste
 pnpm typecheck
 pnpm lint
 pnpm build
+pnpm kode:smoke

@@ -29,6 +29,7 @@
     "check:kode-taste": "tsx scripts/check-kode-taste.ts",
     "kode:setup": "bash scripts/kode-setup.sh",
     "kode:check": "bash scripts/kode-check.sh",
+    "kode:smoke": "bash scripts/kode-smoke.sh",
     "prune:playwright": "bash scripts/prune-playwright-artifacts.sh",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
