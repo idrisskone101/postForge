@@ -230,9 +230,12 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
 assert.match(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
-assert.match(appLayout, /#workspace-sidebar\{display:none\}/);
-assert.match(appLayout, /\[data-automation-fields="true"\]\{min-height:29\.625rem\}/);
-assert.match(appLayout, /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
+assert.match(appLayout, /FIRST_PAINT_CSS/);
+assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{min-height:29\.625rem\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
 assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
