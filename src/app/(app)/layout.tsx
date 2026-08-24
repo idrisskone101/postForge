@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import "../globals.css";
 
 export default async function AppLayout({
   children,
