@@ -1516,6 +1516,8 @@
 [data-jobs-empty="true"] {
   height: 18.75rem !important;
   overflow: hidden !important;
+  padding: 2.5rem 1.25rem !important;
+  box-sizing: border-box !important;
 }
 
 [data-jobs-board="true"] {
@@ -1596,6 +1598,8 @@
 [data-spend-controls="true"] {
   height: 10.75rem !important;
   overflow: hidden !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
 }
 
 [data-spend-stats="true"] > article {
@@ -1778,7 +1782,7 @@
 
 [data-settings-owned="true"] {
   display: grid !important;
-  grid-template-columns: 30px minmax(0, 1fr) auto !important;
+  grid-template-columns: 1.75rem minmax(0, 1fr) 1rem !important;
   align-items: center !important;
   gap: 0.75rem !important;
   margin-top: 1.25rem !important;
@@ -1788,8 +1792,20 @@
   border-radius: 0.5rem !important;
 }
 
+[data-settings-owned="true"] > span:first-child {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+}
+
+[data-settings-owned="true"] > svg:last-child {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
 [data-settings-copy="true"] {
   margin-top: 0.25rem !important;
+  height: 64px !important;
+  overflow: hidden !important;
   font-size: 12px !important;
   line-height: 16px !important;
   color: #52525b !important;

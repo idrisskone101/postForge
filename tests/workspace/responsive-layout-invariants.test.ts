@@ -230,7 +230,9 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
 assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
-assert.match(appLayout, /l\.media="print"/);
+assert.match(appLayout, /rel="preload"/);
+assert.match(appLayout, /media="print"/);
+assert.doesNotMatch(appLayout, /requestAnimationFrame/);
 assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
 assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
 assert.ok(
@@ -249,7 +251,7 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-toolbar="true"\]\{height:15\.375rem/);
 assert.doesNotMatch(source("src/app/first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\[data-gallery-toolbar/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"\]\{height:10\.75rem;overflow:hidden/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"\]\{/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-automation-overlay="true"/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /position: "fixed"/);

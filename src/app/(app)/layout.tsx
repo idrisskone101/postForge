@@ -11,9 +11,11 @@ export default async function AppLayout({
 
   return (
     <div id="workspace-root">
+      <link rel="preload" href="/dashboard.css" as="style" />
+      <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" media="print" />
       <script
         dangerouslySetInnerHTML={{
-          __html: `requestAnimationFrame(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="/dashboard.css";l.media="print";l.onload=function(){l.media="all"};document.head.appendChild(l)})`,
+          __html: `(function(l){function r(){l.media="all"}if(!l)return;l.addEventListener("load",r);if(l.sheet)r()})(document.getElementById("pf-dashboard-css"))`,
         }}
       />
       <noscript>
