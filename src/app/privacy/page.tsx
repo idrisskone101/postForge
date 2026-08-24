@@ -20,8 +20,10 @@ export default function PrivacyPage() {
           content: (
             <>
               <p>PostForge is self-hosted software designed for a single operator.</p>
-              <p className="mt-3">The person or organization running a deployment controls that deployment and is responsible for how it is configured and used.</p>
-              <p className="mt-3">This policy covers data processed by the PostForge application itself; connected platforms and infrastructure providers apply their own privacy terms.</p>
+              <p className="mt-3">The person running a deployment controls that deployment.</p>
+              <p className="mt-3">They are responsible for how it is configured and used.</p>
+              <p className="mt-3">This policy covers data processed by PostForge itself.</p>
+              <p className="mt-3">Connected platforms apply their own privacy terms.</p>
             </>
           ),
         },

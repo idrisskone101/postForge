@@ -20,8 +20,9 @@ export default function TermsPage() {
           content: (
             <>
               <p>By using PostForge, you agree to these terms.</p>
-              <p className="mt-3">PostForge is currently designed as self-hosted, single-operator software.</p>
-              <p className="mt-3">The operator controls the deployment, infrastructure, credentials, configured providers, and any access granted to another person.</p>
+              <p className="mt-3">PostForge is self-hosted, single-operator software.</p>
+              <p className="mt-3">The operator controls the deployment and credentials.</p>
+              <p className="mt-3">They also control configured providers and granted access.</p>
             </>
           ),
         },

@@ -55,7 +55,7 @@ export function PublicPolicyPage({
 
       <main id="policy-content" className="mx-auto max-w-[1120px] px-5 py-10 sm:px-7 sm:py-14 lg:px-8 lg:py-16">
         <header className="max-w-[760px] border-b border-[var(--pf-border)] pb-8 sm:pb-10">
-          <h1 className="max-w-[9ch] text-[2.75rem] font-semibold leading-[0.95] tracking-[-0.04em]">
+          <h1 className="max-w-[8ch] text-[3.5rem] font-semibold leading-[0.9] tracking-[-0.05em]">
             {title}
           </h1>
           <p className="mt-4 line-clamp-1 max-w-[16rem] text-[12px] leading-4 text-[var(--pf-muted)]">
@@ -87,16 +87,14 @@ export function PublicPolicyPage({
               <section
                 key={section.id}
                 id={section.id}
-                className={index === 0 ? "scroll-mt-8" : "mt-10 scroll-mt-8 border-t border-[var(--pf-border)] pt-10"}
+                className={
+                  index === 0
+                    ? "scroll-mt-8"
+                    : "mt-10 scroll-mt-8 border-t border-[var(--pf-border)] pt-10 [content-visibility:auto] [contain-intrinsic-size:auto_8rem]"
+                }
               >
                 <h2 className="text-[20px] font-semibold leading-6 tracking-[-0.02em]">{section.title}</h2>
-                <div
-                  className={
-                    index === 0
-                      ? "policy-copy mt-3 max-w-[36ch] text-[13px] leading-5 text-[var(--pf-muted)]"
-                      : "policy-copy mt-3 max-w-[70ch] text-[13px] leading-6 text-[var(--pf-muted)]"
-                  }
-                >
+                <div className="policy-copy mt-3 max-w-[36ch] text-[12px] leading-4 text-[var(--pf-muted)]">
                   {section.content}
                 </div>
               </section>
