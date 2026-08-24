@@ -126,10 +126,10 @@ export function CreateView() {
               <Sparkles className="size-4" />
             </span>
             <div>
-              <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+              <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold tracking-[-0.02em] text-foreground">
                 Start with one idea
               </h2>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="max-w-[8rem] line-clamp-1 text-[10px] text-muted-foreground">
                 PostForge writes the story. You review every slide.
               </p>
             </div>

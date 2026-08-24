@@ -86,7 +86,7 @@ export function GenerateFormControls({
       <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h2 className="max-w-[10rem] line-clamp-1 text-[12px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
+            <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
               Describe your {isVideo ? "video" : "image"}
             </h2>
           </div>

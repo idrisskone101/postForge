@@ -62,7 +62,7 @@ export function WorkspaceState({
       </div>
       <h2
         className={cn(
-          "max-w-[10rem] line-clamp-1 break-words text-[13px] font-semibold tracking-tight [overflow-wrap:anywhere]",
+          "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
           tone === "error" && "text-destructive"
         )}
       >

@@ -9,7 +9,7 @@ export default async function GeneratePage() {
   const models = await getAvailableModels();
 
   return (
-    <div className="min-w-0 px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:pb-8">
+    <div data-workspace-page="true" className="min-w-0 px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:pb-8">
       <WorkspaceHeaderAccessory>
         <div className="flex items-center gap-2">
           <Link

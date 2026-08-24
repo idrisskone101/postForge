@@ -1,4 +1,10 @@
 /* First-paint dashboard chrome. Full utilities load from /dashboard.css after paint. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   color-scheme: light;
   --pf-canvas: #fafafa;
@@ -34,7 +40,9 @@ body {
   min-width: 320px;
   background: var(--pf-canvas);
   color: var(--pf-ink);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #workspace-root {
@@ -66,7 +74,9 @@ body {
 }
 
 #workspace-header-grid {
+  display: grid;
   min-height: 120px;
+  gap: 1rem;
   padding: 1.5rem 1.25rem;
 }
 
@@ -88,8 +98,66 @@ body {
   font-size: 30px;
 }
 
+.pf-content-viewport {
+  min-width: 0;
+  min-height: calc(100dvh - 58px - env(safe-area-inset-top));
+  background: var(--pf-canvas);
+}
+
+.pf-content-viewport > .mx-auto {
+  max-width: 1280px;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.pf-content-viewport header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1.75rem;
+}
+
+[data-workspace-page] {
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+[data-workspace-state] {
+  display: flex;
+  min-height: 240px;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 0.5rem;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+}
+
+[data-workspace-state="empty"] {
+  min-height: 340px;
+}
+
+[data-workspace-state] h2 {
+  max-width: 5rem;
+  margin: 0;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 [data-character-preview-stage="true"] {
+  display: flex;
+  flex-direction: column;
   min-height: 620px;
+  padding: 1.25rem;
   background: #09090b;
 }
 
@@ -128,6 +196,10 @@ body {
   #workspace-shell {
     margin-left: 72px;
     padding-top: 0;
+  }
+
+  .pf-content-viewport {
+    min-height: 100dvh;
   }
 }
 
