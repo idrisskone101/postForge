@@ -10,7 +10,7 @@ type SpendStatCardsProps = {
 
 export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
   return (
-    <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+    <section data-spend-stats="true" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex items-start justify-between gap-3">
           <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Period Spend</span>

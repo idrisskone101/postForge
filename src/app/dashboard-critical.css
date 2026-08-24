@@ -492,6 +492,17 @@ body {
   box-sizing: border-box;
 }
 
+[data-spend-controls="true"] {
+  min-height: 10.75rem;
+  box-sizing: border-box;
+}
+
+[data-spend-stats="true"] > article {
+  height: 158px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 [data-spend-chart-slot="true"] {
   height: 276px;
   box-sizing: border-box;

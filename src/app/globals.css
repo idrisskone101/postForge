@@ -1510,3 +1510,24 @@
     overflow: hidden !important;
   }
 }
+
+[data-workspace-state="empty"] {
+  height: 340px !important;
+  min-height: 340px !important;
+  overflow: hidden !important;
+}
+
+[data-spend-controls="true"] {
+  min-height: 10.75rem !important;
+}
+
+[data-spend-stats="true"] > article {
+  height: 158px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+[data-automation-fields="true"] {
+  height: 29.625rem !important;
+  overflow: hidden !important;
+}

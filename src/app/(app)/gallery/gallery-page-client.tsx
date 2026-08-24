@@ -283,7 +283,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
               ? { href: "/generate", label: "Open Generate" }
               : undefined
           }
-          className="min-h-80"
+          className="h-[340px] overflow-hidden"
         />
       ) : (
         <>
