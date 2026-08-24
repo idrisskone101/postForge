@@ -17,12 +17,9 @@ jobs:
     name: kode
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      DATABASE_URL: postgresql://postforge:postforge@localhost:5432/postforge
-      STORAGE_DRIVER: database
-      STORAGE_LOCAL_PATH: ${{ runner.temp }}/postforge-outputs
-      NEXT_PUBLIC_BASE_URL: http://127.0.0.1:3000
-      POSTFORGE_PUBLIC_URL: http://127.0.0.1:3000
+    # DATABASE_URL lives in `.env` (from `.env.example`), not the job env.
+    # Isolation tests (`tests/_env/unreachable-database.ts`) only fall back to a
+    # dead port when process.env.DATABASE_URL is unset.
     services:
       postgres:
         image: postgres:16
@@ -49,7 +46,8 @@ jobs:
       - name: Prepare env and database
         run: |
           cp .env.example .env
-          mkdir -p "$STORAGE_LOCAL_PATH"
+          mkdir -p "${RUNNER_TEMP}/postforge-outputs"
+          sed -i "s|^STORAGE_LOCAL_PATH=.*|STORAGE_LOCAL_PATH=\"${RUNNER_TEMP}/postforge-outputs\"|" .env
           pnpm exec prisma migrate deploy
       - name: kode:check
         run: pnpm kode:check
