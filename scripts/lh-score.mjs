@@ -18,6 +18,10 @@ for (const route of routes) {
   const url = new URL(route, base).href;
   const slug = route === "/" ? "home" : route.replaceAll("/", "_").replace(/^_+/, "");
   const jsonPath = path.join(outDir, `${formFactor}-${slug}.json`);
+  const emulationFlags =
+    formFactor === "mobile"
+      ? ["--form-factor=mobile", "--screenEmulation.mobile=true"]
+      : ["--preset=desktop"];
   const result = spawnSync(
     "npx",
     [
@@ -28,8 +32,7 @@ for (const route of routes) {
       "--chrome-flags=--headless=new --no-sandbox --disable-gpu",
       "--output=json",
       `--output-path=${jsonPath}`,
-      `--form-factor=${formFactor}`,
-      `--screenEmulation.mobile=${formFactor === "mobile"}`,
+      ...emulationFlags,
       "--only-categories=performance,accessibility,best-practices,seo",
     ],
     { encoding: "utf8", maxBuffer: 20_000_000 }
