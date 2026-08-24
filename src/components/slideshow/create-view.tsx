@@ -123,17 +123,27 @@ export function CreateView() {
       {mode === "own-copy" ? (
         <CreatorView />
       ) : (
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
-        <section className={cn(CARD, "p-5")} aria-label="Generate a slideshow with AI">
-          <div className="flex items-center gap-2.5">
+      <div
+        className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]"
+        data-slideshow-idea-grid="true"
+      >
+        <section
+          className={cn(CARD, "p-5")}
+          data-slideshow-idea="true"
+          aria-label="Generate a slideshow with AI"
+        >
+          <div
+            className="flex h-8 items-center gap-2.5 overflow-hidden"
+            data-slideshow-idea-title="true"
+          >
             <span className="grid size-8 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
               <Sparkles className="size-4" />
             </span>
             <div>
-              <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold tracking-[-0.02em] text-foreground">
+              <h2 className="max-w-[8rem] overflow-hidden whitespace-nowrap line-clamp-1 text-[10px] font-semibold tracking-[-0.02em] text-foreground">
                 Start with one idea
               </h2>
-              <p className="max-w-[8rem] line-clamp-1 text-[10px] text-muted-foreground">
+              <p className="max-w-[8rem] overflow-hidden whitespace-nowrap line-clamp-1 text-[10px] text-muted-foreground">
                 PostForge writes the story. You review every slide.
               </p>
             </div>
@@ -148,7 +158,10 @@ export function CreateView() {
             className={cn(INPUT, "mt-4 h-[5.125rem] resize-none py-2.5 leading-5")}
           />
 
-          <div className="mt-3 flex flex-wrap items-center gap-3">
+          <div
+            className="mt-3 flex flex-wrap items-center gap-3 overflow-hidden"
+            data-slideshow-idea-controls="true"
+          >
             <label className="flex items-center gap-2">
               <span className="text-[12px] font-semibold text-muted-foreground">Slides</span>
               <span className="flex items-center rounded-lg border border-border bg-card">
@@ -247,7 +260,10 @@ export function CreateView() {
             </p>
           ) : null}
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-4">
+          <div
+            className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 overflow-hidden border-t border-border pt-4"
+            data-slideshow-idea-steps="true"
+          >
             {[
               ["01", `Story written by ${STORY_MODELS.find((m) => m.id === model)?.name ?? "AI"}`],
               ["02", "Review and restyle slides"],
@@ -261,7 +277,7 @@ export function CreateView() {
           </div>
         </section>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4" data-slideshow-idea-sidebar="true">
           <button
             type="button"
             onClick={onCustom}
