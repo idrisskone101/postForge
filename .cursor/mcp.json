@@ -4,6 +4,7 @@
       "url": "https://mcp.linear.app/mcp"
     },
     "chrome-devtools": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
