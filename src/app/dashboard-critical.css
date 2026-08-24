@@ -379,6 +379,23 @@ body {
   text-align: left;
 }
 
+[data-automation-builder="true"] {
+  min-height: calc(100dvh - 58px - env(safe-area-inset-top));
+}
+
+[data-automation-builder="true"] > header {
+  height: 82px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-characters-empty="true"] {
+  height: 650px;
+  min-height: 650px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 [data-generate-sparks="true"] {
   display: flex;
   flex-wrap: wrap;

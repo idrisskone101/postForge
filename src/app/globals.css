@@ -1441,3 +1441,14 @@
   min-height: 8.125rem !important;
   overflow: hidden !important;
 }
+
+[data-automation-builder="true"] > header {
+  height: 82px !important;
+  overflow: hidden !important;
+}
+
+[data-characters-empty="true"] {
+  height: 650px !important;
+  min-height: 650px !important;
+  overflow: hidden !important;
+}

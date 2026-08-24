@@ -253,6 +253,8 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-co
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-section-tabs="true"\][\s\S]*?height:\s*2\.5rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-submit="true"\][\s\S]*?height:\s*2\.5rem/);
 assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea-submit="true"/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-builder="true"\][\s\S]*?header[\s\S]*?height:\s*82px/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-characters-empty="true"\][\s\S]*?height:\s*650px/);
 assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea="true"/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);

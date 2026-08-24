@@ -52,15 +52,21 @@ export function AutomationBuilderClient() {
 
   if (loading) {
     return (
-      <div className="pf-content-viewport grid place-items-center">
-        <Loader2 className="size-7 animate-spin text-[var(--pf-orange)]" />
+      <div
+        data-automation-builder="true"
+        className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]"
+        aria-busy="true"
+      >
+        <header className="flex h-[82px] shrink-0 items-center border-b border-border bg-[var(--pf-active)] px-4 sm:px-6" />
+        <div className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-white" />
+        <section className="min-h-0 flex-1" />
       </div>
     );
   }
 
   return (
-    <div className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]">
-      <header className="flex min-h-[82px] flex-wrap items-center justify-between gap-3 border-b border-border bg-[var(--pf-active)] px-4 py-3 sm:px-6">
+    <div data-automation-builder="true" className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]">
+      <header className="flex h-[82px] items-center justify-between gap-3 overflow-x-auto border-b border-border bg-[var(--pf-active)] px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-lg border border-border bg-white">
             <ArrowLeft className="size-4" />

@@ -164,7 +164,10 @@ export function CharactersPageClient() {
     <div className="px-5 py-5 sm:px-7 lg:px-8">
       {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
       {records.length === 0 ? (
-        <section className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-center px-5 text-center">
+        <section
+          data-characters-empty="true"
+          className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-center overflow-hidden px-5 text-center"
+        >
           <div className="relative h-32 w-44">
             <div className="absolute left-1/2 top-0 h-28 w-20 -translate-x-1/2 overflow-hidden rounded-lg border-4 border-white bg-[var(--pf-active)] shadow-lg"><CharacterPhoto alt="Example photographic character" /></div>
             <span className="absolute bottom-0 right-6 grid size-9 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-lg"><Plus className="size-4" /></span>
