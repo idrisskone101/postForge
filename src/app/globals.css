@@ -1596,6 +1596,9 @@
 }
 
 [data-spend-controls="true"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
   height: 10.75rem !important;
   overflow: hidden !important;
   padding: 1rem !important;
@@ -1655,7 +1658,8 @@
   text-align: center !important;
 }
 
-.pf-empty-stage h2 {
+.pf-empty-stage h2,
+.pf-empty-stage [data-empty-heading="true"] {
   margin: 1rem 0 0 !important;
   font-size: 20px !important;
   font-weight: 600 !important;
@@ -1823,12 +1827,12 @@
 
 [data-spend-intro="true"] {
   margin-top: 0.25rem !important;
-  width: 21.125rem !important;
+  width: 6rem !important;
   max-width: 100% !important;
-  height: 20px !important;
+  height: 11px !important;
   overflow: hidden !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
+  font-size: 11px !important;
+  line-height: 11px !important;
   font-weight: 400 !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;

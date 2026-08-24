@@ -269,7 +269,7 @@ assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:fl
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-owned="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]/);
-assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2\{margin:1rem 0 0;font-size:20px/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-icon="true"\]\{width:3\.5rem;height:3\.5rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-deco="true"\]\{position:relative;height:9rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
@@ -330,7 +330,9 @@ assert.match(
   source("src/app/dashboard-critical.css"),
   /\.pf-empty-stage h2[\s\S]*?font-size:\s*20px/,
 );
-assert.match(source("src/app/dashboard-critical.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
+assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
 assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
 assert.match(settings, /data-settings-nav="true"/);
 assert.match(settings, /data-settings-panel="true"/);

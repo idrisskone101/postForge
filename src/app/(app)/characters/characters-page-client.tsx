@@ -177,7 +177,7 @@ export function CharactersPageClient({
             <span className="absolute bottom-0 right-6 grid size-9 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-lg"><Plus className="size-4" /></span>
           </div>
 
-          <h2 className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Create a reusable character</h2>
+          <h2 data-empty-heading="true" className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Create a reusable character</h2>
           <p className="sr-only">Save identity, look, and marks once. Reuse that blueprint in later prompts.</p>
           <p aria-hidden="true" data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts." />
           <Link href="/characters/new" className="pf-button-primary mt-5"><UserRoundPlus className="size-3.5" /> New character</Link>
