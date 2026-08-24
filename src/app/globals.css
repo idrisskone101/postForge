@@ -1479,6 +1479,10 @@
   padding: 1.25rem !important;
 }
 
+[data-automation-fields="true"] {
+  min-height: 29.625rem !important;
+}
+
 [data-spend-page="true"] {
   padding: 1.25rem !important;
 }
