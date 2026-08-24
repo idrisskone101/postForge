@@ -303,6 +303,16 @@ body {
   background: #fff;
 }
 
+[data-generate-prompt="true"] > div:first-child {
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
 [data-generate-prompt="true"] textarea {
   display: block;
   width: 100%;
