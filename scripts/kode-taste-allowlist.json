@@ -45,7 +45,6 @@
     "src/components/avatar-picker-import-mode.tsx",
     "src/components/avatar-picker.tsx",
     "src/components/pinterest-import-dialog.tsx",
-    "src/components/sidebar.tsx",
     "src/components/slideshow/create-view.tsx",
     "src/components/slideshow/creator-view.tsx",
     "src/components/slideshow/publish-dialog.tsx",

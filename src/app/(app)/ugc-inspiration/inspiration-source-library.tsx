@@ -11,8 +11,6 @@ import {
 } from "lucide-react";
 import { INSPIRATION_VIDEO_PAGE_SIZE, parseInspirationSourceSort } from "@/lib/inspiration/types";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { WorkspaceState } from "@/components/workspace-state";
 import { SOURCE_FEED_FILTERS } from "./inspiration-models";
 import { InspirationVideoCard } from "./inspiration-video-card";
@@ -102,12 +100,12 @@ export function InspirationSourceLibrary({
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-2 shadow-[var(--pf-shadow-2xs)] sm:flex-row sm:items-center">
         <label className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+          <input
             value={sourceSearch}
             onChange={(event) => setSourceSearch(event.target.value)}
             placeholder="Search captions or creators"
             aria-label="Search source library"
-            className="h-9 rounded-md border-0 bg-muted/55 pl-9 text-xs shadow-none focus-visible:ring-1"
+            className="h-9 w-full rounded-md border-0 bg-muted/55 pl-9 text-xs shadow-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </label>
         <label className="relative flex h-9 min-w-40 items-center rounded-md border border-border bg-background px-2.5 text-xs text-muted-foreground">
@@ -126,17 +124,18 @@ export function InspirationSourceLibrary({
           </select>
           <ArrowRight className="pointer-events-none absolute right-2.5 size-3.5 rotate-90" />
         </label>
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size="icon-lg"
           aria-label={compactGrid ? "Use comfortable source grid" : "Use compact source grid"}
           aria-pressed={compactGrid}
           onClick={() => setCompactGrid((current) => !current)}
-          className={cn("size-9 rounded-md", compactGrid && "bg-foreground text-background hover:bg-foreground/90 hover:text-background")}
+          className={cn(
+            "inline-flex size-9 items-center justify-center rounded-md border border-border bg-background hover:bg-muted",
+            compactGrid && "bg-foreground text-background hover:bg-foreground/90 hover:text-background",
+          )}
         >
           <LayoutGrid className="size-4" />
-        </Button>
+        </button>
       </div>
 
       {accounts.length === 0 ? (
@@ -183,7 +182,7 @@ export function InspirationSourceLibrary({
               href={selectedAccount.profileUrl}
               target="_blank"
               rel="noreferrer"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mt-5 rounded-lg")}
+              className="mt-5 inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm font-medium hover:bg-muted"
             >
               Open Profile
               <ExternalLink className="size-4 shrink-0" />
@@ -238,20 +237,19 @@ export function InspirationSourceLibrary({
           <p className="text-[11px] text-muted-foreground">
             Showing {videoItems.length} of {videoTotal} matching sources
           </p>
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={() => void handleLoadMore()}
             disabled={isLoadingMore || !videoCursor}
             data-inspiration-load-more="true"
-            className="h-10 rounded-lg px-5 text-xs font-semibold"
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-5 text-xs font-semibold hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoadingMore ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               `Load ${Math.min(INSPIRATION_VIDEO_PAGE_SIZE, remainingVideoCount)} more`
             )}
-          </Button>
+          </button>
         </div>
       )}
     </>

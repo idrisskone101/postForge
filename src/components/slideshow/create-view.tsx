@@ -12,7 +12,6 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { Switch } from "@/components/ui/switch";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
 
@@ -24,18 +23,6 @@ import {
   StepChip,
 } from "./studio-ui";
 import { useSlideshowHome } from "./slideshow-home-provider";
-
-const CreatorView = dynamic(() =>
-  import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
-);
-
-const CreateTemplateGallery = dynamic(
-  () =>
-    import("./create-template-gallery").then((mod) => ({
-      default: mod.CreateTemplateGallery,
-    })),
-  { ssr: true },
-);
 
 export function CreateView() {
   const home = useSlideshowHome();
@@ -240,11 +227,24 @@ export function CreateView() {
               </span>
             </label>
             <label className="flex items-center gap-2">
-              <Switch
-                checked={includeCta}
-                onCheckedChange={setIncludeCta}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={includeCta}
                 aria-label="Include a CTA slide"
-              />
+                onClick={() => setIncludeCta((current) => !current)}
+                className={cn(
+                  "relative inline-flex h-[18px] w-8 shrink-0 items-center rounded-full border border-transparent transition-colors",
+                  includeCta ? "bg-primary" : "bg-input",
+                )}
+              >
+                <span
+                  className={cn(
+                    "block size-4 rounded-full bg-background transition-transform",
+                    includeCta ? "translate-x-[14px]" : "translate-x-0.5",
+                  )}
+                />
+              </button>
               <span className="text-[11px] font-medium text-muted-foreground">CTA slide</span>
             </label>
             <button
@@ -338,3 +338,15 @@ export function CreateView() {
     </div>
   );
 }
+
+const CreatorView = dynamic(() =>
+  import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
+);
+
+const CreateTemplateGallery = dynamic(
+  () =>
+    import("./create-template-gallery").then((mod) => ({
+      default: mod.CreateTemplateGallery,
+    })),
+  { ssr: true },
+);

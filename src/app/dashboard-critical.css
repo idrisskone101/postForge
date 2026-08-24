@@ -84,6 +84,24 @@ body {
   height: 16px;
 }
 
+.sidebar-mobile-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 80;
+  width: 16rem;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--pf-rail);
+  color: var(--pf-rail-ink);
+}
+
+.sidebar-mobile-drawer::backdrop {
+  background: rgb(9 9 11 / 0.32);
+}
+
 .sidebar-brand {
   padding: 0 0.5rem;
 }

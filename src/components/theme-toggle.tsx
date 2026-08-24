@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Sun, Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
   const toggle = () => {
@@ -15,15 +14,14 @@ export function ThemeToggle() {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
+      type="button"
       onClick={toggle}
       aria-label="Toggle theme"
-      className="size-9 rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+      className="grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
     >
       <Moon className="size-4 dark:hidden" />
       <Sun className="hidden size-4 dark:block" />
-    </Button>
+    </button>
   );
 }

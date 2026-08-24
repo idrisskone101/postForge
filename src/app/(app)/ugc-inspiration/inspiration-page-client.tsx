@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { RefreshCw, Sparkles, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { InspirationCreatorRail } from "./inspiration-creator-rail";
 import { InspirationHeaderControls } from "./inspiration-header-controls";
@@ -98,9 +97,8 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                 <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
                   <Sparkles className="size-3.5 shrink-0 text-[var(--pf-orange)]" /> <span className="min-w-0 break-words [overflow-wrap:anywhere]">Fresh posts stay at the front</span>
                 </span>
-                <Button
+                <button
                   type="button"
-                  variant="outline"
                   onClick={() =>
                     accounts.forEach((account) => {
                       if (!refreshingIds.includes(account.id)) {
@@ -109,11 +107,11 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                     })
                   }
                   disabled={accounts.length === 0 || refreshingIds.length > 0}
-                  className="h-10 shrink-0 rounded-lg px-3 text-xs"
+                  className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-xs font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <RefreshCw className={cn("size-4 shrink-0", refreshingIds.length > 0 && "animate-spin")} />
                   Refresh all
-                </Button>
+                </button>
               </div>
             </div>
 

@@ -16,12 +16,6 @@ import {
 } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
 import type { InspirationVideoCard } from "@/lib/inspiration/types";
 import {
   formatDuration,
@@ -133,10 +127,15 @@ export function InspirationVideoCard({
 
       <div className="flex flex-1 flex-col gap-3 p-3">
         <div className="flex items-center gap-2.5">
-          <Avatar size="sm">
-            <AvatarImage src={video.creatorAvatarUrl ?? undefined} alt={video.creatorHandle} />
-            <AvatarFallback>{video.creatorHandle.slice(1, 3).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <span className="relative flex size-6 shrink-0 overflow-hidden rounded-full border border-border">
+            {video.creatorAvatarUrl ? (
+              <img src={video.creatorAvatarUrl} alt="" className="size-full object-cover" />
+            ) : (
+              <span className="flex size-full items-center justify-center bg-muted text-[9px] font-semibold">
+                {video.creatorHandle.slice(1, 3).toUpperCase()}
+              </span>
+            )}
+          </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-xs font-semibold">{video.creatorHandle}</span>
             <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatRelativeDate(video.publishedAt ?? video.createdAt)}</span>
@@ -159,13 +158,12 @@ export function InspirationVideoCard({
         )}
 
         {isRejected ? (
-          <Button
+          <button
             type="button"
-            variant="outline"
             data-source-action="restore"
             onClick={() => void handleSetVideoRejection(video, false)}
             disabled={isUpdatingRejection}
-            className="mt-auto h-9 w-full rounded-md border-border bg-background text-xs font-semibold hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-border bg-background text-xs font-semibold hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isUpdatingRejection ? (
               <>
@@ -178,16 +176,16 @@ export function InspirationVideoCard({
                 <Undo2 className="size-4" />
               </>
             )}
-          </Button>
+          </button>
         ) : (
-          <Button
+          <button
             type="button"
             onClick={() => handleUseInClone(video)}
-            className="mt-auto h-9 w-full rounded-md bg-[var(--pf-orange)] text-xs font-semibold text-white hover:brightness-[0.93]"
+            className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-[var(--pf-orange)] text-xs font-semibold text-white hover:brightness-[0.93]"
           >
             Use in Clone
             <Sparkles className="size-4" />
-          </Button>
+          </button>
         )}
 
         <div
@@ -198,63 +196,55 @@ export function InspirationVideoCard({
               : "grid-cols-[minmax(0,1fr)_2rem_2rem_2rem_2rem]"
           )}
         >
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={() => setSelectedVideoId(video.id)}
-            className="h-8 min-w-0 rounded-md px-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
+            className="inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 text-[11px] font-semibold text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <Eye className="size-3.5" />
             Preview
-          </Button>
+          </button>
 
           {!isRejected && (
-            <Button
+            <button
               type="button"
-              variant="outline"
               data-source-action="reject"
               onClick={() => void handleSetVideoRejection(video, true)}
               disabled={isUpdatingRejection}
               aria-label={`Reject source from ${video.creatorHandle}`}
-              size="icon-sm"
-              className="size-8 rounded-md border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex size-8 items-center justify-center rounded-md border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isUpdatingRejection ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : (
                 <Ban className="size-3.5" />
               )}
-            </Button>
+            </button>
           )}
 
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon-lg"
             onClick={() => void handleCopySourceUrl(video)}
             aria-label={
               copiedVideoId === video.id
                 ? `Copied source URL for ${video.creatorHandle}`
                 : `Copy source URL for ${video.creatorHandle}`
             }
-            className="size-8 rounded-md text-muted-foreground hover:text-foreground"
+            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             {copiedVideoId === video.id ? (
               <CheckCircle2 className="size-4" />
             ) : (
               <Copy className="size-4" />
             )}
-          </Button>
+          </button>
 
           <a
             href={video.originalUrl}
             target="_blank"
             rel="noreferrer"
             aria-label={`Open original source from ${video.creatorHandle}`}
-            className={cn(
-              buttonVariants({ variant: "outline", size: "icon-lg" }),
-              "size-8 rounded-md text-muted-foreground hover:text-foreground"
-            )}
+            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <ExternalLink className="size-4" />
           </a>
