@@ -240,6 +240,10 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?height:\s*6\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?overflow:\s*hidden/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt-meta="true"\][\s\S]*?height:\s*3\.5rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-workspace-state\] p[\s\S]*?height:\s*10px/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-section-nav="true"\][\s\S]*?height:\s*4rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);

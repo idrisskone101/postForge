@@ -137,44 +137,38 @@ export function GenerateFormControls({
           onChange={(event) => onPromptChange(event.target.value.slice(0, 1500))}
           className="field-sizing-fixed min-h-[118px] h-[118px] resize-none rounded-lg border-border bg-card px-3 py-3 text-[12px] leading-5 text-foreground shadow-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
         />
-        <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground">
-          <span>{prompt.length}/1,500</span>
-          <span>Be specific about the opening frame</span>
-        </div>
-
-        {promptImprovementError && (
-          <div
-            role="alert"
-            className="mt-2 flex items-start gap-1.5 text-[12px] leading-4 text-[var(--pf-danger)]"
-          >
-            <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-            <span>{promptImprovementError}</span>
+        <div
+          data-generate-prompt-meta="true"
+          className="mt-2 flex h-[3.5rem] flex-col overflow-hidden text-[12px] leading-5 text-muted-foreground"
+        >
+          <div className="flex h-5 items-center justify-between">
+            <span>{prompt.length}/1,500</span>
+            <span>Be specific about the opening frame</span>
           </div>
-        )}
-
-        <div className="mt-2 min-h-9 text-[12px] leading-4 text-muted-foreground">
-          {promptEnhancerConfigured === false && !promptImprovementError ? (
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span>Prompt improvement needs a Gemini API key.</span>
-              <Link
-                href="/settings?tab=api-keys"
-                className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"
-              >
-                Add key in Settings
-              </Link>
-            </div>
-          ) : null}
-        </div>
-
-        {promptImprovementNotice && (
-          <div
-            role="status"
-            className="mt-2 flex items-start gap-1.5 text-[12px] leading-4 text-[var(--pf-link)]"
-          >
-            <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
-            <span>{promptImprovementNotice}</span>
+          <div className="min-h-9 leading-4">
+            {promptEnhancerConfigured === false && !promptImprovementError ? (
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span>Prompt improvement needs a Gemini API key.</span>
+                <Link
+                  href="/settings?tab=api-keys"
+                  className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"
+                >
+                  Add key in Settings
+                </Link>
+              </div>
+            ) : promptImprovementError ? (
+              <div role="alert" className="flex items-start gap-1.5 text-[var(--pf-danger)]">
+                <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
+                <span>{promptImprovementError}</span>
+              </div>
+            ) : promptImprovementNotice ? (
+              <div role="status" className="flex items-start gap-1.5 text-[var(--pf-link)]">
+                <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
+                <span>{promptImprovementNotice}</span>
+              </div>
+            ) : null}
           </div>
-        )}
+        </div>
 
         <div data-generate-sparks="true" className="mt-3 flex h-[6.75rem] flex-wrap gap-1.5 overflow-hidden">
           {CREATIVE_SPARKS.map((spark) => (

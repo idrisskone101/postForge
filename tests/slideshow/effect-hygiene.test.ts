@@ -35,6 +35,10 @@ const studio = readFileSync(
   new URL("../../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
   "utf8",
 );
+const studioBootstrap = readFileSync(
+  new URL("../../src/components/slideshow/use-slideshow-studio-bootstrap.ts", import.meta.url),
+  "utf8",
+);
 const publish = readFileSync(
   new URL("../../src/components/slideshow/publish-dialog.tsx", import.meta.url),
   "utf8",
@@ -67,11 +71,15 @@ assert.ok(
   countUseEffect(studio) <= 2,
   `slideshow-studio.tsx keeps at most 2 useEffect calls, found ${countUseEffect(studio)}`,
 );
-assert.match(studio, /AbortController/);
-assert.match(studio, /fetchModelsCatalog\(/);
-assert.match(studio, /fetchPlatformCollections\(/);
-assert.match(studio, /watchStudioDrafts\(/);
-assert.match(studio, /watchStudioDraftsRefresh\(/);
+assert.ok(
+  countUseEffect(studioBootstrap) <= 2,
+  `use-slideshow-studio-bootstrap.ts keeps at most 2 useEffect calls, found ${countUseEffect(studioBootstrap)}`,
+);
+assert.match(studioBootstrap, /AbortController/);
+assert.match(studioBootstrap, /fetchModelsCatalog\(/);
+assert.match(studioBootstrap, /fetchPlatformCollections\(/);
+assert.match(studioBootstrap, /connectStudioDrafts\(/);
+assert.match(studioBootstrap, /connectStudioDraftsRefresh\(/);
 assert.match(studio, /key=\{publishProject\?\.id\}/);
 assert.match(studio, /window\.setTimeout\(\(\) => setToast\(null\), 3200\)/);
 

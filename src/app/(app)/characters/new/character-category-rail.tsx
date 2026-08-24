@@ -32,7 +32,7 @@ export function CharacterCategoryRail({
       data-character-recipe-step-rail="true"
       className="border-b border-border bg-[var(--pf-active)] min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r"
     >
-      <div className="border-b border-border px-3 py-3">
+      <div className="h-[4.75rem] overflow-hidden border-b border-border px-3 py-3">
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Attribute recipe</p>

@@ -68,7 +68,7 @@ export function WorkspaceState({
       >
         {title}
       </h2>
-      <p className="mt-2 line-clamp-1 min-w-0 max-w-[8rem] break-words text-[10px] leading-none text-muted-foreground [overflow-wrap:anywhere]">
+      <p className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground">
         {description}
       </p>
       {(action || secondaryAction) && (

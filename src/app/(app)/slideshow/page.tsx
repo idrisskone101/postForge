@@ -20,6 +20,7 @@ export default async function SlideshowPage({
 
   return (
     <SlideshowStudio
+      initialProjects={[]}
       initialProject={startNew ? createBlankSlideshowProject() : null}
       initialViewMode={parseSlideshowViewMode(params.view)}
       supportsMp4Export={await canRenderSlideshowVideo()}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
   ChevronDown,
@@ -16,7 +17,6 @@ import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
 
 import { CreateTemplateGallery } from "./create-template-gallery";
-import { CreatorView } from "./creator-view";
 import { VisualTile } from "./slide-preview";
 import {
   CARD,
@@ -25,6 +25,10 @@ import {
   StepChip,
 } from "./studio-ui";
 import { useSlideshowHome } from "./slideshow-home-provider";
+
+const CreatorView = dynamic(() =>
+  import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
+);
 
 export function CreateView() {
   const home = useSlideshowHome();
@@ -88,7 +92,7 @@ export function CreateView() {
   };
 
   return (
-    <div className="animate-content-enter">
+    <div>
       <div className="mb-4 flex items-center gap-1 rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
         <button
           type="button"

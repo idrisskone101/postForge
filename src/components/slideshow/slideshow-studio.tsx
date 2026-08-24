@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { cn } from "@/lib/utils";
-import { fetchPlatformCollections } from "@/lib/collections-client";
-import { fetchModelsCatalog } from "@/lib/ai/models-client";
 
 import { fetchSlideshowProject } from "@/lib/slideshow/client";
 import { slideshowProjectListItemFromDetail, upsertById } from "@/lib/slideshow/list-client";
@@ -15,26 +13,20 @@ import {
   createProjectFromTemplate,
   DEFAULT_SLIDESHOW_TEMPLATES,
 } from "./fixtures";
-import {
-  generateStudioCreatorProject,
-  type StudioCreatorProgress,
-} from "./studio-creator-generate";
-import {
-  saveStudioProject,
-  mergeSavedStudioProject,
-  regenerateStudioSlide,
-  regenerateStudioSlideImage,
-} from "./studio-editor-actions";
+import type { StudioCreatorProgress } from "./studio-creator-generate";
 import {
   applyStudioExportReceipt,
   applyStudioExportReceiptToProject,
-  exportStudioSlideshow,
-} from "./studio-export";
+} from "./studio-export-receipt";
 import {
-  watchStudioDrafts,
-  watchStudioDraftsRefresh,
-} from "./studio-drafts-load";
-import { generateStudioStory } from "./studio-story";
+  exportStudioSlideshow,
+  generateStudioCreatorProject,
+  generateStudioStory,
+  regenerateStudioSlide,
+  regenerateStudioSlideImage,
+  saveStudioProject,
+} from "./slideshow-studio-runtime";
+import { useSlideshowStudioBootstrap } from "./use-slideshow-studio-bootstrap";
 import { SlideshowHomeProvider } from "./slideshow-home-provider";
 import { StudioHome } from "./studio-home";
 import {
@@ -97,57 +89,18 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   >([]);
   const [selectedImageModel, setSelectedImageModel] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    void fetchModelsCatalog()
-      .then((catalog) => {
-        if (controller.signal.aborted) return;
-        const models = catalog.models.filter((model) => model.type === "image");
-        setImageModels(models.map((model) => ({ id: model.id, name: model.name })));
-        setSelectedImageModel((current) => current ?? catalog.defaults.image ?? models[0]?.id ?? null);
-      })
-      .catch(() => undefined);
-    void fetchPlatformCollections()
-      .then((loaded) => {
-        if (controller.signal.aborted) return;
-        setCollections(
-          loaded.map((collection) => ({
-            id: collection.id,
-            name: collection.name,
-            imageCount: collection.imageCount,
-            visualKeys: [],
-            imageUrls: collection.imageUrls,
-          })),
-        );
-      })
-      .catch(() => undefined);
-    const stopDrafts = watchStudioDrafts({
-      apiBaseUrl,
-      enabled: initialProjects === undefined,
-      onLoaded: setProjects,
-      onError: setProjectsError,
-      onFinally: () => {
-        if (!controller.signal.aborted) setLoadingProjects(false);
-      },
-    });
-    return () => {
-      controller.abort();
-      stopDrafts();
-    };
-  }, [apiBaseUrl, initialProjects]);
-
-  useEffect(() => {
-    return watchStudioDraftsRefresh({
-      apiBaseUrl,
-      enabled:
-        initialProjects === undefined && section === "drafts" && !activeProject,
-      onLoaded: (loaded) => {
-        setProjects(loaded);
-        setProjectsError(null);
-      },
-      onError: setProjectsError,
-    });
-  }, [activeProject, apiBaseUrl, initialProjects, section]);
+  useSlideshowStudioBootstrap({
+    apiBaseUrl,
+    initialProjects,
+    section,
+    activeProject,
+    setImageModels,
+    setSelectedImageModel,
+    setCollections,
+    setProjects,
+    setProjectsError,
+    setLoadingProjects,
+  });
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -242,7 +195,10 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         onSaveProject,
       });
       setProjects((current) =>
-        mergeSavedStudioProject(current, project.id, resolved),
+        upsertById(
+          current.filter((candidate) => candidate.id !== project.id),
+          slideshowProjectListItemFromDetail(resolved),
+        ),
       );
       drafts.current.set(resolved.id, resolved);
       if (resolved.clientId) drafts.current.set(resolved.clientId, resolved);
