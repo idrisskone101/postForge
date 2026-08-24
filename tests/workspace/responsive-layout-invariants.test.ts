@@ -238,6 +238,13 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empt
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-stats="true"\]>article\{height:158px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-toolbar="true"\]\{height:15\.375rem/);
+assert.doesNotMatch(source("src/app/first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\[data-gallery-toolbar/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"\]\{height:10\.75rem;overflow:hidden/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-automation-overlay="true"/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /position: "fixed"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
 assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);

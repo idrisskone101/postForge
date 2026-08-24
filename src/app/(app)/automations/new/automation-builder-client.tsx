@@ -173,7 +173,9 @@ export function AutomationBuilderClient({
 
       {templateOpen && (
         <div
+          data-automation-overlay="true"
           className="pf-safe-overlay fixed inset-0 z-[80] grid place-items-center bg-black/50 backdrop-blur-sm"
+          style={{ position: "fixed", inset: 0, zIndex: 80 }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="template-title"
@@ -220,6 +222,7 @@ export function AutomationBuilderClient({
       {validationOpen && (
         <div
           className="pf-safe-overlay fixed inset-0 z-[85] grid min-w-0 place-items-center bg-black/45 backdrop-blur-sm"
+          style={{ position: "fixed", inset: 0, zIndex: 85 }}
           role="dialog"
           aria-modal="true"
         >

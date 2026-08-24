@@ -62,7 +62,7 @@ export function AutomationBuilderPhaseForm({
       <div
         data-automation-fields="true"
         className="mt-5 space-y-4"
-        style={{ minHeight: "29.625rem" }}
+        style={{ height: "29.625rem", overflow: "hidden" }}
       >
         {phase === "Hook" && (
           <>
