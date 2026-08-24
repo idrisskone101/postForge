@@ -396,6 +396,31 @@ body {
   box-sizing: border-box;
 }
 
+[data-automation-phases="true"] {
+  height: 59px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-automation-preview="true"] {
+  display: none;
+}
+
+[data-automation-builder="true"] textarea {
+  display: block;
+  width: 100%;
+  height: 6rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  [data-automation-preview="true"] {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+}
+
 [data-generate-sparks="true"] {
   display: flex;
   flex-wrap: wrap;

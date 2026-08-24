@@ -29,7 +29,10 @@ export function AutomationBuilderPreviewPane({
   } = workspace;
 
   return (
-    <div className="flex min-w-0 flex-col bg-[var(--pf-active)]">
+    <div
+      data-automation-preview="true"
+      className="hidden min-w-0 flex-col bg-[var(--pf-active)] lg:flex"
+    >
       <div className="flex h-12 items-center justify-between border-b border-[var(--pf-border)] bg-white px-4">
         <div>
           <b className="mt-0.5 block text-[11px]">

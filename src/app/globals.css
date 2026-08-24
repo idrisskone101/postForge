@@ -1452,3 +1452,25 @@
   min-height: 650px !important;
   overflow: hidden !important;
 }
+
+[data-automation-phases="true"] {
+  height: 59px !important;
+  overflow: hidden !important;
+}
+
+[data-automation-preview="true"] {
+  display: none !important;
+}
+
+[data-automation-builder="true"] textarea {
+  display: block !important;
+  width: 100% !important;
+  height: 6rem !important;
+}
+
+@media (min-width: 1024px) {
+  [data-automation-preview="true"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}

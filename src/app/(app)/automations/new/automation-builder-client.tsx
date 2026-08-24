@@ -110,7 +110,10 @@ export function AutomationBuilderClient() {
         </div>
       </header>
 
-      <div className="flex min-h-[59px] items-center justify-between gap-4 overflow-x-auto border-b border-[var(--pf-border)] bg-white px-3 sm:px-6">
+      <div
+        data-automation-phases="true"
+        className="flex h-[59px] items-center justify-between gap-4 overflow-x-auto overflow-y-hidden border-b border-[var(--pf-border)] bg-white px-3 sm:px-6"
+      >
         <div className="flex h-[59px]">
           {PHASES.map((item, index) => (
             <button
