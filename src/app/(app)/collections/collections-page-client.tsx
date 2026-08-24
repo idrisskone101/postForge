@@ -18,7 +18,6 @@ import {
   X,
 } from "lucide-react";
 import { PinterestImportDialog } from "@/components/pinterest-import-dialog";
-import CollectionsLoading from "./collections-loading";
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
@@ -211,9 +210,7 @@ export function CollectionsPageClient() {
     notify("Image deleted");
   }
 
-  if (loading && records.length === 0) {
-    return <CollectionsLoading />;
-  }
+  if (loading && records.length === 0) return <div className="grid min-h-[520px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
   return (
     <div className="px-5 py-5 sm:px-7 lg:px-8" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); upload(event.dataTransfer.files); }}>
