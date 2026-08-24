@@ -26,10 +26,10 @@ import {
 } from "./video-automation-api";
 import { useVideoPublish } from "./use-video-publish";
 
-export function useAutomationsWorkspace() {
+export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = []) {
   const router = useRouter();
-  const [records, setRecords] = useState<AutomationRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<AutomationRecord[]>(initialRecords);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<AutomationHubFilter>("All");
   const [menu, setMenu] = useState<string | null>(null);
@@ -59,7 +59,6 @@ export function useAutomationsWorkspace() {
     notify,
   });
   async function load() {
-    setLoading(true);
     setIntegrationsLoading(true);
     setError(null);
     setIntegrationsError(null);

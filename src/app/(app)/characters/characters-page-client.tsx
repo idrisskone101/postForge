@@ -27,9 +27,13 @@ import {
 } from "@/lib/workspace-features-client";
 import { cn } from "@/lib/utils";
 
-export function CharactersPageClient() {
-  const [records, setRecords] = useState<CharacterRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+export function CharactersPageClient({
+  initialRecords,
+}: {
+  initialRecords: CharacterRecord[];
+}) {
+  const [records, setRecords] = useState<CharacterRecord[]>(initialRecords);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState("All identities");

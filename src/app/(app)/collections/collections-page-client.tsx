@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
@@ -32,13 +32,17 @@ import {
 } from "@/lib/workspace-features-client";
 import { cn } from "@/lib/utils";
 
-export function CollectionsPageClient() {
+export function CollectionsPageClient({
+  initialRecords,
+  openUploader = false,
+}: {
+  initialRecords: CollectionFeatureRecord[];
+  openUploader?: boolean;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const handledUploadQuery = useRef(false);
-  const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<CollectionFeatureRecord[]>(initialRecords);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -48,14 +52,11 @@ export function CollectionsPageClient() {
   const [toast, setToast] = useState<string | null>(null);
 
   async function load() {
-    setLoading(true);
     try {
       const response = await fetchWorkspaceFeature<CollectionFeatureRecord>("collections");
       setRecords(response.records);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to load collections");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -64,7 +65,7 @@ export function CollectionsPageClient() {
   }, []);
 
   useEffect(() => {
-    if (searchParams.get("upload") !== "1") {
+    if (!openUploader) {
       handledUploadQuery.current = false;
       return;
     }
@@ -73,16 +74,11 @@ export function CollectionsPageClient() {
 
     const frame = window.requestAnimationFrame(() => {
       inputRef.current?.click();
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("upload");
-      const query = params.toString();
-      router.replace(query ? `/collections?${query}` : "/collections", {
-        scroll: false,
-      });
+      router.replace("/collections", { scroll: false });
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [router, searchParams]);
+  }, [openUploader, router]);
 
   const assets = useMemo(() => records.filter(isCollectionAssetRecord), [records]);
   const collections = useMemo(() => records.filter(isCollectionRecord), [records]);
@@ -209,8 +205,6 @@ export function CollectionsPageClient() {
     setSelected(null);
     notify("Image deleted");
   }
-
-  if (loading && records.length === 0) return <div className="grid min-h-[520px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
   return (
     <div className="px-5 py-5 sm:px-7 lg:px-8" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); upload(event.dataTransfer.files); }}>

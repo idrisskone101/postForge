@@ -5,11 +5,13 @@ import {
   CalendarDays,
   Check,
   CircleAlert,
-  Loader2,
   Plus,
   RefreshCw,
 } from "lucide-react";
-import { isAutomationExecutionEnabled } from "@/lib/automations";
+import {
+  isAutomationExecutionEnabled,
+  type AutomationRecord,
+} from "@/lib/automations";
 import { cn } from "@/lib/utils";
 import {
   DAYS,
@@ -24,11 +26,14 @@ import { SlideshowAutomationList } from "./slideshow-automation-list";
 import { useAutomationsWorkspace } from "./use-automations-workspace";
 import { VideoAutomationList } from "./video-automation-list";
 
-export function AutomationsPageClient() {
-  const hub = useAutomationsWorkspace();
+export function AutomationsPageClient({
+  initialRecords,
+}: {
+  initialRecords: AutomationRecord[];
+}) {
+  const hub = useAutomationsWorkspace(initialRecords);
   const {
     records,
-    loading,
     error,
     integrationsError,
     integrationStatuses,
@@ -47,8 +52,6 @@ export function AutomationsPageClient() {
     scheduledDays,
     busy,
   } = hub;
-
-  if (loading) return <div className="grid min-h-[520px] place-items-center"><Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" /></div>;
 
   const weekDates = currentWeekDates();
   const todayKey = localDateKey(new Date());

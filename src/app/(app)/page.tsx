@@ -1,15 +1,52 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
-import { HomeCockpit } from "./home-cockpit";
+import { HomeCockpit, HomeHeader } from "./home-cockpit";
 import { type HomeJob } from "./home-cockpit";
+import { HomeEmptyPanel } from "./home-start-work";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  return <HomeDashboard />;
+  return (
+    <div className="pf-content-viewport bg-[var(--pf-canvas)]">
+      <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
+        <HomeHeader />
+        <Suspense fallback={<HomeDashboardFallback />}>
+          <HomeDashboard />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+function HomeDashboardFallback() {
+  return (
+    <>
+      <section data-home-glance="true" aria-hidden="true">
+        <a href="/costs">
+          <span data-home-glance-label="Spend today" />
+          <span />
+        </a>
+        <a href="/jobs?status=active">
+          <span data-home-glance-label="Jobs running" />
+          <span />
+        </a>
+        <a href="/gallery?reviewStatus=needs_review">
+          <span data-home-glance-label="Awaiting review" />
+          <span />
+        </a>
+        <a href="/gallery">
+          <span data-home-glance-label="Completed this week" />
+          <span />
+        </a>
+      </section>
+      <HomeEmptyPanel className="mt-3" />
+    </>
+  );
 }
 
 async function HomeDashboard() {
@@ -156,6 +193,7 @@ async function HomeDashboard() {
 
   return (
     <HomeCockpit
+      bare
       dashboard={{
         todaySummary,
         activeJobs: activeHomeJobs,

@@ -59,9 +59,10 @@ export type HomeDashboard = {
 
 type HomeCockpitProps = {
   dashboard: HomeDashboard;
+  bare?: boolean;
 };
 
-export function HomeCockpit({ dashboard }: HomeCockpitProps) {
+export function HomeCockpit({ dashboard, bare = false }: HomeCockpitProps) {
   const {
     todaySummary,
     activeJobs,
@@ -74,28 +75,10 @@ export function HomeCockpit({ dashboard }: HomeCockpitProps) {
   } = dashboard;
   const visibleReviewJobs = recentJobs.slice(0, 4);
   const isEmpty = activeJobs.length === 0 && recentJobs.length === 0 && recentMedia.length === 0;
-  const todayLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  }).format(now);
 
-  return (
-    <div className="pf-content-viewport bg-[var(--pf-canvas)]">
-      <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
-        <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
-          <div className="min-w-0">
-            <h1 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)]">
-              Home
-            </h1>
-            <p className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
-              {todayLabel}
-            </p>
-          </div>
-          <Link href="/ugc-clone" prefetch={false} className="pf-button-primary shrink-0">
-            <span className="text-base leading-none">+</span> New Clone
-          </Link>
-        </header>
+  const body = (
+    <>
+      {bare ? null : <HomeHeader now={now} />}
 
         <HomeGlanceStats
           todayCost={todaySummary.totalCost}
@@ -191,12 +174,43 @@ export function HomeCockpit({ dashboard }: HomeCockpitProps) {
             <HomeStartWork />
           </>
         )}
+    </>
+  );
+
+  if (bare) return body;
+
+  return (
+    <div className="pf-content-viewport bg-[var(--pf-canvas)]">
+      <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
+        {body}
       </div>
     </div>
   );
 }
 
+export function HomeHeader({ now = new Date() }: { now?: Date }) {
+  const todayLabel = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(now);
 
+  return (
+    <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
+      <div className="min-w-0">
+        <h1 className="text-[30px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)]">
+          Home
+        </h1>
+        <p className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
+          {todayLabel}
+        </p>
+      </div>
+      <Link href="/ugc-clone" prefetch={false} className="pf-button-primary shrink-0">
+        <span className="text-base leading-none">+</span> New Clone
+      </Link>
+    </header>
+  );
+}
 function truncateAtWord(value: string, maxLength: number) {
   if (value.length <= maxLength) return value;
   const trimmed = value.slice(0, maxLength).trimEnd();

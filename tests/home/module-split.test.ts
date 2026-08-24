@@ -40,7 +40,8 @@ const homePage = readFileSync(new URL("src/app/(app)/page.tsx", repoRoot), "utf8
 assert.match(homePage, /<HomeCockpit/);
 assert.doesNotMatch(homePage, /HomeCockpitClient/);
 assert.match(homePage, /export default async function HomePage/);
-assert.doesNotMatch(homePage, /Suspense/);
+assert.match(homePage, /Suspense/);
+assert.match(homePage, /<HomeHeader/);
 
 const homeCockpit = readFileSync(new URL("src/app/(app)/home-cockpit.tsx", repoRoot), "utf8");
 assert.match(homeCockpit, /<Link href="\/ugc-clone" prefetch=\{false\}/);
