@@ -233,6 +233,8 @@ assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-workspace-state\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
+assert.doesNotMatch(layout, /next\/font/);
+assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
 assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
 assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
 assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs"/);
