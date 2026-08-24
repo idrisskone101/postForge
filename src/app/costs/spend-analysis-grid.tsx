@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
-import { DollarSign } from "lucide-react";
+import Link from "next/link";
 import { PIE_COLORS } from "@/components/cost-chart";
-import { WorkspaceState } from "@/components/workspace-state";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
 
@@ -115,15 +114,19 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             </div>
           </>
         ) : (
-          <WorkspaceState
-            tone="empty"
-            icon={DollarSign}
-            title="No spend data yet"
-            description="Workflow and model breakdowns appear after the first tracked production cost."
-            action={{ href: "/ugc-clone", label: "Start Clone" }}
-            secondaryAction={{ href: "/generate", label: "Open Generate" }}
-            className="min-h-64 border-0 bg-transparent px-0 py-6"
-          />
+          <div data-workspace-state="empty" className="space-y-3 py-4">
+            <p className="text-xs leading-4 text-muted-foreground">
+              No spend data yet. Breakdowns appear after the first tracked cost.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/ugc-clone" prefetch={false} className="text-xs font-medium underline">
+                Start Clone
+              </Link>
+              <Link href="/generate" prefetch={false} className="text-xs font-medium underline">
+                Open Generate
+              </Link>
+            </div>
+          </div>
         )}
       </aside>
     </section>
