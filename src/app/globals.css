@@ -1667,6 +1667,7 @@
   max-width: 100% !important;
   overflow: hidden !important;
   white-space: nowrap !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
 .pf-empty-stage p {
@@ -1804,10 +1805,14 @@
 
 [data-settings-copy="true"] {
   margin-top: 0.25rem !important;
+  width: 17.375rem !important;
+  max-width: 100% !important;
   height: 64px !important;
   overflow: hidden !important;
   font-size: 12px !important;
   line-height: 16px !important;
+  font-weight: 400 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;
 }
 
@@ -1818,10 +1823,14 @@
 
 [data-spend-intro="true"] {
   margin-top: 0.25rem !important;
+  width: 21.125rem !important;
+  max-width: 100% !important;
   height: 20px !important;
   overflow: hidden !important;
   font-size: 14px !important;
   line-height: 20px !important;
+  font-weight: 400 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;
   white-space: nowrap !important;
 }
