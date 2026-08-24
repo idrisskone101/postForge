@@ -243,6 +243,7 @@ export function CreateView() {
               type="button"
               onClick={() => void submit()}
               disabled={idea.trim().length < 3 || generating}
+              data-slideshow-idea-submit="true"
               className="pf-button-primary ml-auto h-10 px-5"
             >
               {generating ? (

@@ -1396,9 +1396,18 @@
   overflow: hidden !important;
 }
 
+[data-slideshow-idea-controls="true"] label {
+  display: flex !important;
+  align-items: center !important;
+  height: 2rem !important;
+  overflow: hidden !important;
+}
+
+[data-slideshow-idea-submit="true"],
 [data-slideshow-idea-controls="true"] > button {
   display: inline-flex !important;
   height: 2.5rem !important;
+  min-height: 2.5rem !important;
   margin-left: auto !important;
   padding: 0 1.25rem !important;
 }
