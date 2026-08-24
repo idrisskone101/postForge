@@ -13,6 +13,7 @@ const globalStyles = source("src/app/globals.css");
 const generationStudio = source("src/components/generation-form.tsx");
 const generationEditor = source("src/app/generate/[id]/page.tsx");
 const cloneStudio = source("src/components/ugc-clone-form.tsx");
+const cloneReferenceReview = source("src/components/clone/reference-review.tsx");
 const gallery = source("src/app/gallery/gallery-page-client.tsx");
 const collections = source("src/app/collections/collections-page-client.tsx");
 const characters = source("src/app/characters/characters-page-client.tsx");
@@ -46,6 +47,8 @@ const tiktokInput = source("src/components/tiktok-input.tsx");
 const cloneQueue = source("src/components/ugc-clone-queue.tsx");
 const videoTrimmer = source("src/components/video-trimmer.tsx");
 const avatarPicker = source("src/components/avatar-picker.tsx");
+const avatarPickerImport = source("src/components/avatar-picker-import.tsx");
+const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx");
 const galleryGrid = source("src/components/gallery-grid.tsx");
 const home = source("src/app/home-cockpit.tsx");
 
@@ -171,24 +174,33 @@ assert.match(cloneLoading, /max-w-\[1280px\][^"\n]*px-4 py-6[^"\n]*lg:py-7/);
 
 // Provider and media failures can contain long opaque tokens. They must wrap
 // at the exact legacy surfaces that render those strings.
-for (const failureSurface of [tiktokInput, cloneQueue, videoTrimmer, avatarPicker]) {
+for (const failureSurface of [
+  tiktokInput,
+  cloneQueue,
+  videoTrimmer,
+  avatarPickerImport,
+  avatarPickerGenerate,
+]) {
   assert.match(failureSurface, /\[overflow-wrap:anywhere\]/);
 }
 assert.match(tiktokInput, /sourcesError[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(cloneQueue, /loadError[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(videoTrimmer, /trimError[\s\S]*?\[overflow-wrap:anywhere\]/);
-assert.match(avatarPicker, /readiness\.jsonError[\s\S]*?\[overflow-wrap:anywhere\]/);
-assert.match(avatarPicker, /readiness\.seedError[\s\S]*?\[overflow-wrap:anywhere\]/);
-assert.match(avatarPicker, /generationError[\s\S]*?\[overflow-wrap:anywhere\]/);
+assert.match(avatarPicker, /AvatarImportMode/);
+assert.match(avatarPicker, /AvatarGeneratePanel/);
+assert.match(avatarPickerImport, /readiness\.jsonError[\s\S]*?\[overflow-wrap:anywhere\]/);
+assert.match(avatarPickerImport, /readiness\.seedError[\s\S]*?\[overflow-wrap:anywhere\]/);
+assert.match(avatarPickerImport, /generationError[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(
-  avatarPicker,
+  avatarPickerGenerate,
   /isFailed[\s\S]*?\[overflow-wrap:anywhere\][\s\S]*?genJob\?\.error/
 );
 assert.match(home, /getJobPreview\(job, 88\)[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?getJobPreview\(job, 88\)/);
 assert.match(generationStudio, /prompt\.trim\(\)\.slice\(0, 112\)[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?prompt\.trim\(\)\.slice\(0, 112\)/);
 assert.match(galleryGrid, /item\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?item\.prompt/);
 assert.match(galleryGrid, /lightbox\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?lightbox\.prompt/);
-assert.match(cloneStudio, /selectedRef\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?selectedRef\.prompt/);
+assert.match(cloneStudio, /CloneReferenceReview/);
+assert.match(cloneReferenceReview, /selectedRef\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?selectedRef\.prompt/);
 
 // Dark mode must preserve the workspace palette and status semantics.
 assert.match(globalStyles, /\.dark \.pf-button-secondary:hover/);
