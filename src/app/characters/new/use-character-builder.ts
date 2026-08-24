@@ -75,7 +75,7 @@ export function useCharacterBuilder() {
     ? `/api/files/${encodeURIComponent(previewFileId)}`
     : previewIsPhotographic && avatarId
       ? `/api/avatars/${encodeURIComponent(avatarId)}`
-      : "/character-builder/default-portrait.png";
+      : "/character-builder/default-portrait.webp";
 
   useEffect(() => {
     if (!editId) return;

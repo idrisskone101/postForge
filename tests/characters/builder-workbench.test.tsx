@@ -160,14 +160,15 @@ const photoMarkup = renderToStaticMarkup(
 assert.match(photoMarkup, /data-character-preview="photographic"/);
 assert.match(photoMarkup, /alt="Character preview"/);
 assert.match(photoMarkup, /<img/);
-assert.match(photoMarkup, /\/character-builder\/default-portrait\.png/);
+assert.match(photoMarkup, /\/character-builder\/default-portrait\.webp/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 
 const defaultPortrait = readFileSync(
-  new URL("../../public/character-builder/default-portrait.png", import.meta.url)
+  new URL("../../public/character-builder/default-portrait.webp", import.meta.url)
 );
-assert.equal(defaultPortrait.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
-assert.ok(defaultPortrait.length > 100_000, "default portrait should be a real image asset");
+assert.equal(defaultPortrait.subarray(0, 4).toString("ascii"), "RIFF");
+assert.ok(defaultPortrait.length > 8_000, "default portrait should be a real image asset");
+assert.ok(defaultPortrait.length < 200_000, "default portrait should stay small enough for LCP");
 
 assert.deepEqual(
   parseImportedCharacterAttributes(

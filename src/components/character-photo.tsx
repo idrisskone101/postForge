@@ -50,7 +50,7 @@ export function CharacterPhoto({
 
 
 
-const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.png";
+const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
 
 function characterPhotoSource({
   avatarId,
