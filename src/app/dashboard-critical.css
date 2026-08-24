@@ -175,6 +175,22 @@ body {
   white-space: nowrap;
 }
 
+.pf-button-secondary {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 0.5rem;
+  background: var(--pf-surface);
+  padding: 0 0.75rem;
+  color: var(--pf-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 #workspace-mobile-bar .sidebar-brand {
   display: flex;
   min-width: 0;
@@ -298,6 +314,17 @@ body {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--pf-border);
   background: #fff;
+}
+
+@media (max-width: 1279.98px) {
+  [data-character-workbench-header="true"] {
+    height: 13.5rem;
+    overflow: hidden;
+  }
+
+  [data-character-category-rail="true"] {
+    height: 9.25rem;
+  }
 }
 
 [data-character-workbench-header="true"] > div:first-child {
