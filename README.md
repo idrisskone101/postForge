@@ -35,8 +35,11 @@ Use these actions:
 ```bash
 pnpm dev
 pnpm kode:check
+pnpm kode:smoke
 pnpm exec prisma migrate status
 ```
+
+`pnpm kode:check` already runs `pnpm kode:smoke` last. The smoke reuses the `.next` build from the gate, boots `next start`, and requires HTTP 200 from `GET /api/health` (a Postgres readiness ping). It does not exercise the product UI.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
