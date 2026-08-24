@@ -163,7 +163,7 @@ export function SettingsPageClient() {
         )}
       />
 
-      <section aria-label="Settings panel" className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
+      <section data-settings-panel="true" aria-label="Settings panel" className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
         {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
         {panel}
       </section>
@@ -220,7 +220,7 @@ export function SettingsNavigation({
   connectedIntegrations?: number;
 }) {
   return (
-    <aside className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
+    <aside data-settings-nav="true" className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
       <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Workspace</p>
       {SETTINGS_NAVIGATION.filter((item) => item.group === "workspace").map(
         ({ id, label, icon: Icon }) => (

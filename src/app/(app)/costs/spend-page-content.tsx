@@ -1,17 +1,8 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Download, Settings2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SPEND_PERIODS } from "@/lib/costs/spend-period";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -103,7 +94,6 @@ export function SpendPageContent({
   };
 
   return (
-    <TooltipProvider>
     <div data-spend-page="true" className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
       <section
         data-spend-controls="true"
@@ -113,7 +103,7 @@ export function SpendPageContent({
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Spend controls
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p data-spend-intro="true" className="mt-1 text-sm text-muted-foreground">
             Cost tracking, budget signals, and model usage.
           </p>
         </div>
@@ -143,24 +133,17 @@ export function SpendPageContent({
             ))}
           </div>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <button
-                  type="button"
-                  onClick={() => {
-                    void exportCsv();
-                  }}
-                  disabled={exporting}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-                />
-              }
-            >
-              <Download className="size-4" />
-              <span>Export CSV</span>
-            </TooltipTrigger>
-            <TooltipContent>Export CSV</TooltipContent>
-          </Tooltip>
+          <button
+            type="button"
+            onClick={() => {
+              void exportCsv();
+            }}
+            disabled={exporting}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+          >
+            <Download className="size-4" />
+            <span>Export CSV</span>
+          </button>
         </div>
       </section>
 
@@ -235,48 +218,25 @@ export function SpendPageContent({
         handlers={handlers}
       />
 
-      <Dialog open={budgetOpen} onOpenChange={setBudgetOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit production budget</DialogTitle>
-            <DialogDescription>
-              This planning value is stored only in this browser and does not change provider limits.
-            </DialogDescription>
-          </DialogHeader>
-          <label className="space-y-2">
-            <span className="text-xs font-semibold">Budget amount (USD)</span>
-            <Input
-              type="number"
-              min="1"
-              step="1"
-              value={budgetInput}
-              onChange={(event) => setBudgetInput(event.target.value)}
-              className="h-10"
-            />
-          </label>
-          <DialogFooter>
-            <button
-              type="button"
-              onClick={() => setBudgetOpen(false)}
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={!Number.isFinite(Number(budgetInput)) || Number(budgetInput) <= 0}
-              onClick={saveBudget}
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Save budget
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {budgetOpen ? (
+        <SpendBudgetDialog
+          budgetInput={budgetInput}
+          onBudgetInputChange={setBudgetInput}
+          onClose={() => setBudgetOpen(false)}
+          onSave={saveBudget}
+        />
+      ) : null}
     </div>
-    </TooltipProvider>
   );
 }
+
+const SpendBudgetDialog = dynamic(
+  () =>
+    import("./spend-budget-dialog").then((mod) => ({
+      default: mod.SpendBudgetDialog,
+    })),
+  { ssr: false }
+);
 
 
 const BUDGET_STORAGE_KEY = "postforge-production-budget";

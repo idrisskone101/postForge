@@ -80,7 +80,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
           )}
         </div>
       </div>
-      <p className="mt-2 max-w-[560px] text-[12px] leading-4 text-muted-foreground">{content.description}</p>
+      <p data-settings-copy="true" className="mt-2 max-w-[560px] text-[12px] leading-4 text-muted-foreground">{content.description}</p>
 
       {status?.connected && status.accounts.length > 0 ? (
         <div className="mt-3 grid gap-2">
