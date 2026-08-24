@@ -235,6 +235,7 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
 assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);

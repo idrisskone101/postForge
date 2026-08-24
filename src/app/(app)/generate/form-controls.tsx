@@ -175,7 +175,7 @@ export function GenerateFormControls({
           </div>
         )}
 
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div data-generate-sparks="true" className="mt-3 flex flex-wrap gap-1.5">
           {CREATIVE_SPARKS.map((spark) => (
             <button
               key={spark}

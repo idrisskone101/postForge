@@ -54,10 +54,10 @@ export function CharacterPreviewStage({
         <span role="status" aria-live="polite" className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",rendering ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]" : previewSaveBlocked ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]" : previewRequiresRender ? "bg-[var(--pf-success)]/15 text-[var(--pf-success)]" : "bg-white/10 text-white/80")}>{rendering ? <Loader2 aria-hidden="true" className="size-3 animate-spin" /> : previewSaveBlocked ? <RefreshCw aria-hidden="true" className="size-3" /> : <Check aria-hidden="true" className="size-3" />}{rendering ? "Rendering" : previewSaveBlocked ? "Changes pending" : previewRequiresRender ? "Preview ready" : "Draft — preview optional"}</span>
       </div>
 
-      <div className="relative z-10 grid min-h-0 flex-1 place-items-center py-4 min-[1280px]:py-3">
+      <div className="relative z-10 grid min-h-0 flex-1 content-start justify-items-center py-4 min-[1280px]:py-3">
         <div
           data-character-lcp-frame="true"
-          className="aspect-[3/4] h-auto max-h-full w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
+          className="aspect-[3/4] h-auto w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
         >
           <CharacterPhoto
             generatedFileId={previewFileId}
