@@ -454,6 +454,16 @@ body {
   line-height: 1.2;
 }
 
+[data-automation-fields="true"] {
+  min-height: 29.625rem;
+}
+
+[data-automation-form="true"] select,
+[data-automation-form="true"] .pf-input:not(textarea) {
+  height: 2.5rem;
+  box-sizing: border-box;
+}
+
 [data-spend-page="true"] {
   padding: 1.25rem;
   box-sizing: border-box;

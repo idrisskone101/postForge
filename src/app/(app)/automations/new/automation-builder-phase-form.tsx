@@ -59,7 +59,7 @@ export function AutomationBuilderPhaseForm({
           </p>
         </div>
       </div>
-      <div className="mt-5 space-y-4">
+      <div data-automation-fields="true" className="mt-5 space-y-4">
         {phase === "Hook" && (
           <>
             <Field label="Hook strategy">
