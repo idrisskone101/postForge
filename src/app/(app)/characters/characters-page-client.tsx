@@ -172,7 +172,7 @@ export function CharactersPageClient({
           data-characters-empty="true"
           className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-center overflow-hidden px-5 text-center"
         >
-          <div className="relative h-32 w-44">
+          <div data-empty-figure="true" className="relative h-32 w-44">
             <div className="absolute left-1/2 top-0 h-28 w-20 -translate-x-1/2 overflow-hidden rounded-lg border-4 border-white bg-[var(--pf-active)] shadow-lg" />
             <span className="absolute bottom-0 right-6 grid size-9 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-lg"><Plus className="size-4" /></span>
           </div>

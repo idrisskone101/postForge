@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import {
   Bell,
   Check,
@@ -33,18 +33,21 @@ import { Billing, SettingsForm, Team } from "./workspace-panels";
 
 export function SettingsPageClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const requested = searchParams.get("tab") ?? "integrations";
-  const tab: SettingsTab = isSettingsTab(requested) ? requested : "integrations";
+  const tab = useSyncExternalStore(
+    subscribeSettingsTab,
+    readSettingsTab,
+    readDefaultSettingsTab
+  );
   const [settings, setSettings] = useState<SettingsRecord>(DEFAULT_SETTINGS);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const onOAuthCallback = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     params.set("tab", "integrations");
     router.replace(`/settings?${params.toString()}`, { scroll: false });
-  }, [router, searchParams]);
+    window.dispatchEvent(new Event("pf-settings-tab"));
+  }, [router]);
   const {
     providers,
     integrationsLoading,
@@ -74,9 +77,10 @@ export function SettingsPageClient() {
   }, []);
 
   function selectTab(next: SettingsTab) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     params.set("tab", next);
     router.replace(`/settings?${params.toString()}`, { scroll: false });
+    window.dispatchEvent(new Event("pf-settings-tab"));
   }
 
   async function save() {
@@ -186,6 +190,24 @@ export type SettingsTab = (typeof SETTINGS_NAVIGATION)[number]["id"];
 
 export function isSettingsTab(value: string): value is SettingsTab {
   return SETTINGS_NAVIGATION.some((item) => item.id === value);
+}
+
+function readDefaultSettingsTab(): SettingsTab {
+  return "integrations";
+}
+
+function readSettingsTab(): SettingsTab {
+  const requested = new URLSearchParams(window.location.search).get("tab");
+  return requested && isSettingsTab(requested) ? requested : "integrations";
+}
+
+function subscribeSettingsTab(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener("pf-settings-tab", onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener("pf-settings-tab", onChange);
+  };
 }
 
 export function SettingsNavigation({

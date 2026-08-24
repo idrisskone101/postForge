@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   beginIntegrationConnection,
@@ -26,7 +26,6 @@ export function useSettingsIntegrations({
   setToast: (message: string | null) => void;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [providers, setProviders] = useState<PublicIntegrationStatus[]>([]);
   const [integrationsLoading, setIntegrationsLoading] = useState(true);
   const [integrationsError, setIntegrationsError] = useState<string | null>(null);
@@ -59,10 +58,10 @@ export function useSettingsIntegrations({
   }, [refreshIntegrations]);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     const feedback = readIntegrationCallbackFeedback(params);
     if (!feedback) return;
-    const callbackKey = searchParams.toString();
+    const callbackKey = params.toString();
     if (handledCallbackRef.current === callbackKey) return;
     handledCallbackRef.current = callbackKey;
 
@@ -95,7 +94,7 @@ export function useSettingsIntegrations({
       setToast(`${confirmed.displayName} connected as ${accountLabel}.`);
       window.setTimeout(() => setToast(null), 2600);
     });
-  }, [onOAuthCallback, refreshIntegrations, router, searchParams, setError, setToast]);
+  }, [onOAuthCallback, refreshIntegrations, router, setError, setToast]);
 
   async function connectProvider(
     status: PublicIntegrationStatus,

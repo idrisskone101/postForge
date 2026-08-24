@@ -8,7 +8,8 @@ const settingsPageClient = readFileSync(
 
 assert.doesNotMatch(settingsPageClient, /useState<SettingsTab>/);
 assert.doesNotMatch(settingsPageClient, /setTab\(/);
-assert.match(settingsPageClient, /const tab: SettingsTab = isSettingsTab\(requested\)/);
+assert.match(settingsPageClient, /useSyncExternalStore/);
+assert.match(settingsPageClient, /readSettingsTab/);
 assert.match(settingsPageClient, /params\.set\("tab", next\)/);
 assert.match(
   settingsPageClient,

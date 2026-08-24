@@ -111,7 +111,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
       ) : notConfigured ? (
         <div className="mt-3 rounded-lg border border-dashed border-border bg-card p-2.5">
           <b className="block text-[12px] text-muted-foreground">Server setup required</b>
-          <p className="mt-1 min-w-0 break-words text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere]">{content.setup}</p>
+          <p data-settings-setup="true" className="mt-1 min-w-0 break-words text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere]">{content.setup}</p>
           <Link href={content.documentation} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-link)]">Setup documentation <ExternalLink className="size-2.5" /></Link>
           {content.policyLinks && (
             <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">

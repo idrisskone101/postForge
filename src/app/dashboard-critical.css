@@ -613,7 +613,6 @@ body {
   box-sizing: border-box;
 }
 
-.pf-empty-stage [data-empty-chips] {
   height: 24px;
   max-width: 16rem;
   overflow: hidden;
@@ -1250,7 +1249,8 @@ body {
   letter-spacing: -0.02em;
   color: #18181b;
   height: 50px;
-  max-width: 20rem;
+  width: 20rem;
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -1260,4 +1260,59 @@ body {
   font-size: 12px;
   line-height: 1.25rem;
   color: #52525b;
+}
+
+.pf-empty-stage [data-empty-icon="true"] {
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pf-empty-stage [data-empty-figure="true"] {
+  width: 11rem;
+  height: 8rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pf-empty-stage [data-empty-deco="true"] {
+  position: relative;
+  height: 9rem;
+  width: 18rem;
+  max-width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pf-empty-stage [data-empty-tile="true"] {
+  width: 66px;
+  height: 66px;
+  box-sizing: border-box;
+}
+
+.pf-empty-stage [data-empty-actions="true"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  margin-top: 1.25rem;
+  overflow: hidden;
+}
+
+.pf-empty-stage [data-empty-steps="true"] {
+  height: 4.5rem;
+  margin-top: 1.75rem;
+  overflow: hidden;
+}
+
+[data-settings-setup="true"] {
+  margin-top: 0.25rem;
+  height: 48px;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 16px;
+  color: #71717a;
 }

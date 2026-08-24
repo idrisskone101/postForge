@@ -265,6 +265,8 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\
 assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:center;height:650px/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2\{margin:1rem 0 0;font-size:20px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-icon="true"\]\{width:3\.5rem;height:3\.5rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-deco="true"\]\{position:relative;height:9rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
 assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);

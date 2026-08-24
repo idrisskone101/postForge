@@ -6,9 +6,10 @@ import { costsHref } from "@/lib/costs/spend-period";
 import type { CostsPageClientProps, SpendPageHandlers } from "./spend-models";
 import { SpendPageContent } from "./spend-page-content";
 
-export function CostsPageClient(dashboard: CostsPageClientProps) {
-  const { period, logPage, search, model } = dashboard;
+export function CostsPageClient(initial: CostsPageClientProps) {
+  const { period, logPage, search, model } = initial;
   const router = useRouter();
+  const [dashboard, setDashboard] = useState(initial);
   const [prevSearch, setPrevSearch] = useState(search);
   const [queryDraft, setQueryDraft] = useState(search);
 
@@ -16,6 +17,35 @@ export function CostsPageClient(dashboard: CostsPageClientProps) {
     setPrevSearch(search);
     setQueryDraft(search);
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams({ period });
+    if (logPage > 0) params.set("logPage", String(logPage));
+    if (search.trim()) params.set("q", search.trim());
+    if (model) params.set("model", model);
+    let cancelled = false;
+    fetch(`/api/costs/dashboard?${params.toString()}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: CostsPageClientProps | null) => {
+        if (cancelled || !payload) return;
+        setDashboard((current) =>
+          current.totalCost === payload.totalCost &&
+          current.currentPeriodCost === payload.currentPeriodCost &&
+          current.totalJobs === payload.totalJobs &&
+          current.logs.length === payload.logs.length &&
+          current.period === payload.period &&
+          current.search === payload.search &&
+          current.model === payload.model &&
+          current.logPage === payload.logPage
+            ? current
+            : payload
+        );
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [period, logPage, search, model]);
 
   useEffect(() => {
     if (queryDraft.trim() === search.trim()) return;
