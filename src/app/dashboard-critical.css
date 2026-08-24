@@ -563,6 +563,15 @@ body {
   color: #18181b;
 }
 
+[data-spend-stats="true"] p {
+  margin-top: 0.25rem;
+  height: 11px;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1;
+  color: #52525b;
+}
+
 [data-spend-chart-slot="true"] {
   height: 276px;
   box-sizing: border-box;
