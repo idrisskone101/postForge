@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -266,6 +267,13 @@ export async function renderSlideshowVideo(
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+}
+
+export function ffmpegBinaryExists(
+  ffmpegPath = process.env.FFMPEG_PATH ?? "ffmpeg",
+) {
+  if (ffmpegPath !== "ffmpeg") return existsSync(ffmpegPath);
+  return existsSync("/usr/bin/ffmpeg") || existsSync("/usr/local/bin/ffmpeg");
 }
 
 export async function canRenderSlideshowVideo(

@@ -64,7 +64,10 @@ export function WorkspaceRouteHeader({
   hasAccessory?: boolean;
 }) {
   return (
-    <div className="border-b border-[var(--pf-border)] bg-[var(--pf-canvas)]">
+    <div
+      id="workspace-header"
+      className="border-b border-[var(--pf-border)] bg-[var(--pf-canvas)]"
+    >
       <div
         id="workspace-header-grid"
         className={cn(

@@ -1,4 +1,4 @@
-import { canRenderSlideshowVideo } from "@/lib/ai/slideshow-renderer";
+import { ffmpegBinaryExists } from "@/lib/ai/slideshow-renderer";
 import {
   createBlankSlideshowProject,
   SlideshowStudio,
@@ -23,7 +23,7 @@ export default async function SlideshowPage({
       initialProjects={[]}
       initialProject={startNew ? createBlankSlideshowProject() : null}
       initialViewMode={parseSlideshowViewMode(params.view)}
-      supportsMp4Export={await canRenderSlideshowVideo()}
+      supportsMp4Export={ffmpegBinaryExists()}
     />
   );
 }

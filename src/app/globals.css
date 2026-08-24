@@ -1278,3 +1278,35 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Unlayered CLS pins. /dashboard.css loads after first paint; these win. */
+#workspace-shell {
+  padding-top: calc(58px + env(safe-area-inset-top)) !important;
+}
+
+@media (min-width: 768px) {
+  #workspace-shell {
+    padding-top: 0 !important;
+  }
+}
+
+@media (max-width: 1023.98px) {
+  #workspace-header,
+  #workspace-header-grid {
+    height: 9.1875rem !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  [data-slideshow-create="true"] {
+    height: 52rem !important;
+    min-height: 52rem !important;
+    overflow: hidden !important;
+  }
+
+  [data-slideshow-section-nav="true"] {
+    height: 4rem !important;
+    overflow: hidden !important;
+  }
+}

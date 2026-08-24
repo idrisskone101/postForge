@@ -11,6 +11,7 @@ const accessoryMarkup = renderToStaticMarkup(
   <WorkspaceRouteHeader activeItem={home} hasAccessory />
 );
 
+assert.match(markup, /id="workspace-header"/);
 assert.match(markup, /id="workspace-header-grid"/);
 assert.match(markup, /min-h-\[120px\]/);
 assert.match(markup, /text-\[28px\]/);

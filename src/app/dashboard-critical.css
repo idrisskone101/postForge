@@ -89,6 +89,11 @@ body {
   padding-top: calc(58px + env(safe-area-inset-top));
 }
 
+#workspace-header,
+#workspace-header-grid {
+  box-sizing: border-box;
+}
+
 #workspace-header-grid {
   display: grid;
   min-height: 120px;
@@ -97,6 +102,11 @@ body {
 }
 
 @media (max-width: 1023.98px) {
+  #workspace-header {
+    height: 9.1875rem;
+    overflow: hidden;
+  }
+
   #workspace-header-grid {
     height: 9.1875rem;
     overflow: hidden;
@@ -427,6 +437,16 @@ body {
     height: 52rem;
     overflow: hidden;
   }
+}
+
+[data-generate-models="true"] > div:first-child {
+  display: flex;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
 }
 
 [data-workspace-state] {
