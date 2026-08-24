@@ -1300,6 +1300,7 @@
 
 #workspace-header-grid h1 {
   margin: 0 !important;
+  width: 12rem !important;
   max-width: 12rem !important;
   height: 31px !important;
   overflow: hidden !important;
@@ -1313,6 +1314,7 @@
 
 .pf-content-viewport header h1 {
   margin: 0 !important;
+  width: 12rem !important;
   max-width: 12rem !important;
   height: 33px !important;
   overflow: hidden !important;
@@ -1546,6 +1548,28 @@
   box-sizing: border-box !important;
 }
 
+[data-jobs-empty="true"] p {
+  margin: 0.25rem 0 0 !important;
+  max-width: 8rem !important;
+  height: 10px !important;
+  overflow: hidden !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+}
+
+[data-jobs-empty="true"] h2 {
+  margin: 0.75rem 0 0 !important;
+  height: 19px !important;
+  max-width: 12rem !important;
+  overflow: hidden !important;
+  font-size: 15px !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+}
+
 [data-jobs-board="true"] {
   margin-top: 0.75rem !important;
 }
@@ -1661,6 +1685,8 @@
 }
 
 [data-spend-value="true"] {
+  width: 9.125rem !important;
+  max-width: 100% !important;
   font-size: 28px !important;
 }
 
@@ -1728,7 +1754,7 @@
   letter-spacing: -0.02em !important;
   color: #18181b !important;
   height: 25px !important;
-  width: 20rem !important;
+  width: 12rem !important;
   max-width: 100% !important;
   overflow: hidden !important;
   white-space: nowrap !important;

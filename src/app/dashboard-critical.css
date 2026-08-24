@@ -142,6 +142,7 @@ body {
 #workspace-header-grid h1,
 .pf-content-viewport header h1 {
   margin: 0;
+  width: 12rem;
   max-width: 12rem;
   font-weight: 600;
   line-height: 1.1;
@@ -577,6 +578,8 @@ body {
 }
 
 [data-spend-value="true"] {
+  width: 9.125rem;
+  max-width: 100%;
   font-size: 28px;
 }
 
@@ -619,10 +622,24 @@ body {
 
 [data-jobs-empty="true"] p {
   margin: 0.25rem 0 0;
-  max-width: 24rem;
-  font-size: 12px;
-  line-height: 1.25rem;
+  max-width: 8rem;
+  height: 10px;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 1;
   color: #52525b;
+  white-space: nowrap;
+}
+
+[data-jobs-empty="true"] h2 {
+  margin: 0.75rem 0 0;
+  height: 19px;
+  max-width: 12rem;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 19px;
+  color: #18181b;
+  white-space: nowrap;
 }
 
 [data-settings-intro="true"] {
@@ -1283,7 +1300,7 @@ body {
   letter-spacing: -0.02em;
   color: #18181b;
   height: 25px;
-  width: 20rem;
+  width: 12rem;
   max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
