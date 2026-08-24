@@ -43,7 +43,7 @@ export function WorkspaceState({
     <div
       data-workspace-state={tone}
       className={cn(
-        "flex min-h-[240px] min-w-0 flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
+        "flex min-h-[240px] min-w-0 flex-col items-center justify-start rounded-lg border bg-card/60 px-5 py-10 text-center",
         tone === "empty" && "border-dashed border-border bg-white/[0.01]",
         tone === "error" && "border-destructive/30 bg-destructive/10",
         tone === "neutral" && "border-border",

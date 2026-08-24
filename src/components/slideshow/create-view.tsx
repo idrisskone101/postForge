@@ -92,7 +92,7 @@ export function CreateView() {
   };
 
   return (
-    <div>
+    <div data-slideshow-create="true">
       <div className="mb-4 flex items-center gap-1 rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
         <button
           type="button"

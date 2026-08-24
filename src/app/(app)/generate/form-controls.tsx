@@ -88,7 +88,7 @@ export function GenerateFormControls({
         data-generate-prompt="true"
         className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
       >
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div data-generate-prompt-toolbar="true" className="mb-3 flex h-9 items-center justify-between gap-3 overflow-hidden">
           <div className="flex items-center gap-2">
             <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
               Describe your {isVideo ? "video" : "image"}
