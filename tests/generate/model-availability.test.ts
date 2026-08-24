@@ -4,6 +4,7 @@ import {
   DEFAULT_IMAGE_MODEL,
   DEFAULT_VIDEO_MODEL,
   getAvailableModels,
+  getAvailableModelsNow,
   getDefaultIntelligenceModel,
   getDefaultModel,
   getDefaultVisionIntelligenceModel,
@@ -33,8 +34,11 @@ async function testAvailabilityDefaults() {
   assert.ok(visionDefault, "a vision-capable intelligence fallback must exist");
   assert.equal(visionDefault.vision, true);
 
+  const availableNow = getAvailableModelsNow();
+  assert.equal(availableNow.length, getAllModels().length);
   const available = await getAvailableModels();
   assert.ok(available.length >= getAllModels().length - 1);
+  assert.equal(availableNow.length, available.length);
   for (const model of available) {
     assert.equal(await isModelEnabled(model.id), true);
   }

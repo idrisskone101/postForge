@@ -120,8 +120,8 @@ const namedComponents: Array<[string, string, number]> = [
   ["destination-selector.tsx", "DestinationSelector", 1],
   ["automation-builder-phase-form.tsx", "AutomationBuilderPhaseForm", 1],
   ["automation-builder-preview-pane.tsx", "AutomationBuilderPreviewPane", 1],
-  ["automation-builder-client.tsx", "AutomationBuilderClient", 0],
-  ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 0],
+  ["automation-builder-client.tsx", "AutomationBuilderClient", 1],
+  ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 1],
 ];
 for (const [file, exportName, expected] of namedComponents) {
   const source = readFileSync(new URL(`${builderDir}${file}`, repoRoot), "utf8");

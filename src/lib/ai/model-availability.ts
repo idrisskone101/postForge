@@ -139,6 +139,12 @@ export async function saveModelAvailability(
   return next;
 }
 
+export function getAvailableModelsNow(): ModelDefinition[] {
+  const availability = cachedAvailability() ?? defaultAvailabilityState();
+  const enabled = new Set(availability.enabledModelIds);
+  return getAllModels().filter((model) => enabled.has(model.id));
+}
+
 export async function getAvailableModels(): Promise<ModelDefinition[]> {
   const availability = await readModelAvailability();
   const enabled = new Set(availability.enabledModelIds);

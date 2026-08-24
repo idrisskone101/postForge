@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   AUTOMATION_TEMPLATES,
@@ -42,12 +42,19 @@ type WorkspaceSettingsDefaults = {
   approvalDefault: boolean;
 };
 
-export function useAutomationBuilder() {
+export type AutomationBuilderSearch = {
+  id?: string | string[];
+  sourceFileId?: string | string[];
+  template?: string | string[];
+};
+
+export function useAutomationBuilder(search: AutomationBuilderSearch) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams.get("id");
-  const requestedSourceFileId = searchParams.get("sourceFileId")?.trim() || null;
-  const requestedTemplate = searchParams.get("template") ?? "story-lesson";
+  const editId = typeof search.id === "string" ? search.id : null;
+  const requestedSourceFileId =
+    typeof search.sourceFileId === "string" ? search.sourceFileId.trim() || null : null;
+  const requestedTemplate =
+    typeof search.template === "string" ? search.template : "story-lesson";
   const initialTemplateId = AUTOMATION_TEMPLATES.some(
     (template) => template.id === requestedTemplate
   )

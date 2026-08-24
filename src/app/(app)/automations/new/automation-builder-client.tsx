@@ -17,10 +17,17 @@ import { AutomationBuilderPhaseForm } from "./automation-builder-phase-form";
 import { AutomationBuilderPreviewPane } from "./automation-builder-preview-pane";
 import { PlaybookPicker } from "./playbook-picker";
 import { TEMPLATE_VISUALS, templateNumber } from "./playbook-model";
-import { useAutomationBuilder } from "./use-automation-builder";
+import {
+  useAutomationBuilder,
+  type AutomationBuilderSearch,
+} from "./use-automation-builder";
 
-export function AutomationBuilderClient() {
-  const workspace = useAutomationBuilder();
+export function AutomationBuilderClient({
+  search,
+}: {
+  search: AutomationBuilderSearch;
+}) {
+  const workspace = useAutomationBuilder(search);
   const {
     record,
     setRecord,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -30,10 +30,13 @@ import {
 } from "@/lib/collections-client";
 import { cn } from "@/lib/utils";
 
-export function SlideshowAutomationBuilder() {
+export function SlideshowAutomationBuilder({
+  search,
+}: {
+  search: { id?: string | string[] };
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams.get("id");
+  const editId = typeof search.id === "string" ? search.id : null;
 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);

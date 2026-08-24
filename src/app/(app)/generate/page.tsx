@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CircleHelp, History } from "lucide-react";
 import { GenerationForm } from "@/components/generation-form";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
-import { getAvailableModels } from "@/lib/ai/model-availability";
+import { getAvailableModelsNow } from "@/lib/ai/model-availability";
 import { appSearchParamsToQuery } from "@/lib/search-params-query";
 
 type GeneratePageProps = {
@@ -10,10 +10,8 @@ type GeneratePageProps = {
 };
 
 export default async function GeneratePage({ searchParams }: GeneratePageProps) {
-  const [models, params] = await Promise.all([
-    getAvailableModels(),
-    searchParams,
-  ]);
+  const params = await searchParams;
+  const models = getAvailableModelsNow();
   const initialQuery = appSearchParamsToQuery(params);
 
   return (
