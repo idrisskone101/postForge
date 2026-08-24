@@ -4,10 +4,10 @@ name = "postForge"
 
 [setup]
 script = '''
-if [ -f scripts/codex-setup.sh ]; then
-  bash scripts/codex-setup.sh
+if [ -f scripts/kode-setup.sh ]; then
+  bash scripts/kode-setup.sh
 else
-  POSTFORGE_REPO_ROOT="$PWD" POSTFORGE_ENV_SOURCE_DIR="/Users/idrisskone/Developer/postForge" bash /Users/idrisskone/Developer/postForge/scripts/codex-setup.sh
+  POSTFORGE_REPO_ROOT="$PWD" POSTFORGE_ENV_SOURCE_DIR="/Users/idrisskone/Developer/postForge" bash /Users/idrisskone/Developer/postForge/scripts/kode-setup.sh
 fi
 '''
 
@@ -19,7 +19,7 @@ command = "pnpm dev"
 [[actions]]
 name = "Check"
 icon = "tool"
-command = 'if [ -f scripts/codex-check.sh ]; then bash scripts/codex-check.sh; else pnpm lint && pnpm build; fi'
+command = 'if [ -f scripts/kode-check.sh ]; then bash scripts/kode-check.sh; else pnpm lint && pnpm build; fi'
 
 [[actions]]
 name = "Migration status"

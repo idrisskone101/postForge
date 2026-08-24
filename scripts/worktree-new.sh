@@ -31,8 +31,8 @@ if [ -f "${REPO_ROOT}/.env.local" ]; then
   echo "==> Copied .env.local"
 fi
 
-echo "==> Running Codex setup..."
-POSTFORGE_ENV_SOURCE_DIR="$REPO_ROOT" bash scripts/codex-setup.sh
+echo "==> Running Kode setup..."
+POSTFORGE_ENV_SOURCE_DIR="$REPO_ROOT" bash scripts/kode-setup.sh
 
 echo ""
 echo "Done! Worktree ready at: ${WORKTREE_DIR}"
