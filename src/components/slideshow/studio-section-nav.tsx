@@ -16,7 +16,8 @@ export function StudioSectionNav() {
       className="sticky top-0 z-20 -mx-1 h-16 overflow-hidden bg-[var(--pf-canvas)]/95 px-1 py-3 backdrop-blur"
     >
       <div
-        className="flex w-fit max-w-full gap-0.5 overflow-x-auto rounded-lg bg-[var(--pf-active)] p-1"
+        className="flex h-10 w-fit max-w-full gap-0.5 overflow-x-auto rounded-lg bg-[var(--pf-active)] p-1"
+        data-slideshow-section-tabs="true"
         role="tablist"
       >
         {sections.map(({ id, label, icon: Icon }) => (

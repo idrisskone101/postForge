@@ -250,6 +250,7 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-create=
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea="true"\][\s\S]*?padding:\s*1\.25rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-title="true"\][\s\S]*?height:\s*2rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-controls="true"\][\s\S]*?height:\s*8\.125rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-section-tabs="true"\][\s\S]*?height:\s*2\.5rem/);
 assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea="true"/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
