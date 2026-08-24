@@ -59,10 +59,9 @@ export type HomeDashboard = {
 
 type HomeCockpitProps = {
   dashboard: HomeDashboard;
-  onReviewSaved?: () => void;
 };
 
-export function HomeCockpit({ dashboard, onReviewSaved }: HomeCockpitProps) {
+export function HomeCockpit({ dashboard }: HomeCockpitProps) {
   const {
     todaySummary,
     activeJobs,
@@ -129,10 +128,7 @@ export function HomeCockpit({ dashboard, onReviewSaved }: HomeCockpitProps) {
                       </p>
                     </div>
                   ) : (
-                    <HomeReviewQueue
-                      jobs={visibleReviewJobs}
-                      onReviewSaved={onReviewSaved}
-                    />
+                    <HomeReviewQueue jobs={visibleReviewJobs} />
                   )}
                 </div>
               </section>

@@ -3,7 +3,7 @@ import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
-import { HomeCockpitClient } from "./home-cockpit-client";
+import { HomeCockpit } from "./home-cockpit";
 import { type HomeJob } from "./home-cockpit";
 
 export const dynamic = "force-dynamic";
@@ -151,7 +151,7 @@ export default async function HomePage() {
   }));
 
   return (
-    <HomeCockpitClient
+    <HomeCockpit
       dashboard={{
         todaySummary,
         activeJobs: activeHomeJobs,

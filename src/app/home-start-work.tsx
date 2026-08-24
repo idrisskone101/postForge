@@ -12,6 +12,7 @@ export function HomeStartWork() {
       {startActions.map((action) => (
         <Link
           key={action.href}
+          prefetch={false}
           href={action.href}
           className="group flex min-w-0 items-center gap-3 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
         >

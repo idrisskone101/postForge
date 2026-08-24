@@ -37,8 +37,8 @@ assert.doesNotMatch(reviewQueue, /rules-of-hooks/);
 assert.match(reviewQueue, /onReviewSaved\?/);
 
 const homePage = readFileSync(new URL("src/app/page.tsx", repoRoot), "utf8");
-assert.match(homePage, /HomeCockpitClient/);
-assert.doesNotMatch(homePage, /<HomeCockpit[\s]/);
+assert.match(homePage, /<HomeCockpit/);
+assert.doesNotMatch(homePage, /HomeCockpitClient/);
 
 console.log(
   files

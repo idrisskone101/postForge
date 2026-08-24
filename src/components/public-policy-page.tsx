@@ -31,8 +31,8 @@ export function PublicPolicyPage({
 
       <header className="border-b border-[var(--pf-border)] bg-[var(--pf-surface)]">
         <div className="mx-auto flex min-h-16 max-w-[1120px] items-center justify-between gap-5 px-5 sm:px-7 lg:px-8">
-          <Link href="/privacy" className="flex items-center gap-2.5" aria-label="PostForge policies">
-            <span className="grid size-7 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
+          <Link href="/privacy" className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="grid size-7 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
               P
             </span>
             <span className="text-[15px] font-bold tracking-[-0.02em]">PostForge</span>

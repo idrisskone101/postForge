@@ -36,7 +36,7 @@ export function InspirationCreatorRail({
       className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
     >
       <div className="mb-3">
-        <h3 id="tracked-creators-heading" className="text-sm font-semibold">Tracked creators</h3>
+        <h2 id="tracked-creators-heading" className="text-sm font-semibold">Tracked creators</h2>
         <p className="mt-1 text-xs text-muted-foreground">Choose a creator to narrow the source library.</p>
       </div>
 
