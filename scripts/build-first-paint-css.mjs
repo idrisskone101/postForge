@@ -29,7 +29,54 @@ if (prefix.includes("`")) {
   throw new Error("first-paint prefix contains a backtick");
 }
 
-const critical = minifyCss(await readFile(criticalPath, "utf8"));
+const keepPattern =
+  /data-generate-|data-home-glance|data-workspace-state|data-workspace-page|data-slideshow-|data-jobs-|data-gallery-|data-spend-|data-automation-|pf-content-viewport|:root|\.dark|\.sr-only|\.hidden|\.pf-button|\.pf-safe-overlay/;
+
+function keepRule(block) {
+  const selector = block.slice(0, block.indexOf("{"));
+  return keepPattern.test(selector);
+}
+
+function filterCritical(css) {
+  const stripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  let out = "";
+  let i = 0;
+  while (i < stripped.length) {
+    const at = stripped.indexOf("@media", i);
+    const brace = stripped.indexOf("{", i);
+    if (brace === -1) break;
+    if (at !== -1 && at < brace) {
+      const open = stripped.indexOf("{", at);
+      let depth = 1;
+      let j = open + 1;
+      while (j < stripped.length && depth > 0) {
+        if (stripped[j] === "{") depth += 1;
+        else if (stripped[j] === "}") depth -= 1;
+        j += 1;
+      }
+      const inner = stripped.slice(open + 1, j - 1);
+      const keptInner = filterCritical(inner);
+      if (keptInner) {
+        out += stripped.slice(at, open + 1) + keptInner + "}";
+      }
+      i = j;
+      continue;
+    }
+    let depth = 1;
+    let j = brace + 1;
+    while (j < stripped.length && depth > 0) {
+      if (stripped[j] === "{") depth += 1;
+      else if (stripped[j] === "}") depth -= 1;
+      j += 1;
+    }
+    const block = stripped.slice(i, j);
+    if (keepRule(block)) out += block;
+    i = j;
+  }
+  return out;
+}
+
+const critical = minifyCss(filterCritical(await readFile(criticalPath, "utf8")));
 if (critical.includes("`")) {
   throw new Error("minified dashboard-critical.css contains a backtick");
 }
