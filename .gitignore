@@ -17,6 +17,7 @@
 
 # Generated Tailwind bundle loaded after first paint on dashboard routes.
 /public/dashboard.css
+/public/legal.css
 
 # next.js
 /.next/

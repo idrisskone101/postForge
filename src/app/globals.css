@@ -1609,3 +1609,20 @@
   margin-top: 1.25rem !important;
   overflow: hidden !important;
 }
+
+.pf-empty-stage h2 {
+  margin: 1rem 0 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+}
+
+.pf-empty-stage p {
+  margin: 0.5rem 0 0 !important;
+  max-width: 30rem !important;
+  font-size: 12px !important;
+  line-height: 1.25rem !important;
+  color: #52525b !important;
+}

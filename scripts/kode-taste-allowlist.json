@@ -59,6 +59,7 @@
   ],
   "innerHtml": [
     "src/app/layout.tsx",
-    "src/app/(app)/layout.tsx"
+    "src/app/(app)/layout.tsx",
+    "src/app/(legal)/layout.tsx"
   ]
 }
