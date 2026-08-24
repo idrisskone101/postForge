@@ -7,6 +7,8 @@ import {
   checkKodeTaste,
   collectReactModules,
   findFileLayoutIssue,
+  findInnerHtml,
+  formatKodeTasteViolations,
   PROP_BAG_LIMIT,
   reorderMainExport,
   USE_EFFECT_LIMIT,
@@ -125,7 +127,9 @@ export function Form() {
     rootDir,
     "src/components/ui/button.tsx",
     `function glyph() { return "*"; }
-export function Button() { return <button>{glyph()}</button>; }
+export function Button() {
+  return <button dangerouslySetInnerHTML={{ __html: "*" }} />;
+}
 `
   );
 
@@ -158,6 +162,10 @@ export function Button() { return <button>{glyph()}</button>; }
   );
   assert.equal(
     violations.some((item) => item.path === "src/components/ui/button.tsx"),
+    false
+  );
+  assert.equal(
+    violations.some((item) => item.kind === "inner-html"),
     false
   );
 });
@@ -207,6 +215,7 @@ withTempRoot((rootDir) => {
       propBags: [],
       useState: [],
       useEffect: [],
+      innerHtml: [],
     },
   });
   assert.deepEqual(violations, [
@@ -220,8 +229,73 @@ const namedViewModel = `export function Panel({ workspace }: { workspace: { titl
 `;
 assert.equal(findFileLayoutIssue("src/panel.tsx", namedViewModel), null);
 
+const unsafeMarkup = `export function Markup() {
+  return <div dangerouslySetInnerHTML={{ __html: "<b>hi</b>" }} />;
+}
+`;
+const safeMarkup = `export function Markup() {
+  return <div><b>hi</b></div>;
+}
+`;
+assert.deepEqual(findInnerHtml("src/unsafe.tsx", unsafeMarkup), {
+  kind: "inner-html",
+  path: "src/unsafe.tsx",
+});
+assert.equal(findInnerHtml("src/safe.tsx", safeMarkup), null);
+assert.match(
+  formatKodeTasteViolations([
+    { kind: "inner-html", path: "src/unsafe.tsx" },
+  ]),
+  /dangerouslySetInnerHTML is banned/
+);
+
+withTempRoot((rootDir) => {
+  writeModule(rootDir, "src/unsafe.tsx", unsafeMarkup);
+  writeModule(rootDir, "src/safe.tsx", safeMarkup);
+  writeModule(rootDir, "src/debt.tsx", unsafeMarkup);
+  writeModule(
+    rootDir,
+    "src/helpers.ts",
+    `export const markup = { dangerouslySetInnerHTML: { __html: "no" } };
+`
+  );
+
+  const violations = checkKodeTaste({
+    rootDir,
+    allowlist: {
+      fileLayout: [],
+      propBags: [],
+      useState: [],
+      useEffect: [],
+      innerHtml: ["src/debt.tsx"],
+    },
+  });
+  assert.equal(
+    violations.some(
+      (item) => item.kind === "inner-html" && item.path === "src/unsafe.tsx"
+    ),
+    true
+  );
+  assert.equal(
+    violations.some(
+      (item) => item.kind === "inner-html" && item.path === "src/helpers.ts"
+    ),
+    true
+  );
+  assert.equal(
+    violations.some((item) => item.path === "src/safe.tsx"),
+    false
+  );
+  assert.equal(
+    violations.some(
+      (item) => item.kind === "inner-html" && item.path === "src/debt.tsx"
+    ),
+    false
+  );
+});
+
 console.log(
-  `kode-taste detector: layout, ${PROP_BAG_LIMIT}-prop bags, ${USE_STATE_LIMIT} useState, ${USE_EFFECT_LIMIT} useEffect`
+  `kode-taste detector: layout, ${PROP_BAG_LIMIT}-prop bags, ${USE_STATE_LIMIT} useState, ${USE_EFFECT_LIMIT} useEffect, innerHTML ban`
 );
 
 const allowlist = JSON.parse(
