@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { CircleHelp, History } from "lucide-react";
 import { GenerationForm } from "@/components/generation-form";
@@ -9,11 +10,7 @@ type GeneratePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function GeneratePage({ searchParams }: GeneratePageProps) {
-  const params = await searchParams;
-  const models = getAvailableModelsNow();
-  const initialQuery = appSearchParamsToQuery(params);
-
+export default function GeneratePage({ searchParams }: GeneratePageProps) {
   return (
     <div data-workspace-page="true" className="min-w-0 px-3 py-3 sm:px-5 sm:py-5 lg:px-8 lg:pb-8">
       <WorkspaceHeaderAccessory>
@@ -35,7 +32,33 @@ export default async function GeneratePage({ searchParams }: GeneratePageProps) 
           </Link>
         </div>
       </WorkspaceHeaderAccessory>
-      <GenerationForm models={models} initialQuery={initialQuery} />
+      <Suspense fallback={<GenerateFormSkeleton />}>
+        <GenerateFormSection searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function GenerateFormSection({
+  searchParams,
+}: {
+  searchParams: GeneratePageProps["searchParams"];
+}) {
+  const params = await searchParams;
+  const models = getAvailableModelsNow();
+  const initialQuery = appSearchParamsToQuery(params);
+
+  return <GenerationForm models={models} initialQuery={initialQuery} />;
+}
+
+function GenerateFormSkeleton() {
+  return (
+    <div data-generate-form="true" aria-hidden="true">
+      <div data-generate-controls="true">
+        <section data-generate-prompt="true" />
+        <section data-generate-models="true" />
+      </div>
+      <aside />
     </div>
   );
 }

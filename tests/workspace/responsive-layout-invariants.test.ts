@@ -290,7 +290,9 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-characters-empty=
 assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea="true"/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
-assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /data-generate-form="true"/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
