@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { CircleHelp, History } from "lucide-react";
-import { GenerationForm } from "@/components/generation-form";
+import { GenerationFormLazy } from "@/components/generation-form-lazy";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { getAvailableModelsNow } from "@/lib/ai/model-availability";
 import { appSearchParamsToQuery } from "@/lib/search-params-query";
+import { GenerateFormSkeleton } from "./generate-form-skeleton";
 
 type GeneratePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -48,17 +49,5 @@ async function GenerateFormSection({
   const models = getAvailableModelsNow();
   const initialQuery = appSearchParamsToQuery(params);
 
-  return <GenerationForm models={models} initialQuery={initialQuery} />;
-}
-
-function GenerateFormSkeleton() {
-  return (
-    <div data-generate-form="true" aria-hidden="true">
-      <div data-generate-controls="true">
-        <section data-generate-prompt="true" />
-        <section data-generate-models="true" />
-      </div>
-      <aside />
-    </div>
-  );
+  return <GenerationFormLazy models={models} initialQuery={initialQuery} />;
 }

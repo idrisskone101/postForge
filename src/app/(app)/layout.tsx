@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar-lazy";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
 export default async function AppLayout({

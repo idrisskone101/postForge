@@ -236,6 +236,10 @@ assert.ok(
   appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
   "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
 );
+assert.match(appLayout, /from "@\/components\/sidebar-lazy"/);
+assert.doesNotMatch(appLayout, /from "@\/components\/sidebar";/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /GenerationFormLazy/);
+assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{height:29\.625rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]\{height:340px/);
@@ -291,7 +295,7 @@ assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /Suspense/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /data-generate-form="true"/);
+assert.match(source("src/app/(app)/generate/generate-form-skeleton.tsx"), /data-generate-form="true"/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);

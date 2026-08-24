@@ -1,14 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-import { CreateView } from "./create-view";
+import { CreateView, DraftsView } from "./slideshow-studio-islands";
 import { StudioSectionNav } from "./studio-section-nav";
 import { useSlideshowHome } from "./slideshow-home-provider";
-
-const DraftsView = dynamic(() =>
-  import("./drafts-view").then((mod) => ({ default: mod.DraftsView })),
-);
 
 export function StudioHome() {
   const home = useSlideshowHome();

@@ -2,8 +2,6 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 
-const CloneHandoffQueryContext = createContext("");
-
 export function CloneHandoffQueryProvider({
   query,
   children,
@@ -21,3 +19,5 @@ export function CloneHandoffQueryProvider({
 export function useCloneHandoffQuery() {
   return useContext(CloneHandoffQueryContext);
 }
+
+const CloneHandoffQueryContext = createContext("");
