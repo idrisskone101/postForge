@@ -234,6 +234,8 @@ assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);
 assert.doesNotMatch(layout, /next\/font/);
 assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
 assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
