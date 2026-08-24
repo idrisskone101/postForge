@@ -82,7 +82,7 @@ export function GenerateFormControls({
   } = view;
 
   return (
-    <div className="min-w-0 space-y-3">
+    <div data-generate-controls="true" className="min-w-0 space-y-3">
       <section className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
