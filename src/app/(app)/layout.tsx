@@ -13,7 +13,7 @@ export default async function AppLayout({
     <div id="workspace-root">
       <script
         dangerouslySetInnerHTML={{
-          __html: `requestAnimationFrame(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)})`,
+          __html: `requestAnimationFrame(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="/dashboard.css";l.media="print";l.onload=function(){l.media="all"};document.head.appendChild(l)})`,
         }}
       />
       <noscript>

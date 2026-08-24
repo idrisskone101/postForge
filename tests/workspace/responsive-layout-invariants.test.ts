@@ -230,6 +230,7 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
 assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
+assert.match(appLayout, /l\.media="print"/);
 assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
 assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
 assert.ok(
