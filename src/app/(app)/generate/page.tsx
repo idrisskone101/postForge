@@ -35,7 +35,7 @@ export default async function GeneratePage() {
             <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em]">
               Generate
             </h1>
-            <p className="mt-1.5 max-w-sm text-[11px] leading-4 text-muted-foreground">
+            <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
               Loading the studio.
             </p>
           </div>

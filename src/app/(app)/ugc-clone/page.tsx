@@ -11,7 +11,7 @@ export default function UGCClonePage() {
             <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground sm:text-[30px]">
               Clone
             </h1>
-            <p className="mt-1.5 max-w-sm text-[11px] leading-4 text-muted-foreground">
+            <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
               Turn a proven source into an on-brand creator video.
             </p>
           </header>

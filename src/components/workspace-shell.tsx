@@ -75,7 +75,7 @@ export function WorkspaceRouteHeader({
           <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)] sm:text-[30px]">
             {activeItem.label}
           </h1>
-          <p className="mt-1.5 line-clamp-1 max-w-[14rem] text-[10px] leading-3 text-[var(--pf-muted)]">
+          <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
             {activeItem.description}
           </p>
         </div>
