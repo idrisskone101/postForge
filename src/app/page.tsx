@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/db";
 import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
@@ -5,10 +6,19 @@ import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
 import { HomeCockpit } from "./home-cockpit";
 import { type HomeJob } from "./home-cockpit";
+import HomeLoading from "./home-loading";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default function HomePage() {
+  return (
+    <Suspense fallback={<HomeLoading />}>
+      <HomeDashboard />
+    </Suspense>
+  );
+}
+
+async function HomeDashboard() {
   const now = new Date();
   const activeJobCutoff = getHomeActiveJobCutoff(now);
   const weekCutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

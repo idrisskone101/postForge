@@ -20,6 +20,7 @@ export default function NotFound() {
           </div>
           <Link
             href="/"
+            prefetch={false}
             className="pf-button-primary mt-2"
           >
             Go Home

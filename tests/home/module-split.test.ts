@@ -39,6 +39,10 @@ assert.match(reviewQueue, /onReviewSaved\?/);
 const homePage = readFileSync(new URL("src/app/page.tsx", repoRoot), "utf8");
 assert.match(homePage, /<HomeCockpit/);
 assert.doesNotMatch(homePage, /HomeCockpitClient/);
+assert.match(homePage, /<Suspense fallback=\{<HomeLoading/);
+
+const homeCockpit = readFileSync(new URL("src/app/home-cockpit.tsx", repoRoot), "utf8");
+assert.match(homeCockpit, /<Link href="\/ugc-clone" prefetch=\{false\}/);
 
 console.log(
   files

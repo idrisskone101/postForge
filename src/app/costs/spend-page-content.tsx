@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SPEND_PERIODS } from "@/lib/costs/spend-period";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -103,6 +103,7 @@ export function SpendPageContent({
   };
 
   return (
+    <TooltipProvider>
     <div className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
       <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
@@ -270,6 +271,7 @@ export function SpendPageContent({
         </DialogContent>
       </Dialog>
     </div>
+    </TooltipProvider>
   );
 }
 

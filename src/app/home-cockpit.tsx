@@ -90,7 +90,7 @@ export function HomeCockpit({ dashboard }: HomeCockpitProps) {
             </h1>
             <p className="mt-1 text-[13px] text-[var(--pf-muted)]">{todayLabel}</p>
           </div>
-          <Link href="/ugc-clone" className="pf-button-primary shrink-0">
+          <Link href="/ugc-clone" prefetch={false} className="pf-button-primary shrink-0">
             <span className="text-base leading-none">+</span> New Clone
           </Link>
         </header>
@@ -291,6 +291,7 @@ function CardLink({ href, children }: { href: string; children: React.ReactNode 
   return (
     <Link
       href={href}
+      prefetch={false}
       className="group inline-flex shrink-0 items-center gap-1 text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
     >
       {children}
@@ -311,7 +312,7 @@ function MediaTile({ media }: { media: HomeMedia }) {
   const badge = reviewBadge(media.reviewStatus);
 
   return (
-    <Link href={href} className="group relative block min-w-0">
+    <Link href={href} prefetch={false} className="group relative block min-w-0">
       <span className="relative block aspect-square overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)] transition-shadow duration-[180ms] group-hover:shadow-[var(--pf-shadow-md)]">
         {media.type === "video" ? (
           <VideoFramePreview
@@ -354,6 +355,7 @@ function ActiveJobRow({ job }: { job: HomeJob }) {
   return (
     <Link
       href={getJobDestination(job)}
+      prefetch={false}
       className="group flex min-w-0 items-center gap-3 border-t border-[var(--pf-border)] py-3 first:border-t-0"
     >
       <span

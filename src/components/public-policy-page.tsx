@@ -31,7 +31,7 @@ export function PublicPolicyPage({
 
       <header className="border-b border-[var(--pf-border)] bg-[var(--pf-surface)]">
         <div className="mx-auto flex min-h-16 max-w-[1120px] items-center justify-between gap-5 px-5 sm:px-7 lg:px-8">
-          <Link href="/privacy" className="flex items-center gap-2.5">
+          <Link href="/privacy" prefetch={false} className="flex items-center gap-2.5">
             <span aria-hidden="true" className="grid size-7 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
               P
             </span>
@@ -42,6 +42,7 @@ export function PublicPolicyPage({
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 aria-current={currentPath === link.href ? "page" : undefined}
                 className={`inline-flex min-h-11 items-center rounded-lg px-2.5 py-2 hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)] ${currentPath === link.href ? "bg-[var(--pf-active)] text-[var(--pf-ink)]" : ""}`}
               >
@@ -108,6 +109,7 @@ export function PublicPolicyPage({
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 aria-current={currentPath === link.href ? "page" : undefined}
                 className={currentPath === link.href ? "text-[var(--pf-ink)] underline underline-offset-4" : "hover:text-[var(--pf-ink)]"}
               >

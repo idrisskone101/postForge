@@ -89,6 +89,7 @@ export function HomeReviewQueue({
             >
               <Link
                 href={getJobHref(job)}
+                prefetch={false}
                 className="group flex min-w-0 flex-1 items-center gap-3"
               >
                 <span className="relative size-14 shrink-0 overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)]">

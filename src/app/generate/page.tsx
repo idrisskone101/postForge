@@ -13,12 +13,14 @@ export default async function GeneratePage() {
         <div className="flex items-center gap-2">
           <Link
             href="/gallery"
+            prefetch={false}
             className="pf-button-secondary h-9"
           >
             <History className="size-3.5" /> History
           </Link>
           <Link
             href="/settings"
+            prefetch={false}
             aria-label="Generation help"
             className="pf-button-secondary size-9 px-0"
           >

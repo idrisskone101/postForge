@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootLayout({
   children,
@@ -34,12 +33,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 -->`,
           }}
         />
-        <TooltipProvider>
-          <div className="min-h-dvh">
-            <Sidebar />
-            <WorkspaceShell>{children}</WorkspaceShell>
-          </div>
-        </TooltipProvider>
+        <div className="min-h-dvh">
+          <Sidebar />
+          <WorkspaceShell>{children}</WorkspaceShell>
+        </div>
       </body>
     </html>
   );
@@ -49,11 +46,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "optional",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "optional",
+  preload: false,
 });
 
 export const metadata: Metadata = {

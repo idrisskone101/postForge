@@ -118,6 +118,7 @@ export function WorkspaceRouteHeader({
             <Link
               id="workspace-header-default-action"
               href={activeItem.primaryAction.href}
+              prefetch={false}
               className="pf-button-primary w-fit"
             >
               {activeItem.primaryAction.label}
