@@ -458,6 +458,29 @@ body {
   min-height: 29.625rem;
 }
 
+[data-automation-form="true"] .pf-input {
+  width: 100%;
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  background: var(--pf-surface);
+  color: var(--pf-ink);
+  padding: 0 10px;
+  font-size: 13px;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+}
+
+[data-automation-form="true"] .pf-input:focus {
+  border-color: var(--pf-orange);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--pf-orange) 12%, transparent);
+}
+
+[data-automation-form="true"] textarea.pf-input {
+  height: 6rem;
+  padding: 10px;
+}
+
 [data-automation-form="true"] select,
 [data-automation-form="true"] .pf-input:not(textarea) {
   height: 2.5rem;
@@ -467,6 +490,19 @@ body {
 [data-spend-page="true"] {
   padding: 1.25rem;
   box-sizing: border-box;
+}
+
+[data-spend-chart-slot="true"] {
+  height: 276px;
+  box-sizing: border-box;
+}
+
+[data-jobs-summary="true"] {
+  min-height: 10.75rem;
+}
+
+[data-jobs-empty="true"] {
+  min-height: 18.75rem;
 }
 
 [data-gallery-toolbar="true"] {

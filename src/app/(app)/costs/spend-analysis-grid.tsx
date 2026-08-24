@@ -34,13 +34,17 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
           </div>
         </header>
         {chartHasSpend ? (
-          <CostChart data={dashboard.chartData} />
+          <div data-spend-chart-slot="true" className="h-[276px]" style={{ height: 276 }}>
+            <CostChart data={dashboard.chartData} />
+          </div>
         ) : (
           <div
+            data-spend-chart-slot="true"
             data-spend-chart="empty"
             role="img"
             aria-label="No image or video spend in this period"
             className="h-[276px] rounded-md bg-muted/40"
+            style={{ height: 276 }}
           />
         )}
       </article>
@@ -60,7 +64,11 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
                 Spend by Format
               </h3>
               <div className="mt-2 grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3">
-                <div className="size-28 shrink-0" aria-label="Workflow type spend distribution">
+                <div
+                  className="size-28 shrink-0"
+                  style={{ width: 112, height: 112 }}
+                  aria-label="Workflow type spend distribution"
+                >
                   <ModelPieChart data={view.workflowPieData} />
                 </div>
                 <div className="min-w-0 space-y-3">
@@ -149,12 +157,18 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.CostChart),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <div className="h-full rounded-md bg-muted/40" aria-hidden />,
+  }
 );
 
 const ModelPieChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => <div className="size-full rounded-full bg-muted/40" aria-hidden />,
+  }
 );
 
 type SpendAnalysisGridProps = {

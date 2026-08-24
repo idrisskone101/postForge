@@ -1483,8 +1483,25 @@
   min-height: 29.625rem !important;
 }
 
+[data-automation-form="true"] .pf-input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 [data-spend-page="true"] {
   padding: 1.25rem !important;
+}
+
+[data-spend-chart-slot="true"] {
+  height: 276px !important;
+}
+
+[data-jobs-summary="true"] {
+  min-height: 10.75rem !important;
+}
+
+[data-jobs-empty="true"] {
+  min-height: 18.75rem !important;
 }
 
 @media (max-width: 767.98px) {

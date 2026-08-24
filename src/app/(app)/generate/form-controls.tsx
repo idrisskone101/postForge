@@ -209,7 +209,7 @@ export function GenerateFormControls({
       {model && (
         <section
           key={model.id}
-          className="animate-content-enter rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
+          className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]"
         >
           <div className="mb-3 flex items-center gap-2">
             <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">

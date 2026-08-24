@@ -155,6 +155,7 @@ export function CreateView() {
             rows={3}
             placeholder="A small morning habit"
             aria-label="What is the story about?"
+            style={{ height: "5.125rem" }}
             className={cn(INPUT, "mt-4 h-[5.125rem] resize-none py-2.5 leading-5")}
           />
 

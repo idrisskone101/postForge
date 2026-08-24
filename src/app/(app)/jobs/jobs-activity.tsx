@@ -69,8 +69,10 @@ export function JobsActivity({ activity }: JobsActivityProps) {
     <div className="pf-content-viewport">
       <div className="mx-auto max-w-[1280px] px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-6">
         <section
+          data-jobs-summary="true"
           aria-label="Job activity summary"
           className="grid grid-cols-2 gap-3 min-[860px]:grid-cols-4"
+          style={{ minHeight: "10.75rem" }}
         >
           <SummaryCard label="Running now" value={counts.active} />
           <SummaryCard label="Completed · 30 days" value={counts.completed} />
@@ -320,7 +322,11 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
 function EmptyJobs({ status }: { status: JobsStatusFilter }) {
   const active = status === "active";
   return (
-    <div className="flex min-h-[300px] flex-col items-center justify-center px-5 py-10 text-center">
+    <div
+      data-jobs-empty="true"
+      className="flex min-h-[300px] flex-col items-center justify-center px-5 py-10 text-center"
+      style={{ minHeight: 300 }}
+    >
       <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
         {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
       </span>

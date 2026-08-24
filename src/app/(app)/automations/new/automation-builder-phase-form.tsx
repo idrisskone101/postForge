@@ -59,7 +59,11 @@ export function AutomationBuilderPhaseForm({
           </p>
         </div>
       </div>
-      <div data-automation-fields="true" className="mt-5 space-y-4">
+      <div
+        data-automation-fields="true"
+        className="mt-5 space-y-4"
+        style={{ minHeight: "29.625rem" }}
+      >
         {phase === "Hook" && (
           <>
             <Field label="Hook strategy">
@@ -316,7 +320,6 @@ export function AutomationBuilderPhaseForm({
           <ArrowRight className="size-3" />
         </button>
       </div>
-      <style jsx>{`.pf-input{width:100%;border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface);color:var(--pf-ink);padding:0 10px;font-size:13px;outline:none;resize:none}.pf-input:focus{border-color:var(--pf-orange);box-shadow:0 0 0 3px color-mix(in oklch, var(--pf-orange) 12%, transparent)}`}</style>
     </aside>
   );
 }

@@ -179,6 +179,7 @@ function ModelCard({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
+      style={{ height: "8.125rem" }}
       className={cn(
         "group relative h-[8.125rem] min-w-0 overflow-hidden rounded-lg border bg-card p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
         selected

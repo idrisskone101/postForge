@@ -1,13 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { RefreshCw, Sparkles, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { InspirationCreatorRail } from "./inspiration-creator-rail";
 import { InspirationHeaderControls } from "./inspiration-header-controls";
-import { InspirationPreviewDialog } from "./inspiration-preview-dialog";
-import { InspirationSourceLibrary } from "./inspiration-source-library";
 import {
   useInspirationWorkspace,
   type InspirationPageClientProps,
@@ -127,3 +126,19 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
     </>
   );
 }
+
+const InspirationSourceLibrary = dynamic(
+  () =>
+    import("./inspiration-source-library").then(
+      (module) => module.InspirationSourceLibrary
+    ),
+  { loading: () => <div className="min-h-[24rem]" aria-hidden /> }
+);
+
+const InspirationPreviewDialog = dynamic(
+  () =>
+    import("./inspiration-preview-dialog").then(
+      (module) => module.InspirationPreviewDialog
+    ),
+  { ssr: false }
+);
