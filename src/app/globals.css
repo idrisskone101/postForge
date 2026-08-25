@@ -1630,12 +1630,6 @@
   overflow: hidden !important;
 }
 
-[data-character-preview-stage="true"] {
-  height: 620px !important;
-  min-height: 620px !important;
-  overflow: hidden !important;
-}
-
 [data-character-attribute-editor="true"] {
   min-height: 470px !important;
 }
