@@ -746,19 +746,19 @@ body {
 }
 
 [data-playbook-title]::before {
-  content: attr(data-playbook-title);
-  display: block;
-  overflow: hidden;
-  width: 12rem;
-  max-width: 12rem;
-  height: 24px;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  color: #18181b;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  content: attr(data-playbook-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 12rem !important;
+  max-width: 12rem !important;
+  height: 24px !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 [data-playbook-lede]::before,
@@ -2596,14 +2596,14 @@ body {
 }
 
 [data-lcp]::before {
-  content: attr(data-lcp);
-  display: block;
-  overflow: hidden;
-  width: 8rem;
-  height: 12px;
-  font-size: 12px;
-  line-height: 12px;
-  color: #18181b;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  content: attr(data-lcp) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  line-height: 12px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }

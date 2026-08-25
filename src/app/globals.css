@@ -1425,20 +1425,6 @@
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
-#workspace-header-grid h1::before {
-  content: attr(data-workspace-title) !important;
-  display: block !important;
-  overflow: hidden !important;
-  height: 31px !important;
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  line-height: 31px !important;
-  letter-spacing: -0.02em !important;
-  color: #18181b !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
-}
-
 .pf-content-viewport header h1 {
   margin: 0 !important;
   max-width: 12rem !important;
@@ -1933,22 +1919,6 @@
   letter-spacing: -0.02em !important;
   color: #18181b !important;
   white-space: nowrap !important;
-}
-
-[data-playbook-title]::before {
-  content: attr(data-playbook-title) !important;
-  display: block !important;
-  overflow: hidden !important;
-  width: 12rem !important;
-  max-width: 12rem !important;
-  height: 24px !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  letter-spacing: -0.02em !important;
-  color: #18181b !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
 }
 
 [data-picker-open="true"] textarea.pf-input {
@@ -2574,19 +2544,6 @@
   font-size: 28px !important;
 }
 
-[data-spend-value="true"]::before {
-  content: attr(data-spend-text) !important;
-  display: block !important;
-  overflow: hidden !important;
-  height: 28px !important;
-  font-size: 28px !important;
-  font-weight: 600 !important;
-  line-height: 1 !important;
-  letter-spacing: -0.02em !important;
-  color: #18181b !important;
-  white-space: nowrap !important;
-}
-
 [data-spend-model="true"] {
   display: block !important;
   margin-top: 0.75rem !important;
@@ -3125,17 +3082,4 @@
   max-width: 8rem !important;
   max-height: 1.5rem !important;
   overflow: hidden !important;
-}
-
-[data-lcp]::before {
-  content: attr(data-lcp) !important;
-  display: block !important;
-  overflow: hidden !important;
-  width: 8rem !important;
-  height: 12px !important;
-  font-size: 12px !important;
-  line-height: 12px !important;
-  color: #18181b !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
 }

@@ -24,26 +24,34 @@ export function CostsPageClient(initial: CostsPageClientProps) {
     if (search.trim()) params.set("q", search.trim());
     if (model) params.set("model", model);
     let cancelled = false;
-    fetch(`/api/costs/dashboard?${params.toString()}`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((payload: CostsPageClientProps | null) => {
-        if (cancelled || !payload) return;
-        setDashboard((current) =>
-          current.totalCost === payload.totalCost &&
-          current.currentPeriodCost === payload.currentPeriodCost &&
-          current.totalJobs === payload.totalJobs &&
-          current.logs.length === payload.logs.length &&
-          current.period === payload.period &&
-          current.search === payload.search &&
-          current.model === payload.model &&
-          current.logPage === payload.logPage
-            ? current
-            : payload
-        );
-      })
-      .catch(() => undefined);
+    function loadDashboard() {
+      fetch(`/api/costs/dashboard?${params.toString()}`)
+        .then((response) => (response.ok ? response.json() : null))
+        .then((payload: CostsPageClientProps | null) => {
+          if (cancelled || !payload) return;
+          setDashboard((current) =>
+            current.totalCost === payload.totalCost &&
+            current.currentPeriodCost === payload.currentPeriodCost &&
+            current.totalJobs === payload.totalJobs &&
+            current.logs.length === payload.logs.length &&
+            current.period === payload.period &&
+            current.search === payload.search &&
+            current.model === payload.model &&
+            current.logPage === payload.logPage
+              ? current
+              : payload
+          );
+        })
+        .catch(() => undefined);
+    }
+    if (document.readyState === "complete") {
+      loadDashboard();
+    } else {
+      window.addEventListener("load", loadDashboard);
+    }
     return () => {
       cancelled = true;
+      window.removeEventListener("load", loadDashboard);
     };
   }, [period, logPage, search, model]);
 

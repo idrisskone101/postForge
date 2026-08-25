@@ -62,12 +62,12 @@ export function CharacterAttributeEditor({
               {CHARACTER_ATTRIBUTE_SECTIONS.map((section) => (
                 <button key={section.id} onClick={() => onSelectSection(section.id)} className="pf-card p-3 text-left transition hover:border-[var(--pf-border-strong)] hover:shadow-sm motion-reduce:transform-none">
                   <span className="flex items-center justify-between">
-                    <b data-lcp={section.label} className="text-[12px]">
+                    <b data-lcp={section.label}>
                       <span className="sr-only">{section.label}</span>
                     </b>
                     <ChevronRight className="size-3 text-muted-foreground" />
                   </span>
-                  <span data-lcp={section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")} className="mt-1.5 block text-[11px] leading-4 text-muted-foreground">
+                  <span data-lcp={section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}>
                     <span className="sr-only">{section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}</span>
                   </span>
                 </button>

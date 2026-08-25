@@ -152,15 +152,18 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     : "text-[#52525B] hover:text-foreground dark:text-[var(--pf-muted)]"
                 )}
               >
-                <span>{filter.label}</span>
+                <span data-lcp={filter.label}>
+                  <span className="sr-only">{filter.label}</span>
+                </span>
                 <span
+                  data-lcp={String(reviewCounts[filter.value])}
                   data-gallery-count="true"
                   className={cn(
                     "rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
                     reviewFilter === filter.value ? "bg-[var(--pf-active)]" : "bg-[var(--pf-surface)]"
                   )}
                 >
-                  {reviewCounts[filter.value]}
+                  <span className="sr-only">{reviewCounts[filter.value]}</span>
                 </span>
               </button>
             ))}

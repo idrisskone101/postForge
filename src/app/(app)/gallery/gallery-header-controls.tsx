@@ -8,16 +8,18 @@ export function GalleryHeaderControls() {
       <Link
         href="/ugc-clone"
         prefetch={false}
+        data-lcp="Start Clone"
         className="pf-button-secondary shrink-0 whitespace-nowrap"
       >
-        Start Clone
+        <span className="sr-only">Start Clone</span>
       </Link>
       <Link
         href="/generate"
         prefetch={false}
+        data-lcp="Generate asset"
         className="pf-button-primary shrink-0 whitespace-nowrap"
       >
-        Generate asset
+        <span className="sr-only">Generate asset</span>
       </Link>
     </div>
   );

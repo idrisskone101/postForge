@@ -266,8 +266,10 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
           type="button"
           onClick={() => setTemplateOpen(true)}
           className="pf-button-primary"
+          data-lcp="New Slideshow"
         >
-          <Plus className="size-3.5" /> New Slideshow
+          <Plus className="size-3.5" />
+          <span className="sr-only">New Slideshow</span>
         </button>
       </WorkspaceHeaderAccessory>
 
