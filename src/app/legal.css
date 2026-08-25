@@ -169,27 +169,27 @@ a {
 }
 
 .policy-heading {
-  width: 20rem;
-  max-width: 100%;
-  height: 3.5rem;
+  width: 12rem;
+  max-width: 12rem;
+  height: 33px;
   margin: 0;
   overflow: hidden;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 3.5rem;
+  font-size: 30px;
   font-weight: 600;
-  line-height: 3.5rem;
-  letter-spacing: -0.05em;
+  line-height: 33px;
+  letter-spacing: -0.02em;
 }
 
 .policy-heading::before {
   content: attr(data-policy-title);
   display: block;
   overflow: hidden;
-  height: 3.5rem;
-  font-size: 3.5rem;
+  height: 33px;
+  font-size: 30px;
   font-weight: 600;
-  line-height: 3.5rem;
-  letter-spacing: -0.05em;
+  line-height: 33px;
+  letter-spacing: -0.02em;
   color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
