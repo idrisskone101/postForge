@@ -367,7 +367,7 @@ assert.match(
 );
 assert.match(
   source("src/app/first-paint-css.ts"),
-  /\[data-character-attribute-editor="true"\]\{min-height:470px;content-visibility:auto/,
+  /\[data-character-attribute-editor="true"\]\{min-height:470px/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
@@ -443,8 +443,12 @@ assert.match(
   /import\("\.\/automation-builder-phase-form"\)/,
 );
 assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-workbench-header="true"\]>div:last-child\{display:flex;flex-wrap:nowrap/,
+);
+assert.match(
   source("src/app/(app)/characters/new/character-attribute-editor.tsx"),
-  /data-character-blueprint="Character blueprint"/,
+  /data-character-section=\{section\.label\}/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);

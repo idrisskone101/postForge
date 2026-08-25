@@ -1826,6 +1826,30 @@ body {
   text-overflow: ellipsis !important;
 }
 
+[data-character-section] {
+  max-width: 8rem;
+  max-height: 12px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+  white-space: nowrap;
+}
+
+[data-character-section]::before {
+  content: attr(data-character-section) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 8rem !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 12px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-character-action] {
   max-width: 9.75rem;
   overflow: hidden;
@@ -1903,8 +1927,15 @@ body {
 
 [data-character-workbench-header="true"] > div:last-child {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5rem;
+  height: 2.25rem;
+  overflow: hidden;
+}
+
+[data-character-workbench-header="true"] > div:last-child > button {
+  height: 2.25rem;
+  flex-shrink: 0;
 }
 
 [data-character-category-rail="true"] {
@@ -1947,8 +1978,6 @@ body {
 
 [data-character-attribute-editor="true"] {
   min-height: 470px;
-  content-visibility: auto;
-  contain-intrinsic-size: 470px;
 }
 
 [data-character-preview-stage="true"] > div:first-child {

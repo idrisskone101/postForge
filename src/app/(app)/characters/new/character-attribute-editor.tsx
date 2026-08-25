@@ -51,17 +51,17 @@ export function CharacterAttributeEditor({
                 </h2>
                 <p className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
               </div>
-              <button onClick={copyPrompt} className="pf-button-secondary shrink-0">
+              <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-character-action="Copy prompt">
                 <Copy className="size-3.5" />
-                Copy prompt
+                <span className="sr-only">Copy prompt</span>
               </button>
             </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1460px]:grid-cols-2">
               {CHARACTER_ATTRIBUTE_SECTIONS.map((section) => (
                 <button key={section.id} onClick={() => onSelectSection(section.id)} className="pf-card p-3 text-left transition hover:border-[var(--pf-border-strong)] hover:shadow-sm motion-reduce:transform-none">
                   <span className="flex items-center justify-between">
-                    <b style={{ maxWidth: "8rem", maxHeight: 12, overflow: "hidden", fontSize: 12, lineHeight: "12px", whiteSpace: "nowrap" }}>
-                      {section.label}
+                    <b style={{ maxWidth: "8rem", maxHeight: 12, overflow: "hidden", fontSize: 12, lineHeight: "12px", whiteSpace: "nowrap" }} data-character-section={section.label}>
+                      <span className="sr-only">{section.label}</span>
                     </b>
                     <ChevronRight className="size-3 text-muted-foreground" />
                   </span>
