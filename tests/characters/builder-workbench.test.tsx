@@ -162,8 +162,8 @@ const photoMarkup = renderToStaticMarkup(
 
 assert.match(photoMarkup, /data-character-preview="photographic"/);
 assert.match(photoMarkup, /data-character-default-frame="true"/);
-assert.match(photoMarkup, /role="img"/);
-assert.doesNotMatch(photoMarkup, /<img/);
+assert.match(photoMarkup, /data:image\/gif;base64/);
+assert.doesNotMatch(photoMarkup, /default-portrait\.webp/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 assert.match(
   readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8"),

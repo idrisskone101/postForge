@@ -59,6 +59,7 @@ export function CharacterCategoryRail({
             "flex h-10 min-w-max items-center gap-2 rounded-lg px-2.5 text-[12px] min-[1280px]:w-full",
             activeSection === "overview" ? "bg-white font-semibold shadow-[var(--pf-shadow-2xs)]" : "text-muted-foreground hover:bg-[var(--pf-active)]"
           )}
+          style={{ height: 40 }}
         >
           <span data-lcp="00" className="grid size-5 place-items-center rounded-md bg-[var(--pf-active)] text-[12px] font-bold">
             <span className="sr-only">00</span>
@@ -82,6 +83,7 @@ export function CharacterCategoryRail({
                 "group flex min-w-[150px] items-center gap-2 rounded-lg px-2.5 py-2 text-left min-[1280px]:w-full min-[1280px]:min-w-0",
                 activeSection === section.id ? "bg-white shadow-[var(--pf-shadow-2xs)]" : "hover:bg-[var(--pf-active)]"
               )}
+              style={{ height: 40 }}
             >
               <span
                 data-lcp={index}

@@ -1782,6 +1782,13 @@ header:has([data-home-title]) .pf-button-primary {
     flex-grow: 0;
     flex-shrink: 0;
   }
+
+  [data-character-category-rail="true"] nav button {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    overflow: hidden;
+  }
 }
 
 [data-character-workbench-header="true"] > div:first-child {
@@ -1994,7 +2001,6 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-character-category-rail="true"] nav button {
   height: 2.5rem;
-  min-width: 150px;
   padding: 0 0.625rem;
   box-sizing: border-box;
   flex-shrink: 0;

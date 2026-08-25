@@ -1723,9 +1723,12 @@ header:has([data-home-title]) p {
 
   [data-character-category-rail="true"] nav button {
     height: 2.5rem !important;
+    width: 150px !important;
     min-width: 150px !important;
+    max-width: 150px !important;
     padding: 0 0.625rem !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   [data-character-preview-stage="true"] {

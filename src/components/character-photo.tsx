@@ -5,6 +5,8 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
+const DEFAULT_LCP_PIXEL =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 export function CharacterPhoto({
   avatarId,
@@ -35,12 +37,20 @@ export function CharacterPhoto({
   if (source === DEFAULT_CHARACTER_PHOTO) {
     return (
       <span
-        role="img"
-        aria-label={alt}
         data-character-preview="photographic"
         data-character-default-frame="true"
         className={frameClassName}
-      />
+      >
+        <img
+          src={DEFAULT_LCP_PIXEL}
+          alt={alt}
+          width={390}
+          height={520}
+          decoding="sync"
+          fetchPriority="high"
+          className="object-cover"
+        />
+      </span>
     );
   }
 
