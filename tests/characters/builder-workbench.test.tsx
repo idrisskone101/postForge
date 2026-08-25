@@ -29,7 +29,6 @@ const builderSource = [
   "character-builder-header.tsx",
   "character-category-rail.tsx",
   "character-preview-stage.tsx",
-  "character-attribute-editor-lazy.tsx",
   "character-attribute-editor.tsx",
   "character-preview.ts",
   "character-import.ts",
@@ -151,7 +150,7 @@ assert.match(previewSource, /export type CharacterPreviewStageViewModel/);
 assert.match(editorSource, /export type CharacterAttributeEditorViewModel/);
 assert.match(builderSource, /<CharacterBuilderHeader view=\{headerView\} \/>/);
 assert.match(builderSource, /<CharacterPreviewStage view=\{previewView\} \/>/);
-assert.match(builderSource, /<CharacterAttributeEditorLazy view=\{attributeView\} \/>/);
+assert.match(builderSource, /<CharacterAttributeEditor view=\{attributeView\} \/>/);
 assert.doesNotMatch(builderSource, /createContext|useContext/);
 
 const photoMarkup = renderToStaticMarkup(

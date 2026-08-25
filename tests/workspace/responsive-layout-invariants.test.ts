@@ -418,6 +418,11 @@ assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"),
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClient/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /SlideshowAutomationBuilderLazy/);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/new/page.tsx"),
+  /from "\.\/slideshow-automation-builder"/,
+);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-lede=/);
 assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), /data-playbook-name=\{template\.name\}/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-picker-open=\{templateOpen \? "true" : undefined\}/);
@@ -453,9 +458,8 @@ assert.match(
   source("src/app/(app)/automations/new/automation-builder-session-lazy.tsx"),
   /import\("\.\/automation-builder-session"\)/,
 );
-assert.match(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditorLazy/);
-assert.match(source("src/app/(app)/characters/new/character-attribute-editor-lazy.tsx"), /CharacterAttributeEditorDynamic/);
-assert.match(source("src/app/(app)/characters/new/character-attribute-editor-dynamic.tsx"), /ssr:\s*false/);
+assert.match(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditor/);
+assert.doesNotMatch(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditorLazy/);
 assert.match(
   source("src/app/first-paint-css.ts"),
   /\[data-character-workbench-header="true"\]>div:last-child\{display:flex;flex-wrap:nowrap/,
