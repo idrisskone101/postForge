@@ -1770,6 +1770,9 @@ body {
   min-width: 0;
   align-items: center;
   gap: 0.5rem;
+  height: 2.0625rem;
+  overflow: hidden;
+  flex-wrap: nowrap;
 }
 
 [data-character-title] {
@@ -1925,6 +1928,11 @@ body {
   height: 2.25rem;
 }
 
+[data-character-workbench-header="true"] > label {
+  height: 2.25rem;
+  overflow: hidden;
+}
+
 [data-character-workbench-header="true"] > div:last-child {
   display: flex;
   flex-wrap: nowrap;
@@ -1965,6 +1973,8 @@ body {
 
 [data-character-category-rail="true"] nav button {
   height: 2.5rem;
+  padding: 0 0.625rem;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 

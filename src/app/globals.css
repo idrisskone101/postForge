@@ -1682,6 +1682,17 @@
     flex-shrink: 0 !important;
   }
 
+  [data-character-workbench-header="true"] > div:first-child {
+    height: 2.0625rem !important;
+    overflow: hidden !important;
+    flex-wrap: nowrap !important;
+  }
+
+  [data-character-workbench-header="true"] > label {
+    height: 2.25rem !important;
+    overflow: hidden !important;
+  }
+
   [data-character-category-rail="true"] {
     height: 9.25rem !important;
     overflow: hidden !important;
@@ -1689,6 +1700,8 @@
 
   [data-character-category-rail="true"] nav button {
     height: 2.5rem !important;
+    padding: 0 0.625rem !important;
+    box-sizing: border-box !important;
   }
 
   [data-character-preview-stage="true"] {
