@@ -163,7 +163,19 @@ const photoMarkup = renderToStaticMarkup(
 assert.match(photoMarkup, /data-character-preview="photographic"/);
 assert.match(photoMarkup, /data-character-default-frame="true"/);
 assert.match(photoMarkup, /\/character-builder\/default-portrait\.webp/);
+assert.match(photoMarkup, /width="390"/);
+assert.match(photoMarkup, /height="520"/);
+assert.match(photoMarkup, /object-fit:cover/);
+assert.doesNotMatch(photoMarkup, /object-cover/);
+assert.doesNotMatch(photoMarkup, /data-nimg/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
+
+assert.doesNotMatch(previewSource, /aspect-\[3\/4\]/);
+assert.doesNotMatch(previewSource, /max-w-\[390px\]/);
+assert.match(
+  readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
+  /fetchPriority="high"/,
+);
 
 const defaultPortrait = readFileSync(
   new URL("../../public/character-builder/default-portrait.webp", import.meta.url)

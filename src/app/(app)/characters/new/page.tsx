@@ -18,6 +18,7 @@ export default async function CharacterBuilderPage({
           rel="preload"
           as="image"
           href="/character-builder/default-portrait.webp"
+          fetchPriority="high"
         />
       )}
       <CharacterBuilderClient editId={editId} />

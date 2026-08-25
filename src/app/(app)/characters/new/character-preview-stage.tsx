@@ -111,7 +111,13 @@ export function CharacterPreviewStage({
       <div className="relative z-10 grid min-h-0 flex-1 content-start justify-items-center py-4 min-[1280px]:py-3">
         <div
           data-character-lcp-frame="true"
-          className="aspect-[3/4] w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
+          className="overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)]"
+          style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: 390,
+            height: 520,
+          }}
         >
           <CharacterPhoto
             generatedFileId={previewFileId}
