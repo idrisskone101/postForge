@@ -207,7 +207,10 @@ export function AutomationBuilderClient({
             className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden rounded-[12px] bg-card shadow-2xl sm:rounded-[20px]"
           >
             <PlaybookPicker picker={playbookPicker} />
-            <footer className="flex shrink-0 flex-col gap-3 border-t border-border bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(35,35,35,.06)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <footer
+              data-playbook-footer="true"
+              className="flex shrink-0 flex-col gap-3 border-t border-border bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(35,35,35,.06)] sm:flex-row sm:items-center sm:justify-between sm:px-5"
+            >
               <div className="flex min-w-0 items-center gap-3">
                 <span
                   className={cn(
@@ -218,22 +221,26 @@ export function AutomationBuilderClient({
                   {templateNumber(selectedTemplate)}
                 </span>
                 <span className="min-w-0">
-                  <small className="block text-[11px] font-bold uppercase tracking-[.1em] text-muted-foreground">
-                    Selected playbook
+                  <small data-playbook-kicker="Selected playbook">
+                    <span className="sr-only">Selected playbook</span>
                   </small>
-                  <b className="mt-0.5 block truncate text-[12px]">{selectedTemplate.name}</b>
+                  <b data-playbook-name={selectedTemplate.name}>
+                    <span className="sr-only">{selectedTemplate.name}</span>
+                  </b>
                 </span>
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={playbookPicker.onClose} className="pf-button-secondary flex-1 sm:flex-none">
-                  Cancel
+                <button type="button" onClick={playbookPicker.onClose} data-playbook-cancel="Cancel" className="pf-button-secondary flex-1 sm:flex-none">
+                  <span className="sr-only">Cancel</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => applyTemplate(selectedTemplate.id)}
+                  data-playbook-apply="Apply playbook"
                   className="pf-button-primary flex-1 sm:flex-none"
                 >
-                  Apply playbook <ArrowRight className="size-3.5" />
+                  <span className="sr-only">Apply playbook</span>
+                  <ArrowRight className="size-3.5" />
                 </button>
               </div>
             </footer>

@@ -62,16 +62,18 @@ export function IntegrationsPanel({
             text="Connect every account you publish or measure. Each account keeps its own scope and sync state."
           />
         </div>
-        <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0">
+        <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0" data-settings-refresh="Refresh status">
           <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
-          Refresh status
+          <span className="sr-only">Refresh status</span>
         </button>
       </div>
 
       <div data-settings-owned="true" className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3">
         <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-white">i</span>
         <div className="min-w-0">
-          <b className="block text-[11px]">Connections are server-owned</b>
+          <b data-settings-owned-title="Connections are server-owned">
+            <span className="sr-only">Connections are server-owned</span>
+          </b>
           <SettingsCopy text="PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported." />
         </div>
         <ShieldCheck className="size-4 text-[var(--pf-link)]" />
@@ -86,10 +88,14 @@ export function IntegrationsPanel({
 
       <div className="mt-5 flex items-end justify-between gap-3">
         <div>
-          <h3 className="text-[13px] font-semibold">Social accounts</h3>
+          <h3 data-settings-subhead="Social accounts">
+            <span className="sr-only">Social accounts</span>
+          </h3>
           <SettingsCopy text="Multiple accounts per platform share the same server-owned connection state in Performance and Automations." />
         </div>
-        <span className="shrink-0 text-[12px] text-muted-foreground">{connectedCount} connected</span>
+        <span data-settings-count={`${connectedCount} connected`} className="shrink-0">
+          <span className="sr-only">{connectedCount} connected</span>
+        </span>
       </div>
       <div className="mt-3 grid gap-3" aria-busy={loading}>
         {SOCIAL_PROVIDERS.map((provider) => (
@@ -135,7 +141,9 @@ function SettingsCopy({
 function SectionHeading({ title, description }: { title: string; description: string }) {
   return (
     <div className="mb-2 mt-6">
-      <h3 className="text-[13px] font-semibold">{title}</h3>
+      <h3 data-settings-subhead={title}>
+        <span className="sr-only">{title}</span>
+      </h3>
       <SettingsCopy text={description} />
     </div>
   );
@@ -160,7 +168,9 @@ function ServiceRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <h3 className="truncate text-[12px] font-semibold">{name}</h3>
+        <h3 data-settings-subhead={name} className="truncate">
+          <span className="sr-only">{name}</span>
+        </h3>
         <SettingsCopy text={description} />
       </div>
       {onAction ? (

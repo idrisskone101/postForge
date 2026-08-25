@@ -52,6 +52,7 @@ export function CharacterCategoryRail({
       </div>
       <nav className="flex gap-1 overflow-x-auto p-2 min-[1280px]:block min-[1280px]:h-[calc(100%_-_116px)] min-[1280px]:overflow-y-auto min-[1280px]:px-2 min-[1280px]:py-2" aria-label="Character attribute recipe">
         <button
+          type="button"
           onClick={() => onSelectSection("overview")}
           aria-current={activeSection === "overview" ? "page" : undefined}
           className={cn(
@@ -59,14 +60,49 @@ export function CharacterCategoryRail({
             activeSection === "overview" ? "bg-white font-semibold shadow-[var(--pf-shadow-2xs)]" : "text-muted-foreground hover:bg-[var(--pf-active)]"
           )}
         >
-          <span className="grid size-5 place-items-center rounded-md bg-[var(--pf-active)] text-[12px] font-bold">00</span>
-          <span className="min-w-0 flex-1 text-left">Overview</span>
+          <span data-character-rail-index="00" className="grid size-5 place-items-center rounded-md bg-[var(--pf-active)] text-[12px] font-bold">
+            <span className="sr-only">00</span>
+          </span>
+          <span data-character-rail-item="Overview" className="min-w-0 flex-1 text-left">
+            <span className="sr-only">Overview</span>
+          </span>
           <Check className="size-3 text-[var(--pf-success)]" />
         </button>
         {CHARACTER_ATTRIBUTE_SECTIONS.map((section, sectionIndex) => {
           const summary = section.groups.slice(0, 2).map((group) => attributes[group.key]).join(" · ");
           const sectionComplete = section.groups.every((group) => Boolean(attributes[group.key]?.trim()));
-          return <button key={section.id} onClick={() => onSelectSection(section.id)} aria-current={activeSection === section.id ? "page" : undefined} className={cn("group flex min-w-[150px] items-center gap-2 rounded-lg px-2.5 py-2 text-left min-[1280px]:w-full min-[1280px]:min-w-0",activeSection === section.id ? "bg-white shadow-[var(--pf-shadow-2xs)]" : "hover:bg-[var(--pf-active)]")}><span className={cn("grid size-5 shrink-0 place-items-center rounded-md text-[12px] font-bold",activeSection === section.id ? "bg-foreground text-background" : "bg-[var(--pf-active)] text-muted-foreground")}>{String(sectionIndex + 1).padStart(2, "0")}</span><span className="min-w-0 flex-1"><b className="block truncate text-[12px] font-medium">{section.label}</b><small className="mt-0.5 block truncate text-[12px] text-muted-foreground">{summary}</small></span>{sectionComplete ? <Check className="size-3 text-[var(--pf-success)]" /> : activeSection === section.id ? <ChevronDown className="size-3 text-[var(--pf-orange)]" /> : <ChevronRight className="size-3 text-muted-foreground" />}</button>;
+          const index = String(sectionIndex + 1).padStart(2, "0");
+          return (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => onSelectSection(section.id)}
+              aria-current={activeSection === section.id ? "page" : undefined}
+              className={cn(
+                "group flex min-w-[150px] items-center gap-2 rounded-lg px-2.5 py-2 text-left min-[1280px]:w-full min-[1280px]:min-w-0",
+                activeSection === section.id ? "bg-white shadow-[var(--pf-shadow-2xs)]" : "hover:bg-[var(--pf-active)]"
+              )}
+            >
+              <span
+                data-character-rail-index={index}
+                className={cn(
+                  "grid size-5 shrink-0 place-items-center rounded-md text-[12px] font-bold",
+                  activeSection === section.id ? "bg-foreground text-background" : "bg-[var(--pf-active)] text-muted-foreground"
+                )}
+              >
+                <span className="sr-only">{index}</span>
+              </span>
+              <span className="min-w-0 flex-1">
+                <b data-character-rail-item={section.label} className="block truncate text-[12px] font-medium">
+                  <span className="sr-only">{section.label}</span>
+                </b>
+                <small data-character-rail-summary={summary} className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                  <span className="sr-only">{summary}</span>
+                </small>
+              </span>
+              {sectionComplete ? <Check className="size-3 text-[var(--pf-success)]" /> : activeSection === section.id ? <ChevronDown className="size-3 text-[var(--pf-orange)]" /> : <ChevronRight className="size-3 text-muted-foreground" />}
+            </button>
+          );
         })}
       </nav>
     </aside>
