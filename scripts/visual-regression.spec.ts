@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "playwright/test";
 import {
   CRITICAL_OVERFLOW_SELECTORS,
   VISUAL_REGRESSION_ROUTES,

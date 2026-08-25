@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -70,3 +71,20 @@ const sweep = readFileSync(
 assert.match(sweep, /pnpm/);
 assert.match(sweep, /playwright/);
 assert.doesNotMatch(sweep, /npx --yes playwright@/);
+
+const spec = readFileSync(
+  path.join(repoRoot, "scripts/visual-regression.spec.ts"),
+  "utf8"
+);
+const visualConfig = readFileSync(
+  path.join(repoRoot, "scripts/playwright.visual.config.ts"),
+  "utf8"
+);
+assert.match(spec, /from "playwright\/test"/);
+assert.match(visualConfig, /from "playwright\/test"/);
+assert.doesNotMatch(spec, /@playwright\/test/);
+assert.doesNotMatch(visualConfig, /@playwright\/test/);
+assert.match(
+  createRequire(import.meta.url).resolve("playwright/test"),
+  /playwright/
+);
