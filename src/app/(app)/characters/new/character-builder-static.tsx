@@ -1,4 +1,4 @@
-const LCP_PORTRAIT = "/character-builder/lcp-portrait.webp";
+import { LCP_PORTRAIT_DATA_URI } from "./character-lcp-portrait-uri";
 
 const FRAME_STYLE = {
   position: "relative",
@@ -93,7 +93,7 @@ export function CharacterBuilderStatic() {
               style={PHOTO_FRAME_STYLE}
             >
               <img
-                src={LCP_PORTRAIT}
+                src={LCP_PORTRAIT_DATA_URI}
                 alt="Untitled character photographic preview"
                 width={390}
                 height={520}

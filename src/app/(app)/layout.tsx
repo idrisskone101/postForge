@@ -20,14 +20,6 @@ export default async function AppLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <style>{FIRST_PAINT_CSS}</style>
-        {deferDashboardCss ? (
-          <link
-            rel="preload"
-            as="image"
-            href="/character-builder/lcp-portrait.webp"
-            fetchPriority="high"
-          />
-        ) : null}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,

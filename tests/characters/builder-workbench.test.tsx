@@ -174,10 +174,6 @@ assert.doesNotMatch(previewSource, /aspect-\[3\/4\]/);
 assert.doesNotMatch(previewSource, /max-w-\[390px\]/);
 assert.match(
   readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
-  /fetchPriority="high"/,
-);
-assert.match(
-  readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
   /CharacterBuilderStatic/,
 );
 assert.match(
@@ -186,11 +182,19 @@ assert.match(
 );
 assert.match(
   readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /\/character-builder\/lcp-portrait\.webp/,
+  /LCP_PORTRAIT_DATA_URI/,
+);
+assert.match(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /fetchPriority="high"/,
 );
 assert.doesNotMatch(
   readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
   /"use client"/,
+);
+assert.match(
+  readFileSync(new URL("character-lcp-portrait-uri.ts", workbenchDir), "utf8"),
+  /data:image\/webp;base64,/,
 );
 
 const defaultPortrait = readFileSync(

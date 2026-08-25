@@ -14,17 +14,7 @@ export default async function CharacterBuilderPage({
 
   return (
     <>
-      {editId ? null : (
-        <>
-          <link
-            rel="preload"
-            as="image"
-            href="/character-builder/lcp-portrait.webp"
-            fetchPriority="high"
-          />
-          <CharacterBuilderStatic />
-        </>
-      )}
+      {editId ? null : <CharacterBuilderStatic />}
       <CharacterBuilderClientLazy editId={editId} />
     </>
   );
