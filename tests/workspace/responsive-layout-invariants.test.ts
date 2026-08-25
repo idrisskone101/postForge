@@ -25,9 +25,11 @@ const characterBuilder = source(
 const performance = source("src/app/(app)/performance/performance-page-client.tsx");
 const settings = source("src/app/(app)/settings/settings-page-client.tsx");
 const automations = source("src/app/(app)/automations/automations-page-client.tsx");
-const automationBuilder = source(
-  "src/app/(app)/automations/new/automation-builder-client.tsx"
-);
+const automationBuilder = [
+  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"),
+  source("src/app/(app)/automations/new/automation-builder-session.tsx"),
+].join("\n");
 const alertDialog = source("src/components/ui/alert-dialog.tsx");
 const dialog = source("src/components/ui/dialog.tsx");
 const homeLoading = source("src/app/(app)/home-loading.tsx");
@@ -259,8 +261,13 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-toolbar="true
 assert.doesNotMatch(source("src/app/first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\[data-gallery-toolbar/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"\]\{/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
-assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-automation-overlay="true"/);
-assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /position: "fixed"/);
+assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /data-automation-overlay="true"/);
+assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /position: "fixed"/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /AutomationPlaybookOverlay/);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  /from "\.\/use-automation-builder"/,
+);
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
@@ -439,9 +446,16 @@ assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
 assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
 assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
 assert.match(
-  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  source("src/app/(app)/automations/new/automation-builder-phase-form-lazy.tsx"),
   /import\("\.\/automation-builder-phase-form"\)/,
 );
+assert.match(
+  source("src/app/(app)/automations/new/automation-builder-session-lazy.tsx"),
+  /import\("\.\/automation-builder-session"\)/,
+);
+assert.match(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditorLazy/);
+assert.match(source("src/app/(app)/characters/new/character-attribute-editor-lazy.tsx"), /CharacterAttributeEditorDynamic/);
+assert.match(source("src/app/(app)/characters/new/character-attribute-editor-dynamic.tsx"), /ssr:\s*false/);
 assert.match(
   source("src/app/first-paint-css.ts"),
   /\[data-character-workbench-header="true"\]>div:last-child\{display:flex;flex-wrap:nowrap/,

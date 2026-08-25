@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AUTOMATION_TEMPLATES,
   createAutomationRecord,
@@ -12,6 +12,7 @@ import {
   type AutomationRecord,
 } from "@/lib/automations";
 import { fetchWorkspaceFeature, saveWorkspaceFeature } from "@/lib/workspace-features-client";
+import type { AutomationBuilderSearch } from "./automation-builder-search";
 import {
   clampPreviewSlide,
   nextPreviewSlide,
@@ -22,19 +23,9 @@ import {
   destinationSelectionPatch,
   preparePlanSave,
 } from "./automation-builder-plan";
-import {
-  DAYS,
-  filterPlaybooks,
-  PHASES,
-  playbookCategories,
-  playbookCategoryCounts,
-  type Phase,
-  type PlaybookPickerState,
-  type TemplateSort,
-  type TemplateView,
-} from "./playbook-model";
+import { DAYS, PHASES, type Phase } from "./playbook-model";
 import { useAutomationBuilderResources } from "./use-automation-builder-resources";
-import { usePlaybookFavorites } from "./use-playbook-favorites";
+import { usePlaybookEntry } from "./use-playbook-entry";
 
 type WorkspaceSettingsDefaults = {
   id: string;
@@ -42,11 +33,7 @@ type WorkspaceSettingsDefaults = {
   approvalDefault: boolean;
 };
 
-export type AutomationBuilderSearch = {
-  id?: string | string[];
-  sourceFileId?: string | string[];
-  template?: string | string[];
-};
+export type { AutomationBuilderSearch };
 
 export function useAutomationBuilder(search: AutomationBuilderSearch) {
   const router = useRouter();
@@ -66,14 +53,7 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
     })
   );
   const [phase, setPhase] = useState<Phase>("Hook");
-  const [templateOpen, setTemplateOpen] = useState(!editId);
-  const [templateSearch, setTemplateSearch] = useState("");
-  const [templateCategory, setTemplateCategory] = useState("All");
-  const [templateSort, setTemplateSort] = useState<TemplateSort>("recommended");
-  const [templateView, setTemplateView] = useState<TemplateView>("grid");
-  const [previewTemplateId, setPreviewTemplateId] = useState(initialTemplateId);
-  const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
-  const { favoriteTemplateIds, toggleFavorite } = usePlaybookFavorites();
+  const [templateOpen, setTemplateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedRecordSignature, setSavedRecordSignature] = useState<string | null>(null);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -86,6 +66,10 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
   const [toast, setToast] = useState<string | null>(null);
   const [previewSlide, setPreviewSlide] = useState(0);
   const [previewZoom, setPreviewZoom] = useState(58);
+  const playbook = usePlaybookEntry({
+    initialTemplateId,
+    onClose: () => setTemplateOpen(false),
+  });
 
   const {
     collections,
@@ -116,8 +100,7 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
             if (
               AUTOMATION_TEMPLATES.some((template) => template.id === existing.template)
             ) {
-              setPreviewTemplateId(existing.template);
-              setSelectedTemplateId(existing.template);
+              playbook.selectTemplate(existing.template);
             }
           }
           if (!cancelled && !existing) {
@@ -163,28 +146,6 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
     };
   }, [editId]);
 
-  const templateCategories = useMemo(() => playbookCategories(), []);
-  const templateCategoryCounts = useMemo(
-    () => playbookCategoryCounts(favoriteTemplateIds),
-    [favoriteTemplateIds]
-  );
-  const templates = useMemo(
-    () =>
-      filterPlaybooks({
-        search: templateSearch,
-        category: templateCategory,
-        sort: templateSort,
-        favoriteTemplateIds,
-      }),
-    [favoriteTemplateIds, templateCategory, templateSearch, templateSort]
-  );
-
-  const previewTemplate =
-    AUTOMATION_TEMPLATES.find((template) => template.id === previewTemplateId) ??
-    AUTOMATION_TEMPLATES[0];
-  const selectedTemplate =
-    AUTOMATION_TEMPLATES.find((template) => template.id === selectedTemplateId) ??
-    AUTOMATION_TEMPLATES[0];
   const selectedCollection = record.content.collectionId
     ? collections.find(
         (collection) => collection.id === record.content.collectionId
@@ -235,8 +196,7 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
 
   function applyTemplate(templateId: string) {
     setRecord((current) => applyPlaybookToRecord(current, templateId));
-    setSelectedTemplateId(templateId);
-    setPreviewTemplateId(templateId);
+    playbook.selectTemplate(templateId);
     setSaveFailed(false);
     setTemplateOpen(false);
     setPhase("Hook");
@@ -249,14 +209,8 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
     )
       ? record.template
       : AUTOMATION_TEMPLATES[0].id;
-    setSelectedTemplateId(currentTemplateId);
-    setPreviewTemplateId(currentTemplateId);
+    playbook.selectTemplate(currentTemplateId);
     setTemplateOpen(true);
-  }
-
-  function selectTemplate(templateId: string) {
-    setSelectedTemplateId(templateId);
-    setPreviewTemplateId(templateId);
   }
 
   function updateHook(patch: Partial<AutomationRecord["hook"]>) {
@@ -289,28 +243,6 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
       ...destinationSelectionPatch(current, destination, integrationStatuses),
     }));
   }
-
-  const playbookPicker: PlaybookPickerState = {
-    templates,
-    categories: templateCategories,
-    categoryCounts: templateCategoryCounts,
-    category: templateCategory,
-    onCategoryChange: setTemplateCategory,
-    search: templateSearch,
-    onSearchChange: setTemplateSearch,
-    sort: templateSort,
-    onSortChange: setTemplateSort,
-    view: templateView,
-    onViewChange: setTemplateView,
-    favorites: favoriteTemplateIds,
-    onToggleFavorite: toggleFavorite,
-    previewTemplate,
-    onPreview: setPreviewTemplateId,
-    selectedTemplateId,
-    onSelect: selectTemplate,
-    onBuildFromScratch: () => selectTemplate("custom"),
-    onClose: () => setTemplateOpen(false),
-  };
 
   async function persist(mode: "draft" | "create") {
     const prepared = preparePlanSave({
@@ -369,8 +301,8 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
     integrationsLoading,
     integrationsError,
     refreshIntegrations,
-    playbookPicker,
-    selectedTemplate,
+    playbookPicker: playbook.playbookPicker,
+    selectedTemplate: playbook.selectedTemplate,
     previewAsset,
     previewEmptyCopy,
     recordSignature,
@@ -392,4 +324,3 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
 }
 
 export type AutomationBuilderWorkspace = ReturnType<typeof useAutomationBuilder>;
-

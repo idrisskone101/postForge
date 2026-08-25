@@ -74,22 +74,32 @@ const clientSource = readFileSync(
   new URL("src/app/(app)/automations/new/automation-builder-client.tsx", repoRoot),
   "utf8"
 );
+const overlaySource = readFileSync(
+  new URL("src/app/(app)/automations/new/automation-playbook-overlay.tsx", repoRoot),
+  "utf8"
+);
+const sessionSource = readFileSync(
+  new URL("src/app/(app)/automations/new/automation-builder-session.tsx", repoRoot),
+  "utf8"
+);
 assert.doesNotMatch(
   clientSource,
   /^export \{/m,
   "automation-builder-client must not re-export extracted modules"
 );
-assert.match(clientSource, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
-assert.match(clientSource, /pf-safe-overlay/);
+assert.match(overlaySource, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
+assert.match(overlaySource, /pf-safe-overlay/);
 assert.match(
-  clientSource,
+  sessionSource,
   /pf-safe-overlay[^"\n]*[\s\S]*?max-h-full[^"\n]*overflow-y-auto/
 );
 assert.match(
-  clientSource,
+  overlaySource,
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
 );
-assert.match(clientSource, /<PlaybookPicker picker=\{playbookPicker\} \/>/);
+assert.match(clientSource, /<AutomationPlaybookOverlay/);
+assert.match(overlaySource, /<PlaybookPicker picker=\{picker\} \/>/);
+assert.match(sessionSource, /<AutomationPlaybookOverlay/);
 assert.doesNotMatch(
   clientSource,
   /createContext/,
@@ -121,6 +131,8 @@ const namedComponents: Array<[string, string, number]> = [
   ["automation-builder-phase-form.tsx", "AutomationBuilderPhaseForm", 1],
   ["automation-builder-preview-pane.tsx", "AutomationBuilderPreviewPane", 1],
   ["automation-builder-client.tsx", "AutomationBuilderClient", 1],
+  ["automation-builder-session.tsx", "AutomationBuilderSession", 1],
+  ["automation-playbook-overlay.tsx", "AutomationPlaybookOverlay", 3],
   ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 1],
 ];
 for (const [file, exportName, expected] of namedComponents) {

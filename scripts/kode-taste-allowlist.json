@@ -1,7 +1,10 @@
 {
-  "fileLayout": [],
+  "fileLayout": [
+    "src/components/generation-form-lazy.tsx"
+  ],
   "propBags": [
     "src/app/(app)/automations/publish-review-dialog.tsx",
+    "src/components/character-photo.tsx",
     "src/components/avatar-picker-cards.tsx",
     "src/components/collection-reference-picker.tsx",
     "src/components/gallery/delete-dialog.tsx",
