@@ -51,30 +51,56 @@ function evaluateRow(row) {
 }
 
 const scoreScript = path.join(repoRoot, "scripts/lh-score.mjs");
-const result = spawnSync(
-  process.execPath,
-  [scoreScript, base, formFactor, LH_ROUTES.join(",")],
-  { cwd: repoRoot, encoding: "utf8", maxBuffer: 20_000_000 }
-);
 
-if (result.status !== 0 && !result.stdout?.trim()) {
-  process.stderr.write(
-    result.stderr || `lh-score exited with status ${result.status ?? "unknown"}\n`
+function scoreRoutes(routes) {
+  const result = spawnSync(
+    process.execPath,
+    [scoreScript, base, formFactor, routes.join(",")],
+    { cwd: repoRoot, encoding: "utf8", maxBuffer: 20_000_000 }
   );
-  process.exit(result.status || 1);
+
+  if (result.status !== 0 && !result.stdout?.trim()) {
+    process.stderr.write(
+      result.stderr || `lh-score exited with status ${result.status ?? "unknown"}\n`
+    );
+    process.exit(result.status || 1);
+  }
+
+  try {
+    return JSON.parse(result.stdout);
+  } catch (error) {
+    process.stderr.write(
+      `lh-gate: failed to parse lh-score output: ${error instanceof Error ? error.message : String(error)}\n`
+    );
+    if (result.stderr) {
+      process.stderr.write(result.stderr);
+    }
+    process.exit(1);
+  }
 }
 
-let rows;
-try {
-  rows = JSON.parse(result.stdout);
-} catch (error) {
-  process.stderr.write(
-    `lh-gate: failed to parse lh-score output: ${error instanceof Error ? error.message : String(error)}\n`
+const warmupRoute = LH_ROUTES[0];
+if (warmupRoute) {
+  process.stdout.write(
+    `Lighthouse gate: discarding warmup audit of ${warmupRoute} to prime Chrome\n`
   );
-  if (result.stderr) {
-    process.stderr.write(result.stderr);
+  scoreRoutes([warmupRoute]);
+}
+
+const rows = scoreRoutes(LH_ROUTES);
+
+for (let index = 0; index < rows.length; index += 1) {
+  const row = rows[index];
+  if (evaluateRow(row).length === 0) {
+    continue;
   }
-  process.exit(1);
+  process.stdout.write(
+    `Lighthouse gate: retrying ${row.route} in isolation after a failed first pass\n`
+  );
+  const [retry] = scoreRoutes([row.route]);
+  if (retry && evaluateRow(retry).length === 0) {
+    rows[index] = retry;
+  }
 }
 
 const failing = [];

@@ -29,6 +29,14 @@ assert.match(gateScript, /LH_MIN_PERFORMANCE/);
 assert.match(gateScript, /LH_MAX_CLS/);
 assert.match(gateScript, /LH_MAX_LCP_MS/);
 assert.match(gateScript, /performance >= \$\{minPerformance\}/);
+assert.match(gateScript, /discarding warmup audit/);
+assert.match(gateScript, /retrying \$\{row\.route\} in isolation/);
+
+const bootScript = readFileSync(
+  path.join(repoRoot, "scripts/kode-lighthouse.sh"),
+  "utf8"
+);
+assert.match(bootScript, /warmup GET/);
 
 assert.ok(LH_ROUTES.length >= 18, "expected at least 18 scored routes");
 assert.ok(LH_ROUTES.includes("/"));

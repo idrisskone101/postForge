@@ -97,5 +97,16 @@ if [[ "$http_code" != "200" ]]; then
   exit 1
 fi
 
+# Warm the first scored route so Lighthouse does not pay Next.js compile/SSR
+# on the first audited page. CI otherwise saw `/` at ~59 / 3.6s LCP while
+# every later route passed.
+warm_url="http://${HOST}:${PORT}/"
+warm_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$warm_url" || true)"
+echo "kode:lighthouse: warmup GET ${warm_url} -> ${warm_code:-failed}"
+if [[ "$warm_code" != "200" ]]; then
+  echo "kode:lighthouse: warmup of ${warm_url} did not return 200" >&2
+  exit 1
+fi
+
 echo "kode:lighthouse: running Lighthouse gate (${LH_FORM_FACTOR:-mobile})"
 node scripts/lh-gate.mjs
