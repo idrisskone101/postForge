@@ -41,6 +41,8 @@ export function CharacterPhoto({
         data-character-default-frame="true"
         className={frameClassName}
       >
+        {/* Data-URI pixel is the in-viewport LCP; the webp is CSS background. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DEFAULT_LCP_PIXEL}
           alt={alt}
