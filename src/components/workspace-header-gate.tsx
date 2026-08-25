@@ -70,7 +70,6 @@ export function WorkspaceRouteHeader({
             <Link
               id="workspace-header-default-action"
               href={activeItem.primaryAction.href}
-              prefetch={false}
               data-header-action={activeItem.primaryAction.label}
               className="pf-button-primary w-fit"
             >

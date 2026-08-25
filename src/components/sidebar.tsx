@@ -117,7 +117,6 @@ export function Sidebar() {
       <Link
         key={item.href}
         href={item.href}
-        prefetch={false}
         aria-label={item.label}
         title={item.label}
         aria-current={active ? "page" : undefined}
@@ -172,11 +171,13 @@ export function Sidebar() {
         <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
           {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
             <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
+              {/* prefetch-off: alert chip, not primary nav */}
               <Bell className="size-3 shrink-0 text-[var(--pf-danger)]" /><span className="min-w-0 flex-1 truncate">Failed generations</span><b className="pf-data">{notificationCounts.generationFailures}</b>
             </Link>
           )}
           {notificationPreferences.approvals && notificationCounts.approvalsWaiting > 0 && (
             <Link prefetch={false} href="/gallery?reviewStatus=needs_review" onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
+              {/* prefetch-off: alert chip, not primary nav */}
               <Bell className="size-3 shrink-0 text-[var(--pf-orange)]" /><span className="min-w-0 flex-1 truncate">Outputs to review</span><b className="pf-data">{notificationCounts.approvalsWaiting}</b>
             </Link>
           )}
@@ -195,6 +196,7 @@ export function Sidebar() {
           Local workspace
         </span>
         <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
+          {/* prefetch-off: billing is a footer utility */}
           Manage
         </Link>
       </div>
@@ -246,7 +248,6 @@ export function Sidebar() {
         </dialog>
         <PostForgeBrand name={workspaceName} />
         <Link
-          prefetch={false}
           href={quickAction.href}
           aria-label={quickAction.label}
           className="ml-auto grid size-9 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] hover:brightness-[0.93] active:scale-[0.98]"
@@ -323,7 +324,7 @@ function applySidebarCollapsedDataset(collapsed: boolean) {
 
 function PostForgeBrand({ name }: { name: string }) {
   return (
-    <Link href="/" prefetch={false} className="sidebar-brand flex min-w-0 items-center gap-2.5 px-2" aria-label={name}>
+    <Link href="/" className="sidebar-brand flex min-w-0 items-center gap-2.5 px-2" aria-label={name}>
       <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
         P
       </span>
