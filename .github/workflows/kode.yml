@@ -36,6 +36,10 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch PR base
+        run: git fetch origin "${{ github.base_ref }}"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -50,6 +54,8 @@ jobs:
           sed -i "s|^STORAGE_LOCAL_PATH=.*|STORAGE_LOCAL_PATH=\"${RUNNER_TEMP}/postforge-outputs\"|" .env
           pnpm exec prisma migrate deploy
       - name: kode:check
+        env:
+          KODE_BASE_REF: origin/${{ github.base_ref }}
         run: pnpm kode:check
 
   lighthouse:
