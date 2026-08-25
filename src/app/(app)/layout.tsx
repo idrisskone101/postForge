@@ -6,15 +6,12 @@ import { FIRST_PAINT_CSS } from "../first-paint-css";
 
 const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
 
-const DASHBOARD_CSS_ON_INPUT = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}function onInput(){load();window.removeEventListener("pointerdown",onInput);window.removeEventListener("keydown",onInput)}window.addEventListener("pointerdown",onInput);window.addEventListener("keydown",onInput)})()`;
-
 export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = (await headers()).get("x-pathname") || "/";
-  const deferDashboardCss = pathname.startsWith("/characters/new");
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -44,9 +41,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         <div id="workspace-root">
           <script
             dangerouslySetInnerHTML={{
-              __html: deferDashboardCss
-                ? DASHBOARD_CSS_ON_INPUT
-                : DASHBOARD_CSS_LOADER,
+              __html: DASHBOARD_CSS_LOADER,
             }}
           />
           <noscript>
