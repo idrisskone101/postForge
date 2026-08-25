@@ -345,7 +345,16 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-budget-label\]:
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]::before\{content:attr\(data-spend-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\] strong::before\{content:attr\(data-jobs-value\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\.pf-content-viewport header h1::before\{content:attr\(data-home-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-title\]::before\{content:attr\(data-home-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /header:has\(\[data-home-title\]\)\{display:flex;height:4\.75rem/);
+assert.doesNotMatch(
+  source("src/app/first-paint-css.ts"),
+  /\.pf-content-viewport header\{display:flex;height:4\.75rem/,
+);
+assert.doesNotMatch(
+  source("src/app/globals.css"),
+  /\.pf-content-viewport header h1::before/,
+);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]::before\{content:attr\(data-settings-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-note="true"\]::before\{content:attr\(data-spend-note-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]::before\{content:attr\(data-empty-title\)/);

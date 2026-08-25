@@ -140,7 +140,7 @@ body {
 }
 
 #workspace-header-grid h1,
-.pf-content-viewport header h1 {
+[data-home-title] {
   margin: 0;
   max-width: 12rem;
   font-weight: 600;
@@ -172,13 +172,13 @@ body {
   text-overflow: ellipsis !important;
 }
 
-.pf-content-viewport header h1 {
+[data-home-title] {
   height: 33px !important;
   overflow: hidden !important;
   font-size: 30px !important;
 }
 
-.pf-content-viewport header h1::before {
+[data-home-title]::before {
   content: attr(data-home-title) !important;
   display: block !important;
   overflow: hidden !important;
@@ -193,7 +193,7 @@ body {
 }
 
 #workspace-header-grid p,
-.pf-content-viewport header p {
+header:has([data-home-title]) p {
   max-width: 8rem;
   width: 8rem;
   height: 10px;
@@ -270,7 +270,7 @@ body {
   overflow: hidden;
 }
 
-.pf-content-viewport header h1 {
+[data-home-title] {
   height: 33px;
   overflow: hidden;
   font-size: 30px;
@@ -289,7 +289,7 @@ body {
   padding-left: 1rem;
 }
 
-.pf-content-viewport header {
+header:has([data-home-title]) {
   display: flex;
   height: 4.75rem;
   flex-wrap: nowrap;
@@ -300,12 +300,12 @@ body {
   padding-top: 1.75rem;
 }
 
-.pf-content-viewport header > div:first-child {
+header:has([data-home-title]) > div:first-child {
   min-width: 0;
   flex: 1 1 auto;
 }
 
-.pf-content-viewport header .pf-button-primary {
+header:has([data-home-title]) .pf-button-primary {
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -1753,6 +1753,8 @@ body {
 [data-character-workbench-header="true"] {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   gap: 0.75rem;
   min-height: 13.5rem;
   padding: 0.75rem 1rem;

@@ -1400,7 +1400,7 @@
   text-overflow: ellipsis !important;
 }
 
-.pf-content-viewport header p {
+header:has([data-home-title]) p {
   max-width: 8rem !important;
   width: 8rem !important;
   height: 10px !important;
@@ -1445,7 +1445,7 @@
   text-overflow: ellipsis !important;
 }
 
-.pf-content-viewport header h1 {
+[data-home-title] {
   margin: 0 !important;
   max-width: 12rem !important;
   height: 33px !important;
@@ -1458,7 +1458,7 @@
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
-.pf-content-viewport header h1::before {
+[data-home-title]::before {
   content: attr(data-home-title) !important;
   display: block !important;
   overflow: hidden !important;
@@ -1670,6 +1670,10 @@
 
 @media (max-width: 1279.98px) {
   [data-character-workbench-header="true"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
     min-height: 13.5rem !important;
     height: 13.5rem !important;
     overflow: hidden !important;
