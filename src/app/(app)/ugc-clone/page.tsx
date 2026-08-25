@@ -1,5 +1,7 @@
-import { UGCCloneForm } from "@/components/ugc-clone-form";
-import { UGCCloneQueue } from "@/components/ugc-clone-queue";
+import {
+  UGCCloneFormLazy,
+  UGCCloneQueueLazy,
+} from "@/components/ugc-clone-form-lazy";
 import { CloneHandoffQueryProvider } from "@/lib/clone-handoff-query-context";
 import { appSearchParamsToQuery } from "@/lib/search-params-query";
 
@@ -25,9 +27,9 @@ export default async function UGCClonePage({ searchParams }: UGCClonePageProps) 
       </div>
       <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <CloneHandoffQueryProvider query={initialQuery}>
-          <UGCCloneForm />
+          <UGCCloneFormLazy />
           <div className="mt-6 pb-24">
-            <UGCCloneQueue />
+            <UGCCloneQueueLazy />
           </div>
         </CloneHandoffQueryProvider>
       </div>

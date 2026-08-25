@@ -1181,6 +1181,16 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-clone-form-skeleton="true"] {
+  height: 42rem;
+  overflow: hidden;
+}
+
+[data-clone-queue-skeleton="true"] {
+  height: 8rem;
+  overflow: hidden;
+}
+
 @media (max-width: 767.98px) {
   [data-generate-prompt="true"] {
     height: 25.625rem;
@@ -1586,6 +1596,7 @@ body {
   position: relative;
   width: 100%;
   max-width: 390px;
+  height: 520px;
   aspect-ratio: 3 / 4;
   overflow: hidden;
 }
@@ -1655,13 +1666,31 @@ body {
 }
 
 .policy-heading {
-  max-width: 8ch;
+  width: 20rem;
+  max-width: 100%;
+  height: 3.5rem;
   margin: 0;
+  overflow: hidden;
   font-size: 3.5rem;
   font-weight: 600;
-  line-height: 0.9;
+  line-height: 3.5rem;
   letter-spacing: -0.05em;
   color: #18181b;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.policy-heading::before {
+  content: attr(data-policy-title);
+  display: block;
+  overflow: hidden;
+  height: 3.5rem;
+  font-size: 3.5rem;
+  font-weight: 600;
+  line-height: 3.5rem;
+  letter-spacing: -0.05em;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pf-card {
@@ -2111,5 +2140,10 @@ body {
 
   [data-playbook-cards="true"] {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  [data-character-lcp-frame="true"] {
+    max-width: 440px;
+    height: 586.67px;
   }
 }

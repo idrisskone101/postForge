@@ -57,7 +57,7 @@ export function CharacterPreviewStage({
       <div className="relative z-10 grid min-h-0 flex-1 content-start justify-items-center py-4 min-[1280px]:py-3">
         <div
           data-character-lcp-frame="true"
-          className="aspect-[3/4] h-auto w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
+          className="aspect-[3/4] w-full max-w-[390px] overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)] min-[1280px]:max-w-[440px]"
         >
           <CharacterPhoto
             generatedFileId={previewFileId}
@@ -65,6 +65,7 @@ export function CharacterPreviewStage({
             alt={`${name || "Untitled character"} photographic preview`}
             className={cn("transition duration-300 motion-reduce:transition-none", rendering && "scale-[1.01] blur-[2px] grayscale-[.2]")}
             onLoadError={onLoadError}
+            priority
           />
         </div>
       </div>

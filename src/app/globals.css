@@ -1565,6 +1565,15 @@
   overflow: hidden !important;
 }
 
+[data-character-lcp-frame="true"] {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 390px !important;
+  height: 520px !important;
+  aspect-ratio: 3 / 4 !important;
+  overflow: hidden !important;
+}
+
 [data-automation-phases="true"] {
   height: 59px !important;
   overflow: hidden !important;
@@ -1766,6 +1775,16 @@
   color: #52525b !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
+}
+
+[data-clone-form-skeleton="true"] {
+  height: 42rem !important;
+  overflow: hidden !important;
+}
+
+[data-clone-queue-skeleton="true"] {
+  height: 8rem !important;
+  overflow: hidden !important;
 }
 
 [data-jobs-empty="true"] {
@@ -2082,6 +2101,11 @@
 
   [data-playbook-cards="true"] {
     grid-template-columns: 1fr 1fr 1fr !important;
+  }
+
+  [data-character-lcp-frame="true"] {
+    max-width: 440px !important;
+    height: 586.67px !important;
   }
 }
 
@@ -2616,5 +2640,10 @@
 
   [data-playbook-cards="true"] {
     grid-template-columns: 1fr 1fr 1fr !important;
+  }
+
+  [data-character-lcp-frame="true"] {
+    max-width: 440px !important;
+    height: 586.67px !important;
   }
 }

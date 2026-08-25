@@ -10,12 +10,14 @@ export function CharacterPhoto({
   alt = "Character portrait",
   className,
   onLoadError,
+  priority = false,
 }: {
   avatarId?: string | null;
   generatedFileId?: string | null;
   alt?: string;
   className?: string;
   onLoadError?: () => void;
+  priority?: boolean;
 }) {
   const requestedSource = characterPhotoSource({ avatarId, generatedFileId });
   const [failedSource, setFailedSource] = useState<string | null>(null);
@@ -36,8 +38,8 @@ export function CharacterPhoto({
         sizes="(max-width: 640px) 92vw, 440px"
         className="object-cover"
         unoptimized
-        priority={false}
-        fetchPriority="auto"
+        priority={priority}
+        fetchPriority={priority ? "high" : "auto"}
         onError={() => {
           if (source !== DEFAULT_CHARACTER_PHOTO) {
             onLoadError?.();
