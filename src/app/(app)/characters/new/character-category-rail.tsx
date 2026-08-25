@@ -35,10 +35,18 @@ export function CharacterCategoryRail({
       <div className="h-[4.75rem] overflow-hidden border-b border-border px-3 py-3">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Attribute recipe</p>
-            <p className="mt-1 text-[12px] font-semibold">{completedRecipeGroups} of {recipeGroups.length} complete</p>
+            <p data-character-rail-kicker="Attribute recipe">
+              <span className="sr-only">Attribute recipe</span>
+            </p>
+            <p data-character-rail-copy={`${completedRecipeGroups} of ${recipeGroups.length} complete`}>
+              <span className="sr-only">
+                {completedRecipeGroups} of {recipeGroups.length} complete
+              </span>
+            </p>
           </div>
-          <span className="text-[13px] font-semibold text-muted-foreground">{recipeProgress}%</span>
+          <span data-character-rail-pct={`${recipeProgress}%`}>
+            <span className="sr-only">{recipeProgress}%</span>
+          </span>
         </div>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--pf-border-strong)]"><span className="block h-full rounded-full bg-[var(--pf-orange)]" style={{ width: `${recipeProgress}%` }} /></div>
       </div>

@@ -1793,6 +1793,57 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-character-rail-kicker],
+[data-character-rail-copy],
+[data-character-rail-pct] {
+  width: 8rem;
+  max-width: 8rem;
+  height: 10px;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 10px;
+  white-space: nowrap;
+}
+
+[data-character-rail-kicker]::before {
+  content: attr(data-character-rail-kicker);
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 10px;
+  color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-character-rail-copy]::before {
+  content: attr(data-character-rail-copy);
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 10px;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-character-rail-pct]::before {
+  content: attr(data-character-rail-pct);
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 10px;
+  color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 [data-character-workbench-header="true"] input {
   display: block;
   width: 100%;
