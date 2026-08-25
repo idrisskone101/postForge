@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 export function useWindowLoadReady() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
+    const go = () => setReady(true);
     if (document.readyState === "complete") {
-      setReady(true);
-      return;
+      const id = window.setTimeout(go, 0);
+      return () => window.clearTimeout(id);
     }
-    const onLoad = () => setReady(true);
-    window.addEventListener("load", onLoad);
-    return () => window.removeEventListener("load", onLoad);
+    window.addEventListener("load", go);
+    return () => window.removeEventListener("load", go);
   }, []);
   return ready;
 }
