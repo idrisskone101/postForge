@@ -24,7 +24,7 @@ export default async function AppLayout({
           <link
             rel="preload"
             as="image"
-            href="/character-builder/default-portrait.webp"
+            href="/character-builder/lcp-portrait.webp"
             fetchPriority="high"
           />
         ) : null}

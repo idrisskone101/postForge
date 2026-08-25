@@ -186,7 +186,7 @@ assert.match(
 );
 assert.match(
   readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /\/character-builder\/default-portrait\.webp/,
+  /\/character-builder\/lcp-portrait\.webp/,
 );
 assert.doesNotMatch(
   readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
@@ -199,6 +199,13 @@ const defaultPortrait = readFileSync(
 assert.equal(defaultPortrait.subarray(0, 4).toString("ascii"), "RIFF");
 assert.ok(defaultPortrait.length > 8_000, "default portrait should be a real image asset");
 assert.ok(defaultPortrait.length < 200_000, "default portrait should stay small enough for LCP");
+
+const lcpPortrait = readFileSync(
+  new URL("../../public/character-builder/lcp-portrait.webp", import.meta.url)
+);
+assert.equal(lcpPortrait.subarray(0, 4).toString("ascii"), "RIFF");
+assert.ok(lcpPortrait.length > 4_000, "LCP portrait should be a real image asset");
+assert.ok(lcpPortrait.length < 16_000, "LCP portrait should stay smaller than the full default");
 
 assert.deepEqual(
   parseImportedCharacterAttributes(

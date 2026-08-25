@@ -1,4 +1,4 @@
-const DEFAULT_PORTRAIT = "/character-builder/default-portrait.webp";
+const LCP_PORTRAIT = "/character-builder/lcp-portrait.webp";
 
 const FRAME_STYLE = {
   position: "relative",
@@ -93,7 +93,7 @@ export function CharacterBuilderStatic() {
               style={PHOTO_FRAME_STYLE}
             >
               <img
-                src={DEFAULT_PORTRAIT}
+                src={LCP_PORTRAIT}
                 alt="Untitled character photographic preview"
                 width={390}
                 height={520}
