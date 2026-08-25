@@ -5,8 +5,9 @@ import {
   CloneFormSkeleton,
   CloneQueueSkeleton,
 } from "@/app/(app)/ugc-clone/clone-form-skeleton";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 
-export const UGCCloneFormLazy = dynamic(
+const UGCCloneFormDynamic = dynamic(
   () =>
     import("@/components/ugc-clone-form").then((mod) => ({
       default: mod.UGCCloneForm,
@@ -14,10 +15,22 @@ export const UGCCloneFormLazy = dynamic(
   { ssr: false, loading: CloneFormSkeleton },
 );
 
-export const UGCCloneQueueLazy = dynamic(
+const UGCCloneQueueDynamic = dynamic(
   () =>
     import("@/components/ugc-clone-queue").then((mod) => ({
       default: mod.UGCCloneQueue,
     })),
   { ssr: false, loading: CloneQueueSkeleton },
 );
+
+export function UGCCloneFormLazy() {
+  const ready = useWindowLoadReady();
+  if (!ready) return <CloneFormSkeleton />;
+  return <UGCCloneFormDynamic />;
+}
+
+export function UGCCloneQueueLazy() {
+  const ready = useWindowLoadReady();
+  if (!ready) return <CloneQueueSkeleton />;
+  return <UGCCloneQueueDynamic />;
+}

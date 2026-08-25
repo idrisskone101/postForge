@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { WorkspaceRouteSkeleton } from "@/components/workspace-route-skeleton";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import type { SlideshowStudioProps } from "./types";
 
 const SlideshowStudioDynamic = dynamic(
@@ -14,16 +14,7 @@ const SlideshowStudioDynamic = dynamic(
 );
 
 export function SlideshowStudioLazy(props: SlideshowStudioProps) {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    if (document.readyState === "complete") {
-      setReady(true);
-      return;
-    }
-    const onLoad = () => setReady(true);
-    window.addEventListener("load", onLoad);
-    return () => window.removeEventListener("load", onLoad);
-  }, []);
+  const ready = useWindowLoadReady();
   if (!ready) return <WorkspaceRouteSkeleton />;
   return <SlideshowStudioDynamic {...props} />;
 }

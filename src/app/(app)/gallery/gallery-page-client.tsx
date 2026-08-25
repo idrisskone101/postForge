@@ -29,7 +29,7 @@ import {
 } from "./gallery-models";
 import { useGalleryWorkspace } from "./use-gallery-workspace";
 
-interface GalleryPageClientProps {
+export interface GalleryPageClientProps {
   initialPage: Omit<GalleryPage, "items"> & { items: GalleryItemInput[] };
   initialType?: GalleryTypeFilter;
   initialSort?: GallerySortOrder;

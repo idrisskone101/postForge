@@ -548,8 +548,28 @@ assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
 assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
 assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
 assert.match(
-  source("src/components/slideshow/slideshow-studio-lazy.tsx"),
+  source("src/lib/use-window-load-ready.ts"),
   /window\.addEventListener\("load"/,
+);
+assert.match(
+  source("src/components/slideshow/slideshow-studio-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/generation-form-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/ugc-clone-form-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/ugc-inspiration/inspiration-page-lazy.tsx"),
+  /useWindowLoadReady/,
 );
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-copy=/);
