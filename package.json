@@ -34,6 +34,7 @@
     "kode:setup": "bash scripts/kode-setup.sh",
     "kode:check": "bash scripts/kode-check.sh",
     "kode:smoke": "bash scripts/kode-smoke.sh",
+    "kode:lighthouse": "bash scripts/kode-lighthouse.sh",
     "prune:playwright": "bash scripts/prune-playwright-artifacts.sh",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",

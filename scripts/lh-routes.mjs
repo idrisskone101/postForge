@@ -1,0 +1,21 @@
+/** User-visible routes scored in CI Lighthouse gate. */
+export const LH_ROUTES = [
+  "/",
+  "/generate",
+  "/gallery",
+  "/settings",
+  "/jobs",
+  "/automations/new",
+  "/slideshow",
+  "/collections",
+  "/automations",
+  "/characters",
+  "/privacy",
+  "/ugc-clone",
+  "/costs",
+  "/ugc-inspiration",
+  "/characters/new",
+  "/performance",
+  "/terms",
+  "/data-deletion",
+];
