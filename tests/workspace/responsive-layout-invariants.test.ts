@@ -77,6 +77,8 @@ const routeSurfaces = [
 
 // One responsive shell owns document overflow and every route inherits it.
 assert.match(appLayout, /<WorkspaceShell pathname=\{pathname\}>\{children\}<\/WorkspaceShell>/);
+assert.match(shell, /usePathname\(\)/);
+assert.match(shell, /"use client"/);
 assert.doesNotMatch(legalLayout, /WorkspaceShell|Sidebar/);
 assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);

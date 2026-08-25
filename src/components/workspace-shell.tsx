@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -9,11 +12,12 @@ import {
 
 export function WorkspaceShell({
   children,
-  pathname,
+  pathname: serverPathname,
 }: {
   children: React.ReactNode;
   pathname: string;
 }) {
+  const pathname = usePathname() || serverPathname;
   const activeItem =
     getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
   const hideHeader = routeOwnsHeader(pathname);
