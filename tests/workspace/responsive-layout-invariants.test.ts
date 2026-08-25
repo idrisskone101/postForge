@@ -263,7 +263,8 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
 assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /data-automation-overlay="true"/);
 assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /position: "fixed"/);
-assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /AutomationPlaybookOverlayLazy/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /PlaybookOverlayStatic/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClientLazy/);
 assert.doesNotMatch(
   source("src/app/(app)/automations/new/automation-builder-client.tsx"),
   /from "\.\/use-automation-builder"/,

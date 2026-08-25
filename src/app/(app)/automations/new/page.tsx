@@ -1,4 +1,5 @@
-import { AutomationBuilderClient } from "./automation-builder-client";
+import { AutomationBuilderClientLazy } from "./automation-builder-client-lazy";
+import { PlaybookOverlayStatic } from "./playbook-overlay-static";
 import { SlideshowAutomationBuilderLazy } from "./slideshow-automation-builder-lazy";
 
 export default async function AutomationBuilderPage({
@@ -13,10 +14,16 @@ export default async function AutomationBuilderPage({
     sourceFileId: params.sourceFileId,
     template: params.template,
   };
+  const editId = typeof params.id === "string" ? params.id : null;
 
-  return workflow === "slideshow" ? (
-    <SlideshowAutomationBuilderLazy search={search} />
-  ) : (
-    <AutomationBuilderClient search={search} />
+  if (workflow === "slideshow") {
+    return <SlideshowAutomationBuilderLazy search={search} />;
+  }
+
+  return (
+    <>
+      {editId ? null : <PlaybookOverlayStatic />}
+      <AutomationBuilderClientLazy search={search} />
+    </>
   );
 }

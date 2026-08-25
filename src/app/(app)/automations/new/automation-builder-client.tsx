@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
-import { AutomationPlaybookOverlayLazy } from "./automation-playbook-overlay-lazy";
+import { AutomationPlaybookOverlay } from "./automation-playbook-overlay";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
 import { AutomationBuilderSessionLazy } from "./automation-builder-session-lazy";
 import { usePlaybookEntry } from "./use-playbook-entry";
@@ -45,7 +45,7 @@ export function AutomationBuilderClient({
         <aside data-automation-form="true" />
         <div data-automation-preview="true" />
       </section>
-      <AutomationPlaybookOverlayLazy
+      <AutomationPlaybookOverlay
         picker={playbookPicker}
         selectedTemplate={selectedTemplate}
         onApply={(templateId) => {

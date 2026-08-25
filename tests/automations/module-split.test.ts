@@ -97,11 +97,14 @@ assert.match(
   overlaySource,
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
 );
-assert.match(clientSource, /<AutomationPlaybookOverlayLazy/);
-assert.doesNotMatch(
-  clientSource,
-  /from "\.\/automation-playbook-overlay"/,
-  "playbook overlay JS must stay off the default page chunk"
+assert.match(clientSource, /<AutomationPlaybookOverlay/);
+assert.match(
+  readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
+  /PlaybookOverlayStatic/
+);
+assert.match(
+  readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
+  /AutomationBuilderClientLazy/
 );
 assert.match(overlaySource, /<PlaybookPicker picker=\{picker\} \/>/);
 assert.match(sessionSource, /<AutomationPlaybookOverlay/);

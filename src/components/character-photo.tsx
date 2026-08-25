@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+
+const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
 
 export function CharacterPhoto({
   avatarId,
@@ -32,15 +33,14 @@ export function CharacterPhoto({
       data-character-default-frame={source === DEFAULT_CHARACTER_PHOTO ? "true" : undefined}
       className={cn("relative block size-full overflow-hidden bg-[#111113]", className)}
     >
-      <Image
+      <img
         src={source}
         alt={alt}
-        fill
-        sizes="(max-width: 640px) 92vw, 440px"
-        className="object-cover"
-        unoptimized
-        priority={priority}
+        width={390}
+        height={520}
+        decoding="async"
         fetchPriority={priority ? "high" : "auto"}
+        className="absolute inset-0 size-full object-cover"
         onError={() => {
           if (source !== DEFAULT_CHARACTER_PHOTO) {
             onLoadError?.();
@@ -51,10 +51,6 @@ export function CharacterPhoto({
     </span>
   );
 }
-
-
-
-const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
 
 function characterPhotoSource({
   avatarId,
