@@ -162,12 +162,12 @@ const photoMarkup = renderToStaticMarkup(
 
 assert.match(photoMarkup, /data-character-preview="photographic"/);
 assert.match(photoMarkup, /data-character-default-frame="true"/);
-assert.match(photoMarkup, /data:image\/gif;base64/);
+assert.match(photoMarkup, /\/character-builder\/lcp-placeholder\.webp/);
 assert.doesNotMatch(photoMarkup, /default-portrait\.webp/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 assert.match(
   readFileSync(new URL("../../src/app/globals.css", import.meta.url), "utf8"),
-  /\[data-character-default-frame="true"\][\s\S]*default-portrait\.webp/,
+  /\[data-character-portrait-fill="true"\][\s\S]*default-portrait\.webp/,
 );
 
 const defaultPortrait = readFileSync(
@@ -176,6 +176,11 @@ const defaultPortrait = readFileSync(
 assert.equal(defaultPortrait.subarray(0, 4).toString("ascii"), "RIFF");
 assert.ok(defaultPortrait.length > 8_000, "default portrait should be a real image asset");
 assert.ok(defaultPortrait.length < 200_000, "default portrait should stay small enough for LCP");
+const lcpPlaceholder = readFileSync(
+  new URL("../../public/character-builder/lcp-placeholder.webp", import.meta.url)
+);
+assert.equal(lcpPlaceholder.subarray(0, 4).toString("ascii"), "RIFF");
+assert.ok(lcpPlaceholder.length < 2_000, "LCP placeholder must stay a tiny request");
 
 assert.deepEqual(
   parseImportedCharacterAttributes(

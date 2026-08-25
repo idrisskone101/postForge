@@ -5,8 +5,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
-const DEFAULT_LCP_PIXEL =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const DEFAULT_LCP_PLACEHOLDER = "/character-builder/lcp-placeholder.webp";
 
 export function CharacterPhoto({
   avatarId,
@@ -41,10 +40,10 @@ export function CharacterPhoto({
         data-character-default-frame="true"
         className={frameClassName}
       >
-        {/* Data-URI pixel is the in-viewport LCP; the webp is CSS background. */}
+        {/* Tiny 390×520 placeholder is LCP; the real portrait is a CSS background. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={DEFAULT_LCP_PIXEL}
+          src={DEFAULT_LCP_PLACEHOLDER}
           alt={alt}
           width={390}
           height={520}
@@ -52,6 +51,7 @@ export function CharacterPhoto({
           fetchPriority="high"
           className="object-cover"
         />
+        <span data-character-portrait-fill="true" />
       </span>
     );
   }
