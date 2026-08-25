@@ -108,5 +108,11 @@ if [[ "$warm_code" != "200" ]]; then
   exit 1
 fi
 
+echo "kode:lighthouse: first-paint heading tokens"
+pnpm exec tsx scripts/check-first-paint-tokens.ts
+
+echo "kode:lighthouse: visual regression sweep"
+pnpm exec tsx scripts/visual-regression-sweep.ts
+
 echo "kode:lighthouse: running Lighthouse gate (${LH_FORM_FACTOR:-mobile})"
 node scripts/lh-gate.mjs

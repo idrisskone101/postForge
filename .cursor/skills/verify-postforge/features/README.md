@@ -48,3 +48,4 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 - [Collections](./collections.md) — library empty state and upload entry.
 - [Slideshow drafts](./slideshow.md) — studio Create/Drafts tabs and new slideshow entry.
 - [Automations and Settings](./automations-settings.md) — automation hub/builder and settings tabs.
+- [Visual regression](./visual-regression.md) — first-paint tokens and 18-route overflow sweep before Lighthouse.

@@ -5,6 +5,15 @@ import { LH_ROUTES } from "./lh-routes.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+const tokenCheck = spawnSync(
+  process.execPath,
+  ["--import", "tsx", path.join(repoRoot, "scripts/check-first-paint-tokens.ts")],
+  { cwd: repoRoot, stdio: "inherit" }
+);
+if (tokenCheck.status !== 0) {
+  process.exit(tokenCheck.status || 1);
+}
+
 const base = process.env.LH_BASE ?? "http://127.0.0.1:3000";
 const formFactor = process.env.LH_FORM_FACTOR ?? "mobile";
 const minPerformance = Number(process.env.LH_MIN_PERFORMANCE ?? 90);

@@ -87,6 +87,8 @@ jobs:
           pnpm exec prisma migrate deploy
       - name: Build production app
         run: pnpm build
+      - name: Install Playwright Chromium
+        run: pnpm dlx playwright install --with-deps chromium
       - name: kode:lighthouse
         run: pnpm kode:lighthouse
       - name: Upload Lighthouse reports
