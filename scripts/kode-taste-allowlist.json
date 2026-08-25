@@ -57,7 +57,6 @@
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "innerHtml": [
-    "src/app/layout.tsx",
     "src/app/(app)/layout.tsx"
   ]
 }

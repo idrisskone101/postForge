@@ -117,7 +117,7 @@ const shellSource = readFileSync(
   "utf8"
 );
 const layoutSource = readFileSync(
-  new URL("../../src/app/layout.tsx", import.meta.url),
+  new URL("../../src/app/(app)/layout.tsx", import.meta.url),
   "utf8"
 );
 const globalStyles = readFileSync(

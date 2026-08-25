@@ -9,8 +9,8 @@ const pkg = source("package.json");
 const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
-const layout = source("src/app/layout.tsx");
 const appLayout = source("src/app/(app)/layout.tsx");
+const legalLayout = source("src/app/(legal)/layout.tsx");
 const globalStyles = source("src/app/globals.css");
 const generationStudio = source("src/components/generation-form.tsx");
 const generationEditor = source("src/app/(app)/generate/[id]/page.tsx");
@@ -75,11 +75,12 @@ const routeSurfaces = [
 
 // One responsive shell owns document overflow and every route inherits it.
 assert.match(appLayout, /<WorkspaceShell pathname=\{pathname\}>\{children\}<\/WorkspaceShell>/);
-assert.doesNotMatch(layout, /WorkspaceShell|Sidebar/);
+assert.doesNotMatch(legalLayout, /WorkspaceShell|Sidebar/);
 assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);
 assert.match(globalStyles, /\.pf-content-viewport\s*\{[\s\S]*?100dvh/);
-assert.match(layout, /viewportFit:\s*"cover"/);
+assert.match(appLayout, /viewportFit:\s*"cover"/);
+assert.match(legalLayout, /viewportFit:\s*"cover"/);
 
 const routeOwnedViewportSurfaces = [
   home,
@@ -100,7 +101,7 @@ assert.doesNotMatch(inspirationPage + inspiration, /100vh/);
 
 // The rail must fit at 72px, hydrate without a layout jump, and move fixed bars.
 assert.match(sidebar, /w-\[72px\][^"\n]*xl:w-64/);
-assert.match(layout, /postforge-sidebar-collapsed/);
+assert.match(appLayout, /postforge-sidebar-collapsed/);
 assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
 assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] \.workspace-sidebar-offset-left/);
 assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
@@ -234,12 +235,10 @@ assert.match(appLayout, /\/dashboard\.css/);
 assert.match(appLayout, /rel="preload"/);
 assert.match(appLayout, /media="print"/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
-assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
-assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
-assert.doesNotMatch(source("src/app/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
-assert.doesNotMatch(source("src/app/layout.tsx"), /isPublicPolicyPath/);
-assert.doesNotMatch(source("src/app/layout.tsx"), /headers\(/);
-assert.match(source("src/app/(legal)/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
+assert.match(appLayout, /FIRST_PAINT_CSS/);
+assert.doesNotMatch(legalLayout, /from "\.\.\/first-paint-css"/);
+assert.doesNotMatch(appLayout, /isPublicPolicyPath/);
+assert.match(legalLayout, /LEGAL_FIRST_PAINT_CSS/);
 assert.ok(
   appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
   "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
@@ -288,7 +287,7 @@ assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-
 assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
 assert.doesNotMatch(appLayout, /globals\.css/);
-assert.doesNotMatch(layout, /globals\.css/);
+assert.doesNotMatch(appLayout, /globals\.css/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-dialog="true"\]\{display:flex/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-body="true"\]\{display:grid/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-header-accessory="true"\] #workspace-header-accessory\{display:flex;width:17rem/);
@@ -385,7 +384,7 @@ assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="tru
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
-assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderLazy/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClient/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-lede=/);
 assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), /data-playbook-name=\{template\.name\}/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-picker-open=\{templateOpen \? "true" : undefined\}/);
@@ -401,7 +400,8 @@ assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);
-assert.doesNotMatch(layout, /next\/font/);
+assert.doesNotMatch(appLayout, /next\/font/);
+assert.doesNotMatch(legalLayout, /next\/font/);
 assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
 assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
 assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
