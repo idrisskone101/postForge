@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { COST_LOG_PAGE_SIZE } from "../../src/lib/costs/spend-period";
-import { buildSpendDashboardView } from "../../src/app/costs/spend-models";
+import { buildSpendDashboardView } from "../../src/app/(app)/costs/spend-models";
 
 const emptyBreakdown = {
   image: { count: 0, cost: 0 },

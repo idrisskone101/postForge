@@ -9,7 +9,7 @@ const repoRoot = path.resolve(
 );
 
 const leftoverThumbs = [
-  "src/app/home-review-queue.tsx",
+  "src/app/(app)/home-review-queue.tsx",
   "src/components/media-preview.tsx",
   "src/components/clone-output/sidebar.tsx",
   "src/components/clone/reference-inputs.tsx",

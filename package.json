@@ -5,6 +5,10 @@
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev": "next dev --turbopack",
+    "build:dashboard-css": "node scripts/build-dashboard-css.mjs",
+    "build:first-paint-css": "node scripts/build-first-paint-css.mjs",
+    "predev": "node scripts/build-dashboard-css.mjs && node scripts/build-first-paint-css.mjs",
+    "prebuild": "node scripts/build-dashboard-css.mjs && node scripts/build-first-paint-css.mjs",
     "build": "next build --webpack",
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint",

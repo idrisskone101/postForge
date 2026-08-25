@@ -28,7 +28,7 @@ const editorWorkspaceSource = readFileSync(
   "utf8",
 );
 const pageSource = readFileSync(
-  new URL("../../src/app/slideshow/page.tsx", import.meta.url),
+  new URL("../../src/app/(app)/slideshow/page.tsx", import.meta.url),
   "utf8",
 );
 const previewSource = readFileSync(
@@ -47,7 +47,8 @@ assert.match(editorWorkspaceSource, /SlideshowBoardView/);
 assert.match(editorWorkspaceSource, /SlideshowPlayView/);
 assert.match(editorPreviewSource, /slideCoverImage/);
 assert.match(editorPreviewSource, /ArrowLeft/);
-assert.match(pageSource, /parseSlideshowViewMode\(params\.view\)/);
+assert.match(pageSource, /SlideshowStudio/);
+assert.match(pageSource, /supportsMp4Export=\{ffmpegBinaryExists\(\)\}/);
 assert.match(previewSource, /imageUrl\?:/);
 assert.match(previewSource, /\/api\/slideshows\/overlay/);
 assert.match(previewSource, /getSlideshowDimensions/);

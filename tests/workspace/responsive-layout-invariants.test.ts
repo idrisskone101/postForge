@@ -5,43 +5,47 @@ function source(relativePath: string) {
   return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
+const pkg = source("package.json");
 const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
-const layout = source("src/app/layout.tsx");
+const appLayout = source("src/app/(app)/layout.tsx");
+const legalLayout = source("src/app/(legal)/layout.tsx");
 const globalStyles = source("src/app/globals.css");
 const generationStudio = source("src/components/generation-form.tsx");
-const generationEditor = source("src/app/generate/[id]/page.tsx");
+const generationEditor = source("src/app/(app)/generate/[id]/page.tsx");
 const cloneStudio = source("src/components/ugc-clone-form.tsx");
 const cloneReferenceReview = source("src/components/clone/reference-review.tsx");
-const gallery = source("src/app/gallery/gallery-page-client.tsx");
-const collections = source("src/app/collections/collections-page-client.tsx");
-const characters = source("src/app/characters/characters-page-client.tsx");
+const gallery = source("src/app/(app)/gallery/gallery-page-client.tsx");
+const collections = source("src/app/(app)/collections/collections-page-client.tsx");
+const characters = source("src/app/(app)/characters/characters-page-client.tsx");
 const characterBuilder = source(
-  "src/app/characters/new/character-builder-client.tsx"
+  "src/app/(app)/characters/new/character-builder-client.tsx"
 );
-const performance = source("src/app/performance/performance-page-client.tsx");
-const settings = source("src/app/settings/settings-page-client.tsx");
-const automations = source("src/app/automations/automations-page-client.tsx");
-const automationBuilder = source(
-  "src/app/automations/new/automation-builder-client.tsx"
-);
+const performance = source("src/app/(app)/performance/performance-page-client.tsx");
+const settings = source("src/app/(app)/settings/settings-page-client.tsx");
+const automations = source("src/app/(app)/automations/automations-page-client.tsx");
+const automationBuilder = [
+  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"),
+  source("src/app/(app)/automations/new/automation-builder-session.tsx"),
+].join("\n");
 const alertDialog = source("src/components/ui/alert-dialog.tsx");
 const dialog = source("src/components/ui/dialog.tsx");
-const homeLoading = source("src/app/loading.tsx");
-const inspirationLoading = source("src/app/ugc-inspiration/loading.tsx");
-const galleryLoading = source("src/app/gallery/loading.tsx");
-const spendLoading = source("src/app/costs/loading.tsx");
-const generationLoading = source("src/app/generate/loading.tsx");
-const cloneLoading = source("src/app/ugc-clone/loading.tsx");
-const clonePage = source("src/app/ugc-clone/page.tsx");
-const cloneDetailPage = source("src/app/ugc-clone/[id]/page.tsx");
-const generationDetailLoading = source("src/app/generate/[id]/loading.tsx");
-const automationBuilderPage = source("src/app/automations/new/page.tsx");
-const characterBuilderPage = source("src/app/characters/new/page.tsx");
-const inspirationPage = source("src/app/ugc-inspiration/page.tsx");
+const homeLoading = source("src/app/(app)/home-loading.tsx");
+const inspirationLoading = source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx");
+const galleryLoading = source("src/app/(app)/gallery/gallery-page-client.tsx");
+const spendLoading = source("src/app/(app)/costs/spend-page-content.tsx");
+const generationLoading = source("src/app/(app)/generate/form-controls.tsx");
+const cloneLoading = source("src/app/(app)/ugc-clone/page.tsx");
+const clonePage = source("src/app/(app)/ugc-clone/page.tsx");
+const cloneDetailPage = source("src/app/(app)/ugc-clone/[id]/page.tsx");
+const generationDetailLoading = source("src/app/(app)/generate/[id]/page.tsx");
+const automationBuilderPage = source("src/app/(app)/automations/new/page.tsx");
+const characterBuilderPage = source("src/app/(app)/characters/new/page.tsx");
+const inspirationPage = source("src/app/(app)/ugc-inspiration/page.tsx");
 const inspiration = source(
-  "src/app/ugc-inspiration/inspiration-page-client.tsx"
+  "src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"
 );
 const tiktokInput = source("src/components/tiktok-input.tsx");
 const cloneQueue = source("src/components/ugc-clone-queue.tsx");
@@ -50,11 +54,11 @@ const avatarPicker = source("src/components/avatar-picker.tsx");
 const avatarPickerImport = source("src/components/avatar-picker-import.tsx");
 const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx");
 const galleryGrid = source("src/components/gallery-grid.tsx");
-const home = source("src/app/home-cockpit.tsx");
+const home = source("src/app/(app)/home-cockpit.tsx");
 
 const routeSurfaces = [
-  source("src/app/home-cockpit.tsx"),
-  source("src/app/ugc-inspiration/inspiration-page-client.tsx"),
+  source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"),
   cloneStudio,
   source("src/components/clone-output-review-detail.tsx"),
   gallery,
@@ -62,7 +66,7 @@ const routeSurfaces = [
   automations,
   automationBuilder,
   performance,
-  source("src/app/costs/costs-page-client.tsx"),
+  source("src/app/(app)/costs/costs-page-client.tsx"),
   generationStudio,
   generationEditor,
   collections,
@@ -72,11 +76,17 @@ const routeSurfaces = [
 ].join("\n");
 
 // One responsive shell owns document overflow and every route inherits it.
-assert.match(layout, /<WorkspaceShell>\{children\}<\/WorkspaceShell>/);
-assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
+assert.match(appLayout, /<WorkspaceShell pathname=\{pathname\}>\{children\}<\/WorkspaceShell>/);
+assert.match(shell, /WorkspaceHeaderGate/);
+assert.doesNotMatch(shell, /"use client"/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /usePathname\(\)/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /"use client"/);
+assert.doesNotMatch(legalLayout, /WorkspaceShell|Sidebar/);
+assert.match(shell, /min-h-dvh min-w-0 overflow-x-clip/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);
 assert.match(globalStyles, /\.pf-content-viewport\s*\{[\s\S]*?100dvh/);
-assert.match(layout, /viewportFit:\s*"cover"/);
+assert.match(appLayout, /viewportFit:\s*"cover"/);
+assert.match(legalLayout, /viewportFit:\s*"cover"/);
 
 const routeOwnedViewportSurfaces = [
   home,
@@ -97,7 +107,7 @@ assert.doesNotMatch(inspirationPage + inspiration, /100vh/);
 
 // The rail must fit at 72px, hydrate without a layout jump, and move fixed bars.
 assert.match(sidebar, /w-\[72px\][^"\n]*xl:w-64/);
-assert.match(layout, /postforge-sidebar-collapsed/);
+assert.match(appLayout, /postforge-sidebar-collapsed/);
 assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
 assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] \.workspace-sidebar-offset-left/);
 assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
@@ -156,19 +166,22 @@ assert.match(globalStyles, /safe-area-inset-top/);
 assert.match(globalStyles, /\.pf-safe-dialog-viewport\s*\{/);
 
 // Loading and failure states must not widen their containing cards.
-assert.match(generationEditor, /h-\[560px\] w-\[315px\] max-w-full/);
+assert.match(generationEditor, /max-w-md/);
+assert.match(generationEditor, /max-w-full/);
 assert.match(routeSurfaces, /\[overflow-wrap:anywhere\]/);
 
 // Loading views reflow inside their cards instead of relying on shell clipping.
-assert.match(inspirationLoading, /w-\[28rem\] max-w-full/);
-assert.match(generationLoading, /w-\[282px\] max-w-full/);
-assert.match(generationLoading, /mt-3 flex flex-wrap gap-2/);
-assert.match(homeLoading, /w-72 max-w-full/);
-assert.match(galleryLoading, /flex flex-wrap gap-2/);
-assert.match(spendLoading, /w-72 max-w-full/);
-assert.match(spendLoading, /flex flex-wrap gap-2/);
-assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
 assert.match(inspirationLoading, /max-w-\[1280px\]/);
+assert.match(
+  generationLoading,
+  /mt-3 flex h-\[6\.75rem\] flex-wrap gap-1\.5 overflow-hidden/,
+);
+assert.match(homeLoading, /w-72 max-w-full/);
+assert.match(galleryLoading, /data-gallery-tool-row="true"/);
+assert.match(galleryLoading, /flex-nowrap/);
+assert.match(spendLoading, /lg:w-72/);
+assert.match(spendLoading, /flex flex-wrap items-center gap-2/);
+assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
 assert.match(inspirationLoading, /px-4 py-5[^"\n]*lg:py-7/);
 assert.match(cloneLoading, /max-w-\[1280px\][^"\n]*px-4 py-6[^"\n]*lg:py-7/);
 
@@ -221,5 +234,358 @@ assert.match(generationStudio, /bg-\[#09090B\]/);
 assert.match(generationEditor, /bg-\[#09090B\]/);
 assert.match(generationEditor, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
 assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
+
+// Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
+assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
+assert.match(appLayout, /\/dashboard\.css/);
+assert.doesNotMatch(appLayout, /rel="preload" href="\/dashboard\.css"/);
+assert.doesNotMatch(appLayout, /media="print"/);
+assert.match(appLayout, /createElement\("link"\)/);
+assert.match(appLayout, /addEventListener\("load"/);
+assert.doesNotMatch(appLayout, /if\(l\.sheet\)/);
+assert.doesNotMatch(appLayout, /requestAnimationFrame/);
+assert.match(appLayout, /FIRST_PAINT_CSS/);
+assert.doesNotMatch(legalLayout, /from "\.\.\/first-paint-css"/);
+assert.doesNotMatch(appLayout, /isPublicPolicyPath/);
+assert.match(legalLayout, /LEGAL_FIRST_PAINT_CSS/);
+assert.ok(
+  appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
+  "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
+);
+assert.match(appLayout, /from "@\/components\/sidebar-lazy"/);
+assert.doesNotMatch(appLayout, /from "@\/components\/sidebar";/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /GenerationFormLazy/);
+assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{height:29\.625rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]\{height:340px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-stats="true"\]>article\{height:158px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-toolbar="true"\]\{height:15\.375rem/);
+assert.doesNotMatch(source("src/app/first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\[data-gallery-toolbar/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"\]\{/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
+assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /data-automation-overlay="true"/);
+assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /position: "fixed"/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /PlaybookOverlayStatic/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClientLazy/);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  /from "\.\/use-automation-builder"/,
+);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-filters="true"\]\{display:grid/);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-generate-form="true"\]\{display:grid;gap:1rem\}/,
+);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-glance-label\]::before\{content:attr\(data-home-glance-label\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage\{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:650px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-note="true"\]\{display:block;height:1rem/);
+assert.match(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-empty-copy=/);
+assert.doesNotMatch(source("src/app/(app)/performance/performance-empty-state.tsx"), /data-workspace-state="empty"/);
+assert.doesNotMatch(source("src/app/first-paint-css.ts"), /data-empty-stack/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-owned="true"\]/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]/);
+assert.match(source("src/app/first-paint-css.ts"), /\.pf-empty-stage h2/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-icon="true"\]\{width:3\.5rem;height:3\.5rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-deco="true"\]\{position:relative;height:9rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-home-body="true"\]\{width:100%/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-board="true"/);
+assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
+assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"), /next\/dynamic/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
+assert.doesNotMatch(appLayout, /globals\.css/);
+assert.doesNotMatch(appLayout, /globals\.css/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-dialog="true"\]\{display:flex/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-body="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-header-accessory="true"\] #workspace-header-accessory\{display:flex;width:17rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-log="true"\]>header\{display:flex/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-empty="true"\]\{height:5\.5rem/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-preview-pane.tsx"), /data-automation-preview-stage="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-preview-stage="true"\]\{display:grid;min-height:610px/);
+assert.match(source("src/app/(app)/costs/spend-page-content.tsx"), /data-spend-actions="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-actions="true"\]\{display:flex/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action\{display:inline-flex;height:2\.5rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-chart-head="true"\]\{display:flex/);
+assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-body="true"/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-accessory=\{hasAccessory \? "true" : "false"\}/);
+assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-empty="true"/);
+assert.doesNotMatch(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-workspace-state="empty"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-count="true"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-search="true"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-tool-row="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-search="true"\]\{display:flex;height:2\.25rem;width:100%/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-tool-row="true"\]\{display:flex/);
+assert.match(source("src/app/globals.css"), /\[data-automation-dialog="true"\]/);
+assert.match(source("src/app/globals.css"), /\[data-header-accessory="true"\] #workspace-header-accessory/);
+const firstPaintCss = source("src/app/first-paint-css.ts");
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-spend-budget=\"true\"]{flex-direction:row") >
+    firstPaintCss.lastIndexOf("[data-spend-budget=\"true\"]{display:flex;flex-direction:column"),
+  "desktop spend budget row must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-playbook-body=\"true\"]{grid-template-columns:170px") >
+    firstPaintCss.indexOf("[data-playbook-body=\"true\"]{display:grid"),
+  "desktop playbook columns must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-gallery-search=\"true\"]{width:14rem") >
+    firstPaintCss.lastIndexOf("[data-gallery-search=\"true\"]{display:flex;height:2.25rem;width:100%"),
+  "desktop gallery search width must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-gallery-tools=\"true\"]{flex-direction:row;flex-wrap:nowrap") >
+    firstPaintCss.lastIndexOf("[data-gallery-tools=\"true\"]{display:flex;flex-direction:column"),
+  "desktop gallery tools row must follow the stacked first-paint default",
+);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-budget-label\]::before\{content:attr\(data-spend-budget-label\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]::before\{content:attr\(data-spend-text\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\] strong::before\{content:attr\(data-jobs-value\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-home-title\]::before\{content:attr\(data-home-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /header:has\(\[data-home-title\]\)\{display:flex;height:4\.75rem/);
+assert.doesNotMatch(
+  source("src/app/first-paint-css.ts"),
+  /\.pf-content-viewport header\{display:flex;height:4\.75rem/,
+);
+assert.doesNotMatch(
+  source("src/app/globals.css"),
+  /\.pf-content-viewport header h1::before/,
+);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]::before\{content:attr\(data-settings-text\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-note="true"\]::before\{content:attr\(data-spend-note-text\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]::before\{content:attr\(data-empty-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-value="true"\]::before\{content:attr\(data-spend-text\)/);
+assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);
+assert.match(source("src/app/dashboard-critical.css"), /#workspace-header \{/);
+assert.match(source("src/app/globals.css"), /#workspace-header-grid \{/);
+assert.match(
+  source("src/app/globals.css"),
+  /#workspace-header-grid h1::before[\s\S]*?content:\s*attr\(data-workspace-title\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-playbook-title\]::before[\s\S]*?content:\s*attr\(data-playbook-title\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-spend-value="true"\]::before[\s\S]*?content:\s*attr\(data-spend-text\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-lcp\]::before[\s\S]*?content:\s*attr\(data-lcp\)/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-title\]\{margin:0;width:12rem/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-attribute-editor="true"\]\{min-height:470px/,
+);
+assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
+assert.match(
+  source("src/app/dashboard-critical.css"),
+  /\[data-home-glance-label\]::before[\s\S]*?content:\s*attr\(data-home-glance-label\)/,
+);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-form="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-models="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?height:\s*6\.75rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-sparks="true"\][\s\S]*?overflow:\s*hidden/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-generate-prompt-meta="true"\][\s\S]*?height:\s*3\.5rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-workspace-state\] p[\s\S]*?height:\s*10px/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-create="true"\][\s\S]*?height:\s*52rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-home-body="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-create="true"\] textarea/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea="true"\][\s\S]*?padding:\s*1\.25rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-title="true"\][\s\S]*?height:\s*2rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-controls="true"\][\s\S]*?height:\s*8\.125rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-section-tabs="true"\][\s\S]*?height:\s*2\.5rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-submit="true"\][\s\S]*?height:\s*2\.5rem/);
+assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea-submit="true"/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-builder="true"\][\s\S]*?header[\s\S]*?height:\s*82px/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-characters-empty="true"\][\s\S]*?height:\s*650px/);
+assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea="true"/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
+assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/generate/generate-form-skeleton.tsx"), /data-generate-form="true"/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
+assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-home-title="Clone"/);
+assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
+assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:58rem/);
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);
+assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
+assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/characters/new/page.tsx"), /CharacterBuilderStatic/);
+assert.match(source("src/app/(app)/characters/new/page.tsx"), /CharacterBuilderClientLazy/);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/new/page.tsx"),
+  /from "\.\/character-builder-client"/,
+);
+assert.match(
+  source("src/app/(app)/characters/new/character-builder-client-lazy.tsx"),
+  /ssr:\s*false/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/new/character-builder-static.tsx"),
+  /"use client"/,
+);
+assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClient/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /SlideshowAutomationBuilderLazy/);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/new/page.tsx"),
+  /from "\.\/slideshow-automation-builder"/,
+);
+assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-lede=/);
+assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), /data-playbook-name=\{template\.name\}/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-picker-open=\{templateOpen \? "true" : undefined\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-name\]::before\{content:attr\(data-playbook-name\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]::before\{content:attr\(data-playbook-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-overlay="true"\]\{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:1rem;box-sizing:border-box;background:#09090b/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2::before\{content:attr\(data-workspace-title\)/);
+assert.match(source("src/components/workspace-state.tsx"), /data-workspace-title=\{title\}/);
+assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
+assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
+assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-character-preview-stage="true"\][\s\S]*?min-height:\s*620px/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-character-blueprint\]::before[\s\S]*?content:\s*attr\(data-character-blueprint\)/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-blueprint\]::before\{content:attr\(data-character-blueprint\)/,
+);
+assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
+assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
+assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
+assert.match(
+  source("src/app/(app)/automations/new/automation-builder-phase-form-lazy.tsx"),
+  /import\("\.\/automation-builder-phase-form"\)/,
+);
+assert.match(
+  source("src/app/(app)/automations/new/automation-builder-session-lazy.tsx"),
+  /import\("\.\/automation-builder-session"\)/,
+);
+assert.match(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditor/);
+assert.doesNotMatch(source("src/app/(app)/characters/new/character-builder-client.tsx"), /CharacterAttributeEditorLazy/);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-workbench-header="true"\]>div:last-child\{display:flex;flex-wrap:nowrap/,
+);
+assert.match(
+  source("src/app/(app)/characters/new/character-attribute-editor.tsx"),
+  /data-character-section=\{section\.label\}/,
+);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);
+assert.doesNotMatch(appLayout, /next\/font/);
+assert.doesNotMatch(legalLayout, /next\/font/);
+assert.doesNotMatch(source("src/app/dashboard-critical.css"), /font-geist/);
+assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);
+assert.doesNotMatch(source("src/app/(legal)/layout.tsx"), /globals\.css|dashboard\.css/);
+assert.match(source("src/app/dashboard-critical.css"), /\.policy-heading/);
+assert.match(
+  source("src/app/dashboard-critical.css"),
+  /\.pf-empty-stage h2[\s\S]*?font-size:\s*20px/,
+);
+assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
+assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
+assert.match(source("src/app/globals.css"), /\[data-empty-copy\]::before[\s\S]*?content:\s*attr\(data-empty-copy\)/);
+assert.match(settings, /data-settings-nav="true"/);
+assert.match(settings, /data-settings-panel="true"/);
+assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-owned="true"/);
+assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-copy="true"/);
+assert.match(source("src/app/(app)/settings/social-integration-card.tsx"), /data-settings-copy="true"/);
+assert.match(spendLoading, /data-spend-intro="true"/);
+assert.match(spendLoading, /spend-budget-dialog/);
+assert.doesNotMatch(spendLoading, /TooltipProvider/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-settings-owned="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-settings-copy="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-settings-panel="true"\]/);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-spend-intro="true"\]/);
+assert.match(source("src/app/globals.css"), /\[data-settings-owned="true"\]/);
+assert.match(source("src/app/globals.css"), /\[data-spend-intro="true"\]/);
+assert.match(pkg, /"prebuild": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
+assert.match(pkg, /"build:first-paint-css": "node scripts\/build-first-paint-css\.mjs"/);
+assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/);
+assert.match(source("scripts/build-first-paint-css.mjs"), /dashboard-critical\.css/);
+assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
+
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
+assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
+assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
+assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-title="Integrations"/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /data-generate-history="History"/);
+assert.match(appLayout, /window\.addEventListener\("load"/);
+assert.match(source("src/app/(app)/characters/page.tsx"), /CharactersPageLazy/);
+assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);
+assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/);
+assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
+assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
+assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
+assert.match(
+  source("src/lib/use-window-load-ready.ts"),
+  /window\.addEventListener\("load"/,
+);
+assert.match(
+  source("src/components/slideshow/slideshow-studio-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/generation-form-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/ugc-clone-form-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/ugc-inspiration/inspiration-page-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-copy=/);
+assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);
+assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /data-character-cost=/);
+assert.match(source("src/app/(app)/characters/new/character-builder-header.tsx"), /data-character-title=/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-empty-cta="Create asset"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-route-skeleton="true"\]\{height:40rem/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action svg\{width:0\.875rem/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-page="true"/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /paddingTop: 20/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid p::before\{content:attr\(data-header-copy\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#character-preview-generation-cost::before\{content:attr\(data-character-cost\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]\{margin:0;width:12rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-chrome="true"\]\{height:5\.75rem/);
+assert.match(source("src/app/globals.css"), /#workspace-header-grid p::before/);
+assert.match(source("src/app/globals.css"), /#character-preview-generation-cost::before/);
 
 console.log("responsive layout invariant tests passed");

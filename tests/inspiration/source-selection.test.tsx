@@ -3,9 +3,9 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   InspirationPageClient,
-} from "../../src/app/ugc-inspiration/inspiration-page-client";
-import { InspirationHeaderControls } from "../../src/app/ugc-inspiration/inspiration-header-controls";
-import { filterVideosBySourceUsage } from "../../src/app/ugc-inspiration/inspiration-models";
+} from "../../src/app/(app)/ugc-inspiration/inspiration-page-client";
+import { InspirationHeaderControls } from "../../src/app/(app)/ugc-inspiration/inspiration-header-controls";
+import { filterVideosBySourceUsage } from "../../src/app/(app)/ugc-inspiration/inspiration-models";
 import {
   emptyInspirationAccountPage,
   emptyInspirationVideoPage,
@@ -17,11 +17,11 @@ import {
 } from "../../src/lib/inspiration/types";
 
 const workspaceSource = readFileSync(
-  new URL("../../src/app/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts", import.meta.url),
   "utf8"
 );
 const previewDialogSource = readFileSync(
-  new URL("../../src/app/ugc-inspiration/inspiration-preview-dialog.tsx", import.meta.url),
+  new URL("../../src/app/(app)/ugc-inspiration/inspiration-preview-dialog.tsx", import.meta.url),
   "utf8"
 );
 

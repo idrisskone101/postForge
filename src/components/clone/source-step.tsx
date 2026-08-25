@@ -40,11 +40,11 @@ export function CloneSourceStep({
       <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div className="flex items-center gap-3">
           <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="text-[12px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
               Source &amp; trim
             </h2>
-            <p className="text-xs text-muted-foreground">
-              Choose the clip and trim the part to clone.
+            <p data-clone-copy="Choose the clip and trim the part to clone.">
+              <span className="sr-only">Choose the clip and trim the part to clone.</span>
             </p>
           </div>
         </div>

@@ -4,8 +4,8 @@ import {
   isSettingsTab,
   SETTINGS_NAVIGATION,
   SettingsNavigation,
-} from "../../src/app/settings/settings-page-client";
-import { DeveloperSettingsPanel } from "../../src/app/settings/webhooks-panel";
+} from "../../src/app/(app)/settings/settings-page-client";
+import { DeveloperSettingsPanel } from "../../src/app/(app)/settings/webhooks-panel";
 
 assert.deepEqual(
   SETTINGS_NAVIGATION.map(({ id, group }) => [id, group]),

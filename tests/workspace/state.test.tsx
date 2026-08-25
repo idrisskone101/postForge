@@ -29,6 +29,8 @@ const emptyMarkup = renderToStaticMarkup(
 );
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /data-workspace-title="Start Source Selection"/);
+assert.match(emptyMarkup, /data-workspace-copy="Track a creator to build the first cached source feed."/);
 assert.match(emptyMarkup, /Start Source Selection/);
 assert.match(emptyMarkup, /Track a creator/);
 assert.match(emptyMarkup, /href="\/ugc-inspiration"/);

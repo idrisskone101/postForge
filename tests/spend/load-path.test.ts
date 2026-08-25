@@ -4,8 +4,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const costsDir = path.join(repoRoot, "src/app/costs");
+const costsDir = path.join(repoRoot, "src/app/(app)/costs");
 const pageSource = readFileSync(path.join(costsDir, "page.tsx"), "utf8");
+const loaderSource = readFileSync(path.join(costsDir, "spend-loader.ts"), "utf8");
 const trackerSource = readFileSync(path.join(repoRoot, "src/lib/costs/tracker.ts"), "utf8");
 const clientSource = readdirSync(costsDir)
   .filter((name) => name.endsWith(".ts") || name.endsWith(".tsx"))
@@ -18,10 +19,11 @@ const exportRouteSource = readFileSync(
   "utf8"
 );
 
-assert.match(pageSource, /getDailyCostSeries/);
-assert.match(pageSource, /getCostSummaryForRange/);
-assert.match(pageSource, /getCostTotalForRange/);
-assert.match(pageSource, /listCostLogsPage/);
+assert.match(loaderSource, /getDailyCostSeries/);
+assert.match(loaderSource, /getCostSummaryForRange/);
+assert.match(loaderSource, /getCostTotalForRange/);
+assert.match(loaderSource, /listCostLogsPage/);
+assert.match(pageSource, /EMPTY_COSTS_DASHBOARD/);
 assert.match(pageSource, /parseCostLogSearch/);
 assert.match(pageSource, /parseCostLogModel/);
 assert.doesNotMatch(pageSource, /prisma\.costLog\.findMany/);
@@ -38,7 +40,7 @@ assert.match(trackerSource, /contains: filter.search/);
 assert.match(clientSource, /logTotalCount/);
 assert.match(clientSource, /logHasNext/);
 assert.match(clientSource, /onLogPageChange/);
-assert.match(clientSource, /\/api\/costs\/export/);
+assert.doesNotMatch(clientSource, /from "@\/components\/cost-chart"/);
 assert.doesNotMatch(clientSource, /filteredLogs/);
 assert.doesNotMatch(clientSource, /logs\.filter/);
 assert.doesNotMatch(clientSource, /filteredLogs\.slice/);

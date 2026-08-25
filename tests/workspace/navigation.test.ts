@@ -117,7 +117,7 @@ const shellSource = readFileSync(
   "utf8"
 );
 const layoutSource = readFileSync(
-  new URL("../../src/app/layout.tsx", import.meta.url),
+  new URL("../../src/app/(app)/layout.tsx", import.meta.url),
   "utf8"
 );
 const globalStyles = readFileSync(
@@ -125,7 +125,7 @@ const globalStyles = readFileSync(
   "utf8"
 );
 
-assert.match(shellSource, /min-w-0 overflow-x-hidden/);
+assert.match(shellSource, /min-w-0 overflow-x-clip/);
 assert.doesNotMatch(shellSource, /workspaceHeaderAccessory/);
 assert.doesNotMatch(globalStyles, /data-workspace-header-accessory/);
 assert.match(sidebarSource, /document\.documentElement\.dataset\.sidebarCollapsed/);

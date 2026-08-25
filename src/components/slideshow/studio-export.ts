@@ -1,10 +1,11 @@
 import { downloadSlideshowExport } from "@/lib/slideshow/client";
 
-import type {
-  SlideshowProject,
-  SlideshowProjectListItem,
-  SlideshowPublishOptions,
-} from "./types";
+import type { SlideshowProject, SlideshowPublishOptions } from "./types";
+
+export {
+  applyStudioExportReceipt,
+  applyStudioExportReceiptToProject,
+} from "./studio-export-receipt";
 
 export async function exportStudioSlideshow(input: {
   project: SlideshowProject;
@@ -41,37 +42,4 @@ export async function exportStudioSlideshow(input: {
       ? "Slideshow export started."
       : "Slideshow sent to the publishing queue.",
   );
-}
-
-export function applyStudioExportReceipt(
-  current: SlideshowProjectListItem[],
-  projectId: string,
-  receipt: { successfulExportCount: number; exportedAt: string },
-): SlideshowProjectListItem[] {
-  return current.map((candidate) =>
-    candidate.id === projectId
-      ? {
-          ...candidate,
-          successfulExportCount: receipt.successfulExportCount,
-          lastExportedAt: receipt.exportedAt,
-        }
-      : candidate,
-  );
-}
-
-export function applyStudioExportReceiptToProject(
-  current: SlideshowProject | null,
-  projectId: string,
-  receipt: { successfulExportCount: number; exportedAt: string },
-): SlideshowProject | null {
-  if (!current || current.id !== projectId) return current;
-  return {
-    ...current,
-    successfulExportCount: receipt.successfulExportCount,
-    lastExportedAt: receipt.exportedAt,
-    exportHistory: [
-      ...(current.exportHistory ?? []),
-      receipt.exportedAt,
-    ].slice(-500),
-  };
 }

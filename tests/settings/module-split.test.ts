@@ -27,7 +27,7 @@ function lineCount(relativePath: string) {
     : text.split("\n").length;
 }
 
-const files = listFiles("src/app/settings/");
+const files = listFiles("src/app/(app)/settings/");
 
 assert.ok(
   !files.some((file) => file.endsWith("/index.ts") || file.endsWith("/index.tsx")),
@@ -40,12 +40,12 @@ for (const file of files) {
 }
 
 assert.ok(
-  lineCount("src/app/settings/settings-page-client.tsx") < 1420,
+  lineCount("src/app/(app)/settings/settings-page-client.tsx") < 1420,
   "settings-page-client.tsx must shrink"
 );
 
 const pageSource = readFileSync(
-  new URL("src/app/settings/settings-page-client.tsx", repoRoot),
+  new URL("src/app/(app)/settings/settings-page-client.tsx", repoRoot),
   "utf8"
 );
 assert.doesNotMatch(

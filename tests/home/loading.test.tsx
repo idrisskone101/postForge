@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
-import HomeLoading from "../../src/app/loading";
+import HomeLoading from "../../src/app/(app)/home-loading";
 
 const markup = renderToStaticMarkup(<HomeLoading />);
 

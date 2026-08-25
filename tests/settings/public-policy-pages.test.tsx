@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import PrivacyPage from "../../src/app/privacy/page";
-import TermsPage from "../../src/app/terms/page";
-import DataDeletionPage from "../../src/app/data-deletion/page";
+import PrivacyPage from "../../src/app/(legal)/privacy/page";
+import TermsPage from "../../src/app/(legal)/terms/page";
+import DataDeletionPage from "../../src/app/(legal)/data-deletion/page";
 import { isPublicPolicyPath } from "../../src/lib/public-policy-routes";
 
 const privacy = renderToStaticMarkup(<PrivacyPage />);
@@ -13,6 +14,15 @@ for (const pathname of ["/privacy", "/terms", "/data-deletion"]) {
   assert.equal(isPublicPolicyPath(pathname), true);
 }
 assert.equal(isPublicPolicyPath("/settings"), false);
+
+assert.match(
+  readFileSync(new URL("../../src/app/(legal)/layout.tsx", import.meta.url), "utf8"),
+  /LEGAL_FIRST_PAINT_CSS/,
+);
+assert.match(
+  readFileSync(new URL("../../src/app/legal.css", import.meta.url), "utf8"),
+  /min-height:\s*100svh/,
+);
 
 for (const markup of [privacy, terms, deletion]) {
   assert.match(markup, /data-public-policy/);

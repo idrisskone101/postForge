@@ -188,7 +188,7 @@ assert.match(formSource, /capabilities\.characterReference/);
 assert.match(formSource, /GenerateFormSubmitBars/);
 assert.match(formSource, /nextAvatarId && videoReferenceFileId/);
 const submitBarsSource = readFileSync(
-  new URL("../../src/app/generate/form-submit-bars.tsx", import.meta.url),
+  new URL("../../src/app/(app)/generate/form-submit-bars.tsx", import.meta.url),
   "utf8"
 );
 assert.match(submitBarsSource, /identity-locked opening frame/);

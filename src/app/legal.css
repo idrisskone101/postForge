@@ -1,0 +1,452 @@
+:root {
+  color-scheme: light;
+  --pf-canvas: #fafafa;
+  --pf-surface: #ffffff;
+  --pf-ink: #18181b;
+  --pf-muted: #52525b;
+  --pf-border: #e4e4e7;
+  --pf-active: #f4f4f5;
+  --pf-orange: #c2410c;
+  --pf-link: #2563eb;
+  --pf-shadow-orange:
+    0 1px 2px rgba(130, 25, 0, 0.15),
+    0 4px 12px -4px rgba(255, 74, 32, 0.28);
+}
+
+.dark {
+  color-scheme: dark;
+  --pf-canvas: #0a0a0b;
+  --pf-surface: #131316;
+  --pf-ink: #fafafa;
+  --pf-muted: #a1a1aa;
+  --pf-border: #26262b;
+  --pf-active: #1c1c20;
+  --pf-orange: #c2410c;
+  --pf-link: #6aa7ff;
+  --pf-shadow-orange:
+    0 1px 2px rgba(130, 25, 0, 0.15),
+    0 4px 12px -4px rgba(255, 74, 32, 0.28);
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--pf-canvas);
+  color: var(--pf-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.policy-page {
+  min-height: 100dvh;
+  background: var(--pf-canvas);
+  color: var(--pf-ink);
+}
+
+.policy-skip {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.policy-skip:focus {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 50;
+  width: auto;
+  height: auto;
+  margin: 0;
+  clip: auto;
+  overflow: visible;
+  white-space: normal;
+  border-radius: 0.5rem;
+  background: var(--pf-ink);
+  color: var(--pf-canvas);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.policy-topBar {
+  border-bottom: 1px solid var(--pf-border);
+  background: var(--pf-surface);
+}
+
+.policy-topBarInner {
+  display: flex;
+  min-height: 4rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 0 1.25rem;
+}
+
+.policy-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.policy-mark {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--pf-orange);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: var(--pf-shadow-orange);
+}
+
+.policy-brandName {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.policy-topNav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pf-muted);
+}
+
+.policy-topLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+}
+
+.policy-topLink:hover,
+.policy-topLinkCurrent {
+  background: var(--pf-active);
+  color: var(--pf-ink);
+}
+
+.policy-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+.policy-titleBlock {
+  max-width: 760px;
+  border-bottom: 1px solid var(--pf-border);
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 767.98px) {
+  .policy-titleBlock {
+    min-height: 100svh;
+    box-sizing: border-box;
+  }
+}
+
+.policy-heading {
+  width: 12rem;
+  max-width: 12rem;
+  height: 33px;
+  margin: 0;
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 33px;
+  letter-spacing: -0.02em;
+}
+
+.policy-heading::before {
+  content: attr(data-policy-title);
+  display: block;
+  overflow: hidden;
+  height: 33px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 33px;
+  letter-spacing: -0.02em;
+  color: var(--pf-ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.policy-summary {
+  width: 16rem;
+  max-width: 16rem;
+  height: 1rem;
+  margin: 1rem 0 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1rem;
+  color: var(--pf-muted);
+}
+
+.policy-summary::before {
+  content: attr(data-policy-summary);
+  display: block;
+  overflow: hidden;
+  height: 1rem;
+  font-size: 12px;
+  line-height: 1rem;
+  color: var(--pf-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.policy-effective {
+  margin: 1.25rem 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--pf-muted);
+}
+
+.policy-columns {
+  display: grid;
+  min-width: 0;
+  gap: 2.5rem;
+  margin-top: 2.25rem;
+}
+
+.policy-aside {
+  min-width: 0;
+}
+
+.policy-asideLabel {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.policy-sectionNav {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.policy-sectionLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  font-size: 12px;
+  line-height: 1rem;
+  color: var(--pf-muted);
+}
+
+.policy-sectionLink:hover {
+  background: var(--pf-active);
+  color: var(--pf-ink);
+}
+
+.policy-article {
+  min-width: 0;
+}
+
+.policy-section {
+  scroll-margin-top: 2rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 8rem;
+}
+
+.policy-sectionLater {
+  scroll-margin-top: 2rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--pf-border);
+  padding-top: 2.5rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 8rem;
+}
+
+.policy-sectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.policy-copy {
+  max-width: 36ch;
+  margin-top: 0.75rem;
+  font-size: 12px;
+  line-height: 1rem;
+  color: var(--pf-muted);
+}
+
+.policy-copy p {
+  margin: 0;
+  text-wrap: wrap;
+}
+
+.policy-copy p + p,
+.policy-copy p + ul,
+.policy-copy p + ol,
+.policy-copy ul + p,
+.policy-copy ol + p {
+  margin-top: 0.75rem;
+}
+
+.policy-copy ul,
+.policy-copy ol {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.policy-copy ul {
+  list-style: disc;
+}
+
+.policy-copy ol {
+  list-style: decimal;
+}
+
+.policy-copy li + li {
+  margin-top: 0.5rem;
+}
+
+.policy-copy strong {
+  color: var(--pf-ink);
+  font-weight: 600;
+}
+
+.policy-copy a {
+  color: var(--pf-link);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.policy-footer {
+  border-top: 1px solid var(--pf-border);
+  background: var(--pf-surface);
+}
+
+.policy-footerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+  font-size: 12px;
+  color: var(--pf-muted);
+}
+
+.policy-footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+.policy-footerLinkCurrent {
+  color: var(--pf-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.policy-footerInner a:hover {
+  color: var(--pf-ink);
+}
+
+@media (min-width: 640px) {
+  .policy-topBarInner,
+  .policy-main,
+  .policy-footerInner {
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+
+  .policy-main {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .policy-titleBlock {
+    padding-bottom: 2.5rem;
+  }
+
+  .policy-topNav {
+    gap: 0.5rem;
+  }
+
+  .policy-footerInner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .policy-topBarInner,
+  .policy-main,
+  .policy-footerInner {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .policy-main {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .policy-columns {
+    grid-template-columns: 210px minmax(0, 720px);
+    gap: 3.5rem;
+  }
+
+  .policy-aside {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+  }
+
+  .policy-sectionNav {
+    flex-direction: column;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .policy-sectionLink {
+    white-space: normal;
+  }
+}

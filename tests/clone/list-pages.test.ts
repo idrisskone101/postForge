@@ -33,7 +33,7 @@ const cloneForm = readFileSync(
   "utf8"
 );
 const cloneIdentity = readFileSync(
-  new URL("../../src/app/ugc-clone/use-clone-identity.ts", import.meta.url),
+  new URL("../../src/app/(app)/ugc-clone/use-clone-identity.ts", import.meta.url),
   "utf8"
 );
 const cloneReferenceLibrary = readFileSync(

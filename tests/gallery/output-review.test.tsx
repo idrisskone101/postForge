@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { GalleryPageClient } from "../../src/app/gallery/gallery-page-client";
-import { GalleryHeaderControls } from "../../src/app/gallery/gallery-header-controls";
-import { GalleryLoadErrorState } from "../../src/app/gallery/gallery-load-error-state";
-import { getFailedGalleryActionIds } from "../../src/app/gallery/gallery-models";
+import { GalleryPageClient } from "../../src/app/(app)/gallery/gallery-page-client";
+import { GalleryHeaderControls } from "../../src/app/(app)/gallery/gallery-header-controls";
+import { GalleryLoadErrorState } from "../../src/app/(app)/gallery/gallery-load-error-state";
+import { getFailedGalleryActionIds } from "../../src/app/(app)/gallery/gallery-models";
 import { GallerySelectionInspector } from "../../src/components/gallery/selection-inspector";
 import {
   buildGalleryWhere,
@@ -231,7 +231,7 @@ const inspectorSource = readFileSync(
   "utf8"
 );
 const pageSource = readFileSync(
-  new URL("../../src/app/gallery/gallery-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/gallery/gallery-page-client.tsx", import.meta.url),
   "utf8"
 );
 

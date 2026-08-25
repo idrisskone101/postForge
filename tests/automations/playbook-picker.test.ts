@@ -5,7 +5,7 @@ import {
   filterPlaybooks,
   playbookCategories,
   playbookCategoryCounts,
-} from "../../src/app/automations/new/playbook-model";
+} from "../../src/app/(app)/automations/new/playbook-model";
 
 const recommended = filterPlaybooks({
   search: "",
@@ -95,7 +95,7 @@ assert.equal(playbookCategoryCounts(["custom"]).Favorites, 1);
 assert.equal(playbookCategoryCounts(["custom"]).All, AUTOMATION_TEMPLATES.length);
 
 const pickerSource = readFileSync(
-  new URL("../../src/app/automations/new/playbook-picker.tsx", import.meta.url),
+  new URL("../../src/app/(app)/automations/new/playbook-picker.tsx", import.meta.url),
   "utf8"
 );
 assert.match(pickerSource, /picker: PlaybookPickerState/);

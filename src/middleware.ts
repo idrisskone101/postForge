@@ -62,17 +62,25 @@ function authenticationNotConfigured() {
   );
 }
 
+function nextWithPathname(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+}
+
 export function middleware(request: NextRequest) {
   // Provider review and account-deletion crawlers cannot supply the private
   // workspace key. Keep only the published legal disclosures public.
   if (isPublicPolicyPath(request.nextUrl.pathname)) {
-    return NextResponse.next();
+    return nextWithPathname(request);
   }
 
   // Railway health checks cannot send the operator API key. Keep this endpoint
   // narrow and independently limited to a minimal database-readiness response.
   if (request.nextUrl.pathname === "/api/health") {
-    return NextResponse.next();
+    return nextWithPathname(request);
   }
 
   // Provider crawlers cannot send the operator API key. This one media route
@@ -90,7 +98,7 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname === "/api/integrations/retention" ||
     request.nextUrl.pathname === "/api/internal/slideshow-automations/tick"
   ) {
-    return NextResponse.next();
+    return nextWithPathname(request);
   }
 
   const apiKey = process.env.POSTFORGE_API_KEY;
@@ -105,7 +113,7 @@ export function middleware(request: NextRequest) {
       hostname === "0.0.0.0" ||
       hostname === "::1";
     return process.env.NODE_ENV !== "production" || isLocalhost
-      ? NextResponse.next()
+      ? nextWithPathname(request)
       : authenticationNotConfigured();
   }
 
@@ -114,7 +122,7 @@ export function middleware(request: NextRequest) {
     return unauthorized();
   }
 
-  return NextResponse.next();
+  return nextWithPathname(request);
 }
 
 export const config = {

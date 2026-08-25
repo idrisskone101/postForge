@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import { TooltipProvider } from "../../src/components/ui/tooltip";
-import { SpendPageContent } from "../../src/app/costs/spend-page-content";
+import { SpendPageContent } from "../../src/app/(app)/costs/spend-page-content";
 import type {
   CostsPageClientProps,
   SpendPageHandlers,
-} from "../../src/app/costs/spend-models";
+} from "../../src/app/(app)/costs/spend-models";
 
 const handlers: SpendPageHandlers = {
   onPeriodChange: () => {},
@@ -140,6 +140,8 @@ assert.ok(markup.indexOf("Spend Over Time") < markup.indexOf("Spend by Format"))
 assert.ok(markup.indexOf("Spend by Model") < markup.indexOf("Generation Log"));
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /data-spend-empty="true"/);
+assert.match(emptyMarkup, /data-spend-chart="empty"/);
 assert.match(emptyMarkup, /No spend data yet/);
 assert.match(emptyMarkup, /No cost log entries yet/);
 assert.match(emptyMarkup, /Start Clone/);

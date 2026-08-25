@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CharacterPhoto } from "../../src/components/character-photo";
-import { parseImportedCharacterAttributes } from "../../src/app/characters/new/character-import";
+import { parseImportedCharacterAttributes } from "../../src/app/(app)/characters/new/character-import";
 import {
   buildCharacterImagePrompt,
   characterRecipeFingerprint,
@@ -10,7 +10,7 @@ import {
   DEFAULT_CHARACTER_ATTRIBUTES,
 } from "../../src/lib/character-attributes";
 
-const workbenchDir = new URL("../../src/app/characters/new/", import.meta.url);
+const workbenchDir = new URL("../../src/app/(app)/characters/new/", import.meta.url);
 const headerSource = readFileSync(
   new URL("character-builder-header.tsx", workbenchDir),
   "utf8"
@@ -36,7 +36,7 @@ const builderSource = [
   .map((file) => readFileSync(new URL(file, workbenchDir), "utf8"))
   .join("\n");
 const librarySource = readFileSync(
-  new URL("../../src/app/characters/characters-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/characters/characters-page-client.tsx", import.meta.url),
   "utf8"
 );
 const avatarRouteSource = readFileSync(
@@ -50,6 +50,9 @@ const generationRouteSource = readFileSync(
 
 assert.match(builderSource, /data-character-workbench="true"/);
 assert.match(builderSource, /data-character-workbench-header="true"/);
+assert.match(headerSource, /min-\[1280px\]:flex-1/);
+assert.doesNotMatch(headerSource, /className="min-w-0 flex-1 /);
+assert.match(headerSource, /flex-nowrap gap-2/);
 assert.match(builderSource, /data-character-category-rail="true"/);
 assert.match(builderSource, /data-character-recipe-step-rail="true"/);
 assert.match(builderSource, /data-character-preview-stage="true"/);
@@ -158,16 +161,44 @@ const photoMarkup = renderToStaticMarkup(
 );
 
 assert.match(photoMarkup, /data-character-preview="photographic"/);
-assert.match(photoMarkup, /alt="Character preview"/);
-assert.match(photoMarkup, /<img/);
-assert.match(photoMarkup, /\/character-builder\/default-portrait\.png/);
+assert.match(photoMarkup, /data-character-default-frame="true"/);
+assert.match(photoMarkup, /\/character-builder\/default-portrait\.webp/);
+assert.match(photoMarkup, /width="390"/);
+assert.match(photoMarkup, /height="520"/);
+assert.match(photoMarkup, /object-fit:cover/);
+assert.doesNotMatch(photoMarkup, /object-cover/);
+assert.doesNotMatch(photoMarkup, /data-nimg/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 
-const defaultPortrait = readFileSync(
-  new URL("../../public/character-builder/default-portrait.png", import.meta.url)
+assert.doesNotMatch(previewSource, /aspect-\[3\/4\]/);
+assert.doesNotMatch(previewSource, /max-w-\[390px\]/);
+assert.match(
+  readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
+  /CharacterBuilderStatic/,
 );
-assert.equal(defaultPortrait.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
-assert.ok(defaultPortrait.length > 100_000, "default portrait should be a real image asset");
+assert.match(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /data-character-first-paint="true"/,
+);
+assert.match(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /data-character-title="Character builder"/,
+);
+assert.doesNotMatch(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /<img/,
+);
+assert.doesNotMatch(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /"use client"/,
+);
+
+const defaultPortrait = readFileSync(
+  new URL("../../public/character-builder/default-portrait.webp", import.meta.url)
+);
+assert.equal(defaultPortrait.subarray(0, 4).toString("ascii"), "RIFF");
+assert.ok(defaultPortrait.length > 8_000, "default portrait should be a real image asset");
+assert.ok(defaultPortrait.length < 200_000, "default portrait should stay small enough for LCP");
 
 assert.deepEqual(
   parseImportedCharacterAttributes(

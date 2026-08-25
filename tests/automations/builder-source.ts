@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export function automationsBuilderSource() {
-  const dir = new URL("../../src/app/automations/new/", import.meta.url);
+  const dir = new URL("../../src/app/(app)/automations/new/", import.meta.url);
   const chunks: string[] = [];
 
   function walk(relative: string) {

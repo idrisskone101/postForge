@@ -14,16 +14,16 @@ import {
 
 const generationFormSource = [
   "../../src/components/generation-form.tsx",
-  "../../src/app/generate/form-collection-section.tsx",
-  "../../src/app/generate/form-session.tsx",
-  "../../src/app/generate/use-generation-form.ts",
+  "../../src/app/(app)/generate/form-collection-section.tsx",
+  "../../src/app/(app)/generate/form-session.tsx",
+  "../../src/app/(app)/generate/use-generation-form.ts",
 ]
   .map((relativePath) =>
     readFileSync(new URL(relativePath, import.meta.url), "utf8")
   )
   .join("\n");
 const generationDetailSource = readFileSync(
-  new URL("../../src/app/generate/[id]/page.tsx", import.meta.url),
+  new URL("../../src/app/(app)/generate/[id]/page.tsx", import.meta.url),
   "utf8"
 );
 const imageRouteSource = readFileSync(
@@ -35,7 +35,7 @@ const videoRouteSource = readFileSync(
   "utf8"
 );
 const collectionsSource = readFileSync(
-  new URL("../../src/app/collections/collections-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/collections/collections-page-client.tsx", import.meta.url),
   "utf8"
 );
 

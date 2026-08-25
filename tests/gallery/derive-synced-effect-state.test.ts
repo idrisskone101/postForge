@@ -10,7 +10,7 @@ function source(relativePath: string): string {
 const reviewStatusControl = source("src/components/gallery/review-status-control.tsx");
 const lightbox = source("src/components/gallery/lightbox.tsx");
 const galleryGrid = source("src/components/gallery-grid.tsx");
-const galleryWorkspace = source("src/app/gallery/use-gallery-workspace.ts");
+const galleryWorkspace = source("src/app/(app)/gallery/use-gallery-workspace.ts");
 
 assert.doesNotMatch(reviewStatusControl, /useEffect/);
 assert.doesNotMatch(reviewStatusControl, /setCurrent/);
@@ -27,7 +27,7 @@ assert.doesNotMatch(galleryWorkspace, /didMountRef/);
 assert.match(galleryWorkspace, /setReviewFilterAndReload/);
 assert.match(galleryWorkspace, /useGalleryFilterReload/);
 
-const galleryFilterReload = source("src/app/gallery/gallery-filter-reload.ts");
+const galleryFilterReload = source("src/app/(app)/gallery/gallery-filter-reload.ts");
 assert.match(galleryFilterReload, /reloadGallery/);
 assert.match(galleryFilterReload, /setTypeFilterAndReload/);
 assert.match(galleryFilterReload, /setSortOrderAndReload/);

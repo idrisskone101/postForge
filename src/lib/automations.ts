@@ -4,6 +4,9 @@ import {
   type AutomationSocialDestination,
   type AutomationStatus,
 } from "./automations/destination";
+import { AUTOMATION_TEMPLATES } from "./automations/templates";
+
+export { AUTOMATION_TEMPLATES } from "./automations/templates";
 
 export type {
   AutomationDestination,
@@ -144,69 +147,6 @@ export function createAutomationSchedulerState(): NonNullable<
 export function isAutomationExecutionEnabled(record: AutomationRecord) {
   return record.executionEnabled === true;
 }
-
-export const AUTOMATION_TEMPLATES = [
-  {
-    id: "story-lesson",
-    name: "Story lesson",
-    category: "Education",
-    slides: 6,
-    description: "Turn one experience into a clean lesson with a strong hook and useful close.",
-    hook: "Curiosity gap",
-    structure: "Problem → Shift → Result",
-    cta: "Save this post",
-  },
-  {
-    id: "before-after",
-    name: "Before / after",
-    category: "Transformation",
-    slides: 6,
-    description: "Build tension with the old way, reveal the change, and land the result.",
-    hook: "Unexpected result",
-    structure: "Before → Change → After",
-    cta: "Follow for part two",
-  },
-  {
-    id: "product-breakdown",
-    name: "Product breakdown",
-    category: "Product",
-    slides: 8,
-    description: "Explain what it is, why it matters, and the proof behind the claim.",
-    hook: "Specific product truth",
-    structure: "Problem → Product → Proof",
-    cta: "Visit profile link",
-  },
-  {
-    id: "quick-wins",
-    name: "3 quick wins",
-    category: "Listicle",
-    slides: 5,
-    description: "A fast, repeatable format for useful tips viewers want to keep.",
-    hook: "Concrete promise",
-    structure: "Tip 1 → Tip 2 → Tip 3",
-    cta: "Save this post",
-  },
-  {
-    id: "myth-reality",
-    name: "Myth vs reality",
-    category: "Education",
-    slides: 6,
-    description: "Challenge a familiar assumption and replace it with a sharper view.",
-    hook: "Contrarian truth",
-    structure: "Myth → Evidence → Reality",
-    cta: "Comment a keyword",
-  },
-  {
-    id: "custom",
-    name: "Custom automation",
-    category: "Blank",
-    slides: 5,
-    description: "Start with a blank Hook, Content, and CTA structure.",
-    hook: "Curiosity gap",
-    structure: "Problem → Shift → Result",
-    cta: "Save this post",
-  },
-] as const;
 
 export function createAutomationRecord(
   templateId = "story-lesson",

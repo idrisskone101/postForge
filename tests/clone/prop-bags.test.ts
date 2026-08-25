@@ -74,10 +74,13 @@ const files = [
   "src/components/clone-output-review-detail.tsx",
   ...listTsx("src/components/clone/"),
   ...listTsx("src/components/clone-output/"),
-  ...listTsx("src/app/ugc-clone/"),
+  ...listTsx("src/app/(app)/ugc-clone/"),
 ];
 
 for (const file of files) {
+  if (file.endsWith("/page.tsx")) {
+    continue;
+  }
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   for (const exported of parseExportedProps(source)) {
     const viewModels = exported.props.filter((prop) => VIEW_MODEL_PROPS.has(prop));

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { JobsActivity } from "../../src/app/jobs/jobs-activity";
+import { JobsActivity } from "../../src/app/(app)/jobs/jobs-activity";
 import {
   getJobActivityLabel,
   getJobDestination,

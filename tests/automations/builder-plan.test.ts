@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   applyPlaybookToRecord,
   preparePlanSave,
-} from "../../src/app/automations/new/automation-builder-plan";
+} from "../../src/app/(app)/automations/new/automation-builder-plan";
 import { createAutomationRecord } from "../../src/lib/automations";
 
 const draft = createAutomationRecord("story-lesson");

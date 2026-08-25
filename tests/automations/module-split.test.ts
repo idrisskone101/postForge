@@ -27,7 +27,7 @@ function lineCount(relativePath: string) {
     : text.split("\n").length;
 }
 
-const files = listFiles("src/app/automations/");
+const files = listFiles("src/app/(app)/automations/");
 
 assert.equal(
   files.some((file) => file.endsWith("/index.ts") || file.endsWith("/index.tsx")),
@@ -41,37 +41,45 @@ for (const file of files) {
 }
 
 assert.ok(
-  lineCount("src/app/automations/automations-page-client.tsx") < 2030,
+  lineCount("src/app/(app)/automations/automations-page-client.tsx") < 2030,
   "automations-page-client.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/automations/new/automation-builder-client.tsx") < 1372,
+  lineCount("src/app/(app)/automations/new/automation-builder-client.tsx") < 1372,
   "automation-builder-client.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/automations/new/slideshow-automation-builder.tsx") <= CAP,
+  lineCount("src/app/(app)/automations/new/slideshow-automation-builder.tsx") <= CAP,
   "slideshow-automation-builder.tsx must stay under the cap"
 );
 
 assert.ok(
-  files.includes("src/app/automations/video-automation-list.tsx"),
+  files.includes("src/app/(app)/automations/video-automation-list.tsx"),
   "JSON video automations stay a separate list"
 );
 assert.ok(
-  files.includes("src/app/automations/slideshow-automation-list.tsx"),
+  files.includes("src/app/(app)/automations/slideshow-automation-list.tsx"),
   "Prisma slideshow automations stay a separate list"
 );
 assert.ok(
-  files.includes("src/app/automations/new/automation-builder-client.tsx"),
+  files.includes("src/app/(app)/automations/new/automation-builder-client.tsx"),
   "JSON video automations keep their builder"
 );
 assert.ok(
-  files.includes("src/app/automations/new/slideshow-automation-builder.tsx"),
+  files.includes("src/app/(app)/automations/new/slideshow-automation-builder.tsx"),
   "Prisma slideshow automations keep a separate builder"
 );
 
 const clientSource = readFileSync(
-  new URL("src/app/automations/new/automation-builder-client.tsx", repoRoot),
+  new URL("src/app/(app)/automations/new/automation-builder-client.tsx", repoRoot),
+  "utf8"
+);
+const overlaySource = readFileSync(
+  new URL("src/app/(app)/automations/new/automation-playbook-overlay.tsx", repoRoot),
+  "utf8"
+);
+const sessionSource = readFileSync(
+  new URL("src/app/(app)/automations/new/automation-builder-session.tsx", repoRoot),
   "utf8"
 );
 assert.doesNotMatch(
@@ -79,17 +87,27 @@ assert.doesNotMatch(
   /^export \{/m,
   "automation-builder-client must not re-export extracted modules"
 );
-assert.match(clientSource, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
-assert.match(clientSource, /pf-safe-overlay/);
+assert.match(overlaySource, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
+assert.match(overlaySource, /pf-safe-overlay/);
 assert.match(
-  clientSource,
+  sessionSource,
   /pf-safe-overlay[^"\n]*[\s\S]*?max-h-full[^"\n]*overflow-y-auto/
 );
 assert.match(
-  clientSource,
+  overlaySource,
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
 );
-assert.match(clientSource, /<PlaybookPicker picker=\{playbookPicker\} \/>/);
+assert.match(clientSource, /<AutomationPlaybookOverlay/);
+assert.match(
+  readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
+  /PlaybookOverlayStatic/
+);
+assert.match(
+  readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
+  /AutomationBuilderClientLazy/
+);
+assert.match(overlaySource, /<PlaybookPicker picker=\{picker\} \/>/);
+assert.match(sessionSource, /<AutomationPlaybookOverlay/);
 assert.doesNotMatch(
   clientSource,
   /createContext/,
@@ -113,15 +131,17 @@ function exportedComponentPropCount(source: string, exportName: string) {
     .filter((part) => part.length > 0).length;
 }
 
-const builderDir = "src/app/automations/new/";
+const builderDir = "src/app/(app)/automations/new/";
 const namedComponents: Array<[string, string, number]> = [
   ["playbook-picker.tsx", "PlaybookPicker", 1],
   ["playbook-card.tsx", "PlaybookCard", 2],
   ["destination-selector.tsx", "DestinationSelector", 1],
   ["automation-builder-phase-form.tsx", "AutomationBuilderPhaseForm", 1],
   ["automation-builder-preview-pane.tsx", "AutomationBuilderPreviewPane", 1],
-  ["automation-builder-client.tsx", "AutomationBuilderClient", 0],
-  ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 0],
+  ["automation-builder-client.tsx", "AutomationBuilderClient", 1],
+  ["automation-builder-session.tsx", "AutomationBuilderSession", 1],
+  ["automation-playbook-overlay.tsx", "AutomationPlaybookOverlay", 3],
+  ["slideshow-automation-builder.tsx", "SlideshowAutomationBuilder", 1],
 ];
 for (const [file, exportName, expected] of namedComponents) {
   const source = readFileSync(new URL(`${builderDir}${file}`, repoRoot), "utf8");
@@ -134,18 +154,18 @@ for (const [file, exportName, expected] of namedComponents) {
 }
 
 const pickerModel = readFileSync(
-  new URL("src/app/automations/new/playbook-model.ts", repoRoot),
+  new URL("src/app/(app)/automations/new/playbook-model.ts", repoRoot),
   "utf8"
 );
 assert.match(pickerModel, /export type PlaybookPickerState/);
 const destinationSource = readFileSync(
-  new URL("src/app/automations/new/destination-selector.tsx", repoRoot),
+  new URL("src/app/(app)/automations/new/destination-selector.tsx", repoRoot),
   "utf8"
 );
 assert.match(destinationSource, /export type DestinationSelectorState/);
 assert.match(destinationSource, /selector: DestinationSelectorState/);
 
-for (const file of files.filter((path) => path.startsWith("src/app/automations/new/"))) {
+for (const file of files.filter((path) => path.startsWith("src/app/(app)/automations/new/"))) {
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   assert.doesNotMatch(source, /createContext/, `${file} must not add React Context`);
   for (const match of source.matchAll(/export function ([A-Z][A-Za-z0-9]*)\(/g)) {
@@ -182,6 +202,26 @@ for (const file of namedLibFiles) {
     source,
     /^export (async )?function /m,
     `${file} must keep an implementation, not become a re-export barrel`
+  );
+}
+
+const pickerFirstLoad = [
+  "src/app/(app)/automations/new/automation-builder-client.tsx",
+  "src/app/(app)/automations/new/playbook-model.ts",
+  "src/app/(app)/automations/new/use-playbook-entry.ts",
+  "src/app/(app)/automations/new/use-playbook-favorites.ts",
+];
+for (const file of pickerFirstLoad) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(
+    source,
+    /from ["']@\/lib\/automations["']/,
+    `${file} must import templates without the automations record module`
+  );
+  assert.match(
+    source,
+    /from ["']@\/lib\/automations\/templates["']/,
+    `${file} must read AUTOMATION_TEMPLATES from the leaf module`
   );
 }
 

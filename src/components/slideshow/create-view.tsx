@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
   ChevronDown,
@@ -11,12 +12,9 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { Switch } from "@/components/ui/switch";
 import { getStoryModel, STORY_MODELS } from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
 
-import { CreateTemplateGallery } from "./create-template-gallery";
-import { CreatorView } from "./creator-view";
 import { VisualTile } from "./slide-preview";
 import {
   CARD,
@@ -88,8 +86,8 @@ export function CreateView() {
   };
 
   return (
-    <div className="animate-content-enter">
-      <div className="mb-4 flex items-center gap-1 rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
+    <div data-slideshow-create="true">
+      <div className="mb-4 flex h-10 items-center gap-1 overflow-hidden rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
         <button
           type="button"
           onClick={() => setMode("one-idea")}
@@ -119,17 +117,27 @@ export function CreateView() {
       {mode === "own-copy" ? (
         <CreatorView />
       ) : (
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
-        <section className={cn(CARD, "p-5")} aria-label="Generate a slideshow with AI">
-          <div className="flex items-center gap-2.5">
+      <div
+        className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]"
+        data-slideshow-idea-grid="true"
+      >
+        <section
+          className={cn(CARD, "p-5")}
+          data-slideshow-idea="true"
+          aria-label="Generate a slideshow with AI"
+        >
+          <div
+            className="flex h-8 items-center gap-2.5 overflow-hidden"
+            data-slideshow-idea-title="true"
+          >
             <span className="grid size-8 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
               <Sparkles className="size-4" />
             </span>
             <div>
-              <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+              <h2 className="max-w-[8rem] overflow-hidden whitespace-nowrap line-clamp-1 text-[10px] font-semibold tracking-[-0.02em] text-foreground">
                 Start with one idea
               </h2>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="max-w-[8rem] overflow-hidden whitespace-nowrap line-clamp-1 text-[10px] text-muted-foreground">
                 PostForge writes the story. You review every slide.
               </p>
             </div>
@@ -139,12 +147,16 @@ export function CreateView() {
             value={idea}
             onChange={(event) => setIdea(event.target.value)}
             rows={3}
-            placeholder="Example: the small reminder habit that made my mornings calmer"
+            placeholder="A small morning habit"
             aria-label="What is the story about?"
-            className={cn(INPUT, "mt-4 resize-none py-2.5 leading-5")}
+            style={{ height: "5.125rem" }}
+            className={cn(INPUT, "mt-4 h-[5.125rem] resize-none py-2.5 leading-5")}
           />
 
-          <div className="mt-3 flex flex-wrap items-center gap-3">
+          <div
+            className="mt-3 flex flex-wrap items-center gap-3 overflow-hidden"
+            data-slideshow-idea-controls="true"
+          >
             <label className="flex items-center gap-2">
               <span className="text-[12px] font-semibold text-muted-foreground">Slides</span>
               <span className="flex items-center rounded-lg border border-border bg-card">
@@ -215,17 +227,31 @@ export function CreateView() {
               </span>
             </label>
             <label className="flex items-center gap-2">
-              <Switch
-                checked={includeCta}
-                onCheckedChange={setIncludeCta}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={includeCta}
                 aria-label="Include a CTA slide"
-              />
+                onClick={() => setIncludeCta((current) => !current)}
+                className={cn(
+                  "relative inline-flex h-[18px] w-8 shrink-0 items-center rounded-full border border-transparent transition-colors",
+                  includeCta ? "bg-primary" : "bg-input",
+                )}
+              >
+                <span
+                  className={cn(
+                    "block size-4 rounded-full bg-background transition-transform",
+                    includeCta ? "translate-x-[14px]" : "translate-x-0.5",
+                  )}
+                />
+              </button>
               <span className="text-[11px] font-medium text-muted-foreground">CTA slide</span>
             </label>
             <button
               type="button"
               onClick={() => void submit()}
               disabled={idea.trim().length < 3 || generating}
+              data-slideshow-idea-submit="true"
               className="pf-button-primary ml-auto h-10 px-5"
             >
               {generating ? (
@@ -243,7 +269,10 @@ export function CreateView() {
             </p>
           ) : null}
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-4">
+          <div
+            className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 overflow-hidden border-t border-border pt-4"
+            data-slideshow-idea-steps="true"
+          >
             {[
               ["01", `Story written by ${STORY_MODELS.find((m) => m.id === model)?.name ?? "AI"}`],
               ["02", "Review and restyle slides"],
@@ -257,7 +286,7 @@ export function CreateView() {
           </div>
         </section>
 
-        <div className="grid gap-4">
+        <div className="grid gap-4" data-slideshow-idea-sidebar="true">
           <button
             type="button"
             onClick={onCustom}
@@ -309,3 +338,15 @@ export function CreateView() {
     </div>
   );
 }
+
+const CreatorView = dynamic(() =>
+  import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
+);
+
+const CreateTemplateGallery = dynamic(
+  () =>
+    import("./create-template-gallery").then((mod) => ({
+      default: mod.CreateTemplateGallery,
+    })),
+  { ssr: true },
+);

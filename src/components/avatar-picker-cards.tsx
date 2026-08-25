@@ -51,7 +51,7 @@ export function AvatarCreationCard({
         <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
           New Avatar
         </p>
-        <p className="mt-1 text-[12px] leading-4 text-muted-foreground/70">
+        <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
           Upload, generate, import, or choose from gallery.
         </p>
       </div>

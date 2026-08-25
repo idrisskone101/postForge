@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const performanceWorkspace = readFileSync(
-  new URL("../../src/app/performance/use-performance-workspace.ts", import.meta.url),
+  new URL("../../src/app/(app)/performance/use-performance-workspace.ts", import.meta.url),
   "utf8"
 );
 

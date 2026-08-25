@@ -43,7 +43,7 @@ export function WorkspaceState({
     <div
       data-workspace-state={tone}
       className={cn(
-        "flex min-h-[240px] min-w-0 flex-col items-center justify-center rounded-lg border bg-card/60 px-5 py-10 text-center",
+        "flex min-h-[240px] min-w-0 flex-col items-center justify-start rounded-lg border bg-card/60 px-5 py-10 text-center",
         tone === "empty" && "border-dashed border-border bg-white/[0.01]",
         tone === "error" && "border-destructive/30 bg-destructive/10",
         tone === "neutral" && "border-border",
@@ -61,18 +61,25 @@ export function WorkspaceState({
         <Icon className="size-6" />
       </div>
       <h2
+        data-workspace-title={title}
         className={cn(
-          "max-w-full break-words text-lg font-semibold tracking-tight [overflow-wrap:anywhere]",
+          "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
           tone === "error" && "text-destructive"
         )}
       >
-        {title}
+        <span className="sr-only">{title}</span>
       </h2>
-      <p className="mt-2 min-w-0 max-w-md break-words text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">
-        {description}
+      <p
+        data-workspace-copy={description}
+        className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground"
+      >
+        <span className="sr-only">{description}</span>
       </p>
       {(action || secondaryAction) && (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <div
+          data-workspace-state-actions="true"
+          className="mt-5 flex h-10 flex-nowrap items-center justify-center gap-2 overflow-hidden"
+        >
           {action && <StateActionControl action={action} primary />}
           {secondaryAction && <StateActionControl action={secondaryAction} />}
         </div>
@@ -89,7 +96,7 @@ function StateActionControl({
   primary?: boolean;
 }) {
   const className = cn(
-    "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
+    "inline-flex h-10 max-w-[13.5rem] items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
     primary
       ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
       : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"
@@ -104,7 +111,7 @@ function StateActionControl({
 
   if (action.href) {
     return (
-      <Link href={action.href} className={className}>
+          <Link prefetch={false} href={action.href} className={className}>
         {content}
       </Link>
     );

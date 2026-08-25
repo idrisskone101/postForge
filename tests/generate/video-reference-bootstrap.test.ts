@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { getAllModels } from "../../src/lib/ai/models";
-import { resolveGenerationFormInitialState } from "../../src/app/generate/use-generation-form-helpers";
+import { resolveGenerationFormInitialState } from "../../src/app/(app)/generate/use-generation-form-helpers";
 
 const models = getAllModels();
 const imageModel = models.find((model) => model.type === "image") ?? models[0];

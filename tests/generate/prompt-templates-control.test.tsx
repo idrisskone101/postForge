@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { PromptTemplatesControl } from "../../src/app/generate/prompt-templates-control";
+import { PromptTemplatesControl } from "../../src/app/(app)/generate/prompt-templates-control";
 
 const originalFetch = globalThis.fetch;
 
@@ -33,7 +33,7 @@ assert.doesNotMatch(markup, /Save prompt/, "dialog content stays closed in stati
 globalThis.fetch = originalFetch;
 
 const formControlsSource = readFileSync(
-  new URL("../../src/app/generate/form-controls.tsx", import.meta.url),
+  new URL("../../src/app/(app)/generate/form-controls.tsx", import.meta.url),
   "utf8"
 );
 assert.match(formControlsSource, /PromptTemplatesControl/);
@@ -41,11 +41,11 @@ assert.match(formControlsSource, /onPromptChange={onPromptChange}/);
 assert.match(formControlsSource, /aria-label="Creative prompt"/);
 
 const controlSource = readFileSync(
-  new URL("../../src/app/generate/prompt-templates-control.tsx", import.meta.url),
+  new URL("../../src/app/(app)/generate/prompt-templates-control.tsx", import.meta.url),
   "utf8"
 );
 const hookSource = readFileSync(
-  new URL("../../src/app/generate/use-prompt-templates.ts", import.meta.url),
+  new URL("../../src/app/(app)/generate/use-prompt-templates.ts", import.meta.url),
   "utf8"
 );
 assert.match(controlSource, /Prompt templates/);

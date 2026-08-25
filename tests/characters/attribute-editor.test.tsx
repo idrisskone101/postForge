@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   CharacterAttributeEditor,
   type CharacterAttributeEditorViewModel,
-} from "../../src/app/characters/new/character-attribute-editor";
+} from "../../src/app/(app)/characters/new/character-attribute-editor";
 import {
   CHARACTER_ATTRIBUTE_SECTIONS,
   DEFAULT_CHARACTER_ATTRIBUTES,
@@ -78,7 +78,7 @@ assert.match(errorMarkup, /Dismiss error/);
 
 const editorSource = readFileSync(
   new URL(
-    "../../src/app/characters/new/character-attribute-editor.tsx",
+    "../../src/app/(app)/characters/new/character-attribute-editor.tsx",
     import.meta.url
   ),
   "utf8"
