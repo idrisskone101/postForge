@@ -2595,6 +2595,133 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-settings-account],
+[data-settings-badge],
+[data-inspiration-heading],
+[data-inspiration-copy],
+[data-inspiration-feed],
+[data-character-blueprint],
+[data-character-review],
+[data-character-copy] {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+[data-settings-account],
+[data-inspiration-copy],
+[data-character-review] {
+  width: 8rem;
+  max-width: 8rem;
+  height: 12px;
+  font-size: 12px;
+  line-height: 12px;
+  color: #52525b;
+}
+
+[data-settings-account]::before {
+  content: attr(data-settings-account);
+}
+
+[data-inspiration-copy]::before {
+  content: attr(data-inspiration-copy);
+}
+
+[data-character-review]::before {
+  content: attr(data-character-review);
+}
+
+[data-settings-account]::before,
+[data-inspiration-copy]::before,
+[data-character-review]::before {
+  display: block;
+  overflow: hidden;
+  height: 12px;
+  font-size: 12px;
+  line-height: 12px;
+  color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-settings-badge] {
+  height: 18px;
+  max-width: 8rem;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+[data-settings-badge]::before {
+  content: attr(data-settings-badge);
+  display: block;
+  overflow: hidden;
+  height: 11px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-inspiration-heading],
+[data-character-blueprint],
+[data-inspiration-feed] {
+  width: 8rem;
+  max-width: 8rem;
+  height: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: #18181b;
+}
+
+[data-inspiration-heading]::before {
+  content: attr(data-inspiration-heading);
+}
+
+[data-character-blueprint]::before {
+  content: attr(data-character-blueprint);
+}
+
+[data-inspiration-feed]::before {
+  content: attr(data-inspiration-feed);
+}
+
+[data-inspiration-heading]::before,
+[data-character-blueprint]::before,
+[data-inspiration-feed]::before {
+  display: block;
+  overflow: hidden;
+  height: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-character-copy] {
+  height: 2.25rem;
+  max-width: 8rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-character-copy]::before {
+  content: attr(data-character-copy);
+  display: inline-block;
+  overflow: hidden;
+  height: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 [data-settings-copy="true"] {
   margin-top: 0.25rem;
   width: 8rem;

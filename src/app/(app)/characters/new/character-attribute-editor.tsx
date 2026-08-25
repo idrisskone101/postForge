@@ -46,11 +46,17 @@ export function CharacterAttributeEditor({
           <div>
             <div className="flex flex-col items-start justify-between gap-3 min-[560px]:flex-row min-[560px]:items-end">
               <div>
-
-                <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em]">Character blueprint</h2>
-                <p className="mt-1 max-w-xl text-[12px] leading-4 text-muted-foreground">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
+                <h2 data-character-blueprint="Character blueprint">
+                  <span className="sr-only">Character blueprint</span>
+                </h2>
+                <p data-character-review="Review every selected attribute before saving or copy the full prompt for another workflow.">
+                  <span className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</span>
+                </p>
               </div>
-              <button onClick={copyPrompt} className="pf-button-secondary shrink-0"><Copy className="size-3.5" /> Copy prompt</button>
+              <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-character-copy="Copy prompt">
+                <Copy className="size-3.5" />
+                <span className="sr-only">Copy prompt</span>
+              </button>
             </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1460px]:grid-cols-2">
               {CHARACTER_ATTRIBUTE_SECTIONS.map((section) => (
@@ -65,8 +71,12 @@ export function CharacterAttributeEditor({
           <div>
             <div>
 
-              <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em]">{active.label}</h2>
-              <p className="mt-1 max-w-xl text-[12px] leading-4 text-muted-foreground">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</p>
+              <h2 data-character-blueprint={active.label}>
+                <span className="sr-only">{active.label}</span>
+              </h2>
+              <p data-character-review="Selections update the recipe immediately. Re-render to apply them to the photographic preview.">
+                <span className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</span>
+              </p>
             </div>
             <div className="mt-4 space-y-4">
               {active.groups.map((group) => (

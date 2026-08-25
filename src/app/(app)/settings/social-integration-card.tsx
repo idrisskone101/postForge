@@ -61,16 +61,33 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
         <div className="flex min-w-0 items-center gap-3">
           <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
           <div className="min-w-0">
-            <h3 className="text-[15px] font-semibold tracking-[-0.01em]">{displayName}</h3>
-            <p className="mt-0.5 whitespace-nowrap text-[12px] text-muted-foreground">{status?.connected ? `${status.accounts.length} connected` : "No account connected"}</p>
+            <h3 data-settings-subhead={displayName}>
+              <span className="sr-only">{displayName}</span>
+            </h3>
+            <p
+              data-settings-account={
+                status?.connected ? `${status.accounts.length} connected` : "No account connected"
+              }
+            >
+              <span className="sr-only">
+                {status?.connected ? `${status.accounts.length} connected` : "No account connected"}
+              </span>
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {loading && !status ? (
             <span className="h-5 w-20 animate-pulse rounded-full bg-[var(--pf-active)]" />
           ) : (
-            <span className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]", unavailable ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]" : connected ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "border-border bg-[var(--pf-active)] text-muted-foreground")}>
-              {unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"}
+            <span
+              data-settings-badge={
+                unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"
+              }
+              className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]", unavailable ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]" : connected ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "border-border bg-[var(--pf-active)] text-muted-foreground")}
+            >
+              <span className="sr-only">
+                {unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"}
+              </span>
             </span>
           )}
           {status?.configuration === "ready" && !loading && status.connected && (

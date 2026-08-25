@@ -3158,6 +3158,133 @@
   text-overflow: ellipsis !important;
 }
 
+[data-settings-account],
+[data-settings-badge],
+[data-inspiration-heading],
+[data-inspiration-copy],
+[data-inspiration-feed],
+[data-character-blueprint],
+[data-character-review],
+[data-character-copy] {
+  display: block !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+[data-settings-account],
+[data-inspiration-copy],
+[data-character-review] {
+  width: 8rem !important;
+  max-width: 8rem !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  line-height: 12px !important;
+  color: #52525b !important;
+}
+
+[data-settings-account]::before {
+  content: attr(data-settings-account) !important;
+}
+
+[data-inspiration-copy]::before {
+  content: attr(data-inspiration-copy) !important;
+}
+
+[data-character-review]::before {
+  content: attr(data-character-review) !important;
+}
+
+[data-settings-account]::before,
+[data-inspiration-copy]::before,
+[data-character-review]::before {
+  display: block !important;
+  overflow: hidden !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  line-height: 12px !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-settings-badge] {
+  height: 18px !important;
+  max-width: 8rem !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
+}
+
+[data-settings-badge]::before {
+  content: attr(data-settings-badge) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 11px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 11px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-inspiration-heading],
+[data-character-blueprint],
+[data-inspiration-feed] {
+  width: 8rem !important;
+  max-width: 8rem !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 14px !important;
+  color: #18181b !important;
+}
+
+[data-inspiration-heading]::before {
+  content: attr(data-inspiration-heading) !important;
+}
+
+[data-character-blueprint]::before {
+  content: attr(data-character-blueprint) !important;
+}
+
+[data-inspiration-feed]::before {
+  content: attr(data-inspiration-feed) !important;
+}
+
+[data-inspiration-heading]::before,
+[data-character-blueprint]::before,
+[data-inspiration-feed]::before {
+  display: block !important;
+  overflow: hidden !important;
+  height: 14px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 14px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-character-copy] {
+  height: 2.25rem !important;
+  max-width: 8rem !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+[data-character-copy]::before {
+  content: attr(data-character-copy) !important;
+  display: inline-block !important;
+  overflow: hidden !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 12px !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-settings-copy="true"] {
   margin-top: 0.25rem !important;
   width: 8rem !important;

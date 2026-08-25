@@ -38,7 +38,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <span className="sr-only">{changeLabel}</span>
           </span>
         </div>
-        <strong data-spend-value="true" data-spend-text={formatCost(dashboard.currentPeriodCost)} className="mt-3 block tabular-nums"></strong>
+        <strong data-spend-value="true" data-spend-text={formatCost(dashboard.currentPeriodCost)}></strong>
         <p data-spend-note="true" data-spend-note-text={`${formatCost(dashboard.totalCost)} all-time spend`}>
           <span className="sr-only">{formatCost(dashboard.totalCost)} all-time spend</span>
         </p>
@@ -53,7 +53,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <Sparkles className="size-3.5" />
           </span>
         </div>
-        <strong data-spend-value="true" data-spend-text={String(dashboard.totalJobs)} className="mt-3 block tabular-nums"></strong>
+        <strong data-spend-value="true" data-spend-text={String(dashboard.totalJobs)}></strong>
         <p data-spend-note="true" data-spend-note-text={`Avg cost ${formatCost(dashboard.avgCycleCost)} per generation`}>
           <span className="sr-only">Avg cost {formatCost(dashboard.avgCycleCost)} per generation</span>
         </p>
@@ -90,7 +90,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <WalletCards className="size-3.5" />
           </span>
         </div>
-        <strong data-spend-value="true" data-spend-text={formatCost(view.budgetRemaining)} className="mt-3 block tabular-nums"></strong>
+        <strong data-spend-value="true" data-spend-text={formatCost(view.budgetRemaining)}></strong>
         <p data-spend-note="true" data-spend-note-text={`of ${formatCost(view.budget)} production budget`}>
           <span className="sr-only">of {formatCost(view.budget)} production budget</span>
         </p>
