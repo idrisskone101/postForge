@@ -125,11 +125,19 @@ export function CharacterPreviewStage({
       </div>
 
       <div className="relative z-10 grid gap-2 rounded-lg border border-white/35 bg-white/20 p-2.5 backdrop-blur-sm sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1420px]:grid-cols-2">
-        <button onClick={rerender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" className="pf-button-secondary !border-white/70 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45"><RefreshCw className={cn("size-3.5",rendering && "animate-spin")} /> Re-render preview</button>
-        <button onClick={randomizeAndRender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" title="Uses one paid image generation" className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45">{rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />} {rendering ? "Rendering…" : "Randomize & render"}</button>
+        <button onClick={rerender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" className="pf-button-secondary !border-white/70 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45" data-lcp="Re-render preview">
+          <RefreshCw className={cn("size-3.5",rendering && "animate-spin")} />
+          <span className="sr-only">Re-render preview</span>
+        </button>
+        <button onClick={randomizeAndRender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" title="Uses one paid image generation" className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45" data-lcp={rendering ? "Rendering…" : "Randomize & render"}>
+          {rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />}
+          <span className="sr-only">{rendering ? "Rendering…" : "Randomize & render"}</span>
+        </button>
         <div className="flex min-w-0 items-center gap-2 px-1 py-1 sm:col-span-2 min-[1280px]:col-span-1 min-[1420px]:col-span-2">
           <span className="size-1.5 shrink-0 rounded-full bg-[var(--pf-success)]" />
-          <p className="min-w-0 break-words text-[12px] font-medium text-white/60">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</p>
+          <p data-lcp={`${attributes.gender} · ${attributes.age} · ${attributes.ethnicity}`} className="min-w-0 break-words text-[12px] font-medium text-white/60">
+            <span className="sr-only">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</span>
+          </p>
         </div>
       </div>
     </section>
