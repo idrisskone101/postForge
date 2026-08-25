@@ -547,6 +547,10 @@ assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/
 assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
 assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
 assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
+assert.match(
+  source("src/components/slideshow/slideshow-studio-lazy.tsx"),
+  /window\.addEventListener\("load"/,
+);
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-copy=/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);
