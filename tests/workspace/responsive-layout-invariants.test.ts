@@ -263,14 +263,13 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-controls="true"
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-safe-overlay\{position:fixed;inset:0/);
 assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /data-automation-overlay="true"/);
 assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /position: "fixed"/);
-assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /AutomationPlaybookOverlay/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /AutomationPlaybookOverlayLazy/);
 assert.doesNotMatch(
   source("src/app/(app)/automations/new/automation-builder-client.tsx"),
   /from "\.\/use-automation-builder"/,
 );
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]>\*\{height:5rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-filters="true"\]\{display:grid/);
 assert.match(
@@ -526,7 +525,9 @@ assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"),
 assert.match(source("src/app/(app)/characters/new/character-builder-header.tsx"), /data-character-title=/);
 assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-empty-cta="Create asset"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-route-skeleton="true"\]\{height:40rem/);
-assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action::before\{content:attr\(data-header-action\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action svg\{width:0\.875rem/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-jobs-page="true"/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /paddingTop: 20/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid p::before\{content:attr\(data-header-copy\)/);
 assert.match(source("src/app/first-paint-css.ts"), /#character-preview-generation-cost::before\{content:attr\(data-character-cost\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]\{margin:0;width:12rem/);

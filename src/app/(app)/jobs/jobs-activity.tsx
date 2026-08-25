@@ -67,7 +67,11 @@ export function JobsActivity({ activity }: JobsActivityProps) {
 
   return (
     <div className="pf-content-viewport">
-      <div className="mx-auto max-w-[1280px] px-4 py-5 pb-12 sm:px-6 lg:px-8 lg:py-6">
+      <div
+        data-jobs-page="true"
+        className="mx-auto max-w-[1280px] pb-12 sm:px-6 lg:px-8 lg:py-6"
+        style={{ paddingTop: 20, paddingLeft: 16, paddingRight: 16 }}
+      >
         <section
           data-jobs-summary="true"
           aria-label="Job activity summary"

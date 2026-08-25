@@ -1356,6 +1356,12 @@
   box-sizing: border-box !important;
 }
 
+#workspace-header-default-action svg {
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+  flex-shrink: 0 !important;
+}
+
 #workspace-header-default-action::before {
   content: attr(data-header-action) !important;
   display: block !important;
@@ -1711,7 +1717,8 @@
 
 [data-character-blueprint] {
   margin: 0 !important;
-  max-width: 8rem !important;
+  width: 12rem !important;
+  max-width: 12rem !important;
   height: 19px !important;
   overflow: hidden !important;
   font-size: 15px !important;
@@ -1725,7 +1732,8 @@
   content: attr(data-character-blueprint) !important;
   display: block !important;
   overflow: hidden !important;
-  max-width: 8rem !important;
+  width: 12rem !important;
+  max-width: 12rem !important;
   height: 19px !important;
   font-size: 15px !important;
   font-weight: 600 !important;
@@ -1761,9 +1769,6 @@
 
 [data-character-action] {
   max-width: 9.75rem !important;
-  height: 2.25rem !important;
-  padding: 0 0.75rem !important;
-  box-sizing: border-box !important;
   overflow: hidden !important;
 }
 
@@ -2147,13 +2152,6 @@
   white-space: nowrap !important;
 }
 
-[data-jobs-summary="true"] > * {
-  height: 5rem !important;
-  padding: 1rem !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-
 [data-generate-notice]::before {
   content: attr(data-generate-notice) !important;
   display: block !important;
@@ -2329,12 +2327,6 @@
   text-overflow: ellipsis !important;
 }
 
-[data-jobs-empty="true"] > span:first-of-type {
-  width: 2.75rem !important;
-  height: 2.75rem !important;
-  flex-shrink: 0 !important;
-}
-
 [data-jobs-board="true"] {
   margin-top: 0.75rem !important;
 }
@@ -2342,17 +2334,6 @@
 [data-jobs-filters="true"] {
   height: 7.75rem !important;
   overflow: hidden !important;
-}
-
-[data-jobs-filters="true"] a {
-  display: inline-flex !important;
-  height: 1.75rem !important;
-  padding: 0 0.75rem !important;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  line-height: 1.75rem !important;
 }
 
 [data-spend-page="true"] > * + * {
