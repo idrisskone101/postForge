@@ -166,6 +166,7 @@ export function SpendPageContent({
       <SpendStatCards dashboard={dashboard} view={view} />
 
       <section
+        data-spend-budget="true"
         className={cn(
           "flex flex-col gap-4 rounded-lg border p-4 lg:flex-row lg:items-center",
           view.budgetPercent >= 90
@@ -184,8 +185,12 @@ export function SpendPageContent({
           <AlertTriangle className="size-4" />
         </div>
         <div className="min-w-0 flex-1">
-          <strong className="text-sm">
-            You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
+          <strong
+            data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
+          >
+            <span className="sr-only">
+              You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
+            </span>
           </strong>
           <p
             data-spend-note="true"

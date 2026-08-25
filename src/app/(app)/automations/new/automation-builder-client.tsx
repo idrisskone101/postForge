@@ -65,8 +65,11 @@ export function AutomationBuilderClient({
         aria-busy="true"
       >
         <header className="flex h-[82px] shrink-0 items-center border-b border-border bg-[var(--pf-active)] px-4 sm:px-6" />
-        <div className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-white" />
-        <section className="min-h-0 flex-1" />
+        <div data-automation-phases="true" className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-white" />
+        <section data-automation-workspace="true" className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
+          <aside data-automation-form="true" />
+          <div data-automation-preview="true" />
+        </section>
       </div>
     );
   }
@@ -166,7 +169,10 @@ export function AutomationBuilderClient({
         </div>
       )}
 
-      <section className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
+      <section
+        data-automation-workspace="true"
+        className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]"
+      >
         <AutomationBuilderPhaseForm workspace={workspace} />
         <AutomationBuilderPreviewPane workspace={workspace} />
       </section>

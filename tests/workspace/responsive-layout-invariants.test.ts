@@ -284,6 +284,9 @@ assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx")
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
 assert.doesNotMatch(appLayout, /globals\.css/);
 assert.doesNotMatch(layout, /globals\.css/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-workspace="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-analysis-grid="true"\]\{display:grid/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-budget-label\]::before\{content:attr\(data-spend-budget-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]::before\{content:attr\(data-spend-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\] strong::before\{content:attr\(data-jobs-value\)/);
