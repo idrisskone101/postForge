@@ -17,16 +17,18 @@ export function AutomationBuilderClientLazy({
 }: {
   search: AutomationBuilderSearch;
 }) {
-  const [ready, setReady] = useState(false);
+  const needsSession = Boolean(search.id) || search.intent === "apply";
+  const [ready, setReady] = useState(needsSession);
   useEffect(() => {
-    if (document.readyState === "complete") {
-      setReady(true);
-      return;
-    }
-    const onLoad = () => setReady(true);
-    window.addEventListener("load", onLoad);
-    return () => window.removeEventListener("load", onLoad);
-  }, []);
+    if (needsSession) return;
+    const go = () => setReady(true);
+    window.addEventListener("pointerdown", go, { once: true });
+    window.addEventListener("keydown", go, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", go);
+      window.removeEventListener("keydown", go);
+    };
+  }, [needsSession]);
   useEffect(() => {
     if (!ready) return;
     document.querySelector("[data-playbook-first-paint]")?.setAttribute("hidden", "");

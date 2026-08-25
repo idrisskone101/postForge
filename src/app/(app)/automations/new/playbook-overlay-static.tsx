@@ -64,12 +64,15 @@ export function PlaybookOverlayStatic() {
           <b data-playbook-name={selectedTemplate.name}>
             <span className="sr-only">{selectedTemplate.name}</span>
           </b>
-          <span data-lcp="Cancel">
+          <a href="/automations" data-lcp="Cancel">
             <span className="sr-only">Cancel</span>
-          </span>
-          <span data-lcp="Apply playbook">
+          </a>
+          <a
+            href={`/automations/new?template=${selectedTemplate.id}&intent=apply`}
+            data-lcp="Apply playbook"
+          >
             <span className="sr-only">Apply playbook</span>
-          </span>
+          </a>
         </footer>
       </div>
     </div>

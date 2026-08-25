@@ -18,7 +18,9 @@ export function AutomationBuilderClient({
   const initialTemplateId = AUTOMATION_TEMPLATES.some((template) => template.id === requestedTemplate)
     ? requestedTemplate
     : AUTOMATION_TEMPLATES[0].id;
-  const [templateOpen, setTemplateOpen] = useState(!editId);
+  const [templateOpen, setTemplateOpen] = useState(
+    !editId && search.intent !== "apply"
+  );
   const [appliedTemplate, setAppliedTemplate] = useState(initialTemplateId);
   const { playbookPicker, selectedTemplate } = usePlaybookEntry({
     initialTemplateId,

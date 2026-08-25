@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -33,14 +34,15 @@ export function CharacterPhoto({
       data-character-default-frame={source === DEFAULT_CHARACTER_PHOTO ? "true" : undefined}
       className={cn("relative block size-full overflow-hidden bg-[#111113]", className)}
     >
-      <img
+      <Image
         src={source}
         alt={alt}
-        width={390}
-        height={520}
-        decoding="async"
+        fill
+        sizes="(max-width: 640px) 92vw, 440px"
+        className="object-cover"
+        unoptimized
+        priority={priority}
         fetchPriority={priority ? "high" : "auto"}
-        className="absolute inset-0 size-full object-cover"
         onError={() => {
           if (source !== DEFAULT_CHARACTER_PHOTO) {
             onLoadError?.();

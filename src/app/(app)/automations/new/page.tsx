@@ -13,8 +13,10 @@ export default async function AutomationBuilderPage({
     id: params.id,
     sourceFileId: params.sourceFileId,
     template: params.template,
+    intent: params.intent,
   };
   const editId = typeof params.id === "string" ? params.id : null;
+  const applying = params.intent === "apply";
 
   if (workflow === "slideshow") {
     return <SlideshowAutomationBuilderLazy search={search} />;
@@ -22,7 +24,7 @@ export default async function AutomationBuilderPage({
 
   return (
     <>
-      {editId ? null : <PlaybookOverlayStatic />}
+      {editId || applying ? null : <PlaybookOverlayStatic />}
       <AutomationBuilderClientLazy search={search} />
     </>
   );
