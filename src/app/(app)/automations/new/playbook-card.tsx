@@ -44,10 +44,14 @@ export function PlaybookCard({
       <div className="flex min-w-0 flex-col p-3">
         <span className="text-[11px] font-bold uppercase tracking-[.09em] text-[var(--pf-orange)]">{template.category}</span>
         <div className="mt-1 flex items-start justify-between gap-2">
-          <h3 className="text-[13px] font-semibold">{template.name}</h3>
+          <h3 data-playbook-name={template.name} className="text-[13px] font-semibold">
+            <span className="sr-only">{template.name}</span>
+          </h3>
           {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[var(--pf-success)]" aria-label="Selected" />}
         </div>
-        <p className="mt-1 min-h-8 text-[12px] leading-4 text-muted-foreground">{template.description}</p>
+        <p data-playbook-blurb={template.description} className="mt-1 min-h-8 text-[12px] leading-4 text-muted-foreground">
+          <span className="sr-only">{template.description}</span>
+        </p>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
           <button type="button" onClick={() => picker.onPreview(template.id)} className="h-7 flex-1 rounded-lg border border-border text-[12px] font-semibold hover:bg-[var(--pf-active)]">
             Preview

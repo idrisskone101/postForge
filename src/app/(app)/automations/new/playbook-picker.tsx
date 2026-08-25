@@ -37,13 +37,19 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
         <div>
           <h2
             id="template-title"
+            data-playbook-title="Choose a playbook"
             className="mt-1 text-[20px] font-semibold tracking-[-0.02em]"
           >
-            Choose a playbook
+            <span className="sr-only">Choose a playbook</span>
           </h2>
-          <p className="mt-1 max-w-[560px] text-[11px] leading-4 text-muted-foreground sm:text-[12px]">
-            Start with a proven Hook, Content, and CTA structure. Preview it,
-            select it, then apply when you are ready.
+          <p
+            data-playbook-lede="Start with a proven Hook, Content, and CTA structure."
+            className="mt-1 max-w-[12rem] overflow-hidden text-[11px] leading-4 text-muted-foreground sm:text-[12px]"
+          >
+            <span className="sr-only">
+              Start with a proven Hook, Content, and CTA structure. Preview it,
+              select it, then apply when you are ready.
+            </span>
           </p>
         </div>
         <button

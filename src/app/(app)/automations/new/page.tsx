@@ -1,4 +1,4 @@
-import { AutomationBuilderClient } from "./automation-builder-client";
+import { AutomationBuilderLazy } from "./automation-builder-lazy";
 import { SlideshowAutomationBuilder } from "./slideshow-automation-builder";
 
 export default async function AutomationBuilderPage({
@@ -17,6 +17,6 @@ export default async function AutomationBuilderPage({
   return workflow === "slideshow" ? (
     <SlideshowAutomationBuilder search={search} />
   ) : (
-    <AutomationBuilderClient search={search} />
+    <AutomationBuilderLazy search={search} />
   );
 }

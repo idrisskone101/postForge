@@ -75,7 +75,11 @@ export function AutomationBuilderClient({
   }
 
   return (
-    <div data-automation-builder="true" className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]">
+    <div
+      data-automation-builder="true"
+      data-picker-open={templateOpen ? "true" : undefined}
+      className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]"
+    >
       <header className="flex h-[82px] items-center justify-between gap-3 overflow-x-auto border-b border-border bg-[var(--pf-active)] px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-lg border border-border bg-white">
@@ -173,8 +177,17 @@ export function AutomationBuilderClient({
         data-automation-workspace="true"
         className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]"
       >
-        <AutomationBuilderPhaseForm workspace={workspace} />
-        <AutomationBuilderPreviewPane workspace={workspace} />
+        {templateOpen ? (
+          <>
+            <aside data-automation-form="true" />
+            <div data-automation-preview="true" />
+          </>
+        ) : (
+          <>
+            <AutomationBuilderPhaseForm workspace={workspace} />
+            <AutomationBuilderPreviewPane workspace={workspace} />
+          </>
+        )}
       </section>
 
       {templateOpen && (

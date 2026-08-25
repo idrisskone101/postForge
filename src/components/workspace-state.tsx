@@ -61,15 +61,19 @@ export function WorkspaceState({
         <Icon className="size-6" />
       </div>
       <h2
+        data-workspace-title={title}
         className={cn(
           "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
           tone === "error" && "text-destructive"
         )}
       >
-        {title}
+        <span className="sr-only">{title}</span>
       </h2>
-      <p className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground">
-        {description}
+      <p
+        data-workspace-copy={description}
+        className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground"
+      >
+        <span className="sr-only">{description}</span>
       </p>
       {(action || secondaryAction) && (
         <div

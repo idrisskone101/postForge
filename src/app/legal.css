@@ -168,6 +168,13 @@ a {
   padding-bottom: 2rem;
 }
 
+@media (max-width: 767.98px) {
+  .policy-titleBlock {
+    min-height: 100svh;
+    box-sizing: border-box;
+  }
+}
+
 .policy-heading {
   width: 12rem;
   max-width: 12rem;
@@ -275,6 +282,8 @@ a {
 
 .policy-section {
   scroll-margin-top: 2rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 8rem;
 }
 
 .policy-sectionLater {

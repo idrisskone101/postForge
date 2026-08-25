@@ -234,10 +234,12 @@ assert.match(appLayout, /\/dashboard\.css/);
 assert.match(appLayout, /rel="preload"/);
 assert.match(appLayout, /media="print"/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
-assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
-assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
-assert.match(source("src/app/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
-assert.match(source("src/app/layout.tsx"), /isPublicPolicyPath/);
+assert.match(appLayout, /FIRST_PAINT_CSS/);
+assert.doesNotMatch(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
+assert.doesNotMatch(source("src/app/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
+assert.doesNotMatch(source("src/app/layout.tsx"), /isPublicPolicyPath/);
+assert.doesNotMatch(source("src/app/layout.tsx"), /headers\(/);
+assert.match(source("src/app/(legal)/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
 assert.ok(
   appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
   "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
@@ -383,6 +385,16 @@ assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="tru
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderLazy/);
+assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-lede=/);
+assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), /data-playbook-name=\{template\.name\}/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-picker-open=\{templateOpen \? "true" : undefined\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-name\]::before\{content:attr\(data-playbook-name\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]::before\{content:attr\(data-playbook-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-overlay="true"\]\{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:1rem;box-sizing:border-box;background:#09090b/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2::before\{content:attr\(data-workspace-title\)/);
+assert.match(source("src/components/workspace-state.tsx"), /data-workspace-title=\{title\}/);
+assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
 assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
