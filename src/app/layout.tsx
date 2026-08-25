@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
-
-const ROOT_PAINT_RESET =
-  "*,*::before,*::after{box-sizing:border-box}html,body{margin:0;background:#fafafa;color:#18181b}";
+import { FIRST_PAINT_CSS } from "./first-paint-css";
 
 export default function RootLayout({
   children,
@@ -11,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{ROOT_PAINT_RESET}</style>
+        <style>{FIRST_PAINT_CSS}</style>
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,

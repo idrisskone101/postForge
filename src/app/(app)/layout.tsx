@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { Sidebar } from "@/components/sidebar-lazy";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import { FIRST_PAINT_CSS } from "../first-paint-css";
 
 export default async function AppLayout({
   children,
@@ -12,7 +11,6 @@ export default async function AppLayout({
 
   return (
     <div id="workspace-root">
-      <style>{FIRST_PAINT_CSS}</style>
       <link rel="preload" href="/dashboard.css" as="style" />
       <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" media="print" />
       <script

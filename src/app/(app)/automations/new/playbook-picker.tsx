@@ -35,11 +35,7 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     <>
       <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-white px-4 py-4 sm:px-5">
         <div>
-          <h2
-            id="template-title"
-            data-playbook-title="Choose a playbook"
-            className="mt-1 text-[20px] font-semibold tracking-[-0.02em]"
-          >
+          <h2 id="template-title" data-playbook-title="Choose a playbook">
             <span className="sr-only">Choose a playbook</span>
           </h2>
           <p
