@@ -582,6 +582,19 @@ body {
   font-size: 28px;
 }
 
+[data-spend-value="true"]::before {
+  content: attr(data-spend-text);
+  display: block;
+  overflow: hidden;
+  height: 28px;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #18181b;
+  white-space: nowrap;
+}
+
 [data-spend-model="true"] {
   font-size: 20px;
 }
@@ -639,6 +652,18 @@ body {
   line-height: 19px;
   color: #18181b;
   white-space: nowrap;
+}
+
+[data-jobs-empty="true"] h2::before {
+  content: attr(data-empty-title);
+  display: block;
+  overflow: hidden;
+  height: 19px;
+  font-size: 15px;
+  line-height: 19px;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 [data-settings-intro="true"] {
@@ -1293,17 +1318,31 @@ body {
 .pf-empty-stage h2,
 .pf-empty-stage [data-empty-heading="true"] {
   margin: 1rem 0 0;
+  height: 25px;
+  width: 12rem;
+  max-width: 100%;
+  overflow: hidden;
   font-size: 20px;
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.02em;
   color: #18181b;
-  height: 25px;
-  width: 12rem;
-  max-width: 100%;
-  overflow: hidden;
   white-space: nowrap;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.pf-empty-stage [data-empty-heading="true"]::before {
+  content: attr(data-empty-title);
+  display: block;
+  overflow: hidden;
+  height: 25px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  letter-spacing: -0.02em;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pf-empty-stage p {

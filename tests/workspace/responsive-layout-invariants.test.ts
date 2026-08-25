@@ -285,7 +285,8 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="
 assert.doesNotMatch(appLayout, /globals\.css/);
 assert.doesNotMatch(layout, /globals\.css/);
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]\{[^}]*width:12rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]::before\{content:attr\(data-empty-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-value="true"\]::before\{content:attr\(data-spend-text\)/);
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header \{/);
 assert.match(source("src/app/globals.css"), /#workspace-header-grid \{/);
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);

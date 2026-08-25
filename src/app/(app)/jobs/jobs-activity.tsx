@@ -336,10 +336,10 @@ function EmptyJobs({ status }: { status: JobsStatusFilter }) {
       <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
         {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
       </span>
-      <h2 className="mt-3 text-[15px] font-semibold text-[var(--pf-ink)]">
-        {active ? "No jobs are running" : "No jobs match these filters"}
+      <h2 data-empty-title={active ? "No jobs are running" : "No jobs match these filters"}>
+        <span className="sr-only">{active ? "No jobs are running" : "No jobs match these filters"}</span>
       </h2>
-      <p className="mt-1 max-w-sm text-[12px] leading-5 text-[var(--pf-muted)]">
+      <p className="sr-only">
         {active
           ? "New image, video, reference, slideshow, and identity generations will appear here as soon as they start."
           : "Try another status or media type. This view keeps completed and failed activity for 30 days."}

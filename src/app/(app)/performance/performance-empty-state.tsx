@@ -17,7 +17,7 @@ export function PerformanceEmptyState({
   return (
     <section className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-start p-6 text-center">
       <div data-empty-icon="true" className="grid size-14 place-items-center rounded-[8px] bg-foreground text-background"><BarChart3 className="size-6" /></div>
-      <h2 data-empty-heading="true" className="mt-2 text-[20px] font-semibold tracking-[-0.02em]">Connect an account or import a local report</h2>
+      <h2 data-empty-heading="true" data-empty-title="Connect an account or import a local report"><span className="sr-only">Connect an account or import a local report</span></h2>
       <p className="sr-only">PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset.</p>
       <p aria-hidden="true" data-empty-copy="PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset." />
       {providerUnavailable ? <p className="sr-only">Connected account status is currently unavailable. CSV import still works locally.</p> : null}

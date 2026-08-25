@@ -31,9 +31,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             )}
           </span>
         </div>
-        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
-          {formatCost(dashboard.currentPeriodCost)}
-        </strong>
+        <strong data-spend-value="true" data-spend-text={formatCost(dashboard.currentPeriodCost)} className="mt-3 block tabular-nums"></strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
           {formatCost(dashboard.totalCost)} all-time spend
         </p>
@@ -46,9 +44,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <Sparkles className="size-3.5" />
           </span>
         </div>
-        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
-          {dashboard.totalJobs}
-        </strong>
+        <strong data-spend-value="true" data-spend-text={String(dashboard.totalJobs)} className="mt-3 block tabular-nums"></strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
           Avg cost {formatCost(dashboard.avgCycleCost)} per generation
         </p>
@@ -78,9 +74,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <WalletCards className="size-3.5" />
           </span>
         </div>
-        <strong data-spend-value="true" className="mt-3 block text-[28px] font-semibold tracking-[-0.02em] tabular-nums">
-          {formatCost(view.budgetRemaining)}
-        </strong>
+        <strong data-spend-value="true" data-spend-text={formatCost(view.budgetRemaining)} className="mt-3 block tabular-nums"></strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
           of {formatCost(view.budget)} production budget
         </p>
