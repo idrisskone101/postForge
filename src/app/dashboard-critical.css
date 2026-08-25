@@ -1400,11 +1400,11 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-clone-form-skeleton="true"] {
   height: 100%;
-  min-height: 42rem;
+  min-height: 58rem;
 }
 
 [data-clone-studio="true"] {
-  min-height: 42rem;
+  min-height: 58rem;
 }
 
 [data-clone-queue-slot="true"] {

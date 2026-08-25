@@ -2262,11 +2262,11 @@ header:has([data-home-title]) p {
 
 [data-clone-form-skeleton="true"] {
   height: 100% !important;
-  min-height: 42rem !important;
+  min-height: 58rem !important;
 }
 
 [data-clone-studio="true"] {
-  min-height: 42rem !important;
+  min-height: 58rem !important;
 }
 
 [data-clone-queue-slot="true"] {
