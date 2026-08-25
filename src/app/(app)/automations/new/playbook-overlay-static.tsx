@@ -1,5 +1,4 @@
 import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
-import { TEMPLATE_VISUALS, templateNumber } from "./playbook-model";
 
 export function PlaybookOverlayStatic() {
   const selectedTemplate = AUTOMATION_TEMPLATES[0];
@@ -33,30 +32,11 @@ export function PlaybookOverlayStatic() {
             </p>
           </div>
         </header>
-        <div data-playbook-body="true" className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] overflow-hidden">
-          <div data-playbook-cards="true" className="grid gap-3 p-3">
-            {AUTOMATION_TEMPLATES.map((template) => (
-              <article key={template.id} className="overflow-hidden rounded-lg border border-border bg-white">
-                <div
-                  className={`relative overflow-hidden ${TEMPLATE_VISUALS[template.id]}`}
-                  style={{ height: "7rem" }}
-                >
-                  <span className="absolute left-4 top-4 font-serif text-2xl font-bold italic text-white">
-                    {templateNumber(template)}
-                  </span>
-                </div>
-                <div className="p-3">
-                  <h3 data-playbook-name={template.name}>
-                    <span className="sr-only">{template.name}</span>
-                  </h3>
-                  <p data-playbook-blurb={template.description}>
-                    <span className="sr-only">{template.description}</span>
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
+        <div
+          data-playbook-body="true"
+          className="min-h-0 flex-1 overflow-hidden"
+          style={{ minHeight: "24rem" }}
+        />
         <footer
           data-playbook-footer="true"
           className="flex shrink-0 flex-col gap-3 border-t border-border bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-5"
