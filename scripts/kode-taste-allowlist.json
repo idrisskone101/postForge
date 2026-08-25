@@ -59,5 +59,36 @@
   ],
   "innerHtml": [
     "src/app/(app)/layout.tsx"
+  ],
+  "hookSize": [
+    "src/app/(app)/automations/new/use-automation-builder.ts",
+    "src/app/(app)/automations/use-automations-workspace.ts",
+    "src/app/(app)/characters/new/use-character-builder.ts",
+    "src/app/(app)/gallery/use-gallery-workspace.ts",
+    "src/app/(app)/generate/use-generation-form.ts",
+    "src/app/(app)/performance/use-performance-workspace.ts",
+    "src/app/(app)/ugc-clone/use-clone-form.ts",
+    "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
+  ],
+  "effectFns": [
+    "src/app/(app)/automations/new/automation-builder-client-lazy.tsx",
+    "src/app/(app)/automations/new/playbook-picker.tsx",
+    "src/app/(app)/characters/new/character-builder-client-lazy.tsx",
+    "src/app/(app)/costs/costs-page-client.tsx",
+    "src/app/(app)/generate/use-generation-form.ts",
+    "src/app/(app)/generate/use-job-detail.ts",
+    "src/app/(app)/jobs/jobs-auto-refresh.tsx",
+    "src/app/(app)/settings/models-panel.tsx",
+    "src/components/avatar-picker-generate.tsx",
+    "src/components/avatar-picker-import-mode.tsx",
+    "src/components/sidebar.tsx",
+    "src/components/slideshow/create-view.tsx",
+    "src/components/slideshow/slideshow-editor.tsx",
+    "src/components/slideshow/slideshow-view-modes.tsx",
+    "src/components/slideshow/use-slideshow-studio-bootstrap.ts",
+    "src/components/video-reference-picker.tsx",
+    "src/components/video-trimmer.tsx",
+    "src/lib/hooks/use-polling.ts",
+    "src/lib/use-window-load-ready.ts"
   ]
 }

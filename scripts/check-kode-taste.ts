@@ -6,6 +6,7 @@ import ts from "typescript";
 export const USE_STATE_LIMIT = 5;
 export const USE_EFFECT_LIMIT = 3;
 export const PROP_BAG_LIMIT = 5;
+export const HOOK_MODULE_LINE_CAP = 250;
 
 const EXEMPT_PROP_KEYS = new Set(["children", "className", "key", "hidden"]);
 
@@ -14,7 +15,9 @@ export type KodeTasteAllowlistRule =
   | "propBags"
   | "useState"
   | "useEffect"
-  | "innerHtml";
+  | "innerHtml"
+  | "hookSize"
+  | "effectFns";
 
 export type KodeTasteAllowlist = {
   fileLayout: string[];
@@ -22,6 +25,8 @@ export type KodeTasteAllowlist = {
   useState: string[];
   useEffect: string[];
   innerHtml: string[];
+  hookSize: string[];
+  effectFns: string[];
 };
 
 export type KodeTasteViolation =
@@ -50,6 +55,17 @@ export type KodeTasteViolation =
       kind: "missing-allowlist";
       path: string;
       rule: KodeTasteAllowlistRule;
+    }
+  | {
+      kind: "hook-size";
+      path: string;
+      lines: number;
+    }
+  | {
+      kind: "effect-fn";
+      path: string;
+      name: string;
+      line: number;
     };
 
 const EMPTY_ALLOWLIST: KodeTasteAllowlist = {
@@ -58,6 +74,8 @@ const EMPTY_ALLOWLIST: KodeTasteAllowlist = {
   useState: [],
   useEffect: [],
   innerHtml: [],
+  hookSize: [],
+  effectFns: [],
 };
 
 function normalizeAllowlist(
@@ -69,6 +87,8 @@ function normalizeAllowlist(
     useState: raw?.useState ?? [],
     useEffect: raw?.useEffect ?? [],
     innerHtml: raw?.innerHtml ?? [],
+    hookSize: raw?.hookSize ?? [],
+    effectFns: raw?.effectFns ?? [],
   };
 }
 
@@ -511,6 +531,125 @@ export function findInnerHtml(
   return { kind: "inner-html", path: relPath };
 }
 
+function countSourceLines(source: string): number {
+  let lines = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    if (source.charCodeAt(index) === 10) {
+      lines += 1;
+    }
+  }
+  return lines;
+}
+
+export function isHookModule(relPath: string, source: string): boolean {
+  const base = path.basename(relPath);
+  if (/^use[-.].+\.tsx?$/.test(base)) {
+    return true;
+  }
+  return (
+    /\bexport\s+(?:async\s+)?function\s+use[A-Z]/.test(source) ||
+    /\bexport\s+const\s+use[A-Z]/.test(source)
+  );
+}
+
+export function findHookSize(
+  relPath: string,
+  source: string
+): Extract<KodeTasteViolation, { kind: "hook-size" }> | null {
+  if (!isHookModule(relPath, source)) {
+    return null;
+  }
+  const lines = countSourceLines(source);
+  if (lines <= HOOK_MODULE_LINE_CAP) {
+    return null;
+  }
+  return { kind: "hook-size", path: relPath, lines };
+}
+
+function isFunctionInitializer(node: ts.Expression | undefined): boolean {
+  if (!node) {
+    return false;
+  }
+  return ts.isArrowFunction(node) || ts.isFunctionExpression(node);
+}
+
+function effectCallbackBody(
+  call: ts.CallExpression
+): ts.ConciseBody | undefined {
+  const callee = call.expression;
+  const isUseEffect =
+    (ts.isIdentifier(callee) && callee.text === "useEffect") ||
+    (ts.isPropertyAccessExpression(callee) &&
+      ts.isIdentifier(callee.name) &&
+      callee.name.text === "useEffect");
+  if (!isUseEffect) {
+    return undefined;
+  }
+  const callback = call.arguments[0];
+  if (!callback) {
+    return undefined;
+  }
+  if (ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) {
+    return callback.body;
+  }
+  return undefined;
+}
+
+export function findEffectInnerFns(
+  relPath: string,
+  source: string
+): Array<Extract<KodeTasteViolation, { kind: "effect-fn" }>> {
+  const sourceFile = parseSource(relPath, source);
+  const violations: Array<Extract<KodeTasteViolation, { kind: "effect-fn" }>> =
+    [];
+
+  const visitEffectBody = (body: ts.ConciseBody): void => {
+    if (!ts.isBlock(body)) {
+      return;
+    }
+    for (const statement of body.statements) {
+      if (ts.isFunctionDeclaration(statement) && statement.name) {
+        violations.push({
+          kind: "effect-fn",
+          path: relPath,
+          name: statement.name.text,
+          line: lineOf(sourceFile, statement.getStart()),
+        });
+        continue;
+      }
+      if (!ts.isVariableStatement(statement)) {
+        continue;
+      }
+      for (const declaration of statement.declarationList.declarations) {
+        if (
+          ts.isIdentifier(declaration.name) &&
+          isFunctionInitializer(declaration.initializer)
+        ) {
+          violations.push({
+            kind: "effect-fn",
+            path: relPath,
+            name: declaration.name.text,
+            line: lineOf(sourceFile, declaration.getStart()),
+          });
+        }
+      }
+    }
+  };
+
+  const walk = (node: ts.Node): void => {
+    if (ts.isCallExpression(node)) {
+      const body = effectCallbackBody(node);
+      if (body) {
+        visitEffectBody(body);
+      }
+    }
+    ts.forEachChild(node, walk);
+  };
+
+  walk(sourceFile);
+  return violations;
+}
+
 function allowlistSet(paths: readonly string[]): Set<string> {
   return new Set(paths);
 }
@@ -527,6 +666,8 @@ export function checkKodeTaste(options: {
   const seenState = new Set<string>();
   const seenEffect = new Set<string>();
   const seenInnerHtml = new Set<string>();
+  const seenHookSize = new Set<string>();
+  const seenEffectFns = new Set<string>();
 
   for (const relPath of files) {
     const absPath = path.join(options.rootDir, relPath);
@@ -567,6 +708,19 @@ export function checkKodeTaste(options: {
         }
       }
     }
+    const hookSize = findHookSize(relPath, source);
+    if (hookSize) {
+      seenHookSize.add(relPath);
+      if (!allowlistSet(allowlist.hookSize).has(relPath)) {
+        violations.push(hookSize);
+      }
+    }
+    for (const effectFn of findEffectInnerFns(relPath, source)) {
+      seenEffectFns.add(relPath);
+      if (!allowlistSet(allowlist.effectFns).has(relPath)) {
+        violations.push(effectFn);
+      }
+    }
   }
 
   const stale = (
@@ -590,6 +744,8 @@ export function checkKodeTaste(options: {
   stale("useState", allowlist.useState, seenState);
   stale("useEffect", allowlist.useEffect, seenEffect);
   stale("innerHtml", allowlist.innerHtml, seenInnerHtml);
+  stale("hookSize", allowlist.hookSize, seenHookSize);
+  stale("effectFns", allowlist.effectFns, seenEffectFns);
 
   violations.sort((left, right) => {
     const pathOrder = left.path.localeCompare(right.path);
@@ -630,6 +786,16 @@ export function formatKodeTasteViolations(
       case "inner-html":
         lines.push(
           `${violation.path}: dangerouslySetInnerHTML is banned; render React nodes or text instead`
+        );
+        break;
+      case "hook-size":
+        lines.push(
+          `${violation.path}: hook module is ${violation.lines} lines (cap ${HOOK_MODULE_LINE_CAP}); split by domain, not by line count`
+        );
+        break;
+      case "effect-fn":
+        lines.push(
+          `${violation.path}:${violation.line}: ${violation.name} is declared inside useEffect; hoist it or keep only listener/cleanup arrows`
         );
         break;
       case "stale-allowlist":
