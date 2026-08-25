@@ -1,5 +1,5 @@
-import { CharactersPageClient } from "./characters-page-client";
+import { CharactersPageLazy } from "./characters-page-lazy";
 
 export default function CharactersPage() {
-  return <CharactersPageClient initialRecords={[]} />;
+  return <CharactersPageLazy initialRecords={[]} />;
 }

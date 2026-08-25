@@ -435,4 +435,28 @@ assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/
 assert.match(source("scripts/build-first-paint-css.mjs"), /dashboard-critical\.css/);
 assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
 
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
+assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
+assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageLazy/);
+assert.match(source("src/app/(app)/characters/page.tsx"), /CharactersPageLazy/);
+assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);
+assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/);
+assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageLazy/);
+assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivityLazy/);
+assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
+assert.match(source("src/components/workspace-shell.tsx"), /data-header-action=/);
+assert.match(source("src/components/workspace-shell.tsx"), /data-header-copy=/);
+assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);
+assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /data-character-cost=/);
+assert.match(source("src/app/(app)/characters/new/character-builder-header.tsx"), /data-character-title=/);
+assert.match(source("src/app/(app)/jobs/jobs-activity.tsx"), /data-empty-cta="Create asset"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-route-skeleton="true"\]\{height:40rem/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action::before\{content:attr\(data-header-action\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid p::before\{content:attr\(data-header-copy\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#character-preview-generation-cost::before\{content:attr\(data-character-cost\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]\{margin:0;width:12rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-chrome="true"\]\{height:5\.75rem/);
+assert.match(source("src/app/globals.css"), /#workspace-header-grid p::before/);
+assert.match(source("src/app/globals.css"), /#character-preview-generation-cost::before/);
+
 console.log("responsive layout invariant tests passed");

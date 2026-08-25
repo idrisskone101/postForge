@@ -1,5 +1,5 @@
-import { AutomationsPageClient } from "./automations-page-client";
+import { AutomationsPageLazy } from "./automations-page-lazy";
 
 export default function AutomationsPage() {
-  return <AutomationsPageClient initialRecords={[]} />;
+  return <AutomationsPageLazy initialRecords={[]} />;
 }

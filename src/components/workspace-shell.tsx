@@ -79,8 +79,8 @@ export function WorkspaceRouteHeader({
           <h1 data-workspace-title={activeItem.label}>
             <span className="sr-only">{activeItem.label}</span>
           </h1>
-          <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
-            {activeItem.description}
+          <p data-header-copy={activeItem.description}>
+            <span className="sr-only">{activeItem.description}</span>
           </p>
         </div>
 
@@ -96,9 +96,10 @@ export function WorkspaceRouteHeader({
               id="workspace-header-default-action"
               href={activeItem.primaryAction.href}
               prefetch={false}
+              data-header-action={activeItem.primaryAction.label}
               className="pf-button-primary w-fit"
             >
-              {activeItem.primaryAction.label}
+              <span className="sr-only">{activeItem.primaryAction.label}</span>
               <ArrowRight className="size-3.5" />
             </Link>
           )}

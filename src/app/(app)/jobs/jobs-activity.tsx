@@ -344,8 +344,13 @@ function EmptyJobs({ status }: { status: JobsStatusFilter }) {
           ? "New image, video, reference, slideshow, and identity generations will appear here as soon as they start."
           : "Try another status or media type. This view keeps completed and failed activity for 30 days."}
       </p>
-      <Link href="/generate" className="pf-button-primary mt-4">
-        Create asset <ArrowRight className="size-3.5" />
+      <Link
+        href="/generate"
+        data-empty-cta="Create asset"
+        className="pf-button-primary mt-4"
+      >
+        <span className="sr-only">Create asset</span>
+        <ArrowRight className="size-3.5" />
       </Link>
     </div>
   );

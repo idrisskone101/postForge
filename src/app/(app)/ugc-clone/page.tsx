@@ -19,8 +19,10 @@ export default async function UGCClonePage({ searchParams }: UGCClonePageProps) 
             <h1 data-home-title="Clone">
               <span className="sr-only">Clone</span>
             </h1>
-            <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
-              Turn a proven source into an on-brand creator video.
+            <p data-clone-copy="Turn a proven source into an on-brand creator video.">
+              <span className="sr-only">
+                Turn a proven source into an on-brand creator video.
+              </span>
             </p>
           </header>
         </div>

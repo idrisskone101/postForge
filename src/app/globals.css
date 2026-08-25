@@ -1349,10 +1349,66 @@
   display: inline-flex !important;
   height: 2.5rem !important;
   min-width: 9.75rem !important;
+  max-width: 9.75rem !important;
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+}
+
+#workspace-header-default-action::before {
+  content: attr(data-header-action) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 7.5rem !important;
+  height: 1rem !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1rem !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+#workspace-header-grid p {
+  max-width: 8rem !important;
+  width: 8rem !important;
+  height: 10px !important;
+  margin: 0.375rem 0 0 !important;
+  overflow: hidden !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#workspace-header-grid p::before {
+  content: attr(data-header-copy) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.pf-content-viewport header p {
+  max-width: 8rem !important;
+  width: 8rem !important;
+  height: 10px !important;
+  margin: 0.375rem 0 0 !important;
+  overflow: hidden !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+[data-route-skeleton="true"] {
+  height: 40rem !important;
+  min-height: 40rem !important;
+  overflow: hidden !important;
 }
 
 #workspace-header-grid h1 {
@@ -1574,6 +1630,97 @@
   overflow: hidden !important;
 }
 
+[data-character-title] {
+  margin: 0 !important;
+  width: 8rem !important;
+  max-width: 8rem !important;
+  height: 19px !important;
+  overflow: hidden !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  letter-spacing: -0.01em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+}
+
+[data-character-title]::before {
+  content: attr(data-character-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 19px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-character-preview-label],
+#character-preview-generation-cost {
+  width: 8rem !important;
+  max-width: 8rem !important;
+  height: 10px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  white-space: nowrap !important;
+}
+
+#character-preview-generation-cost {
+  margin-top: 0.25rem !important;
+}
+
+[data-character-preview-label]::before {
+  content: attr(data-character-preview-label) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+#character-preview-generation-cost::before {
+  content: attr(data-character-cost) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-character-status] {
+  max-width: 8rem !important;
+  height: 1.5rem !important;
+  overflow: hidden !important;
+}
+
+[data-character-status]::before {
+  content: attr(data-character-status) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 6rem !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 12px !important;
+  color: inherit !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-automation-phases="true"] {
   height: 59px !important;
   overflow: hidden !important;
@@ -1681,12 +1828,21 @@
   background: #fff !important;
 }
 
+[data-playbook-chrome="true"] {
+  height: 5.75rem !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
 [data-playbook-body="true"] {
   display: grid !important;
   min-height: 0 !important;
   flex: 1 1 auto !important;
   grid-template-columns: minmax(0, 1fr) !important;
   overflow: auto !important;
+  content-visibility: auto !important;
+  contain-intrinsic-size: auto 24rem !important;
 }
 
 [data-playbook-cards="true"] {
@@ -1694,6 +1850,20 @@
   gap: 0.75rem !important;
   padding: 0.75rem !important;
   grid-template-columns: minmax(0, 1fr) !important;
+}
+
+[data-playbook-title] {
+  margin: 0 !important;
+  width: 12rem !important;
+  max-width: 12rem !important;
+  height: 24px !important;
+  overflow: hidden !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
 }
 
 [data-playbook-title]::before {
@@ -1886,6 +2056,32 @@
   font-size: 15px !important;
   line-height: 19px !important;
   color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-jobs-empty="true"] a {
+  display: inline-flex !important;
+  height: 2.5rem !important;
+  min-width: 9.75rem !important;
+  max-width: 9.75rem !important;
+  margin-top: 1rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+[data-jobs-empty="true"] a::before {
+  content: attr(data-empty-cta) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 7.5rem !important;
+  height: 1rem !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1rem !important;
+  color: #fff !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }

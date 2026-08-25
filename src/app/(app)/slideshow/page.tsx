@@ -1,12 +1,12 @@
 import { ffmpegBinaryExists } from "@/lib/ai/slideshow-renderer";
-import { SlideshowStudio } from "@/components/slideshow";
+import { SlideshowStudioLazy } from "@/components/slideshow/slideshow-studio-lazy";
 
 export const metadata = { title: "Slideshow Studio - PostForge" };
 export const dynamic = "force-dynamic";
 
 export default function SlideshowPage() {
   return (
-    <SlideshowStudio
+    <SlideshowStudioLazy
       initialProjects={[]}
       initialProject={null}
       initialViewMode="edit"

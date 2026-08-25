@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Grid2X2, Heart, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaybookCard } from "./playbook-card";
@@ -22,8 +22,10 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     onBuildFromScratch,
     onClose,
   } = picker;
+  const [cardsReady, setCardsReady] = useState(false);
 
   useEffect(() => {
+    setCardsReady(true);
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
     }
@@ -33,7 +35,10 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
 
   return (
     <>
-      <header className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-white px-4 py-4 sm:px-5">
+      <header
+        data-playbook-chrome="true"
+        className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-white px-4 py-4 sm:px-5"
+      >
         <div>
           <h2 id="template-title" data-playbook-title="Choose a playbook">
             <span className="sr-only">Choose a playbook</span>
@@ -200,9 +205,11 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
               data-playbook-cards="true"
               className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}
             >
-              {templates.map((template) => (
-                <PlaybookCard key={template.id} picker={picker} template={template} />
-              ))}
+              {cardsReady
+                ? templates.map((template) => (
+                    <PlaybookCard key={template.id} picker={picker} template={template} />
+                  ))
+                : null}
             </div>
           )}
         </section>

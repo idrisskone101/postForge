@@ -54,7 +54,9 @@ export function CharacterBuilderHeader({
           <ArrowLeft className="size-4" />
         </Link>
         <div className="min-w-0">
-          <h1 className="truncate text-[15px] font-semibold tracking-[-0.01em]">{editId ? "Edit character" : "Character builder"}</h1>
+          <h1 data-character-title={editId ? "Edit character" : "Character builder"}>
+            <span className="sr-only">{editId ? "Edit character" : "Character builder"}</span>
+          </h1>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { CollectionsPageClient } from "./collections-page-client";
+import { CollectionsPageLazy } from "./collections-page-lazy";
+import { WorkspaceRouteSkeleton } from "@/components/workspace-route-skeleton";
 
 export default function CollectionsPage({
   searchParams,
@@ -7,7 +8,7 @@ export default function CollectionsPage({
   searchParams: Promise<{ upload?: string }>;
 }) {
   return (
-    <Suspense fallback={<CollectionsPageClient initialRecords={[]} openUploader={false} />}>
+    <Suspense fallback={<WorkspaceRouteSkeleton />}>
       <CollectionsPageWithParams searchParams={searchParams} />
     </Suspense>
   );
@@ -19,5 +20,5 @@ async function CollectionsPageWithParams({
   searchParams: Promise<{ upload?: string }>;
 }) {
   const params = await searchParams;
-  return <CollectionsPageClient initialRecords={[]} openUploader={params.upload === "1"} />;
+  return <CollectionsPageLazy initialRecords={[]} openUploader={params.upload === "1"} />;
 }

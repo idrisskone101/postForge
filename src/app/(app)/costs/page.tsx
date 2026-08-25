@@ -4,7 +4,7 @@ import {
   parseLogPage,
   parseSpendPeriod,
 } from "@/lib/costs/spend-period";
-import { CostsPageClient } from "./costs-page-client";
+import { CostsPageLazy } from "./costs-page-lazy";
 import { EMPTY_COSTS_DASHBOARD } from "./spend-models";
 
 export const metadata = { title: "Spend - PostForge" };
@@ -21,7 +21,7 @@ interface CostsPageProps {
 export default async function CostsPage({ searchParams }: CostsPageProps) {
   const params = await searchParams;
   return (
-    <CostsPageClient
+    <CostsPageLazy
       {...EMPTY_COSTS_DASHBOARD}
       period={parseSpendPeriod(params.period)}
       search={parseCostLogSearch(params.q)}
