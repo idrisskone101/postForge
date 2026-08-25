@@ -232,8 +232,9 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 // Dashboard Tailwind must not block first paint; legal routes stay off that bundle.
 assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
-assert.match(appLayout, /rel="preload"/);
+assert.doesNotMatch(appLayout, /rel="preload" href="\/dashboard\.css"/);
 assert.match(appLayout, /media="print"/);
+assert.doesNotMatch(appLayout, /if\(l\.sheet\)/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
 assert.match(appLayout, /FIRST_PAINT_CSS/);
 assert.doesNotMatch(legalLayout, /from "\.\.\/first-paint-css"/);
@@ -438,6 +439,9 @@ assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scr
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
 assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
 assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
+assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-title="Integrations"/);
+assert.match(source("src/app/(app)/generate/page.tsx"), /data-generate-history="History"/);
+assert.match(appLayout, /window\.addEventListener\("load"/);
 assert.match(source("src/app/(app)/characters/page.tsx"), /CharactersPageLazy/);
 assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);
 assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/);

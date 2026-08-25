@@ -151,45 +151,45 @@ body {
 }
 
 #workspace-header-grid h1 {
-  height: 31px;
-  width: 12rem;
-  overflow: hidden;
-  font-size: 28px;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 31px !important;
+  width: 12rem !important;
+  overflow: hidden !important;
+  font-size: 28px !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
 #workspace-header-grid h1::before {
-  content: attr(data-workspace-title);
-  display: block;
-  overflow: hidden;
-  height: 31px;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 31px;
-  letter-spacing: -0.02em;
-  color: #18181b;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  content: attr(data-workspace-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 31px !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 31px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 .pf-content-viewport header h1 {
-  height: 33px;
-  overflow: hidden;
-  font-size: 30px;
+  height: 33px !important;
+  overflow: hidden !important;
+  font-size: 30px !important;
 }
 
 .pf-content-viewport header h1::before {
-  content: attr(data-home-title);
-  display: block;
-  overflow: hidden;
-  height: 33px;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 33px;
-  letter-spacing: -0.02em;
-  color: #18181b;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  content: attr(data-home-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 33px !important;
+  font-size: 30px !important;
+  font-weight: 600 !important;
+  line-height: 33px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 #workspace-header-grid p,
@@ -1324,6 +1324,31 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-generate-history] {
+  display: inline-flex;
+  height: 2.25rem;
+  min-width: 6.5rem;
+  max-width: 6.5rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-generate-history]::before {
+  content: attr(data-generate-history);
+  display: block;
+  overflow: hidden;
+  max-width: 4.5rem;
+  height: 1rem;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1rem;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 [data-clone-copy]::before,
 [data-home-copy]::before {
   content: attr(data-clone-copy);
@@ -2258,6 +2283,8 @@ body {
 
 [data-settings-heading="true"] {
   margin: 0.25rem 0 0;
+  width: 12rem;
+  max-width: 12rem;
   height: 25px;
   overflow: hidden;
   font-size: 20px;
@@ -2265,6 +2292,21 @@ body {
   line-height: 25px;
   letter-spacing: -0.02em;
   color: #18181b;
+}
+
+[data-settings-heading="true"]::before {
+  content: attr(data-settings-title);
+  display: block;
+  overflow: hidden;
+  width: 12rem;
+  height: 25px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  letter-spacing: -0.02em;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 [data-settings-nav="true"] {

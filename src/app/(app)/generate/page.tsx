@@ -19,9 +19,11 @@ export default function GeneratePage({ searchParams }: GeneratePageProps) {
           <Link
             href="/gallery"
             prefetch={false}
+            data-generate-history="History"
             className="pf-button-secondary h-9"
           >
-            <History className="size-3.5" /> History
+            <History className="size-3.5" />
+            <span className="sr-only">History</span>
           </Link>
           <Link
             href="/settings"
