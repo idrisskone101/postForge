@@ -22,11 +22,14 @@ The reviewer must:
 
 1. Compare the running production code with `DESIGN.md`, the shared shell, and the affected route's intended state at desktop (1440 x 1024) and mobile (390 x 844), then run responsive fit checks at 1280, 1024, and 768 CSS pixels wide.
 2. Check layout, hierarchy, typography, color, spacing, borders, controls, responsive behavior, sidebar expansion/collapse, column fallbacks, fixed or sticky bars, safe areas, and loading, empty, error, and populated states.
-3. Exercise the pre-redesign behavior contract for the affected route, including deep links, query parameters, mutations, handoffs, downloads, retries, and failure recovery.
-4. Reject invented integrations or fabricated data. Disconnected services must remain explicit and functional local workflows must remain real.
-5. Report findings with severity, route, reproduction steps, and screenshot or DOM evidence.
+3. Hunt visual regressions from first-paint or Lighthouse work: clipped or ellipsized copy, missing or doubled borders, buttons that no longer look like buttons, and spacing that collapsed or doubled. Compare first paint to the post-`window.load` / post-hydrate UI. Follow `.cursor/skills/verify-postforge/SKILL.md` (Visual regressions).
+4. Exercise the pre-redesign behavior contract for the affected route, including deep links, query parameters, mutations, handoffs, downloads, retries, failure recovery, and perceived navigation speed (sidebar/header clicks; `prefetch={false}` needs a reason).
+5. Reject invented integrations or fabricated data. Disconnected services must remain explicit and functional local workflows must remain real.
+6. Report findings with severity, route, reproduction steps, and screenshot or DOM evidence.
 
-The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI work is not complete until the reviewer confirms design-system consistency and no material functionality regression, followed by lint, typecheck, tests, and a production build.
+The implementing agent must fix every P0/P1 finding and rerun the reviewer. UI work is not complete until the reviewer confirms design-system consistency and no material functionality or visual regression, followed by lint, typecheck, tests, and a production build.
+
+A green Lighthouse job (performance ≥ 90, healthy CLS/LCP) does not replace this review. Fast lab scores with cut-off text, flattened controls, or sluggish nav are still P0/P1. Perf work is not done until visual QA on the production build passes.
 
 ## Playwright session artifacts
 
