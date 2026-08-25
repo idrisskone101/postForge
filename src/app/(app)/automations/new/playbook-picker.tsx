@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Grid2X2, Heart, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaybookCard } from "./playbook-card";
@@ -22,10 +22,8 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     onBuildFromScratch,
     onClose,
   } = picker;
-  const [cardsReady, setCardsReady] = useState(false);
 
   useEffect(() => {
-    setCardsReady(true);
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
     }
@@ -111,8 +109,12 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
               <Plus className="size-3.5" />
             </span>
             <span>
-              <b className="block text-[11px]">Build from scratch</b>
-              <small className="mt-0.5 block text-[11px] text-muted-foreground">Blank three-phase workflow</small>
+              <b className="block text-[11px]" data-playbook-scratch="Build from scratch">
+                <span className="sr-only">Build from scratch</span>
+              </b>
+              <small className="mt-0.5 block text-[11px] text-muted-foreground" data-playbook-scratch-copy="Blank three-phase workflow">
+                <span className="sr-only">Blank three-phase workflow</span>
+              </small>
             </span>
           </button>
         </aside>
@@ -205,11 +207,9 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
               data-playbook-cards="true"
               className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}
             >
-              {cardsReady
-                ? templates.map((template) => (
-                    <PlaybookCard key={template.id} picker={picker} template={template} />
-                  ))
-                : null}
+              {templates.map((template) => (
+                <PlaybookCard key={template.id} picker={picker} template={template} />
+              ))}
             </div>
           )}
         </section>

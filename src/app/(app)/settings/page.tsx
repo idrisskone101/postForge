@@ -1,5 +1,5 @@
-import { SettingsPageLazy } from "./settings-page-lazy";
+import { SettingsPageClient } from "./settings-page-client";
 
 export default function SettingsPage() {
-  return <SettingsPageLazy />;
+  return <SettingsPageClient />;
 }

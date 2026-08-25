@@ -1658,6 +1658,24 @@
   text-overflow: ellipsis !important;
 }
 
+[data-character-action] {
+  max-width: 9.75rem !important;
+  overflow: hidden !important;
+}
+
+[data-character-action]::before {
+  content: attr(data-character-action) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 7.5rem !important;
+  height: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 12px !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-character-preview-label],
 #character-preview-generation-cost {
   width: 8rem !important;
@@ -1997,6 +2015,44 @@
   font-size: 10px !important;
   line-height: 10px !important;
   color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-home-copy]::before {
+  content: attr(data-home-copy) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 10px !important;
+  max-width: 8rem !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-home-action] {
+  display: inline-flex !important;
+  height: 2.5rem !important;
+  min-width: 9.75rem !important;
+  max-width: 9.75rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+[data-home-action]::before {
+  content: attr(data-home-action) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 7.5rem !important;
+  height: 1rem !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1rem !important;
+  color: #fff !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2664,11 +2720,24 @@
 
 [data-settings-setup="true"] {
   margin-top: 0.25rem !important;
-  height: 16px !important;
-  max-width: 16rem !important;
+  height: 10px !important;
+  width: 8rem !important;
+  max-width: 8rem !important;
   overflow: hidden !important;
-  font-size: 11px !important;
-  line-height: 16px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
+  color: #71717a !important;
+  white-space: nowrap !important;
+}
+
+[data-settings-setup="true"]::before {
+  content: attr(data-settings-text) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 8rem !important;
+  height: 10px !important;
+  font-size: 10px !important;
+  line-height: 10px !important;
   color: #71717a !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;

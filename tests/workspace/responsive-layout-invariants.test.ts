@@ -437,12 +437,12 @@ assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scr
 
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
 assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
-assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageLazy/);
+assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
 assert.match(source("src/app/(app)/characters/page.tsx"), /CharactersPageLazy/);
 assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);
 assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/);
-assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageLazy/);
-assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivityLazy/);
+assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
+assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
 assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
 assert.match(source("src/components/workspace-shell.tsx"), /data-header-action=/);
 assert.match(source("src/components/workspace-shell.tsx"), /data-header-copy=/);

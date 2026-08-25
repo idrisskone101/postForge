@@ -763,7 +763,9 @@ body {
 
 [data-playbook-lede]::before,
 [data-playbook-name]::before,
-[data-playbook-blurb]::before {
+[data-playbook-blurb]::before,
+[data-playbook-scratch]::before,
+[data-playbook-scratch-copy]::before {
   display: block;
   overflow: hidden;
   width: 8rem;
@@ -791,6 +793,20 @@ body {
 [data-playbook-blurb]::before {
   content: attr(data-playbook-blurb);
   font-size: 12px;
+  font-weight: 400;
+  color: #52525b;
+}
+
+[data-playbook-scratch]::before {
+  content: attr(data-playbook-scratch);
+  font-size: 11px;
+  font-weight: 700;
+  color: #18181b;
+}
+
+[data-playbook-scratch-copy]::before {
+  content: attr(data-playbook-scratch-copy);
+  font-size: 11px;
   font-weight: 400;
   color: #52525b;
 }
@@ -1308,7 +1324,8 @@ body {
   text-overflow: ellipsis;
 }
 
-[data-clone-copy]::before {
+[data-clone-copy]::before,
+[data-home-copy]::before {
   content: attr(data-clone-copy);
   display: block;
   overflow: hidden;
@@ -1317,6 +1334,35 @@ body {
   font-size: 10px;
   line-height: 10px;
   color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-home-copy]::before {
+  content: attr(data-home-copy);
+}
+
+[data-home-action] {
+  display: inline-flex;
+  height: 2.5rem;
+  min-width: 9.75rem;
+  max-width: 9.75rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-home-action]::before {
+  content: attr(data-home-action);
+  display: block;
+  overflow: hidden;
+  max-width: 7.5rem;
+  height: 1rem;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1rem;
+  color: #fff;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1729,6 +1775,24 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-character-action] {
+  max-width: 9.75rem;
+  overflow: hidden;
+}
+
+[data-character-action]::before {
+  content: attr(data-character-action);
+  display: block;
+  overflow: hidden;
+  max-width: 7.5rem;
+  height: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 [data-character-workbench-header="true"] input {
   display: block;
   width: 100%;
@@ -2118,11 +2182,24 @@ body {
 
 [data-settings-setup="true"] {
   margin-top: 0.25rem;
-  height: 16px;
-  max-width: 16rem;
+  height: 10px;
+  width: 8rem;
+  max-width: 8rem;
   overflow: hidden;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 10px;
+  color: #71717a;
+  white-space: nowrap;
+}
+
+[data-settings-setup="true"]::before {
+  content: attr(data-settings-text);
+  display: block;
+  overflow: hidden;
+  width: 8rem;
+  height: 10px;
+  font-size: 10px;
+  line-height: 10px;
   color: #71717a;
   white-space: nowrap;
   text-overflow: ellipsis;

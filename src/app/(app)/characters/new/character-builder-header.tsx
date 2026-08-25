@@ -71,14 +71,15 @@ export function CharacterBuilderHeader({
           disabled={saving || rendering}
           aria-describedby="character-preview-generation-cost"
           title="Uses one paid image generation"
+          data-character-action={rendering ? "Rendering…" : "Randomize & render"}
           className="pf-button-secondary h-9 disabled:cursor-not-allowed disabled:opacity-45"
         >
           {rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />}
-          {rendering ? "Rendering…" : "Randomize & render"}
+          <span className="sr-only">{rendering ? "Rendering…" : "Randomize & render"}</span>
         </button>
-        <button onClick={onImport} aria-label="Import prompt or JSON" className="pf-button-secondary h-9"><Upload className="size-3.5" /> Import</button>
-        <button onClick={copyAttributes} aria-label="Copy attributes JSON" className="pf-button-secondary h-9"><Clipboard className="size-3.5" /> Copy JSON</button>
-        <button onClick={saveCharacter} disabled={saving || rendering || missingEditRecord || previewSaveBlocked} aria-label="Save character" title={rendering ? "Wait for the preview render to finish" : previewSaveBlocked ? "Re-render the photographic preview before saving" : undefined} className="pf-button-primary h-9 shrink-0 px-4 disabled:cursor-not-allowed disabled:opacity-45"><Save className="size-3.5" /> {saving ? "Saving…" : rendering ? "Rendering…" : missingEditRecord ? "Unavailable" : previewSaveBlocked ? "Preview changed" : readyPreviewFingerprint ? "Save" : "Save draft"}</button>
+        <button onClick={onImport} aria-label="Import prompt or JSON" data-character-action="Import" className="pf-button-secondary h-9"><Upload className="size-3.5" /><span className="sr-only">Import</span></button>
+        <button onClick={copyAttributes} aria-label="Copy attributes JSON" data-character-action="Copy JSON" className="pf-button-secondary h-9"><Clipboard className="size-3.5" /><span className="sr-only">Copy JSON</span></button>
+        <button onClick={saveCharacter} disabled={saving || rendering || missingEditRecord || previewSaveBlocked} aria-label="Save character" title={rendering ? "Wait for the preview render to finish" : previewSaveBlocked ? "Re-render the photographic preview before saving" : undefined} data-character-action={saving ? "Saving…" : rendering ? "Rendering…" : missingEditRecord ? "Unavailable" : previewSaveBlocked ? "Preview changed" : readyPreviewFingerprint ? "Save" : "Save draft"} className="pf-button-primary h-9 shrink-0 px-4 disabled:cursor-not-allowed disabled:opacity-45"><Save className="size-3.5" /><span className="sr-only">{saving ? "Saving…" : rendering ? "Rendering…" : missingEditRecord ? "Unavailable" : previewSaveBlocked ? "Preview changed" : readyPreviewFingerprint ? "Save" : "Save draft"}</span></button>
       </div>
     </header>
   );

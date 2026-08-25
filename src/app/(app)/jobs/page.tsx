@@ -1,9 +1,12 @@
 import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { WorkspaceRouteSkeleton } from "@/components/workspace-route-skeleton";
-import type { JobsStatusFilter, JobsTypeFilter } from "./jobs-activity";
-import { JobsActivityLazy } from "./jobs-activity-lazy";
+import {
+  EMPTY_JOBS_ACTIVITY,
+  JobsActivity,
+  type JobsStatusFilter,
+  type JobsTypeFilter,
+} from "./jobs-activity";
 import { JobsAutoRefresh } from "./jobs-auto-refresh";
 
 export const metadata = { title: "Jobs - PostForge" };
@@ -15,7 +18,7 @@ export default function JobsPage({
   searchParams: Promise<{ status?: string; type?: string; page?: string }>;
 }) {
   return (
-    <Suspense fallback={<WorkspaceRouteSkeleton />}>
+    <Suspense fallback={<JobsActivity activity={EMPTY_JOBS_ACTIVITY} />}>
       <JobsPageData searchParams={searchParams} />
     </Suspense>
   );
@@ -94,7 +97,7 @@ async function JobsPageData({
   return (
     <>
       <JobsAutoRefresh enabled={activeCount > 0} />
-      <JobsActivityLazy
+      <JobsActivity
         activity={{
           jobs,
           counts: {

@@ -198,15 +198,13 @@ export function HomeHeader({ now = new Date() }: { now?: Date }) {
   return (
     <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
       <div className="min-w-0">
-        <h1 data-home-title="Home">
-          <span className="sr-only">Home</span>
-        </h1>
-        <p className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
-          {todayLabel}
+        <h1 data-home-title="Home"><span className="sr-only">Home</span></h1>
+        <p data-home-copy={todayLabel} className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
+          <span className="sr-only">{todayLabel}</span>
         </p>
       </div>
-      <Link href="/ugc-clone" prefetch={false} className="pf-button-primary shrink-0">
-        <span className="text-base leading-none">+</span> New Clone
+      <Link href="/ugc-clone" prefetch={false} data-home-action="New Clone" className="pf-button-primary shrink-0">
+        <span className="sr-only">New Clone</span>
       </Link>
     </header>
   );
