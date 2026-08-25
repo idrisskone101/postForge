@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AUTOMATION_TEMPLATES } from "@/lib/automations";
+import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
 import {
   filterPlaybooks,
   playbookCategories,

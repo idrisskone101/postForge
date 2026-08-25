@@ -1,4 +1,4 @@
-import { AUTOMATION_TEMPLATES } from "@/lib/automations";
+import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
 
 export type Phase = "Hook" | "Content" | "CTA";
 export type TemplateSort = "recommended" | "name" | "slides";

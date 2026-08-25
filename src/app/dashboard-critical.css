@@ -1029,6 +1029,13 @@ body {
   white-space: nowrap;
 }
 
+[data-jobs-summary="true"] > * {
+  height: 5rem;
+  padding: 1rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 [data-jobs-empty="true"] {
   height: 18.75rem;
   overflow: hidden;
@@ -1096,6 +1103,12 @@ body {
   text-overflow: ellipsis;
 }
 
+[data-jobs-empty="true"] > span:first-of-type {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+}
+
 [data-settings-intro="true"] {
   margin-top: 0.25rem;
   max-width: 36rem;
@@ -1126,6 +1139,17 @@ body {
   height: 7.75rem;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+[data-jobs-filters="true"] a {
+  display: inline-flex;
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.75rem;
 }
 
 [data-spend-page="true"] > * + * {
@@ -1855,6 +1879,9 @@ body {
 
 [data-character-action] {
   max-width: 9.75rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
   overflow: hidden;
 }
 

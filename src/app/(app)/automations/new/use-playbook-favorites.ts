@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AUTOMATION_TEMPLATES } from "@/lib/automations";
+import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
 import { FAVORITES_STORAGE_KEY } from "./playbook-model";
 
 export function usePlaybookFavorites() {

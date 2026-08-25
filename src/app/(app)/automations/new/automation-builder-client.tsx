@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AUTOMATION_TEMPLATES } from "@/lib/automations";
+import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
 import { AutomationPlaybookOverlay } from "./automation-playbook-overlay";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
 import { AutomationBuilderSessionLazy } from "./automation-builder-session-lazy";

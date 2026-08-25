@@ -197,6 +197,26 @@ for (const file of namedLibFiles) {
   );
 }
 
+const pickerFirstLoad = [
+  "src/app/(app)/automations/new/automation-builder-client.tsx",
+  "src/app/(app)/automations/new/playbook-model.ts",
+  "src/app/(app)/automations/new/use-playbook-entry.ts",
+  "src/app/(app)/automations/new/use-playbook-favorites.ts",
+];
+for (const file of pickerFirstLoad) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(
+    source,
+    /from ["']@\/lib\/automations["']/,
+    `${file} must import templates without the automations record module`
+  );
+  assert.match(
+    source,
+    /from ["']@\/lib\/automations\/templates["']/,
+    `${file} must read AUTOMATION_TEMPLATES from the leaf module`
+  );
+}
+
 console.log(
   [...files, ...libFiles, ...namedLibFiles]
     .map((file) => `${lineCount(file).toString().padStart(4)} ${file}`)
