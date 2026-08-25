@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Grid2X2, Heart, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PlaybookCard } from "./playbook-card";
 import { isTemplateSort, type PlaybookPickerState } from "./playbook-model";
+
+const PlaybookCard = dynamic(
+  () =>
+    import("./playbook-card").then((mod) => ({
+      default: mod.PlaybookCard,
+    })),
+  { ssr: false },
+);
 
 export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
   const {
@@ -22,6 +30,7 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     onBuildFromScratch,
     onClose,
   } = picker;
+  const [cardsReady, setCardsReady] = useState(false);
 
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
@@ -30,6 +39,16 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [onClose]);
+
+  useEffect(() => {
+    if (document.readyState === "complete") {
+      setCardsReady(true);
+      return;
+    }
+    const onLoad = () => setCardsReady(true);
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
 
   return (
     <>
@@ -207,9 +226,17 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
               data-playbook-cards="true"
               className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}
             >
-              {templates.map((template) => (
-                <PlaybookCard key={template.id} picker={picker} template={template} />
-              ))}
+              {cardsReady
+                ? templates.map((template) => (
+                    <PlaybookCard key={template.id} picker={picker} template={template} />
+                  ))
+                : templates.map((template) => (
+                    <article
+                      key={template.id}
+                      aria-hidden
+                      className="h-[17.5rem] overflow-hidden rounded-lg border border-border bg-white"
+                    />
+                  ))}
             </div>
           )}
         </section>

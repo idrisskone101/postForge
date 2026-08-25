@@ -439,8 +439,8 @@ assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
 assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
 assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
 assert.match(
-  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
-  /import\("\.\/automation-builder-phase-form"\)/,
+  source("src/app/(app)/automations/new/playbook-picker.tsx"),
+  /import\("\.\/playbook-card"\)/,
 );
 assert.match(
   source("src/app/first-paint-css.ts"),
