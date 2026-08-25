@@ -77,8 +77,10 @@ const routeSurfaces = [
 
 // One responsive shell owns document overflow and every route inherits it.
 assert.match(appLayout, /<WorkspaceShell pathname=\{pathname\}>\{children\}<\/WorkspaceShell>/);
-assert.match(shell, /usePathname\(\)/);
-assert.match(shell, /"use client"/);
+assert.match(shell, /WorkspaceHeaderGate/);
+assert.doesNotMatch(shell, /"use client"/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /usePathname\(\)/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /"use client"/);
 assert.doesNotMatch(legalLayout, /WorkspaceShell|Sidebar/);
 assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);
@@ -313,7 +315,7 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-actions="true"\
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action\{display:inline-flex;height:2\.5rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-chart-head="true"\]\{display:flex/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-body="true"/);
-assert.match(source("src/components/workspace-shell.tsx"), /data-header-accessory=\{hasAccessory \? "true" : "false"\}/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-accessory=\{hasAccessory \? "true" : "false"\}/);
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-empty="true"/);
 assert.doesNotMatch(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-workspace-state="empty"/);
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-count="true"/);
@@ -545,8 +547,8 @@ assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/
 assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
 assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
 assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
-assert.match(source("src/components/workspace-shell.tsx"), /data-header-action=/);
-assert.match(source("src/components/workspace-shell.tsx"), /data-header-copy=/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);
+assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-copy=/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /data-character-cost=/);
 assert.match(source("src/app/(app)/characters/new/character-builder-header.tsx"), /data-character-title=/);
