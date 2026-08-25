@@ -46,22 +46,22 @@ export function CharacterAttributeEditor({
           <div>
             <div className="flex flex-col items-start justify-between gap-3 min-[560px]:flex-row min-[560px]:items-end">
               <div>
-                <h2 data-lcp="Character blueprint">
-                  <span className="sr-only">Character blueprint</span>
+                <h2 style={{ margin: 0, maxWidth: "8rem", height: 19, overflow: "hidden", fontSize: 15, lineHeight: "19px" }}>
+                  Character blueprint
                 </h2>
                 <p className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
               </div>
-              <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-lcp="Copy prompt">
+              <button onClick={copyPrompt} className="pf-button-secondary shrink-0">
                 <Copy className="size-3.5" />
-                <span className="sr-only">Copy prompt</span>
+                Copy prompt
               </button>
             </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1460px]:grid-cols-2">
               {CHARACTER_ATTRIBUTE_SECTIONS.map((section) => (
                 <button key={section.id} onClick={() => onSelectSection(section.id)} className="pf-card p-3 text-left transition hover:border-[var(--pf-border-strong)] hover:shadow-sm motion-reduce:transform-none">
                   <span className="flex items-center justify-between">
-                    <b data-lcp={section.label}>
-                      <span className="sr-only">{section.label}</span>
+                    <b style={{ maxWidth: "8rem", maxHeight: 12, overflow: "hidden", fontSize: 12, lineHeight: "12px", whiteSpace: "nowrap" }}>
+                      {section.label}
                     </b>
                     <ChevronRight className="size-3 text-muted-foreground" />
                   </span>
@@ -74,12 +74,10 @@ export function CharacterAttributeEditor({
           <div>
             <div>
 
-              <h2 data-lcp={active.label}>
-                <span className="sr-only">{active.label}</span>
+              <h2 style={{ margin: 0, maxWidth: "8rem", height: 19, overflow: "hidden", fontSize: 15, lineHeight: "19px" }}>
+                {active.label}
               </h2>
-              <p data-lcp="Selections update the recipe immediately.">
-                <span className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</span>
-              </p>
+              <p className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</p>
             </div>
             <div className="mt-4 space-y-4">
               {active.groups.map((group) => (
