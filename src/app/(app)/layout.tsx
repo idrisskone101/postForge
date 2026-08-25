@@ -42,6 +42,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
               __html: `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`,
             }}
           />
+          <noscript>
+            <link rel="stylesheet" href="/dashboard.css" />
+          </noscript>
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
           <Sidebar />
         </div>

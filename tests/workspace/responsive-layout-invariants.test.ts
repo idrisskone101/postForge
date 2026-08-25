@@ -237,7 +237,6 @@ assert.doesNotMatch(appLayout, /media="print"/);
 assert.match(appLayout, /createElement\("link"\)/);
 assert.doesNotMatch(appLayout, /if\(l\.sheet\)/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
-assert.doesNotMatch(appLayout, /<noscript>/);
 assert.match(appLayout, /FIRST_PAINT_CSS/);
 assert.doesNotMatch(legalLayout, /from "\.\.\/first-paint-css"/);
 assert.doesNotMatch(appLayout, /isPublicPolicyPath/);

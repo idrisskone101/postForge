@@ -49,9 +49,7 @@ export function CharacterAttributeEditor({
                 <h2 data-lcp="Character blueprint">
                   <span className="sr-only">Character blueprint</span>
                 </h2>
-                <p data-lcp="Review every selected attribute before saving or copy the full prompt for another workflow.">
-                  <span className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</span>
-                </p>
+                <p className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
               </div>
               <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-lcp="Copy prompt">
                 <Copy className="size-3.5" />
@@ -67,9 +65,7 @@ export function CharacterAttributeEditor({
                     </b>
                     <ChevronRight className="size-3 text-muted-foreground" />
                   </span>
-                  <span data-lcp={section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}>
-                    <span className="sr-only">{section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}</span>
-                  </span>
+                  <span className="sr-only">{section.groups.map((group) => `${group.label}: ${attributes[group.key]}`).join(" · ")}</span>
                 </button>
               ))}
             </div>
@@ -81,7 +77,7 @@ export function CharacterAttributeEditor({
               <h2 data-lcp={active.label}>
                 <span className="sr-only">{active.label}</span>
               </h2>
-              <p data-lcp="Selections update the recipe immediately. Re-render to apply them to the photographic preview.">
+              <p data-lcp="Selections update the recipe immediately.">
                 <span className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</span>
               </p>
             </div>

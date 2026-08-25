@@ -96,9 +96,7 @@ export function CharacterCategoryRail({
                 <b data-lcp={section.label} className="block truncate text-[12px] font-medium">
                   <span className="sr-only">{section.label}</span>
                 </b>
-                <small data-lcp={summary} className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                  <span className="sr-only">{summary}</span>
-                </small>
+                <small className="sr-only">{summary}</small>
               </span>
               {sectionComplete ? <Check className="size-3 text-[var(--pf-success)]" /> : activeSection === section.id ? <ChevronDown className="size-3 text-[var(--pf-orange)]" /> : <ChevronRight className="size-3 text-muted-foreground" />}
             </button>
