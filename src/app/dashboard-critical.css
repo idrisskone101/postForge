@@ -1919,6 +1919,10 @@ body {
   background: #09090b;
 }
 
+[data-character-attribute-editor="true"] {
+  min-height: 470px;
+}
+
 [data-character-preview-stage="true"] > div:first-child {
   display: flex;
   height: 5.25rem;

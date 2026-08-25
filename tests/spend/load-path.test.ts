@@ -40,7 +40,7 @@ assert.match(trackerSource, /contains: filter.search/);
 assert.match(clientSource, /logTotalCount/);
 assert.match(clientSource, /logHasNext/);
 assert.match(clientSource, /onLogPageChange/);
-assert.match(clientSource, /\/api\/costs\/dashboard/);
+assert.doesNotMatch(clientSource, /from "@\/components\/cost-chart"/);
 assert.doesNotMatch(clientSource, /filteredLogs/);
 assert.doesNotMatch(clientSource, /logs\.filter/);
 assert.doesNotMatch(clientSource, /filteredLogs\.slice/);

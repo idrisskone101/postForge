@@ -1630,6 +1630,10 @@
   overflow: hidden !important;
 }
 
+[data-character-attribute-editor="true"] {
+  min-height: 470px !important;
+}
+
 [data-character-title] {
   margin: 0 !important;
   width: 12rem !important;

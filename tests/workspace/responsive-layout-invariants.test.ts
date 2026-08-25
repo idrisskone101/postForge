@@ -237,6 +237,7 @@ assert.doesNotMatch(appLayout, /media="print"/);
 assert.match(appLayout, /createElement\("link"\)/);
 assert.doesNotMatch(appLayout, /if\(l\.sheet\)/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
+assert.doesNotMatch(appLayout, /<noscript>/);
 assert.match(appLayout, /FIRST_PAINT_CSS/);
 assert.doesNotMatch(legalLayout, /from "\.\.\/first-paint-css"/);
 assert.doesNotMatch(appLayout, /isPublicPolicyPath/);
@@ -364,6 +365,10 @@ assert.match(
 assert.match(
   source("src/app/first-paint-css.ts"),
   /\[data-character-title\]\{margin:0;width:12rem/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-attribute-editor="true"\]\{min-height:470px/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);

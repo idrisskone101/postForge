@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { PIE_COLORS } from "@/components/cost-chart";
+import { PIE_COLORS } from "@/lib/costs/chart-colors";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
 

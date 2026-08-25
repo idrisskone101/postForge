@@ -150,7 +150,7 @@ assert.match(previewSource, /export type CharacterPreviewStageViewModel/);
 assert.match(editorSource, /export type CharacterAttributeEditorViewModel/);
 assert.match(builderSource, /<CharacterBuilderHeader view=\{headerView\} \/>/);
 assert.match(builderSource, /<CharacterPreviewStage view=\{previewView\} \/>/);
-assert.match(builderSource, /<CharacterAttributeEditor view=\{attributeView\} \/>/);
+assert.match(builderSource, /<CharacterAttributeEditorLazy view=\{attributeView\} \/>/);
 assert.doesNotMatch(builderSource, /createContext|useContext/);
 
 const photoMarkup = renderToStaticMarkup(

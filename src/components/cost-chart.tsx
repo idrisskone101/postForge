@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { ACCENT_BLUE, ACCENT_CORAL, PIE_COLORS } from "@/lib/costs/chart-colors";
 import { formatCost } from "@/lib/utils/format-cost";
 
 interface CostChartProps {
@@ -61,9 +62,6 @@ export function CostChart({ data }: CostChartProps) {
   );
 }
 
-const ACCENT_CORAL = "#FF4A20";
-const ACCENT_BLUE = "#378EFF";
-
 function CustomTooltip({
   active,
   payload,
@@ -102,15 +100,6 @@ function CustomTooltip({
 interface ModelPieChartProps {
   data: Array<{ name: string; value: number }>;
 }
-
-export const PIE_COLORS = [
-  ACCENT_CORAL,
-  "#E6B759",
-  "#7CB99A",
-  "#C97C5D",
-  ACCENT_BLUE,
-  "#8A8B86",
-];
 
 export function ModelPieChart({ data }: ModelPieChartProps) {
   return (
