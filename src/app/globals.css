@@ -1641,6 +1641,8 @@
   content: attr(data-generate-notice) !important;
   display: block !important;
   overflow: hidden !important;
+  width: 8rem !important;
+  max-width: 8rem !important;
   height: 16px !important;
   font-size: 12px !important;
   line-height: 16px !important;
@@ -1762,8 +1764,8 @@
 
 @media (min-width: 768px) {
   [data-gallery-toolbar="true"] {
-    height: auto !important;
-    overflow: visible !important;
+    height: 6.5rem !important;
+    overflow: hidden !important;
   }
 
   [data-gallery-tools="true"] {
@@ -1797,6 +1799,20 @@
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
   gap: 0.75rem !important;
+}
+
+@media (min-width: 1024px) {
+  [data-spend-controls="true"] {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-spend-stats="true"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
 }
 
 [data-spend-stats="true"] > article {
@@ -2098,15 +2114,16 @@
 
 [data-settings-copy="true"] {
   margin-top: 0.25rem !important;
-  width: 17.375rem !important;
+  width: 8rem !important;
   max-width: 100% !important;
-  height: 64px !important;
+  height: 16px !important;
   overflow: hidden !important;
   font-size: 12px !important;
   line-height: 16px !important;
   font-weight: 400 !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;
+  white-space: nowrap !important;
 }
 
 [data-settings-copy="true"]::before {
@@ -2150,6 +2167,30 @@
   font-size: 11px !important;
   line-height: 11px !important;
   font-weight: 400 !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-spend-note="true"] {
+  margin-top: 0.25rem !important;
+  width: 8rem !important;
+  max-width: 100% !important;
+  height: 11px !important;
+  overflow: hidden !important;
+  font-size: 11px !important;
+  line-height: 11px !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+}
+
+[data-spend-note="true"]::before {
+  content: attr(data-spend-note-text) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 11px !important;
+  font-size: 11px !important;
+  line-height: 11px !important;
   color: #52525b !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;

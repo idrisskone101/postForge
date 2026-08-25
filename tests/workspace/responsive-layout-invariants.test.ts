@@ -289,7 +289,7 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]:
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\] strong::before\{content:attr\(data-jobs-value\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-content-viewport header h1::before\{content:attr\(data-home-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]::before\{content:attr\(data-settings-text\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]::before\{content:attr\(data-spend-intro-text\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-note="true"\]::before\{content:attr\(data-spend-note-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-empty-heading="true"\]::before\{content:attr\(data-empty-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-value="true"\]::before\{content:attr\(data-spend-text\)/);
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);

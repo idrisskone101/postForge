@@ -187,8 +187,13 @@ export function SpendPageContent({
           <strong className="text-sm">
             You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
           </strong>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Track the selected period against a budget you control locally in PostForge.
+          <p
+            data-spend-note="true"
+            data-spend-note-text="Track the selected period against a budget you control locally in PostForge."
+          >
+            <span className="sr-only">
+              Track the selected period against a budget you control locally in PostForge.
+            </span>
           </p>
         </div>
         <div className="flex min-w-0 items-center gap-3 lg:w-72 lg:max-w-full">
