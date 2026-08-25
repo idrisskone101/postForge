@@ -60,12 +60,18 @@ export function CharacterBuilderHeader({
         </div>
       </div>
 
-      <label className="min-w-0 flex-1 min-[1280px]:max-w-[300px]">
+      <label
+        className="min-w-0 min-[1280px]:max-w-[300px] min-[1280px]:flex-1"
+        style={{ height: 36, overflow: "hidden" }}
+      >
         <span className="sr-only">Character name</span>
         <input value={name} onChange={(event) => onNameChange(event.target.value)} aria-label="Character name" className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[11px] font-medium outline-none transition focus:border-[var(--pf-orange)] focus:bg-white focus:ring-2 focus:ring-[var(--pf-orange)]/15" placeholder="Add character name…" />
       </label>
 
-      <div className="flex min-w-0 flex-wrap gap-2 min-[1280px]:ml-auto min-[1280px]:flex-nowrap">
+      <div
+        className="flex min-w-0 flex-nowrap gap-2 min-[1280px]:ml-auto"
+        style={{ height: 36, overflow: "hidden" }}
+      >
         <button
           onClick={randomizeAndRender}
           disabled={saving || rendering}

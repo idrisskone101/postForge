@@ -1771,6 +1771,17 @@ header:has([data-home-title]) .pf-button-primary {
   [data-character-category-rail="true"] {
     height: 9.25rem;
   }
+
+  [data-character-workbench-header="true"] > label {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 2.25rem;
+  }
+
+  [data-character-workbench-header="true"] > div:last-child {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
 }
 
 [data-character-workbench-header="true"] > div:first-child {

@@ -50,6 +50,9 @@ const generationRouteSource = readFileSync(
 
 assert.match(builderSource, /data-character-workbench="true"/);
 assert.match(builderSource, /data-character-workbench-header="true"/);
+assert.match(headerSource, /min-\[1280px\]:flex-1/);
+assert.doesNotMatch(headerSource, /className="min-w-0 flex-1 /);
+assert.match(headerSource, /flex-nowrap gap-2/);
 assert.match(builderSource, /data-character-category-rail="true"/);
 assert.match(builderSource, /data-character-recipe-step-rail="true"/);
 assert.match(builderSource, /data-character-preview-stage="true"/);
