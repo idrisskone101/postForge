@@ -140,6 +140,7 @@ assert.ok(markup.indexOf("Spend Over Time") < markup.indexOf("Spend by Format"))
 assert.ok(markup.indexOf("Spend by Model") < markup.indexOf("Generation Log"));
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
+assert.match(emptyMarkup, /data-spend-empty="true"/);
 assert.match(emptyMarkup, /data-spend-chart="empty"/);
 assert.match(emptyMarkup, /No spend data yet/);
 assert.match(emptyMarkup, /No cost log entries yet/);
