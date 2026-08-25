@@ -148,7 +148,9 @@ export function GenerateFormControls({
           <div className="min-h-9 leading-4">
             {promptEnhancerConfigured === false && !promptImprovementError ? (
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span>Prompt improvement needs a Gemini API key.</span>
+                <span data-generate-notice="Prompt improvement needs a Gemini API key.">
+                  <span className="sr-only">Prompt improvement needs a Gemini API key.</span>
+                </span>
                 <Link
                   href="/settings?tab=api-keys"
                   className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"

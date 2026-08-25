@@ -43,8 +43,8 @@ export function CloneSourceStep({
             <h2 className="text-[12px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
               Source &amp; trim
             </h2>
-            <p className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
-              Choose the clip and trim the part to clone.
+            <p data-clone-copy="Choose the clip and trim the part to clone.">
+              <span className="sr-only">Choose the clip and trim the part to clone.</span>
             </p>
           </div>
         </div>

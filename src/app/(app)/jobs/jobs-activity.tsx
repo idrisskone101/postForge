@@ -315,11 +315,11 @@ function StatusPill({ job }: { job: JobActivityItem }) {
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)]">
-      <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-        {label}
+      <span data-jobs-label={label}>
+        <span className="sr-only">{label}</span>
       </span>
-      <strong className="mt-1.5 block text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
-        {value}
+      <strong data-jobs-value={String(value)}>
+        <span className="sr-only">{value}</span>
       </strong>
     </div>
   );

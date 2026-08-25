@@ -57,8 +57,13 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
             <Gauge className="size-3.5" />
           </span>
         </div>
-        <strong data-spend-model="true" className="mt-3 block truncate text-[20px] font-semibold tracking-[-0.02em]">
-          {dashboard.topModel ? dashboard.topModel.name : "No data yet"}
+        <strong
+          data-spend-model="true"
+          data-spend-text={dashboard.topModel ? dashboard.topModel.name : "No data yet"}
+        >
+          <span className="sr-only">
+            {dashboard.topModel ? dashboard.topModel.name : "No data yet"}
+          </span>
         </strong>
         <p className="mt-1 text-[11px] text-muted-foreground">
           {dashboard.topModel

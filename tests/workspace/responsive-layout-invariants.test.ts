@@ -284,7 +284,9 @@ assert.match(source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx")
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-form="true"\] \.pf-input/);
 assert.doesNotMatch(appLayout, /globals\.css/);
 assert.doesNotMatch(layout, /globals\.css/);
-assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid h1::before\{content:attr\(data-workspace-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]::before\{content:attr\(data-spend-text\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\] strong::before\{content:attr\(data-jobs-value\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\.pf-content-viewport header h1::before\{content:attr\(data-home-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-settings-copy="true"\]::before\{content:attr\(data-settings-text\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-intro="true"\]::before\{content:attr\(data-spend-intro-text\)/);
