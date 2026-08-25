@@ -17,7 +17,7 @@ export default async function CharacterBuilderPage({
         <link
           rel="preload"
           as="image"
-          href="/character-builder/lcp-placeholder.webp"
+          href="/character-builder/default-portrait.webp"
         />
       )}
       <CharacterBuilderClient editId={editId} />

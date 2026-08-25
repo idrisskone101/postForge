@@ -5,7 +5,6 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_CHARACTER_PHOTO = "/character-builder/default-portrait.webp";
-const DEFAULT_LCP_PLACEHOLDER = "/character-builder/lcp-placeholder.webp";
 
 export function CharacterPhoto({
   avatarId,
@@ -28,38 +27,17 @@ export function CharacterPhoto({
     failedSource === requestedSource
       ? DEFAULT_CHARACTER_PHOTO
       : requestedSource;
-  const frameClassName = cn(
-    "relative block size-full overflow-hidden bg-[#111113]",
-    className,
-  );
-
-  if (source === DEFAULT_CHARACTER_PHOTO) {
-    return (
-      <span
-        data-character-preview="photographic"
-        data-character-default-frame="true"
-        className={frameClassName}
-      >
-        {/* Tiny 390×520 placeholder is LCP; the real portrait is a CSS background. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={DEFAULT_LCP_PLACEHOLDER}
-          alt={alt}
-          width={390}
-          height={520}
-          decoding="sync"
-          fetchPriority="high"
-          className="object-cover"
-        />
-        <span data-character-portrait-fill="true" />
-      </span>
-    );
-  }
 
   return (
     <span
       data-character-preview="photographic"
-      className={frameClassName}
+      data-character-default-frame={
+        source === DEFAULT_CHARACTER_PHOTO ? "true" : undefined
+      }
+      className={cn(
+        "relative block size-full overflow-hidden bg-[#111113]",
+        className,
+      )}
     >
       <Image
         src={source}
@@ -71,8 +49,10 @@ export function CharacterPhoto({
         priority={priority}
         fetchPriority={priority ? "high" : "auto"}
         onError={() => {
-          onLoadError?.();
-          setFailedSource(requestedSource);
+          if (source !== DEFAULT_CHARACTER_PHOTO) {
+            onLoadError?.();
+            setFailedSource(requestedSource);
+          }
         }}
       />
     </span>

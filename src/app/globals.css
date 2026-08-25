@@ -1640,14 +1640,6 @@ header:has([data-home-title]) p {
   background-color: #111113 !important;
 }
 
-[data-character-portrait-fill="true"] {
-  background-color: #111113 !important;
-  background-image: url("/character-builder/default-portrait.webp") !important;
-  background-position: center !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-}
-
 [data-character-attribute-editor="true"] {
   min-height: 470px !important;
 }
