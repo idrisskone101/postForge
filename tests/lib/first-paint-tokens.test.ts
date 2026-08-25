@@ -63,3 +63,10 @@ const lhBoot = readFileSync(
 assert.match(lhGate, /check-first-paint-tokens/);
 assert.match(lhBoot, /check-first-paint-tokens/);
 assert.match(lhBoot, /visual-regression/);
+const sweep = readFileSync(
+  path.join(repoRoot, "scripts/visual-regression-sweep.ts"),
+  "utf8"
+);
+assert.match(sweep, /pnpm/);
+assert.match(sweep, /playwright/);
+assert.doesNotMatch(sweep, /npx --yes playwright@/);

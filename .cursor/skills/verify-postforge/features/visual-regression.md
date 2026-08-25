@@ -27,5 +27,5 @@ LH_BASE="http://127.0.0.1:${PORT:-3000}" pnpm exec tsx scripts/visual-regression
 ## Gotchas
 
 - Overflow on muted 10px copy is intentional first-paint clipping. The sweep only fails `h1`, home/character/policy titles, and primary buttons.
-- Install Chromium once: `pnpm dlx playwright install chromium`.
+- Install Chromium once: `pnpm exec playwright install chromium`.
 - Legal routes stay out of this sweep. They are scored by Lighthouse, not this map.
