@@ -367,6 +367,10 @@ assert.match(
 );
 assert.match(
   source("src/app/first-paint-css.ts"),
+  /\[data-character-preview-stage="true"\]\{display:flex;flex-direction:column;height:620px/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
   /\[data-character-attribute-editor="true"\]\{min-height:470px/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);

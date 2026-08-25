@@ -1914,7 +1914,9 @@ body {
 [data-character-preview-stage="true"] {
   display: flex;
   flex-direction: column;
+  height: 620px;
   min-height: 620px;
+  overflow: hidden;
   padding: 1.25rem;
   background: #09090b;
 }

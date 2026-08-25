@@ -46,7 +46,9 @@ export function CharacterAttributeEditor({
           <div>
             <div className="flex flex-col items-start justify-between gap-3 min-[560px]:flex-row min-[560px]:items-end">
               <div>
-                <h2 className="sr-only">Character blueprint</h2>
+                <h2 style={{ margin: 0, maxWidth: "8rem", height: 19, overflow: "hidden", fontSize: 15, lineHeight: "19px" }}>
+                  Character blueprint
+                </h2>
                 <p className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
               </div>
               <button onClick={copyPrompt} className="pf-button-secondary shrink-0">
