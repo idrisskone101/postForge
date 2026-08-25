@@ -1,30 +1,9 @@
-import { LCP_PORTRAIT_DATA_URI } from "./character-lcp-portrait-uri";
-
 const FRAME_STYLE = {
   position: "relative",
   width: "100%",
   maxWidth: 390,
   height: 520,
-} as const;
-
-const PHOTO_FRAME_STYLE = {
-  position: "relative",
-  display: "block",
-  width: "100%",
-  height: "100%",
-  overflow: "hidden",
   backgroundColor: "#111113",
-} as const;
-
-const PHOTO_IMAGE_STYLE = {
-  position: "absolute",
-  inset: 0,
-  display: "block",
-  width: "100%",
-  height: "100%",
-  maxWidth: "100%",
-  objectFit: "cover",
-  verticalAlign: "middle",
 } as const;
 
 export function CharacterBuilderStatic() {
@@ -86,23 +65,7 @@ export function CharacterBuilderStatic() {
             data-character-lcp-frame="true"
             className="overflow-hidden rounded-lg border border-white/10"
             style={FRAME_STYLE}
-          >
-            <span
-              data-character-preview="photographic"
-              data-character-default-frame="true"
-              style={PHOTO_FRAME_STYLE}
-            >
-              <img
-                src={LCP_PORTRAIT_DATA_URI}
-                alt="Untitled character photographic preview"
-                width={390}
-                height={520}
-                decoding="async"
-                fetchPriority="high"
-                style={PHOTO_IMAGE_STYLE}
-              />
-            </span>
-          </div>
+          />
         </div>
       </section>
     </div>
