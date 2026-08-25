@@ -233,7 +233,8 @@ assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]
 assert.doesNotMatch(appLayout, /dashboard-critical\.css/);
 assert.match(appLayout, /\/dashboard\.css/);
 assert.doesNotMatch(appLayout, /rel="preload" href="\/dashboard\.css"/);
-assert.match(appLayout, /media="print"/);
+assert.doesNotMatch(appLayout, /media="print"/);
+assert.match(appLayout, /createElement\("link"\)/);
 assert.doesNotMatch(appLayout, /if\(l\.sheet\)/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
 assert.match(appLayout, /FIRST_PAINT_CSS/);

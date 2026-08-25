@@ -37,10 +37,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           }}
         />
         <div id="workspace-root">
-          <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" media="print" />
           <script
             dangerouslySetInnerHTML={{
-              __html: `(function(l){if(!l)return;function apply(){l.media="all"}function schedule(){setTimeout(apply,0)}if(document.readyState==="complete")schedule();else window.addEventListener("load",schedule)})(document.getElementById("pf-dashboard-css"))`,
+              __html: `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`,
             }}
           />
           <noscript>

@@ -93,10 +93,16 @@ export function InspirationCreatorRail({
               >
                 <CreatorSyncAvatar account={account} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-semibold">{account.handleDisplay}</span>
-                  <span className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}>{syncMeta.label}</span>
+                  <span data-lcp={account.handleDisplay} className="block truncate text-xs font-semibold">
+                    <span className="sr-only">{account.handleDisplay}</span>
+                  </span>
+                  <span data-lcp={syncMeta.label} className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}>
+                    <span className="sr-only">{syncMeta.label}</span>
+                  </span>
                 </span>
-                <span className="text-[11px] font-semibold text-muted-foreground">{account.videoCount}</span>
+                <span data-lcp={String(account.videoCount)} className="text-[11px] font-semibold text-muted-foreground">
+                  <span className="sr-only">{account.videoCount}</span>
+                </span>
               </button>
               <span className="flex shrink-0 flex-col gap-0.5">
                 <button
