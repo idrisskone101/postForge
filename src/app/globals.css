@@ -1778,8 +1778,16 @@
 }
 
 [data-clone-form-skeleton="true"] {
-  height: 42rem !important;
-  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 42rem !important;
+}
+
+[data-clone-studio="true"] {
+  min-height: 42rem !important;
+}
+
+[data-clone-queue-slot="true"] {
+  min-height: 8rem !important;
 }
 
 [data-clone-queue-skeleton="true"] {

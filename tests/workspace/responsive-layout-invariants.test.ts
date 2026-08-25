@@ -236,6 +236,8 @@ assert.match(appLayout, /media="print"/);
 assert.doesNotMatch(appLayout, /requestAnimationFrame/);
 assert.doesNotMatch(appLayout, /FIRST_PAINT_CSS/);
 assert.match(source("src/app/layout.tsx"), /FIRST_PAINT_CSS/);
+assert.match(source("src/app/layout.tsx"), /LEGAL_FIRST_PAINT_CSS/);
+assert.match(source("src/app/layout.tsx"), /isPublicPolicyPath/);
 assert.ok(
   appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
   "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
@@ -375,7 +377,8 @@ assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-home-title="Clone"/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-form-skeleton="true"\]\{height:42rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:42rem/);
+assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);

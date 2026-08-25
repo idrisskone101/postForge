@@ -158,9 +158,9 @@ const photoMarkup = renderToStaticMarkup(
 );
 
 assert.match(photoMarkup, /data-character-preview="photographic"/);
-assert.match(photoMarkup, /alt="Character preview"/);
-assert.match(photoMarkup, /<img/);
-assert.match(photoMarkup, /\/character-builder\/default-portrait\.webp/);
+assert.match(photoMarkup, /data-character-default-frame="true"/);
+assert.doesNotMatch(photoMarkup, /<img/);
+assert.doesNotMatch(photoMarkup, /\/character-builder\/default-portrait\.webp/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 
 const defaultPortrait = readFileSync(

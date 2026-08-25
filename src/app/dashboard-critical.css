@@ -1182,8 +1182,16 @@ body {
 }
 
 [data-clone-form-skeleton="true"] {
-  height: 42rem;
-  overflow: hidden;
+  height: 100%;
+  min-height: 42rem;
+}
+
+[data-clone-studio="true"] {
+  min-height: 42rem;
+}
+
+[data-clone-queue-slot="true"] {
+  min-height: 8rem;
 }
 
 [data-clone-queue-skeleton="true"] {

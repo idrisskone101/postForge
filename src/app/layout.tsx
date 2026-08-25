@@ -1,15 +1,23 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 import { FIRST_PAINT_CSS } from "./first-paint-css";
+import { LEGAL_FIRST_PAINT_CSS } from "./legal-first-paint-css";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = (await headers()).get("x-pathname") || "/";
+  const firstPaintCss = isPublicPolicyPath(pathname)
+    ? LEGAL_FIRST_PAINT_CSS
+    : FIRST_PAINT_CSS;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{FIRST_PAINT_CSS}</style>
+        <style>{firstPaintCss}</style>
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,

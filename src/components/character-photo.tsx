@@ -26,6 +26,16 @@ export function CharacterPhoto({
       ? DEFAULT_CHARACTER_PHOTO
       : requestedSource;
 
+  if (source === DEFAULT_CHARACTER_PHOTO) {
+    return (
+      <span
+        data-character-preview="photographic"
+        data-character-default-frame="true"
+        className={cn("relative block size-full overflow-hidden bg-[#111113]", className)}
+      />
+    );
+  }
+
   return (
     <span
       data-character-preview="photographic"

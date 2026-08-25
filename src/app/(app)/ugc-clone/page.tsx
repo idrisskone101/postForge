@@ -27,8 +27,10 @@ export default async function UGCClonePage({ searchParams }: UGCClonePageProps) 
       </div>
       <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <CloneHandoffQueryProvider query={initialQuery}>
-          <UGCCloneFormLazy />
-          <div className="mt-6 pb-24">
+          <div data-clone-studio="true">
+            <UGCCloneFormLazy />
+          </div>
+          <div data-clone-queue-slot="true" className="mt-6 pb-24">
             <UGCCloneQueueLazy />
           </div>
         </CloneHandoffQueryProvider>
