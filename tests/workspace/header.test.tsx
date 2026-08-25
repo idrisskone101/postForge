@@ -14,9 +14,10 @@ const accessoryMarkup = renderToStaticMarkup(
 assert.match(markup, /id="workspace-header"/);
 assert.match(markup, /id="workspace-header-grid"/);
 assert.match(markup, /min-h-\[120px\]/);
-assert.match(markup, /text-\[28px\]/);
-assert.match(markup, /sm:text-\[30px\]/);
+assert.match(markup, /data-workspace-title="Home"/);
 assert.match(markup, />Home</);
+assert.doesNotMatch(markup, /text-\[28px\]/);
+assert.doesNotMatch(markup, /sm:text-\[30px\]/);
 assert.match(markup, /Today’s jobs, reviews, and the next useful action/);
 assert.match(markup, /href="\/ugc-clone"/);
 assert.match(markup, /New Clone/);

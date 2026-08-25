@@ -75,8 +75,8 @@ export function WorkspaceRouteHeader({
         )}
       >
         <div className="min-w-0">
-          <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--pf-ink)] sm:text-[30px]">
-            {activeItem.label}
+          <h1 data-workspace-title={activeItem.label}>
+            <span className="sr-only">{activeItem.label}</span>
           </h1>
           <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
             {activeItem.description}

@@ -163,6 +163,7 @@ const ordinaryMarkup = renderToStaticMarkup(
 );
 
 // Header and primary action
+assert.match(markup, /data-home-title="Home"/);
 assert.match(markup, />Home</);
 assert.match(markup, /New Clone/);
 assert.match(markup, /pf-button-primary/);

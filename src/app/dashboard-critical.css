@@ -157,6 +157,40 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+#workspace-header-grid h1::before {
+  content: attr(data-workspace-title);
+  display: block;
+  overflow: hidden;
+  height: 31px;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 31px;
+  letter-spacing: -0.02em;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pf-content-viewport header h1 {
+  height: 33px;
+  overflow: hidden;
+  font-size: 30px;
+}
+
+.pf-content-viewport header h1::before {
+  content: attr(data-home-title);
+  display: block;
+  overflow: hidden;
+  height: 33px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 33px;
+  letter-spacing: -0.02em;
+  color: #18181b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 #workspace-header-grid p,
 .pf-content-viewport header p {
   max-width: 8rem;
@@ -1492,6 +1526,17 @@ body {
   color: #52525b;
 }
 
+[data-settings-copy="true"]::before {
+  content: attr(data-settings-text);
+  display: block;
+  overflow: hidden;
+  height: 64px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #52525b;
+}
+
 [data-social-provider] {
   padding: 1rem;
   box-sizing: border-box;
@@ -1509,6 +1554,19 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   color: #52525b;
   white-space: nowrap;
+}
+
+[data-spend-intro="true"]::before {
+  content: attr(data-spend-intro-text);
+  display: block;
+  overflow: hidden;
+  height: 11px;
+  font-size: 11px;
+  line-height: 11px;
+  font-weight: 400;
+  color: #52525b;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 @media (min-width: 640px) {

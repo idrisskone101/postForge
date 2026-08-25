@@ -14,18 +14,8 @@ export default async function UGCClonePage({ searchParams }: UGCClonePageProps) 
       <div className="border-b border-border bg-[var(--pf-canvas)]">
         <div className="mx-auto min-w-0 max-w-[1280px] px-4 pb-6 pt-7 sm:px-6 lg:px-8">
           <header>
-            <h1
-              className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground sm:text-[30px]"
-              style={{
-                margin: 0,
-                fontSize: 28,
-                fontWeight: 600,
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-                color: "#18181b",
-              }}
-            >
-              Clone
+            <h1 data-home-title="Clone">
+              <span className="sr-only">Clone</span>
             </h1>
             <p className="mt-1.5 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground">
               Turn a proven source into an on-brand creator video.

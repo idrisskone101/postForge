@@ -1311,6 +1311,20 @@
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
+#workspace-header-grid h1::before {
+  content: attr(data-workspace-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 31px !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 31px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 .pf-content-viewport header h1 {
   margin: 0 !important;
   max-width: 12rem !important;
@@ -1322,6 +1336,20 @@
   letter-spacing: -0.02em !important;
   color: #18181b !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+}
+
+.pf-content-viewport header h1::before {
+  content: attr(data-home-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 33px !important;
+  font-size: 30px !important;
+  font-weight: 600 !important;
+  line-height: 33px !important;
+  letter-spacing: -0.02em !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 @media (max-width: 767.98px) {
@@ -1967,6 +1995,17 @@
   color: #52525b !important;
 }
 
+[data-settings-copy="true"]::before {
+  content: attr(data-settings-text) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 64px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 400 !important;
+  color: #52525b !important;
+}
+
 [data-social-provider] {
   padding: 1rem !important;
   box-sizing: border-box !important;
@@ -1984,6 +2023,19 @@
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
   color: #52525b !important;
   white-space: nowrap !important;
+}
+
+[data-spend-intro="true"]::before {
+  content: attr(data-spend-intro-text) !important;
+  display: block !important;
+  overflow: hidden !important;
+  height: 11px !important;
+  font-size: 11px !important;
+  line-height: 11px !important;
+  font-weight: 400 !important;
+  color: #52525b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 @media (min-width: 640px) {

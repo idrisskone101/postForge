@@ -103,8 +103,13 @@ export function SpendPageContent({
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Spend controls
           </p>
-          <p data-spend-intro="true" className="mt-1 text-sm text-muted-foreground">
-            Cost tracking, budget signals, and model usage.
+          <p
+            data-spend-intro="true"
+            data-spend-intro-text="Cost tracking, budget signals, and model usage."
+          >
+            <span className="sr-only">
+              Cost tracking, budget signals, and model usage.
+            </span>
           </p>
         </div>
 
