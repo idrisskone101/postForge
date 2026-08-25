@@ -99,9 +99,8 @@ export function JobsActivity({ activity }: JobsActivityProps) {
                     status === filter.value &&
                       "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
                   )}
-                  data-lcp={filter.label}
                 >
-                  <span className="sr-only">{filter.label}</span>
+                  {filter.label}
                 </Link>
               ))}
             </div>
@@ -116,9 +115,8 @@ export function JobsActivity({ activity }: JobsActivityProps) {
                     type === filter.value &&
                       "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
                   )}
-                  data-lcp={filter.label}
                 >
-                  <span className="sr-only">{filter.label}</span>
+                  {filter.label}
                 </Link>
               ))}
             </div>

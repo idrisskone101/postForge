@@ -345,6 +345,26 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-value="true"\]:
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header-grid h1/);
 assert.match(source("src/app/dashboard-critical.css"), /#workspace-header \{/);
 assert.match(source("src/app/globals.css"), /#workspace-header-grid \{/);
+assert.match(
+  source("src/app/globals.css"),
+  /#workspace-header-grid h1::before[\s\S]*?content:\s*attr\(data-workspace-title\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-playbook-title\]::before[\s\S]*?content:\s*attr\(data-playbook-title\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-spend-value="true"\]::before[\s\S]*?content:\s*attr\(data-spend-text\)/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-lcp\]::before[\s\S]*?content:\s*attr\(data-lcp\)/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-title\]\{margin:0;width:12rem/,
+);
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);
 assert.match(

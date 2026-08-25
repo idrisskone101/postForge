@@ -1774,30 +1774,30 @@ body {
 
 [data-character-title] {
   margin: 0;
-  width: 8rem;
-  max-width: 8rem;
-  height: 19px;
+  width: 12rem;
+  max-width: 12rem;
+  height: 31px;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 28px;
   font-weight: 600;
-  line-height: 19px;
-  letter-spacing: -0.01em;
+  line-height: 31px;
+  letter-spacing: -0.02em;
   color: #18181b;
   white-space: nowrap;
 }
 
 [data-character-title]::before {
-  content: attr(data-character-title);
-  display: block;
-  overflow: hidden;
-  width: 8rem;
-  height: 19px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 19px;
-  color: #18181b;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  content: attr(data-character-title) !important;
+  display: block !important;
+  overflow: hidden !important;
+  width: 12rem !important;
+  height: 31px !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 31px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
 [data-character-action] {
