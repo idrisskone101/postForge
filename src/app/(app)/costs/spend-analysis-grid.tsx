@@ -56,7 +56,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
         data-spend-breakdown="true"
         className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5"
       >
-        <header className="border-b border-border pb-3">
+        <header data-spend-breakdown-head="true" className="border-b border-border pb-3">
           <h2 className="text-sm font-semibold">Spend breakdown</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Workflow type and model mix · {dashboard.period.toUpperCase()}

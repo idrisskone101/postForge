@@ -113,7 +113,7 @@ export function SpendPageContent({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div data-spend-actions="true" className="flex flex-wrap items-center gap-2">
           <div
             className="flex items-center rounded-lg border border-border bg-background p-1 text-[11px] font-semibold"
             aria-label="Spend period"
@@ -184,7 +184,7 @@ export function SpendPageContent({
         >
           <AlertTriangle className="size-4" />
         </div>
-        <div className="min-w-0 flex-1">
+        <div data-spend-budget-copy="true" className="min-w-0 flex-1">
           <strong
             data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
           >
@@ -201,7 +201,10 @@ export function SpendPageContent({
             </span>
           </p>
         </div>
-        <div className="flex min-w-0 items-center gap-3 lg:w-72 lg:max-w-full">
+        <div
+          data-spend-meter="true"
+          className="flex min-w-0 items-center gap-3 lg:w-72 lg:max-w-full"
+        >
           <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-black/10">
             <div
               className={cn(

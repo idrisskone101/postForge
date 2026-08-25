@@ -291,7 +291,9 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-log="true"\]>he
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-empty="true"\]\{height:5\.5rem/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-preview-pane.tsx"), /data-automation-preview-stage="true"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-preview-stage="true"\]\{display:grid;min-height:610px/);
-assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-head="true"/);
+assert.match(source("src/app/(app)/costs/spend-page-content.tsx"), /data-spend-actions="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-actions="true"\]\{display:flex/);
+assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-default-action\{display:inline-flex;height:2\.5rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-chart-head="true"\]\{display:flex/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-body="true"/);
 assert.match(source("src/components/workspace-shell.tsx"), /data-header-accessory=\{hasAccessory \? "true" : "false"\}/);
