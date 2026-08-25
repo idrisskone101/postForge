@@ -1,4 +1,5 @@
-import { CharacterBuilderClient } from "./character-builder-client";
+import { CharacterBuilderClientLazy } from "./character-builder-client-lazy";
+import { CharacterBuilderStatic } from "./character-builder-static";
 
 type CharacterBuilderPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -14,14 +15,17 @@ export default async function CharacterBuilderPage({
   return (
     <>
       {editId ? null : (
-        <link
-          rel="preload"
-          as="image"
-          href="/character-builder/default-portrait.webp"
-          fetchPriority="high"
-        />
+        <>
+          <link
+            rel="preload"
+            as="image"
+            href="/character-builder/default-portrait.webp"
+            fetchPriority="high"
+          />
+          <CharacterBuilderStatic />
+        </>
       )}
-      <CharacterBuilderClient editId={editId} />
+      <CharacterBuilderClientLazy editId={editId} />
     </>
   );
 }

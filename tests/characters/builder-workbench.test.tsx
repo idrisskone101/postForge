@@ -176,6 +176,22 @@ assert.match(
   readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
   /fetchPriority="high"/,
 );
+assert.match(
+  readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
+  /CharacterBuilderStatic/,
+);
+assert.match(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /data-character-first-paint="true"/,
+);
+assert.match(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /\/character-builder\/default-portrait\.webp/,
+);
+assert.doesNotMatch(
+  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
+  /"use client"/,
+);
 
 const defaultPortrait = readFileSync(
   new URL("../../public/character-builder/default-portrait.webp", import.meta.url)

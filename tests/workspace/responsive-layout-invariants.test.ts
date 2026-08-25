@@ -429,6 +429,20 @@ assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
+assert.match(source("src/app/(app)/characters/new/page.tsx"), /CharacterBuilderStatic/);
+assert.match(source("src/app/(app)/characters/new/page.tsx"), /CharacterBuilderClientLazy/);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/new/page.tsx"),
+  /from "\.\/character-builder-client"/,
+);
+assert.match(
+  source("src/app/(app)/characters/new/character-builder-client-lazy.tsx"),
+  /ssr:\s*false/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/new/character-builder-static.tsx"),
+  /"use client"/,
+);
 assert.doesNotMatch(source("src/app/(app)/automations/new/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/automations/new/page.tsx"), /AutomationBuilderClient/);
 assert.match(source("src/app/(app)/automations/new/page.tsx"), /SlideshowAutomationBuilderLazy/);
