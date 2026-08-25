@@ -55,7 +55,9 @@ export function PublicPolicyPage({
           <h1 className="policy-heading" data-policy-title={title}>
             <span className="sr-only">{title}</span>
           </h1>
-          <p className="policy-summary">{summary}</p>
+          <p className="policy-summary" data-policy-summary={summary}>
+            <span className="sr-only">{summary}</span>
+          </p>
           <p className="policy-effective">
             Effective <time dateTime="2026-08-09">{effectiveDate}</time>
           </p>

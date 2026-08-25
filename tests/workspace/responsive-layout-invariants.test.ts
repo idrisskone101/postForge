@@ -376,6 +376,7 @@ assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-home-title="Clone"/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
+assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:42rem/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);

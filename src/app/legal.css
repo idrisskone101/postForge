@@ -196,15 +196,26 @@ a {
 }
 
 .policy-summary {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
+  width: 16rem;
   max-width: 16rem;
+  height: 1rem;
   margin: 1rem 0 0;
+  overflow: hidden;
   font-size: 12px;
   line-height: 1rem;
   color: var(--pf-muted);
+}
+
+.policy-summary::before {
+  content: attr(data-policy-summary);
+  display: block;
+  overflow: hidden;
+  height: 1rem;
+  font-size: 12px;
+  line-height: 1rem;
+  color: var(--pf-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .policy-effective {
