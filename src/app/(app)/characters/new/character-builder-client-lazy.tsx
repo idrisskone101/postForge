@@ -3,14 +3,6 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-const CharacterBuilderClientDynamic = dynamic(
-  () =>
-    import("./character-builder-client").then((mod) => ({
-      default: mod.CharacterBuilderClient,
-    })),
-  { ssr: false },
-);
-
 export function CharacterBuilderClientLazy({
   editId = null,
 }: {
@@ -37,3 +29,11 @@ export function CharacterBuilderClientLazy({
   if (!ready) return null;
   return <CharacterBuilderClientDynamic editId={editId} />;
 }
+
+const CharacterBuilderClientDynamic = dynamic(
+  () =>
+    import("./character-builder-client").then((mod) => ({
+      default: mod.CharacterBuilderClient,
+    })),
+  { ssr: false },
+);

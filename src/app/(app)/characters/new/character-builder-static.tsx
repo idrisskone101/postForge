@@ -1,11 +1,3 @@
-const FRAME_STYLE = {
-  position: "relative",
-  width: "100%",
-  maxWidth: 390,
-  height: 520,
-  backgroundColor: "#111113",
-} as const;
-
 export function CharacterBuilderStatic() {
   return (
     <div
@@ -71,3 +63,11 @@ export function CharacterBuilderStatic() {
     </div>
   );
 }
+
+const FRAME_STYLE = {
+  position: "relative",
+  width: "100%",
+  maxWidth: 390,
+  height: 520,
+  backgroundColor: "#111113",
+} as const;

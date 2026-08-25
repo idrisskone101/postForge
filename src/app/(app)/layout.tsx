@@ -4,8 +4,6 @@ import { Sidebar } from "@/components/sidebar-lazy";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 
-const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
-
 export default async function AppLayout({
   children,
 }: Readonly<{
@@ -54,6 +52,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </html>
   );
 }
+
+const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
 
 export const metadata: Metadata = {
   title: "PostForge",

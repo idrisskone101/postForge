@@ -4,14 +4,6 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
 
-const AutomationBuilderClientDynamic = dynamic(
-  () =>
-    import("./automation-builder-client").then((mod) => ({
-      default: mod.AutomationBuilderClient,
-    })),
-  { ssr: false },
-);
-
 export function AutomationBuilderClientLazy({
   search,
 }: {
@@ -36,3 +28,11 @@ export function AutomationBuilderClientLazy({
   if (!ready) return null;
   return <AutomationBuilderClientDynamic search={search} />;
 }
+
+const AutomationBuilderClientDynamic = dynamic(
+  () =>
+    import("./automation-builder-client").then((mod) => ({
+      default: mod.AutomationBuilderClient,
+    })),
+  { ssr: false },
+);

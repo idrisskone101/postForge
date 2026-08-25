@@ -5,6 +5,12 @@ import { GenerateFormSkeleton } from "@/app/(app)/generate/generate-form-skeleto
 import type { GenerationFormProps } from "@/app/(app)/generate/form-types";
 import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 
+export function GenerationFormLazy(props: GenerationFormProps) {
+  const ready = useWindowLoadReady();
+  if (!ready) return <GenerateFormSkeleton />;
+  return <GenerationFormDynamic {...props} />;
+}
+
 const GenerationFormDynamic = dynamic(
   () =>
     import("@/components/generation-form").then((mod) => ({
@@ -12,9 +18,3 @@ const GenerationFormDynamic = dynamic(
     })),
   { ssr: false, loading: GenerateFormSkeleton },
 );
-
-export function GenerationFormLazy(props: GenerationFormProps) {
-  const ready = useWindowLoadReady();
-  if (!ready) return <GenerateFormSkeleton />;
-  return <GenerationFormDynamic {...props} />;
-}

@@ -1,7 +1,5 @@
 {
-  "fileLayout": [
-    "src/components/generation-form-lazy.tsx"
-  ],
+  "fileLayout": [],
   "propBags": [
     "src/app/(app)/automations/publish-review-dialog.tsx",
     "src/components/character-photo.tsx",
