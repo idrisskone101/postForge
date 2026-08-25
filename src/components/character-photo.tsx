@@ -27,12 +27,27 @@ export function CharacterPhoto({
     failedSource === requestedSource
       ? DEFAULT_CHARACTER_PHOTO
       : requestedSource;
+  const frameClassName = cn(
+    "relative block size-full overflow-hidden bg-[#111113]",
+    className,
+  );
+
+  if (source === DEFAULT_CHARACTER_PHOTO) {
+    return (
+      <span
+        role="img"
+        aria-label={alt}
+        data-character-preview="photographic"
+        data-character-default-frame="true"
+        className={frameClassName}
+      />
+    );
+  }
 
   return (
     <span
       data-character-preview="photographic"
-      data-character-default-frame={source === DEFAULT_CHARACTER_PHOTO ? "true" : undefined}
-      className={cn("relative block size-full overflow-hidden bg-[#111113]", className)}
+      className={frameClassName}
     >
       <Image
         src={source}
@@ -44,10 +59,8 @@ export function CharacterPhoto({
         priority={priority}
         fetchPriority={priority ? "high" : "auto"}
         onError={() => {
-          if (source !== DEFAULT_CHARACTER_PHOTO) {
-            onLoadError?.();
-            setFailedSource(requestedSource);
-          }
+          onLoadError?.();
+          setFailedSource(requestedSource);
         }}
       />
     </span>

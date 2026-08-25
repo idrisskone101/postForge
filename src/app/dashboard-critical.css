@@ -1994,6 +1994,7 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-character-category-rail="true"] nav button {
   height: 2.5rem;
+  min-width: 150px;
   padding: 0 0.625rem;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -2100,6 +2101,10 @@ header:has([data-home-title]) .pf-button-primary {
   height: 520px;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+}
+
+[data-character-default-frame="true"] {
+  background-color: #111113;
 }
 
 [data-character-lcp-frame="true"] span,

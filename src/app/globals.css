@@ -1636,6 +1636,14 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
 }
 
+[data-character-default-frame="true"] {
+  background-color: #111113 !important;
+  background-image: url("/character-builder/default-portrait.webp") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
 [data-character-attribute-editor="true"] {
   min-height: 470px !important;
 }
@@ -1715,6 +1723,7 @@ header:has([data-home-title]) p {
 
   [data-character-category-rail="true"] nav button {
     height: 2.5rem !important;
+    min-width: 150px !important;
     padding: 0 0.625rem !important;
     box-sizing: border-box !important;
   }
