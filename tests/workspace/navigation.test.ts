@@ -125,7 +125,7 @@ const globalStyles = readFileSync(
   "utf8"
 );
 
-assert.match(shellSource, /min-w-0 overflow-x-hidden/);
+assert.match(shellSource, /min-w-0 overflow-x-clip/);
 assert.doesNotMatch(shellSource, /workspaceHeaderAccessory/);
 assert.doesNotMatch(globalStyles, /data-workspace-header-accessory/);
 assert.match(sidebarSource, /document\.documentElement\.dataset\.sidebarCollapsed/);

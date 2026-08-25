@@ -82,7 +82,7 @@ assert.doesNotMatch(shell, /"use client"/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /usePathname\(\)/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /"use client"/);
 assert.doesNotMatch(legalLayout, /WorkspaceShell|Sidebar/);
-assert.match(shell, /min-h-dvh min-w-0 overflow-x-hidden/);
+assert.match(shell, /min-h-dvh min-w-0 overflow-x-clip/);
 assert.match(globalStyles, /body\s*\{[\s\S]*?min-width:\s*320px;/);
 assert.match(globalStyles, /\.pf-content-viewport\s*\{[\s\S]*?100dvh/);
 assert.match(appLayout, /viewportFit:\s*"cover"/);
@@ -427,7 +427,7 @@ assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-home-title="Clone
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:42rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:79\.75rem/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);

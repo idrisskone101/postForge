@@ -12,10 +12,10 @@ type UGCClonePageProps = {
 export default async function UGCClonePage({ searchParams }: UGCClonePageProps) {
   const initialQuery = appSearchParamsToQuery(await searchParams);
   return (
-    <div className="pf-content-viewport overflow-x-hidden bg-background">
+    <div className="pf-content-viewport overflow-x-clip bg-background">
       <div className="border-b border-border bg-[var(--pf-canvas)]">
-        <div className="mx-auto min-w-0 max-w-[1280px] px-4 pb-6 pt-7 sm:px-6 lg:px-8">
-          <header>
+        <div className="mx-auto min-w-0 max-w-[1280px] px-4 pb-6 sm:px-6 lg:px-8">
+          <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
             <h1 data-home-title="Clone">
               <span className="sr-only">Clone</span>
             </h1>
