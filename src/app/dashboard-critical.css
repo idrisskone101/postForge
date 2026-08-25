@@ -1847,3 +1847,87 @@ body {
     padding-inline: 2rem;
   }
 }
+
+@media (min-width: 640px) {
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem;
+  }
+
+  [data-spend-log="true"] > header {
+    height: 7.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-gallery-toolbar="true"] {
+    height: 7.5rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-tools="true"] {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  [data-gallery-filters="true"] {
+    display: flex;
+    width: fit-content;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-automation-workspace="true"] {
+    grid-template-columns: 340px minmax(0, 1fr);
+  }
+
+  [data-automation-form="true"] {
+    width: 340px;
+    border-bottom: 0;
+    border-right: 1px solid var(--pf-border);
+  }
+
+  [data-automation-preview="true"] {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  [data-playbook-body="true"] {
+    grid-template-columns: 170px minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  [data-spend-controls="true"] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  [data-spend-budget="true"] {
+    flex-direction: row;
+    align-items: center;
+    height: 5.5rem;
+  }
+
+  [data-spend-log="true"] > header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 4.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-spend-stats="true"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  [data-spend-analysis-grid="true"] {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

@@ -297,6 +297,17 @@ assert.doesNotMatch(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-count="true"/);
 assert.match(source("src/app/globals.css"), /\[data-automation-dialog="true"\]/);
 assert.match(source("src/app/globals.css"), /\[data-header-accessory="true"\] #workspace-header-accessory/);
+const firstPaintCss = source("src/app/first-paint-css.ts");
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-spend-budget=\"true\"]{flex-direction:row") >
+    firstPaintCss.lastIndexOf("[data-spend-budget=\"true\"]{display:flex;flex-direction:column"),
+  "desktop spend budget row must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-playbook-body=\"true\"]{grid-template-columns:170px") >
+    firstPaintCss.indexOf("[data-playbook-body=\"true\"]{display:grid"),
+  "desktop playbook columns must follow the stacked first-paint default",
+);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-budget-label\]::before\{content:attr\(data-spend-budget-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-model="true"\]::before\{content:attr\(data-spend-text\)/);

@@ -2358,3 +2358,75 @@
     padding-inline: 2rem !important;
   }
 }
+
+@media (min-width: 640px) {
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 1rem !important;
+  }
+
+  [data-spend-log="true"] > header {
+    height: 7.75rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  [data-gallery-toolbar="true"] {
+    height: 7.5rem !important;
+    overflow: hidden !important;
+  }
+
+  [data-gallery-tools="true"] {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  [data-gallery-filters="true"] {
+    display: flex !important;
+    width: fit-content !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-automation-workspace="true"] {
+    grid-template-columns: 340px minmax(0, 1fr) !important;
+  }
+
+  [data-playbook-body="true"] {
+    grid-template-columns: 170px minmax(0, 1fr) !important;
+    overflow: hidden !important;
+  }
+
+  [data-spend-controls="true"] {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  [data-spend-budget="true"] {
+    flex-direction: row !important;
+    align-items: center !important;
+    height: 5.5rem !important;
+  }
+
+  [data-spend-log="true"] > header {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 4.75rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  [data-spend-stats="true"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  [data-spend-analysis-grid="true"] {
+    grid-template-columns: minmax(0, 1fr) 340px !important;
+  }
+
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr 1fr !important;
+  }
+}
