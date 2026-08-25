@@ -208,6 +208,16 @@ body {
   min-height: 2.25rem;
 }
 
+[data-header-accessory="true"] #workspace-header-accessory {
+  display: flex;
+  width: 17rem;
+  max-width: 100%;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
 .pf-content-viewport header h1 {
   height: 33px;
   overflow: hidden;
@@ -526,6 +536,11 @@ body {
     flex-direction: column;
   }
 
+  [data-playbook-body="true"] {
+    grid-template-columns: 170px minmax(0, 1fr);
+    overflow: hidden;
+  }
+
   [data-spend-controls="true"] {
     flex-direction: row;
     align-items: center;
@@ -536,6 +551,13 @@ body {
     flex-direction: row;
     align-items: center;
     height: 5.5rem;
+  }
+
+  [data-spend-log="true"] > header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 4.75rem;
   }
 }
 
@@ -569,6 +591,37 @@ body {
   position: fixed;
   inset: 0;
   z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: rgb(0 0 0 / 0.5);
+}
+
+[data-automation-dialog="true"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1180px;
+  height: min(860px, 100%);
+  overflow: hidden;
+  border-radius: 20px;
+  background: #fff;
+}
+
+[data-playbook-body="true"] {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: auto;
+}
+
+[data-playbook-cards="true"] {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 [data-automation-form="true"] .pf-input {
@@ -847,6 +900,23 @@ body {
   margin-top: 1rem;
 }
 
+[data-spend-empty="true"] {
+  height: 5.5rem;
+  overflow: hidden;
+  padding: 1rem 0;
+  box-sizing: border-box;
+}
+
+[data-spend-log="true"] > header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 11.5rem;
+  overflow: hidden;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
 [data-automation-footer="true"] {
   margin-top: 1.75rem;
   padding-top: 1rem;
@@ -886,6 +956,12 @@ body {
 [data-gallery-filters="true"] button {
   height: 2.25rem;
   box-sizing: border-box;
+}
+
+[data-gallery-count="true"] {
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
 }
 
 [data-gallery-tools="true"] {
@@ -1440,6 +1516,10 @@ body {
   [data-spend-analysis-grid="true"] {
     grid-template-columns: minmax(0, 1fr) 340px;
   }
+
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .policy-heading {
@@ -1746,6 +1826,15 @@ body {
 @media (min-width: 640px) {
   [data-settings-panel="true"] {
     padding-inline: 1.75rem;
+  }
+
+  [data-playbook-cards="true"] {
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem;
+  }
+
+  [data-spend-log="true"] > header {
+    height: 7.75rem;
   }
 }
 

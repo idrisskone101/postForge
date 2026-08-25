@@ -154,6 +154,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
               >
                 <span>{filter.label}</span>
                 <span
+                  data-gallery-count="true"
                   className={cn(
                     "rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
                     reviewFilter === filter.value ? "bg-[var(--pf-active)]" : "bg-[var(--pf-surface)]"

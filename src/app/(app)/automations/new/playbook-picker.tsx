@@ -56,7 +56,10 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
         </button>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] overflow-y-auto lg:grid-cols-[170px_minmax(0,1fr)] lg:overflow-hidden">
+      <div
+        data-playbook-body="true"
+        className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] overflow-y-auto lg:grid-cols-[170px_minmax(0,1fr)] lg:overflow-hidden"
+      >
         <aside className="border-b border-border bg-[var(--pf-active)] p-3 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-4">
           <div className="mb-2 flex items-center gap-2 px-1 text-[12px] font-bold uppercase tracking-[0.11em] text-muted-foreground">
             <SlidersHorizontal className="size-3" /> Categories
@@ -191,7 +194,10 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
               </div>
             </div>
           ) : (
-            <div className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}>
+            <div
+              data-playbook-cards="true"
+              className={cn("grid gap-3 p-3 sm:p-4", view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1")}
+            >
               {templates.map((template) => (
                 <PlaybookCard key={template.id} picker={picker} template={template} />
               ))}

@@ -30,7 +30,10 @@ export function SpendGenerationLog({
   handlers,
 }: SpendGenerationLogProps) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]">
+    <section
+      data-spend-log="true"
+      className="overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]"
+    >
       <header className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold">Generation Log</h2>

@@ -135,7 +135,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             </div>
           </>
         ) : (
-          <div data-workspace-state="empty" className="space-y-3 py-4">
+          <div data-spend-empty="true" className="space-y-3 py-4">
             <p className="text-xs leading-4 text-muted-foreground">
               No spend data yet. Breakdowns appear after the first tracked cost.
             </p>

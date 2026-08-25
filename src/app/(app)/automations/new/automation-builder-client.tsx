@@ -189,7 +189,10 @@ export function AutomationBuilderClient({
             if (event.currentTarget === event.target) playbookPicker.onClose();
           }}
         >
-          <div className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden rounded-[12px] bg-card shadow-2xl sm:rounded-[20px]">
+          <div
+            data-automation-dialog="true"
+            className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden rounded-[12px] bg-card shadow-2xl sm:rounded-[20px]"
+          >
             <PlaybookPicker picker={playbookPicker} />
             <footer className="flex shrink-0 flex-col gap-3 border-t border-border bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(35,35,35,.06)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <div className="flex min-w-0 items-center gap-3">

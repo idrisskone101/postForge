@@ -70,6 +70,7 @@ export function WorkspaceRouteHeader({
     >
       <div
         id="workspace-header-grid"
+        data-header-accessory={hasAccessory ? "true" : "false"}
         className={cn(
           "grid min-h-[120px] gap-4 px-5 pb-6 pt-6 sm:px-7 lg:items-end lg:px-8 lg:grid-cols-[minmax(0,1fr)_auto]"
         )}
