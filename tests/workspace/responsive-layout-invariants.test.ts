@@ -423,6 +423,29 @@ assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767
 assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
 assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-character-preview-stage="true"\][\s\S]*?min-height:\s*620px/,
+);
+assert.match(
+  source("src/app/globals.css"),
+  /\[data-character-blueprint\]::before[\s\S]*?content:\s*attr\(data-character-blueprint\)/,
+);
+assert.match(
+  source("src/app/first-paint-css.ts"),
+  /\[data-character-blueprint\]::before\{content:attr\(data-character-blueprint\)/,
+);
+assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
+assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
+assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
+assert.match(
+  source("src/app/(app)/automations/new/automation-builder-client.tsx"),
+  /import\("\.\/automation-builder-phase-form"\)/,
+);
+assert.match(
+  source("src/app/(app)/characters/new/character-attribute-editor.tsx"),
+  /data-character-blueprint="Character blueprint"/,
+);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-lcp-frame="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-workbench-header="true"\]/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\]/);

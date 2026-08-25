@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,14 +14,28 @@ import {
 import { automationDestinationLabel } from "@/lib/automations";
 import { cn } from "@/lib/utils";
 import { ValidationRow } from "./automation-builder-fields";
-import { AutomationBuilderPhaseForm } from "./automation-builder-phase-form";
-import { AutomationBuilderPreviewPane } from "./automation-builder-preview-pane";
 import { PlaybookPicker } from "./playbook-picker";
 import { TEMPLATE_VISUALS, templateNumber } from "./playbook-model";
 import {
   useAutomationBuilder,
   type AutomationBuilderSearch,
 } from "./use-automation-builder";
+
+const AutomationBuilderPhaseForm = dynamic(
+  () =>
+    import("./automation-builder-phase-form").then((mod) => ({
+      default: mod.AutomationBuilderPhaseForm,
+    })),
+  { ssr: false },
+);
+
+const AutomationBuilderPreviewPane = dynamic(
+  () =>
+    import("./automation-builder-preview-pane").then((mod) => ({
+      default: mod.AutomationBuilderPreviewPane,
+    })),
+  { ssr: false },
+);
 
 export function AutomationBuilderClient({
   search,

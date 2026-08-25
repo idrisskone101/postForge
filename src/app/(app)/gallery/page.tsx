@@ -2,7 +2,7 @@ import {
   getGalleryPage,
   normalizeGalleryReviewStatusFilter,
 } from "@/lib/gallery";
-import { GalleryPageClient } from "./gallery-page-client";
+import { GalleryPageLazy } from "./gallery-page-lazy";
 
 export const metadata = { title: "Gallery - PostForge" };
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export default async function GalleryPage({
   const page = await getGalleryPage({ type, sort, reviewStatus });
 
   return (
-    <GalleryPageClient
+    <GalleryPageLazy
       initialPage={page}
       initialType={type}
       initialSort={sort}

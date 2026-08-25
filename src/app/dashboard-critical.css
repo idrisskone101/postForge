@@ -1800,6 +1800,32 @@ body {
   text-overflow: ellipsis !important;
 }
 
+[data-character-blueprint] {
+  margin: 0;
+  max-width: 8rem;
+  height: 19px;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 19px;
+  color: #18181b;
+  white-space: nowrap;
+}
+
+[data-character-blueprint]::before {
+  content: attr(data-character-blueprint) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 8rem !important;
+  height: 19px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-character-action] {
   max-width: 9.75rem;
   overflow: hidden;

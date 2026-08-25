@@ -46,8 +46,8 @@ export function CharacterAttributeEditor({
           <div>
             <div className="flex flex-col items-start justify-between gap-3 min-[560px]:flex-row min-[560px]:items-end">
               <div>
-                <h2 style={{ margin: 0, maxWidth: "8rem", height: 19, overflow: "hidden", fontSize: 15, lineHeight: "19px" }}>
-                  Character blueprint
+                <h2 data-character-blueprint="Character blueprint">
+                  <span className="sr-only">Character blueprint</span>
                 </h2>
                 <p className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</p>
               </div>
@@ -74,8 +74,8 @@ export function CharacterAttributeEditor({
           <div>
             <div>
 
-              <h2 style={{ margin: 0, maxWidth: "8rem", height: 19, overflow: "hidden", fontSize: 15, lineHeight: "19px" }}>
-                {active.label}
+              <h2 data-character-blueprint={active.label}>
+                <span className="sr-only">{active.label}</span>
               </h2>
               <p className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</p>
             </div>

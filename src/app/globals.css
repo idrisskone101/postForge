@@ -1662,6 +1662,49 @@
   text-overflow: ellipsis !important;
 }
 
+@media (max-width: 1279.98px) {
+  [data-character-workbench-header="true"] {
+    min-height: 13.5rem !important;
+    height: 13.5rem !important;
+    overflow: hidden !important;
+  }
+
+  [data-character-category-rail="true"] {
+    height: 9.25rem !important;
+    overflow: hidden !important;
+  }
+
+  [data-character-preview-stage="true"] {
+    min-height: 620px !important;
+  }
+}
+
+[data-character-blueprint] {
+  margin: 0 !important;
+  max-width: 8rem !important;
+  height: 19px !important;
+  overflow: hidden !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+}
+
+[data-character-blueprint]::before {
+  content: attr(data-character-blueprint) !important;
+  display: block !important;
+  overflow: hidden !important;
+  max-width: 8rem !important;
+  height: 19px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
 [data-character-action] {
   max-width: 9.75rem !important;
   overflow: hidden !important;

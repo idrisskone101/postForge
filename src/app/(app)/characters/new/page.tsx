@@ -11,15 +11,5 @@ export default async function CharacterBuilderPage({
   const rawId = params.id;
   const editId = Array.isArray(rawId) ? rawId[0] ?? null : rawId ?? null;
 
-  return (
-    <>
-      <link
-        rel="preload"
-        as="image"
-        href="/character-builder/default-portrait.webp"
-        fetchPriority="high"
-      />
-      <CharacterBuilderClient editId={editId} />
-    </>
-  );
+  return <CharacterBuilderClient editId={editId} />;
 }
