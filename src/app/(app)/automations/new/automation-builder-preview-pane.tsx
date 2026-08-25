@@ -33,7 +33,10 @@ export function AutomationBuilderPreviewPane({
       data-automation-preview="true"
       className="hidden min-w-0 flex-col bg-[var(--pf-active)] lg:flex"
     >
-      <div className="flex h-12 items-center justify-between border-b border-[var(--pf-border)] bg-white px-4">
+      <div
+        data-automation-preview-bar="true"
+        className="flex h-12 items-center justify-between border-b border-[var(--pf-border)] bg-white px-4"
+      >
         <div>
           <b className="mt-0.5 block text-[11px]">
             Slide {previewSlide + 1} of {record.content.slideCount}
@@ -63,7 +66,10 @@ export function AutomationBuilderPreviewPane({
           </button>
         </div>
       </div>
-      <div className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[#09090B] p-5">
+      <div
+        data-automation-preview-stage="true"
+        className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[#09090B] p-5"
+      >
         <div
           style={{ width: `${Math.round((320 * previewZoom) / 58)}px` }}
           className="relative aspect-[9/16] shrink-0 overflow-hidden rounded-lg border-[6px] border-white bg-[#09090B] shadow-[0_22px_52px_rgba(34,35,31,.19)] transition-[width] duration-150 motion-reduce:transition-none"
@@ -112,7 +118,10 @@ export function AutomationBuilderPreviewPane({
           </span>
         </div>
       </div>
-      <div className="flex h-24 gap-2 overflow-x-auto border-t border-[var(--pf-border)] bg-white p-3">
+      <div
+        data-automation-preview-strip="true"
+        className="flex h-24 gap-2 overflow-x-auto border-t border-[var(--pf-border)] bg-white p-3"
+      >
         {Array.from({ length: record.content.slideCount }, (_, index) => (
           <button
             key={index}

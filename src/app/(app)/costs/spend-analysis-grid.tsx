@@ -15,7 +15,10 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
       className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
     >
       <article className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
-        <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <header
+          data-spend-chart-head="true"
+          className="mb-4 flex flex-wrap items-start justify-between gap-3"
+        >
           <div>
             <h2 className="text-sm font-semibold">Spend Over Time</h2>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -49,7 +52,10 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
         )}
       </article>
 
-      <aside className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
+      <aside
+        data-spend-breakdown="true"
+        className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5"
+      >
         <header className="border-b border-border pb-3">
           <h2 className="text-sm font-semibold">Spend breakdown</h2>
           <p className="mt-1 text-xs text-muted-foreground">

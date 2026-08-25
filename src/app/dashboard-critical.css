@@ -500,6 +500,30 @@ body {
   display: none;
 }
 
+[data-automation-preview-bar="true"] {
+  height: 3rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+[data-automation-preview-stage="true"] {
+  display: grid;
+  min-height: 610px;
+  height: 610px;
+  overflow: hidden;
+  place-items: center;
+  background: #09090b;
+  box-sizing: border-box;
+}
+
+[data-automation-preview-strip="true"] {
+  height: 6rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
 [data-automation-builder="true"] textarea {
   display: block;
   width: 100%;
@@ -697,6 +721,21 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
+}
+
+[data-spend-analysis-grid="true"] > article,
+[data-spend-breakdown="true"] {
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+[data-spend-chart-head="true"] {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 2.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 [data-spend-stats="true"] {
@@ -1915,6 +1954,11 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 4.75rem;
+  }
+
+  [data-automation-preview-stage="true"] {
+    min-height: 610px;
+    height: 610px;
   }
 }
 
