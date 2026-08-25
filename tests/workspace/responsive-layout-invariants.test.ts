@@ -170,7 +170,8 @@ assert.match(
   /mt-3 flex h-\[6\.75rem\] flex-wrap gap-1\.5 overflow-hidden/,
 );
 assert.match(homeLoading, /w-72 max-w-full/);
-assert.match(galleryLoading, /flex-wrap/);
+assert.match(galleryLoading, /data-gallery-tool-row="true"/);
+assert.match(galleryLoading, /flex-nowrap/);
 assert.match(spendLoading, /lg:w-72/);
 assert.match(spendLoading, /flex flex-wrap items-center gap-2/);
 assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
@@ -300,6 +301,10 @@ assert.match(source("src/components/workspace-shell.tsx"), /data-header-accessor
 assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-empty="true"/);
 assert.doesNotMatch(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-workspace-state="empty"/);
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-count="true"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-search="true"/);
+assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-tool-row="true"/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-search="true"\]\{display:flex;height:2\.25rem;width:100%/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-tool-row="true"\]\{display:flex/);
 assert.match(source("src/app/globals.css"), /\[data-automation-dialog="true"\]/);
 assert.match(source("src/app/globals.css"), /\[data-header-accessory="true"\] #workspace-header-accessory/);
 const firstPaintCss = source("src/app/first-paint-css.ts");
@@ -312,6 +317,16 @@ assert.ok(
   firstPaintCss.lastIndexOf("[data-playbook-body=\"true\"]{grid-template-columns:170px") >
     firstPaintCss.indexOf("[data-playbook-body=\"true\"]{display:grid"),
   "desktop playbook columns must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-gallery-search=\"true\"]{width:14rem") >
+    firstPaintCss.lastIndexOf("[data-gallery-search=\"true\"]{display:flex;height:2.25rem;width:100%"),
+  "desktop gallery search width must follow the stacked first-paint default",
+);
+assert.ok(
+  firstPaintCss.lastIndexOf("[data-gallery-tools=\"true\"]{flex-direction:row;flex-wrap:nowrap") >
+    firstPaintCss.lastIndexOf("[data-gallery-tools=\"true\"]{display:flex;flex-direction:column"),
+  "desktop gallery tools row must follow the stacked first-paint default",
 );
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-budget-label\]::before\{content:attr\(data-spend-budget-label\)/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header-grid\{grid-template-columns:minmax\(0,1fr\) auto/);

@@ -1010,6 +1010,10 @@ body {
   margin-top: 1rem;
 }
 
+[data-gallery-page="true"] [data-workspace-state] {
+  margin-top: 0;
+}
+
 [data-gallery-toolbar="true"] {
   height: 15.375rem;
   overflow: hidden;
@@ -1046,6 +1050,49 @@ body {
   gap: 0.5rem;
 }
 
+[data-gallery-search="true"] {
+  display: flex;
+  height: 2.25rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+[data-gallery-tool-row="true"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  [data-gallery-search="true"] {
+    width: 14rem;
+    flex: 0 0 14rem;
+    max-width: 14rem;
+  }
+
+  [data-gallery-tools="true"] {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-tool-row="true"] {
+    flex-wrap: nowrap;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-filters="true"] {
+    display: flex;
+    width: fit-content;
+  }
+}
+
 @media (min-width: 768px) {
   [data-gallery-toolbar="true"] {
     height: 7.5rem;
@@ -1054,7 +1101,16 @@ body {
 
   [data-gallery-tools="true"] {
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-search="true"] {
+    width: 14rem;
+    flex: 0 0 14rem;
+    max-width: 14rem;
   }
 
   [data-gallery-filters="true"] {
@@ -1933,6 +1989,31 @@ body {
   [data-spend-log="true"] > header {
     height: 7.75rem;
   }
+
+  [data-gallery-search="true"] {
+    width: 14rem;
+    flex: 0 0 14rem;
+    max-width: 14rem;
+  }
+
+  [data-gallery-tools="true"] {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-tool-row="true"] {
+    flex-wrap: nowrap;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-filters="true"] {
+    display: flex;
+    width: fit-content;
+  }
 }
 
 @media (min-width: 768px) {
@@ -1943,7 +2024,22 @@ body {
 
   [data-gallery-tools="true"] {
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  [data-gallery-search="true"] {
+    width: 14rem;
+    flex: 0 0 14rem;
+    max-width: 14rem;
+  }
+
+  [data-gallery-tool-row="true"] {
+    flex-wrap: nowrap;
+    height: 2.25rem;
+    overflow: hidden;
   }
 
   [data-gallery-filters="true"] {

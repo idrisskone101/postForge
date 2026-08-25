@@ -167,7 +167,10 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
           </div>
 
           <div data-gallery-tools="true" className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-56">
+            <label
+              data-gallery-search="true"
+              className="flex h-9 min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 text-muted-foreground sm:w-56"
+            >
               <Search className="size-4 shrink-0" />
               <span className="sr-only">Search gallery</span>
               <input
@@ -182,7 +185,10 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
               />
             </label>
 
-            <div className="flex min-w-0 flex-wrap items-center gap-1">
+            <div
+              data-gallery-tool-row="true"
+              className="flex min-w-0 flex-nowrap items-center gap-1 overflow-hidden"
+            >
               <span className="sr-only">Media type</span>
               {filterOptions.map((option) => (
                 <button
