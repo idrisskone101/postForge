@@ -1801,15 +1801,15 @@ body {
 }
 
 [data-character-blueprint] {
-  margin: 0;
-  max-width: 8rem;
-  height: 19px;
-  overflow: hidden;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 19px;
-  color: #18181b;
-  white-space: nowrap;
+  margin: 0 !important;
+  max-width: 8rem !important;
+  height: 19px !important;
+  overflow: hidden !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 19px !important;
+  color: #18181b !important;
+  white-space: nowrap !important;
 }
 
 [data-character-blueprint]::before {
@@ -1947,6 +1947,8 @@ body {
 
 [data-character-attribute-editor="true"] {
   min-height: 470px;
+  content-visibility: auto;
+  contain-intrinsic-size: 470px;
 }
 
 [data-character-preview-stage="true"] > div:first-child {

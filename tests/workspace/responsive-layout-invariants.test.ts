@@ -367,7 +367,7 @@ assert.match(
 );
 assert.match(
   source("src/app/first-paint-css.ts"),
-  /\[data-character-attribute-editor="true"\]\{min-height:470px/,
+  /\[data-character-attribute-editor="true"\]\{min-height:470px;content-visibility:auto/,
 );
 assert.match(source("src/app/dashboard-critical.css"), /box-sizing:\s*border-box/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-home-glance="true"\]/);

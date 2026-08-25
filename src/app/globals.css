@@ -1632,6 +1632,8 @@
 
 [data-character-attribute-editor="true"] {
   min-height: 470px !important;
+  content-visibility: auto !important;
+  contain-intrinsic-size: 470px !important;
 }
 
 [data-character-title] {
