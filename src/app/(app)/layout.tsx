@@ -4,17 +4,30 @@ import { Sidebar } from "@/components/sidebar-lazy";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 
+const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
+
+const DASHBOARD_CSS_ON_INPUT = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}function onInput(){load();window.removeEventListener("pointerdown",onInput);window.removeEventListener("keydown",onInput)}window.addEventListener("pointerdown",onInput);window.addEventListener("keydown",onInput)})()`;
+
 export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = (await headers()).get("x-pathname") || "/";
+  const deferDashboardCss = pathname.startsWith("/characters/new");
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <style>{FIRST_PAINT_CSS}</style>
+        {deferDashboardCss ? (
+          <link
+            rel="preload"
+            as="image"
+            href="/character-builder/default-portrait.webp"
+            fetchPriority="high"
+          />
+        ) : null}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,
@@ -39,7 +52,9 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
         <div id="workspace-root">
           <script
             dangerouslySetInnerHTML={{
-              __html: `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`,
+              __html: deferDashboardCss
+                ? DASHBOARD_CSS_ON_INPUT
+                : DASHBOARD_CSS_LOADER,
             }}
           />
           <noscript>
