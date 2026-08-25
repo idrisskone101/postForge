@@ -60,10 +60,10 @@ export function CharacterCategoryRail({
             activeSection === "overview" ? "bg-white font-semibold shadow-[var(--pf-shadow-2xs)]" : "text-muted-foreground hover:bg-[var(--pf-active)]"
           )}
         >
-          <span data-character-rail-index="00" className="grid size-5 place-items-center rounded-md bg-[var(--pf-active)] text-[12px] font-bold">
+          <span data-lcp="00" className="grid size-5 place-items-center rounded-md bg-[var(--pf-active)] text-[12px] font-bold">
             <span className="sr-only">00</span>
           </span>
-          <span data-character-rail-item="Overview" className="min-w-0 flex-1 text-left">
+          <span data-lcp="Overview" className="min-w-0 flex-1 text-left">
             <span className="sr-only">Overview</span>
           </span>
           <Check className="size-3 text-[var(--pf-success)]" />
@@ -84,7 +84,7 @@ export function CharacterCategoryRail({
               )}
             >
               <span
-                data-character-rail-index={index}
+                data-lcp={index}
                 className={cn(
                   "grid size-5 shrink-0 place-items-center rounded-md text-[12px] font-bold",
                   activeSection === section.id ? "bg-foreground text-background" : "bg-[var(--pf-active)] text-muted-foreground"
@@ -93,10 +93,10 @@ export function CharacterCategoryRail({
                 <span className="sr-only">{index}</span>
               </span>
               <span className="min-w-0 flex-1">
-                <b data-character-rail-item={section.label} className="block truncate text-[12px] font-medium">
+                <b data-lcp={section.label} className="block truncate text-[12px] font-medium">
                   <span className="sr-only">{section.label}</span>
                 </b>
-                <small data-character-rail-summary={summary} className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                <small data-lcp={summary} className="mt-0.5 block truncate text-[12px] text-muted-foreground">
                   <span className="sr-only">{summary}</span>
                 </small>
               </span>

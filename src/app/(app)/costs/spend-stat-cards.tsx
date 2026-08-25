@@ -18,11 +18,11 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
     <section data-spend-stats="true" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex items-start justify-between gap-3">
-          <span data-spend-label="Period Spend">
+          <span data-lcp="Period Spend">
             <span className="sr-only">Period Spend</span>
           </span>
           <span
-            data-spend-change={changeLabel}
+            data-lcp={changeLabel}
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
               dashboard.changePercent === 0 && "bg-muted text-muted-foreground",
@@ -46,7 +46,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
 
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex items-start justify-between gap-3">
-          <span data-spend-label="Generations">
+          <span data-lcp="Generations">
             <span className="sr-only">Generations</span>
           </span>
           <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
@@ -61,7 +61,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
 
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex items-start justify-between gap-3">
-          <span data-spend-label="Top Model">
+          <span data-lcp="Top Model">
             <span className="sr-only">Top Model</span>
           </span>
           <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
@@ -83,7 +83,7 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
 
       <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
         <div className="flex items-start justify-between gap-3">
-          <span data-spend-label="Budget remaining">
+          <span data-lcp="Budget remaining">
             <span className="sr-only">Budget remaining</span>
           </span>
           <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">

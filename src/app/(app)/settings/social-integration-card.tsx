@@ -61,11 +61,11 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
         <div className="flex min-w-0 items-center gap-3">
           <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
           <div className="min-w-0">
-            <h3 data-settings-subhead={displayName}>
+            <h3 data-lcp={displayName}>
               <span className="sr-only">{displayName}</span>
             </h3>
             <p
-              data-settings-account={
+              data-lcp={
                 status?.connected ? `${status.accounts.length} connected` : "No account connected"
               }
             >
@@ -80,7 +80,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
             <span className="h-5 w-20 animate-pulse rounded-full bg-[var(--pf-active)]" />
           ) : (
             <span
-              data-settings-badge={
+              data-lcp={
                 unavailable ? "Status unavailable" : connected ? "Connected" : notConfigured ? "Not configured" : "Ready to connect"
               }
               className={cn("rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]", unavailable ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]" : connected ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "border-border bg-[var(--pf-active)] text-muted-foreground")}

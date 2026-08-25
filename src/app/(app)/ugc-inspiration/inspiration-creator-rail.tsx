@@ -36,10 +36,10 @@ export function InspirationCreatorRail({
       className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
     >
       <div className="mb-3">
-        <h2 id="tracked-creators-heading" data-inspiration-heading="Tracked creators">
+        <h2 id="tracked-creators-heading" data-lcp="Tracked creators">
           <span className="sr-only">Tracked creators</span>
         </h2>
-        <p data-inspiration-copy="Choose a creator to narrow the source library.">
+        <p data-lcp="Choose a creator to narrow the source library.">
           <span className="sr-only">Choose a creator to narrow the source library.</span>
         </p>
       </div>
@@ -63,7 +63,7 @@ export function InspirationCreatorRail({
           <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", activeFilter === "all" ? "bg-background/15" : "bg-muted text-muted-foreground")}>
             <Compass className="size-4" />
           </span>
-          <span data-inspiration-feed="Creator Feed" className="whitespace-nowrap text-[13px] font-semibold">
+          <span data-lcp="Creator Feed" className="whitespace-nowrap text-[13px] font-semibold">
             <span className="sr-only">Creator Feed</span>
           </span>
           <span className={cn("text-[11px] font-semibold tabular-nums", activeFilter === "all" ? "text-background/70" : "text-muted-foreground")}>{trackedVideoCount}</span>

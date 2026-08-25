@@ -62,7 +62,7 @@ export function IntegrationsPanel({
             text="Connect every account you publish or measure. Each account keeps its own scope and sync state."
           />
         </div>
-        <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0" data-settings-refresh="Refresh status">
+        <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0" data-lcp="Refresh status">
           <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
           <span className="sr-only">Refresh status</span>
         </button>
@@ -71,7 +71,7 @@ export function IntegrationsPanel({
       <div data-settings-owned="true" className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3">
         <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-white">i</span>
         <div className="min-w-0">
-          <b data-settings-owned-title="Connections are server-owned">
+          <b data-lcp="Connections are server-owned">
             <span className="sr-only">Connections are server-owned</span>
           </b>
           <SettingsCopy text="PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported." />
@@ -88,12 +88,12 @@ export function IntegrationsPanel({
 
       <div className="mt-5 flex items-end justify-between gap-3">
         <div>
-          <h3 data-settings-subhead="Social accounts">
+          <h3 data-lcp="Social accounts">
             <span className="sr-only">Social accounts</span>
           </h3>
           <SettingsCopy text="Multiple accounts per platform share the same server-owned connection state in Performance and Automations." />
         </div>
-        <span data-settings-count={`${connectedCount} connected`} className="shrink-0">
+        <span data-lcp={`${connectedCount} connected`} className="shrink-0">
           <span className="sr-only">{connectedCount} connected</span>
         </span>
       </div>
@@ -141,7 +141,7 @@ function SettingsCopy({
 function SectionHeading({ title, description }: { title: string; description: string }) {
   return (
     <div className="mb-2 mt-6">
-      <h3 data-settings-subhead={title}>
+      <h3 data-lcp={title}>
         <span className="sr-only">{title}</span>
       </h3>
       <SettingsCopy text={description} />
@@ -168,7 +168,7 @@ function ServiceRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <h3 data-settings-subhead={name} className="truncate">
+        <h3 data-lcp={name} className="truncate">
           <span className="sr-only">{name}</span>
         </h3>
         <SettingsCopy text={description} />

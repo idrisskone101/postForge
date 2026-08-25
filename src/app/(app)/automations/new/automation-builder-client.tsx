@@ -221,7 +221,7 @@ export function AutomationBuilderClient({
                   {templateNumber(selectedTemplate)}
                 </span>
                 <span className="min-w-0">
-                  <small data-playbook-kicker="Selected playbook">
+                  <small data-playbook-lede="Selected playbook">
                     <span className="sr-only">Selected playbook</span>
                   </small>
                   <b data-playbook-name={selectedTemplate.name}>
@@ -230,13 +230,13 @@ export function AutomationBuilderClient({
                 </span>
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={playbookPicker.onClose} data-playbook-cancel="Cancel" className="pf-button-secondary flex-1 sm:flex-none">
+                <button type="button" onClick={playbookPicker.onClose} data-lcp="Cancel" className="pf-button-secondary flex-1 sm:flex-none">
                   <span className="sr-only">Cancel</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => applyTemplate(selectedTemplate.id)}
-                  data-playbook-apply="Apply playbook"
+                  data-lcp="Apply playbook"
                   className="pf-button-primary flex-1 sm:flex-none"
                 >
                   <span className="sr-only">Apply playbook</span>

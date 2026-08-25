@@ -46,14 +46,14 @@ export function CharacterAttributeEditor({
           <div>
             <div className="flex flex-col items-start justify-between gap-3 min-[560px]:flex-row min-[560px]:items-end">
               <div>
-                <h2 data-character-blueprint="Character blueprint">
+                <h2 data-lcp="Character blueprint">
                   <span className="sr-only">Character blueprint</span>
                 </h2>
-                <p data-character-review="Review every selected attribute before saving or copy the full prompt for another workflow.">
+                <p data-lcp="Review every selected attribute before saving or copy the full prompt for another workflow.">
                   <span className="sr-only">Review every selected attribute before saving or copy the full prompt for another workflow.</span>
                 </p>
               </div>
-              <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-character-copy="Copy prompt">
+              <button onClick={copyPrompt} className="pf-button-secondary shrink-0" data-lcp="Copy prompt">
                 <Copy className="size-3.5" />
                 <span className="sr-only">Copy prompt</span>
               </button>
@@ -71,10 +71,10 @@ export function CharacterAttributeEditor({
           <div>
             <div>
 
-              <h2 data-character-blueprint={active.label}>
+              <h2 data-lcp={active.label}>
                 <span className="sr-only">{active.label}</span>
               </h2>
-              <p data-character-review="Selections update the recipe immediately. Re-render to apply them to the photographic preview.">
+              <p data-lcp="Selections update the recipe immediately. Re-render to apply them to the photographic preview.">
                 <span className="sr-only">Selections update the recipe immediately. Re-render to apply them to the photographic preview.</span>
               </p>
             </div>
