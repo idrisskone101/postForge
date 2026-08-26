@@ -111,8 +111,18 @@ fi
 echo "kode:lighthouse: first-paint heading tokens"
 pnpm exec tsx scripts/check-first-paint-tokens.ts
 
+# Score Lighthouse before the Playwright sweep so Chrome is not already
+# contended. CI otherwise retried `/settings` at LCP 2842ms after 36
+# visual-regression tests.
+echo "kode:lighthouse: running Lighthouse gate (${LH_FORM_FACTOR:-mobile})"
+set +e
+node scripts/lh-gate.mjs
+lh_status=$?
+set -e
+
 echo "kode:lighthouse: visual regression sweep"
 pnpm exec tsx scripts/visual-regression-sweep.ts
 
-echo "kode:lighthouse: running Lighthouse gate (${LH_FORM_FACTOR:-mobile})"
-node scripts/lh-gate.mjs
+if (( lh_status != 0 )); then
+  exit "$lh_status"
+fi

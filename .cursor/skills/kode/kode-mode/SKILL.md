@@ -122,15 +122,49 @@ Context is not automatic. Skip it when:
 
 One coherent object at the owner is fine. Stop there. Don't thread the same bag through many layers instead of Context.
 
+Put derived UI strings on the view-model or a sibling helper (`saveLabel`, `saveTitle`, `saveAction`). Headers and leaves render those fields. They do not re-decide the same five-boolean chain in JSX.
+
+### JSX conditionals
+
+A one-level UI switch is fine: `{busy ? <Spinner /> : <Icon />}`.
+
+Do not nest or chain ternaries in JSX (`a ? … : b ? … : c ? …`). That includes repeating the same chain on `title`, `data-*`, and `sr-only`. Extract a named helper, a lookup table, or a `switch`. Domain label logic belongs on the view-model, not in the markup.
+
+In non-JSX logic, prefer railway early-return over nested ternaries.
+
 ### useEffect
 
 `useEffect` is allowed. It is not the default first tool.
 
-Prefer deriving state during render, event handlers, and framework data APIs (route loaders, query libraries, server components) before reaching for an effect. Multiple effects in one file, about three or more, are a smell: see if they can merge, move into the event that caused the change, or live in a custom hook with a clear name. Keep effects that sync with external systems.
+Prefer deriving state during render, event handlers, and framework data APIs (route loaders, query libraries, server components) before reaching for an effect. Multiple effects in one file, about three or more, are a smell: see if they can merge, move into the event that caused the change, or live in a custom hook with a clear name. Keep effects that sync with external systems. A low effect count does not mean the hook is well-scoped — see Custom hooks.
+
+Do not declare functions inside an effect body (`function go()` or `const go = () => { … }` as a statement). Hoist the callback to module scope or define it outside the effect, then pass that reference to `addEventListener` / cleanup. Inline one-off arrows passed directly to an API (`addEventListener("load", () => setReady(true))`) are acceptable when they are not reused. Do not copy the same listener/`load` effect across `*-lazy.tsx` files — use a shared hook.
+
+### Custom hooks
+
+A `use-*` hook that mixes bootstrap, mutations, and derived selectors, or grows past about 200 lines, is too big. Split by domain ownership (identity vs form vs resources), not by chopping the file into setter bags.
+
+Order of operations when a hook is too big:
+
+1. Move pure parsers, mappers, and formatters into a sibling `*-helpers.ts` first.
+2. Then extract a subdomain hook that has its own lifecycle or I/O.
+3. Keep one owner that builds the named view-model. The page or feature root still owns that object.
+
+Refuse splits that only re-export state and setters. That is the prop-bag smell with extra files. Hook splits must not introduce Context where a route test forbids it.
+
+Deferred client islands reuse shared ready hooks (`src/lib/use-window-load-ready.ts`, or a shared first-input hook). Do not copy `pointerdown` / `keydown` / `window.load` gates per route.
 
 ### Helper modules
 
 React files stay mostly JSX and light glue. Non-UI logic goes in a sibling `foo-helpers.ts` next to `foo.tsx`. Import helpers. Don't pass them in as a deps object.
+
+When shrinking a large hook, extract helpers before extracting another hook.
+
+### Perf vs polish
+
+Do not trade visible polish for a lab Lighthouse score. Fixed `overflow: hidden` widths and `::before { content: attr(...) }` shells are last resorts. If production copy clips, borders vanish, or controls stop looking like buttons after first-paint CSS, widen the shell or put the text back in hydrated React. A green performance score with cut-off UI is a fail.
+
+`prefetch={false}` needs a reason (heavy route, legal page, intentional cold load). Default workspace navigation should feel instant. Re-enable prefetch on primary sidebar and header links when it does not hurt LCP. Perceived navigation speed is part of the product, not a leftover optimization.
 
 ### Optional checker
 

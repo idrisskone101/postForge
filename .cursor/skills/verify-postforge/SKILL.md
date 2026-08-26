@@ -1,6 +1,6 @@
 ---
 name: verify-postforge
-description: "Drive PostForge production UI with Playwright/ARIA, seed empty feature tables, and capture temporal proof for navigation handoffs (waitForURL or RecordScreen). Use when proving UI changes, Inspiration Use in Clone, regressions, or adversarial review."
+description: "Drive PostForge production UI with Playwright/ARIA, seed empty feature tables, and capture temporal proof for navigation handoffs (waitForURL or RecordScreen). Use when proving UI changes, Inspiration Use in Clone, regressions, adversarial review, or first-paint/Lighthouse work that can clip text or flatten controls."
 ---
 
 # Verify PostForge
@@ -114,6 +114,26 @@ Proof standards:
 - Confirm side effects when the feature mutates (reload / second view / list row).
 - Viewports: desktop `1440x1024`, mobile `390x844`; responsive widths `1280`, `1024`, `768` when layout is in scope.
 - Never write screenshots to the repo root (pruned and forbidden by `AGENTS.md`). Prefer `$PROOF_DIR` under `/tmp`. `.playwright-cli/` / `.playwright-mcp/` are allowed but auto-pruned.
+- A green Lighthouse score does not replace this pass. If the change touched first-paint CSS, deferred islands, `prefetch`, or critical layout, run the visual regression checklist below.
+
+## Visual regressions
+
+First-paint and Lighthouse work often clips copy (`overflow: hidden`, `8rem`/`12rem` caps, `::before { content: attr(...) }`) and defers `dashboard.css` until `window.load`. Fast lab scores can still look worse than the pre-change UI.
+
+Perf or first-paint work is not done until this checklist passes on a production build (`pnpm build` + `pnpm start`), at desktop `1440x1024` and mobile `390x844`.
+
+Check every changed route, and any route that shares the shell, first-paint CSS, or deferred island:
+
+- **Text overflow.** Headings, descriptions, empty-state copy, glance stats, and button labels are fully readable. No ellipsis on a title that should wrap. No `sr-only`-only text that never becomes visible after load.
+- **Borders.** Cards, rails, dividers, inputs, and overlays match `DESIGN.md` after `dashboard.css` lands. Missing or doubled borders are a fail.
+- **Buttons.** Primary and secondary actions look like buttons (height, padding, radius, fill). Bare links, empty shells, and icon-only controls that lost their label fail.
+- **Spacing.** Section rhythm, header height, content inset, safe areas, and the mobile bar are not collapsed, doubled, or clipped.
+- **Before vs after hydration.** Capture first paint, then again after `window.load` (and after first input on deferred islands such as Character builder and Automations playbook). The hydrated UI must not jump, hide copy, or leave a first-paint clip in place.
+- **Perceived navigation.** Click 3–4 primary sidebar links. Note load delay. `prefetch={false}` on workspace nav needs a reason (heavy route, legal). Default nav should feel instant. Sluggish nav after a perf pass is a P1 even when Lighthouse is green.
+
+Recipe: [features/visual-regression.md](features/visual-regression.md).
+
+Treat clipped text, missing borders, flattened buttons, off spacing, or slower nav as P0/P1 visual regressions. Fix them before calling the work verified. A green `lighthouse` CI job with cut-off UI is still a fail.
 
 ## Cleanup
 
