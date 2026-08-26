@@ -130,6 +130,18 @@ components:
 
 # Design System: PostForge
 
+## What this site is
+
+PostForge is a self-hosted, single-operator marketing dashboard: generate, UGC clone, slideshow, gallery, automations, performance, spend, and settings. It is not a marketing landing page. The product is an authenticated workspace — 240px / 72px rail, `WorkspaceRouteHeader`, zinc chrome, one coral accent, a dark media stage, and the 12-surface shared primitives. `PRODUCT.md` stays product context; this file stays visual canon.
+
+## Taste Skill / how agents design
+
+This file owns PostForge tokens, named rules, and primitives. It wins over any inferred palette or new theme. Kode mode owns structure (colocate, types files, kode-taste); it does not own look. [Taste Skill](https://www.tasteskill.dev/) owns the anti-slop UX (layout, hierarchy, spacing, motion, pre-flight) that this file does not specify.
+
+For a kode route pass: read this file, `PRODUCT.md`, and the shared shell, then load [`redesign-existing-projects`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md) (audit existing UI first) and [`design-taste-frontend`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) (v2 default: brief inference, design-system map, redesign-audit, pre-flight). [`minimalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/minimalist-skill/SKILL.md) matches the Linear / Resend bar already named here. Optional: [`high-end-visual-design`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/soft-skill/SKILL.md) for calm density. Never [`industrial-brutalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/brutalist-skill/SKILL.md). Load [`gpt-taste`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/gpt-tasteskill/SKILL.md) only if the runner is GPT / Codex. Imagegen skills are image-only; not for a kode route pass.
+
+Redesign protocol: audit first, preserve the canon, do not modernize into a different product. Skills live under `skills/` in [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
+
 ## Overview
 
 **Creative North Star: "The Category Standard, Owned"**

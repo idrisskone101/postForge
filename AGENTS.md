@@ -9,6 +9,7 @@
 
 - `DESIGN.md` is the canonical design-language authority for PostForge, and `PRODUCT.md` holds the product context for design and implementation decisions.
 - Reuse the shared PostForge design tokens and shell before introducing route-specific visual primitives.
+- Agents must follow the Taste Skill links in `DESIGN.md`.
 
 ## Required adversarial review
 
