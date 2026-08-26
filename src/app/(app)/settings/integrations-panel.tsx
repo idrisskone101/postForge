@@ -9,32 +9,19 @@ import {
 } from "lucide-react";
 import {
   SOCIAL_PROVIDERS,
-  type PublicIntegrationStatus,
-  type SocialProvider,
 } from "@/lib/integrations-client";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
+import { SettingsPaintText } from "./settings-paint-text";
 import { SocialIntegrationCard } from "./social-integration-card";
-
-export type IntegrationsWorkspace = {
-  providers: PublicIntegrationStatus[];
-  loading: boolean;
-  error: string | null;
-  busyProvider: SocialProvider | null;
-  onRefresh: () => void;
-  onConnect: (
-    status: PublicIntegrationStatus,
-    acceptPolicies?: boolean
-  ) => void;
-  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
-  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
-  onOpenWebhooks: () => void;
-};
+import type { IntegrationsWorkspace } from "./types";
 
 export function IntegrationsPanel({
   workspace,
 }: {
   workspace: IntegrationsWorkspace;
 }) {
+  const paintReady = useWindowLoadReady();
   const {
     providers,
     loading,
@@ -50,52 +37,128 @@ export function IntegrationsPanel({
     (sum, provider) => sum + provider.accounts.length,
     0
   );
+  const connectedLabel = `${connectedCount} connected`;
+
   return (
     <>
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div>
-          <h2 data-settings-heading="true" data-settings-title="Integrations">
-            <span className="sr-only">Integrations</span>
-          </h2>
+          <SettingsPaintText
+            ready={paintReady}
+            liveAs="h2"
+            liveClassName="pf-section-title"
+            paint={
+              <h2 data-settings-heading="true" data-settings-title="Integrations">
+                <span className="sr-only">Integrations</span>
+              </h2>
+            }
+          >
+            Integrations
+          </SettingsPaintText>
           <SettingsCopy
+            paintReady={paintReady}
             intro
             text="Connect every account you publish or measure. Each account keeps its own scope and sync state."
           />
         </div>
-        <button type="button" onClick={onRefresh} disabled={loading} className="pf-button-secondary shrink-0" data-lcp="Refresh status">
-          <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
-          <span className="sr-only">Refresh status</span>
-        </button>
+        {paintReady ? (
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={loading}
+            className="pf-button-secondary shrink-0"
+          >
+            <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+            Refresh status
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={loading}
+            className="pf-button-secondary shrink-0"
+            data-lcp="Refresh status"
+          >
+            <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+            <span className="sr-only">Refresh status</span>
+          </button>
+        )}
       </div>
 
-      <div data-settings-owned="true" className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3">
-        <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-white">i</span>
+      <div
+        data-settings-owned="true"
+        className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3"
+      >
+        <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-[var(--pf-canvas)]">
+          i
+        </span>
         <div className="min-w-0">
-          <b data-lcp="Connections are server-owned">
-            <span className="sr-only">Connections are server-owned</span>
-          </b>
-          <SettingsCopy text="PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported." />
+          <SettingsPaintText
+            ready={paintReady}
+            liveAs="b"
+            liveClassName="block text-[12px] font-semibold text-[var(--pf-link)]"
+            paint={
+              <b data-lcp="Connections are server-owned">
+                <span className="sr-only">Connections are server-owned</span>
+              </b>
+            }
+          >
+            Connections are server-owned
+          </SettingsPaintText>
+          <SettingsCopy
+            paintReady={paintReady}
+            text="PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported."
+          />
         </div>
         <ShieldCheck className="size-4 text-[var(--pf-link)]" />
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-3 text-[12px] text-[var(--pf-danger)] sm:flex-row sm:items-center">
-          <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]"><AlertCircle className="size-4 shrink-0" />{error}</span>
-          <button type="button" onClick={onRefresh} className="rounded-lg border border-[var(--pf-danger)]/40 bg-white px-2.5 py-1.5 text-[12px] font-semibold">Try again</button>
+        <div
+          role="alert"
+          className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-3 text-[12px] text-[var(--pf-danger)] sm:flex-row sm:items-center"
+        >
+          <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]">
+            <AlertCircle className="size-4 shrink-0" />
+            {error}
+          </span>
+          <button type="button" onClick={onRefresh} className="pf-button-secondary shrink-0 text-[12px]">
+            Try again
+          </button>
         </div>
       )}
 
       <div className="mt-5 flex items-end justify-between gap-3">
         <div>
-          <h3 data-lcp="Social accounts">
-            <span className="sr-only">Social accounts</span>
-          </h3>
-          <SettingsCopy text="Multiple accounts per platform share the same server-owned connection state in Performance and Automations." />
+          <SettingsPaintText
+            ready={paintReady}
+            liveAs="h3"
+            liveClassName="text-[13px] font-semibold text-[var(--pf-ink)]"
+            paint={
+              <h3 data-lcp="Social accounts">
+                <span className="sr-only">Social accounts</span>
+              </h3>
+            }
+          >
+            Social accounts
+          </SettingsPaintText>
+          <SettingsCopy
+            paintReady={paintReady}
+            text="Multiple accounts per platform share the same server-owned connection state in Performance and Automations."
+          />
         </div>
-        <span data-lcp={`${connectedCount} connected`} className="shrink-0">
-          <span className="sr-only">{connectedCount} connected</span>
-        </span>
+        <SettingsPaintText
+          ready={paintReady}
+          liveAs="span"
+          liveClassName="shrink-0 text-[12px] font-semibold text-muted-foreground"
+          paint={
+            <span data-lcp={connectedLabel} className="shrink-0">
+              <span className="sr-only">{connectedLabel}</span>
+            </span>
+          }
+        >
+          {connectedLabel}
+        </SettingsPaintText>
       </div>
       <div className="mt-3 grid gap-3" aria-busy={loading}>
         {SOCIAL_PROVIDERS.map((provider) => (
@@ -114,8 +177,21 @@ export function IntegrationsPanel({
         ))}
       </div>
 
-      <SectionHeading title="Automation handoffs" description="Register server-owned delivery before sending review events outside PostForge." />
-      <div className="grid gap-2 xl:grid-cols-2"><ServiceRow icon={<Webhook className="size-4" />} name="Custom webhook" description="No endpoint is registered. Open the delivery requirements and current status." action="View status" onAction={onOpenWebhooks} /></div>
+      <SectionHeading
+        paintReady={paintReady}
+        title="Automation handoffs"
+        description="Register server-owned delivery before sending review events outside PostForge."
+      />
+      <div className="grid gap-2 xl:grid-cols-2">
+        <ServiceRow
+          paintReady={paintReady}
+          icon={<Webhook className="size-4" />}
+          name="Custom webhook"
+          description="No endpoint is registered. Open the delivery requirements and current status."
+          action="View status"
+          onAction={onOpenWebhooks}
+        />
+      </div>
     </>
   );
 }
@@ -123,28 +199,59 @@ export function IntegrationsPanel({
 function SettingsCopy({
   text,
   intro = false,
+  paintReady,
 }: {
   text: string;
   intro?: boolean;
+  paintReady: boolean;
 }) {
   return (
-    <p
-      data-settings-copy="true"
-      data-settings-intro={intro ? "true" : undefined}
-      data-settings-text={text}
+    <SettingsPaintText
+      ready={paintReady}
+      liveAs="p"
+      liveClassName={cn(
+        "min-w-0 text-[11px] leading-4 text-muted-foreground",
+        intro && "mt-1 max-w-[620px]"
+      )}
+      paint={
+        <p
+          data-settings-copy="true"
+          data-settings-intro={intro ? "true" : undefined}
+          data-settings-text={text}
+        >
+          <span className="sr-only">{text}</span>
+        </p>
+      }
     >
-      <span className="sr-only">{text}</span>
-    </p>
+      {text}
+    </SettingsPaintText>
   );
 }
 
-function SectionHeading({ title, description }: { title: string; description: string }) {
+function SectionHeading({
+  title,
+  description,
+  paintReady,
+}: {
+  title: string;
+  description: string;
+  paintReady: boolean;
+}) {
   return (
     <div className="mb-2 mt-6">
-      <h3 data-lcp={title}>
-        <span className="sr-only">{title}</span>
-      </h3>
-      <SettingsCopy text={description} />
+      <SettingsPaintText
+        ready={paintReady}
+        liveAs="h3"
+        liveClassName="text-[13px] font-semibold text-[var(--pf-ink)]"
+        paint={
+          <h3 data-lcp={title}>
+            <span className="sr-only">{title}</span>
+          </h3>
+        }
+      >
+        {title}
+      </SettingsPaintText>
+      <SettingsCopy paintReady={paintReady} text={description} />
     </div>
   );
 }
@@ -155,12 +262,14 @@ function ServiceRow({
   description,
   action,
   onAction,
+  paintReady,
 }: {
   icon: ReactNode;
   name: string;
   description: string;
   action: string;
   onAction?: () => void;
+  paintReady: boolean;
 }) {
   return (
     <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]">
@@ -168,16 +277,25 @@ function ServiceRow({
         {icon}
       </span>
       <div className="min-w-0">
-        <h3 data-lcp={name} className="truncate">
-          <span className="sr-only">{name}</span>
-        </h3>
-        <SettingsCopy text={description} />
+        <SettingsPaintText
+          ready={paintReady}
+          liveAs="h3"
+          liveClassName="truncate text-[13px] font-semibold text-[var(--pf-ink)]"
+          paint={
+            <h3 data-lcp={name} className="truncate">
+              <span className="sr-only">{name}</span>
+            </h3>
+          }
+        >
+          {name}
+        </SettingsPaintText>
+        <SettingsCopy paintReady={paintReady} text={description} />
       </div>
       {onAction ? (
         <button
           type="button"
           onClick={onAction}
-          className="col-span-2 w-full rounded-lg border border-border bg-white px-2 py-1.5 text-[12px] font-semibold text-foreground hover:bg-[var(--pf-active)] sm:col-span-1 sm:w-auto"
+          className="pf-button-secondary col-span-2 w-full text-[12px] sm:col-span-1 sm:w-auto"
         >
           {action}
         </button>

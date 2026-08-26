@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { ReactNode } from "react";
 import {
   Bell,
   ChevronRight,
@@ -11,36 +11,19 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-import type { SettingsRecord } from "./settings-record";
-
-export type SettingsFormModel = {
-  tab: string;
-  settings: SettingsRecord;
-  setSettings: Dispatch<SetStateAction<SettingsRecord>>;
-  saving: boolean;
-  onSave: () => void;
-};
+import type { SettingsFormModel } from "./types";
 
 export function SettingsForm({ form }: { form: SettingsFormModel }) {
   const { tab, settings, setSettings, saving, onSave } = form;
-  const info =
-    tab === "profile"
-      ? (["Profile", "Workspace identity and timezone.", UserRound] as const)
-      : tab === "publishing"
-        ? (["Publishing defaults", "Set safe defaults for new automations.", Settings2] as const)
-        : ([
-            "Notifications",
-            "Choose which live workspace events appear in the navigation rail.",
-            Bell,
-          ] as const);
-  const Icon = info[2];
+  const info = formCopy(tab);
+  const Icon = info.icon;
   return (
     <div>
       <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <Icon className="size-4" />
       </span>
-      <h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">{info[0]}</h2>
-      <p className="mt-1 text-[11px] text-muted-foreground">{info[1]}</p>
+      <h2 className="pf-section-title mt-4">{info.title}</h2>
+      <p className="mt-1 text-[11px] text-muted-foreground">{info.description}</p>
       <div className="pf-card mt-6 max-w-[620px] space-y-5 p-5">
         {tab === "profile" && (
           <>
@@ -113,7 +96,7 @@ export function Billing() {
       <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <CircleDollarSign className="size-4" />
       </span>
-      <h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Billing & usage</h2>
+      <h2 className="pf-section-title mt-4">Billing & usage</h2>
       <p className="mt-1 text-[11px] text-muted-foreground">
         This self-hosted workspace tracks provider spend rather than charging a PostForge subscription.
       </p>
@@ -148,13 +131,13 @@ export function Team() {
       <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <Users className="size-4" />
       </span>
-      <h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Team</h2>
+      <h2 className="pf-section-title mt-4">Team</h2>
       <p className="mt-1 text-[11px] text-muted-foreground">
         PostForge is currently running as one local workspace.
       </p>
       <div className="pf-card mt-6 max-w-[620px] p-5">
         <div className="flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-full bg-foreground text-[12px] font-bold text-white">
+          <span className="grid size-9 place-items-center rounded-full bg-foreground text-[12px] font-bold text-[var(--pf-canvas)]">
             PF
           </span>
           <div>
@@ -212,4 +195,28 @@ function Toggle({
       />
     </label>
   );
+}
+
+const FORM_COPY = {
+  profile: {
+    title: "Profile",
+    description: "Workspace identity and timezone.",
+    icon: UserRound,
+  },
+  publishing: {
+    title: "Publishing defaults",
+    description: "Set safe defaults for new automations.",
+    icon: Settings2,
+  },
+  notifications: {
+    title: "Notifications",
+    description: "Choose which live workspace events appear in the navigation rail.",
+    icon: Bell,
+  },
+} as const;
+
+function formCopy(tab: string) {
+  if (tab === "profile") return FORM_COPY.profile;
+  if (tab === "publishing") return FORM_COPY.publishing;
+  return FORM_COPY.notifications;
 }

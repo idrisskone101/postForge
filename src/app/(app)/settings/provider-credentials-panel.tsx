@@ -106,7 +106,7 @@ export function ProviderCredentialsPanel() {
       </span>
       <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">API keys</h2>
+          <h2 className="pf-section-title mt-1">API keys</h2>
           <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
             Manage the provider credentials this workspace uses for generation. Keys are encrypted at rest on the server and are never sent back to this browser.
           </p>
@@ -127,16 +127,11 @@ export function ProviderCredentialsPanel() {
       <div className="mt-6 max-w-[760px] space-y-3">
         {!statuses && (
           <div className="pf-card grid min-h-[200px] place-items-center p-5">
-            <Loader2 className="size-5 animate-spin text-[var(--pf-orange)]" />
+            <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         )}
         {(statuses ?? []).map((status) => {
-          const tone =
-            status.source === "stored"
-              ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-              : status.source === "env"
-                ? "border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 text-[var(--pf-link)]"
-                : "border-border bg-[var(--pf-active)] text-muted-foreground";
+          const tone = credentialToneClass(status.source);
           return (
             <article
               key={status.provider}
@@ -149,11 +144,7 @@ export function ProviderCredentialsPanel() {
                     {PROVIDER_LABELS[status.provider] ?? status.provider}
                   </h3>
                   <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.06em]", tone)}>
-                    {status.source === "stored"
-                      ? "Configured"
-                      : status.source === "env"
-                        ? "Env configured"
-                        : "Not configured"}
+                    {credentialSourceLabel(status.source)}
                   </span>
                 </div>
                 <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
@@ -181,7 +172,7 @@ export function ProviderCredentialsPanel() {
                     type="button"
                     onClick={() => void handleSave(status.provider)}
                     disabled={busy !== null || !(values[status.provider] ?? "").trim()}
-                    className="h-9 shrink-0 rounded-lg bg-foreground px-3 text-[12px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-[var(--pf-active)] disabled:text-muted-foreground"
+                    className="pf-button-primary h-9 shrink-0 px-3 text-[12px] disabled:cursor-not-allowed disabled:bg-[var(--pf-active)] disabled:text-muted-foreground"
                   >
                     {busy === status.provider ? <Loader2 className="size-3.5 animate-spin" /> : "Save"}
                   </button>
@@ -205,10 +196,25 @@ export function ProviderCredentialsPanel() {
   );
 }
 
-
 const PROVIDER_LABELS: Record<string, string> = {
   fal: "fal.ai",
   gemini: "Google Gemini",
   virlo: "Virlo",
   ollama: "Ollama",
 };
+
+function credentialToneClass(source: ProviderCredentialStatus["source"]): string {
+  if (source === "stored") {
+    return "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]";
+  }
+  if (source === "env") {
+    return "border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 text-[var(--pf-link)]";
+  }
+  return "border-border bg-[var(--pf-active)] text-muted-foreground";
+}
+
+function credentialSourceLabel(source: ProviderCredentialStatus["source"]): string {
+  if (source === "stored") return "Configured";
+  if (source === "env") return "Env configured";
+  return "Not configured";
+}

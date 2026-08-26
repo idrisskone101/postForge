@@ -133,7 +133,7 @@ export const workspaceNavigationGroups = {
       match: ["/settings"],
       eyebrow: "Workspace",
       description: "Manage connections, publishing defaults, usage, and preferences.",
-      primaryAction: { label: "View Integrations", href: "/settings?tab=integrations" },
+      primaryAction: { label: "Integrations", href: "/settings?tab=integrations" },
     },
   ],
 } as const satisfies {

@@ -2,12 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readIntegrationCallbackFeedback } from "../../src/app/(app)/settings/integration-callback";
-import {
-  IntegrationsPanel,
-  type IntegrationsWorkspace,
-} from "../../src/app/(app)/settings/integrations-panel";
+import { IntegrationsPanel } from "../../src/app/(app)/settings/integrations-panel";
 import { SettingsNavigation } from "../../src/app/(app)/settings/settings-page-client";
 import { SocialIntegrationCard } from "../../src/app/(app)/settings/social-integration-card";
+import type { IntegrationsWorkspace } from "../../src/app/(app)/settings/types";
 import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
 
 const noOp = () => {};
@@ -244,10 +242,14 @@ const pageSource = readFileSync(
   new URL("settings-page-client.tsx", settingsDir),
   "utf8"
 );
+const typesSource = readFileSync(
+  new URL("types.ts", settingsDir),
+  "utf8"
+);
 assert.deepEqual(componentPropNames(panelSource, "IntegrationsPanel"), [
   "workspace",
 ]);
-assert.match(panelSource, /export type IntegrationsWorkspace/);
+assert.match(typesSource, /export type IntegrationsWorkspace/);
 assert.match(
   pageSource,
   /<IntegrationsPanel workspace=\{integrationsWorkspace\} \/>/

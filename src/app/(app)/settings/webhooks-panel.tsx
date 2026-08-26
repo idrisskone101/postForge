@@ -8,7 +8,7 @@ export function DeveloperSettingsPanel() {
       </span>
       <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">Webhooks</h2>
+          <h2 className="pf-section-title mt-1">Webhooks</h2>
           <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
             Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist.
           </p>
@@ -18,7 +18,7 @@ export function DeveloperSettingsPanel() {
         </span>
       </div>
       <div className="pf-card mt-6 max-w-[720px] p-5">
-        <div className="rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-card px-5 py-8 text-center">
+        <div className="rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-surface)] px-5 py-8 text-center">
           <Webhook className="mx-auto size-6 text-muted-foreground" />
           <h3 className="mt-3 text-[13px] font-semibold">No webhook endpoints are registered</h3>
           <p className="mx-auto mt-2 max-w-[480px] text-[11px] leading-4 text-muted-foreground">
@@ -40,7 +40,7 @@ export function DeveloperSettingsPanel() {
               ["Delivery history", "Status and response audit log"],
             ] as const
           ).map(([title, detail]) => (
-            <div key={title} className="rounded-lg border border-border bg-card p-3">
+            <div key={title} className="rounded-lg border border-border bg-[var(--pf-surface)] p-3">
               <b className="block text-[11px]">{title}</b>
               <span className="mt-1 block text-[12px] leading-4 text-muted-foreground">{detail}</span>
             </div>

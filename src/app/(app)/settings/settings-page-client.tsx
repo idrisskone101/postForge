@@ -19,19 +19,19 @@ import {
   fetchWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
-import {
-  IntegrationsPanel,
-  type IntegrationsWorkspace,
-} from "./integrations-panel";
+import { IntegrationsPanel } from "./integrations-panel";
 import { ModelsPanel } from "./models-panel";
 import { ProviderCredentialsPanel } from "./provider-credentials-panel";
 import { DEFAULT_SETTINGS, type SettingsRecord } from "./settings-record";
 import { useSettingsIntegrations } from "./use-settings-integrations";
+import type { IntegrationsWorkspace, SettingsTab } from "./types";
 import { DeveloperSettingsPanel } from "./webhooks-panel";
 import { Billing, SettingsForm, Team } from "./workspace-panels";
 
 export function SettingsPageClient() {
+  const paintReady = useWindowLoadReady();
   const router = useRouter();
   const tab = useSyncExternalStore(
     subscribeSettingsTab,
@@ -45,6 +45,7 @@ export function SettingsPageClient() {
   const onOAuthCallback = useCallback(() => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", "integrations");
+    rememberSettingsTab("integrations");
     router.replace(`/settings?${params.toString()}`, { scroll: false });
     window.dispatchEvent(new Event("pf-settings-tab"));
   }, [router]);
@@ -79,6 +80,7 @@ export function SettingsPageClient() {
   function selectTab(next: SettingsTab) {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", next);
+    rememberSettingsTab(next);
     router.replace(`/settings?${params.toString()}`, { scroll: false });
     window.dispatchEvent(new Event("pf-settings-tab"));
   }
@@ -153,7 +155,10 @@ export function SettingsPageClient() {
   }
 
   return (
-    <div data-settings-page="true" className="grid min-h-[calc(100dvh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]">
+    <div
+      data-settings-page={paintReady ? undefined : "true"}
+      className="grid min-h-[calc(100dvh-184px)] max-lg:pt-5 lg:grid-cols-[210px_minmax(0,1fr)]"
+    >
       <SettingsNavigation
         tab={tab}
         onSelect={selectTab}
@@ -164,15 +169,32 @@ export function SettingsPageClient() {
       />
 
       <section data-settings-panel="true" aria-label="Settings panel" className="min-w-0 px-5 py-6 sm:px-7 lg:px-8">
-        {error && <div role="alert" className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"><span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span><button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error"><X className="size-3.5" /></button></div>}
+        {error && (
+          <div
+            role="alert"
+            className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"
+          >
+            <span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span>
+            <button onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error">
+              <X className="size-3.5" />
+            </button>
+          </div>
+        )}
         {panel}
       </section>
 
-      {toast && <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"><Check className="size-3.5 shrink-0 text-[var(--pf-success)]" /><span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span></div>}
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-[var(--pf-canvas)] shadow-[var(--pf-shadow-lg)] sm:left-auto sm:max-w-[420px]"
+        >
+          <Check className="size-3.5 shrink-0 text-[var(--pf-success)]" />
+          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span>
+        </div>
+      )}
     </div>
   );
 }
-
 
 export const SETTINGS_NAVIGATION = [
   { id: "profile", label: "Profile", group: "workspace", icon: UserRound },
@@ -186,8 +208,6 @@ export const SETTINGS_NAVIGATION = [
   { id: "webhooks", label: "Webhooks", group: "developer", icon: Webhook },
 ] as const;
 
-export type SettingsTab = (typeof SETTINGS_NAVIGATION)[number]["id"];
-
 export function isSettingsTab(value: string): value is SettingsTab {
   return SETTINGS_NAVIGATION.some((item) => item.id === value);
 }
@@ -196,18 +216,37 @@ function readDefaultSettingsTab(): SettingsTab {
   return "integrations";
 }
 
+let rememberedSettingsTab: SettingsTab | null = null;
+
+function rememberSettingsTab(next: SettingsTab) {
+  rememberedSettingsTab = next;
+}
+
 function readSettingsTab(): SettingsTab {
+  if (rememberedSettingsTab) return rememberedSettingsTab;
   const requested = new URLSearchParams(window.location.search).get("tab");
   return requested && isSettingsTab(requested) ? requested : "integrations";
 }
 
 function subscribeSettingsTab(onChange: () => void) {
-  window.addEventListener("popstate", onChange);
+  const onPopState = () => {
+    rememberedSettingsTab = null;
+    onChange();
+  };
+  window.addEventListener("popstate", onPopState);
   window.addEventListener("pf-settings-tab", onChange);
   return () => {
-    window.removeEventListener("popstate", onChange);
+    window.removeEventListener("popstate", onPopState);
     window.removeEventListener("pf-settings-tab", onChange);
   };
+}
+
+function navTabClass(active: boolean): string {
+  return cn(
+    "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
+    active &&
+      "bg-[var(--pf-surface)] font-semibold text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
+  );
 }
 
 export function SettingsNavigation({
@@ -220,8 +259,13 @@ export function SettingsNavigation({
   connectedIntegrations?: number;
 }) {
   return (
-    <aside data-settings-nav="true" className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4">
-      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Workspace</p>
+    <aside
+      data-settings-nav="true"
+      className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4"
+    >
+      <p className="mb-2 max-lg:hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        Workspace
+      </p>
       {SETTINGS_NAVIGATION.filter((item) => item.group === "workspace").map(
         ({ id, label, icon: Icon }) => (
           <button
@@ -229,23 +273,25 @@ export function SettingsNavigation({
             key={id}
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
-              tab === id && "bg-white font-semibold text-foreground shadow-sm"
-            )}
+            className={navTabClass(tab === id)}
           >
-            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
+            <Icon className="size-3.5" />
             {label}
             {id === "integrations" && connectedIntegrations > 0 && (
-              <span aria-label={`${connectedIntegrations} connected integrations`} className="ml-auto grid size-4 place-items-center rounded-full bg-[var(--pf-orange)] text-[11px] text-white">
+              <span
+                aria-label={`${connectedIntegrations} connected integrations`}
+                className="ml-auto grid size-4 place-items-center rounded-full bg-[var(--pf-orange)] text-[11px] text-white"
+              >
                 {connectedIntegrations}
               </span>
             )}
           </button>
         )
       )}
-      <div className="my-4 hidden h-px bg-[var(--pf-border)] lg:block" />
-      <p className="mb-2 hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground lg:block">Developer</p>
+      <div className="my-4 h-px max-lg:hidden bg-[var(--pf-border)]" />
+      <p className="mb-2 max-lg:hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        Developer
+      </p>
       {SETTINGS_NAVIGATION.filter((item) => item.group === "developer").map(
         ({ id, label, icon: Icon }) => (
           <button
@@ -253,12 +299,9 @@ export function SettingsNavigation({
             key={id}
             onClick={() => onSelect(id)}
             aria-current={tab === id ? "page" : undefined}
-            className={cn(
-              "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-[12px] text-muted-foreground lg:w-full",
-              tab === id && "bg-white font-semibold text-foreground shadow-sm"
-            )}
+            className={navTabClass(tab === id)}
           >
-            <Icon className={cn("size-3.5", tab === id && "text-[var(--pf-orange)]")} />
+            <Icon className="size-3.5" />
             {label}
           </button>
         )
