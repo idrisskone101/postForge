@@ -149,7 +149,7 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
 
   if (items.length === 0) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 text-muted-foreground">
+      <div className="pf-card flex min-h-64 flex-col items-center justify-center text-[var(--pf-muted)]">
         <Images className="mb-3 size-10 opacity-40" />
         <p className="text-sm font-medium">No media yet</p>
         <p className="mt-1 text-xs">Generated images and videos will appear here</p>

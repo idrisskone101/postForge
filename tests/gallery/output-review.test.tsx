@@ -12,8 +12,8 @@ import {
 } from "../../src/lib/gallery";
 
 const initialPage = {
-  nextCursor: null,
-  hasMore: false,
+  nextCursor: "cursor-1",
+  hasMore: true,
   reviewCounts: {
     needs_review: 17,
     approved_output: 8,
@@ -125,7 +125,10 @@ assert.match(markup, /Search gallery/);
 assert.match(markup, /aria-label="Grid view"/);
 assert.match(markup, /aria-label="List view"/);
 assert.ok(markup.indexOf("Needs Review") < markup.indexOf("Media type"));
-assert.match(markup, /bg-muted text-foreground[^>]*>Videos/);
+assert.match(markup, /bg-\[var\(--pf-surface\)\] text-\[var\(--pf-ink\)\][^>]*>Videos/);
+assert.match(markup, /pf-card/);
+assert.match(markup, /pf-data/);
+assert.match(markup, /pf-button-secondary/);
 assert.match(markup, /Showing 1 of 17 outputs needing review/);
 assert.match(markup, />17</);
 assert.match(markup, />8</);
@@ -152,6 +155,9 @@ assert.doesNotMatch(markup, /Approved creator still/);
 assert.match(approvedMarkup, /Showing 1 of 8 outputs in approved output/);
 assert.match(approvedMarkup, /\/api\/files\/file-approved/);
 assert.doesNotMatch(approvedMarkup, /\/api\/files\/file-needs-review/);
+assert.match(approvedMarkup, /pf-review-stamp !top-2 !bottom-auto/);
+assert.match(approvedMarkup, /pf-review-stamp--approved/);
+assert.match(approvedMarkup, /bg-\[var\(--pf-success\)\]/);
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
 assert.match(emptyMarkup, /No Outputs ready for review/);

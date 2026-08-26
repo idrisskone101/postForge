@@ -18,6 +18,13 @@ export type GalleryItemInput = Omit<GalleryItem, "type" | "reviewStatus"> & {
   };
 };
 
+export interface GalleryPageClientProps {
+  initialPage: Omit<GalleryPage, "items"> & { items: GalleryItemInput[] };
+  initialType?: GalleryTypeFilter;
+  initialSort?: GallerySortOrder;
+  initialReviewStatus?: ReviewFilter;
+}
+
 export interface GalleryPage {
   items: GalleryItem[];
   nextCursor: string | null;

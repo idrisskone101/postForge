@@ -1,5 +1,5 @@
 import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
-import { cn } from "@/lib/utils";
+import { Check, CircleX } from "lucide-react";
 
 export function ReviewStatePill({
   status,
@@ -8,28 +8,28 @@ export function ReviewStatePill({
 }) {
   const approved = status.value === "approved_output";
   const rejected = status.value === "rejected_output";
+
+  if (approved) {
+    return (
+      <span className="pf-status-success inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
+        <Check className="size-3" />
+        <span className="truncate">{status.label}</span>
+      </span>
+    );
+  }
+
+  if (rejected) {
+    return (
+      <span className="pf-status-danger inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
+        <CircleX className="size-3" />
+        <span className="truncate">{status.label}</span>
+      </span>
+    );
+  }
+
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium",
-        approved &&
-          "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
-        rejected &&
-          "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]",
-        !approved &&
-          !rejected &&
-          "border-[var(--pf-border)] bg-[var(--pf-active)] text-[var(--pf-muted)]"
-      )}
-    >
-      <span
-        className={cn(
-          "size-1.5 rounded-full",
-          approved && "bg-[#4ADE80]",
-          rejected && "bg-[#F87171]",
-          !approved && !rejected && "bg-[#FBBF24]"
-        )}
-      />
-      {status.label}
+    <span className="inline-flex max-w-full items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] px-2.5 py-0.5 text-[11px] font-medium capitalize text-[var(--pf-muted)]">
+      <span className="truncate">{status.label}</span>
     </span>
   );
 }

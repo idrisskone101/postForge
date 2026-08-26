@@ -42,7 +42,7 @@ export function GalleryLightbox({
         if (!open) onClose();
       }}
     >
-      <DialogContent className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[12px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20">
+      <DialogContent className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[8px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20">
         <DialogTitle className="sr-only">Output preview</DialogTitle>
         {item && (
           <div className="grid lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -58,30 +58,33 @@ export function GalleryLightbox({
                 mediaClassName="object-contain"
               />
             </div>
-            <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-border bg-card p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
+            <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-[var(--pf-border)] bg-[var(--pf-surface)] p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
               <div className="flex flex-wrap items-center gap-2">
                 <ReviewStatePill status={item.reviewStatus} />
-                <span className="text-[12px] capitalize text-muted-foreground">
+                <span className="text-[12px] capitalize text-[var(--pf-muted)]">
                   {item.type}
                   {item.durationSec != null ? ` · ${item.durationSec}s` : ""}
                 </span>
               </div>
 
               <div className="min-w-0">
-                <h2 className="truncate text-[15px] font-semibold tracking-[-0.01em]">
+                <h2 className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[var(--pf-ink)]">
                   {item.filename?.trim() || `Generated ${item.type}`}
                 </h2>
-                <p className="mt-1 truncate text-[12px] text-muted-foreground">
-                  {item.model} · <span suppressHydrationWarning>{formatRelativeDate(item.createdAt)}</span>
+                <p className="mt-1 truncate text-[12px] text-[var(--pf-muted)]">
+                  {item.model} ·{" "}
+                  <span className="pf-data" suppressHydrationWarning>
+                    {formatRelativeDate(item.createdAt)}
+                  </span>
                 </p>
               </div>
 
               {prompt}
 
-              <dl className="divide-y divide-border border-y border-border">
+              <dl className="divide-y divide-[var(--pf-border)] border-y border-[var(--pf-border)]">
                 <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-muted-foreground">Output</dt>
-                  <dd>
+                  <dt className="text-[var(--pf-muted)]">Output</dt>
+                  <dd className="pf-data text-[var(--pf-ink)]">
                     {item.width && item.height
                       ? `${item.width} × ${item.height}`
                       : item.type}
@@ -89,14 +92,14 @@ export function GalleryLightbox({
                 </div>
                 {item.tiktokSourceUrl && (
                   <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                    <dt className="text-muted-foreground">Source</dt>
+                    <dt className="text-[var(--pf-muted)]">Source</dt>
                     <dd className="flex items-center gap-1">
                       <button
                         type="button"
                         title="Copy Source URL"
                         aria-label="Copy Source URL"
                         onClick={() => void copySourceUrl(item.tiktokSourceUrl!)}
-                        className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        className="inline-flex h-7 items-center gap-1 rounded-[8px] px-2 text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                       >
                         <Copy className="size-3" /> Copy
                       </button>
@@ -106,7 +109,7 @@ export function GalleryLightbox({
                         rel="noreferrer"
                         title="Open Source Selection"
                         aria-label="Open Source Selection"
-                        className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-muted-foreground hover:bg-muted hover:text-primary"
+                        className="inline-flex h-7 items-center gap-1 rounded-[8px] px-2 text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-primary"
                       >
                         <ExternalLink className="size-3" /> Open
                       </a>
@@ -125,7 +128,7 @@ export function GalleryLightbox({
                 onFeedback={onFeedback}
               />
 
-              <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
+              <div className="mt-auto flex flex-col gap-2 border-t border-[var(--pf-border)] pt-4">
                 {item.type === "image" && (
                   <Link
                     href={`/ugc-clone?referenceFileId=${encodeURIComponent(item.id)}`}
@@ -139,7 +142,7 @@ export function GalleryLightbox({
                   <button
                     type="button"
                     onClick={() => void downloadItem(item)}
-                    className="flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background text-[13px] font-semibold transition-colors hover:bg-muted"
+                    className="pf-button-secondary h-10"
                   >
                     <Download className="size-4" />
                     Download
@@ -147,7 +150,7 @@ export function GalleryLightbox({
                   <button
                     type="button"
                     onClick={() => void onHandoff?.(item)}
-                    className="flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background text-[13px] font-semibold transition-colors hover:bg-muted"
+                    className="pf-button-secondary h-10"
                   >
                     <Send className="size-4" />
                     Handoff
@@ -158,7 +161,7 @@ export function GalleryLightbox({
                   trigger={
                     <button
                       type="button"
-                      className="flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
+                      className="flex h-9 items-center justify-center gap-2 rounded-[8px] text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
                     />
                   }
                   title="Delete this asset?"
@@ -181,7 +184,6 @@ export function GalleryLightbox({
     </Dialog>
   );
 }
-
 
 function LightboxReviewControl({
   outputId,
@@ -229,10 +231,10 @@ function LightboxReviewControl({
         onClick={() => void update("approved_output")}
         aria-pressed={reviewStatus.value === "approved_output"}
         className={cn(
-          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
+          "flex h-10 items-center justify-center gap-2 rounded-[8px] border text-[13px] font-semibold transition-colors disabled:opacity-50",
           reviewStatus.value === "approved_output"
             ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-            : "border-border bg-background text-foreground hover:border-[var(--pf-success)]/40 hover:text-[var(--pf-success)]"
+            : "border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)] hover:border-[var(--pf-success)]/40 hover:text-[var(--pf-success)]"
         )}
       >
         {pending === "approved_output" ? (
@@ -248,10 +250,10 @@ function LightboxReviewControl({
         onClick={() => void update("rejected_output")}
         aria-pressed={reviewStatus.value === "rejected_output"}
         className={cn(
-          "flex h-10 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold transition-colors disabled:opacity-50",
+          "flex h-10 items-center justify-center gap-2 rounded-[8px] border text-[13px] font-semibold transition-colors disabled:opacity-50",
           reviewStatus.value === "rejected_output"
             ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-            : "border-border bg-background text-foreground hover:border-[var(--pf-danger)]/40 hover:text-[var(--pf-danger)]"
+            : "border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)] hover:border-[var(--pf-danger)]/40 hover:text-[var(--pf-danger)]"
         )}
       >
         {pending === "rejected_output" ? (
