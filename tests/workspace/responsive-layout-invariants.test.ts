@@ -54,10 +54,14 @@ const avatarPicker = source("src/components/avatar-picker.tsx");
 const avatarPickerImport = source("src/components/avatar-picker-import.tsx");
 const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx");
 const galleryGrid = source("src/components/gallery-grid.tsx");
-const home = source("src/app/(app)/home-cockpit.tsx");
+const home = [
+  source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/home-active-lane.tsx"),
+].join("\n");
 
 const routeSurfaces = [
   source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/home-active-lane.tsx"),
   source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"),
   cloneStudio,
   source("src/components/clone-output-review-detail.tsx"),
