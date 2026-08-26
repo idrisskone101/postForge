@@ -169,6 +169,7 @@ assert.match(markup, /New Clone/);
 assert.match(markup, /pf-button-primary/);
 
 // Stat strip: four canon stat cards with real values
+assert.match(markup, /min-\[860px\]:!grid-cols-4/);
 assert.match(markup, /Spend today/);
 assert.match(markup, /Jobs running/);
 assert.match(markup, /Awaiting review/);
