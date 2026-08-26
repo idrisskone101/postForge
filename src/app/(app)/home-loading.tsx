@@ -13,7 +13,7 @@ export default function HomeLoading() {
 
       <section
         aria-label="Today at a glance"
-        className="mt-6 grid grid-cols-2 gap-3 min-[860px]:grid-cols-4"
+        className="mt-6 grid grid-cols-2 gap-3 min-[860px]:!grid-cols-4"
       >
         {["Spend today", "Jobs running", "Awaiting review", "Completed this week"].map((label) => (
           <div key={label} className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4">
