@@ -1,5 +1,8 @@
 import { cn } from "@/lib/utils";
 
+export const PLAYBOOK_HEADER_CLASS =
+  "flex shrink-0 items-start justify-between gap-4 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 sm:px-5";
+
 export function playbookCardShellClass(selected: boolean, previewing: boolean, listView: boolean) {
   let border = "border-[var(--pf-border)] hover:border-[var(--pf-border-strong)]";
   if (selected) {

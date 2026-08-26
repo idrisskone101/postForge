@@ -109,8 +109,8 @@ export function AutomationsPageClient({
 
           <AutomationsPaintText
             ready={paintReady}
-            liveAs="h2"
-            liveClassName="mt-4 max-w-md text-[16px] font-semibold leading-6 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+            liveAs="span"
+            liveClassName="mt-4 max-w-md text-balance text-center text-[16px] font-semibold leading-6 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
             paint={
               <h2 data-empty-heading="true" data-empty-title="Build your first reviewed content plan">
                 <span className="sr-only">Build your first reviewed content plan</span>

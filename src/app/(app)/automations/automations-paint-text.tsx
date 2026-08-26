@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 
-type LiveTag = "p" | "span" | "strong" | "h2";
+type LiveTag = "p" | "span" | "strong";
 
 export function AutomationsPaintText({
   ready,
@@ -20,7 +20,7 @@ export function AutomationsPaintText({
   const Live = liveAs;
   return (
     <>
-      <div aria-hidden={ready || undefined} style={ready ? HIDDEN_SHELL : undefined}>
+      <div aria-hidden={ready || undefined} style={ready ? PAINT_HIDDEN_SHELL : undefined}>
         {paint}
       </div>
       {ready ? <Live className={liveClassName}>{children}</Live> : null}
@@ -28,7 +28,7 @@ export function AutomationsPaintText({
   );
 }
 
-const HIDDEN_SHELL: CSSProperties = {
+export const PAINT_HIDDEN_SHELL: CSSProperties = {
   position: "absolute",
   width: 0,
   height: 0,

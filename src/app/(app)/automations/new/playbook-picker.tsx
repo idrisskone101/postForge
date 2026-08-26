@@ -3,9 +3,12 @@
 import { useEffect } from "react";
 import { Grid2X2, Heart, List, Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { AutomationsPaintText, PAINT_HIDDEN_SHELL } from "../automations-paint-text";
 import { PlaybookCard } from "./playbook-card";
 import { isTemplateSort, type PlaybookPickerState } from "./playbook-model";
 import {
+  PLAYBOOK_HEADER_CLASS,
   playbookCategoryButtonClass,
   playbookCategoryCountClass,
 } from "./playbook-visual";
@@ -26,6 +29,7 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
     onBuildFromScratch,
     onClose,
   } = picker;
+  const paintReady = useWindowLoadReady();
 
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
@@ -37,32 +41,40 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
 
   return (
     <>
-      <header
-        data-playbook-chrome="true"
-        className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 sm:px-5"
-      >
-        <div>
-          <h2 id="template-title" data-playbook-title="Choose a playbook">
-            <span className="sr-only">Choose a playbook</span>
-          </h2>
-          <p
-            data-playbook-lede="Start with a proven Hook, Content, and CTA structure."
-            className="mt-1 max-w-[12rem] overflow-hidden text-[11px] leading-4 text-[var(--pf-muted)] sm:text-[12px]"
-          >
-            <span className="sr-only">
+      <div aria-hidden={paintReady || undefined} style={paintReady ? PAINT_HIDDEN_SHELL : undefined}>
+        <header data-playbook-chrome="true" className={PLAYBOOK_HEADER_CLASS}>
+          <div>
+            <h2 id={paintReady ? undefined : "template-title"} data-playbook-title="Choose a playbook">
+              <span className="sr-only">Choose a playbook</span>
+            </h2>
+            <p
+              data-playbook-lede="Start with a proven Hook, Content, and CTA structure."
+              className="mt-1 max-w-[12rem] overflow-hidden text-[11px] leading-4 text-[var(--pf-muted)] sm:text-[12px]"
+            >
+              <span className="sr-only">
+                Start with a proven Hook, Content, and CTA structure. Preview it, select it, then apply when you are ready.
+              </span>
+            </p>
+          </div>
+          <PlaybookCloseButton onClose={onClose} />
+        </header>
+      </div>
+      {paintReady ? (
+        <header className={PLAYBOOK_HEADER_CLASS}>
+          <div className="min-w-0">
+            <span
+              id="template-title"
+              className="block text-[20px] font-semibold tracking-tight text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+            >
+              Choose a playbook
+            </span>
+            <span className="mt-1 block max-w-xl text-[12px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]">
               Start with a proven Hook, Content, and CTA structure. Preview it, select it, then apply when you are ready.
             </span>
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close playbook picker"
-          className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-surface)] hover:bg-[var(--pf-active)]"
-        >
-          <X className="size-4" />
-        </button>
-      </header>
+          </div>
+          <PlaybookCloseButton onClose={onClose} />
+        </header>
+      ) : null}
 
       <div
         data-playbook-body="true"
@@ -104,16 +116,34 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
             <span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white">
               <Plus className="size-3.5" />
             </span>
-            <span>
-              <b className="block text-[11px] text-[var(--pf-ink)]" data-playbook-scratch="Build from scratch">
-                <span className="sr-only">Build from scratch</span>
-              </b>
-              <small
-                className="mt-0.5 block text-[11px] text-[var(--pf-muted)]"
-                data-playbook-scratch-copy="Blank three-phase workflow"
+            <span className="min-w-0">
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="block text-[11px] font-semibold text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+                paint={
+                  <b className="block text-[11px] text-[var(--pf-ink)]" data-playbook-scratch="Build from scratch">
+                    <span className="sr-only">Build from scratch</span>
+                  </b>
+                }
               >
-                <span className="sr-only">Blank three-phase workflow</span>
-              </small>
+                Build from scratch
+              </AutomationsPaintText>
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="mt-0.5 block text-[11px] text-[var(--pf-muted)] [overflow-wrap:anywhere]"
+                paint={
+                  <small
+                    className="mt-0.5 block text-[11px] text-[var(--pf-muted)]"
+                    data-playbook-scratch-copy="Blank three-phase workflow"
+                  >
+                    <span className="sr-only">Blank three-phase workflow</span>
+                  </small>
+                }
+              >
+                Blank three-phase workflow
+              </AutomationsPaintText>
             </span>
           </button>
         </aside>
@@ -228,5 +258,18 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerState }) {
         </section>
       </div>
     </>
+  );
+}
+
+function PlaybookCloseButton({ onClose }: { onClose: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClose}
+      aria-label="Close playbook picker"
+      className="grid size-9 shrink-0 place-items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-surface)] hover:bg-[var(--pf-active)]"
+    >
+      <X className="size-4" />
+    </button>
   );
 }

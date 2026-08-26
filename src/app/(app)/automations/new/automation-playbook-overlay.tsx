@@ -2,6 +2,8 @@
 
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { AutomationsPaintText } from "../automations-paint-text";
 import {
   TEMPLATE_VISUALS,
   templateNumber,
@@ -19,6 +21,8 @@ export function AutomationPlaybookOverlay({
   selectedTemplate: AutomationTemplate;
   onApply: (templateId: string) => void;
 }) {
+  const paintReady = useWindowLoadReady();
+
   return (
     <div
       data-automation-overlay="true"
@@ -50,30 +54,68 @@ export function AutomationPlaybookOverlay({
               {templateNumber(selectedTemplate)}
             </span>
             <span className="min-w-0">
-              <small data-playbook-lede="Selected playbook" className="text-[var(--pf-muted)]">
-                <span className="sr-only">Selected playbook</span>
-              </small>
-              <b data-playbook-name={selectedTemplate.name} className="text-[var(--pf-ink)]">
-                <span className="sr-only">{selectedTemplate.name}</span>
-              </b>
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="block text-[11px] text-[var(--pf-muted)] [overflow-wrap:anywhere]"
+                paint={
+                  <small data-playbook-lede="Selected playbook" className="text-[var(--pf-muted)]">
+                    <span className="sr-only">Selected playbook</span>
+                  </small>
+                }
+              >
+                Selected playbook
+              </AutomationsPaintText>
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="block text-[13px] font-semibold text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+                paint={
+                  <b data-playbook-name={selectedTemplate.name} className="text-[var(--pf-ink)]">
+                    <span className="sr-only">{selectedTemplate.name}</span>
+                  </b>
+                }
+              >
+                {selectedTemplate.name}
+              </AutomationsPaintText>
             </span>
           </div>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={picker.onClose}
-              data-lcp="Cancel"
               className="pf-button-secondary flex-1 sm:flex-none"
             >
-              <span className="sr-only">Cancel</span>
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="whitespace-normal [overflow-wrap:anywhere]"
+                paint={
+                  <span data-lcp="Cancel">
+                    <span className="sr-only">Cancel</span>
+                  </span>
+                }
+              >
+                Cancel
+              </AutomationsPaintText>
             </button>
             <button
               type="button"
               onClick={() => onApply(selectedTemplate.id)}
-              data-lcp="Apply playbook"
               className="pf-button-primary flex-1 sm:flex-none"
             >
-              <span className="sr-only">Apply playbook</span>
+              <AutomationsPaintText
+                ready={paintReady}
+                liveAs="span"
+                liveClassName="whitespace-normal [overflow-wrap:anywhere]"
+                paint={
+                  <span data-lcp="Apply playbook">
+                    <span className="sr-only">Apply playbook</span>
+                  </span>
+                }
+              >
+                Apply playbook
+              </AutomationsPaintText>
               <ArrowRight className="size-3.5" />
             </button>
           </div>

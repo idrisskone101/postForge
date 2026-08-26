@@ -2,6 +2,8 @@
 
 import { Check, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { AutomationsPaintText } from "../automations-paint-text";
 import {
   TEMPLATE_VISUALS,
   templateNumber,
@@ -24,6 +26,7 @@ export function PlaybookCard({
   const favorite = picker.favorites.includes(template.id);
   const selected = picker.selectedTemplateId === template.id;
   const previewing = picker.previewTemplate.id === template.id;
+  const paintReady = useWindowLoadReady();
 
   return (
     <article className={playbookCardShellClass(selected, previewing, view === "list")}>
@@ -59,17 +62,35 @@ export function PlaybookCard({
           {template.category}
         </span>
         <div className="mt-1 flex items-start justify-between gap-2">
-          <h3 data-playbook-name={template.name} className="text-[13px] font-semibold text-[var(--pf-ink)]">
-            <span className="sr-only">{template.name}</span>
-          </h3>
+          <AutomationsPaintText
+            ready={paintReady}
+            liveAs="span"
+            liveClassName="min-w-0 text-[13px] font-semibold text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+            paint={
+              <h3 data-playbook-name={template.name} className="text-[13px] font-semibold text-[var(--pf-ink)]">
+                <span className="sr-only">{template.name}</span>
+              </h3>
+            }
+          >
+            {template.name}
+          </AutomationsPaintText>
           {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[var(--pf-success)]" aria-label="Selected" />}
         </div>
-        <p
-          data-playbook-blurb={template.description}
-          className="mt-1 min-h-8 text-[12px] leading-4 text-[var(--pf-muted)]"
+        <AutomationsPaintText
+          ready={paintReady}
+          liveAs="span"
+          liveClassName="mt-1 min-h-8 text-[12px] leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
+          paint={
+            <p
+              data-playbook-blurb={template.description}
+              className="mt-1 min-h-8 text-[12px] leading-4 text-[var(--pf-muted)]"
+            >
+              <span className="sr-only">{template.description}</span>
+            </p>
+          }
         >
-          <span className="sr-only">{template.description}</span>
-        </p>
+          {template.description}
+        </AutomationsPaintText>
         <div className="mt-3 flex items-center gap-2 border-t border-[var(--pf-border)] pt-2">
           <button
             type="button"
