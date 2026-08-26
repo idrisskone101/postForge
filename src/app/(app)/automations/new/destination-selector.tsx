@@ -86,7 +86,7 @@ export function DestinationSelector({
               onClick={() => onSelect(option.id)}
               aria-pressed={selected}
               className={cn(
-                "flex min-h-14 items-center gap-2 rounded-lg border bg-white px-2.5 text-left transition-colors",
+                "flex min-h-14 items-center gap-2 rounded-[8px] border bg-[var(--pf-surface)] px-2.5 text-left transition-colors",
                 selected
                   ? "border-[var(--pf-ink)] ring-2 ring-[var(--pf-ink)]/10"
                   : "border-border hover:border-[var(--pf-border-strong)]"
@@ -195,7 +195,7 @@ export function DestinationSelector({
                           : "Connected account"
                       );
                     }}
-                    className="h-9 w-full rounded-lg border border-border bg-white px-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="h-9 w-full rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                     aria-label="Connected social account"
                   >
                     <option value="" disabled>

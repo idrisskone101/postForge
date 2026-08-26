@@ -13,13 +13,13 @@ export function Metric({
 }) {
   return (
     <article className="pf-card p-3">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
         {label}
       </span>
       <div className="mt-2 flex items-center justify-between">
         <b
           className={cn(
-            "text-[20px] font-semibold tracking-[-0.02em]",
+            "text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]",
             tone === "danger" && "text-[var(--pf-danger)]"
           )}
         >
@@ -34,9 +34,7 @@ export function Metric({
           />
         )}
       </div>
-      <small className="mt-1 block text-[12px] text-muted-foreground">
-        {detail}
-      </small>
+      <small className="mt-1 block text-[12px] text-[var(--pf-muted)]">{detail}</small>
     </article>
   );
 }

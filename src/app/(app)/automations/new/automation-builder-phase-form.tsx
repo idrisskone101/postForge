@@ -133,7 +133,7 @@ export function AutomationBuilderPhaseForm({
             </Field>
             {record.content.sourceFileId && (
               <Field label="Attached generated asset">
-                <div className="flex min-h-14 items-center gap-2 rounded-lg border border-border bg-white p-2">
+                <div className="flex min-h-14 items-center gap-2 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-2">
                   <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-[var(--pf-active)]">
                     {sourceFile?.type === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -262,8 +262,8 @@ export function AutomationBuilderPhaseForm({
                 className={cn(
                   "h-8 rounded-lg border text-[12px]",
                   record.schedule.days.includes(day)
-                    ? "border-[var(--pf-ink)] bg-foreground text-background"
-                    : "border-border bg-white text-muted-foreground"
+                    ? "border-[var(--pf-orange)] bg-[var(--pf-orange)] text-white"
+                    : "border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)]"
                 )}
               >
                 {day[0]}
@@ -317,7 +317,7 @@ export function AutomationBuilderPhaseForm({
           onClick={() =>
             phaseIndex === 2 ? setValidationOpen(true) : setPhase(PHASES[phaseIndex + 1])
           }
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-foreground px-3 text-[13px] font-semibold text-white"
+          className="pf-button-primary !h-9"
         >
           {phaseIndex === 2 ? "Review" : "Next"}
           <ArrowRight className="size-3" />

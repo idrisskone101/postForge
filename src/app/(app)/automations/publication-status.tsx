@@ -2,36 +2,32 @@
 
 import { cn } from "@/lib/utils";
 import type { AutomationPublication } from "@/lib/automations";
+import {
+  publicationStatusHeadline,
+  publicationStatusHeadlineClass,
+  publicationStatusPillClass,
+} from "./hub-visual";
 
 export function PublicationStatus({
   publication,
 }: {
   publication: AutomationPublication;
 }) {
-  const label =
-    publication.status === "pending"
-      ? "Preparing secure handoff"
-      : publication.status === "submitted"
-        ? "Provider processing"
-        : publication.status === "published"
-          ? "Provider published"
-          : "Publish failed";
+  const label = publicationStatusHeadline(publication);
   return (
-    <div className="mt-1 min-w-0 text-[11px] leading-3 text-muted-foreground">
-      <b
+    <div className="mt-1 min-w-0 text-[11px] leading-3 text-[var(--pf-muted)]">
+      <span
         className={cn(
-          "block min-w-0 break-words [overflow-wrap:anywhere]",
-          publication.status === "failed"
-            ? "text-[var(--pf-danger)]"
-            : publication.status === "published"
-              ? "text-[var(--pf-success)]"
-              : "text-[var(--pf-lamp-amber)]"
+          "inline-flex max-w-full items-center gap-1 px-2 py-0.5 text-[11px] font-bold [overflow-wrap:anywhere]",
+          publicationStatusPillClass(publication)
         )}
       >
-        {label}
-      </b>
+        <b className={cn("min-w-0 break-words", publicationStatusHeadlineClass(publication))}>
+          {label}
+        </b>
+      </span>
       {publication.providerStatus && (
-        <span className="block min-w-0 break-words [overflow-wrap:anywhere]">
+        <span className="mt-1 block min-w-0 break-words [overflow-wrap:anywhere]">
           {publication.providerStatus.replaceAll("_", " ").toLowerCase()} ·{" "}
           {publicationVisibilityLabel(publication)}
         </span>
@@ -39,7 +35,7 @@ export function PublicationStatus({
       {publication.error && (
         <span
           role="alert"
-          className="block min-w-0 break-words text-[var(--pf-danger)] [overflow-wrap:anywhere]"
+          className="mt-1 block min-w-0 break-words text-[var(--pf-danger)] [overflow-wrap:anywhere]"
         >
           {publication.error}
         </span>
@@ -47,7 +43,6 @@ export function PublicationStatus({
     </div>
   );
 }
-
 
 function publicationVisibilityLabel(publication: AutomationPublication) {
   if (publication.providerVisibility) {

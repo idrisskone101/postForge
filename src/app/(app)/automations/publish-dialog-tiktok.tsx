@@ -29,7 +29,7 @@ export function PublishDialogTiktokFields({
                     onChange={(event) =>
                       onChange({ ...state, caption: event.target.value })
                     }
-                    className="min-h-24 w-full min-w-0 resize-y rounded-lg border border-border bg-white px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="min-h-24 w-full min-w-0 resize-y rounded-lg border border-border bg-[var(--pf-surface)] px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   />
                 </FieldLabel>
                 <FieldLabel label="Who can watch" detail="Choose one; no default is assumed">
@@ -43,7 +43,7 @@ export function PublishDialogTiktokFields({
                           | TikTokPrivacyLevel,
                       })
                     }
-                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-white px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   >
                     <option value="">Select TikTok privacy</option>
                     {creator.privacyLevelOptions.map((privacy) => (

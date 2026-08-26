@@ -44,7 +44,7 @@ export function PublishReviewDialog({
       aria-labelledby="publish-review-title"
     >
       <div className="flex max-h-full w-full min-w-0 max-w-[760px] flex-col overflow-hidden rounded-[12px] border border-border bg-card shadow-2xl sm:rounded-[12px]">
-        <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 border-b border-border bg-white px-4 py-3 sm:px-5">
+        <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 border-b border-border bg-[var(--pf-surface)] px-4 py-3 sm:px-5">
           <div className="min-w-0">
             <h2
               id="publish-review-title"
@@ -126,7 +126,7 @@ export function PublishReviewDialog({
                     onChange={(event) =>
                       onChange({ ...state, caption: event.target.value })
                     }
-                    className="min-h-28 w-full min-w-0 resize-y rounded-lg border border-border bg-white px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="min-h-28 w-full min-w-0 resize-y rounded-lg border border-border bg-[var(--pf-surface)] px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   />
                 </FieldLabel>
               </>
@@ -140,7 +140,7 @@ export function PublishReviewDialog({
               />
             )}
 
-            <div className="min-w-0 rounded-lg border border-border bg-white p-3">
+            <div className="min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] p-3">
               <CheckControl
                 label={`Publish this exact approved video to ${providerName} now`}
                 checked={state.consent}
@@ -153,7 +153,7 @@ export function PublishReviewDialog({
           </section>
         </div>
 
-        <footer className="flex min-w-0 shrink-0 flex-col-reverse gap-2 border-t border-border bg-white px-4 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <footer className="flex min-w-0 shrink-0 flex-col-reverse gap-2 border-t border-border bg-[var(--pf-surface)] px-4 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <p className="min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
             {state.retryFailed
               ? "This creates a new explicit attempt for the same approved asset."

@@ -56,3 +56,23 @@ export type ManualResolutionDialogState = {
   resolution: "published" | "not_published";
   error: string | null;
 };
+
+export type VideoAutomationMenuModel = {
+  record: AutomationRecord;
+  scheduleActive: boolean;
+  canControlLocalSchedule: boolean;
+  pendingRecoverable: boolean;
+  canRefreshPublication: boolean;
+  failedReconciliationStage: boolean;
+  manualOutcomeStage: boolean;
+  manualOutcomeResolvable: boolean;
+  negativeOutcomeResolvable: boolean;
+  onChangeLocalSchedule: () => void;
+  onGenerateReviewDraft: () => void;
+  onOpenPublishReview: () => void;
+  onRefreshPublication: () => void;
+  onRecoverPendingPublication: () => void;
+  onSetManualResolutionDialog: (state: ManualResolutionDialogState) => void;
+  onDuplicate: () => void;
+  onRemove: () => void;
+};
