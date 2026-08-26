@@ -4,12 +4,14 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Download } from "lucide-react";
 import { SPEND_PERIODS } from "@/lib/costs/spend-period";
+import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { SpendAnalysisGrid } from "./spend-analysis-grid";
 import { SpendGenerationLog } from "./spend-generation-log";
 import { buildSpendDashboardView } from "./spend-models";
+import { SpendPaintText } from "./spend-paint-text";
 import { SpendStatCards } from "./spend-stat-cards";
 import type { SpendPageContentProps } from "./types";
 
@@ -22,6 +24,7 @@ export function SpendPageContent({
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const paintReady = useWindowLoadReady();
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -98,14 +101,23 @@ export function SpendPageContent({
         className="pf-card flex h-[10.75rem] flex-col gap-4 overflow-hidden p-4 lg:flex-row lg:items-center lg:justify-between"
       >
         <div className="min-w-0">
-          <p
-            data-spend-intro="true"
-            data-spend-intro-text="Cost tracking, budget signals, and model usage."
+          <SpendPaintText
+            ready={paintReady}
+            liveAs="p"
+            liveClassName="mt-1 min-w-0 text-[13px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
+            paint={
+              <p
+                data-spend-intro="true"
+                data-spend-intro-text="Cost tracking, budget signals, and model usage."
+              >
+                <span className="sr-only">
+                  Cost tracking, budget signals, and model usage.
+                </span>
+              </p>
+            }
           >
-            <span className="sr-only">
-              Cost tracking, budget signals, and model usage.
-            </span>
-          </p>
+            Cost tracking, budget signals, and model usage.
+          </SpendPaintText>
         </div>
 
         <div data-spend-actions="true" className="flex flex-wrap items-center gap-2">
@@ -161,7 +173,7 @@ export function SpendPageContent({
       <SpendStatCards dashboard={dashboard} view={view} />
 
       <section
-        data-spend-budget="true"
+        data-spend-budget={paintReady ? undefined : "true"}
         className={cn(
           "flex flex-col gap-4 rounded-[8px] border p-4 lg:flex-row lg:items-center",
           view.budgetPercent >= 90
@@ -180,21 +192,39 @@ export function SpendPageContent({
           <AlertTriangle className="size-4" />
         </div>
         <div data-spend-budget-copy="true" className="min-w-0 flex-1">
-          <strong
-            data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
+          <SpendPaintText
+            ready={paintReady}
+            liveAs="strong"
+            liveClassName="block min-w-0 text-[14px] font-semibold leading-5 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
+            paint={
+              <strong
+                data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
+              >
+                <span className="sr-only">
+                  You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
+                </span>
+              </strong>
+            }
           >
-            <span className="sr-only">
-              You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
-            </span>
-          </strong>
-          <p
-            data-spend-note="true"
-            data-spend-note-text="Track the selected period against a budget you control locally in PostForge."
+            You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
+          </SpendPaintText>
+          <SpendPaintText
+            ready={paintReady}
+            liveAs="p"
+            liveClassName="mt-1 min-w-0 text-[12px] leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
+            paint={
+              <p
+                data-spend-note="true"
+                data-spend-note-text="Track the selected period against a budget you control locally in PostForge."
+              >
+                <span className="sr-only">
+                  Track the selected period against a budget you control locally in PostForge.
+                </span>
+              </p>
+            }
           >
-            <span className="sr-only">
-              Track the selected period against a budget you control locally in PostForge.
-            </span>
-          </p>
+            Track the selected period against a budget you control locally in PostForge.
+          </SpendPaintText>
         </div>
         <div
           data-spend-meter="true"

@@ -1,10 +1,14 @@
+"use client";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { PIE_COLORS } from "@/lib/costs/chart-colors";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { formatCost } from "@/lib/utils/format-cost";
 import type { SpendAnalysisGridProps } from "./types";
 
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
+  const paintReady = useWindowLoadReady();
   const chartHasSpend = dashboard.chartData.some(
     (point) => point.image > 0 || point.video > 0
   );
@@ -16,7 +20,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
     >
       <article className="pf-card min-w-0 p-4 sm:p-5">
         <header
-          data-spend-chart-head="true"
+          data-spend-chart-head={paintReady ? undefined : "true"}
           className="mb-4 flex flex-wrap items-start justify-between gap-3"
         >
           <div>
@@ -56,7 +60,10 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
         data-spend-breakdown="true"
         className="pf-card min-w-0 p-4 sm:p-5"
       >
-        <header data-spend-breakdown-head="true" className="border-b border-[var(--pf-border)] pb-3">
+        <header
+          data-spend-breakdown-head={paintReady ? undefined : "true"}
+          className="border-b border-[var(--pf-border)] pb-3"
+        >
           <h2 className="pf-section-title">Spend breakdown</h2>
           <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
             Workflow type and model mix · {dashboard.period.toUpperCase()}
