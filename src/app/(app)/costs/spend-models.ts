@@ -1,37 +1,18 @@
-import type { CostLogEntry } from "@/lib/costs/tracker";
-import {
-  COST_LOG_PAGE_SIZE,
-  type SpendChartPoint,
-  type SpendPeriod,
-} from "@/lib/costs/spend-period";
+import { COST_LOG_PAGE_SIZE } from "@/lib/costs/spend-period";
+import type {
+  CostsPageClientProps,
+  SpendDashboardView,
+  SpendModelStats,
+} from "./types";
 
-export type SpendModelStats = {
-  count: number;
-  cost: number;
-};
-
-export type CostsPageClientProps = {
-  totalCost: number;
-  currentPeriodCost: number;
-  changePercent: number;
-  avgCycleCost: number;
-  totalJobs: number;
-  topModel: { name: string; cost: number; pct: string } | null;
-  chartData: SpendChartPoint[];
-  byModel: Record<string, SpendModelStats>;
-  breakdown: {
-    image: SpendModelStats;
-    video: SpendModelStats;
-  };
-  logs: CostLogEntry[];
-  logPage: number;
-  logTotalCount: number;
-  logHasNext: boolean;
-  logFilterActive: boolean;
-  search: string;
-  model: string | null;
-  period: SpendPeriod;
-};
+export type {
+  CostsPageClientProps,
+  SpendDashboardView,
+  SpendModelStats,
+  SpendPageContentProps,
+  SpendPageHandlers,
+  SpendWorkflowSlice,
+} from "./types";
 
 export const EMPTY_COSTS_DASHBOARD: CostsPageClientProps = {
   totalCost: 0,
@@ -54,41 +35,6 @@ export const EMPTY_COSTS_DASHBOARD: CostsPageClientProps = {
   search: "",
   model: null,
   period: "30d",
-};
-
-export type SpendPageHandlers = {
-  onPeriodChange: (period: SpendPeriod) => void;
-  onLogPageChange: (page: number) => void;
-  onSearchChange: (search: string) => void;
-  onModelChange: (model: string | null) => void;
-  onClearFilters: () => void;
-  onExportCsv: () => Promise<number>;
-};
-
-export type SpendPageContentProps = {
-  dashboard: CostsPageClientProps;
-  handlers: SpendPageHandlers;
-};
-
-export type SpendWorkflowSlice = {
-  name: string;
-  value: number;
-};
-
-export type SpendDashboardView = {
-  modelEntries: Array<[string, SpendModelStats]>;
-  totalModelCost: number;
-  modelOptions: string[];
-  totalPages: number;
-  safeLogPage: number;
-  emptyPeriod: boolean;
-  imagePct: number;
-  videoPct: number;
-  workflowPieData: SpendWorkflowSlice[];
-  budget: number;
-  budgetPercent: number;
-  budgetRemaining: number;
-  changeIsUp: boolean;
 };
 
 export function buildSpendDashboardView(input: {

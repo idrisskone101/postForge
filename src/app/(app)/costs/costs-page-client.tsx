@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { costsHref } from "@/lib/costs/spend-period";
-import type { CostsPageClientProps, SpendPageHandlers } from "./spend-models";
+import type { CostsPageClientProps, SpendPageHandlers } from "./types";
 import { SpendPageContent } from "./spend-page-content";
 
 export function CostsPageClient(initial: CostsPageClientProps) {
