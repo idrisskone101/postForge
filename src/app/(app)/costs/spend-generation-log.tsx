@@ -1,9 +1,9 @@
-import { ChevronLeft, ChevronRight, DollarSign, Search } from "lucide-react";
-import { WorkspaceState } from "@/components/workspace-state";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { COST_LOG_PAGE_SIZE } from "@/lib/costs/spend-period";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { SpendLogEmpty } from "./spend-log-empty";
 import type { SpendGenerationLogProps } from "./types";
 
 export function SpendGenerationLog({
@@ -58,26 +58,9 @@ export function SpendGenerationLog({
 
       <div className="max-h-[430px] overflow-auto">
         {dashboard.logs.length === 0 ? (
-          <WorkspaceState
-            tone="empty"
-            icon={DollarSign}
-            title={view.emptyPeriod ? "No cost log entries yet" : "No matching cost log entries"}
-            description={
-              view.emptyPeriod
-                ? "Create production work to populate Spend with cost entries."
-                : "Try a different model filter or search term."
-            }
-            action={
-              view.emptyPeriod
-                ? { href: "/ugc-clone", label: "Start Clone" }
-                : { label: "Clear filters", onClick: handlers.onClearFilters }
-            }
-            secondaryAction={
-              view.emptyPeriod
-                ? { href: "/generate", label: "Open Generate" }
-                : undefined
-            }
-            className="min-h-56 border-0 bg-transparent"
+          <SpendLogEmpty
+            emptyPeriod={view.emptyPeriod}
+            onClearFilters={handlers.onClearFilters}
           />
         ) : (
           <LogTable logs={dashboard.logs} />
