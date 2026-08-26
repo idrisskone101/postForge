@@ -25,7 +25,7 @@ pnpm exec tsx scripts/check-first-paint-tokens.ts
 LH_BASE="http://127.0.0.1:${PORT:-3000}" pnpm exec tsx scripts/visual-regression-sweep.ts
 ```
 
-`pnpm kode:lighthouse` runs the token check and the sweep before Lighthouse. A green Lighthouse job cannot skip them.
+`pnpm kode:lighthouse` runs the token check, then Lighthouse, then the sweep. A green Lighthouse job cannot skip the sweep.
 
 For each changed route (and each route that shares first-paint CSS or a deferred island):
 
