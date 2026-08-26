@@ -38,7 +38,7 @@ export function CharacterBuilderHeader({
 
   return (
     <header
-      data-character-workbench-header="true"
+      data-character-workbench-header={paintReady ? undefined : "true"}
       className="flex flex-col gap-3 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-3 min-[1280px]:col-span-3 min-[1280px]:row-start-1 min-[1280px]:h-16 min-[1280px]:flex-row min-[1280px]:items-center min-[1280px]:gap-4 min-[1280px]:py-2"
     >
       <div className="flex min-w-0 items-center gap-2 min-[1280px]:w-[184px] min-[1280px]:shrink-0">
@@ -67,7 +67,7 @@ export function CharacterBuilderHeader({
 
       <label
         className="min-w-0 min-[1280px]:max-w-[300px] min-[1280px]:flex-1"
-        style={{ height: 36, overflow: "hidden" }}
+        style={paintReady ? undefined : { height: 36, overflow: "hidden" }}
       >
         <span className="sr-only">Character name</span>
         <input
@@ -80,8 +80,12 @@ export function CharacterBuilderHeader({
       </label>
 
       <div
-        className="flex min-w-0 flex-nowrap gap-2 min-[1280px]:ml-auto"
-        style={{ height: 36, overflow: "hidden" }}
+        className={
+          paintReady
+            ? "flex min-w-0 flex-wrap gap-2 min-[1280px]:ml-auto min-[1280px]:flex-nowrap"
+            : "flex min-w-0 flex-nowrap gap-2 min-[1280px]:ml-auto"
+        }
+        style={paintReady ? undefined : { height: 36, overflow: "hidden" }}
       >
         <button
           type="button"

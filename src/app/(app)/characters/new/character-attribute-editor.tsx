@@ -31,8 +31,8 @@ export function CharacterAttributeEditor({
   return (
     <section
       aria-label="Character attributes"
-      data-character-attribute-editor="true"
-      className="min-w-0 bg-[var(--pf-surface)] min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:overflow-y-auto"
+      data-character-attribute-editor={paintReady ? undefined : "true"}
+      className="min-w-0 bg-[var(--pf-surface)] min-[1280px]:col-start-3 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:overflow-y-auto"
     >
       <section className="min-h-[470px] px-4 py-5 sm:px-5 min-[1280px]:pb-10">
         {error ? (

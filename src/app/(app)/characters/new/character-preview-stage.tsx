@@ -51,10 +51,10 @@ export function CharacterPreviewStage({
 
   return (
     <section
-      data-character-preview-stage="true"
+      data-character-preview-stage={paintReady ? undefined : "true"}
       aria-label="Live character portrait"
       aria-busy={rendering}
-      className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-[var(--pf-border)] bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
+      className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-[var(--pf-border)] bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:col-start-2 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
     >
       <div className="relative z-10 flex flex-nowrap items-start justify-between gap-3 overflow-hidden">
         <div>
@@ -99,7 +99,7 @@ export function CharacterPreviewStage({
 
       <div className="relative z-10 grid min-h-0 flex-1 content-start justify-items-center py-4 min-[1280px]:py-3">
         <div
-          data-character-lcp-frame="true"
+          data-character-lcp-frame={paintReady ? undefined : "true"}
           className="overflow-hidden rounded-lg border border-white/10 shadow-[var(--pf-shadow-lg)]"
           style={{
             position: "relative",

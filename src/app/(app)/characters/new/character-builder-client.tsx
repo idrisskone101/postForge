@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Download, Loader2, X } from "lucide-react";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { CharacterAttributeEditor } from "./character-attribute-editor";
 import { CharacterBuilderHeader } from "./character-builder-header";
 import { CharacterCategoryRail } from "./character-category-rail";
@@ -23,6 +24,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
     applyImport,
     toast,
   } = useCharacterBuilder(editId);
+  const paintReady = useWindowLoadReady();
 
   if (loading) {
     return (
@@ -34,7 +36,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
 
   return (
     <div
-      data-character-workbench="true"
+      data-character-workbench={paintReady ? undefined : "true"}
       className="pf-content-viewport bg-[var(--pf-canvas)] min-[1280px]:grid min-[1280px]:h-dvh min-[1280px]:min-h-0 min-[1280px]:grid-cols-[200px_minmax(420px,1.2fr)_minmax(360px,0.8fr)] min-[1280px]:grid-rows-[64px_minmax(0,1fr)] min-[1280px]:overflow-hidden"
     >
       <CharacterBuilderHeader view={headerView} />

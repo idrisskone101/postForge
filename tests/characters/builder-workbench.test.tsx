@@ -24,6 +24,7 @@ const editorSource = readFileSync(
   "utf8"
 );
 const builderSource = [
+  "character-builder-static.tsx",
   "character-builder-client.tsx",
   "use-character-builder.ts",
   "character-builder-header.tsx",

@@ -30,9 +30,9 @@ export function CharacterCategoryRail({
 
   return (
     <aside
-      data-character-category-rail="true"
-      data-character-recipe-step-rail="true"
-      className="border-b border-[var(--pf-border)] bg-[var(--pf-active)] min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r"
+      data-character-category-rail={paintReady ? undefined : "true"}
+      data-character-recipe-step-rail={paintReady ? undefined : "true"}
+      className="border-b border-[var(--pf-border)] bg-[var(--pf-active)] min-[1280px]:col-start-1 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:overflow-hidden min-[1280px]:border-b-0 min-[1280px]:border-r"
     >
       <div className="h-[4.75rem] overflow-hidden border-b border-[var(--pf-border)] px-3 py-3">
         <div className="flex items-end justify-between gap-3">
