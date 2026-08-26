@@ -8,7 +8,11 @@ import {
   collectReactModules,
   findFileLayoutIssue,
   findInnerHtml,
+  findEffectInnerFns,
+  findHookSize,
   formatKodeTasteViolations,
+  HOOK_MODULE_LINE_CAP,
+  isHookModule,
   PROP_BAG_LIMIT,
   reorderMainExport,
   USE_EFFECT_LIMIT,
@@ -294,8 +298,88 @@ withTempRoot((rootDir) => {
   );
 });
 
+const smallHook = `export function useTiny() {
+  return 1;
+}
+`;
+assert.equal(isHookModule("src/use-tiny.ts", smallHook), true);
+assert.equal(findHookSize("src/use-tiny.ts", smallHook), null);
+
+const largeHook = `${"export function useHuge() {\n  return 1;\n}\n"}${"const pad = 1;\n".repeat(HOOK_MODULE_LINE_CAP)}`;
+assert.deepEqual(findHookSize("src/use-huge.ts", largeHook), {
+  kind: "hook-size",
+  path: "src/use-huge.ts",
+  lines: HOOK_MODULE_LINE_CAP + 3,
+});
+
+const effectWithInnerFn = `import { useEffect } from "react";
+export function useBad() {
+  useEffect(() => {
+    function load() {}
+    const tick = () => {};
+    load();
+    tick();
+  }, []);
+  return null;
+}
+`;
+assert.deepEqual(
+  findEffectInnerFns("src/use-bad.ts", effectWithInnerFn).map((item) => item.name),
+  ["load", "tick"]
+);
+
+const effectCleanupOnly = `import { useEffect } from "react";
+export function useOk() {
+  useEffect(() => {
+    const onResize = () => {};
+    window.addEventListener("resize", () => {});
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return null;
+}
+`;
+assert.equal(
+  findEffectInnerFns("src/use-ok.ts", effectCleanupOnly).some(
+    (item) => item.name === "onResize"
+  ),
+  true
+);
+
+const effectListenerOnly = `import { useEffect } from "react";
+export function useListen() {
+  useEffect(() => {
+    window.addEventListener("resize", () => {});
+    return () => window.removeEventListener("resize", () => {});
+  }, []);
+  return null;
+}
+`;
+assert.deepEqual(findEffectInnerFns("src/use-listen.ts", effectListenerOnly), []);
+
+withTempRoot((rootDir) => {
+  writeModule(rootDir, "src/use-huge.ts", largeHook);
+  writeModule(rootDir, "src/use-bad.ts", effectWithInnerFn);
+  writeModule(rootDir, "src/card.tsx", alreadyGood);
+  const violations = checkKodeTaste({ rootDir });
+  assert.equal(
+    violations.some((item) => item.kind === "hook-size" && item.path === "src/use-huge.ts"),
+    true
+  );
+  assert.equal(
+    violations.some((item) => item.kind === "effect-fn" && item.path === "src/use-bad.ts"),
+    true
+  );
+});
+
+assert.match(
+  formatKodeTasteViolations([
+    { kind: "hook-size", path: "src/use-huge.ts", lines: 300 },
+  ]),
+  /split by domain/
+);
+
 console.log(
-  `kode-taste detector: layout, ${PROP_BAG_LIMIT}-prop bags, ${USE_STATE_LIMIT} useState, ${USE_EFFECT_LIMIT} useEffect, innerHTML ban`
+  `kode-taste detector: layout, ${PROP_BAG_LIMIT}-prop bags, ${USE_STATE_LIMIT} useState, ${USE_EFFECT_LIMIT} useEffect, hook ${HOOK_MODULE_LINE_CAP} lines, no effect fns, innerHTML ban`
 );
 
 const allowlist = JSON.parse(

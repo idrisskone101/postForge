@@ -36,6 +36,10 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch PR base
+        run: git fetch origin "${{ github.base_ref }}"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -50,4 +54,53 @@ jobs:
           sed -i "s|^STORAGE_LOCAL_PATH=.*|STORAGE_LOCAL_PATH=\"${RUNNER_TEMP}/postforge-outputs\"|" .env
           pnpm exec prisma migrate deploy
       - name: kode:check
+        env:
+          KODE_BASE_REF: origin/${{ github.base_ref }}
         run: pnpm kode:check
+
+  lighthouse:
+    name: lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postforge
+          POSTGRES_PASSWORD: postforge
+          POSTGRES_DB: postforge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postforge -d postforge"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Prepare env and database
+        run: |
+          cp .env.example .env
+          mkdir -p "${RUNNER_TEMP}/postforge-outputs"
+          sed -i "s|^STORAGE_LOCAL_PATH=.*|STORAGE_LOCAL_PATH=\"${RUNNER_TEMP}/postforge-outputs\"|" .env
+          pnpm exec prisma migrate deploy
+      - name: Build production app
+        run: pnpm build
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: kode:lighthouse
+        run: pnpm kode:lighthouse
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .audit/lighthouse/
+          if-no-files-found: ignore
