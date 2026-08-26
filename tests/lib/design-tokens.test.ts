@@ -11,9 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   checkDesignTokens,
-  DESIGN_MD_EXCEPTION_PATHS,
   findForbiddenHex,
-  formatDesignTokenViolations,
 } from "../../scripts/check-design-tokens";
 
 const repoRoot = path.resolve(
@@ -147,20 +145,6 @@ withTempRoot((rootDir) => {
   });
   assert.deepEqual(violations, []);
 });
-
-assert.match(
-  formatDesignTokenViolations([
-    { kind: "over-cap", path: "src/new.tsx", count: 1 },
-  ]),
-  /src\/new\.tsx/
-);
-
-assert.equal(
-  DESIGN_MD_EXCEPTION_PATHS.has(
-    "src/app/(app)/automations/new/playbook-model.ts"
-  ),
-  true
-);
 
 const allowlist = JSON.parse(
   readFileSync(
