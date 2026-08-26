@@ -45,9 +45,9 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
   return (
     <article data-social-provider={provider} className="pf-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <SettingsPaintText
               ready={paintReady}
               liveAs="h3"
@@ -63,7 +63,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
             <SettingsPaintText
               ready={paintReady}
               liveAs="p"
-              liveClassName="truncate text-[11px] text-muted-foreground"
+              liveClassName="text-[11px] leading-4 text-muted-foreground"
               paint={
                 <p data-lcp={connectionSummary}>
                   <span className="sr-only">{connectionSummary}</span>
@@ -133,7 +133,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
             onConnect,
           }}
         />
-      ) : (
+      ) : loading && !status ? null : (
         <DisconnectedCopy
           paintReady={paintReady}
           content={content}

@@ -45,6 +45,7 @@ export function SettingsPageClient() {
   const onOAuthCallback = useCallback(() => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", "integrations");
+    rememberSettingsTab("integrations");
     router.replace(`/settings?${params.toString()}`, { scroll: false });
     window.dispatchEvent(new Event("pf-settings-tab"));
   }, [router]);
@@ -79,6 +80,7 @@ export function SettingsPageClient() {
   function selectTab(next: SettingsTab) {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", next);
+    rememberSettingsTab(next);
     router.replace(`/settings?${params.toString()}`, { scroll: false });
     window.dispatchEvent(new Event("pf-settings-tab"));
   }
@@ -214,16 +216,27 @@ function readDefaultSettingsTab(): SettingsTab {
   return "integrations";
 }
 
+let rememberedSettingsTab: SettingsTab | null = null;
+
+function rememberSettingsTab(next: SettingsTab) {
+  rememberedSettingsTab = next;
+}
+
 function readSettingsTab(): SettingsTab {
+  if (rememberedSettingsTab) return rememberedSettingsTab;
   const requested = new URLSearchParams(window.location.search).get("tab");
   return requested && isSettingsTab(requested) ? requested : "integrations";
 }
 
 function subscribeSettingsTab(onChange: () => void) {
-  window.addEventListener("popstate", onChange);
+  const onPopState = () => {
+    rememberedSettingsTab = null;
+    onChange();
+  };
+  window.addEventListener("popstate", onPopState);
   window.addEventListener("pf-settings-tab", onChange);
   return () => {
-    window.removeEventListener("popstate", onChange);
+    window.removeEventListener("popstate", onPopState);
     window.removeEventListener("pf-settings-tab", onChange);
   };
 }
@@ -248,7 +261,7 @@ export function SettingsNavigation({
   return (
     <aside
       data-settings-nav="true"
-      className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4"
+      className="relative z-10 flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4"
     >
       <p className="mb-2 max-lg:hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         Workspace
