@@ -1,9 +1,9 @@
-export const ACCENT_CORAL = "#18181B";
-export const ACCENT_BLUE = "#71717A";
+export const SERIES_INK = "#18181B";
+export const SERIES_MUTED = "#71717A";
 
 export const PIE_COLORS = [
-  ACCENT_BLUE,
-  ACCENT_CORAL,
+  SERIES_MUTED,
+  SERIES_INK,
   "#A1A1AA",
   "#D4D4D8",
   "#3A3A40",

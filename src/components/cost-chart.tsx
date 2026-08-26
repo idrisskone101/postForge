@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { ACCENT_BLUE, ACCENT_CORAL, PIE_COLORS } from "@/lib/costs/chart-colors";
+import { PIE_COLORS, SERIES_INK, SERIES_MUTED } from "@/lib/costs/chart-colors";
 import { formatCost } from "@/lib/utils/format-cost";
 
 interface CostChartProps {
@@ -49,13 +49,13 @@ export function CostChart({ data }: CostChartProps) {
           <Bar
             dataKey="image"
             stackId="spend"
-            fill={ACCENT_BLUE}
+            fill={SERIES_MUTED}
             maxBarSize={24}
           />
           <Bar
             dataKey="video"
             stackId="spend"
-            fill={ACCENT_CORAL}
+            fill={SERIES_INK}
             radius={[4, 4, 0, 0]}
             maxBarSize={24}
           />
