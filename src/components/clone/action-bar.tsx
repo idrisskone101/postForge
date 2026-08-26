@@ -108,12 +108,12 @@ export function CloneActionBar({
           </div>
         )}
 
-        <div className="grid grid-cols-[minmax(0,1fr)_44px] gap-2 lg:hidden">
+        <div className="grid grid-cols-[minmax(0,1fr)_40px] gap-2 lg:hidden">
           <button
             type="button"
             onClick={onPrimaryAction}
             disabled={primaryActionDisabled}
-            className="pf-button-primary flex h-11 min-w-0 items-center justify-center gap-2 px-4 text-[13px] disabled:pointer-events-none disabled:cursor-not-allowed"
+            className="pf-button-primary flex h-10 min-w-0 items-center justify-center gap-2 px-4 text-[13px] disabled:pointer-events-none disabled:cursor-not-allowed"
           >
             <Zap className="size-3.5 shrink-0" />
             <span className="truncate">
@@ -130,7 +130,7 @@ export function CloneActionBar({
             aria-label="Generation settings"
             aria-expanded={mobileSettingsOpen}
             className={cn(
-              "flex size-11 items-center justify-center rounded-lg border transition-colors",
+              "flex size-10 items-center justify-center rounded-lg border transition-colors",
               mobileSettingsOpen
                 ? "border-[var(--pf-orange)] bg-[var(--pf-surface)] text-foreground ring-1 ring-[var(--pf-orange)]/25"
                 : "border-border bg-[var(--pf-active)] text-muted-foreground hover:bg-muted hover:text-foreground"
