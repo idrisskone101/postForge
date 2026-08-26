@@ -266,7 +266,7 @@ function InspirationLibraryBody({
   return (
     <div
       className={cn(
-        "grid max-h-[440px] grid-cols-1 gap-4 overflow-y-auto pr-1 sm:grid-cols-2",
+        "grid grid-cols-1 gap-4 sm:grid-cols-2",
         compactGrid
           ? "lg:grid-cols-4 2xl:grid-cols-5"
           : "lg:grid-cols-3 2xl:grid-cols-4"

@@ -288,7 +288,8 @@ assert.doesNotMatch(markup, /Tracked Creators/);
 assert.doesNotMatch(markup, /Top Creator/);
 assert.match(markup, />Preview</);
 assert.match(markup, /snap-start/);
-assert.match(markup, /max-h-\[440px\]/);
+assert.doesNotMatch(markup, /max-h-\[440px\]/);
+assert.doesNotMatch(markup, /overflow-y-auto pr-1/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
 assert.match(markup, /object-cover/);
 
