@@ -43,7 +43,7 @@ export function CollectionsLibrary({ library }: { library: CollectionsLibraryMod
 
   return (
     <>
-      <section className="pf-card grid min-h-[72px] min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 border-dashed px-4 py-3 sm:grid-cols-[36px_minmax(0,1fr)_auto_auto]">
+      <section className="grid min-h-[72px] min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-surface)] px-4 py-3 sm:grid-cols-[36px_minmax(0,1fr)_auto_auto]">
         <span className="grid size-9 place-items-center rounded-lg bg-[var(--pf-active)] text-[var(--pf-muted)]">
           <Upload className="size-4" />
         </span>

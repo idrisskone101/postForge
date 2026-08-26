@@ -40,7 +40,7 @@ export function CollectionsDetail({ detail }: { detail: CollectionsDetailModel }
           <button
             type="button"
             onClick={onDelete}
-            className="pf-button-secondary text-[var(--pf-danger)]"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10"
           >
             <Trash2 className="size-3.5" /> Delete
           </button>
