@@ -45,6 +45,15 @@ assert.ok(
   !existsSync(new URL("src/app/(app)/performance/index.ts", repoRoot)),
   "src/app/(app)/performance must not grow an index barrel"
 );
+assert.ok(
+  existsSync(new URL("src/app/(app)/performance/types.ts", repoRoot)),
+  "performance/types.ts must exist"
+);
+
+const typesSource = readFileSync(
+  new URL("src/app/(app)/performance/types.ts", repoRoot),
+  "utf8"
+);
 const panelSource = readFileSync(
   new URL("src/app/(app)/performance/performance-source-panel.tsx", repoRoot),
   "utf8"
@@ -63,15 +72,14 @@ const allowlist = JSON.parse(
 
 assert.deepEqual(allowlist, {}, "module-size allowlist stays empty");
 
+assert.match(typesSource, /export type PerformanceSourceWorkspace = \{/);
+assert.match(typesSource, /csvDataset: PerformanceDataset \| null/);
+assert.match(typesSource, /providers: ConnectedAccountView\[\]/);
 assert.match(
   panelSource,
-  /export type PerformanceSourceWorkspace = \{/
+  /import type \{ PerformanceSourceWorkspace \} from "\.\/types"/
 );
-assert.match(
-  panelSource,
-  /csvDataset: PerformanceDataset \| null/
-);
-assert.match(panelSource, /providers: ConnectedAccountView\[\]/);
+assert.doesNotMatch(panelSource, /export type /);
 assert.match(
   pageSource,
   /const sourceWorkspace: PerformanceSourceWorkspace = \{/
@@ -80,11 +88,21 @@ assert.match(
   pageSource,
   /<PerformanceSourcePanel workspace=\{sourceWorkspace\}/
 );
+assert.match(pageSource, /hidden overflow-x-auto sm:block/);
 assert.doesNotMatch(
   hookSource,
   /PerformanceSourceWorkspace/,
   "page owner builds the view-model, not the workspace hook"
 );
+
+const performanceTsx = files.filter(
+  (file) => file.startsWith("src/app/(app)/performance/") && file.endsWith(".tsx")
+);
+for (const file of performanceTsx) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(source, /export type /, `${file} must not export types`);
+  assert.doesNotMatch(source, /#(?:[0-9A-Fa-f]{3,8})\b/, `${file} must not use literal hex`);
+}
 
 function listedProps(source: string, exportName: string): string[] {
   const needle = `export function ${exportName}({`;
@@ -111,7 +129,7 @@ assert.doesNotMatch(pageSource, /createContext|useContext/);
 assert.doesNotMatch(panelSource, /demo account|synthetic metric/i);
 assert.match(panelSource, /optgroup label="Local reports"/);
 assert.match(panelSource, /value="csv"/);
-assert.match(panelSource, /csvDataset &&/);
+assert.match(panelSource, /csvDataset \?/);
 
 console.log(
   files
