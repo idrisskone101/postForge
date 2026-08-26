@@ -153,7 +153,7 @@ export function ModelsPanel() {
           data-model-availability-row={model.id}
           className={cn(
             "flex min-w-0 items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors",
-            enabled ? "border-border bg-white" : "border-border bg-card opacity-60"
+            enabled ? "border-border bg-[var(--pf-surface)]" : "border-border bg-[var(--pf-surface)] opacity-60"
           )}
         >
           <input
@@ -166,11 +166,7 @@ export function ModelsPanel() {
           <span className="min-w-0 flex-1">
             <b className="block truncate text-[11px] text-foreground">{model.name}</b>
             <small className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-              {model.pricing.unit === "per_image"
-                ? `$${model.pricing.amount.toFixed(3)}/image`
-                : model.pricing.unit === "per_clip"
-                  ? `$${model.pricing.amount.toFixed(2)}/clip`
-                  : `$${model.pricing.amount.toFixed(3)}/second`}
+              {formatModelPricing(model.pricing)}
             </small>
           </span>
           {isDefault && (
@@ -185,7 +181,7 @@ export function ModelsPanel() {
   if (loading) {
     return (
       <div className="grid min-h-[420px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" />
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -195,7 +191,7 @@ export function ModelsPanel() {
       <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
         <Settings2 className="size-4" />
       </span>
-      <h2 className="mt-4 text-[20px] font-semibold tracking-[-0.02em]">Available models</h2>
+      <h2 className="pf-section-title mt-4">Available models</h2>
       <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
         One central catalog powers the Generate, Clone, Slideshow, and automation surfaces. Disabled models disappear from every picker; the default model is used when a surface does not expose a picker.
       </p>
@@ -305,4 +301,10 @@ export function ModelsPanel() {
       </div>
     </div>
   );
+}
+
+function formatModelPricing(pricing: { unit: string; amount: number }): string {
+  if (pricing.unit === "per_image") return `$${pricing.amount.toFixed(3)}/image`;
+  if (pricing.unit === "per_clip") return `$${pricing.amount.toFixed(2)}/clip`;
+  return `$${pricing.amount.toFixed(3)}/second`;
 }
