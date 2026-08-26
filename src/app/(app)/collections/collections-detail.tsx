@@ -57,7 +57,7 @@ export function CollectionsDetail({ detail }: { detail: CollectionsDetailModel }
                   "relative overflow-hidden rounded-lg border",
                   included
                     ? "border-primary ring-1 ring-primary/25"
-                    : "border-border opacity-55 hover:opacity-100"
+                    : "border-[var(--pf-border)] opacity-55 hover:opacity-100"
                 )}
               >
                 <Image
