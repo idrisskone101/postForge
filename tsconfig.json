@@ -33,6 +33,7 @@
   "exclude": [
     "node_modules",
     "scripts/playwright.visual.config.ts",
-    "scripts/visual-regression.spec.ts"
+    "scripts/visual-regression.spec.ts",
+    "*.canvas.tsx"
   ]
 }
