@@ -4,6 +4,7 @@ import { Sparkles, ImageIcon, Video } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorkspaceState } from "@/components/workspace-state";
 import { userErrorMessage } from "@/lib/user-error-message";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
 import { GenerateFormControls } from "@/app/(app)/generate/form-controls";
 import { GenerateIdentitySection } from "@/app/(app)/generate/form-identity-section";
@@ -185,10 +186,11 @@ export function GenerateFormView({
 }) {
   const view = getGenerateFormViewModel(form);
   const { prompt, aspectRatio, numImages } = form;
+  const paintReady = useWindowLoadReady();
 
   return (
     <form
-      data-generate-form="true"
+      data-generate-form={paintReady ? undefined : "true"}
       onSubmit={(event) => {
         event.preventDefault();
         actions.onSubmit();
@@ -201,9 +203,9 @@ export function GenerateFormView({
 
       <GenerateFormControls form={form} actions={actions} view={view} />
 
-      <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
+      <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)] shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
         <div className="flex h-12 items-center justify-between border-b border-border px-4">
-          <span className="text-[13px] font-semibold text-foreground">Preview</span>
+          <span className="pf-section-title">Preview</span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold text-muted-foreground">
             {view.isVideo ? <Video className="size-3" /> : <ImageIcon className="size-3" />}
             {view.ratioLabel}
@@ -241,7 +243,7 @@ export function GenerateFormView({
         <GenerateFormSubmitBars
           form={form}
           view={view}
-          desktopBarClassName="sticky bottom-0 hidden gap-3 border-t border-border bg-white px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
+          desktopBarClassName="sticky bottom-0 max-md:hidden gap-3 border-t border-border bg-[var(--pf-surface)] px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
         />
       </aside>
     </form>

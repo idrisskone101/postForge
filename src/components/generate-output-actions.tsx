@@ -72,7 +72,7 @@ export function GenerateOutputActions({
         type="button"
         onClick={onDownload}
         disabled={!canDownload || isDownloading}
-        className="h-10 justify-center gap-2 rounded-lg bg-[var(--pf-orange)] text-[13px] font-semibold text-white hover:brightness-[0.93]"
+        className="pf-button-primary h-10 justify-center gap-2 text-[13px]"
       >
         {isDownloading ? (
           <Loader2 className="size-3.5 animate-spin" />
@@ -89,7 +89,7 @@ export function GenerateOutputActions({
             variant="outline"
             onClick={onRetry}
             disabled={isRetrying}
-            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
+            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
           >
             {isRetrying ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -104,7 +104,7 @@ export function GenerateOutputActions({
           variant="outline"
           aria-label="Save to Gallery"
           onClick={onSaveToGallery}
-          className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
+          className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
         >
           <GalleryHorizontal className="size-3.5" />
           View in Gallery
@@ -114,7 +114,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onGenerateSimilar}
-            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
+            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
           >
             <Sparkles className="size-3.5" />
             Generate similar
@@ -128,7 +128,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onUseInClone}
-            className="h-10 justify-center gap-2 rounded-lg border-border bg-card text-[12px]"
+            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
           >
             <Users className="size-3.5" />
             Use in Clone
@@ -139,7 +139,7 @@ export function GenerateOutputActions({
             type="button"
             variant="outline"
             onClick={onAddToAutomation}
-            className="h-10 justify-center gap-2 rounded-lg border-border bg-white text-[12px]"
+            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
           >
             <Workflow className="size-3.5" />
             Add to automation

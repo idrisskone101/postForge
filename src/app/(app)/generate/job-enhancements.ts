@@ -104,3 +104,15 @@ export interface JobDetailActions {
   onDiscard: () => void;
   onLeave: () => void;
 }
+
+export interface JobPreviewToolbarView {
+  previewZoom: number;
+  cropMode: boolean;
+  isFullscreen: boolean;
+  isCompleted: boolean;
+  featured: JobOutput | undefined;
+  onZoomOut: () => void;
+  onZoomIn: () => void;
+  onToggleCrop: () => void;
+  onFullscreen: () => void;
+}

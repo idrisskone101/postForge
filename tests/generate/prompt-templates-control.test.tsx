@@ -32,10 +32,14 @@ assert.doesNotMatch(markup, /Save prompt/, "dialog content stays closed in stati
 
 globalThis.fetch = originalFetch;
 
-const formControlsSource = readFileSync(
-  new URL("../../src/app/(app)/generate/form-controls.tsx", import.meta.url),
-  "utf8"
-);
+const formControlsSource = [
+  "../../src/app/(app)/generate/form-controls.tsx",
+  "../../src/app/(app)/generate/form-prompt-section.tsx",
+]
+  .map((relativePath) =>
+    readFileSync(new URL(relativePath, import.meta.url), "utf8")
+  )
+  .join("\n");
 assert.match(formControlsSource, /PromptTemplatesControl/);
 assert.match(formControlsSource, /onPromptChange={onPromptChange}/);
 assert.match(formControlsSource, /aria-label="Creative prompt"/);

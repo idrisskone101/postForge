@@ -50,11 +50,11 @@ export function GenerateCollectionSection({
     onFoldIntoVibe,
   } = actions;
   return (
-    <div className="rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
+    <div className="pf-card p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="pf-section-title">
               Visual collection
             </h2>
             <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
@@ -103,7 +103,7 @@ export function GenerateCollectionSection({
               onClick={onExtractVibe}
               disabled={vibeExtracting}
               aria-busy={vibeExtracting}
-              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-white px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border border-border bg-[var(--pf-surface)] px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
             >
               {vibeExtracting ? (
                 <Loader2 className="size-3 animate-spin" />
@@ -167,7 +167,7 @@ export function GenerateCollectionSection({
                 </p>
               )}
 
-              <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-white px-3 py-2.5">
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-[var(--pf-surface)] px-3 py-2.5">
                 <span className="min-w-0">
                   <strong className="block text-[12px] font-semibold text-foreground">
                     Fold my prompt into the JSON
@@ -196,7 +196,7 @@ export function GenerateCollectionSection({
                       Boolean(vibeJsonError)
                     }
                     aria-busy={vibeFolding}
-                    className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-white px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
+                    className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-[var(--pf-surface)] px-2.5 text-[12px] font-semibold text-[var(--pf-link)] hover:border-[var(--pf-border-strong)] disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     {vibeFolding ? (
                       <Loader2 className="size-3 animate-spin" />

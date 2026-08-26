@@ -103,7 +103,7 @@ export function JobInspectorFooter({
             type="button"
             variant="outline"
             onClick={onUseInClone}
-            className="h-9 rounded-lg border-border bg-white text-[12px] xl:hidden"
+            className="pf-button-secondary h-9 text-[12px] xl:hidden"
           >
             <Users className="size-3.5 shrink-0" /> Use in Clone
           </Button>
@@ -113,7 +113,7 @@ export function JobInspectorFooter({
             type="button"
             variant="outline"
             onClick={onAddToAutomation}
-            className="h-9 rounded-lg border-border bg-white text-[12px] xl:hidden"
+            className="pf-button-secondary h-9 text-[12px] xl:hidden"
           >
             <Workflow className="size-3.5 shrink-0" /> Automate
           </Button>

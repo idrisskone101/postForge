@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import type { ModelDefinition } from "@/lib/ai/types";
 
 interface ModelPickerProps {
@@ -32,6 +33,7 @@ export function ModelPicker({
   models,
   recommendedModelId,
 }: ModelPickerProps) {
+  const paintReady = useWindowLoadReady();
   const selected = models.find((model) => model.id === selectedModel);
   const [requestedType, setRequestedType] = useState<"image" | "video">(
     selected?.type ?? "image"
@@ -68,7 +70,7 @@ export function ModelPicker({
               className={cn(
                 "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
                 active
-                  ? "bg-white text-foreground shadow-[var(--pf-shadow-2xs)]"
+                  ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -81,7 +83,7 @@ export function ModelPicker({
 
       <div
         key={activeType}
-        data-generate-model-grid="true"
+        data-generate-model-grid={paintReady ? undefined : "true"}
         className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"
       >
         {visibleModels.map((model) => (

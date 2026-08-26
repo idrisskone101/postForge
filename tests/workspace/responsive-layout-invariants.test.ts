@@ -41,7 +41,12 @@ const homeLoading = source("src/app/(app)/home-loading.tsx");
 const inspirationLoading = source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx");
 const galleryLoading = source("src/app/(app)/gallery/gallery-page-client.tsx");
 const spendLoading = source("src/app/(app)/costs/spend-page-content.tsx");
-const generationLoading = source("src/app/(app)/generate/form-controls.tsx");
+const generationLoading = [
+  "src/app/(app)/generate/form-controls.tsx",
+  "src/app/(app)/generate/form-prompt-section.tsx",
+]
+  .map((file) => source(file))
+  .join("\n");
 const cloneLoading = source("src/app/(app)/ugc-clone/page.tsx");
 const clonePage = source("src/app/(app)/ugc-clone/page.tsx");
 const cloneDetailPage = source("src/app/(app)/ugc-clone/[id]/page.tsx");
@@ -548,7 +553,10 @@ assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
 assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
 assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
 assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-title="Integrations"/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /data-generate-history="History"/);
+assert.match(
+  source("src/app/(app)/generate/generate-header-accessory.tsx"),
+  /data-generate-history=\{paintReady \? undefined : "History"\}/
+);
 assert.match(appLayout, /window\.addEventListener\("load"/);
 assert.match(source("src/app/(app)/characters/page.tsx"), /CharactersPageLazy/);
 assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);

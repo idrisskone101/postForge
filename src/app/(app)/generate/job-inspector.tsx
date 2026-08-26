@@ -28,27 +28,30 @@ export function JobInspectorTabs({
   onTabChange: (tab: InspectorTab) => void;
 }) {
   return (
-    <div
-      role="tablist"
-      aria-label="Generation editor panels"
-      className="grid grid-cols-3 border-b border-border px-3 pt-2"
-    >
-      {(["enhance", "details", "prompts"] as const).map((tab) => (
-        <button
-          key={tab}
-          type="button"
-          role="tab"
-          aria-selected={activeTab === tab}
-          onClick={() => onTabChange(tab)}
-          className={cn(
-            "relative h-10 text-[12px] font-semibold capitalize text-muted-foreground transition-colors hover:text-foreground",
-            activeTab === tab &&
-              "text-foreground after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-[var(--pf-orange)]"
-          )}
-        >
-          {tab}
-        </button>
-      ))}
+    <div className="border-b border-border p-3">
+      <div
+        role="tablist"
+        aria-label="Generation editor panels"
+        className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--pf-active)] p-1"
+      >
+        {(["enhance", "details", "prompts"] as const).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            onClick={() => onTabChange(tab)}
+            className={cn(
+              "flex h-9 items-center justify-center rounded-lg text-[12px] font-semibold capitalize transition-colors",
+              activeTab === tab
+                ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -88,7 +91,7 @@ export function JobEnhancePanel({
           <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Quick actions
           </p>
-          <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+          <h2 className="mt-1 pf-section-title">
             Refine this output
           </h2>
         </div>
@@ -110,8 +113,8 @@ export function JobEnhancePanel({
               className={cn(
                 "min-w-0 rounded-lg border p-2.5 text-left transition-colors",
                 active
-                  ? "border-[var(--pf-orange)] bg-[var(--sidebar-accent)]"
-                  : "border-border bg-white hover:bg-[var(--pf-active)]"
+                  ? "border-[var(--pf-orange)] bg-[var(--pf-surface)] ring-1 ring-[var(--pf-orange)]/25"
+                  : "border-border bg-[var(--pf-surface)] hover:bg-[var(--pf-active)]"
               )}
             >
               <span className="flex items-start gap-2">
@@ -182,7 +185,7 @@ export function JobEnhancePanel({
         type="button"
         disabled={!featured || !isCompleted || isApplying || !enhancementInstruction.trim()}
         onClick={onApply}
-        className="h-11 w-full rounded-lg bg-[var(--pf-orange)] text-[12px] font-semibold text-white hover:brightness-[0.93]"
+        className="pf-button-primary h-11 w-full text-[12px]"
       >
         {isApplying ? (
           <Loader2 className="size-3.5 animate-spin" />
@@ -221,7 +224,7 @@ export function JobDetailsPanel({
       <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         Output details
       </p>
-      <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+      <h2 className="mt-1 pf-section-title">
         Generation record
       </h2>
       <dl className="mt-4 divide-y divide-border rounded-lg border border-border px-3">
@@ -251,7 +254,11 @@ export function JobDetailsPanel({
           >
             <dt className="text-muted-foreground">{label}</dt>
             <dd className="truncate text-right font-semibold capitalize text-foreground">
-              {value}
+              {label === "Cost" || label === "Created" ? (
+                <span className="pf-data">{value}</span>
+              ) : (
+                value
+              )}
             </dd>
           </div>
         ))}
@@ -263,7 +270,7 @@ export function JobDetailsPanel({
         <strong className="mt-1 block text-[12px] font-semibold text-foreground">
           Generate Studio
         </strong>
-        <small className="mt-1 block min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
+        <small className="pf-data mt-1 block min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
           Job {job.id}
         </small>
       </div>

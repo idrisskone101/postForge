@@ -1,7 +1,6 @@
 "use client";
 
-import { AlertCircle, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, CircleX } from "lucide-react";
 import { getGenerationStatusCopy, type JobDetail } from "@/lib/generation-editor";
 
 export function JobStatusBadge({
@@ -12,32 +11,37 @@ export function JobStatusBadge({
   queueStage: JobDetail["queueStage"];
 }) {
   const copy = getGenerationStatusCopy(status, queueStage);
-  const completed = status === "completed";
-  const failed = status === "failed";
+
+  if (status === "completed") {
+    return (
+      <span className="pf-status-success inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
+        <Check className="size-3" />
+        <span className="truncate">{copy.label}</span>
+      </span>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <span className="pf-status-danger inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
+        <CircleX className="size-3" />
+        <span className="truncate">{copy.label}</span>
+      </span>
+    );
+  }
+
+  if (status === "processing") {
+    return (
+      <span className="pf-status-warning inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
+        <span className="pf-lamp" />
+        <span className="truncate">{copy.label}</span>
+      </span>
+    );
+  }
 
   return (
-    <span
-      className={cn(
-        "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-semibold",
-        completed && "bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
-        failed && "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]",
-        status === "processing" && "bg-[var(--pf-link)]/10 text-[var(--pf-link)]",
-        status === "queued" && "bg-[var(--pf-active)] text-muted-foreground"
-      )}
-    >
-      {completed ? (
-        <Check className="size-3" />
-      ) : failed ? (
-        <AlertCircle className="size-3" />
-      ) : (
-        <span
-          className={cn(
-            "size-1.5 rounded-full bg-current",
-            status === "processing" && "animate-pulse"
-          )}
-        />
-      )}
-      {copy.label}
+    <span className="inline-flex max-w-full items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] px-2.5 py-0.5 text-[11px] font-medium capitalize text-[var(--pf-muted)]">
+      <span className="truncate">{copy.label}</span>
     </span>
   );
 }

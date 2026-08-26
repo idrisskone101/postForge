@@ -182,6 +182,7 @@ assert.doesNotMatch(editInstruction, /Design one coherent/);
   const formSource = [
     "../../src/components/generation-form.tsx",
     "../../src/app/(app)/generate/form-controls.tsx",
+    "../../src/app/(app)/generate/form-prompt-section.tsx",
     "../../src/app/(app)/generate/form-session.tsx",
     "../../src/app/(app)/generate/use-prompt-improvement.ts",
     "../../src/app/(app)/generate/generation-requests.ts",
