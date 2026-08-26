@@ -96,10 +96,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
         </div>
       ) : null}
       {toast ? (
-        <div
-          role="status"
-          className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-background shadow-xl sm:left-auto sm:max-w-[420px]"
-        >
+        <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-background shadow-xl sm:left-auto sm:max-w-[420px]">
           <Check className="size-3.5 shrink-0 text-[var(--pf-success)]" />
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span>
         </div>
