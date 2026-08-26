@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
-  type InspirationAccountPage,
   type InspirationSourceFeedFilter,
   type InspirationSourceSort,
   type InspirationVideoCard,
@@ -31,11 +30,7 @@ import {
   setInspirationVideoRejection,
 } from "./inspiration-mutations";
 import { useInspirationAccountList } from "./use-inspiration-account-list";
-
-export interface InspirationPageClientProps {
-  initialAccountPage: InspirationAccountPage;
-  initialVideoPage: InspirationVideoPage;
-}
+import type { InspirationPageClientProps } from "./types";
 
 export function useInspirationWorkspace({
   initialAccountPage,
@@ -391,5 +386,3 @@ export function useInspirationWorkspace({
     clearThumbnailError,
   };
 }
-
-export type InspirationWorkspace = ReturnType<typeof useInspirationWorkspace>;

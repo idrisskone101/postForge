@@ -83,14 +83,14 @@ export function getCreatorSyncMeta(
   if (isRefreshing) {
     return {
       label: "Syncing now",
-      className: "text-blue-600",
+      className: "text-[var(--pf-lamp-amber)]",
     };
   }
 
   if (account.syncStatus === "error") {
     return {
       label: "Sync failed",
-      className: "text-destructive",
+      className: "text-[var(--pf-danger)]",
     };
   }
 
@@ -101,7 +101,7 @@ export function getCreatorSyncMeta(
     className:
       account.syncStatus === "ready" && !account.isStale
         ? "text-[var(--pf-success)]"
-        : "text-muted-foreground",
+        : "text-[var(--pf-muted)]",
   };
 }
 
@@ -176,6 +176,85 @@ export function inspirationSourceStatusLabel(video: InspirationVideoCard) {
   if (video.sourceDecision.status === "rejected") return "Rejected";
   if (video.sourceUsage.status === "used") return "Used in Clone";
   return "Fresh source";
+}
+
+export function inspirationStatusTone(
+  video: InspirationVideoCard
+): "rejected" | "used" | "fresh" {
+  if (video.sourceDecision.status === "rejected") return "rejected";
+  if (video.sourceUsage.status === "used") return "used";
+  return "fresh";
+}
+
+export function inspirationStatusDotClass(video: InspirationVideoCard) {
+  const tone = inspirationStatusTone(video);
+  switch (tone) {
+    case "rejected":
+      return "bg-[var(--pf-danger)]";
+    case "used":
+      return "bg-[var(--pf-success)]";
+    case "fresh":
+      return "bg-[var(--pf-lamp-amber)]";
+    default: {
+      const _never: never = tone;
+      return _never;
+    }
+  }
+}
+
+export function inspirationStatusPillClass(video: InspirationVideoCard) {
+  const tone = inspirationStatusTone(video);
+  switch (tone) {
+    case "rejected":
+      return "pf-status-danger";
+    case "used":
+      return "pf-status-success";
+    case "fresh":
+      return "border-[var(--pf-border)] bg-[var(--pf-active)] text-[var(--pf-muted)]";
+    default: {
+      const _never: never = tone;
+      return _never;
+    }
+  }
+}
+
+export function emptyLibraryCopy(
+  search: string,
+  filter: InspirationSourceFeedFilter
+): { title: string; description: string } {
+  if (search.trim()) {
+    return {
+      title: "No sources match your search",
+      description:
+        "Try another creator, caption phrase, or clear the search to see every source in this view.",
+    };
+  }
+
+  switch (filter) {
+    case "used":
+      return {
+        title: "No used sources in this view",
+        description:
+          "This creator view does not have any videos that have already been sent to Clone.",
+      };
+    case "rejected":
+      return {
+        title: "No rejected sources in this view",
+        description:
+          "Reject a source when you know it will never become clone material.",
+      };
+    case "all":
+    case "unused":
+      return {
+        title: "Everything here is used or rejected",
+        description:
+          "Switch to Used or Rejected to review prior decisions, or refresh creators to bring in new options.",
+      };
+    default: {
+      const _never: never = filter;
+      return _never;
+    }
+  }
 }
 
 export function applySourceDecisionToCounts(

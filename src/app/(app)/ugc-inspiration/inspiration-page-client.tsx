@@ -7,10 +7,8 @@ import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessor
 import { InspirationCreatorRail } from "./inspiration-creator-rail";
 import { InspirationHeaderControls } from "./inspiration-header-controls";
 import { InspirationSourceLibrary } from "./inspiration-source-library";
-import {
-  useInspirationWorkspace,
-  type InspirationPageClientProps,
-} from "./use-inspiration-workspace";
+import { useInspirationWorkspace } from "./use-inspiration-workspace";
+import type { InspirationPageClientProps } from "./types";
 
 export function InspirationPageClient(props: InspirationPageClientProps) {
   const workspace = useInspirationWorkspace(props);
@@ -45,68 +43,85 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
         <section className="min-w-0 px-4 py-5 sm:px-6 lg:px-8 lg:py-7 overflow-x-clip">
           <div className="mx-auto flex w-full min-w-0 max-w-[1280px] flex-col gap-5 overflow-x-clip">
             {pageError && (
-              <div role="alert" className="flex min-w-0 items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              <div
+                role="alert"
+                className="flex min-w-0 items-start gap-3 rounded-[8px] border border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 px-4 py-3 text-[13px] text-[var(--pf-danger)]"
+              >
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-                <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{pageError}</span>
-                <button type="button" onClick={() => setPageError(null)} className="shrink-0 text-xs font-semibold hover:underline">
+                <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+                  {pageError}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPageError(null)}
+                  className="shrink-0 text-[12px] font-semibold text-[var(--pf-danger)] hover:underline"
+                >
                   Dismiss
                 </button>
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg border border-border bg-card px-4 py-3 shadow-[var(--pf-shadow-2xs)]">
+            <div className="pf-card flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
               <button
                 type="button"
                 onClick={() => {
                   setActiveFilter("all");
-                  document.getElementById("tracked-creators-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document
+                    .getElementById("tracked-creators-heading")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Show all tracked creators"
-                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
+                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
               >
-                <strong className="text-[15px] font-semibold tabular-nums">{accounts.length}</strong>
-                <span className="ml-2 text-xs text-muted-foreground underline-offset-2">tracked creators</span>
+                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
+                  {accounts.length}
+                </strong>
+                <span className="ml-2 text-[12px] text-[var(--pf-muted)] underline-offset-2">
+                  tracked creators
+                </span>
               </button>
-              <span className="hidden h-6 w-px bg-border sm:block" />
+              <span className="hidden h-6 w-px bg-[var(--pf-border)] sm:block" />
               <button
                 type="button"
                 onClick={() => {
                   setSourceFeedFilter("all");
-                  document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document
+                    .getElementById("source-library-heading")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Show every saved source"
-                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
+                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
               >
-                <strong data-lcp={String(trackedVideoCount)} className="text-[15px] font-semibold tabular-nums">
-                  <span className="sr-only">{trackedVideoCount}</span>
+                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
+                  {trackedVideoCount}
                 </strong>
-                <span data-lcp="saved sources" className="ml-2 text-xs text-muted-foreground">
-                  <span className="sr-only">saved sources</span>
+                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
+                  saved sources
                 </span>
               </button>
-              <span className="hidden h-6 w-px bg-border sm:block" />
+              <span className="hidden h-6 w-px bg-[var(--pf-border)] sm:block" />
               <button
                 type="button"
                 onClick={() => {
                   setSourceFeedFilter("unused");
-                  document.getElementById("source-library-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document
+                    .getElementById("source-library-heading")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 title="Filter the library to fresh sources"
-                className="rounded-md text-left transition-colors hover:text-[var(--pf-orange)]"
+                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
               >
-                <strong data-lcp={String(sourceUsageCounts.unused)} className="text-[15px] font-semibold tabular-nums">
-                  <span className="sr-only">{sourceUsageCounts.unused}</span>
+                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
+                  {sourceUsageCounts.unused}
                 </strong>
-                <span data-lcp="ready to use" className="ml-2 text-xs text-muted-foreground">
-                  <span className="sr-only">ready to use</span>
+                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
+                  ready to use
                 </span>
               </button>
               <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
-                <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
-                  <Sparkles className="size-3.5 shrink-0 text-[var(--pf-orange)]" />
-                  <span data-lcp="Fresh posts stay at the front" className="min-w-0">
-                    <span className="sr-only">Fresh posts stay at the front</span>
-                  </span>
+                <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-[var(--pf-muted)]">
+                  <Sparkles className="size-3.5 shrink-0" />
+                  <span className="min-w-0">Fresh posts stay at the front</span>
                 </span>
                 <button
                   type="button"
@@ -118,11 +133,15 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                     })
                   }
                   disabled={accounts.length === 0 || refreshingIds.length > 0}
-                  className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 text-xs font-medium hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                  data-lcp="Refresh all"
+                  className="pf-button-secondary h-10 shrink-0 px-3 text-[12px]"
                 >
-                  <RefreshCw className={cn("size-4 shrink-0", refreshingIds.length > 0 && "animate-spin")} />
-                  <span className="sr-only">Refresh all</span>
+                  <RefreshCw
+                    className={cn(
+                      "size-4 shrink-0",
+                      refreshingIds.length > 0 && "animate-spin"
+                    )}
+                  />
+                  Refresh all
                 </button>
               </div>
             </div>

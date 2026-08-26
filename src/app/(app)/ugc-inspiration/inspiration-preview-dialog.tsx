@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Avatar,
   AvatarFallback,
@@ -29,8 +28,9 @@ import {
   formatPublishedDate,
   getInspirationThumbnailSrc,
   inspirationSourceStatusLabel,
+  inspirationStatusPillClass,
 } from "./inspiration-models";
-import type { InspirationWorkspace } from "./use-inspiration-workspace";
+import type { InspirationWorkspace } from "./types";
 
 export function InspirationPreviewDialog({
   workspace,
@@ -55,13 +55,16 @@ export function InspirationPreviewDialog({
     ? inspirationSourceStatusLabel(selectedVideo)
     : null;
   const isRejected = selectedVideo?.sourceDecision.status === "rejected";
+  const isUpdatingRejection = selectedVideo
+    ? updatingRejectionIds.includes(selectedVideo.id)
+    : false;
 
   return (
     <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideoId(null)}>
       <DialogContent
         showCloseButton
         data-source-preview-drawer="true"
-        className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[12px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20"
+        className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[8px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20"
       >
         <DialogTitle className="sr-only">Source preview</DialogTitle>
         {selectedVideo && (
@@ -70,7 +73,10 @@ export function InspirationPreviewDialog({
               {embedState !== "failed" && (
                 <iframe
                   key={selectedVideo.id}
-                  src={selectedVideo.embedUrl ?? `https://www.tiktok.com/embed/v3/${selectedVideo.externalVideoId}`}
+                  src={
+                    selectedVideo.embedUrl ??
+                    `https://www.tiktok.com/embed/v3/${selectedVideo.externalVideoId}`
+                  }
                   title={`TikTok preview for ${selectedVideo.creatorHandle}`}
                   className={cn(
                     "size-full min-h-[300px] lg:min-h-[560px]",
@@ -100,14 +106,17 @@ export function InspirationPreviewDialog({
                           selectedVideo.id,
                           selectedVideo.updatedAt
                         )}
-                        alt={selectedVideo.caption || `${selectedVideo.creatorHandle} TikTok`}
+                        alt={
+                          selectedVideo.caption ||
+                          `${selectedVideo.creatorHandle} TikTok`
+                        }
                         className="max-h-[42dvh] max-w-full object-contain lg:max-h-[calc(100dvh-8rem)]"
                         onError={() => markThumbnailError(selectedVideo.id)}
                         onLoad={() => clearThumbnailError(selectedVideo.id)}
                       />
                     </>
                   ) : (
-                    <div className="flex size-16 items-center justify-center rounded-lg bg-white/10">
+                    <div className="flex size-16 items-center justify-center rounded-[8px] bg-white/10">
                       <Play className="size-8" />
                     </div>
                   )}
@@ -124,22 +133,21 @@ export function InspirationPreviewDialog({
               )}
             </div>
 
-            <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-border bg-card p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
+            <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-[var(--pf-border)] bg-[var(--pf-surface)] p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium",
-                    isRejected
-                      ? "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-                      : selectedVideo.sourceUsage.status === "used"
-                        ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-                        : "border-[var(--pf-border)] bg-[var(--pf-active)] text-muted-foreground"
+                    inspirationStatusPillClass(selectedVideo)
                   )}
                 >
                   {statusLabel}
                 </span>
-                <span className="text-[12px] text-muted-foreground">
-                  {formatDuration(selectedVideo.durationSec)} · {formatRelativeDate(selectedVideo.publishedAt ?? selectedVideo.createdAt)}
+                <span className="pf-data text-[12px] text-[var(--pf-muted)]">
+                  {formatDuration(selectedVideo.durationSec)} ·{" "}
+                  {formatRelativeDate(
+                    selectedVideo.publishedAt ?? selectedVideo.createdAt
+                  )}
                 </span>
               </div>
 
@@ -154,10 +162,10 @@ export function InspirationPreviewDialog({
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[15px] font-semibold tracking-[-0.01em]">
+                  <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[var(--pf-ink)]">
                     {selectedVideo.creatorDisplayName || selectedVideo.creatorHandle}
                   </p>
-                  <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                  <p className="mt-0.5 truncate text-[12px] text-[var(--pf-muted)]">
                     {selectedVideo.creatorHandle}
                   </p>
                 </div>
@@ -165,39 +173,46 @@ export function InspirationPreviewDialog({
 
               {selectedVideo.caption && (
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
                     Caption
                   </p>
-                  <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-foreground/80 [overflow-wrap:anywhere] line-clamp-5">
+                  <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-[var(--pf-ink)]/80 [overflow-wrap:anywhere] line-clamp-5">
                     {selectedVideo.caption}
                   </p>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2">
-                {([
-                  ["Views", selectedVideo.viewCount],
-                  ["Likes", selectedVideo.likeCount],
-                  ["Comments", selectedVideo.commentCount],
-                  ["Shares", selectedVideo.shareCount],
-                ] as const).map(([label, value]) => (
-                  <div key={label} className="flex items-baseline justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-[var(--pf-shadow-2xs)]">
-                    <p className="truncate text-[11px] text-muted-foreground">{label}</p>
-                    <p className="text-[13px] font-semibold tabular-nums">
+                {(
+                  [
+                    ["Views", selectedVideo.viewCount],
+                    ["Likes", selectedVideo.likeCount],
+                    ["Comments", selectedVideo.commentCount],
+                    ["Shares", selectedVideo.shareCount],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="pf-card flex items-baseline justify-between gap-2 px-3 py-2"
+                  >
+                    <p className="truncate text-[11px] text-[var(--pf-muted)]">{label}</p>
+                    <p className="pf-data text-[13px] font-semibold tabular-nums text-[var(--pf-ink)]">
                       {formatMetric(value)}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <dl className="divide-y divide-border border-y border-border">
+              <dl className="divide-y divide-[var(--pf-border)] border-y border-[var(--pf-border)]">
                 <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-muted-foreground">Published</dt>
-                  <dd>{formatPublishedDate(selectedVideo.publishedAt)}</dd>
+                  <dt className="text-[var(--pf-muted)]">Published</dt>
+                  <dd className="pf-data text-[var(--pf-ink)]">
+                    {formatPublishedDate(selectedVideo.publishedAt)}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-muted-foreground">Source use</dt>
-                  <dd>
+                  <dt className="text-[var(--pf-muted)]">Source use</dt>
+                  <dd className="text-[var(--pf-ink)]">
                     {selectedVideo.sourceUsage.status === "used" &&
                     selectedVideo.sourceUsage.usedAt
                       ? `Used ${formatRelativeDate(selectedVideo.sourceUsage.usedAt)}`
@@ -205,8 +220,8 @@ export function InspirationPreviewDialog({
                   </dd>
                 </div>
                 <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-muted-foreground">Decision</dt>
-                  <dd>
+                  <dt className="text-[var(--pf-muted)]">Decision</dt>
+                  <dd className="text-[var(--pf-ink)]">
                     {selectedVideo.sourceDecision.status === "rejected" &&
                     selectedVideo.sourceDecision.rejectedAt
                       ? `Rejected ${formatRelativeDate(selectedVideo.sourceDecision.rejectedAt)}`
@@ -215,16 +230,15 @@ export function InspirationPreviewDialog({
                 </div>
               </dl>
 
-              <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
+              <div className="mt-auto flex flex-col gap-2 border-t border-[var(--pf-border)] pt-4">
                 {isRejected ? (
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={() => void handleSetVideoRejection(selectedVideo, false)}
-                    disabled={updatingRejectionIds.includes(selectedVideo.id)}
-                    className="h-10 rounded-lg border-border text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={isUpdatingRejection}
+                    className="pf-button-secondary h-10 text-[13px]"
                   >
-                    {updatingRejectionIds.includes(selectedVideo.id) ? (
+                    {isUpdatingRejection ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
                         Restoring source...
@@ -235,24 +249,23 @@ export function InspirationPreviewDialog({
                         <Undo2 className="size-4" />
                       </>
                     )}
-                  </Button>
+                  </button>
                 ) : (
-                  <Button
+                  <button
                     type="button"
                     onClick={() => handleUseInClone(selectedVideo)}
                     className="pf-button-primary h-10"
                   >
                     Use in Clone
                     <Sparkles className="size-4" />
-                  </Button>
+                  </button>
                 )}
 
                 <div className="grid grid-cols-2 gap-2">
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={() => void handleCopySourceUrl(selectedVideo)}
-                    className="h-10 rounded-lg text-[13px] font-semibold"
+                    className="pf-button-secondary h-10 text-[13px]"
                   >
                     {copiedVideoId === selectedVideo.id ? (
                       <>
@@ -265,15 +278,12 @@ export function InspirationPreviewDialog({
                         <Copy className="size-4" />
                       </>
                     )}
-                  </Button>
+                  </button>
                   <a
                     href={selectedVideo.originalUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "h-10 rounded-lg text-[13px] font-semibold"
-                    )}
+                    className="pf-button-secondary h-10 text-[13px]"
                   >
                     Open
                     <ExternalLink className="size-4" />
@@ -281,14 +291,13 @@ export function InspirationPreviewDialog({
                 </div>
 
                 {selectedVideo.sourceDecision.status !== "rejected" && (
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={() => void handleSetVideoRejection(selectedVideo, true)}
-                    disabled={updatingRejectionIds.includes(selectedVideo.id)}
-                    className="h-9 rounded-lg border-transparent text-[12px] font-medium text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={isUpdatingRejection}
+                    className="inline-flex h-9 items-center justify-center gap-2 rounded-[8px] text-[12px] font-medium text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {updatingRejectionIds.includes(selectedVideo.id) ? (
+                    {isUpdatingRejection ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
                         Rejecting source...
@@ -299,7 +308,7 @@ export function InspirationPreviewDialog({
                         <Ban className="size-4" />
                       </>
                     )}
-                  </Button>
+                  </button>
                 )}
               </div>
             </aside>

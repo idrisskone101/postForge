@@ -9,7 +9,7 @@ import {
   getCreatorSyncMeta,
   getInspirationAvatarSrc,
 } from "./inspiration-models";
-import type { InspirationWorkspace } from "./use-inspiration-workspace";
+import type { InspirationWorkspace } from "./types";
 
 export function InspirationCreatorRail({
   workspace,
@@ -36,11 +36,11 @@ export function InspirationCreatorRail({
       className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
     >
       <div className="mb-3">
-        <h2 id="tracked-creators-heading" data-lcp="Tracked creators">
-          <span className="sr-only">Tracked creators</span>
+        <h2 id="tracked-creators-heading" className="pf-section-title">
+          Tracked creators
         </h2>
-        <p data-lcp="Choose a creator to narrow the source library.">
-          <span className="sr-only">Choose a creator to narrow the source library.</span>
+        <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
+          Choose a creator to narrow the source library.
         </p>
       </div>
 
@@ -54,19 +54,35 @@ export function InspirationCreatorRail({
           onClick={() => setActiveFilter("all")}
           title="All tracked creator videos"
           className={cn(
-            "flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-[8px] border px-3 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
             activeFilter === "all"
-              ? "border-foreground/20 bg-foreground text-background shadow-[var(--pf-shadow-2xs)]"
-              : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:bg-muted/60"
+              ? "border-primary bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)] ring-1 ring-primary/25"
+              : "pf-card hover:bg-[var(--pf-active)]"
           )}
         >
-          <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", activeFilter === "all" ? "bg-background/15" : "bg-muted text-muted-foreground")}>
+          <span
+            className={cn(
+              "flex size-8 shrink-0 items-center justify-center rounded-full",
+              activeFilter === "all"
+                ? "bg-[var(--pf-surface)]/40"
+                : "bg-[var(--pf-active)] text-[var(--pf-muted)]"
+            )}
+          >
             <Compass className="size-4" />
           </span>
-          <span data-lcp="Creator Feed" className="whitespace-nowrap text-[13px] font-semibold">
-            <span className="sr-only">Creator Feed</span>
+          <span className="whitespace-nowrap text-[13px] font-semibold">
+            Creator Feed
           </span>
-          <span className={cn("text-[11px] font-semibold tabular-nums", activeFilter === "all" ? "text-background/70" : "text-muted-foreground")}>{trackedVideoCount}</span>
+          <span
+            className={cn(
+              "pf-data text-[11px] font-semibold",
+              activeFilter === "all"
+                ? "text-[var(--sidebar-accent-foreground)]"
+                : "text-[var(--pf-muted)]"
+            )}
+          >
+            {trackedVideoCount}
+          </span>
         </button>
 
         {accounts.map((account) => {
@@ -79,10 +95,10 @@ export function InspirationCreatorRail({
             <div
               key={account.id}
               className={cn(
-                "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-lg border pr-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-[8px] border pr-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
                 isActive
-                  ? "border-foreground/20 bg-card shadow-[var(--pf-shadow-sm)]"
-                  : "border-border bg-card shadow-[var(--pf-shadow-2xs)] hover:bg-muted/40 hover:shadow-[var(--pf-shadow-2xs)]"
+                  ? "border-primary bg-[var(--sidebar-accent)] ring-1 ring-primary/25"
+                  : "pf-card hover:bg-[var(--pf-active)]"
               )}
             >
               <button
@@ -93,15 +109,17 @@ export function InspirationCreatorRail({
               >
                 <CreatorSyncAvatar account={account} />
                 <span className="min-w-0 flex-1">
-                  <span data-lcp={account.handleDisplay} className="block truncate text-xs font-semibold">
-                    <span className="sr-only">{account.handleDisplay}</span>
+                  <span className="block truncate text-xs font-semibold text-[var(--pf-ink)]">
+                    {account.handleDisplay}
                   </span>
-                  <span data-lcp={syncMeta.label} className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}>
-                    <span className="sr-only">{syncMeta.label}</span>
+                  <span
+                    className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}
+                  >
+                    {syncMeta.label}
                   </span>
                 </span>
-                <span data-lcp={String(account.videoCount)} className="text-[11px] font-semibold text-muted-foreground">
-                  <span className="sr-only">{account.videoCount}</span>
+                <span className="pf-data text-[11px] font-semibold text-[var(--pf-muted)]">
+                  {account.videoCount}
                 </span>
               </button>
               <span className="flex shrink-0 flex-col gap-0.5">
@@ -109,24 +127,34 @@ export function InspirationCreatorRail({
                   type="button"
                   onClick={() => void handleRefreshAccount(account.id)}
                   disabled={isRefreshing || isDeleting}
-                  className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50"
+                  className="flex size-6 items-center justify-center rounded-[6px] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)] disabled:opacity-50"
                   aria-label={`Refresh ${account.handleDisplay}`}
                 >
-                  {isRefreshing ? <Loader2 className="size-3 animate-spin" /> : <RefreshCw className="size-3" />}
+                  {isRefreshing ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-3" />
+                  )}
                   <span className="sr-only">Refresh</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => void handleDeleteAccount(account)}
                   disabled={isDeleting}
-                  className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                  className="flex size-6 items-center justify-center rounded-[6px] text-[var(--pf-muted)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
                   aria-label={`Remove ${account.handleDisplay}`}
                 >
-                  {isDeleting ? <Loader2 className="size-3 animate-spin" /> : <Trash2 className="size-3" />}
+                  {isDeleting ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-3" />
+                  )}
                   <span className="sr-only">Remove</span>
                 </button>
               </span>
-              {account.lastSyncError && <span className="sr-only">{account.lastSyncError}</span>}
+              {account.lastSyncError && (
+                <span className="sr-only">{account.lastSyncError}</span>
+              )}
             </div>
           );
         })}
@@ -137,12 +165,14 @@ export function InspirationCreatorRail({
             disabled={isLoadingMoreAccounts}
             data-inspiration-load-more-accounts="true"
             title="Load more tracked creators"
-            className="flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-muted/60 disabled:opacity-50"
+            className="pf-card flex w-auto shrink-0 snap-start items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[var(--pf-active)] disabled:opacity-50"
           >
             {isLoadingMoreAccounts ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
-              <span className="whitespace-nowrap text-[13px] font-semibold">Load more</span>
+              <span className="whitespace-nowrap text-[13px] font-semibold text-[var(--pf-ink)]">
+                Load more
+              </span>
             )}
           </button>
         ) : null}
@@ -150,7 +180,6 @@ export function InspirationCreatorRail({
     </section>
   );
 }
-
 
 function CreatorSyncAvatar({
   account,
@@ -165,7 +194,7 @@ function CreatorSyncAvatar({
   const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
 
   return (
-    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-[11px] font-medium text-muted-foreground">
+    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] text-[11px] font-medium text-[var(--pf-muted)]">
       {avatarSrc ? (
         <Image
           src={avatarSrc}
