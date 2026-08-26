@@ -76,14 +76,14 @@ export function UGCCloneQueue() {
   }, [fetchJobs, hasActiveJobs]);
 
   return (
-    <section className="rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)]">
+    <section className="pf-card">
       <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
             <History className="size-4 text-muted-foreground" />
           </span>
           <div>
-            <h2 className="text-sm font-semibold">Recent clone activity</h2>
+            <h2 className="pf-section-title">Recent clone activity</h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {hasActiveJobs ? "Active jobs update automatically." : "Latest generated, queued, and failed clones."}
             </p>
@@ -106,7 +106,7 @@ export function UGCCloneQueue() {
           <button
             type="button"
             onClick={() => void fetchJobs()}
-            className="mt-3 h-8 rounded-lg border border-border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted"
+            className="mt-3 h-8 rounded-lg border border-border bg-card px-3 text-xs font-semibold pf-button-secondary"
           >
             Try again
           </button>
@@ -138,7 +138,7 @@ export function UGCCloneQueue() {
               href={`/ugc-clone/${job.id}`}
               className={cn(
                 "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-2xs)]",
-                isActive && "border-accent-blue/30 bg-accent-blue/5"
+                isActive && "border-[var(--pf-lamp-amber)]/30 bg-[var(--pf-lamp-amber)]/5"
               )}
             >
               <div
@@ -163,11 +163,11 @@ export function UGCCloneQueue() {
                       ? job.prompt.slice(0, 40) + "..."
                       : job.prompt}
                   </p>
-                  <span className={cn("shrink-0 text-[12px] font-bold uppercase tracking-wider", config.className)}>
+                  <span className={cn("shrink-0 pf-data text-[12px] font-semibold uppercase tracking-wider", config.className)}>
                     {config.label}
                   </span>
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-muted-foreground font-mono">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 pf-data text-[12px] text-muted-foreground">
                   <span>{job.model}</span>
                   <span className="text-border">|</span>
                   <span>{formatCost(job.estimatedCost)}</span>
@@ -201,25 +201,25 @@ const STATUS_CONFIG = {
   queued: {
     icon: Clock,
     label: "Queued",
-    className: "text-amber-500",
-    bgClassName: "bg-amber-500/10",
+    className: "text-[var(--pf-lamp-amber)]",
+    bgClassName: "bg-[var(--pf-lamp-amber)]/10",
   },
   processing: {
     icon: Loader2,
     label: "Processing",
-    className: "text-accent-blue",
-    bgClassName: "bg-accent-blue/10",
+    className: "text-[var(--pf-lamp-amber)]",
+    bgClassName: "bg-[var(--pf-lamp-amber)]/10",
   },
   completed: {
     icon: CheckCircle2,
     label: "Completed",
-    className: "text-accent-green",
-    bgClassName: "bg-accent-green/10",
+    className: "text-[var(--pf-success)]",
+    bgClassName: "bg-[var(--pf-success)]/10",
   },
   failed: {
     icon: XCircle,
     label: "Failed",
-    className: "text-destructive",
-    bgClassName: "bg-destructive/10",
+    className: "text-[var(--pf-danger)]",
+    bgClassName: "bg-[var(--pf-danger)]/10",
   },
 } as const;

@@ -38,7 +38,7 @@ export function CloneSetupNav({
                 isComplete
                   ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
                   : isActive
-                    ? "border-transparent bg-accent-coral text-white shadow-[var(--pf-shadow-2xs)]"
+                    ? "border-border bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
                     : "border-border bg-card text-muted-foreground"
               )}
             >
@@ -48,7 +48,7 @@ export function CloneSetupNav({
               <span className="block truncate text-[13px] font-semibold sm:text-sm">
                 {step.shortLabel}
               </span>
-              <span className="mt-0.5 hidden truncate text-[12px] text-muted-foreground sm:block">
+              <span className="mt-0.5 max-sm:hidden truncate text-[12px] text-muted-foreground sm:block">
                 {step.description}
               </span>
             </span>

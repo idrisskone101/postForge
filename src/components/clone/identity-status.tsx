@@ -70,7 +70,7 @@ export function CloneIdentityStatusPanel({
           </button>
         )}
         {avatarReady && (
-          <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
+          <Badge variant="outline" className="pf-status-success">
             Active
           </Badge>
         )}

@@ -42,7 +42,7 @@ export function CloneModelSelect({
       >
         <SelectTrigger
           aria-label={label}
-          className="h-10! min-h-10 w-full min-w-0 border-border bg-white px-3 py-2 text-foreground hover:bg-muted dark:bg-muted/50 dark:text-white dark:hover:bg-muted [&>span]:min-w-0 [&>span]:flex-1"
+          className="h-10! min-h-10 w-full min-w-0 border-border bg-[var(--pf-surface)] px-3 py-2 text-foreground hover:bg-[var(--pf-active)] [&>span]:min-w-0 [&>span]:flex-1"
         >
           <SelectValue>
             {() => (
@@ -56,7 +56,7 @@ export function CloneModelSelect({
                   </span>
                 </span>
                 {selectedModel ? (
-                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
+                  <span className="shrink-0 pf-data text-[12px] text-muted-foreground">
                     {getCost(selectedModel.id)}
                   </span>
                 ) : null}
@@ -77,7 +77,7 @@ export function CloneModelSelect({
                       {description}
                     </span>
                   </span>
-                  <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
+                  <span className="shrink-0 pf-data text-[12px] text-muted-foreground">
                     {getCost(model.id)}
                   </span>
                 </span>

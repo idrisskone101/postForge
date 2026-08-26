@@ -437,12 +437,18 @@ assert.match(source("src/app/(app)/generate/generate-form-skeleton.tsx"), /data-
 assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
-assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-home-title="Clone"/);
+assert.match(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /data-home-title=\{paintReady \? undefined : TITLE\}/,
+);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:58rem/);
-assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-studio="true"/);
+assert.match(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /data-clone-studio=\{paintReady \? undefined : "true"\}/,
+);
 assert.match(source("src/app/(app)/characters/new/character-preview-stage.tsx"), /priority/);
 assert.doesNotMatch(source("src/app/(app)/characters/new/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/characters/new/page.tsx"), /CharacterBuilderStatic/);
@@ -549,7 +555,10 @@ assert.match(source("scripts/build-dashboard-css.mjs"), /public\/dashboard\.css/
 assert.match(source("scripts/build-first-paint-css.mjs"), /dashboard-critical\.css/);
 assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scripts\/build-first-paint-css\.mjs"/);
 
-assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /data-clone-copy=/);
+assert.match(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /data-clone-copy=\{paintReady \? undefined : COPY\}/,
+);
 assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
 assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
 assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-title="Integrations"/);

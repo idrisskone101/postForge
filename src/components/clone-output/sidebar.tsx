@@ -47,7 +47,7 @@ export function CloneOutputReviewSidebar({
                   href={sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-w-0 items-center gap-1 text-[13px] font-semibold text-accent-blue hover:underline"
+                  className="inline-flex min-w-0 items-center gap-1 text-[13px] font-semibold text-[var(--pf-link)] hover:underline"
                 >
                   View original
                   <ExternalLink className="size-3 shrink-0" />
@@ -56,17 +56,17 @@ export function CloneOutputReviewSidebar({
             </div>
           </div>
           {sourcePreviewUrl && sourceVideo && (
-            <details className="rounded-lg border border-border bg-black/40 p-2">
+            <details className="rounded-lg border border-border bg-[#09090B] p-2">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-2 py-1 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
                 <span className="inline-flex items-center gap-2">
-                  <PlayCircle className="size-3.5 text-accent-green" />
+                  <PlayCircle className="size-3.5 text-[var(--pf-success)]" />
                   View source video
                 </span>
                 <span className="text-[12px] uppercase tracking-wider text-muted-foreground">
                   {formatDuration(sourceVideo.durationSec)}
                 </span>
               </summary>
-              <div className="mt-2 overflow-hidden rounded-lg bg-black">
+              <div className="mt-2 overflow-hidden rounded-lg bg-[#09090B]">
                 <video
                   src={sourcePreviewUrl}
                   width={sourceVideo.width}
@@ -84,7 +84,7 @@ export function CloneOutputReviewSidebar({
       <DetailSection title="Identity Used">
         <div className="flex items-center gap-4">
           {avatarPreviewUrl ? (
-            <span className="relative size-12 shrink-0 overflow-hidden rounded-full border border-border bg-white/[0.05]">
+            <span className="relative size-12 shrink-0 overflow-hidden rounded-full border border-border bg-[var(--pf-active)]">
               <FileImage
                 src={avatarPreviewUrl}
                 alt={`${identityName} avatar`}
@@ -92,7 +92,7 @@ export function CloneOutputReviewSidebar({
               />
             </span>
           ) : (
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-white/[0.05]">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-[var(--pf-active)]">
               <Users className="size-5 shrink-0 text-muted-foreground" />
             </div>
           )}
@@ -160,7 +160,7 @@ export function CloneOutputReviewSidebar({
               className="rounded-lg border border-border bg-muted/25 px-2 py-3 text-center"
             >
               {signal.ready ? (
-                <Check className="mx-auto size-4 shrink-0 text-accent-green" />
+                <Check className="mx-auto size-4 shrink-0 text-[var(--pf-success)]" />
               ) : (
                 <AlertCircle className="mx-auto size-4 shrink-0 text-muted-foreground" />
               )}
@@ -185,7 +185,7 @@ export function CloneOutputReviewSidebar({
             href={reference.previewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative block max-h-56 overflow-hidden rounded-lg border border-border bg-black"
+            className="relative block max-h-56 overflow-hidden rounded-lg border border-border bg-[#09090B]"
           >
             <Image
               src={reference.previewUrl}
@@ -211,9 +211,9 @@ function DetailSection({
   children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-card">
+    <section className="pf-card overflow-hidden">
       <div className="border-b border-border px-4 py-3">
-        <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+        <h2 className="pf-section-title">
           {title}
         </h2>
       </div>

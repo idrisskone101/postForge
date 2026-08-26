@@ -46,7 +46,7 @@ export function CloneOutputReviewActions({
           className={cn(
             "flex items-center justify-between rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
             featured?.reviewStatus.value === "approved_output"
-              ? "border-accent-green bg-accent-green/10"
+              ? "border-[var(--pf-success)] bg-[var(--pf-success)]/10"
               : "border-border"
           )}
         >
@@ -59,9 +59,9 @@ export function CloneOutputReviewActions({
             </span>
           </span>
           {pendingReviewStatus === "approved_output" ? (
-            <Loader2 className="size-5 shrink-0 animate-spin text-accent-green" />
+            <Loader2 className="size-5 shrink-0 animate-spin text-[var(--pf-success)]" />
           ) : (
-            <Check className="size-5 shrink-0 text-accent-green" />
+            <Check className="size-5 shrink-0 text-[var(--pf-success)]" />
           )}
         </button>
         <button
@@ -93,11 +93,11 @@ export function CloneOutputReviewActions({
         <button
           type="button"
           onClick={onNewClone}
-          className="flex items-center justify-between rounded-lg border border-dashed border-accent-coral/40 bg-card p-4 text-left text-accent-coral transition-colors hover:border-accent-coral hover:bg-accent-coral/5"
+          className="pf-button-secondary flex items-center justify-between rounded-lg border border-dashed p-4 text-left"
         >
           <span>
             <span className="block text-sm font-semibold">New Clone</span>
-            <span className="mt-1 block text-[11px] text-accent-coral/70">
+            <span className="mt-1 block text-[11px] text-muted-foreground">
               Return to Clone
             </span>
           </span>

@@ -66,7 +66,7 @@ export function CloneReferenceReview({
               <ArrowLeft className="size-4" />
             </Button>
             <div className="min-w-0">
-              <h1 className="text-lg font-semibold tracking-tight">Review reference</h1>
+              <h1 className="pf-section-title">Review reference</h1>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Check the source and generated still before creating the clone.
               </p>
@@ -97,28 +97,28 @@ export function CloneReferenceReview({
                   <p className="truncate font-medium text-foreground">
                     {videoInfo.label || "Selected TikTok source"}
                   </p>
-                  <p className="mt-1 font-mono text-[12px]">
+                  <p className="mt-1 pf-data text-[12px]">
                     {durationSec}s · {videoInfo.width}x{videoInfo.height}
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="overflow-hidden rounded-lg border border-border bg-muted/20">
+            <div className="overflow-hidden rounded-lg border border-border bg-[var(--pf-surface)]">
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
-                <p className="text-sm font-semibold">Generated reference</p>
+                <p className="text-sm font-semibold text-foreground">Generated reference</p>
                 <span className="text-xs text-muted-foreground">
                   {completedCount} variant{completedCount === 1 ? "" : "s"}
                 </span>
               </div>
-              <div className="relative flex min-h-[420px] items-center justify-center">
+              <div className="relative flex min-h-[420px] items-center justify-center bg-[#09090B]">
                 {selectedRef?.status === "generating" && (
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative">
-                      <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-accent-coral" />
+                      <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-[var(--pf-orange)]" />
                     </div>
-                    <p className="text-sm font-medium">Generating reference image...</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm font-medium text-white">Generating reference image...</p>
+                    <p className="text-xs text-white/50">
                       Compositing your avatar into the video&apos;s environment
                     </p>
                   </div>
@@ -165,7 +165,7 @@ export function CloneReferenceReview({
                     className={cn(
                       "relative shrink-0 size-16 rounded-lg border-2 overflow-hidden transition-all duration-150",
                       selectedRefIndex === i
-                        ? "border-accent-coral"
+                        ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
                         : "border-border hover:border-foreground/20 opacity-70 hover:opacity-100"
                     )}
                   >
@@ -178,7 +178,7 @@ export function CloneReferenceReview({
                       />
                     ) : entry.status === "generating" ? (
                       <div className="w-full h-full flex items-center justify-center bg-muted">
-                        <Loader2 className="size-4 animate-spin text-accent-coral" />
+                        <Loader2 className="size-4 animate-spin text-muted-foreground" />
                       </div>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-destructive/10">
@@ -202,7 +202,7 @@ export function CloneReferenceReview({
                   Reference Image Prompt
                 </p>
               </div>
-              <span className="font-mono text-[12px] text-muted-foreground">
+              <span className="pf-data text-[12px] text-muted-foreground">
                 {refPrompt.length}/500
               </span>
             </div>
@@ -211,12 +211,12 @@ export function CloneReferenceReview({
               value={refPrompt}
               onChange={(e) => onRefPromptChange(e.target.value.slice(0, 500))}
               maxLength={500}
-              className="min-h-[120px] resize-none bg-muted/50 border border-border focus:border-accent-coral/20 focus:bg-card rounded-lg p-4 text-sm transition-all duration-150"
+              className="min-h-[120px] resize-none bg-[var(--pf-active)] border border-border focus:border-[var(--pf-orange)]/30 focus:bg-card rounded-lg p-4 text-sm transition-all duration-150"
             />
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-xs text-muted-foreground">
                 Total estimate:{" "}
-                <span className="font-mono text-foreground">
+                <span className="pf-data text-foreground">
                   {formatCost((totalRefCost || referenceBatchCost) + videoCost + textErasureCost)}
                 </span>
               </div>
@@ -251,14 +251,14 @@ export function CloneReferenceReview({
           )}
 
           <div className="flex flex-col-reverse gap-2 border-t border-border pt-5 sm:flex-row sm:justify-end">
-            <Button variant="outline" onClick={onBack} className="gap-2">
+            <Button variant="outline" onClick={onBack} className="pf-button-secondary gap-2">
               <ArrowLeft className="size-4" />
               Back
             </Button>
             <Button
               onClick={onApprove}
               disabled={!hasAnyCompleted || !selectedRefFileId || isSubmitting}
-              className="gap-2 bg-accent-coral font-semibold text-white hover:brightness-[0.93]"
+              className="pf-button-primary gap-2"
             >
               {isSubmitting ? (
                 <>

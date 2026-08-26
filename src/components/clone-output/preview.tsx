@@ -21,12 +21,12 @@ export function CloneOutputReviewPreview({
     onSelectVariant,
   } = review;
   return (
-    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+    <div className="pf-card p-4 sm:p-6">
       <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>
         <div className="relative min-w-0">
           {isActive && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-card/80 text-center backdrop-blur-sm">
-              <Loader2 className="mb-4 size-10 animate-spin text-accent-blue" />
+              <Loader2 className="mb-4 size-10 animate-spin text-[var(--pf-lamp-amber)]" />
               <p className="text-sm font-semibold">
                 {job.status === "queued"
                   ? "Waiting in queue..."
@@ -76,7 +76,7 @@ export function CloneOutputReviewPreview({
               }
             />
           ) : (
-            <div className="flex min-h-[min(720px,calc(100dvh-20rem))] items-center justify-center rounded-lg bg-zinc-950 text-sm text-muted-foreground">
+            <div className="flex min-h-[min(720px,calc(100dvh-20rem))] items-center justify-center rounded-lg bg-[#09090B] text-sm text-muted-foreground">
               Output preview will appear here.
             </div>
           )}
@@ -84,7 +84,7 @@ export function CloneOutputReviewPreview({
 
         {job.outputs.length > 1 && (
           <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
-            <p className="hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
+            <p className="max-sm:hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
               Variants
             </p>
             {job.outputs.map((output, index) => (
@@ -95,10 +95,10 @@ export function CloneOutputReviewPreview({
                 aria-label={`View variant ${index + 1}`}
                 aria-pressed={featured?.id === output.id}
                 className={cn(
-                  "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-black p-0.5 transition-colors",
+                  "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#09090B] p-0.5 transition-colors",
                   featured?.id === output.id
-                    ? "border-accent-coral"
-                    : "border-white hover:border-accent-coral/50"
+                    ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
+                    : "border-border hover:border-[var(--pf-orange)]/50"
                 )}
               >
                 {output.type === "image" ? (

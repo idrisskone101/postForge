@@ -85,14 +85,14 @@ export function CloneLiveComposition({
   return (
     <aside
       data-clone-live-composition="true"
-      className="min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] lg:sticky lg:top-4"
+      className="pf-card min-w-0 lg:sticky lg:top-4"
     >
       <div className="flex h-12 items-center justify-between border-b border-border px-4">
-        <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-          {hasComposition && <span className="size-1.5 rounded-full bg-accent-green" />}
+        <span className="inline-flex items-center gap-2 pf-section-title">
+          {hasComposition && <span className="size-1.5 rounded-full bg-[var(--pf-success)]" />}
           {stageLabel}
         </span>
-        <span className="rounded-md border border-border bg-white px-2 py-1 text-[12px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
+        <span className="rounded-md border border-border bg-[var(--pf-surface)] px-2 py-1 text-[12px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
           9:16 · Fit
         </span>
       </div>
@@ -128,8 +128,8 @@ export function CloneLiveComposition({
             ) : null}
           </div>
         ) : (
-          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] px-8 text-center ">
-            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-white text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
+          <div className="mx-auto flex aspect-[9/16] w-full max-w-[360px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] px-8 text-center">
+            <span className="grid size-12 place-items-center rounded-2xl border border-border bg-[var(--pf-surface)] text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
               <Eye className="size-5" />
             </span>
             <p className="mt-4 text-sm font-semibold text-foreground">Your clone takes shape here</p>
@@ -142,7 +142,7 @@ export function CloneLiveComposition({
                   key={slot.id}
                   type="button"
                   onClick={() => onJumpToStep(slot.id)}
-                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-white px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
+                  className="group flex items-center gap-2.5 rounded-lg border border-border bg-[var(--pf-surface)] px-2.5 py-2 text-left shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[var(--pf-shadow-sm)] active:scale-[0.98]"
                 >
                   <span className="size-6 shrink-0 overflow-hidden rounded-md">{slot.thumb}</span>
                   <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-foreground">
@@ -150,7 +150,7 @@ export function CloneLiveComposition({
                   </span>
                   <span className={cn(
                     "shrink-0 text-[12px] font-bold uppercase tracking-wider",
-                    slot.ready ? "text-accent-green" : "text-accent-coral"
+                    slot.ready ? "text-[var(--pf-success)]" : "text-muted-foreground"
                   )}>
                     {slot.ready ? "Ready" : "Add"}
                   </span>
@@ -168,7 +168,7 @@ export function CloneLiveComposition({
             type="button"
             onClick={() => onJumpToStep(slot.id)}
             aria-label={`${slot.label}: ${slot.ready ? "ready" : "required"}. Edit ${slot.label}.`}
-            className="group flex items-center gap-2 bg-white px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[var(--pf-active)]"
+            className="group flex items-center gap-2 bg-[var(--pf-surface)] px-3 py-3 text-left transition-colors duration-[180ms] hover:bg-[var(--pf-active)]"
           >
             <span className="size-7 shrink-0 overflow-hidden rounded-md border border-border shadow-[var(--pf-shadow-2xs)]">
               {slot.thumb}
@@ -181,7 +181,7 @@ export function CloneLiveComposition({
                 <span
                   className={cn(
                     "size-1.5 shrink-0 rounded-full",
-                    slot.ready ? "bg-accent-green" : "bg-[var(--pf-border-strong)]"
+                    slot.ready ? "bg-[var(--pf-success)]" : "bg-[var(--pf-border-strong)]"
                   )}
                 />
                 <span className={cn("truncate", !slot.ready && "text-muted-foreground")}>
@@ -192,7 +192,7 @@ export function CloneLiveComposition({
           </button>
         ))}
       </div>
-      <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3 text-[12px] text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border bg-[var(--pf-surface)] px-4 py-3 text-[12px] text-muted-foreground">
         <span className="capitalize">Editing {activeStep}</span>
         <span>{referenceReady && identityReady && sourceReady ? "All inputs ready" : "Setup in progress"}</span>
       </div>
