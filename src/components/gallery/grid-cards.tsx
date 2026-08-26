@@ -10,21 +10,6 @@ import type { GalleryMediaSession } from "./media-session";
 import { GalleryReviewStatusControl } from "./review-status-control";
 import type { GalleryItem } from "./types";
 
-function galleryReviewDotClass(status: OutputReviewStatus) {
-  switch (status) {
-    case "approved_output":
-      return "bg-[var(--pf-success)]";
-    case "rejected_output":
-      return "bg-[var(--pf-danger)]";
-    case "needs_review":
-      return "bg-[var(--pf-lamp-amber)]";
-    default: {
-      const _never: never = status;
-      return _never;
-    }
-  }
-}
-
 export function GalleryGridCards({
   items,
   view,
@@ -250,4 +235,19 @@ export function GalleryGridCards({
       })}
     </div>
   );
+}
+
+function galleryReviewDotClass(status: OutputReviewStatus) {
+  switch (status) {
+    case "approved_output":
+      return "bg-[var(--pf-success)]";
+    case "rejected_output":
+      return "bg-[var(--pf-danger)]";
+    case "needs_review":
+      return "bg-[var(--pf-lamp-amber)]";
+    default: {
+      const _never: never = status;
+      return _never;
+    }
+  }
 }
