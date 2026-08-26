@@ -25,7 +25,7 @@ export function ManualResolutionDialog({
       aria-modal="true"
       aria-labelledby="manual-resolution-title"
     >
-      <div className="max-h-full w-full min-w-0 max-w-[470px] overflow-y-auto rounded-[12px] border border-border bg-white p-5 shadow-2xl sm:p-6">
+      <div className="max-h-full w-full min-w-0 max-w-[470px] overflow-y-auto rounded-[12px] border border-border bg-[var(--pf-surface)] p-5 shadow-2xl sm:p-6">
         <span
           className={cn(
             "grid size-10 place-items-center rounded-full",

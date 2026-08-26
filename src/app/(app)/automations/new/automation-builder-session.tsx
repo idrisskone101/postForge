@@ -62,7 +62,7 @@ export function AutomationBuilderSession({
         aria-busy="true"
       >
         <header className="flex h-[82px] shrink-0 items-center border-b border-border bg-[var(--pf-active)] px-4 sm:px-6" />
-        <div data-automation-phases="true" className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-white" />
+        <div data-automation-phases="true" className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-[var(--pf-surface)]" />
         <section data-automation-workspace="true" className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
           <aside data-automation-form="true" />
           <div data-automation-preview="true" />
@@ -79,7 +79,7 @@ export function AutomationBuilderSession({
     >
       <header className="flex h-[82px] items-center justify-between gap-3 overflow-x-auto border-b border-border bg-[var(--pf-active)] px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-lg border border-border bg-white">
+          <Link href="/automations" aria-label="Back to automations" className="grid size-9 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)]">
             <ArrowLeft className="size-4" />
           </Link>
           <div className="min-w-0">
@@ -123,7 +123,7 @@ export function AutomationBuilderSession({
 
       <div
         data-automation-phases="true"
-        className="flex h-[59px] items-center justify-between gap-4 overflow-x-auto overflow-y-hidden border-b border-[var(--pf-border)] bg-white px-3 sm:px-6"
+        className="flex h-[59px] items-center justify-between gap-4 overflow-x-auto overflow-y-hidden border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 sm:px-6"
       >
         <div className="flex h-[59px]">
           {PHASES.map((item, index) => (
@@ -202,7 +202,7 @@ export function AutomationBuilderSession({
           role="dialog"
           aria-modal="true"
         >
-          <div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[12px] bg-white p-6 text-center shadow-2xl">
+          <div className="max-h-full w-full min-w-0 max-w-[390px] overflow-y-auto rounded-[12px] bg-[var(--pf-surface)] p-6 text-center shadow-[var(--pf-shadow-lg)]">
             <span
               className={cn(
                 "mx-auto grid size-11 shrink-0 place-items-center rounded-full",
@@ -262,10 +262,7 @@ export function AutomationBuilderSession({
         </div>
       )}
       {toast && (
-        <div
-          role="status"
-          className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-xl sm:left-auto sm:max-w-[420px]"
-        >
+        <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[90] flex min-w-0 items-center gap-2 rounded-[8px] bg-foreground px-3 py-2.5 text-[12px] font-medium text-white shadow-[var(--pf-shadow-lg)] sm:left-auto sm:max-w-[420px]">
           <Check className="size-3.5 shrink-0 text-[var(--pf-success)]" />
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{toast}</span>
         </div>

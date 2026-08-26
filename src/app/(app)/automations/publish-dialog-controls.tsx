@@ -39,7 +39,7 @@ export function CheckControl({
   return (
     <label
       className={cn(
-        "flex min-w-0 items-start gap-2 rounded-lg border border-border bg-white px-2.5 py-2 text-[11px] leading-4",
+        "flex min-w-0 items-start gap-2 rounded-lg border border-border bg-[var(--pf-surface)] px-2.5 py-2 text-[11px] leading-4",
         disabled && "cursor-not-allowed opacity-50"
       )}
     >

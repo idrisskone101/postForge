@@ -1,0 +1,30 @@
+import type { PlatformCollectionSummary } from "@/lib/collections-client";
+import type { SlideshowProjectListItem } from "@/components/slideshow/types";
+
+export type SlideshowAutomationFieldsModel = {
+  name: string;
+  projectId: string;
+  days: string[];
+  time: string;
+  active: boolean;
+  visualPolicy: "reuse" | "fresh-ai";
+  imageCollectionId: string;
+  hooks: string;
+  projects: SlideshowProjectListItem[];
+  collections: PlatformCollectionSummary[];
+  expectedSlideCount: number;
+  estimatedImageCost: string;
+  saving: boolean;
+  saveError: string | null;
+  existing: boolean;
+  onNameChange: (value: string) => void;
+  onProjectChange: (value: string) => void;
+  onVisualPolicyChange: (value: "reuse" | "fresh-ai") => void;
+  onImageCollectionChange: (value: string) => void;
+  onHooksChange: (value: string) => void;
+  onToggleDay: (day: string) => void;
+  onTimeChange: (value: string) => void;
+  onActiveChange: (value: boolean) => void;
+  onSubmit: () => void;
+  saveLabel: string;
+};

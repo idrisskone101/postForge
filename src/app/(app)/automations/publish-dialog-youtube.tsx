@@ -28,7 +28,7 @@ export function PublishDialogYoutubeFields({
                     onChange={(event) =>
                       onChange({ ...state, youtubeTitle: event.target.value })
                     }
-                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-white px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   />
                 </FieldLabel>
                 <FieldLabel
@@ -40,7 +40,7 @@ export function PublishDialogYoutubeFields({
                     onChange={(event) =>
                       onChange({ ...state, youtubeDescription: event.target.value })
                     }
-                    className="min-h-28 w-full min-w-0 resize-y rounded-lg border border-border bg-white px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="min-h-28 w-full min-w-0 resize-y rounded-lg border border-border bg-[var(--pf-surface)] px-3 py-2 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   />
                 </FieldLabel>
                 <FieldLabel label="Visibility" detail="Choose one; no default is assumed">
@@ -56,7 +56,7 @@ export function PublishDialogYoutubeFields({
                           | "public",
                       })
                     }
-                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-white px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   >
                     <option value="">Select YouTube visibility</option>
                     <option value="private">Private</option>
@@ -79,14 +79,14 @@ export function PublishDialogYoutubeFields({
                           | "not_made_for_kids",
                       })
                     }
-                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-white px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
+                    className="h-10 w-full min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] outline-none focus:border-[var(--pf-orange)]"
                   >
                     <option value="">Select whether this video is made for kids</option>
                     <option value="made_for_kids">Yes, it&apos;s made for kids</option>
                     <option value="not_made_for_kids">No, it&apos;s not made for kids</option>
                   </select>
                 </FieldLabel>
-                <div className="min-w-0 rounded-lg border border-border bg-white p-3">
+                <div className="min-w-0 rounded-lg border border-border bg-[var(--pf-surface)] p-3">
                   <CheckControl
                     label="I certify this upload complies with YouTube Community Guidelines"
                     checked={state.youtubeGuidelinesConfirmed}
