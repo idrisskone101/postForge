@@ -22,7 +22,9 @@ export function CharactersLibrary({ library }: { library: CharactersLibraryModel
     <>
       <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[12px] text-[var(--pf-muted)]">{recordCount} saved identities</p>
+          <p className="text-[12px] text-[var(--pf-muted)]">
+            {recordCount} saved {recordCount === 1 ? "identity" : "identities"}
+          </p>
           <h2 className="pf-section-title mt-1">Character library</h2>
         </div>
         <Link href="/characters/new" className="pf-button-primary shrink-0">
