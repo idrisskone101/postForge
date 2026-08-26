@@ -117,7 +117,7 @@ export function GenerateFormSubmitBars({
           type="submit"
           aria-label="Generate Now"
           disabled={!canSubmit}
-          className="h-11 min-w-[174px] rounded-lg bg-[var(--pf-orange)] px-5 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] hover:brightness-[0.93]"
+          className="pf-button-primary h-11 min-w-[174px] px-5 text-[13px] shadow-[var(--pf-shadow-orange)]"
         >
           {isSubmitting ? (
             <>
@@ -163,7 +163,7 @@ export function GenerateFormSubmitBars({
           type="submit"
           aria-label="Generate Now on mobile"
           disabled={!canSubmit}
-          className="h-10 rounded-lg bg-[var(--pf-orange)] px-4 text-[12px] font-bold text-white hover:brightness-[0.93]"
+          className="pf-button-primary h-10 px-4 text-[12px]"
         >
           {isSubmitting ? (
             <Loader2 className="size-3.5 animate-spin" />

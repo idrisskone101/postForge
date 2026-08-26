@@ -33,7 +33,7 @@ export function JobDetailHeader({
             type="button"
             aria-label="Back"
             onClick={onBack}
-            className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-white text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground"
+            className="pf-button-secondary grid size-9 shrink-0 place-items-center px-0"
           >
             <ArrowLeft className="size-3.5" />
           </button>
@@ -44,7 +44,7 @@ export function JobDetailHeader({
               </h1>
               <JobStatusBadge status={job.status} queueStage={job.queueStage} />
             </div>
-            <p className="mt-1 truncate text-[12px] text-muted-foreground">
+            <p className="pf-data mt-1 truncate text-[12px] text-muted-foreground">
               {job.model} · Job {job.id.slice(0, 8)}
             </p>
           </div>
@@ -55,7 +55,7 @@ export function JobDetailHeader({
             type="button"
             variant="outline"
             onClick={onShare}
-            className="h-9 shrink-0 rounded-lg border-border bg-white px-3 text-[12px]"
+            className="pf-button-secondary h-9 shrink-0 px-3 text-[12px]"
           >
             <Share2 className="size-3.5 shrink-0" /> Share
           </Button>
@@ -64,7 +64,7 @@ export function JobDetailHeader({
               type="button"
               variant="outline"
               onClick={onGallery}
-              className="h-9 shrink-0 rounded-lg border-border bg-white px-3 text-[12px]"
+              className="pf-button-secondary h-9 shrink-0 px-3 text-[12px]"
             >
               <GalleryHorizontal className="size-3.5 shrink-0" /> Gallery
             </Button>
@@ -74,7 +74,7 @@ export function JobDetailHeader({
               type="button"
               disabled={isDownloading}
               onClick={onDownload}
-              className="h-9 shrink-0 rounded-lg bg-[var(--pf-orange)] px-3.5 text-[12px] text-white hover:brightness-[0.93]"
+              className="pf-button-primary h-9 shrink-0 px-3.5 text-[12px]"
             >
               {isDownloading ? (
                 <Loader2 className="size-3.5 shrink-0 animate-spin" />

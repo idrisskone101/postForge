@@ -21,19 +21,7 @@ import {
   type JobOutput,
 } from "@/lib/generation-editor";
 import { cn } from "@/lib/utils";
-import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
-
-export type JobPreviewToolbarView = {
-  previewZoom: number;
-  cropMode: boolean;
-  isFullscreen: boolean;
-  isCompleted: boolean;
-  featured: JobOutput | undefined;
-  onZoomOut: () => void;
-  onZoomIn: () => void;
-  onToggleCrop: () => void;
-  onFullscreen: () => void;
-};
+import type { JobDetailActions, JobDetailViewModel, JobPreviewToolbarView } from "./job-enhancements";
 
 export function JobPreviewBody({
   view,
@@ -98,7 +86,7 @@ export function JobPreviewBody({
             type="button"
             onClick={onRetry}
             disabled={isRetrying}
-            className="mt-4 h-9 shrink-0 rounded-lg bg-[var(--pf-orange)] px-4 text-[12px] text-white hover:brightness-[0.93]"
+            className="pf-button-primary mt-4 h-9 shrink-0 px-4 text-[12px]"
           >
             {isRetrying ? (
               <Loader2 className="size-3.5 shrink-0 animate-spin" />
@@ -174,7 +162,7 @@ export function JobPreviewToolbar({
           aria-label="Zoom out"
           onClick={onZoomOut}
           disabled={previewZoom <= 50}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
+          className="grid size-7 place-items-center rounded-lg border border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
         >
           <ZoomOut className="size-3.5" />
         </button>
@@ -186,7 +174,7 @@ export function JobPreviewToolbar({
           aria-label="Zoom in"
           onClick={onZoomIn}
           disabled={previewZoom >= 150}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
+          className="grid size-7 place-items-center rounded-lg border border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
         >
           <ZoomIn className="size-3.5" />
         </button>
@@ -201,7 +189,7 @@ export function JobPreviewToolbar({
               "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
               cropMode
                 ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
-                : "border-border bg-white text-muted-foreground hover:bg-[var(--pf-active)]"
+                : "border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)]"
             )}
           >
             <Crop className="size-3.5" /> {cropMode ? "Fit" : "Crop"}
@@ -210,7 +198,7 @@ export function JobPreviewToolbar({
         <button
           type="button"
           onClick={onFullscreen}
-          className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-border bg-white px-2 text-[12px] font-semibold text-muted-foreground hover:bg-[var(--pf-active)]"
+          className="pf-button-secondary inline-flex h-7 items-center gap-1.5 px-2 text-[12px]"
         >
           <Maximize2 className="size-3.5" />
           {isFullscreen ? "Exit fullscreen" : "Fullscreen"}

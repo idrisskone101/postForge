@@ -66,11 +66,11 @@ export default function JobDetailPage() {
   if (error && !job) {
     return (
       <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="w-full min-w-0 max-w-md rounded-lg border border-[var(--pf-danger)]/40 bg-white p-6 text-center">
+        <div className="pf-card w-full min-w-0 max-w-md p-6 text-center">
           <span className="mx-auto grid size-10 shrink-0 place-items-center rounded-full bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]">
             <AlertCircle className="size-5 shrink-0" />
           </span>
-          <h1 className="mt-4 text-[15px] font-semibold">Generation could not load</h1>
+          <h1 className="mt-4 pf-section-title">Generation could not load</h1>
           <p className="mt-2 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
             {error.message}
           </p>
@@ -78,11 +78,11 @@ export default function JobDetailPage() {
             <Button
               variant="outline"
               onClick={() => router.push("/generate")}
-              className="shrink-0"
+              className="pf-button-secondary shrink-0"
             >
               Back to Generate
             </Button>
-            <Button className="shrink-0" onClick={() => window.location.reload()}>
+            <Button className="pf-button-primary shrink-0" onClick={() => window.location.reload()}>
               Try again
             </Button>
           </div>
@@ -166,7 +166,7 @@ export default function JobDetailPage() {
       <JobDetailHeader view={view} actions={actions} />
 
       <section className="grid items-start gap-4 p-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white">
+        <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)]">
           <JobPreviewToolbar
             view={{
               previewZoom,
@@ -204,7 +204,7 @@ export default function JobDetailPage() {
           )}
         </div>
 
-        <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-white xl:sticky xl:top-4">
+        <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)] xl:sticky xl:top-4">
           <JobInspectorTabs activeTab={activeTab} onTabChange={setTab} />
 
           {activeTab === "enhance" && (
@@ -222,7 +222,7 @@ export default function JobDetailPage() {
                   <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                     Prompt record
                   </p>
-                  <h2 className="mt-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+                  <h2 className="mt-1 pf-section-title">
                     Recreate or remix
                   </h2>
                 </div>
@@ -230,7 +230,7 @@ export default function JobDetailPage() {
                   type="button"
                   variant="outline"
                   onClick={() => void detail.handleCopyPrompt()}
-                  className="h-7 rounded-lg border-border bg-white px-2 text-[12px]"
+                  className="pf-button-secondary h-7 px-2 text-[12px]"
                 >
                   <Copy className="size-3" /> Copy
                 </Button>
@@ -260,7 +260,7 @@ export default function JobDetailPage() {
                       : buildGenerateSimilarHref(job)
                   )
                 }
-                className="h-10 w-full rounded-lg border-border bg-white text-[12px]"
+                className="pf-button-secondary h-10 w-full text-[12px]"
               >
                 <Redo2 className="size-3.5" />{" "}
                 {job.type === "video"

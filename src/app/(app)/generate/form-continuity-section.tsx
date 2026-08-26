@@ -18,11 +18,11 @@ export function GenerateContinuitySection({
   if (!show) return undefined;
 
   return (
-    <div className="animate-content-enter rounded-lg border border-border bg-white p-4 shadow-[var(--pf-shadow-2xs)]">
+    <div className="animate-content-enter pf-card p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
+            <h2 className="pf-section-title">
               Character continuity
             </h2>
             <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
