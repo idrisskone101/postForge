@@ -181,7 +181,7 @@ assert.match(galleryLoading, /data-gallery-tool-row="true"/);
 assert.match(galleryLoading, /flex-nowrap/);
 assert.match(spendLoading, /lg:w-72/);
 assert.match(spendLoading, /flex flex-wrap items-center gap-2/);
-assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-5/);
+assert.match(homeLoading, /max-w-\[1280px\][^"\n]*px-4[^"\n]*pt-7/);
 assert.match(inspirationLoading, /px-4 py-5[^"\n]*lg:py-7/);
 assert.match(cloneLoading, /max-w-\[1280px\][^"\n]*px-4 py-6[^"\n]*lg:py-7/);
 

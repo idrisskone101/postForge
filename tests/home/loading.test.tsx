@@ -4,8 +4,11 @@ import HomeLoading from "../../src/app/(app)/home-loading";
 
 const markup = renderToStaticMarkup(<HomeLoading />);
 
-assert.match(markup, /Daily production cockpit/);
+assert.doesNotMatch(markup, /Daily production cockpit/);
+assert.doesNotMatch(markup, /pf-eyebrow/);
 assert.match(markup, /Spend today/);
+assert.match(markup, /Review queue/);
+assert.match(markup, /Recent media/);
 assert.match(markup, /In progress/);
-assert.match(markup, /Needs review/);
 assert.match(markup, /Start new work/);
+assert.match(markup, /Jobs running/);

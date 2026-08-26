@@ -17,6 +17,10 @@ const files = [
   "src/app/(app)/home-glance-stats.tsx",
   "src/app/(app)/home-start-work.tsx",
   "src/app/(app)/home-review-queue.tsx",
+  "src/app/(app)/home-active-lane.tsx",
+  "src/app/(app)/home-panel.tsx",
+  "src/app/(app)/home-types.ts",
+  "src/app/(app)/home-loading.tsx",
 ];
 
 for (const file of files) {

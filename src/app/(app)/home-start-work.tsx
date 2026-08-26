@@ -14,9 +14,9 @@ export function HomeStartWork() {
           key={action.href}
           prefetch={false}
           href={action.href}
-          className="group flex min-w-0 items-center gap-3 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
+          className="pf-card pf-card-hover group flex min-w-0 items-center gap-3 p-4"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)] transition-colors group-hover:bg-[var(--sidebar-accent)] group-hover:text-[var(--sidebar-accent-foreground)]">
+          <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)] transition-colors group-hover:text-[var(--pf-ink)]">
             <action.icon className="size-[18px]" />
           </span>
           <span className="min-w-0 flex-1">

@@ -56,7 +56,7 @@ function StatCard({
     <Link
       href={href}
       prefetch={false}
-      className="flex min-w-0 flex-col gap-1.5 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
+      className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
     >
       <span className="sr-only">{label}</span>
       <span aria-hidden="true" data-home-glance-label={label} />
