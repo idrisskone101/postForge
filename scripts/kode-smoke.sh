@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Boot-only smoke: start the production server and require GET /api/health → 200.
-# This is not a product-usage test. /api/health is a Postgres readiness ping
-# (`SELECT 1`); this script does not start Postgres. kode:check already requires
-# a reachable database, and standalone runs fail clearly on 503.
+# Boot smoke: start the production server and require GET /api/health → 200.
+# /api/health is a Postgres readiness ping (`SELECT 1`); this script does not
+# start Postgres. Standalone runs fail clearly on 503.
+# kode:check sets KODE_SMOKE_ROUTES=1 so the same server also GETs the 18
+# workspace routes. Standalone `pnpm kode:smoke` stays health-only.
 set -euo pipefail
 
 export PATH="/opt/homebrew/bin:/opt/homebrew/opt/postgresql@16/bin:$PATH"
@@ -85,6 +86,21 @@ while (( SECONDS < deadline )); do
       echo
     fi
     if [[ "$http_code" == "200" ]]; then
+      if [[ "${KODE_SMOKE_ROUTES:-}" == "1" ]]; then
+        mapfile -t smoke_routes < <(
+          pnpm exec tsx -e 'import { WORKSPACE_SMOKE_ROUTES } from "./scripts/workspace-smoke-routes.ts"; process.stdout.write(WORKSPACE_SMOKE_ROUTES.join("\n") + "\n");'
+        )
+        for route in "${smoke_routes[@]}"; do
+          [[ -n "$route" ]] || continue
+          route_url="http://${HOST}:${PORT}${route}"
+          route_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$route_url" || true)"
+          echo "kode:smoke: GET ${route_url} -> ${route_code}"
+          if [[ "$route_code" != "200" ]]; then
+            echo "kode:smoke: expected HTTP 200 from ${route_url}, got ${route_code}" >&2
+            exit 1
+          fi
+        done
+      fi
       exit 0
     fi
     echo "kode:smoke: expected HTTP 200 from ${url}, got ${http_code}" >&2
