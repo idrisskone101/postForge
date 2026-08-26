@@ -155,6 +155,9 @@ assert.doesNotMatch(markup, /Approved creator still/);
 assert.match(approvedMarkup, /Showing 1 of 8 outputs in approved output/);
 assert.match(approvedMarkup, /\/api\/files\/file-approved/);
 assert.doesNotMatch(approvedMarkup, /\/api\/files\/file-needs-review/);
+assert.match(approvedMarkup, /pf-review-stamp !top-2 !bottom-auto/);
+assert.match(approvedMarkup, /pf-review-stamp--approved/);
+assert.match(approvedMarkup, /bg-\[var\(--pf-success\)\]/);
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
 assert.match(emptyMarkup, /No Outputs ready for review/);

@@ -1,6 +1,7 @@
 "use client";
 
 import { MediaPreviewFrame } from "@/components/media-preview";
+import type { OutputReviewStatus } from "@/lib/output-review-status";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import { Check, Copy, Download, ExternalLink, Loader2, Send, Trash2 } from "lucide-react";
@@ -8,6 +9,21 @@ import { GalleryDeleteDialog } from "./delete-dialog";
 import type { GalleryMediaSession } from "./media-session";
 import { GalleryReviewStatusControl } from "./review-status-control";
 import type { GalleryItem } from "./types";
+
+function galleryReviewDotClass(status: OutputReviewStatus) {
+  switch (status) {
+    case "approved_output":
+      return "bg-[var(--pf-success)]";
+    case "rejected_output":
+      return "bg-[var(--pf-danger)]";
+    case "needs_review":
+      return "bg-[var(--pf-lamp-amber)]";
+    default: {
+      const _never: never = status;
+      return _never;
+    }
+  }
+}
 
 export function GalleryGridCards({
   items,
@@ -52,7 +68,7 @@ export function GalleryGridCards({
               {item.reviewStatus.value !== "needs_review" && (
                 <span
                   className={cn(
-                    "pf-review-stamp",
+                    "pf-review-stamp !top-2 !bottom-auto",
                     item.reviewStatus.value === "approved_output"
                       ? "pf-review-stamp--approved"
                       : "pf-review-stamp--rejected",
@@ -84,7 +100,14 @@ export function GalleryGridCards({
                 />
               </button>
 
-              <div className="absolute bottom-2 left-2 z-10 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium capitalize text-white">
+              <div className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium capitalize text-white">
+                <span
+                  className={cn(
+                    "size-1.5 shrink-0 rounded-full",
+                    galleryReviewDotClass(item.reviewStatus.value)
+                  )}
+                  aria-hidden="true"
+                />
                 {item.type}
               </div>
               {item.durationSec != null && (
