@@ -266,7 +266,7 @@ function PostThumbnail({
     >
       {showThumbnail ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img>
+        <img
           src={post.thumbnailUrl ?? undefined}
           alt={`Thumbnail for ${post.title}`}
           onError={() => setThumbnailFailed(true)}
