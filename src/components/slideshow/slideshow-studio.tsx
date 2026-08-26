@@ -134,14 +134,14 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   const startCustom = useCallback(() => {
     setTemplateOpen(false);
     openEditor(createBlankSlideshowProject());
-  }, [openEditor]);
+  }, [openEditor, setTemplateOpen]);
 
   const startTemplate = useCallback(
     (template: SlideshowTemplate) => {
       setTemplateOpen(false);
       openEditor(createProjectFromTemplate(template));
     },
-    [openEditor],
+    [openEditor, setTemplateOpen],
   );
 
   const handleGenerateStory = useCallback(

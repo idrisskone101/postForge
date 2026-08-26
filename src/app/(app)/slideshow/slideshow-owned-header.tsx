@@ -42,7 +42,6 @@ export function SlideshowOwnedHeader() {
         type="button"
         onClick={openTemplateDialog}
         className="pf-button-primary shrink-0"
-        data-lcp="New Slideshow"
       >
         <Plus className="size-3.5" />
         New Slideshow

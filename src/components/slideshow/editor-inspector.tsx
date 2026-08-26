@@ -11,7 +11,6 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
@@ -279,20 +278,19 @@ export function EditorInspector() {
               />
             </label>
 
-            <div className="rounded-[6px] border border-accent-blue/20 bg-accent-blue/[0.05] p-3.5">
+            <div className="rounded-lg border border-border bg-[var(--pf-active)] p-3.5">
               <div className="flex items-start gap-2.5">
-                <WandSparkles className="mt-0.5 size-4 shrink-0 text-accent-blue" />
+                <WandSparkles className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0">
                   <p className="text-[12px] font-semibold text-foreground">AI copy variation</p>
                   <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Rewrite this slide without changing the visual layout.
                   </p>
-                  <Button
+                  <button
                     type="button"
-                    size="sm"
                     onClick={() => void onRegenerateText()}
                     disabled={regenerating}
-                    className="mt-2.5 h-8 rounded-lg bg-accent-blue px-3 text-[13px] font-semibold text-white hover:brightness-105 active:scale-[0.97]"
+                    className="pf-button-secondary mt-2.5 h-8"
                   >
                     {regenerating ? (
                       <LoaderCircle className="size-3.5 animate-spin" />
@@ -300,7 +298,7 @@ export function EditorInspector() {
                       <RefreshCw className="size-3.5" />
                     )}
                     {regenerating ? "Rewriting..." : "Regenerate text"}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

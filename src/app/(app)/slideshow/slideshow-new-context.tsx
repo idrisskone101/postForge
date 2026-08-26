@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 
+import type { SlideshowNewContextValue } from "./types";
+
 export function SlideshowNewProvider({ children }: { children: ReactNode }) {
   const [templateOpen, setTemplateOpen] = useState(false);
   return (
@@ -24,11 +26,5 @@ export function useSlideshowNew() {
   }
   return value;
 }
-
-type SlideshowNewContextValue = {
-  templateOpen: boolean;
-  setTemplateOpen: (open: boolean) => void;
-  openTemplateDialog: () => void;
-};
 
 const SlideshowNewContext = createContext<SlideshowNewContextValue | null>(null);

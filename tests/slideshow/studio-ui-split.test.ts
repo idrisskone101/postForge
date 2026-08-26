@@ -319,6 +319,7 @@ assert.match(chromeSource, /SlideshowPaintText/);
 assert.match(chromeSource, /paintReady \? undefined/);
 assert.match(chromeSource, /pf-card/);
 assert.match(chromeSource, /pf-button-primary/);
+assert.match(chromeSource, /pf-button-secondary/);
 assert.match(chromeSource, /pf-section-title/);
 
 console.log("slideshow studio UI split tests passed");

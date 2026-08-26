@@ -51,11 +51,9 @@ export function CreatorCopyForm({ draft }: { draft: CreatorDraft }) {
           <span className="grid size-8 place-items-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
             <WandSparkles className="size-4" />
           </span>
-          <div>
-            <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold tracking-[-0.02em] text-foreground">
-              Your copy, your visuals
-            </h2>
-            <p className="max-w-[8rem] line-clamp-1 text-[10px] text-muted-foreground">
+          <div className="min-w-0">
+            <h2 className="pf-section-title">Your copy, your visuals</h2>
+            <p className="text-[13px] leading-[1.35] text-muted-foreground">
               Keep copy verbatim. Attach a collection image to any slide, or generate the rest.
             </p>
           </div>

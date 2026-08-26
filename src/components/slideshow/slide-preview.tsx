@@ -225,7 +225,7 @@ function GridMedia({ slide, grid }: { slide: SlideshowSlide; grid: SlideshowGrid
         return (
           <span
             key={`${imageUrl ?? visualKey}-${index}`}
-            className="block min-h-0 min-w-0 bg-zinc-900"
+            className="block min-h-0 min-w-0 bg-[#09090B]"
             style={{
               backgroundImage: imageUrl
                 ? `url(${JSON.stringify(imageUrl)})`
@@ -252,7 +252,7 @@ export function VisualTile({
   return (
     <span
       aria-hidden="true"
-      className={cn("block bg-zinc-900", className)}
+      className={cn("block bg-[#09090B]", className)}
       style={{
         backgroundImage: imageUrl
           ? `url(${JSON.stringify(imageUrl)})`

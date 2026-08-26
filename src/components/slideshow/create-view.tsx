@@ -26,14 +26,14 @@ export function CreateView() {
 
   return (
     <div data-slideshow-create={paintReady ? undefined : "true"}>
-      <div className="mb-4 flex h-10 items-center gap-1 overflow-hidden rounded-lg border border-border bg-[var(--pf-active)] p-1 sm:w-fit">
+      <div className="mb-4 flex h-10 items-center gap-1 overflow-hidden rounded-lg bg-[var(--pf-active)] p-1 sm:w-fit">
         <button
           type="button"
           onClick={() => setMode("one-idea")}
           className={cn(
-            "flex h-8 items-center gap-1.5 rounded-md px-3 text-[12px] font-semibold transition",
+            "flex h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold transition",
             mode === "one-idea"
-              ? "bg-card text-foreground shadow-[var(--pf-shadow-xs)]"
+              ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
@@ -43,9 +43,9 @@ export function CreateView() {
           type="button"
           onClick={() => setMode("own-copy")}
           className={cn(
-            "flex h-8 items-center gap-1.5 rounded-md px-3 text-[12px] font-semibold transition",
+            "flex h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold transition",
             mode === "own-copy"
-              ? "bg-card text-foreground shadow-[var(--pf-shadow-xs)]"
+              ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

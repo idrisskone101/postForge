@@ -24,6 +24,7 @@ import {
   type SlideshowViewMode,
 } from "./slideshow-view";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
+import { ICON_BTN } from "./studio-ui";
 
 export function SlideshowViewSwitcher({
   value,
@@ -65,9 +66,6 @@ export function SlideshowViewSwitcher({
     </div>
   );
 }
-
-const ICON_BTN =
-  "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
 
 const VIEW_OPTIONS: Array<{
   id: SlideshowViewMode;
