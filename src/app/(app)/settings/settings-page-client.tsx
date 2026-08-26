@@ -157,7 +157,7 @@ export function SettingsPageClient() {
   return (
     <div
       data-settings-page={paintReady ? undefined : "true"}
-      className="grid min-h-[calc(100dvh-184px)] lg:grid-cols-[210px_minmax(0,1fr)]"
+      className="grid min-h-[calc(100dvh-184px)] max-lg:pt-5 lg:grid-cols-[210px_minmax(0,1fr)]"
     >
       <SettingsNavigation
         tab={tab}
@@ -261,7 +261,7 @@ export function SettingsNavigation({
   return (
     <aside
       data-settings-nav="true"
-      className="relative z-10 flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4"
+      className="flex w-full min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain border-b border-border bg-[var(--pf-active)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-4"
     >
       <p className="mb-2 max-lg:hidden px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         Workspace
