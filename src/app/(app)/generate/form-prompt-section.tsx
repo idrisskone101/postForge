@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { canRunPromptImprovement } from "@/lib/ai/prompt-improvement-ui";
+import { cn } from "@/lib/utils";
 import { CREATIVE_SPARKS } from "./form-constants";
 import { GeneratePaintText } from "./generate-paint-text";
 import { PromptTemplatesControl } from "./prompt-templates-control";
@@ -48,7 +49,10 @@ export function GenerateFormPromptSection({
     <section data-generate-prompt={paintReady ? undefined : "true"} className="pf-card p-4">
       <div
         data-generate-prompt-toolbar={paintReady ? undefined : "true"}
-        className="mb-3 flex h-9 items-center justify-between gap-3 overflow-hidden"
+        className={cn(
+          "mb-3 flex items-center justify-between gap-3",
+          paintReady ? "min-h-9 flex-wrap" : "h-9 overflow-hidden"
+        )}
       >
         <div className="flex items-center gap-2">
           <GeneratePaintText
@@ -109,7 +113,10 @@ export function GenerateFormPromptSection({
       />
       <div
         data-generate-prompt-meta={paintReady ? undefined : "true"}
-        className="mt-2 flex h-[3.5rem] flex-col overflow-hidden text-[12px] leading-5 text-muted-foreground"
+        className={cn(
+          "mt-2 flex flex-col text-[12px] leading-5 text-muted-foreground",
+          paintReady ? "min-h-[3.5rem]" : "h-[3.5rem] overflow-hidden"
+        )}
       >
         <div className="flex h-5 items-center justify-between">
           <span>{prompt.length}/1,500</span>
@@ -156,7 +163,11 @@ export function GenerateFormPromptSection({
 
       <div
         data-generate-sparks={paintReady ? undefined : "true"}
-        className="mt-3 flex h-[6.75rem] flex-wrap gap-1.5 overflow-hidden"
+        className={
+          paintReady
+            ? "mt-3 flex flex-wrap gap-1.5"
+            : "mt-3 flex h-[6.75rem] flex-wrap gap-1.5 overflow-hidden"
+        }
       >
         {CREATIVE_SPARKS.map((spark) => (
           <button
