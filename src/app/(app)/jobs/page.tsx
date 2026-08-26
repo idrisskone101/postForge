@@ -1,12 +1,8 @@
 import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import {
-  EMPTY_JOBS_ACTIVITY,
-  JobsActivity,
-  type JobsStatusFilter,
-  type JobsTypeFilter,
-} from "./jobs-activity";
+import { JobsActivity } from "./jobs-activity";
+import { EMPTY_JOBS_ACTIVITY, type JobsStatusFilter, type JobsTypeFilter } from "./types";
 import { JobsAutoRefresh } from "./jobs-auto-refresh";
 
 export const metadata = { title: "Jobs - PostForge" };

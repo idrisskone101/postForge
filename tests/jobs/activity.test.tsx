@@ -90,6 +90,18 @@ assert.match(markup, /href="\/characters\?avatarId=avatar-1"/);
 assert.match(markup, /href="\/ugc-clone\/failed-clone-job"/);
 assert.match(markup, /1–4 of 4 jobs/);
 
+assert.match(markup, /href="\/jobs\?status=active"/);
+assert.match(markup, /href="\/jobs\?status=completed"/);
+assert.match(markup, /href="\/jobs\?status=failed"/);
+assert.match(markup, /href="\/jobs"/);
+assert.match(markup, /pf-card/);
+assert.match(markup, /pf-status-warning/);
+assert.match(markup, /pf-status-success/);
+assert.match(markup, /pf-status-danger/);
+assert.match(markup, /pf-data/);
+assert.match(markup, /pf-button-secondary/);
+assert.match(markup, /data-jobs-filters="true"/);
+
 assert.equal(getJobActivityLabel(jobs[0]), "Reference image");
 assert.equal(getJobStatusLabel(jobs[0]), "Generating");
 assert.equal(getJobDestination(jobs[1]), "/slideshow");
