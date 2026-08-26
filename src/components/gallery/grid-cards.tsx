@@ -3,7 +3,7 @@
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
-import { Check, Copy, Download, ExternalLink, Eye, Loader2, Send, Trash2 } from "lucide-react";
+import { Check, Copy, Download, ExternalLink, Loader2, Send, Trash2 } from "lucide-react";
 import { GalleryDeleteDialog } from "./delete-dialog";
 import type { GalleryMediaSession } from "./media-session";
 import { GalleryReviewStatusControl } from "./review-status-control";
@@ -44,8 +44,8 @@ export function GalleryGridCards({
           <article
             key={item.id}
             className={cn(
-              "group min-w-0 overflow-hidden rounded-lg border bg-card shadow-[var(--pf-shadow-2xs)] transition-[border-color,box-shadow] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-md)]",
-              isSelected ? "border-primary ring-1 ring-primary/25" : "border-border"
+              "pf-card pf-card-hover group min-w-0 overflow-hidden",
+              isSelected && "border-primary ring-1 ring-primary/25"
             )}
           >
             <div className="relative min-w-0">
@@ -79,25 +79,23 @@ export function GalleryGridCards({
                   alt="Generated Output"
                   cover
                   variant="card"
-                  className="aspect-[4/3] rounded-none border-0 bg-muted"
-                  mediaClassName="object-cover transition-transform duration-300 group-hover:scale-[1.025]"
+                  className="aspect-square rounded-none border-0 bg-[var(--pf-active)]"
+                  mediaClassName="object-cover"
                 />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/25 group-hover:opacity-100">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#fff] px-3 py-2 text-[12px] font-semibold text-black shadow-lg">
-                    <Eye className="size-3.5" />
-                    Preview
-                  </span>
-                </span>
               </button>
 
-              <div className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium capitalize text-white">
-                <span>{item.type}</span>
-                {item.durationSec != null && <span>· {item.durationSec}s</span>}
+              <div className="absolute bottom-2 left-2 z-10 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium capitalize text-white">
+                {item.type}
               </div>
+              {item.durationSec != null && (
+                <div className="pf-data absolute bottom-2 right-2 z-10 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white">
+                  {item.durationSec}s
+                </div>
+              )}
 
               <label
                 className={cn(
-                  "absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-md border transition-colors",
+                  "absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[8px] border transition-colors",
                   isSelected
                     ? "border-primary bg-primary"
                     : "border-white/80 bg-black/25 backdrop-blur-sm"
@@ -115,8 +113,6 @@ export function GalleryGridCards({
               </label>
             </div>
 
-            <div className="pf-tear" aria-hidden="true" />
-
             <div className="flex min-w-0 flex-col gap-3 p-3">
               <div className="min-w-0">
                 <div className="flex items-start justify-between gap-2">
@@ -128,14 +124,14 @@ export function GalleryGridCards({
                     {item.model}
                   </button>
                   <span
-                    className="shrink-0 text-[11px] text-muted-foreground"
+                    className="pf-data shrink-0 text-[11px] text-[var(--pf-muted)]"
                     suppressHydrationWarning
                   >
                     {formatRelativeDate(item.createdAt)}
                   </span>
                 </div>
                 <div className="mt-1 flex items-center justify-between gap-3">
-                  <span className="truncate text-[11px] text-muted-foreground">
+                  <span className="pf-data truncate text-[11px] text-[var(--pf-muted)]">
                     {item.width && item.height
                       ? `${item.width} × ${item.height}`
                       : `Job ${item.jobId.slice(0, 8)}`}
@@ -150,7 +146,7 @@ export function GalleryGridCards({
                           event.stopPropagation();
                           void copySourceUrl(item.tiktokSourceUrl!);
                         }}
-                        className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                       >
                         <Copy className="size-3" />
                       </button>
@@ -161,7 +157,7 @@ export function GalleryGridCards({
                         title="Open Source Selection"
                         aria-label="Open Source Selection"
                         onClick={(event) => event.stopPropagation()}
-                        className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
+                        className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-primary"
                       >
                         <ExternalLink className="size-3" />
                       </a>
@@ -185,7 +181,7 @@ export function GalleryGridCards({
                   <button
                     type="button"
                     onClick={() => void downloadItem(item)}
-                    className="inline-flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:text-foreground"
+                    className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                     aria-label={`Download Output ${item.id}`}
                     title="Download"
                   >
@@ -194,7 +190,7 @@ export function GalleryGridCards({
                   <button
                     type="button"
                     onClick={() => void onHandoff?.(item)}
-                    className="inline-flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:text-foreground"
+                    className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                     aria-label={`Handoff Output ${item.id}`}
                     title="Handoff"
                   >
@@ -205,7 +201,7 @@ export function GalleryGridCards({
                     trigger={
                       <button
                         type="button"
-                        className="inline-flex size-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/15 disabled:opacity-50"
+                        className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
                         aria-label={`Delete Output ${item.id}`}
                         title="Delete"
                       />

@@ -35,10 +35,7 @@ const files = [
 
 for (const file of files) {
   const count = lineCount(file);
-  assert.ok(
-    count <= CAP,
-    `${file} is ${count} lines (cap ${CAP})`
-  );
+  assert.ok(count <= CAP, `${file} is ${count} lines (cap ${CAP})`);
 }
 
 assert.ok(
@@ -46,9 +43,41 @@ assert.ok(
   "gallery-grid.tsx must shrink"
 );
 assert.ok(
-  lineCount("src/app/(app)/gallery/gallery-page-client.tsx") < 933,
-  "gallery-page-client.tsx must shrink"
+  lineCount("src/app/(app)/gallery/gallery-page-client.tsx") < 331,
+  "gallery-page-client.tsx must shrink below 331 lines"
 );
+
+const galleryRouteTsx = listFiles("src/app/(app)/gallery/").filter((file) =>
+  file.endsWith(".tsx")
+);
+const galleryComponentTsx = listFiles("src/components/gallery/").filter((file) =>
+  file.endsWith(".tsx")
+);
+
+for (const file of [...galleryRouteTsx, ...galleryComponentTsx]) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(source, /pf-tear/, `${file} must not use pf-tear`);
+  assert.doesNotMatch(source, /pf-masthead/, `${file} must not use pf-masthead`);
+  if (file !== "src/components/gallery/lightbox.tsx") {
+    assert.doesNotMatch(
+      source,
+      /#(?:[0-9A-Fa-f]{3,8})\b/,
+      `${file} must not use literal hex`
+    );
+  } else {
+    const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
+    assert.deepEqual(
+      hexMatches,
+      ["#09090B"],
+      "lightbox.tsx may only use #09090B for the media stage"
+    );
+  }
+}
+
+for (const file of galleryRouteTsx) {
+  const source = readFileSync(new URL(file, repoRoot), "utf8");
+  assert.doesNotMatch(source, /export type /, `${file} must not export types`);
+}
 
 console.log(
   files

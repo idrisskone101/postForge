@@ -54,13 +54,13 @@ export function GalleryReviewStatusControl({
   return (
     <div
       className={cn(
-        "flex items-center rounded-lg border border-border bg-background p-1",
+        "flex items-center rounded-[8px] bg-[var(--pf-active)] p-1",
         compact ? "w-fit gap-1" : "justify-between gap-2"
       )}
       aria-label={`Output review status: ${reviewStatus.label}`}
     >
       {!compact && (
-        <span className="min-w-0 truncate px-2 text-[13px] font-semibold">
+        <span className="min-w-0 truncate px-2 text-[13px] font-semibold text-[var(--pf-ink)]">
           {reviewStatus.label}
         </span>
       )}
@@ -82,16 +82,16 @@ export function GalleryReviewStatusControl({
                 void updateStatus(status.value);
               }}
               className={cn(
-                "inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50",
+                "inline-flex size-8 items-center justify-center rounded-[6px] text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)] disabled:cursor-not-allowed disabled:opacity-50",
                 isActive &&
                   status.value === "needs_review" &&
-                  "bg-muted text-foreground",
+                  "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]",
                 isActive &&
                   status.value === "approved_output" &&
-                  "bg-accent-green/10 text-accent-green",
+                  "bg-[var(--pf-surface)] text-[var(--pf-success)] shadow-[var(--pf-shadow-2xs)]",
                 isActive &&
                   status.value === "rejected_output" &&
-                  "bg-destructive/10 text-destructive"
+                  "bg-[var(--pf-surface)] text-[var(--pf-danger)] shadow-[var(--pf-shadow-2xs)]"
               )}
             >
               {isPending ? (
@@ -106,7 +106,6 @@ export function GalleryReviewStatusControl({
     </div>
   );
 }
-
 
 const reviewStatusIcons = {
   needs_review: CircleDashed,

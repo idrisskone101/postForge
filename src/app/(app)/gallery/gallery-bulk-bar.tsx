@@ -31,38 +31,38 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
   if (selectionCount === 0) return null;
 
   return (
-    <section
-      data-gallery-bulk-bar
-      className="rounded-lg border border-border bg-card px-3 py-2 shadow-[var(--pf-shadow-2xs)]"
-    >
+    <section data-gallery-bulk-bar className="pf-card px-3 py-2">
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-[8px] bg-primary text-[11px] font-bold text-primary-foreground">
           {selectionCount}
         </span>
-        <strong className="shrink-0 text-[13px] font-medium">
+        <strong className="shrink-0 text-[13px] font-medium text-[var(--pf-ink)]">
           {selectionCount} selected
         </strong>
         <button
           type="button"
           onClick={() => setSelectedIds(new Set(filtered.map((item) => item.id)))}
-          className="text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
         >
           Select all {filtered.length}
         </button>
         <button
           type="button"
           onClick={() => setSelectedIds(new Set())}
-          className="text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
         >
           Clear
         </button>
-        <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
+        <span
+          aria-hidden="true"
+          className="hidden h-4 w-px bg-[var(--pf-border)] sm:block"
+        />
         <div className="flex min-w-0 flex-wrap items-center gap-0.5">
           <button
             type="button"
             disabled={isBulkUpdating}
             onClick={() => void updateSelectedReviewStatus("approved_output")}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)] disabled:opacity-50"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)] disabled:opacity-50"
           >
             <CheckCircle2 className="size-3.5" />
             Approve
@@ -71,7 +71,7 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
             type="button"
             disabled={isBulkUpdating}
             onClick={() => void updateSelectedReviewStatus("rejected_output")}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
           >
             <XCircle className="size-3.5" />
             Reject
@@ -80,7 +80,7 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
             type="button"
             disabled={isBulkDownloading}
             onClick={() => void handleBulkDownload()}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isBulkDownloading ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -92,7 +92,7 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
           <button
             type="button"
             onClick={() => void handleBulkHandoff()}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-foreground transition-colors hover:bg-muted"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-active)]"
           >
             <Send className="size-3.5" />
             Handoff
@@ -105,7 +105,7 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
             render={
               <button
                 type="button"
-                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
               />
             }
           >
