@@ -250,4 +250,75 @@ for (const file of files) {
   }
 }
 
+const slideshowAppDir = path.join(rootDir, "src/app/(app)/slideshow");
+const appFiles = listModules(slideshowAppDir);
+for (const file of appFiles) {
+  const rel = path.relative(rootDir, file);
+  const lines = countNewlines(file);
+  assert.ok(lines <= CAP, `${rel} is ${lines} lines (cap ${CAP})`);
+}
+
+assert.equal(
+  existsSync(path.join(slideshowAppDir, "slideshow-paint-text.tsx")),
+  true,
+  "slideshow-paint-text.tsx must exist",
+);
+
+const MEDIA_STAGE = "#09090B";
+const MEDIA_STAGE_FILES = new Set([
+  "src/components/slideshow/editor-preview.tsx",
+  "src/components/slideshow/slideshow-view-modes.tsx",
+  "src/components/slideshow/slide-preview.tsx",
+  "src/components/slideshow/creator-image-slot.tsx",
+]);
+const HEX_SKIP_FILES = new Set([
+  "src/components/slideshow/slide-preview.tsx",
+  "src/components/slideshow/editor-inspector.tsx",
+]);
+
+const chromeFiles = [
+  ...files.filter((file) => file.endsWith(".tsx")),
+  ...appFiles.filter((file) => file.endsWith(".tsx")),
+];
+
+for (const file of chromeFiles) {
+  const rel = path.relative(rootDir, file);
+  if (rel.endsWith("slideshow-paint-text.tsx")) continue;
+  const source = readFileSync(file, "utf8");
+  assert.doesNotMatch(
+    source,
+    /(?<![\w-])(?<![\w]+:)hidden\b/,
+    `${rel} must not use bare hidden class`,
+  );
+  const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
+  if (HEX_SKIP_FILES.has(rel)) {
+    continue;
+  }
+  if (MEDIA_STAGE_FILES.has(rel)) {
+    assert.ok(
+      hexMatches.every((value) => value === MEDIA_STAGE),
+      `${rel} may only use ${MEDIA_STAGE} for the media stage`,
+    );
+  } else {
+    assert.equal(hexMatches.length, 0, `${rel} must not use literal hex`);
+  }
+}
+
+const chromeSource = [
+  path.join(slideshowAppDir, "slideshow-owned-header.tsx"),
+  path.join(slideshowDir, "create-idea-form.tsx"),
+  path.join(slideshowDir, "create-view.tsx"),
+  path.join(slideshowDir, "studio-section-nav.tsx"),
+  path.join(slideshowDir, "drafts-view.tsx"),
+  path.join(slideshowDir, "studio-ui.tsx"),
+]
+  .map((file) => readFileSync(file, "utf8"))
+  .join("\n");
+
+assert.match(chromeSource, /SlideshowPaintText/);
+assert.match(chromeSource, /paintReady \? undefined/);
+assert.match(chromeSource, /pf-card/);
+assert.match(chromeSource, /pf-button-primary/);
+assert.match(chromeSource, /pf-section-title/);
+
 console.log("slideshow studio UI split tests passed");

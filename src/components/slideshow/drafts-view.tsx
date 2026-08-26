@@ -69,7 +69,7 @@ export function DraftsView() {
               onClick={() => setStatus(id)}
               className={cn(
                 "flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-[13px] font-semibold transition-all",
-                status === id ? "bg-white text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                status === id ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {label}
@@ -183,7 +183,7 @@ export function DraftsView() {
       ) : (
         <div className="pf-empty-stage relative mt-5 grid min-h-[320px] place-items-center overflow-hidden rounded-lg border border-dashed border-[var(--pf-border-strong)] p-8 text-center">
           <div className="relative">
-            <span className="mx-auto grid size-11 place-items-center rounded-[6px] bg-white text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
+            <span className="mx-auto grid size-11 place-items-center rounded-[6px] bg-[var(--pf-surface)] text-muted-foreground shadow-[var(--pf-shadow-2xs)]">
               <Archive className="size-5" />
             </span>
             <p className="mt-4 text-[13px] font-semibold text-foreground">

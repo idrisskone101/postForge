@@ -92,7 +92,7 @@ export function SlidePreview({
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden rounded-[10px] bg-zinc-900 text-white",
+        "relative isolate overflow-hidden rounded-[10px] bg-[#09090B] text-white",
         className,
       )}
     >

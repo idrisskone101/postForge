@@ -49,7 +49,7 @@ export function CreatorSlideImageSlot({
           type="button"
           aria-label={`Remove ${label} image`}
           onClick={onClear}
-          className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full border border-border bg-white text-muted-foreground transition hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
+          className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
         >
           <X className="size-2.5" />
         </button>
