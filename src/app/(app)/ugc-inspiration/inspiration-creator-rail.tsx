@@ -36,13 +36,11 @@ export function InspirationCreatorRail({
       className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
     >
       <div className="mb-3">
-        <h2 id="tracked-creators-heading" data-lcp="Tracked creators">
-          <span className="sr-only">Tracked creators</span>
+        <h2 id="tracked-creators-heading" className="pf-section-title">
+          Tracked creators
         </h2>
-        <p data-lcp="Choose a creator to narrow the source library.">
-          <span className="sr-only">
-            Choose a creator to narrow the source library.
-          </span>
+        <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
+          Choose a creator to narrow the source library.
         </p>
       </div>
 
@@ -72,11 +70,8 @@ export function InspirationCreatorRail({
           >
             <Compass className="size-4" />
           </span>
-          <span
-            data-lcp="Creator Feed"
-            className="whitespace-nowrap text-[13px] font-semibold"
-          >
-            <span className="sr-only">Creator Feed</span>
+          <span className="whitespace-nowrap text-[13px] font-semibold">
+            Creator Feed
           </span>
           <span
             className={cn(
@@ -114,24 +109,17 @@ export function InspirationCreatorRail({
               >
                 <CreatorSyncAvatar account={account} />
                 <span className="min-w-0 flex-1">
-                  <span
-                    data-lcp={account.handleDisplay}
-                    className="block truncate text-xs font-semibold text-[var(--pf-ink)]"
-                  >
-                    <span className="sr-only">{account.handleDisplay}</span>
+                  <span className="block truncate text-xs font-semibold text-[var(--pf-ink)]">
+                    {account.handleDisplay}
                   </span>
                   <span
-                    data-lcp={syncMeta.label}
                     className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}
                   >
-                    <span className="sr-only">{syncMeta.label}</span>
+                    {syncMeta.label}
                   </span>
                 </span>
-                <span
-                  data-lcp={String(account.videoCount)}
-                  className="pf-data text-[11px] font-semibold text-[var(--pf-muted)]"
-                >
-                  <span className="sr-only">{account.videoCount}</span>
+                <span className="pf-data text-[11px] font-semibold text-[var(--pf-muted)]">
+                  {account.videoCount}
                 </span>
               </button>
               <span className="flex shrink-0 flex-col gap-0.5">

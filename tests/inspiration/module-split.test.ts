@@ -47,6 +47,7 @@ const inspirationTsxFiles = files.filter((file) => file.endsWith(".tsx"));
 for (const file of inspirationTsxFiles) {
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   assert.doesNotMatch(source, /export type /, `${file} must not export types`);
+  assert.doesNotMatch(source, /data-lcp/, `${file} must not use data-lcp after hydrate`);
   assert.doesNotMatch(source, /pf-masthead/, `${file} must not use pf-masthead`);
   assert.doesNotMatch(source, /pf-tear/, `${file} must not use pf-tear`);
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];

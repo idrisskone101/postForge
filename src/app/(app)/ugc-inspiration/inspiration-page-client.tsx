@@ -92,17 +92,11 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                 title="Show every saved source"
                 className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
               >
-                <strong
-                  data-lcp={String(trackedVideoCount)}
-                  className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]"
-                >
-                  <span className="sr-only">{trackedVideoCount}</span>
+                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
+                  {trackedVideoCount}
                 </strong>
-                <span
-                  data-lcp="saved sources"
-                  className="ml-2 text-[12px] text-[var(--pf-muted)]"
-                >
-                  <span className="sr-only">saved sources</span>
+                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
+                  saved sources
                 </span>
               </button>
               <span className="hidden h-6 w-px bg-[var(--pf-border)] sm:block" />
@@ -117,25 +111,17 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                 title="Filter the library to fresh sources"
                 className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
               >
-                <strong
-                  data-lcp={String(sourceUsageCounts.unused)}
-                  className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]"
-                >
-                  <span className="sr-only">{sourceUsageCounts.unused}</span>
+                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
+                  {sourceUsageCounts.unused}
                 </strong>
-                <span
-                  data-lcp="ready to use"
-                  className="ml-2 text-[12px] text-[var(--pf-muted)]"
-                >
-                  <span className="sr-only">ready to use</span>
+                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
+                  ready to use
                 </span>
               </button>
               <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
                 <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-[var(--pf-muted)]">
                   <Sparkles className="size-3.5 shrink-0" />
-                  <span data-lcp="Fresh posts stay at the front" className="min-w-0">
-                    <span className="sr-only">Fresh posts stay at the front</span>
-                  </span>
+                  <span className="min-w-0">Fresh posts stay at the front</span>
                 </span>
                 <button
                   type="button"
@@ -148,7 +134,6 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                   }
                   disabled={accounts.length === 0 || refreshingIds.length > 0}
                   className="pf-button-secondary h-10 shrink-0 px-3 text-[12px]"
-                  data-lcp="Refresh all"
                 >
                   <RefreshCw
                     className={cn(
@@ -156,7 +141,7 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
                       refreshingIds.length > 0 && "animate-spin"
                     )}
                   />
-                  <span className="sr-only">Refresh all</span>
+                  Refresh all
                 </button>
               </div>
             </div>
