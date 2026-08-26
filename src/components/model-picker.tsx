@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import type { ModelDefinition } from "@/lib/ai/types";
 
 interface ModelPickerProps {
@@ -24,7 +25,6 @@ interface ModelPickerProps {
   onModelSelect: (modelId: string) => void;
   models: ModelDefinition[];
   recommendedModelId?: string;
-  paintReady?: boolean;
 }
 
 export function ModelPicker({
@@ -32,8 +32,8 @@ export function ModelPicker({
   onModelSelect,
   models,
   recommendedModelId,
-  paintReady = false,
 }: ModelPickerProps) {
+  const paintReady = useWindowLoadReady();
   const selected = models.find((model) => model.id === selectedModel);
   const [requestedType, setRequestedType] = useState<"image" | "video">(
     selected?.type ?? "image"

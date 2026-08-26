@@ -57,7 +57,6 @@ export function GenerateFormControls({
           onModelSelect={onModelSelect}
           models={models}
           recommendedModelId={recommendedModelId}
-          paintReady={paintReady}
         />
       </section>
 

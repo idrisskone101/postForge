@@ -87,15 +87,14 @@ assert.equal(
 );
 
 const chromeSource = [
-  "form-controls.tsx",
-  "form-prompt-section.tsx",
-  "form-format-section.tsx",
-  "generate-header-accessory.tsx",
-  "job-inspector.tsx",
+  "src/app/(app)/generate/form-controls.tsx",
+  "src/app/(app)/generate/form-prompt-section.tsx",
+  "src/app/(app)/generate/form-format-section.tsx",
+  "src/app/(app)/generate/generate-header-accessory.tsx",
+  "src/app/(app)/generate/job-inspector.tsx",
+  "src/components/model-picker.tsx",
 ]
-  .map((file) =>
-    readFileSync(new URL(`src/app/(app)/generate/${file}`, repoRoot), "utf8")
-  )
+  .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
   .join("\n");
 
 assert.match(chromeSource, /GeneratePaintText/);
