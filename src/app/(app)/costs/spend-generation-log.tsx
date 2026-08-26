@@ -185,14 +185,15 @@ function LogRow({
   );
 }
 
-function TypeChip({ type }: { type: "image" | "video" }) {
+function TypeChip({ type }: { type: string }) {
+  const video = type === "video";
   return (
     <span
       className={cn(
         "inline-flex rounded-full px-2 py-1 text-[11px] font-semibold capitalize",
-        type === "image"
-          ? "bg-[var(--pf-active)] text-[var(--pf-muted)]"
-          : "border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)]"
+        video
+          ? "border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)]"
+          : "bg-[var(--pf-active)] text-[var(--pf-muted)]"
       )}
     >
       {type}
