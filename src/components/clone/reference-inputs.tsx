@@ -90,7 +90,7 @@ export function CloneReferenceInputs() {
                 <button
                   type="button"
                   onClick={onClearCollection}
-                  className="text-[12px] font-bold text-accent-coral"
+                  className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
                 >
                   Change
                 </button>
@@ -111,7 +111,7 @@ export function CloneReferenceInputs() {
                 <button
                   type="button"
                   onClick={onClearSavedReference}
-                  className="text-[12px] font-bold text-accent-coral"
+                  className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
                 >
                   Change
                 </button>
@@ -119,7 +119,7 @@ export function CloneReferenceInputs() {
             </>
           ) : selectedRef?.status === "generating" ? (
             <ReferencePortraitFrame className="flex-col items-center justify-center bg-[var(--pf-active)] p-4 text-center">
-              <Loader2 className="size-7 animate-spin text-accent-coral" />
+              <Loader2 className="size-7 animate-spin text-muted-foreground" />
               <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Generating reference
               </span>
@@ -155,7 +155,7 @@ export function CloneReferenceInputs() {
                     Variant #{selectedRefIndex + 1}
                   </span>
                 </div>
-                <Badge variant="outline" className="border-accent-coral/30 bg-accent-coral/10 text-accent-coral">
+                <Badge variant="outline" className="pf-status-success">
                   Ready
                 </Badge>
               </div>
@@ -178,7 +178,7 @@ export function CloneReferenceInputs() {
                   </span>
                 </div>
                 {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-                  <Badge variant="outline" className="border-accent-green/30 bg-accent-green/10 text-accent-green">
+                  <Badge variant="outline" className="pf-status-warning">
                     Preparing
                   </Badge>
                 ) : null}
@@ -213,7 +213,7 @@ function ReferencePortraitFrame({
     <div
       data-reference-portrait-frame="true"
       className={cn(
-        "relative mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-zinc-950",
+        "relative mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-[#09090B]",
         className
       )}
     >

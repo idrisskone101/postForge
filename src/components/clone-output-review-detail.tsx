@@ -28,7 +28,7 @@ export function CloneOutputReviewDetail({
   const view = bindCloneOutputReview(review, featuredIndex, setFeaturedIndex);
 
   return (
-    <div className="pf-content-viewport min-w-0 bg-background">
+    <div className="pf-content-viewport min-w-0 bg-[var(--pf-canvas)]">
       <CloneOutputReviewHeader review={view} />
 
       <div className="mx-auto grid min-w-0 max-w-[1280px] gap-5 px-5 py-6 sm:px-6 lg:grid-cols-[minmax(0,64fr)_minmax(340px,36fr)] lg:px-8">

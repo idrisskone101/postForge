@@ -78,7 +78,11 @@ const files = [
 ];
 
 for (const file of files) {
-  if (file.endsWith("/page.tsx")) {
+  if (
+    file.endsWith("/page.tsx") ||
+    file.endsWith("clone-paint-text.tsx") ||
+    file.endsWith("clone-owned-header.tsx")
+  ) {
     continue;
   }
   const source = readFileSync(new URL(file, repoRoot), "utf8");

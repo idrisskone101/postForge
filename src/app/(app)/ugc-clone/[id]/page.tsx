@@ -145,7 +145,7 @@ export default function UGCCloneJobPage() {
     return (
       <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
         <div className="w-full min-w-0 max-w-md text-center">
-          <h1 className="text-[15px] font-semibold">Loading clone job</h1>
+          <h1 className="pf-section-title">Loading clone job</h1>
           <p className="mt-2 text-[12px] leading-5 text-muted-foreground">
             Fetching outputs and review status.
           </p>
@@ -158,9 +158,9 @@ export default function UGCCloneJobPage() {
   if (error && !job) {
     return (
       <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="w-full min-w-0 max-w-md rounded-lg border border-destructive/40 bg-white p-6 text-center">
+        <div className="pf-card w-full min-w-0 max-w-md p-6 text-center">
           <AlertCircle className="mx-auto size-5 text-destructive" />
-          <h1 className="mt-4 text-[15px] font-semibold">Clone job could not load</h1>
+          <h1 className="mt-4 pf-section-title">Clone job could not load</h1>
           <p className="mt-2 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
             {error.message}
           </p>

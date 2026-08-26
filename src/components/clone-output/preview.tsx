@@ -1,7 +1,10 @@
 import { AlertCircle, Download, Loader2 } from "lucide-react";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { cn } from "@/lib/utils";
-import type { CloneOutputReviewView } from "@/components/clone-output/types";
+import type {
+  CloneOutputReviewJob,
+  CloneOutputReviewView,
+} from "@/components/clone-output/types";
 
 export function CloneOutputReviewPreview({
   review,
@@ -21,39 +24,9 @@ export function CloneOutputReviewPreview({
     onSelectVariant,
   } = review;
   return (
-    <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
+    <div className="pf-card p-4 sm:p-6">
       <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>
         <div className="relative min-w-0">
-          {isActive && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-card/80 text-center backdrop-blur-sm">
-              <Loader2 className="mb-4 size-10 animate-spin text-accent-blue" />
-              <p className="text-sm font-semibold">
-                {job.status === "queued"
-                  ? "Waiting in queue..."
-                  : "Cloning motion..."}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                This may take a few minutes
-              </p>
-            </div>
-          )}
-
-          {isFailed && (
-            <div className="absolute inset-0 z-10 flex min-w-0 flex-col items-center justify-center gap-4 rounded-lg bg-card/90 p-6 text-center">
-              <AlertCircle className="size-8 shrink-0 text-destructive" />
-              <div className="w-full min-w-0">
-                <p className="text-sm font-semibold text-destructive">
-                  Clone Failed
-                </p>
-                {job.error && (
-                  <p className="mx-auto mt-1 min-w-0 max-w-sm break-words text-xs text-destructive/80 [overflow-wrap:anywhere]">
-                    {job.error}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
           {isCompleted && featured ? (
             <MediaPreviewFrame
               type={featured.type === "image" ? "image" : "video"}
@@ -76,15 +49,18 @@ export function CloneOutputReviewPreview({
               }
             />
           ) : (
-            <div className="flex min-h-[min(720px,calc(100dvh-20rem))] items-center justify-center rounded-lg bg-zinc-950 text-sm text-muted-foreground">
-              Output preview will appear here.
-            </div>
+            <ClonePreviewStage
+              isActive={isActive}
+              isFailed={isFailed}
+              status={job.status}
+              error={job.error}
+            />
           )}
         </div>
 
         {job.outputs.length > 1 && (
           <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
-            <p className="hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
+            <p className="max-sm:hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
               Variants
             </p>
             {job.outputs.map((output, index) => (
@@ -95,10 +71,10 @@ export function CloneOutputReviewPreview({
                 aria-label={`View variant ${index + 1}`}
                 aria-pressed={featured?.id === output.id}
                 className={cn(
-                  "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-black p-0.5 transition-colors",
+                  "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#09090B] p-0.5 transition-colors",
                   featured?.id === output.id
-                    ? "border-accent-coral"
-                    : "border-white hover:border-accent-coral/50"
+                    ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
+                    : "border-border hover:border-[var(--pf-orange)]/50"
                 )}
               >
                 {output.type === "image" ? (
@@ -140,3 +116,86 @@ export function CloneOutputReviewPreview({
     </div>
   );
 }
+
+function ClonePreviewStage({
+  isActive,
+  isFailed,
+  status,
+  error,
+}: {
+  isActive: boolean;
+  isFailed: boolean;
+  status: CloneOutputReviewJob["status"];
+  error: string | null;
+}) {
+  return (
+    <div className="flex min-h-[min(720px,calc(100dvh-20rem))] flex-col items-center justify-center rounded-lg bg-[#09090B] px-6 text-center">
+      <ClonePreviewStageBody
+        isActive={isActive}
+        isFailed={isFailed}
+        status={status}
+        error={error}
+      />
+    </div>
+  );
+}
+
+function ClonePreviewStageBody({
+  isActive,
+  isFailed,
+  status,
+  error,
+}: {
+  isActive: boolean;
+  isFailed: boolean;
+  status: CloneOutputReviewJob["status"];
+  error: string | null;
+}) {
+  if (isActive) {
+    return (
+      <>
+        <Loader2 className="mb-4 size-10 animate-spin text-[var(--pf-lamp-amber)]" />
+        <p className="text-sm font-semibold text-white">
+          {clonePreviewActiveLabel(status)}
+        </p>
+        <p className="mt-1 text-xs text-white/50">
+          This may take a few minutes
+        </p>
+      </>
+    );
+  }
+  if (isFailed) {
+    return (
+      <>
+        <AlertCircle className="size-8 shrink-0 text-[var(--pf-danger)]" />
+        <p className="mt-4 text-sm font-semibold text-white">Clone Failed</p>
+        {error ? (
+          <p className="mx-auto mt-1 min-w-0 max-w-sm break-words text-xs text-white/70 [overflow-wrap:anywhere]">
+            {error}
+          </p>
+        ) : null}
+      </>
+    );
+  }
+  return (
+    <p className="text-sm text-muted-foreground">
+      Output preview will appear here.
+    </p>
+  );
+}
+
+function clonePreviewActiveLabel(status: CloneOutputReviewJob["status"]) {
+  switch (status) {
+    case "queued":
+      return "Waiting in queue...";
+    case "processing":
+    case "completed":
+    case "failed":
+      return "Cloning motion...";
+    default: {
+      const _exhaustive: never = status;
+      return _exhaustive;
+    }
+  }
+}
+

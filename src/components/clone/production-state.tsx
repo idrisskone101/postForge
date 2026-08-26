@@ -27,21 +27,21 @@ export function CloneProductionStatePanel({
   return (
     <aside
       data-clone-production-state="true"
-      className="h-fit rounded-lg border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24"
+      className="pf-card h-fit p-4 xl:sticky xl:top-24"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             Production State
           </p>
-          <h2 className="mt-1 text-lg font-semibold">Clone readiness</h2>
+          <h2 className="mt-1 pf-section-title">Clone readiness</h2>
         </div>
         <Badge
           variant="outline"
           className={cn(
             canGenerate
-              ? "border-accent-green/30 bg-accent-green/10 text-accent-green"
-              : "bg-muted/45 text-muted-foreground"
+              ? "pf-status-success"
+              : "border-border bg-[var(--pf-active)] text-muted-foreground"
           )}
         >
           {canGenerate ? "Ready" : "In progress"}
@@ -114,9 +114,9 @@ function ProductionStateRow({
   detail: string;
 }) {
   const statusClassName = {
-    ready: "border-accent-green/30 bg-accent-green/10 text-accent-green",
-    required: "border-accent-coral/30 bg-accent-coral/10 text-accent-coral",
-    working: "border-accent-blue/30 bg-accent-blue/10 text-accent-blue",
+    ready: "pf-status-success",
+    required: "pf-status-danger",
+    working: "pf-status-warning",
     optional: "border-border bg-muted/45 text-muted-foreground",
   }[status];
 

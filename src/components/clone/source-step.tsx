@@ -33,18 +33,16 @@ export function CloneSourceStep({
     <section
       data-clone-source-section="true"
       className={cn(
-        "rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5",
+        "pf-card p-4 sm:p-5",
         hidden && "hidden"
       )}
     >
       <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
         <div className="flex items-center gap-3">
           <div>
-            <h2 className="text-[12px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
-              Source &amp; trim
-            </h2>
-            <p data-clone-copy="Choose the clip and trim the part to clone.">
-              <span className="sr-only">Choose the clip and trim the part to clone.</span>
+            <h2 className="pf-section-title">Source &amp; trim</h2>
+            <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
+              Choose the clip and trim the part to clone.
             </p>
           </div>
         </div>
@@ -61,7 +59,7 @@ export function CloneSourceStep({
           <button
             type="button"
             onClick={onTogglePicker}
-            className="text-xs font-semibold text-accent-blue transition-colors hover:text-accent-blue/80"
+            className="text-xs font-semibold text-[var(--pf-link)] transition-colors hover:underline"
           >
             {sourceReady
               ? sourceToolsOpen

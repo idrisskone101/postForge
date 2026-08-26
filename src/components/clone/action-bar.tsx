@@ -42,7 +42,7 @@ export function CloneActionBar({
   const videoSelect: CloneModelSelectModel = {
     label: "Final video",
     description: "Video model",
-    accentClassName: "text-accent-blue",
+    accentClassName: "text-muted-foreground",
     models: cloneVideoModels,
     selectedValue: selectedModel,
     onValueChange: onSelectModel,
@@ -51,7 +51,7 @@ export function CloneActionBar({
   const referenceSelect: CloneModelSelectModel = {
     label: "Reference image",
     description: "Image model",
-    accentClassName: "text-accent-green",
+    accentClassName: "text-muted-foreground",
     models: referenceImageModels,
     selectedValue: selectedReferenceImageModel,
     onValueChange: onSelectReferenceImageModel,
@@ -108,12 +108,12 @@ export function CloneActionBar({
           </div>
         )}
 
-        <div className="grid grid-cols-[minmax(0,1fr)_44px] gap-2 lg:hidden">
+        <div className="grid grid-cols-[minmax(0,1fr)_40px] gap-2 lg:hidden">
           <button
             type="button"
             onClick={onPrimaryAction}
             disabled={primaryActionDisabled}
-            className="flex h-11 min-w-0 items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
+            className="pf-button-primary flex h-10 min-w-0 items-center justify-center gap-2 px-4 text-[13px] disabled:pointer-events-none disabled:cursor-not-allowed"
           >
             <Zap className="size-3.5 shrink-0" />
             <span className="truncate">
@@ -130,17 +130,17 @@ export function CloneActionBar({
             aria-label="Generation settings"
             aria-expanded={mobileSettingsOpen}
             className={cn(
-              "flex size-11 items-center justify-center rounded-lg border transition-colors",
+              "flex size-10 items-center justify-center rounded-lg border transition-colors",
               mobileSettingsOpen
-                ? "border-accent-blue/40 bg-accent-blue/12 text-accent-blue"
-                : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "border-[var(--pf-orange)] bg-[var(--pf-surface)] text-foreground ring-1 ring-[var(--pf-orange)]/25"
+                : "border-border bg-[var(--pf-active)] text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <SlidersHorizontal className="size-4" />
           </button>
         </div>
 
-        <div className="hidden gap-2 lg:grid lg:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] lg:items-center">
+        <div className="max-lg:hidden gap-2 lg:grid lg:grid-cols-[minmax(180px,1fr)_minmax(180px,1fr)_minmax(116px,140px)_minmax(108px,132px)_minmax(170px,220px)] lg:items-center">
           <CloneModelSelect model={videoSelect} className="min-w-0" />
 
           <CloneModelSelect model={referenceSelect} className="min-w-0" />
@@ -163,7 +163,7 @@ export function CloneActionBar({
             <p className="truncate text-[13px] font-semibold text-foreground">
               Text
               {removeTextOverlays && (
-                <span className="ml-1 font-mono text-[12px] text-accent-green">+{formatCost(textErasureCost)}</span>
+                <span className="ml-1 pf-data text-[12px] text-[var(--pf-success)]">+{formatCost(textErasureCost)}</span>
               )}
             </p>
             <Switch
@@ -177,7 +177,7 @@ export function CloneActionBar({
             type="button"
             onClick={onPrimaryAction}
             disabled={primaryActionDisabled}
-            className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-accent-coral px-4 text-[13px] font-semibold text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:brightness-[0.93] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none"
+            className="pf-button-primary flex h-10 w-full items-center justify-center gap-2 px-4 text-[13px] disabled:pointer-events-none disabled:cursor-not-allowed"
           >
             <Zap className="size-3.5 shrink-0" />
             <span className="truncate">

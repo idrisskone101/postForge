@@ -50,7 +50,7 @@ export function CloneReferenceLibrary() {
         <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold text-foreground">This run</p>
-            <span className="font-mono text-[12px] text-muted-foreground/80">
+            <span className="pf-data text-[12px] text-muted-foreground/80">
               {refImages.length} generated
             </span>
           </div>
@@ -61,11 +61,11 @@ export function CloneReferenceLibrary() {
                 type="button"
                 onClick={() => onSelectGenerated(index)}
                 className={cn(
-                  "relative aspect-[9/16] w-24 shrink-0 overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral sm:w-28",
+                  "relative aspect-[9/16] w-24 shrink-0 overflow-hidden rounded-lg border bg-[#09090B] transition-colors hover:border-[var(--pf-orange)] sm:w-28",
                   !selectedCollectionAssetId &&
                   !selectedSavedReference &&
                   selectedRefIndex === index
-                    ? "border-accent-coral"
+                    ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
                     : "border-border"
                 )}
               >
@@ -77,7 +77,7 @@ export function CloneReferenceLibrary() {
                     className="size-full object-cover"
                   />
                 ) : entry.status === "generating" ? (
-                  <span className="grid size-full place-items-center bg-muted/50 text-accent-coral">
+                  <span className="grid size-full place-items-center bg-muted/50 text-muted-foreground">
                     <Loader2 className="size-4 animate-spin" />
                   </span>
                 ) : (
@@ -122,7 +122,7 @@ export function CloneReferenceLibrary() {
               </p>
             </div>
             <span className="flex shrink-0 items-center gap-2">
-              <span className="font-mono text-[12px] text-muted-foreground/80">
+              <span className="pf-data text-[12px] text-muted-foreground/80">
                 {savedReferences.length} saved
               </span>
               <span className="rounded-lg border border-border bg-muted/50 p-1.5 text-muted-foreground">
@@ -145,9 +145,9 @@ export function CloneReferenceLibrary() {
                   type="button"
                   onClick={() => onSelectSavedReference(reference.id)}
                   className={cn(
-                    "relative aspect-[9/16] overflow-hidden rounded-lg border bg-black transition-colors hover:border-accent-coral",
+                    "relative aspect-[9/16] overflow-hidden rounded-lg border bg-[#09090B] transition-colors hover:border-[var(--pf-orange)]",
                     reference.id === selectedSavedReferenceId
-                      ? "border-accent-coral"
+                      ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
                       : "border-border"
                   )}
                 >
@@ -158,7 +158,7 @@ export function CloneReferenceLibrary() {
                     className="size-full object-cover"
                   />
                   {reference.id === selectedSavedReferenceId && (
-                    <span className="absolute inset-0 grid place-items-center bg-accent-coral/15 text-accent-coral">
+                    <span className="absolute inset-0 grid place-items-center bg-[var(--pf-orange)]/15 text-[var(--pf-orange)]">
                       <Check className="size-4" />
                     </span>
                   )}
@@ -212,7 +212,7 @@ export function CloneReferenceLibrary() {
             {avatarReferencePreviews.map((reference) => (
               <div
                 key={reference.id}
-                className="relative aspect-[9/16] overflow-hidden rounded-lg border border-border bg-black"
+                className="relative aspect-[9/16] overflow-hidden rounded-lg border border-border bg-[#09090B]"
                 title={`${reference.label} • ${reference.detail}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -230,7 +230,7 @@ export function CloneReferenceLibrary() {
         )}
 
         {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-          <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs text-accent-green">
+          <div className="flex items-center gap-2 rounded-lg border border-[var(--pf-success)]/20 bg-[var(--pf-success)]/5 px-3 py-2 text-xs text-[var(--pf-success)]">
             <Loader2 className="size-3.5 animate-spin" />
             Preparing identity references...
           </div>

@@ -43,8 +43,8 @@ export function CloneReferenceOptions() {
               className={cn(
                 "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                 selectedHairstyleRole === null
-                  ? "border-accent-green bg-accent-green/20 text-accent-green"
-                  : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
+                  ? "border-border bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                  : "border-border bg-[var(--pf-active)] text-muted-foreground hover:text-foreground"
               )}
               aria-pressed={selectedHairstyleRole === null}
             >
@@ -59,8 +59,8 @@ export function CloneReferenceOptions() {
                 className={cn(
                   "rounded-lg border px-2.5 py-1.5 text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                   selectedHairstyleRole === option.role
-                    ? "border-accent-green bg-accent-green/20 text-accent-green"
-                    : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
+                    ? "border-border bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                    : "border-border bg-[var(--pf-active)] text-muted-foreground hover:text-foreground"
                 )}
                 aria-pressed={selectedHairstyleRole === option.role}
               >
@@ -78,7 +78,7 @@ export function CloneReferenceOptions() {
           <span className="text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
             References
           </span>
-          <span className="font-mono text-[12px] text-muted-foreground/80">
+            <span className="pf-data text-[12px] text-muted-foreground/80">
             {formatCost(referenceBatchCost)}
           </span>
         </div>
@@ -93,8 +93,8 @@ export function CloneReferenceOptions() {
               className={cn(
                 "h-8 rounded-lg border text-[13px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                 referenceBatchSize === count
-                  ? "border-accent-green bg-accent-green/20 text-accent-green"
-                  : "border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground/80"
+                  ? "border-border bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
+                  : "border-border bg-[var(--pf-active)] text-muted-foreground hover:text-foreground"
               )}
               aria-pressed={referenceBatchSize === count}
             >
@@ -109,20 +109,20 @@ export function CloneReferenceOptions() {
         className={cn(
           "rounded-lg border p-3",
           isGenerating
-            ? "border-accent-blue/25 bg-accent-blue/[0.06]"
+            ? "border-[var(--pf-link)]/25 bg-[var(--pf-link)]/10"
             : referenceReady
-              ? "border-accent-green/25 bg-accent-green/[0.06]"
-              : "border-border bg-muted/30"
+              ? "border-[var(--pf-success)]/25 bg-[var(--pf-success)]/10"
+              : "border-border bg-[var(--pf-active)]"
         )}
       >
         <div className="flex items-start gap-2.5">
           <span className={cn(
             "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg",
             isGenerating
-              ? "bg-accent-blue/10 text-accent-blue"
+              ? "bg-[var(--pf-link)]/10 text-[var(--pf-link)]"
               : referenceReady
-                ? "bg-accent-green/10 text-accent-green"
-                : "bg-muted/50 text-muted-foreground"
+                ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
+                : "bg-[var(--pf-active)] text-muted-foreground"
           )}>
             {isGenerating ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -141,7 +141,7 @@ export function CloneReferenceOptions() {
                     ? "Reference ready"
                     : `Ready for ${referenceBatchSize} ${referenceBatchSize === 1 ? "reference" : "references"}`}
               </p>
-              <span className="shrink-0 font-mono text-[12px] text-muted-foreground/80">
+              <span className="shrink-0 pf-data text-[12px] text-muted-foreground/80">
                 {formatCost(referenceBatchCost)}
               </span>
             </div>
