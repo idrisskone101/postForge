@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Plus } from "lucide-react";
 
-import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
+import { useSlideshowNew } from "@/app/(app)/slideshow/slideshow-new-context";
 import { cn } from "@/lib/utils";
 
 import { fetchSlideshowProject } from "@/lib/slideshow/client";
@@ -75,7 +74,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   const [collections, setCollections] = useState<SlideshowCollection[]>([]);
   const [activeProject, setActiveProject] = useState(initialProject);
   const [editorSession, setEditorSession] = useState(0);
-  const [templateOpen, setTemplateOpen] = useState(false);
+  const { templateOpen, setTemplateOpen } = useSlideshowNew();
   const [generatingStory, setGeneratingStory] = useState(false);
   const [publishProject, setPublishProject] = useState<SlideshowProject | null>(null);
   const [publishOpen, setPublishOpen] = useState(false);
@@ -135,14 +134,14 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   const startCustom = useCallback(() => {
     setTemplateOpen(false);
     openEditor(createBlankSlideshowProject());
-  }, [openEditor]);
+  }, [openEditor, setTemplateOpen]);
 
   const startTemplate = useCallback(
     (template: SlideshowTemplate) => {
       setTemplateOpen(false);
       openEditor(createProjectFromTemplate(template));
     },
-    [openEditor],
+    [openEditor, setTemplateOpen],
   );
 
   const handleGenerateStory = useCallback(
@@ -260,19 +259,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   );
 
   return (
-    <div data-slideshow-studio="true" className={cn("min-h-[calc(100vh-105px)]", className)}>
-      <WorkspaceHeaderAccessory>
-        <button
-          type="button"
-          onClick={() => setTemplateOpen(true)}
-          className="pf-button-primary"
-          data-lcp="New Slideshow"
-        >
-          <Plus className="size-3.5" />
-          <span className="sr-only">New Slideshow</span>
-        </button>
-      </WorkspaceHeaderAccessory>
-
+    <div className={cn("min-h-0", className)}>
       {activeProject ? (
         <div className="fixed inset-0 z-40 overflow-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
           <SlideshowEditor

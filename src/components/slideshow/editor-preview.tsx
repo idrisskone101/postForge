@@ -48,7 +48,7 @@ export function EditorPreview() {
                       "min-w-0 shrink-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/40",
                       active
                         ? "w-[min(58vw,300px)] opacity-100 sm:w-[min(38vh,318px)]"
-                        : "hidden w-[168px] opacity-40 hover:opacity-70 md:block",
+                        : "max-md:hidden w-[168px] opacity-40 hover:opacity-70 md:block",
                       draft.aspectRatio === "16:9" &&
                         (active ? "w-[min(80vw,520px)]" : "w-[280px]"),
                       draft.aspectRatio === "1:1" &&
@@ -75,7 +75,7 @@ export function EditorPreview() {
             </div>
             {regeneratingImage ? (
               <div className="absolute inset-0 grid place-items-center bg-[var(--pf-active)]/70 backdrop-blur-[1px]">
-                <span className="flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-[13px] font-semibold text-foreground shadow-lg">
+                <span className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[13px] font-semibold text-foreground shadow-[var(--pf-shadow-lg)]">
                   <LoaderCircle className="size-3.5 animate-spin text-[var(--pf-orange)]" />
                   Rendering slide visual...
                 </span>
@@ -83,7 +83,7 @@ export function EditorPreview() {
             ) : null}
           </div>
 
-          <div className="shrink-0 border-t border-border bg-white px-3 py-2.5">
+          <div className="shrink-0 border-t border-border bg-[var(--pf-surface)] px-3 py-2.5">
             <div className="flex items-center gap-1.5 overflow-x-auto">
               <button
                 type="button"

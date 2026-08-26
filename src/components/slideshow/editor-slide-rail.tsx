@@ -41,7 +41,7 @@ export function EditorSlideRail() {
     onSelectImageModel,
   } = useSlideshowEditor();
   return (
-        <aside className="border-b border-border bg-white xl:border-b-0 xl:border-r">
+        <aside className="border-b border-border bg-[var(--pf-surface)] xl:border-b-0 xl:border-r">
           <div className="grid grid-cols-3 border-b border-border p-2">
             {(["hook", "content", "cta"] as SlideshowSlideKind[]).map((phase) => {
               const exists = draft.slides.some((slide) => slide.kind === phase);

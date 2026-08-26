@@ -426,10 +426,16 @@ assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-ti
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-controls="true"\][\s\S]*?height:\s*8\.125rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-section-tabs="true"\][\s\S]*?height:\s*2\.5rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-idea-submit="true"\][\s\S]*?height:\s*2\.5rem/);
-assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea-submit="true"/);
+assert.match(
+  source("src/components/slideshow/create-idea-form.tsx"),
+  /data-slideshow-idea-submit=\{paintReady \? undefined : "true"\}/,
+);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-automation-builder="true"\][\s\S]*?header[\s\S]*?height:\s*82px/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-characters-empty="true"\][\s\S]*?height:\s*650px/);
-assert.match(source("src/components/slideshow/create-view.tsx"), /data-slideshow-idea="true"/);
+assert.match(
+  source("src/components/slideshow/create-idea-form.tsx"),
+  /data-slideshow-idea=\{paintReady \? undefined : "true"\}/,
+);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-character-category-rail="true"\] > div:first-child[\s\S]*?height:\s*4\.75rem/);
 assert.match(source("src/app/dashboard-critical.css"), /\.sr-only/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /Suspense/);
@@ -559,6 +565,18 @@ assert.match(
   source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
   /data-clone-copy=\{paintReady \? undefined : COPY\}/,
 );
+assert.match(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
+  /data-home-title=\{paintReady \? undefined : TITLE\}/,
+);
+assert.match(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
+  /data-slideshow-copy=\{paintReady \? undefined : COPY\}/,
+);
+assert.match(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
+  /data-slideshow-studio=\{paintReady \? undefined : "true"\}/,
+);
 assert.match(source("src/app/(app)/collections/page.tsx"), /CollectionsPageLazy/);
 assert.match(source("src/app/(app)/settings/page.tsx"), /SettingsPageClient/);
 assert.match(source("src/app/(app)/settings/integrations-panel.tsx"), /data-settings-title="Integrations"/);
@@ -573,6 +591,8 @@ assert.match(source("src/app/(app)/performance/page.tsx"), /PerformancePageLazy/
 assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
 assert.match(source("src/app/(app)/jobs/page.tsx"), /JobsActivity/);
 assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
+assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowOwnedHeader/);
+assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioFrame/);
 assert.match(
   source("src/lib/use-window-load-ready.ts"),
   /window\.addEventListener\("load"/,

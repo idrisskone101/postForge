@@ -11,7 +11,6 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +42,7 @@ export function EditorInspector() {
     onRegenerateImage,
   } = useSlideshowEditor();
   return (
-        <aside className="border-t border-border bg-white xl:border-l xl:border-t-0">
+        <aside className="border-t border-border bg-[var(--pf-surface)] xl:border-l xl:border-t-0">
           <div className="max-h-[700px] space-y-5 overflow-y-auto p-4 xl:max-h-[calc(100vh-170px)]">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -219,7 +218,7 @@ export function EditorInspector() {
                     className={cn(
                       "flex h-7 items-center justify-center rounded-lg transition",
                       draft.textSettings.align === align
-                        ? "bg-white text-foreground shadow-sm"
+                        ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
@@ -279,20 +278,19 @@ export function EditorInspector() {
               />
             </label>
 
-            <div className="rounded-[6px] border border-accent-blue/20 bg-accent-blue/[0.05] p-3.5">
+            <div className="rounded-lg border border-border bg-[var(--pf-active)] p-3.5">
               <div className="flex items-start gap-2.5">
-                <WandSparkles className="mt-0.5 size-4 shrink-0 text-accent-blue" />
+                <WandSparkles className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0">
                   <p className="text-[12px] font-semibold text-foreground">AI copy variation</p>
                   <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
                     Rewrite this slide without changing the visual layout.
                   </p>
-                  <Button
+                  <button
                     type="button"
-                    size="sm"
                     onClick={() => void onRegenerateText()}
                     disabled={regenerating}
-                    className="mt-2.5 h-8 rounded-lg bg-accent-blue px-3 text-[13px] font-semibold text-white hover:brightness-105 active:scale-[0.97]"
+                    className="pf-button-secondary mt-2.5 h-8"
                   >
                     {regenerating ? (
                       <LoaderCircle className="size-3.5 animate-spin" />
@@ -300,7 +298,7 @@ export function EditorInspector() {
                       <RefreshCw className="size-3.5" />
                     )}
                     {regenerating ? "Rewriting..." : "Regenerate text"}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -337,7 +335,7 @@ export function EditorInspector() {
                   Reel-ready range: 1-{MAX_SLIDESHOW_SLIDES}
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[13px] font-semibold text-foreground shadow-sm ring-1 ring-border">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-[13px] font-semibold text-foreground shadow-[var(--pf-shadow-2xs)] ring-1 ring-border">
                 <Layers className="size-3 text-[var(--pf-orange)]" />
                 {draft.slides.length}/{MAX_SLIDESHOW_SLIDES}
               </span>

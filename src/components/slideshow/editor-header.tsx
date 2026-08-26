@@ -31,7 +31,7 @@ export function EditorHeader() {
           <ChevronLeft className="size-3.5" />
           Drafts
         </button>
-        <span className="hidden h-5 w-px bg-border sm:block" />
+        <span className="max-sm:hidden h-5 w-px bg-border sm:block" />
         <input
           aria-label="Slideshow title"
           value={draft.title}
@@ -50,7 +50,7 @@ export function EditorHeader() {
           {viewMode !== "play" ? (
             <button type="button" className={SECONDARY_BTN} onClick={() => setPickerOpen(true)}>
               <Images className="size-3.5" />
-              <span className="hidden sm:inline">Images</span>
+              <span className="max-sm:hidden sm:inline">Images</span>
             </button>
           ) : null}
           <button

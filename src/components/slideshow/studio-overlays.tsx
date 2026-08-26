@@ -8,7 +8,7 @@ export function StudioToast({ message }: { message: string }) {
   return (
     <div
       role="status"
-      className="fixed bottom-5 left-1/2 z-[100] flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2.5 rounded-[6px] border border-border bg-white px-4 py-3 text-[13px] font-semibold text-foreground shadow-[0_16px_40px_rgba(35,35,35,0.18)]"
+      className="fixed bottom-5 left-1/2 z-[100] flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2.5 pf-card px-4 py-3 text-[13px] font-semibold text-foreground shadow-[var(--pf-shadow-lg)]"
     >
       <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent-green/10 text-accent-green">
         <Check className="size-3.5" />
@@ -20,7 +20,7 @@ export function StudioToast({ message }: { message: string }) {
 
 export function StudioDraftsLoading() {
   return (
-    <span className="fixed bottom-5 right-5 flex items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-[12px] text-muted-foreground shadow-lg">
+    <span className="fixed bottom-5 right-5 flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[12px] text-muted-foreground shadow-[var(--pf-shadow-md)]">
       <LoaderCircle className="size-3 animate-spin" /> Loading drafts
     </span>
   );

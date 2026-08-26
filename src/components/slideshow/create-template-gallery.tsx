@@ -17,11 +17,9 @@ export function CreateTemplateGallery() {
   return (
     <>
       <div className="mt-8 flex items-end justify-between gap-4">
-        <div>
-          <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold tracking-[-0.01em] text-foreground">
-            Templates
-          </h2>
-          <p className="mt-1 max-w-[8rem] line-clamp-1 text-[10px] text-muted-foreground">
+        <div className="min-w-0">
+          <h2 className="pf-section-title">Templates</h2>
+          <p className="mt-1 text-[13px] leading-[1.35] text-muted-foreground">
             Swap the idea, imagery, and voice. Keep the structure.
           </p>
         </div>

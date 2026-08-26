@@ -1,14 +1,12 @@
-export const CARD =
-  "rounded-lg border border-border bg-white shadow-[var(--pf-shadow-2xs)]";
+export const CARD = "pf-card";
 export const PREVIEW_ASPECT: Record<string, string> = {
   "1:1": "aspect-square",
   "16:9": "aspect-video",
   "4:5": "aspect-[4/5]",
 };
-export const CARD_HOVER =
-  "transition-all duration-200 hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-md)]";
+export const CARD_HOVER = "pf-card-hover";
 export const SECONDARY_BTN =
-  "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-white px-3 text-[13px] font-semibold text-muted-foreground shadow-[var(--pf-shadow-2xs)] transition-all duration-150 hover:border-[var(--pf-border-strong)] hover:text-foreground active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45";
+  "pf-button-secondary h-9 px-3 text-[13px] disabled:cursor-not-allowed disabled:opacity-45";
 export const INPUT =
   "w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground outline-none transition placeholder:text-muted-foreground focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10";
 export const FIELD_LABEL =

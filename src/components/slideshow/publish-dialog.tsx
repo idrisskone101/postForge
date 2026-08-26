@@ -170,7 +170,7 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
                     "flex min-h-24 items-start gap-3 rounded-[6px] border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     format === "photo-carousel"
                       ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)]"
-                      : "border-border bg-white hover:border-[var(--pf-border-strong)]",
+                      : "border-border bg-card hover:border-[var(--pf-border-strong)]",
                   )}
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--pf-orange)]/10 text-[var(--pf-orange)]">
@@ -191,7 +191,7 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
                     "relative flex min-h-24 items-start gap-3 rounded-[6px] border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     format === "mp4"
                       ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)]"
-                      : "border-border bg-white hover:border-[var(--pf-border-strong)]",
+                      : "border-border bg-card hover:border-[var(--pf-border-strong)]",
                   )}
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-blue/10 text-accent-blue">
@@ -231,7 +231,7 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
                       "flex h-10 items-center justify-center gap-2 rounded-lg border px-3 text-[13px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       destination === value
                         ? "border-[var(--pf-ink)] bg-[var(--pf-ink)] text-white"
-                        : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)] hover:text-foreground",
+                        : "border-border bg-card text-muted-foreground hover:border-[var(--pf-border-strong)] hover:text-foreground",
                     )}
                   >
                     <Icon className="size-4" />

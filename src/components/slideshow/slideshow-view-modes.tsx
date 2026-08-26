@@ -24,6 +24,7 @@ import {
   type SlideshowViewMode,
 } from "./slideshow-view";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
+import { ICON_BTN } from "./studio-ui";
 
 export function SlideshowViewSwitcher({
   value,
@@ -56,7 +57,7 @@ export function SlideshowViewSwitcher({
             )}
           >
             <Icon className="size-3.5" />
-            <span className={cn(id === "board" ? "hidden sm:inline" : undefined)}>
+            <span className={cn(id === "board" ? "max-sm:hidden sm:inline" : undefined)}>
               {label}
             </span>
           </button>
@@ -65,9 +66,6 @@ export function SlideshowViewSwitcher({
     </div>
   );
 }
-
-const ICON_BTN =
-  "grid size-8 shrink-0 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-[var(--pf-active)] hover:text-foreground active:scale-[0.95] disabled:opacity-35 disabled:hover:bg-transparent";
 
 const VIEW_OPTIONS: Array<{
   id: SlideshowViewMode;
@@ -159,7 +157,7 @@ export function SlideshowBoardView() {
 
       <div className="shrink-0 border-t border-border bg-card px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="mx-auto flex w-full max-w-[1240px] items-center gap-1.5 overflow-x-auto">
-          <p className="mr-2 hidden min-w-0 truncate text-[12px] text-muted-foreground sm:block">
+          <p className="mr-2 max-sm:hidden min-w-0 truncate text-[12px] text-muted-foreground sm:block">
             {phaseLabel(project.slides[activeIndex]?.kind ?? "hook")} · slide{" "}
             {activeIndex + 1}
           </p>
@@ -379,7 +377,7 @@ export function SlideshowPlayView() {
             {phaseLabel(activeSlide.kind)} · {activeIndex + 1} of{" "}
             {project.slides.length}
           </p>
-          <p className="ml-auto hidden text-[12px] text-white/45 sm:block">
+          <p className="ml-auto max-sm:hidden text-[12px] text-white/45 sm:block">
             Space plays · arrows step
           </p>
         </div>
