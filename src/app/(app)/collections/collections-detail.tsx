@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Check, Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { assetUrl } from "./collections-helpers";
+import { assetUrl, formatImageCount } from "./collections-helpers";
 import type { CollectionsDetailModel } from "./types";
 
 export function CollectionsDetail({ detail }: { detail: CollectionsDetailModel }) {
@@ -21,7 +21,7 @@ export function CollectionsDetail({ detail }: { detail: CollectionsDetailModel }
               {collection.name}
             </h2>
             <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-              {collection.assetIds.length} images · database-backed
+              {formatImageCount(collection.assetIds.length)} · database-backed
             </p>
           </div>
           <button

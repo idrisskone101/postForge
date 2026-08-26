@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import {
   assetUrl,
   formatAssetSizeMb,
+  formatImageCount,
   formatShortDate,
   previewAssetsForCollection,
 } from "./collections-helpers";
@@ -218,7 +219,7 @@ function CollectionCard({
             {collection.name}
           </h3>
           <p className="mt-1 truncate text-[12px] text-[var(--pf-muted)]">
-            {collection.assetIds.length} images · updated {formatShortDate(collection.updatedAt)}
+            {formatImageCount(collection.assetIds.length)} · updated {formatShortDate(collection.updatedAt)}
           </p>
         </div>
       </button>

@@ -30,23 +30,22 @@ export function CollectionsEmpty({
         aria-hidden="true"
         data-empty-copy="Upload owned product shots, portraits, locations, and textures. Group them into collections that other PostForge workflows can reuse."
       />
-      <div
-        data-empty-actions="true"
-        className="mt-5 flex flex-wrap items-center justify-center gap-2"
-      >
-        <button
-          type="button"
-          onClick={onUpload}
-          disabled={uploading}
-          className="pf-button-primary"
-        >
-          {uploading ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Upload className="size-3.5" />
-          )}
-          Upload your first images
-        </button>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <div data-empty-actions="true">
+          <button
+            type="button"
+            onClick={onUpload}
+            disabled={uploading}
+            className="pf-button-primary"
+          >
+            {uploading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Upload className="size-3.5" />
+            )}
+            Upload your first images
+          </button>
+        </div>
         <button type="button" onClick={onPinterest} className="pf-button-secondary">
           <Link2 className="size-3.5" /> Import from Pinterest
         </button>

@@ -16,6 +16,10 @@ export function formatShortDate(iso: string) {
   return new Date(iso).toLocaleDateString();
 }
 
+export function formatImageCount(count: number) {
+  return `${count} image${count === 1 ? "" : "s"}`;
+}
+
 export function previewAssetsForCollection(
   collection: CollectionRecord,
   assets: readonly CollectionAssetRecord[],
