@@ -14,6 +14,7 @@ pnpm exec tsx scripts/check-pr-boundaries.ts
 pnpm test
 pnpm check:module-size
 pnpm check:kode-taste
+pnpm check:design-tokens
 pnpm check:workspace-prefetch
 pnpm typecheck
 pnpm lint

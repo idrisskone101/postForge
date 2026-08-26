@@ -59,7 +59,7 @@ PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Pri
 ### Lint / typecheck / test / build
 
 - Standard commands live in `package.json` scripts: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm dev`, `pnpm start`.
-- `pnpm kode:check` (`scripts/kode-check.sh`) is the canonical full gate: it runs the entire `test:*` suite, then typecheck, lint, a production build, and `pnpm kode:smoke`. It requires a running Postgres. Individual tests are the `test:*` scripts.
+- `pnpm kode:check` (`scripts/kode-check.sh`) is the canonical full gate: it runs the entire `test:*` suite, then `check:module-size`, `check:kode-taste`, `check:design-tokens`, typecheck, lint, a production build, and `pnpm kode:smoke`. It requires a running Postgres. Individual tests are the `test:*` scripts.
 - Pull requests targeting `main` run the `kode` GitHub Actions job (`pnpm kode:check`). Merge stays a click in GitHub. Require the `kode` check on `main` so a red PR cannot merge.
 - `pnpm kode:smoke` (`scripts/kode-smoke.sh`) is boot-only: it reuses an existing `.next` production build (or runs `pnpm build` if none), starts `next start` on `127.0.0.1`, and requires HTTP 200 from `GET /api/health`. That route pings Postgres (`SELECT 1`); the smoke does not start the database and fails clearly on 503. This is not a product-usage test.
 - Lint currently passes with warnings only (no errors); do not treat those pre-existing warnings as regressions.

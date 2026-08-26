@@ -31,6 +31,7 @@
     "test:lib": "tsx scripts/run-tests.ts tests/lib",
     "check:module-size": "tsx scripts/check-module-size.ts",
     "check:kode-taste": "tsx scripts/check-kode-taste.ts",
+    "check:design-tokens": "tsx scripts/check-design-tokens.ts",
     "check:pr-boundaries": "tsx scripts/check-pr-boundaries.ts",
     "check:workspace-prefetch": "tsx scripts/check-workspace-prefetch.ts",
     "kode:setup": "bash scripts/kode-setup.sh",
