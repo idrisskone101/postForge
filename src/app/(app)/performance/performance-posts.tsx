@@ -41,7 +41,7 @@ export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
             />
           </label>
           <div
-            className="hidden rounded-[8px] bg-[var(--pf-active)] p-1 sm:flex"
+            className="max-sm:hidden rounded-[8px] bg-[var(--pf-active)] p-1 sm:flex"
             aria-label="Performance post layout"
           >
             <button
@@ -98,7 +98,7 @@ export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
           {view === "table" ? (
             <div className={tableFrameClassName}>
               <div className="min-w-[700px]">
-                <div className="hidden grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] gap-3 border-b border-[var(--pf-border)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)] md:grid">
+                <div className="max-md:hidden grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] gap-3 border-b border-[var(--pf-border)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)] md:grid">
                   <span>Post</span>
                   <span>Published</span>
                   <span>Views</span>
@@ -118,7 +118,7 @@ export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
               </div>
             </div>
           ) : (
-            <div className="mt-3 hidden gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-3 max-sm:hidden gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-4">
               {posts.map((post, index) => (
                 <PerformanceGridCard
                   key={post.id}

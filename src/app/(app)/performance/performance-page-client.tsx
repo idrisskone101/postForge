@@ -104,7 +104,7 @@ export function PerformancePageClient() {
     view,
     search,
     youtubeRawOnly: activeIsYouTube,
-    tableFrameClassName: "mt-3 hidden overflow-x-auto sm:block",
+    tableFrameClassName: "mt-3 max-sm:hidden overflow-x-auto sm:block",
     onSearch: setSearch,
     onView: setView,
   };
