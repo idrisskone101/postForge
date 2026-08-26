@@ -17,11 +17,14 @@ import {
   fetchWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
-import type { CharacterAttributeEditorViewModel } from "./character-attribute-editor";
-import type { CharacterBuilderHeaderViewModel } from "./character-builder-header";
+import type {
+  CharacterAttributeEditorViewModel,
+  CharacterBuilderHeaderViewModel,
+  CharacterPreviewStageViewModel,
+} from "./types";
+import { characterSaveAction } from "./character-save-action";
 import { parseImportedCharacterAttributes } from "./character-import";
 import { saveCharacterAvatar, waitForCharacterPreview } from "./character-preview";
-import type { CharacterPreviewStageViewModel } from "./character-preview-stage";
 
 function makeCharacterId() {
   return `character_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -271,6 +274,13 @@ export function useCharacterBuilder(editId: string | null = null) {
     onImport: () => setImportOpen(true),
     copyAttributes,
     saveCharacter,
+    saveAction: characterSaveAction({
+      saving,
+      rendering,
+      missingEditRecord,
+      previewSaveBlocked,
+      readyPreviewFingerprint,
+    }),
   };
   const previewView: CharacterPreviewStageViewModel = {
     name,

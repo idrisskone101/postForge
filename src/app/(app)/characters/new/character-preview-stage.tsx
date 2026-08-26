@@ -2,23 +2,16 @@
 
 import { Check, Dices, Loader2, RefreshCw } from "lucide-react";
 import { CharacterPhoto } from "@/components/character-photo";
-import type { CharacterAttributes } from "@/lib/character-attributes";
+import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
-
-export type CharacterPreviewStageViewModel = {
-  name: string;
-  attributes: CharacterAttributes;
-  avatarId: string | null;
-  previewFileId: string | null;
-  previewIsPhotographic: boolean;
-  rendering: boolean;
-  saving: boolean;
-  previewRequiresRender: boolean;
-  previewSaveBlocked: boolean;
-  rerender: () => void;
-  randomizeAndRender: () => void;
-  onLoadError: () => void;
-};
+import { CharactersPaintText } from "../characters-paint-text";
+import {
+  previewStatusClass,
+  previewStatusIcon,
+  previewStatusLabel,
+  type PreviewStatusIcon,
+} from "./character-preview-status";
+import type { CharacterPreviewStageViewModel } from "./types";
 
 export function CharacterPreviewStage({
   view,
@@ -39,72 +32,68 @@ export function CharacterPreviewStage({
     randomizeAndRender,
     onLoadError,
   } = view;
+  const paintReady = useWindowLoadReady();
+  const statusLabel = previewStatusLabel(
+    rendering,
+    previewSaveBlocked,
+    previewRequiresRender
+  );
+  const statusClass = previewStatusClass(
+    rendering,
+    previewSaveBlocked,
+    previewRequiresRender
+  );
+  const statusIcon = previewStatusIcon(rendering, previewSaveBlocked);
+  const costText = previewRequiresRender
+    ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe."
+    : "Save as a draft without generating. Render a preview when you want to make this identity reusable.";
+  const randomizeLabel = rendering ? "Rendering…" : "Randomize & render";
+
   return (
     <section
       data-character-preview-stage="true"
       aria-label="Live character portrait"
       aria-busy={rendering}
-      className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-border bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
+      className="relative flex min-h-[620px] min-w-0 flex-col overflow-hidden border-b border-[var(--pf-border)] bg-[#09090B] px-5 pb-5 pt-5 min-[1280px]:row-start-2 min-[1280px]:h-full min-[1280px]:min-h-0 min-[1280px]:border-b-0 min-[1280px]:border-r min-[1280px]:px-6 min-[1280px]:pb-5 min-[1280px]:pt-5"
     >
       <div className="relative z-10 flex flex-nowrap items-start justify-between gap-3 overflow-hidden">
         <div>
-          <p data-character-preview-label="Photographic recipe preview">
-            <span className="sr-only">Photographic recipe preview</span>
-          </p>
-          <p
-            id="character-preview-generation-cost"
-            data-character-cost={
-              previewRequiresRender
-                ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe."
-                : "Save as a draft without generating. Render a preview when you want to make this identity reusable."
+          <CharactersPaintText
+            ready={paintReady}
+            liveAs="span"
+            liveClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70"
+            paint={
+              <p data-character-preview-label="Photographic recipe preview">
+                <span className="sr-only">Photographic recipe preview</span>
+              </p>
             }
           >
-            <span className="sr-only">
-              {previewRequiresRender
-                ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe."
-                : "Save as a draft without generating. Render a preview when you want to make this identity reusable."}
-            </span>
-          </p>
+            Photographic recipe preview
+          </CharactersPaintText>
+          <CharactersPaintText
+            ready={paintReady}
+            liveAs="span"
+            liveClassName="mt-1 max-w-sm text-[12px] leading-4 text-white/55 [overflow-wrap:anywhere]"
+            paint={
+              <p id="character-preview-generation-cost" data-character-cost={costText}>
+                <span className="sr-only">{costText}</span>
+              </p>
+            }
+          >
+            {costText}
+          </CharactersPaintText>
         </div>
         <span
           role="status"
           aria-live="polite"
-          data-character-status={
-            rendering
-              ? "Rendering"
-              : previewSaveBlocked
-                ? "Changes pending"
-                : previewRequiresRender
-                  ? "Preview ready"
-                  : "Draft — preview optional"
-          }
+          data-character-status={paintReady ? undefined : statusLabel}
           className={cn(
             "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold shadow-sm",
-            rendering
-              ? "bg-[var(--pf-link)]/15 text-[var(--pf-link)]"
-              : previewSaveBlocked
-                ? "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]"
-                : previewRequiresRender
-                  ? "bg-[var(--pf-success)]/15 text-[var(--pf-success)]"
-                  : "bg-white/10 text-white/80",
+            statusClass
           )}
         >
-          {rendering ? (
-            <Loader2 aria-hidden="true" className="size-3 animate-spin" />
-          ) : previewSaveBlocked ? (
-            <RefreshCw aria-hidden="true" className="size-3" />
-          ) : (
-            <Check aria-hidden="true" className="size-3" />
-          )}
-          <span className="sr-only">
-            {rendering
-              ? "Rendering"
-              : previewSaveBlocked
-                ? "Changes pending"
-                : previewRequiresRender
-                  ? "Preview ready"
-                  : "Draft — preview optional"}
-          </span>
+          <PreviewStatusGlyph icon={statusIcon} />
+          {paintReady ? <span>{statusLabel}</span> : <span className="sr-only">{statusLabel}</span>}
         </span>
       </div>
 
@@ -123,29 +112,80 @@ export function CharacterPreviewStage({
             generatedFileId={previewFileId}
             avatarId={!previewFileId && previewIsPhotographic ? avatarId : null}
             alt={`${name || "Untitled character"} photographic preview`}
-            className={cn("transition duration-300 motion-reduce:transition-none", rendering && "scale-[1.01] blur-[2px] grayscale-[.2]")}
+            className={cn(
+              "transition duration-300 motion-reduce:transition-none",
+              rendering && "scale-[1.01] blur-[2px] grayscale-[.2]"
+            )}
             onLoadError={onLoadError}
             priority
           />
         </div>
       </div>
 
-      <div className="relative z-10 grid gap-2 rounded-lg border border-white/35 bg-white/20 p-2.5 backdrop-blur-sm sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1420px]:grid-cols-2">
-        <button onClick={rerender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" className="pf-button-secondary !border-white/70 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45" data-lcp="Re-render preview">
-          <RefreshCw className={cn("size-3.5",rendering && "animate-spin")} />
-          <span className="sr-only">Re-render preview</span>
+      <div className="relative z-10 grid gap-2 rounded-[8px] border border-white/10 p-2.5 sm:grid-cols-2 min-[1280px]:grid-cols-1 min-[1420px]:grid-cols-2">
+        <button
+          type="button"
+          onClick={rerender}
+          disabled={saving || rendering}
+          aria-describedby="character-preview-generation-cost"
+          className="pf-button-secondary disabled:cursor-not-allowed disabled:opacity-45"
+          data-lcp={paintReady ? undefined : "Re-render preview"}
+        >
+          <RefreshCw className={cn("size-3.5", rendering && "animate-spin")} />
+          {paintReady ? <span>Re-render preview</span> : <span className="sr-only">Re-render preview</span>}
         </button>
-        <button onClick={randomizeAndRender} disabled={saving || rendering} aria-describedby="character-preview-generation-cost" title="Uses one paid image generation" className="pf-button-secondary !border-white/50 !bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-45" data-lcp={rendering ? "Rendering…" : "Randomize & render"}>
-          {rendering ? <Loader2 className="size-3.5 animate-spin" /> : <Dices className="size-3.5" />}
-          <span className="sr-only">{rendering ? "Rendering…" : "Randomize & render"}</span>
+        <button
+          type="button"
+          onClick={randomizeAndRender}
+          disabled={saving || rendering}
+          aria-describedby="character-preview-generation-cost"
+          title="Uses one paid image generation"
+          className="pf-button-secondary disabled:cursor-not-allowed disabled:opacity-45"
+          data-lcp={paintReady ? undefined : randomizeLabel}
+        >
+          {rendering ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Dices className="size-3.5" />
+          )}
+          {paintReady ? <span>{randomizeLabel}</span> : <span className="sr-only">{randomizeLabel}</span>}
         </button>
         <div className="flex min-w-0 items-center gap-2 px-1 py-1 sm:col-span-2 min-[1280px]:col-span-1 min-[1420px]:col-span-2">
           <span className="size-1.5 shrink-0 rounded-full bg-[var(--pf-success)]" />
-          <p data-lcp={`${attributes.gender} · ${attributes.age} · ${attributes.ethnicity}`} className="min-w-0 break-words text-[12px] font-medium text-white/60">
-            <span className="sr-only">{attributes.gender} · {attributes.age} · {attributes.ethnicity}</span>
-          </p>
+          <CharactersPaintText
+            ready={paintReady}
+            liveAs="span"
+            liveClassName="min-w-0 break-words text-[12px] font-medium text-white/60 [overflow-wrap:anywhere]"
+            paint={
+              <p
+                data-lcp={`${attributes.gender} · ${attributes.age} · ${attributes.ethnicity}`}
+                className="min-w-0 break-words text-[12px] font-medium text-white/60"
+              >
+                <span className="sr-only">
+                  {attributes.gender} · {attributes.age} · {attributes.ethnicity}
+                </span>
+              </p>
+            }
+          >
+            {attributes.gender} · {attributes.age} · {attributes.ethnicity}
+          </CharactersPaintText>
         </div>
       </div>
     </section>
   );
+}
+
+function PreviewStatusGlyph({ icon }: { icon: PreviewStatusIcon }) {
+  switch (icon) {
+    case "loading":
+      return <Loader2 aria-hidden="true" className="size-3 animate-spin" />;
+    case "refresh":
+      return <RefreshCw aria-hidden="true" className="size-3" />;
+    case "check":
+      return <Check aria-hidden="true" className="size-3" />;
+    default: {
+      const _exhaustive: never = icon;
+      return _exhaustive;
+    }
+  }
 }

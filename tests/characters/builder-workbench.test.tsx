@@ -35,10 +35,18 @@ const builderSource = [
 ]
   .map((file) => readFileSync(new URL(file, workbenchDir), "utf8"))
   .join("\n");
-const librarySource = readFileSync(
-  new URL("../../src/app/(app)/characters/characters-page-client.tsx", import.meta.url),
-  "utf8"
-);
+const libraryFiles = [
+  "characters-page-client.tsx",
+  "characters-helpers.ts",
+  "characters-card.tsx",
+  "characters-library.tsx",
+  "characters-mutations.ts",
+];
+const libraryDir = new URL("../../src/app/(app)/characters/", import.meta.url);
+const librarySource = libraryFiles
+  .map((file) => readFileSync(new URL(file, libraryDir), "utf8"))
+  .join("\n");
+const typesSource = readFileSync(new URL("types.ts", workbenchDir), "utf8");
 const avatarRouteSource = readFileSync(
   new URL("../../src/app/api/avatars/[id]/route.ts", import.meta.url),
   "utf8"
@@ -148,9 +156,12 @@ const editorProps = componentPropNames(editorSource, "CharacterAttributeEditor")
 assert.deepEqual(headerProps, ["view"]);
 assert.deepEqual(previewProps, ["view"]);
 assert.deepEqual(editorProps, ["view"]);
-assert.match(headerSource, /export type CharacterBuilderHeaderViewModel/);
-assert.match(previewSource, /export type CharacterPreviewStageViewModel/);
-assert.match(editorSource, /export type CharacterAttributeEditorViewModel/);
+assert.match(typesSource, /export type CharacterBuilderHeaderViewModel/);
+assert.match(typesSource, /export type CharacterPreviewStageViewModel/);
+assert.match(typesSource, /export type CharacterAttributeEditorViewModel/);
+assert.doesNotMatch(headerSource, /export type /);
+assert.doesNotMatch(previewSource, /export type /);
+assert.doesNotMatch(editorSource, /export type /);
 assert.match(builderSource, /<CharacterBuilderHeader view=\{headerView\} \/>/);
 assert.match(builderSource, /<CharacterPreviewStage view=\{previewView\} \/>/);
 assert.match(builderSource, /<CharacterAttributeEditor view=\{attributeView\} \/>/);
