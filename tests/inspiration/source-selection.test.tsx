@@ -229,10 +229,18 @@ const manyAccountsMarkup = renderToStaticMarkup(
 assert.match(headerMarkup, /Source Selection/);
 assert.match(headerMarkup, /Compare creator posts/);
 assert.match(headerMarkup, /Track Creator/);
+assert.match(headerMarkup, /pf-button-primary/);
 assert.match(headerMarkup, /lg:w-\[31rem\]/);
 assert.doesNotMatch(markup, /Source Selection/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
+assert.match(markup, /pf-card/);
+assert.match(markup, /pf-button-primary/);
+assert.match(markup, /pf-button-secondary/);
+assert.match(markup, /pf-data/);
+assert.match(markup, /pf-section-title/);
+assert.doesNotMatch(markup, /hover:text-\[var\(--pf-orange\)\]/);
+assert.doesNotMatch(markup, /bg-zinc-950/);
 assert.match(markup, /Tracked creators/);
 assert.match(markup, /Creator Feed/);
 assert.match(markup, /All tracked creator videos/);

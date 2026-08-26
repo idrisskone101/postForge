@@ -22,8 +22,11 @@ import {
   formatMetric,
   getInspirationThumbnailSrc,
   inspirationSourceStatusLabel,
+  inspirationStatusDotClass,
+  inspirationStatusPillClass,
+  inspirationStatusTone,
 } from "./inspiration-models";
-import type { InspirationWorkspace } from "./use-inspiration-workspace";
+import type { InspirationWorkspace } from "./types";
 
 export function InspirationVideoCard({
   video,
@@ -47,22 +50,23 @@ export function InspirationVideoCard({
   const isRejected = video.sourceDecision.status === "rejected";
   const isUpdatingRejection = updatingRejectionIds.includes(video.id);
   const statusLabel = inspirationSourceStatusLabel(video);
+  const tone = inspirationStatusTone(video);
 
   return (
     <article
       data-inspiration-video-id={video.id}
       data-source-decision={video.sourceDecision.status}
-      className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-foreground/20 hover:shadow-[var(--pf-shadow-md)]"
+      className="pf-card pf-card-hover group flex min-w-0 flex-col overflow-hidden"
     >
       <button
         type="button"
         aria-label={`Preview source from ${video.creatorHandle}`}
         onClick={() => setSelectedVideoId(video.id)}
-        className="relative block w-full overflow-hidden bg-black text-left outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+        className="relative block w-full overflow-hidden bg-[#09090B] text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/40 focus-visible:ring-inset"
       >
         <div
           data-source-preview-frame="portrait"
-          className="aspect-[9/16] bg-zinc-950"
+          className="aspect-[9/16] bg-[#09090B]"
         >
           {!thumbnailFailed ? (
             <>
@@ -77,85 +81,89 @@ export function InspirationVideoCard({
               />
             </>
           ) : (
-            <div className="flex size-full items-center justify-center text-muted-foreground">
+            <div className="flex size-full items-center justify-center text-[var(--pf-muted)]">
               <Play className="size-8" />
             </div>
           )}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
-          <span className="flex max-w-[70%] flex-wrap gap-1.5">
-            <span
-              className={cn(
-                "rounded-full border px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm",
-                isRejected
-                  ? "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/90"
-                  : video.sourceUsage.status === "used"
-                    ? "border-[var(--pf-success)]/40 bg-[var(--pf-success)]/85"
-                    : "border-white/15 bg-black/65"
-              )}
-            >
-              {statusLabel}
-            </span>
-          </span>
-          <span className="rounded-full bg-black/65 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
-            {formatRelativeDate(video.publishedAt ?? video.createdAt)}
-          </span>
-        </div>
-
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent px-3 pb-3 pt-14 text-white">
-          <div className="grid grid-cols-2 gap-2 text-[11px] text-white/85">
-            <div className="flex items-center gap-1.5">
-              <Play className="size-3" />
-              <span>{formatDuration(video.durationSec)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Heart className="size-3" />
-              <span>{formatMetric(video.likeCount)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MessageCircle className="size-3" />
-              <span>{formatMetric(video.commentCount)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Repeat2 className="size-3" />
-              <span>{formatMetric(video.shareCount)}</span>
-            </div>
-          </div>
-        </div>
+        <span className="pointer-events-none absolute bottom-2 left-2 z-10 flex items-center gap-1.5 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white">
+          <span
+            className={cn("size-1.5 shrink-0 rounded-full", inspirationStatusDotClass(video))}
+            aria-hidden="true"
+          />
+          {statusLabel}
+        </span>
+        <span className="pf-data pointer-events-none absolute bottom-2 right-2 z-10 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white">
+          {formatDuration(video.durationSec)}
+        </span>
       </button>
 
       <div className="flex flex-1 flex-col gap-3 p-3">
         <div className="flex items-center gap-2.5">
-          <span className="relative flex size-6 shrink-0 overflow-hidden rounded-full border border-border">
+          <span className="relative flex size-6 shrink-0 overflow-hidden rounded-full border border-[var(--pf-border)]">
             {video.creatorAvatarUrl ? (
-              <img src={video.creatorAvatarUrl} alt="" className="size-full object-cover" />
+              <img
+                src={video.creatorAvatarUrl}
+                alt=""
+                className="size-full object-cover"
+              />
             ) : (
-              <span className="flex size-full items-center justify-center bg-muted text-[9px] font-semibold">
+              <span className="flex size-full items-center justify-center bg-[var(--pf-active)] text-[9px] font-semibold text-[var(--pf-muted)]">
                 {video.creatorHandle.slice(1, 3).toUpperCase()}
               </span>
             )}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-xs font-semibold">{video.creatorHandle}</span>
-            <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatRelativeDate(video.publishedAt ?? video.createdAt)}</span>
+            <span className="block truncate text-[12px] font-semibold text-[var(--pf-ink)]">
+              {video.creatorHandle}
+            </span>
+            <span className="pf-data mt-0.5 block text-[11px] text-[var(--pf-muted)]">
+              {formatRelativeDate(video.publishedAt ?? video.createdAt)}
+            </span>
           </span>
-          <span className="text-[11px] font-medium text-muted-foreground">{formatMetric(video.viewCount)} views</span>
+          <span className="pf-data text-[11px] font-medium text-[var(--pf-muted)]">
+            {formatMetric(video.viewCount)} views
+          </span>
         </div>
-        <p className="line-clamp-2 min-h-10 text-xs leading-5 text-foreground/80">
+        <p className="line-clamp-2 min-h-10 text-[12px] leading-5 text-[var(--pf-ink)]/80">
           {video.caption || "No caption provided."}
         </p>
-        {video.sourceUsage.status === "used" && video.sourceUsage.usedAt && (
-          <p className="rounded-md border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--pf-success)]">
+        <div className="grid grid-cols-3 gap-2 text-[11px] text-[var(--pf-muted)]">
+          <span className="flex items-center gap-1.5">
+            <Heart className="size-3" />
+            <span className="pf-data">{formatMetric(video.likeCount)}</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MessageCircle className="size-3" />
+            <span className="pf-data">{formatMetric(video.commentCount)}</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Repeat2 className="size-3" />
+            <span className="pf-data">{formatMetric(video.shareCount)}</span>
+          </span>
+        </div>
+        {tone === "used" && video.sourceUsage.usedAt ? (
+          <p
+            className={cn(
+              inspirationStatusPillClass(video),
+              "inline-flex w-fit items-center rounded-full px-2.5 py-1.5 text-[11px] font-medium"
+            )}
+          >
             Used as a source {formatRelativeDate(video.sourceUsage.usedAt)}
           </p>
-        )}
+        ) : null}
 
-        {isRejected && video.sourceDecision.rejectedAt && (
-          <p className="rounded-md border border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 px-2.5 py-1.5 text-[11px] font-medium text-[var(--pf-danger)]">
+        {tone === "rejected" && video.sourceDecision.rejectedAt ? (
+          <p
+            className={cn(
+              inspirationStatusPillClass(video),
+              "inline-flex w-fit items-center rounded-full px-2.5 py-1.5 text-[11px] font-medium"
+            )}
+          >
             Rejected as a source {formatRelativeDate(video.sourceDecision.rejectedAt)}
           </p>
-        )}
+        ) : null}
 
         {isRejected ? (
           <button
@@ -163,7 +171,7 @@ export function InspirationVideoCard({
             data-source-action="restore"
             onClick={() => void handleSetVideoRejection(video, false)}
             disabled={isUpdatingRejection}
-            className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-border bg-background text-xs font-semibold hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+            className="pf-button-secondary mt-auto h-9 w-full text-[12px]"
           >
             {isUpdatingRejection ? (
               <>
@@ -181,7 +189,7 @@ export function InspirationVideoCard({
           <button
             type="button"
             onClick={() => handleUseInClone(video)}
-            className="mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-[var(--pf-orange)] text-xs font-semibold text-white hover:brightness-[0.93]"
+            className="pf-button-primary mt-auto h-9 w-full text-[12px]"
           >
             Use in Clone
             <Sparkles className="size-4" />
@@ -199,7 +207,7 @@ export function InspirationVideoCard({
           <button
             type="button"
             onClick={() => setSelectedVideoId(video.id)}
-            className="inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-2 text-[11px] font-semibold text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="pf-button-secondary h-8 min-w-0 px-2 text-[11px] text-[var(--pf-muted)]"
           >
             <Eye className="size-3.5" />
             Preview
@@ -212,7 +220,7 @@ export function InspirationVideoCard({
               onClick={() => void handleSetVideoRejection(video, true)}
               disabled={isUpdatingRejection}
               aria-label={`Reject source from ${video.creatorHandle}`}
-              className="inline-flex size-8 items-center justify-center rounded-md border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex size-8 items-center justify-center rounded-[8px] border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isUpdatingRejection ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -230,7 +238,7 @@ export function InspirationVideoCard({
                 ? `Copied source URL for ${video.creatorHandle}`
                 : `Copy source URL for ${video.creatorHandle}`
             }
-            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="inline-flex size-8 items-center justify-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
           >
             {copiedVideoId === video.id ? (
               <CheckCircle2 className="size-4" />
@@ -244,7 +252,7 @@ export function InspirationVideoCard({
             target="_blank"
             rel="noreferrer"
             aria-label={`Open original source from ${video.creatorHandle}`}
-            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="inline-flex size-8 items-center justify-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
           >
             <ExternalLink className="size-4" />
           </a>

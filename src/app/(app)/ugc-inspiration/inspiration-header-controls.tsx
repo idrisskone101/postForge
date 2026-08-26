@@ -1,13 +1,7 @@
 "use client";
 
 import { Loader2, Users } from "lucide-react";
-
-interface InspirationHeaderControlsProps {
-  handleInput: string;
-  isAddingAccount: boolean;
-  onHandleInputChange: (value: string) => void;
-  onTrackAccount: () => void;
-}
+import type { InspirationHeaderControlsProps } from "./types";
 
 export function InspirationHeaderControls({
   handleInput,
@@ -32,13 +26,13 @@ export function InspirationHeaderControls({
           }}
           placeholder="@creator or TikTok profile URL"
           disabled={isAddingAccount}
-          className="h-10 min-w-0 rounded-lg border border-border bg-card px-3 text-xs shadow-none outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
+          className="h-10 min-w-0 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[13px] text-[var(--pf-ink)] shadow-none outline-none placeholder:text-[var(--pf-muted)] focus-visible:border-[var(--pf-orange)] focus-visible:ring-3 focus-visible:ring-[var(--pf-orange)]/15 disabled:opacity-50"
         />
         <button
           type="button"
           onClick={onTrackAccount}
           disabled={isAddingAccount || !handleInput.trim()}
-          className="inline-flex h-10 min-w-0 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[var(--pf-orange)] px-0 text-xs font-semibold text-white hover:brightness-[0.93] disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
+          className="pf-button-primary h-10 min-w-0 shrink-0 px-0 sm:px-4"
         >
           {isAddingAccount ? (
             <>
