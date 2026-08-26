@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { PIE_COLORS } from "@/lib/costs/chart-colors";
 import { formatCost } from "@/lib/utils/format-cost";
-import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
+import type { SpendAnalysisGridProps } from "./types";
 
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
   const chartHasSpend = dashboard.chartData.some(
@@ -14,24 +14,24 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
       data-spend-analysis-grid="true"
       className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
     >
-      <article className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5">
+      <article className="pf-card min-w-0 p-4 sm:p-5">
         <header
           data-spend-chart-head="true"
           className="mb-4 flex flex-wrap items-start justify-between gap-3"
         >
           <div>
-            <h2 className="text-sm font-semibold">Spend Over Time</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="pf-section-title">Spend Over Time</h2>
+            <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
               Daily image and video cost · {dashboard.period.toUpperCase()}
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-3 text-[11px] text-[var(--pf-muted)]">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2 rounded-sm bg-accent-blue" />
+              <span className="inline-block size-2 rounded-sm bg-[var(--pf-muted)]" />
               Image
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2 rounded-sm bg-primary" />
+              <span className="inline-block size-2 rounded-sm bg-[var(--pf-ink)]" />
               Video
             </span>
           </div>
@@ -46,7 +46,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             data-spend-chart="empty"
             role="img"
             aria-label="No image or video spend in this period"
-            className="h-[276px] rounded-md bg-muted/40"
+            className="h-[276px] rounded-[8px] bg-[var(--pf-active)]"
             style={{ height: 276 }}
           />
         )}
@@ -54,11 +54,11 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
 
       <aside
         data-spend-breakdown="true"
-        className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] sm:p-5"
+        className="pf-card min-w-0 p-4 sm:p-5"
       >
-        <header data-spend-breakdown-head="true" className="border-b border-border pb-3">
-          <h2 className="text-sm font-semibold">Spend breakdown</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+        <header data-spend-breakdown-head="true" className="border-b border-[var(--pf-border)] pb-3">
+          <h2 className="pf-section-title">Spend breakdown</h2>
+          <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
             Workflow type and model mix · {dashboard.period.toUpperCase()}
           </p>
         </header>
@@ -66,7 +66,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
         {view.workflowPieData.length > 0 ? (
           <>
             <div className="pt-4">
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
                 Spend by Format
               </h3>
               <div className="mt-2 grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3">
@@ -80,25 +80,25 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
                 <div className="min-w-0 space-y-3">
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-2 text-[11px]">
-                      <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
-                        <span className="size-2 shrink-0 rounded-sm bg-accent-blue" />
+                      <span className="flex min-w-0 items-center gap-2 text-[var(--pf-muted)]">
+                        <span className="size-2 shrink-0 rounded-sm bg-[var(--pf-muted)]" />
                         <span className="truncate">Image</span>
                       </span>
-                      <strong className="shrink-0 text-foreground">{view.imagePct.toFixed(0)}%</strong>
+                      <strong className="shrink-0 text-[var(--pf-ink)]">{view.imagePct.toFixed(0)}%</strong>
                     </div>
-                    <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                    <p className="mt-1 truncate text-[11px] text-[var(--pf-muted)]">
                       {formatCost(dashboard.breakdown.image.cost)} · {dashboard.breakdown.image.count} {dashboard.breakdown.image.count === 1 ? "job" : "jobs"}
                     </p>
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-2 text-[11px]">
-                      <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
-                        <span className="size-2 shrink-0 rounded-sm bg-primary" />
+                      <span className="flex min-w-0 items-center gap-2 text-[var(--pf-muted)]">
+                        <span className="size-2 shrink-0 rounded-sm bg-[var(--pf-ink)]" />
                         <span className="truncate">Video</span>
                       </span>
-                      <strong className="shrink-0 text-foreground">{view.videoPct.toFixed(0)}%</strong>
+                      <strong className="shrink-0 text-[var(--pf-ink)]">{view.videoPct.toFixed(0)}%</strong>
                     </div>
-                    <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                    <p className="mt-1 truncate text-[11px] text-[var(--pf-muted)]">
                       {formatCost(dashboard.breakdown.video.cost)} · {dashboard.breakdown.video.count} {dashboard.breakdown.video.count === 1 ? "job" : "jobs"}
                     </p>
                   </div>
@@ -106,34 +106,31 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
               </div>
             </div>
 
-            <div className="mt-4 border-t border-border pt-4">
+            <div className="mt-4 border-t border-[var(--pf-border)] pt-4">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
                   Spend by Model
                 </h3>
-                <span className="text-[11px] text-muted-foreground">Highest first</span>
+                <span className="text-[11px] text-[var(--pf-muted)]">Highest first</span>
               </div>
               <div className="mt-2 space-y-1.5">
                 {view.modelEntries.slice(0, 5).map(([name, data], index) => (
                   <div
                     key={name}
-                    className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-muted/55 px-2.5 py-2"
+                    className="flex min-w-0 items-center justify-between gap-3 rounded-[8px] bg-[var(--pf-active)] px-2.5 py-2"
                   >
-                    <span className="flex min-w-0 items-center gap-2 text-[11px] font-medium">
+                    <span className="flex min-w-0 items-center gap-2 text-[11px] font-medium text-[var(--pf-ink)]">
                       <span
                         className="inline-block size-2 shrink-0 rounded-sm"
                         style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                       />
                       <span className="truncate">{name}</span>
                     </span>
-                    <span className="shrink-0 text-right text-[11px] text-muted-foreground">
-                      <strong className="block font-mono text-[11px] text-foreground">
+                    <span className="shrink-0 text-right text-[11px] text-[var(--pf-muted)]">
+                      <strong className="pf-data block text-[11px] text-[var(--pf-ink)]">
                         {formatCost(data.cost)}
                       </strong>
-                      {view.totalModelCost > 0
-                        ? ((data.cost / view.totalModelCost) * 100).toFixed(1)
-                        : "0"}
-                      %
+                      {modelShareLabel(data.cost, view.totalModelCost)}
                     </span>
                   </div>
                 ))}
@@ -142,14 +139,14 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
           </>
         ) : (
           <div data-spend-empty="true" className="space-y-3 py-4">
-            <p className="text-xs leading-4 text-muted-foreground">
+            <p className="text-[12px] leading-4 text-[var(--pf-muted)]">
               No spend data yet. Breakdowns appear after the first tracked cost.
             </p>
             <div className="flex flex-wrap gap-2">
-              <Link href="/ugc-clone" prefetch={false} className="text-xs font-medium underline">
+              <Link href="/ugc-clone" className="pf-button-secondary text-[12px]">
                 Start Clone
               </Link>
-              <Link href="/generate" prefetch={false} className="text-xs font-medium underline">
+              <Link href="/generate" className="pf-button-secondary text-[12px]">
                 Open Generate
               </Link>
             </div>
@@ -160,12 +157,16 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
   );
 }
 
+function modelShareLabel(cost: number, totalModelCost: number) {
+  if (totalModelCost <= 0) return "0%";
+  return `${((cost / totalModelCost) * 100).toFixed(1)}%`;
+}
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.CostChart),
   {
     ssr: false,
-    loading: () => <div className="h-full rounded-md bg-muted/40" aria-hidden />,
+    loading: () => <div className="h-full rounded-[8px] bg-[var(--pf-active)]" aria-hidden />,
   }
 );
 
@@ -173,11 +174,6 @@ const ModelPieChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
   {
     ssr: false,
-    loading: () => <div className="size-full rounded-full bg-muted/40" aria-hidden />,
+    loading: () => <div className="size-full rounded-full bg-[var(--pf-active)]" aria-hidden />,
   }
 );
-
-type SpendAnalysisGridProps = {
-  dashboard: CostsPageClientProps;
-  view: SpendDashboardView;
-};

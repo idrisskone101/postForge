@@ -2,18 +2,16 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, Download, Settings2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download } from "lucide-react";
 import { SPEND_PERIODS } from "@/lib/costs/spend-period";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { SpendAnalysisGrid } from "./spend-analysis-grid";
 import { SpendGenerationLog } from "./spend-generation-log";
-import {
-  buildSpendDashboardView,
-  type SpendPageContentProps,
-} from "./spend-models";
+import { buildSpendDashboardView } from "./spend-models";
 import { SpendStatCards } from "./spend-stat-cards";
+import type { SpendPageContentProps } from "./types";
 
 export function SpendPageContent({
   dashboard,
@@ -97,12 +95,9 @@ export function SpendPageContent({
     <div data-spend-page="true" className="mx-auto max-w-[1280px] space-y-4 p-5 sm:p-6 lg:p-8">
       <section
         data-spend-controls="true"
-        className="flex h-[10.75rem] flex-col gap-4 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)] lg:flex-row lg:items-center lg:justify-between"
+        className="pf-card flex h-[10.75rem] flex-col gap-4 overflow-hidden p-4 lg:flex-row lg:items-center lg:justify-between"
       >
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            Spend controls
-          </p>
           <p
             data-spend-intro="true"
             data-spend-intro-text="Cost tracking, budget signals, and model usage."
@@ -115,7 +110,7 @@ export function SpendPageContent({
 
         <div data-spend-actions="true" className="flex flex-wrap items-center gap-2">
           <div
-            className="flex items-center rounded-lg border border-border bg-background p-1 text-[11px] font-semibold"
+            className="flex items-center gap-1 rounded-[8px] bg-[var(--pf-active)] p-1 text-[12px] font-medium"
             aria-label="Spend period"
           >
             {SPEND_PERIODS.map((option) => (
@@ -127,10 +122,10 @@ export function SpendPageContent({
                   handlers.onPeriodChange(option);
                 }}
                 className={cn(
-                  "h-8 rounded-md px-3 transition-colors",
+                  "rounded-[6px] px-3 py-1.5 transition-colors duration-[180ms]",
                   dashboard.period === option
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                    ? "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
+                    : "text-[var(--pf-muted)] hover:text-[var(--pf-ink)]"
                 )}
               >
                 {option.toUpperCase()}
@@ -144,7 +139,7 @@ export function SpendPageContent({
               void exportCsv();
             }}
             disabled={exporting}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm font-semibold transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+            className="pf-button-secondary inline-flex items-center gap-2 disabled:pointer-events-none disabled:opacity-50"
           >
             <Download className="size-4" />
             <span>Export CSV</span>
@@ -152,34 +147,34 @@ export function SpendPageContent({
         </div>
       </section>
 
-      {feedback && (
+      {feedback ? (
         <div
           role="status"
           aria-live="polite"
-          className="flex min-w-0 items-start gap-2 rounded-lg border border-accent-green/30 bg-accent-green/10 px-4 py-3 text-sm"
+          className="flex min-w-0 items-start gap-2 rounded-[8px] border border-[color-mix(in_srgb,var(--pf-success)_30%,transparent)] bg-[color-mix(in_srgb,var(--pf-success)_10%,transparent)] px-4 py-3 text-sm text-[var(--pf-ink)]"
         >
-          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent-green" />
+          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[var(--pf-success)]" />
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{feedback}</span>
         </div>
-      )}
+      ) : null}
 
       <SpendStatCards dashboard={dashboard} view={view} />
 
       <section
         data-spend-budget="true"
         className={cn(
-          "flex flex-col gap-4 rounded-lg border p-4 lg:flex-row lg:items-center",
+          "flex flex-col gap-4 rounded-[8px] border p-4 lg:flex-row lg:items-center",
           view.budgetPercent >= 90
-            ? "border-destructive/30 bg-destructive/5"
-            : "border-[var(--pf-lamp-amber)]/40 bg-[var(--pf-lamp-amber)]/10"
+            ? "border-[color-mix(in_srgb,var(--pf-danger)_30%,transparent)] bg-[color-mix(in_srgb,var(--pf-danger)_5%,transparent)]"
+            : "border-[color-mix(in_srgb,var(--pf-lamp-amber)_40%,transparent)] bg-[color-mix(in_srgb,var(--pf-lamp-amber)_10%,transparent)]"
         )}
       >
         <div
           className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-lg",
+            "flex size-9 shrink-0 items-center justify-center rounded-[8px]",
             view.budgetPercent >= 90
-              ? "bg-destructive/10 text-destructive"
-              : "bg-[var(--pf-lamp-amber)]/15 text-[var(--pf-lamp-amber)]"
+              ? "bg-[color-mix(in_srgb,var(--pf-danger)_10%,transparent)] text-[var(--pf-danger)]"
+              : "bg-[color-mix(in_srgb,var(--pf-lamp-amber)_15%,transparent)] text-[var(--pf-lamp-amber)]"
           )}
         >
           <AlertTriangle className="size-4" />
@@ -205,25 +200,24 @@ export function SpendPageContent({
           data-spend-meter="true"
           className="flex min-w-0 items-center gap-3 lg:w-72 lg:max-w-full"
         >
-          <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-black/10">
+          <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-[var(--pf-active)]">
             <div
               className={cn(
                 "h-full rounded-full",
-                view.budgetPercent >= 90 ? "bg-destructive" : "bg-[var(--pf-lamp-amber)]"
+                view.budgetPercent >= 90 ? "bg-[var(--pf-danger)]" : "bg-[var(--pf-lamp-amber)]"
               )}
               style={{ width: `${view.budgetPercent}%` }}
             />
           </div>
-          <span className="shrink-0 text-[11px] font-medium text-muted-foreground">
+          <span className="shrink-0 text-[11px] font-medium text-[var(--pf-muted)]">
             {formatCost(dashboard.currentPeriodCost)} / {formatCost(view.budget)}
           </span>
         </div>
         <button
           type="button"
           onClick={() => setBudgetOpen(true)}
-          className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold transition-colors hover:bg-muted"
+          className="pf-button-secondary shrink-0"
         >
-          <Settings2 className="size-3.5" />
           Edit budget
         </button>
       </section>
@@ -255,6 +249,5 @@ const SpendBudgetDialog = dynamic(
     })),
   { ssr: false }
 );
-
 
 const BUDGET_STORAGE_KEY = "postforge-production-budget";

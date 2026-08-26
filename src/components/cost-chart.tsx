@@ -26,23 +26,26 @@ export function CostChart({ data }: CostChartProps) {
         <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(128,128,128,0.15)"
+            stroke="var(--pf-border)"
             vertical={false}
           />
           <XAxis
             dataKey="date"
-            tick={{ fill: "var(--color-muted-foreground)", fontSize: 10 }}
-            axisLine={{ stroke: "rgba(128,128,128,0.2)" }}
+            tick={{ fill: "var(--pf-muted)", fontSize: 10 }}
+            axisLine={{ stroke: "var(--pf-border)" }}
             tickLine={false}
             minTickGap={20}
           />
           <YAxis
-            tick={{ fill: "var(--color-muted-foreground)", fontSize: 10 }}
+            tick={{ fill: "var(--pf-muted)", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(value: number) => `$${value}`}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(35,35,35,0.035)" }} />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: "color-mix(in srgb, var(--pf-ink) 4%, transparent)" }}
+          />
           <Bar
             dataKey="image"
             stackId="spend"
@@ -74,8 +77,8 @@ function CustomTooltip({
   if (!active || !payload) return null;
 
   return (
-    <div className="rounded-lg border bg-popover px-3 py-2 shadow-lg text-popover-foreground">
-      <p className="text-xs font-medium mb-1">{label}</p>
+    <div className="rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 py-2 shadow-[var(--pf-shadow-2xs)]">
+      <p className="mb-1 text-xs font-medium text-[var(--pf-ink)]">{label}</p>
       {payload.map((entry) => (
         <div
           key={entry.dataKey}
@@ -86,9 +89,9 @@ function CustomTooltip({
               className="inline-block size-2 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="capitalize text-muted-foreground">{entry.dataKey}</span>
+            <span className="capitalize text-[var(--pf-muted)]">{entry.dataKey}</span>
           </span>
-          <span className="font-medium">
+          <span className="font-medium text-[var(--pf-ink)]">
             {formatCost(entry.value)}
           </span>
         </div>
@@ -122,10 +125,10 @@ export function ModelPieChart({ data }: ModelPieChartProps) {
         <Tooltip
           formatter={(value: number) => formatCost(value)}
           contentStyle={{
-            background: "var(--popover)",
-            border: "1px solid var(--border)",
+            background: "var(--pf-surface)",
+            border: "1px solid var(--pf-border)",
             borderRadius: "8px",
-            color: "var(--popover-foreground)",
+            color: "var(--pf-ink)",
             fontSize: "12px",
           }}
         />

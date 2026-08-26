@@ -5,7 +5,7 @@ import { SpendPageContent } from "../../src/app/(app)/costs/spend-page-content";
 import type {
   CostsPageClientProps,
   SpendPageHandlers,
-} from "../../src/app/(app)/costs/spend-models";
+} from "../../src/app/(app)/costs/types";
 
 const handlers: SpendPageHandlers = {
   onPeriodChange: () => {},

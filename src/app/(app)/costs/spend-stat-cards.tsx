@@ -1,12 +1,7 @@
-import { Gauge, Sparkles, TrendingDown, TrendingUp, WalletCards } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import type { CostsPageClientProps, SpendDashboardView } from "./spend-models";
-
-type SpendStatCardsProps = {
-  dashboard: CostsPageClientProps;
-  view: SpendDashboardView;
-};
+import type { SpendStatCardsProps } from "./types";
 
 export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
   const changeLabel =
@@ -14,29 +9,15 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
   const modelNote = dashboard.topModel
     ? `${formatCost(dashboard.topModel.cost)} · ${dashboard.topModel.pct}% of ${dashboard.period.toUpperCase()} spend`
     : "Model usage appears after your first generation";
+
   return (
     <section data-spend-stats="true" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-      <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
+      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
           <span data-lcp="Period Spend">
             <span className="sr-only">Period Spend</span>
           </span>
-          <span
-            data-lcp={changeLabel}
-            className={cn(
-              "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
-              dashboard.changePercent === 0 && "bg-muted text-muted-foreground",
-              view.changeIsUp && "bg-destructive/10 text-destructive",
-              dashboard.changePercent < 0 && "bg-accent-green/10 text-accent-green"
-            )}
-          >
-            {dashboard.changePercent !== 0 && view.changeIsUp ? (
-              <TrendingUp className="size-3" />
-            ) : dashboard.changePercent < 0 ? (
-              <TrendingDown className="size-3" />
-            ) : null}
-            <span className="sr-only">{changeLabel}</span>
-          </span>
+          <ChangeChip dashboard={dashboard} view={view} changeLabel={changeLabel} />
         </div>
         <strong data-spend-value="true" data-spend-text={formatCost(dashboard.currentPeriodCost)}></strong>
         <p data-spend-note="true" data-spend-note-text={`${formatCost(dashboard.totalCost)} all-time spend`}>
@@ -44,13 +25,10 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
         </p>
       </article>
 
-      <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
+      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
           <span data-lcp="Generations">
             <span className="sr-only">Generations</span>
-          </span>
-          <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
-            <Sparkles className="size-3.5" />
           </span>
         </div>
         <strong data-spend-value="true" data-spend-text={String(dashboard.totalJobs)}></strong>
@@ -59,13 +37,10 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
         </p>
       </article>
 
-      <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
+      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
           <span data-lcp="Top Model">
             <span className="sr-only">Top Model</span>
-          </span>
-          <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
-            <Gauge className="size-3.5" />
           </span>
         </div>
         <strong
@@ -81,13 +56,10 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
         </p>
       </article>
 
-      <article className="rounded-lg border border-border bg-card p-4 shadow-[var(--pf-shadow-2xs)]">
+      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
           <span data-lcp="Budget remaining">
             <span className="sr-only">Budget remaining</span>
-          </span>
-          <span className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground">
-            <WalletCards className="size-3.5" />
           </span>
         </div>
         <strong data-spend-value="true" data-spend-text={formatCost(view.budgetRemaining)}></strong>
@@ -96,5 +68,34 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
         </p>
       </article>
     </section>
+  );
+}
+
+function ChangeChip({
+  dashboard,
+  view,
+  changeLabel,
+}: {
+  dashboard: SpendStatCardsProps["dashboard"];
+  view: SpendStatCardsProps["view"];
+  changeLabel: string;
+}) {
+  const showTrendUp = dashboard.changePercent !== 0 && view.changeIsUp;
+  const showTrendDown = dashboard.changePercent < 0;
+
+  return (
+    <span
+      data-lcp={changeLabel}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
+        dashboard.changePercent === 0 && "bg-[var(--pf-active)] text-[var(--pf-muted)]",
+        view.changeIsUp && dashboard.changePercent > 0 && "bg-[color-mix(in_srgb,var(--pf-danger)_10%,transparent)] text-[var(--pf-danger)]",
+        dashboard.changePercent < 0 && "bg-[color-mix(in_srgb,var(--pf-success)_10%,transparent)] text-[var(--pf-success)]"
+      )}
+    >
+      {showTrendUp ? <TrendingUp className="size-3" /> : null}
+      {showTrendDown ? <TrendingDown className="size-3" /> : null}
+      <span className="sr-only">{changeLabel}</span>
+    </span>
   );
 }

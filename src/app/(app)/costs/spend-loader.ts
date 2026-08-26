@@ -14,7 +14,7 @@ import {
   periodChangePercent,
   spendWindow,
 } from "@/lib/costs/spend-period";
-import type { CostsPageClientProps } from "./spend-models";
+import type { CostsPageClientProps } from "./types";
 
 export async function loadSpendDashboard(params: {
   period?: string;

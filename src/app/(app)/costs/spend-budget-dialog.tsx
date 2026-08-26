@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import type { SpendBudgetDialogProps } from "./types";
 
 export function SpendBudgetDialog({
   budgetInput,
@@ -26,29 +27,25 @@ export function SpendBudgetDialog({
           </DialogDescription>
         </DialogHeader>
         <label className="space-y-2">
-          <span className="text-xs font-semibold">Budget amount (USD)</span>
+          <span className="text-[12px] font-semibold text-[var(--pf-ink)]">Budget amount (USD)</span>
           <Input
             type="number"
             min="1"
             step="1"
             value={budgetInput}
             onChange={(event) => onBudgetInputChange(event.target.value)}
-            className="h-10"
+            className="h-10 border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)]"
           />
         </label>
         <DialogFooter>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-semibold hover:bg-muted"
-          >
+          <button type="button" onClick={onClose} className="pf-button-secondary">
             Cancel
           </button>
           <button
             type="button"
             disabled={!Number.isFinite(Number(budgetInput)) || Number(budgetInput) <= 0}
             onClick={onSave}
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="pf-button-primary disabled:cursor-not-allowed disabled:opacity-50"
           >
             Save budget
           </button>
@@ -57,10 +54,3 @@ export function SpendBudgetDialog({
     </Dialog>
   );
 }
-
-type SpendBudgetDialogProps = {
-  budgetInput: string;
-  onBudgetInputChange: (value: string) => void;
-  onClose: () => void;
-  onSave: () => void;
-};
