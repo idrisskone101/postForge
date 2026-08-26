@@ -17,7 +17,12 @@ const generationEditor = source("src/app/(app)/generate/[id]/page.tsx");
 const cloneStudio = source("src/components/ugc-clone-form.tsx");
 const cloneReferenceReview = source("src/components/clone/reference-review.tsx");
 const gallery = source("src/app/(app)/gallery/gallery-page-client.tsx");
-const collections = source("src/app/(app)/collections/collections-page-client.tsx");
+const collections = [
+  source("src/app/(app)/collections/collections-page-client.tsx"),
+  source("src/app/(app)/collections/collections-library.tsx"),
+  source("src/app/(app)/collections/collections-detail.tsx"),
+  source("src/app/(app)/collections/collections-empty.tsx"),
+].join("\n");
 const characters = source("src/app/(app)/characters/characters-page-client.tsx");
 const characterBuilder = source(
   "src/app/(app)/characters/new/character-builder-client.tsx"
@@ -514,7 +519,7 @@ assert.match(
   source("src/app/dashboard-critical.css"),
   /\.pf-empty-stage h2[\s\S]*?font-size:\s*20px/,
 );
-assert.match(source("src/app/(app)/collections/collections-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/collections/collections-empty.tsx"), /data-empty-heading="true"/);
 assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
 assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
