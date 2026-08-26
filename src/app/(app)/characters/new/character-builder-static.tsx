@@ -16,7 +16,7 @@ export function CharacterBuilderStatic() {
         </label>
         <div style={{ height: 36, overflow: "hidden" }} />
       </header>
-      <aside data-character-category-rail="true">
+      <aside data-character-category-rail="true" data-character-recipe-step-rail="true">
         <div>
           <div>
             <p data-character-rail-kicker="Attribute recipe">
@@ -60,6 +60,7 @@ export function CharacterBuilderStatic() {
           />
         </div>
       </section>
+      <section data-character-attribute-editor="true" hidden />
     </div>
   );
 }

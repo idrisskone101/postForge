@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   CharacterAttributeEditor,
-  type CharacterAttributeEditorViewModel,
 } from "../../src/app/(app)/characters/new/character-attribute-editor";
+import type { CharacterAttributeEditorViewModel } from "../../src/app/(app)/characters/new/types";
 import {
   CHARACTER_ATTRIBUTE_SECTIONS,
   DEFAULT_CHARACTER_ATTRIBUTES,
@@ -76,6 +76,15 @@ assert.match(errorMarkup, /role="alert"/);
 assert.match(errorMarkup, /Unable to save character/);
 assert.match(errorMarkup, /Dismiss error/);
 
+const typesSource = readFileSync(
+  new URL(
+    "../../src/app/(app)/characters/new/types.ts",
+    import.meta.url
+  ),
+  "utf8"
+);
+assert.match(typesSource, /export type CharacterAttributeEditorViewModel/);
+
 const editorSource = readFileSync(
   new URL(
     "../../src/app/(app)/characters/new/character-attribute-editor.tsx",
@@ -83,7 +92,6 @@ const editorSource = readFileSync(
   ),
   "utf8"
 );
-assert.match(editorSource, /export type CharacterAttributeEditorViewModel/);
 assert.match(editorSource, /onClick=\{copyPrompt\}/);
 assert.match(editorSource, /onSelectSection\(section\.id\)/);
 assert.match(editorSource, /selectAttribute\(group\.key, option\)/);
