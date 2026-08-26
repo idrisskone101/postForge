@@ -20,6 +20,7 @@
     "test:clone": "tsx scripts/run-tests.ts tests/clone",
     "test:slideshow": "tsx scripts/run-tests.ts tests/slideshow",
     "test:gallery": "tsx scripts/run-tests.ts tests/gallery",
+    "test:collections": "tsx scripts/run-tests.ts tests/collections",
     "test:automations": "tsx scripts/run-tests.ts tests/automations",
     "test:performance": "tsx scripts/run-tests.ts tests/performance",
     "test:spend": "tsx scripts/run-tests.ts tests/spend",

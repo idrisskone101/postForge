@@ -35,7 +35,7 @@ const videoRouteSource = readFileSync(
   "utf8"
 );
 const collectionsSource = readFileSync(
-  new URL("../../src/app/(app)/collections/collections-page-client.tsx", import.meta.url),
+  new URL("../../src/app/(app)/collections/use-collections-workspace.ts", import.meta.url),
   "utf8"
 );
 

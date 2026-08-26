@@ -29,7 +29,7 @@
     "src/app/(app)/automations/use-automations-workspace.ts",
     "src/app/(app)/characters/characters-page-client.tsx",
     "src/app/(app)/characters/new/use-character-builder.ts",
-    "src/app/(app)/collections/collections-page-client.tsx",
+    "src/app/(app)/collections/use-collections-workspace.ts",
     "src/app/(app)/costs/spend-page-content.tsx",
     "src/app/(app)/gallery/use-gallery-workspace.ts",
     "src/app/(app)/generate/use-generation-form.ts",
