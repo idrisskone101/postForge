@@ -125,6 +125,9 @@ assert.equal(/\s/.test(longFailureToken), false);
 assert.match(longFailureMarkup, new RegExp(longFailureToken));
 assert.match(longFailureMarkup, /min-w-0/);
 assert.match(longFailureMarkup, /\[overflow-wrap:anywhere\]/);
+assert.match(longFailureMarkup, /bg-\[#09090B\]/);
+assert.doesNotMatch(longFailureMarkup, /bg-card\/90/);
+assert.doesNotMatch(longFailureMarkup, /bg-card\/80/);
 
 const portraitSourceFallbackMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
