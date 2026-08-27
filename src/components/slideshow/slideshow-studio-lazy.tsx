@@ -13,5 +13,5 @@ const SlideshowStudioDynamic = dynamic(
     import("@/components/slideshow/slideshow-studio").then((mod) => ({
       default: mod.SlideshowStudio,
     })),
-  { ssr: false, loading: WorkspaceRouteSkeleton },
+  { loading: WorkspaceRouteSkeleton },
 );

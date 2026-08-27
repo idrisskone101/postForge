@@ -19,7 +19,7 @@ const UGCCloneFormDynamic = dynamic(
     import("@/components/ugc-clone-form").then((mod) => ({
       default: mod.UGCCloneForm,
     })),
-  { ssr: false, loading: CloneFormSkeleton },
+  { loading: CloneFormSkeleton },
 );
 
 const UGCCloneQueueDynamic = dynamic(
@@ -27,5 +27,5 @@ const UGCCloneQueueDynamic = dynamic(
     import("@/components/ugc-clone-queue").then((mod) => ({
       default: mod.UGCCloneQueue,
     })),
-  { ssr: false, loading: CloneQueueSkeleton },
+  { loading: CloneQueueSkeleton },
 );

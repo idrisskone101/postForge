@@ -13,5 +13,5 @@ const GenerationFormDynamic = dynamic(
     import("@/components/generation-form").then((mod) => ({
       default: mod.GenerationForm,
     })),
-  { ssr: false, loading: GenerateFormSkeleton },
+  { loading: GenerateFormSkeleton },
 );
