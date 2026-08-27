@@ -17,8 +17,10 @@
   border: 0;
 }
 
-.hidden {
-  display: none;
+@layer utilities {
+  .hidden {
+    display: none;
+  }
 }
 
 :root {
@@ -38,17 +40,17 @@
 
 .dark {
   color-scheme: dark;
-  --pf-canvas: #0a0a0b;
-  --pf-surface: #131316;
+  --pf-canvas: #2a2a2e;
+  --pf-surface: #3a3a40;
   --pf-ink: #fafafa;
-  --pf-muted: #a1a1aa;
-  --pf-border: #26262b;
-  --pf-rail: #0a0a0b;
+  --pf-muted: #c4c4cc;
+  --pf-border: #5c5c64;
+  --pf-rail: #2a2a2e;
   --pf-rail-ink: #fafafa;
-  --pf-rail-muted: #a1a1aa;
-  --pf-rail-border: #26262b;
+  --pf-rail-muted: #c4c4cc;
+  --pf-rail-border: #5c5c64;
   --pf-orange: #c2410c;
-  --pf-active: #1c1c20;
+  --pf-active: #45454c;
 }
 
 html,
@@ -120,6 +122,7 @@ body {
   min-width: 0;
   overflow-x: clip;
   background: var(--pf-canvas);
+  color: var(--pf-ink);
   padding-top: calc(58px + env(safe-area-inset-top));
 }
 
@@ -147,7 +150,7 @@ body {
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -168,7 +171,7 @@ body {
   font-weight: 600 !important;
   line-height: 31px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -188,7 +191,7 @@ body {
   font-weight: 600 !important;
   line-height: 33px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -214,7 +217,7 @@ header:has([data-home-title]) p {
   height: 10px;
   font-size: 10px;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -360,6 +363,10 @@ header:has([data-home-title]) .pf-button-primary {
   white-space: nowrap;
 }
 
+.theme-toggle {
+  color: var(--pf-rail-muted);
+}
+
 #workspace-mobile-bar .sidebar-brand {
   display: flex;
   min-width: 0;
@@ -422,8 +429,21 @@ header:has([data-home-title]) .pf-button-primary {
   line-height: 17px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+  [data-home-glance="true"] a [data-home-glance-label] {
+    height: 34px;
+  }
+
+  [data-home-glance="true"] a [data-home-glance-label]::before {
+    height: 34px;
+    line-height: 17px;
+    white-space: normal;
+    letter-spacing: 0.04em;
+  }
 }
 
 [data-home-glance="true"] a span:last-child {
@@ -432,7 +452,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 28px;
   font-weight: 600;
   line-height: 1;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-workspace-page] {
@@ -735,7 +755,7 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-picker-open="true"] textarea.pf-input {
   color: transparent;
-  caret-color: #18181b;
+  caret-color: var(--pf-ink);
 }
 
 [data-playbook-title] {
@@ -748,7 +768,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 24px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
 }
 
@@ -763,7 +783,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600 !important;
   line-height: 24px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -787,35 +807,35 @@ header:has([data-home-title]) .pf-button-primary {
   content: attr(data-playbook-lede);
   font-size: 11px;
   font-weight: 400;
-  color: #52525b;
+  color: var(--pf-muted);
 }
 
 [data-playbook-name]::before {
   content: attr(data-playbook-name);
   font-size: 13px;
   font-weight: 600;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-playbook-blurb]::before {
   content: attr(data-playbook-blurb);
   font-size: 12px;
   font-weight: 400;
-  color: #52525b;
+  color: var(--pf-muted);
 }
 
 [data-playbook-scratch]::before {
   content: attr(data-playbook-scratch);
   font-size: 11px;
   font-weight: 700;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-playbook-scratch-copy]::before {
   content: attr(data-playbook-scratch-copy);
   font-size: 11px;
   font-weight: 400;
-  color: #52525b;
+  color: var(--pf-muted);
 }
 
 [data-automation-form="true"] select,
@@ -859,7 +879,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 14px;
   font-weight: 600;
   line-height: 16px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -933,7 +953,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-spend-value="true"] {
@@ -951,7 +971,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
 }
 
@@ -973,7 +993,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -987,7 +1007,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 11px;
   line-height: 1;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -1014,7 +1034,7 @@ header:has([data-home-title]) .pf-button-primary {
   line-height: 17px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -1032,7 +1052,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
 }
 
@@ -1050,7 +1070,7 @@ header:has([data-home-title]) .pf-button-primary {
   overflow: hidden;
   font-size: 10px;
   line-height: 1;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -1061,7 +1081,7 @@ header:has([data-home-title]) .pf-button-primary {
   overflow: hidden;
   font-size: 15px;
   line-height: 19px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
 }
 
@@ -1072,7 +1092,7 @@ header:has([data-home-title]) .pf-button-primary {
   height: 19px;
   font-size: 15px;
   line-height: 19px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1108,7 +1128,7 @@ header:has([data-home-title]) .pf-button-primary {
   max-width: 36rem;
   font-size: 12px;
   line-height: 1rem;
-  color: #52525b;
+  color: var(--pf-muted);
 }
 
 [data-settings-pending="true"],
@@ -1326,7 +1346,7 @@ header:has([data-home-title]) .pf-button-primary {
   height: 16px;
   font-size: 12px;
   line-height: 16px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1351,7 +1371,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 12px;
   font-weight: 600;
   line-height: 1rem;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1365,7 +1385,7 @@ header:has([data-home-title]) .pf-button-primary {
   max-width: 8rem;
   font-size: 10px;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1657,13 +1677,13 @@ header:has([data-home-title]) .pf-button-primary {
   text-align: center;
 }
 
-[data-workspace-state="empty"] {
+[data-workspace-state="empty"]:has([data-workspace-title]) {
   height: 340px;
   min-height: 340px;
   overflow: hidden;
 }
 
-[data-workspace-state] h2 {
+[data-workspace-state] h2[data-workspace-title] {
   max-width: 5rem;
   width: 5rem;
   height: 12px;
@@ -1676,7 +1696,7 @@ header:has([data-home-title]) .pf-button-primary {
   white-space: nowrap;
 }
 
-[data-workspace-state] h2::before {
+[data-workspace-state] h2[data-workspace-title]::before {
   content: attr(data-workspace-title);
   display: block;
   overflow: hidden;
@@ -1685,12 +1705,12 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 600;
   line-height: 12px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-[data-workspace-state] p {
+[data-workspace-state] p[data-workspace-copy] {
   max-width: 8rem;
   height: 10px;
   margin: 0.5rem 0 0;
@@ -1702,7 +1722,7 @@ header:has([data-home-title]) .pf-button-primary {
   white-space: nowrap;
 }
 
-[data-workspace-state] p::before {
+[data-workspace-state] p[data-workspace-copy]::before {
   content: attr(data-workspace-copy);
   display: block;
   overflow: hidden;
@@ -1711,7 +1731,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 400;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1820,7 +1840,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 31px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
 }
 
@@ -1833,7 +1853,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 28px !important;
   font-weight: 600 !important;
   line-height: 31px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1847,7 +1867,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 15px !important;
   font-weight: 600 !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -1861,7 +1881,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 15px !important;
   font-weight: 600 !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1885,7 +1905,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 12px !important;
   font-weight: 600 !important;
   line-height: 12px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1928,7 +1948,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 600;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1941,7 +1961,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 600;
   line-height: 10px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1954,7 +1974,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 600;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2196,7 +2216,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 33px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -2209,14 +2229,14 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 33px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .pf-card {
-  background: #fff;
-  border: 1px solid #e4e4e7;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-border);
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -2252,7 +2272,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 400;
   line-height: 1;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2268,7 +2288,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -2284,7 +2304,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2294,7 +2314,7 @@ header:has([data-home-title]) .pf-button-primary {
   max-width: 30rem;
   font-size: 12px;
   line-height: 1.25rem;
-  color: #52525b;
+  color: var(--pf-muted);
 }
 
 .pf-empty-stage [data-empty-icon="true"] {
@@ -2364,7 +2384,7 @@ header:has([data-home-title]) .pf-button-primary {
   overflow: hidden;
   font-size: 12px;
   line-height: 1rem;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -2403,7 +2423,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-settings-heading="true"]::before {
@@ -2416,7 +2436,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.02em;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2463,7 +2483,7 @@ header:has([data-home-title]) .pf-button-primary {
   line-height: 16px;
   font-weight: 400;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -2476,7 +2496,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2496,7 +2516,7 @@ header:has([data-home-title]) .pf-button-primary {
   line-height: 11px;
   font-weight: 400;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -2508,7 +2528,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 11px;
   line-height: 11px;
   font-weight: 400;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2521,7 +2541,7 @@ header:has([data-home-title]) .pf-button-primary {
   overflow: hidden;
   font-size: 11px;
   line-height: 11px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -2532,7 +2552,7 @@ header:has([data-home-title]) .pf-button-primary {
   height: 11px;
   font-size: 11px;
   line-height: 11px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -2715,7 +2735,7 @@ header:has([data-home-title]) .pf-button-primary {
   height: 12px !important;
   font-size: 12px !important;
   line-height: 12px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }

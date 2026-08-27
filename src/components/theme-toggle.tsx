@@ -1,27 +1,14 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { ThemeToggle as BeuiThemeToggle } from "@/components/ui/theme-toggle";
 
 export function ThemeToggle() {
-  const toggle = () => {
-    const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("postforge-theme", next ? "dark" : "light");
-    } catch {
-      // Theme still toggles for the session when storage is unavailable.
-    }
-  };
-
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label="Toggle theme"
-      className="grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
-    >
-      <Moon className="size-4 dark:hidden" />
-      <Sun className="hidden size-4 dark:block" />
-    </button>
+    <BeuiThemeToggle
+      variant="circle"
+      start="bottom-left"
+      className="theme-toggle grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+      iconClassName="size-4"
+    />
   );
 }
