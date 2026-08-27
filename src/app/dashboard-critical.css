@@ -455,35 +455,6 @@ header:has([data-home-title]) .pf-button-primary {
   color: var(--pf-ink);
 }
 
-[data-home-panel="true"] {
-  border: 1px solid var(--pf-border);
-  border-radius: 8px;
-  background: var(--pf-surface);
-}
-
-[data-home-start="true"] {
-  border: 1px solid var(--pf-border);
-  border-radius: 8px;
-  background: var(--pf-surface);
-}
-
-[data-home-start="true"]:hover {
-  border-color: var(--pf-border-strong);
-}
-
-[data-home-panel="true"] [data-home-row] {
-  border-top: 1px solid var(--pf-border);
-}
-
-[data-home-panel="true"] [data-home-row]:first-child {
-  border-top-width: 0;
-}
-
-[data-home-review] [data-slot="button"] {
-  border: 1px solid var(--pf-border);
-  background: var(--pf-surface);
-}
-
 [data-workspace-page] {
   min-width: 0;
   padding: 0.75rem;
