@@ -17,8 +17,10 @@
   border: 0;
 }
 
-.hidden {
-  display: none;
+@layer utilities {
+  .hidden {
+    display: none;
+  }
 }
 
 :root {
@@ -422,7 +424,7 @@ header:has([data-home-title]) .pf-button-primary {
   line-height: 17px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
 }
 
@@ -432,7 +434,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 28px;
   font-weight: 600;
   line-height: 1;
-  color: #18181b;
+  color: var(--pf-ink);
 }
 
 [data-workspace-page] {
@@ -1657,13 +1659,13 @@ header:has([data-home-title]) .pf-button-primary {
   text-align: center;
 }
 
-[data-workspace-state="empty"] {
+[data-workspace-state="empty"]:has([data-workspace-title]) {
   height: 340px;
   min-height: 340px;
   overflow: hidden;
 }
 
-[data-workspace-state] h2 {
+[data-workspace-state] h2[data-workspace-title] {
   max-width: 5rem;
   width: 5rem;
   height: 12px;
@@ -1676,7 +1678,7 @@ header:has([data-home-title]) .pf-button-primary {
   white-space: nowrap;
 }
 
-[data-workspace-state] h2::before {
+[data-workspace-state] h2[data-workspace-title]::before {
   content: attr(data-workspace-title);
   display: block;
   overflow: hidden;
@@ -1685,12 +1687,12 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 600;
   line-height: 12px;
-  color: #18181b;
+  color: var(--pf-ink);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-[data-workspace-state] p {
+[data-workspace-state] p[data-workspace-copy] {
   max-width: 8rem;
   height: 10px;
   margin: 0.5rem 0 0;
@@ -1702,7 +1704,7 @@ header:has([data-home-title]) .pf-button-primary {
   white-space: nowrap;
 }
 
-[data-workspace-state] p::before {
+[data-workspace-state] p[data-workspace-copy]::before {
   content: attr(data-workspace-copy);
   display: block;
   overflow: hidden;
@@ -1711,7 +1713,7 @@ header:has([data-home-title]) .pf-button-primary {
   font-size: 10px;
   font-weight: 400;
   line-height: 10px;
-  color: #52525b;
+  color: var(--pf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }

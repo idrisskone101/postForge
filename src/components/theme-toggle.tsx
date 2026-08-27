@@ -7,7 +7,6 @@ export function ThemeToggle() {
     <BeuiThemeToggle
       variant="circle"
       start="bottom-left"
-      aria-label="Toggle theme"
       className="theme-toggle grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
       iconClassName="size-4"
     />

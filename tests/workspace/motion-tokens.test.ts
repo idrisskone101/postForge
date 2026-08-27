@@ -61,6 +61,16 @@ assert.match(globals, /--sidebar-accent:\s*#4a322c/i);
 assert.match(globals, /\[data-automation-preview-stage="true"\][\s\S]*?#09090b/i);
 assert.match(dashboardCritical, /\[data-automation-preview-stage="true"\][\s\S]*?#09090b/i);
 
+assert.match(
+  dashboardCritical,
+  /@layer utilities\s*\{[\s\S]*?\.hidden\s*\{[\s\S]*?display:\s*none/,
+);
+assert.match(
+  dashboardCritical,
+  /\[data-home-glance="true"\] a \[data-home-glance-label\]::before[\s\S]*?color:\s*var\(--pf-muted\)/,
+);
+assert.doesNotMatch(sidebar, /hidden xl:(grid|flex|inline-flex)/);
+
 assert.equal(existsSync(path.join(repoRoot, "src/components/pf-system")), false);
 assert.equal(existsSync(path.join(repoRoot, "src/components/motion")), false);
 

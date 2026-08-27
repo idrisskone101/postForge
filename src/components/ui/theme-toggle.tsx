@@ -189,12 +189,12 @@ export function ThemeToggle({
   return (
     <button
       type="button"
+      {...rest}
       aria-label={
         mounted && isDark ? "Switch to light mode" : "Switch to dark mode"
       }
       onClick={toggle}
       className={cn("flex items-center justify-center", className)}
-      {...rest}
     >
       {mounted ? (
         <ActionSwapIcon

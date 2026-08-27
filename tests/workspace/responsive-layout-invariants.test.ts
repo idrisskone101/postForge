@@ -490,8 +490,13 @@ assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-name\]::before\{content:attr\(data-playbook-name\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]::before\{content:attr\(data-playbook-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-overlay="true"\]\{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:1rem;box-sizing:border-box;background:#09090b/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2::before\{content:attr\(data-workspace-title\)/);
-assert.match(source("src/components/workspace-state.tsx"), /data-workspace-title=\{title\}/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2\[data-workspace-title\]::before\{content:attr\(data-workspace-title\)/);
+assert.match(source("src/components/workspace-state.tsx"), /WorkspaceStateCopy/);
+assert.match(
+  source("src/components/workspace-state-copy.tsx"),
+  /data-workspace-title=\{paintReady \? undefined : title\}/,
+);
+assert.match(source("src/components/workspace-state-copy.tsx"), /useWindowLoadReady/);
 assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
@@ -656,6 +661,10 @@ assert.match(
 );
 assert.match(
   source("src/app/(app)/ugc-inspiration/inspiration-page-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/workspace-state-copy.tsx"),
   /useWindowLoadReady/,
 );
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);

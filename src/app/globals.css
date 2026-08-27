@@ -2676,13 +2676,13 @@ header:has([data-home-title]) p {
   }
 }
 
-[data-workspace-state="empty"] {
+[data-workspace-state="empty"]:has([data-workspace-title]) {
   height: 340px !important;
   min-height: 340px !important;
   overflow: hidden !important;
 }
 
-[data-workspace-state] h2 {
+[data-workspace-state] h2[data-workspace-title] {
   max-width: 5rem !important;
   width: 5rem !important;
   height: 12px !important;
@@ -2694,7 +2694,7 @@ header:has([data-home-title]) p {
   white-space: nowrap !important;
 }
 
-[data-workspace-state] h2::before {
+[data-workspace-state] h2[data-workspace-title]::before {
   content: attr(data-workspace-title) !important;
   display: block !important;
   overflow: hidden !important;
@@ -2703,12 +2703,12 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 600 !important;
   line-height: 12px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
 
-[data-workspace-state] p {
+[data-workspace-state] p[data-workspace-copy] {
   max-width: 8rem !important;
   height: 10px !important;
   margin: 0.5rem 0 0 !important;
@@ -2719,7 +2719,7 @@ header:has([data-home-title]) p {
   white-space: nowrap !important;
 }
 
-[data-workspace-state] p::before {
+[data-workspace-state] p[data-workspace-copy]::before {
   content: attr(data-workspace-copy) !important;
   display: block !important;
   overflow: hidden !important;
@@ -2728,7 +2728,7 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 400 !important;
   line-height: 10px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }

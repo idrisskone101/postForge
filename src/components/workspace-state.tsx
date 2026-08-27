@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WorkspaceStateCopy } from "@/components/workspace-state-copy";
 import { cn } from "@/lib/utils";
 
 type WorkspaceStateTone = "empty" | "error" | "neutral";
@@ -61,21 +62,11 @@ export function WorkspaceState({
       >
         <Icon className="size-6" />
       </div>
-      <h2
-        data-workspace-title={title}
-        className={cn(
-          "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
-          tone === "error" && "text-destructive"
-        )}
-      >
-        <span className="sr-only">{title}</span>
-      </h2>
-      <p
-        data-workspace-copy={description}
-        className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground"
-      >
-        <span className="sr-only">{description}</span>
-      </p>
+      <WorkspaceStateCopy
+        title={title}
+        description={description}
+        titleClassName={tone === "error" ? "text-destructive" : undefined}
+      />
       {(action || secondaryAction) && (
         <div
           data-workspace-state-actions="true"
