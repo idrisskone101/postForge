@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PinterestImportDialog } from "@/components/pinterest-import-dialog";
 import { CollectionsDetail } from "./collections-detail";
 import { CollectionsEmpty } from "./collections-empty";
@@ -63,14 +64,16 @@ export function CollectionsPageClient(props: CollectionsPageClientProps) {
           className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"
         >
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setError(null)}
-            className="shrink-0"
             aria-label="Dismiss error"
+            className="size-7 shrink-0 text-muted-foreground"
           >
-            <X className="size-3.5" />
-          </button>
+            <X className="size-4 shrink-0" />
+          </Button>
         </div>
       ) : null}
       {isEmpty ? (

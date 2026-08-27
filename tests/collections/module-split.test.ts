@@ -57,6 +57,23 @@ assert.equal(
   "collections/types.ts must exist"
 );
 
+const collectionsPage = readFileSync(
+  new URL("src/app/(app)/collections/page.tsx", repoRoot),
+  "utf8"
+);
+assert.match(collectionsPage, /COLLECTIONS_HAIRLINE_CSS/);
+
+const collectionsPanel = readFileSync(
+  new URL("src/app/(app)/collections/collections-panel.tsx", repoRoot),
+  "utf8"
+);
+assert.match(collectionsPanel, /\[data-collections-dropzone="true"\]/);
+assert.match(collectionsPanel, /\[data-collections-selection-bar="true"\]/);
+
+const firstPaint = readFileSync(new URL("src/app/first-paint-css.ts", repoRoot), "utf8");
+assert.doesNotMatch(firstPaint, /\[data-collections-dropzone="true"\]/);
+assert.doesNotMatch(firstPaint, /\[data-collections-selection-bar="true"\]/);
+
 console.log(
   files
     .map((file) => `${lineCount(file).toString().padStart(4)} ${file}`)
