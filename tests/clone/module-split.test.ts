@@ -131,7 +131,8 @@ const chromeSource = [
   .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
   .join("\n");
 
-assert.match(chromeSource, /ClonePaintText/);
+assert.match(chromeSource, /data-home-title=\{TITLE\}/);
+assert.match(chromeSource, /data-clone-copy=\{COPY\}/);
 assert.match(chromeSource, /paintReady \? undefined/);
 assert.match(chromeSource, /pf-button-primary/);
 assert.match(chromeSource, /pf-section-title/);

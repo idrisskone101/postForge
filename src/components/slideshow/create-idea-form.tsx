@@ -81,17 +81,10 @@ export function CreateIdeaForm() {
               Start with one idea
             </SlideshowPaintText>
           </h2>
-          <p>
-            <SlideshowPaintText
-              ready={paintReady}
-              liveAs="span"
-              liveClassName="text-[13px] leading-[1.35] text-muted-foreground"
-              paint={
-                <span className="sr-only">PostForge writes the story. You review every slide.</span>
-              }
-            >
+          <p data-lcp="PostForge writes the story. You review every slide.">
+            <span className="sr-only">
               PostForge writes the story. You review every slide.
-            </SlideshowPaintText>
+            </span>
           </p>
         </div>
       </div>

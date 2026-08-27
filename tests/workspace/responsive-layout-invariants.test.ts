@@ -444,13 +444,18 @@ assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
 assert.match(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /data-home-title=\{paintReady \? undefined : TITLE\}/,
+  source("src/components/clone/source-step.tsx"),
+  /data-clone-copy="Choose the clip and trim the part to clone."/,
+);
+assert.match(
+  source("src/app/dashboard-critical.css"),
+  /\[data-home-title\]\s*\{[^}]*width:\s*12rem/,
 );
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\.policy-heading::before\{content:attr\(data-policy-title\)/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-studio="true"\]\{min-height:58rem/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-clone-copy\]::before\{content:attr\(data-clone-copy\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-slideshow-copy\]::before\{content:attr\(data-slideshow-copy\)/);
 assert.match(
   source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
   /data-clone-studio=\{paintReady \? undefined : "true"\}/,
@@ -538,6 +543,41 @@ assert.match(
 );
 assert.match(source("src/app/(app)/collections/collections-empty.tsx"), /data-empty-heading="true"/);
 assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/characters/characters-empty.tsx"), /data-empty-copy=/);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/characters-empty.tsx"),
+  /liveClassName=.*max-w-md/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/automations-page-client.tsx"),
+  /liveClassName=.*max-w-md/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/performance/performance-empty-state.tsx"),
+  /overflow-wrap:anywhere/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /ClonePaintText/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
+  /SlideshowPaintText/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/costs/spend-stat-cards.tsx"),
+  /SpendPaintText/,
+);
+assert.match(
+  source("src/app/(app)/costs/spend-stat-cards.tsx"),
+  /data-spend-stats="true"/,
+);
+assert.match(
+  source("src/app/(app)/generate/form-prompt-section.tsx"),
+  /data-generate-notice="Prompt improvement needs a Gemini API key."/,
+);
+assert.match(source("src/app/dashboard-critical.css"), /\[data-slideshow-copy\]::before/);
+assert.match(source("src/app/globals.css"), /\[data-slideshow-copy\]::before/);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
 assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
 assert.match(source("src/app/globals.css"), /\[data-empty-copy\]::before[\s\S]*?content:\s*attr\(data-empty-copy\)/);
@@ -563,15 +603,15 @@ assert.match(pkg, /"predev": "node scripts\/build-dashboard-css\.mjs && node scr
 
 assert.match(
   source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /data-clone-copy=\{paintReady \? undefined : COPY\}/,
+  /data-clone-copy=\{COPY\}/,
 );
 assert.match(
   source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /data-home-title=\{paintReady \? undefined : TITLE\}/,
+  /data-home-title=\{TITLE\}/,
 );
 assert.match(
   source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /data-slideshow-copy=\{paintReady \? undefined : COPY\}/,
+  /data-slideshow-copy=\{COPY\}/,
 );
 assert.match(
   source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),

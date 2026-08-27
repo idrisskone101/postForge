@@ -11,7 +11,6 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { SpendAnalysisGrid } from "./spend-analysis-grid";
 import { SpendGenerationLog } from "./spend-generation-log";
 import { buildSpendDashboardView } from "./spend-models";
-import { SpendPaintText } from "./spend-paint-text";
 import { SpendStatCards } from "./spend-stat-cards";
 import type { SpendPageContentProps } from "./types";
 
@@ -101,23 +100,14 @@ export function SpendPageContent({
         className="pf-card flex h-[10.75rem] flex-col gap-4 overflow-hidden p-4 lg:flex-row lg:items-center lg:justify-between"
       >
         <div className="min-w-0">
-          <SpendPaintText
-            ready={paintReady}
-            liveAs="p"
-            liveClassName="mt-1 min-w-0 text-[13px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
-            paint={
-              <p
-                data-spend-intro="true"
-                data-spend-intro-text="Cost tracking, budget signals, and model usage."
-              >
-                <span className="sr-only">
-                  Cost tracking, budget signals, and model usage.
-                </span>
-              </p>
-            }
+          <p
+            data-spend-intro="true"
+            data-spend-intro-text="Cost tracking, budget signals, and model usage."
           >
-            Cost tracking, budget signals, and model usage.
-          </SpendPaintText>
+            <span className="sr-only">
+              Cost tracking, budget signals, and model usage.
+            </span>
+          </p>
         </div>
 
         <div data-spend-actions="true" className="flex flex-wrap items-center gap-2">
@@ -192,39 +182,21 @@ export function SpendPageContent({
           <AlertTriangle className="size-4" />
         </div>
         <div data-spend-budget-copy="true" className="min-w-0 flex-1">
-          <SpendPaintText
-            ready={paintReady}
-            liveAs="strong"
-            liveClassName="block min-w-0 text-[14px] font-semibold leading-5 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
-            paint={
-              <strong
-                data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
-              >
-                <span className="sr-only">
-                  You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
-                </span>
-              </strong>
-            }
+          <strong
+            data-spend-budget-label={`You've used ${view.budgetPercent.toFixed(0)}% of your production budget`}
           >
-            You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
-          </SpendPaintText>
-          <SpendPaintText
-            ready={paintReady}
-            liveAs="p"
-            liveClassName="mt-1 min-w-0 text-[12px] leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
-            paint={
-              <p
-                data-spend-note="true"
-                data-spend-note-text="Track the selected period against a budget you control locally in PostForge."
-              >
-                <span className="sr-only">
-                  Track the selected period against a budget you control locally in PostForge.
-                </span>
-              </p>
-            }
+            <span className="sr-only">
+              You&apos;ve used {view.budgetPercent.toFixed(0)}% of your production budget
+            </span>
+          </strong>
+          <p
+            data-spend-note="true"
+            data-spend-note-text="Track the selected period against a budget you control locally in PostForge."
           >
-            Track the selected period against a budget you control locally in PostForge.
-          </SpendPaintText>
+            <span className="sr-only">
+              Track the selected period against a budget you control locally in PostForge.
+            </span>
+          </p>
         </div>
         <div
           data-spend-meter="true"

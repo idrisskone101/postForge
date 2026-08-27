@@ -107,18 +107,9 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
           )}
         </div>
       </div>
-      <SettingsPaintText
-        ready={paintReady}
-        liveAs="p"
-        liveClassName="mt-2 text-[11px] leading-4 text-muted-foreground"
-        paint={
-          <p data-settings-copy="true" data-settings-text={content.description}>
-            <span className="sr-only">{content.description}</span>
-          </p>
-        }
-      >
-        {content.description}
-      </SettingsPaintText>
+      <p data-settings-copy="true" data-settings-text={content.description}>
+        <span className="sr-only">{content.description}</span>
+      </p>
 
       {status?.connected && status.accounts.length > 0 ? (
         <ConnectedAccounts
@@ -135,7 +126,6 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
         />
       ) : loading && !status ? null : (
         <DisconnectedCopy
-          paintReady={paintReady}
           content={content}
           notConfigured={notConfigured}
           unavailable={unavailable}

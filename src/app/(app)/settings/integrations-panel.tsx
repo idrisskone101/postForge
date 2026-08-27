@@ -199,32 +199,19 @@ export function IntegrationsPanel({
 function SettingsCopy({
   text,
   intro = false,
-  paintReady,
 }: {
   text: string;
   intro?: boolean;
-  paintReady: boolean;
+  paintReady?: boolean;
 }) {
   return (
-    <SettingsPaintText
-      ready={paintReady}
-      liveAs="p"
-      liveClassName={cn(
-        "min-w-0 text-[11px] leading-4 text-muted-foreground",
-        intro && "mt-1 max-w-[620px]"
-      )}
-      paint={
-        <p
-          data-settings-copy="true"
-          data-settings-intro={intro ? "true" : undefined}
-          data-settings-text={text}
-        >
-          <span className="sr-only">{text}</span>
-        </p>
-      }
+    <p
+      data-settings-copy="true"
+      data-settings-intro={intro ? "true" : undefined}
+      data-settings-text={text}
     >
-      {text}
-    </SettingsPaintText>
+      <span className="sr-only">{text}</span>
+    </p>
   );
 }
 

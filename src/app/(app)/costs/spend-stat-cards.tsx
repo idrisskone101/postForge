@@ -1,14 +1,11 @@
 "use client";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { SpendPaintText } from "./spend-paint-text";
 import type { SpendStatCardsProps } from "./types";
 
 export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
-  const paintReady = useWindowLoadReady();
   const changeLabel =
     dashboard.changePercent === 0 ? "No change" : `${Math.abs(dashboard.changePercent).toFixed(0)}%`;
   const modelName = dashboard.topModel ? dashboard.topModel.name : "No data yet";
@@ -23,194 +20,75 @@ export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
   const budgetRemaining = formatCost(view.budgetRemaining);
 
   return (
-    <section
-      data-spend-stats={paintReady ? undefined : "true"}
-      className="grid grid-cols-2 gap-3 xl:grid-cols-4"
-    >
+    <section data-spend-stats="true" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
-          <SpendPaintText
-            ready={paintReady}
-            liveClassName={LABEL_CLASS}
-            paint={
-              <span data-lcp="Period Spend">
-                <span className="sr-only">Period Spend</span>
-              </span>
-            }
-          >
-            Period Spend
-          </SpendPaintText>
-          <ChangeChip
-            dashboard={dashboard}
-            view={view}
-            changeLabel={changeLabel}
-            paintReady={paintReady}
-          />
+          <span data-lcp="Period Spend">
+            <span className="sr-only">Period Spend</span>
+          </span>
+          <ChangeChip dashboard={dashboard} view={view} changeLabel={changeLabel} />
         </div>
-        <SpendPaintText
-          ready={paintReady}
-          liveAs="strong"
-          liveClassName={VALUE_CLASS}
-          paint={
-            <strong data-spend-value="true" data-spend-text={periodSpend}>
-              <span className="sr-only">{periodSpend}</span>
-            </strong>
-          }
-        >
-          {periodSpend}
-        </SpendPaintText>
-        <SpendPaintText
-          ready={paintReady}
-          liveClassName={NOTE_CLASS}
-          paint={
-            <p data-spend-note="true" data-spend-note-text={allTimeNote}>
-              <span className="sr-only">{allTimeNote}</span>
-            </p>
-          }
-        >
-          {allTimeNote}
-        </SpendPaintText>
+        <strong data-spend-value="true" data-spend-text={periodSpend}>
+          <span className="sr-only">{periodSpend}</span>
+        </strong>
+        <p data-spend-note="true" data-spend-note-text={allTimeNote}>
+          <span className="sr-only">{allTimeNote}</span>
+        </p>
       </article>
 
       <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
-          <SpendPaintText
-            ready={paintReady}
-            liveClassName={LABEL_CLASS}
-            paint={
-              <span data-lcp="Generations">
-                <span className="sr-only">Generations</span>
-              </span>
-            }
-          >
-            Generations
-          </SpendPaintText>
+          <span data-lcp="Generations">
+            <span className="sr-only">Generations</span>
+          </span>
         </div>
-        <SpendPaintText
-          ready={paintReady}
-          liveAs="strong"
-          liveClassName={VALUE_CLASS}
-          paint={
-            <strong data-spend-value="true" data-spend-text={generations}>
-              <span className="sr-only">{generations}</span>
-            </strong>
-          }
-        >
-          {generations}
-        </SpendPaintText>
-        <SpendPaintText
-          ready={paintReady}
-          liveClassName={NOTE_CLASS}
-          paint={
-            <p data-spend-note="true" data-spend-note-text={avgNote}>
-              <span className="sr-only">{avgNote}</span>
-            </p>
-          }
-        >
-          {avgNote}
-        </SpendPaintText>
+        <strong data-spend-value="true" data-spend-text={generations}>
+          <span className="sr-only">{generations}</span>
+        </strong>
+        <p data-spend-note="true" data-spend-note-text={avgNote}>
+          <span className="sr-only">{avgNote}</span>
+        </p>
       </article>
 
       <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
-          <SpendPaintText
-            ready={paintReady}
-            liveClassName={LABEL_CLASS}
-            paint={
-              <span data-lcp="Top Model">
-                <span className="sr-only">Top Model</span>
-              </span>
-            }
-          >
-            Top Model
-          </SpendPaintText>
+          <span data-lcp="Top Model">
+            <span className="sr-only">Top Model</span>
+          </span>
         </div>
-        <SpendPaintText
-          ready={paintReady}
-          liveAs="strong"
-          liveClassName={MODEL_CLASS}
-          paint={
-            <strong data-spend-model="true" data-spend-text={modelName}>
-              <span className="sr-only">{modelName}</span>
-            </strong>
-          }
-        >
-          {modelName}
-        </SpendPaintText>
-        <SpendPaintText
-          ready={paintReady}
-          liveClassName={NOTE_CLASS}
-          paint={
-            <p data-spend-note="true" data-spend-note-text={modelNote}>
-              <span className="sr-only">{modelNote}</span>
-            </p>
-          }
-        >
-          {modelNote}
-        </SpendPaintText>
+        <strong data-spend-model="true" data-spend-text={modelName}>
+          <span className="sr-only">{modelName}</span>
+        </strong>
+        <p data-spend-note="true" data-spend-note-text={modelNote}>
+          <span className="sr-only">{modelNote}</span>
+        </p>
       </article>
 
       <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
         <div className="flex items-start justify-between gap-3">
-          <SpendPaintText
-            ready={paintReady}
-            liveClassName={LABEL_CLASS}
-            paint={
-              <span data-lcp="Budget remaining">
-                <span className="sr-only">Budget remaining</span>
-              </span>
-            }
-          >
-            Budget remaining
-          </SpendPaintText>
+          <span data-lcp="Budget remaining">
+            <span className="sr-only">Budget remaining</span>
+          </span>
         </div>
-        <SpendPaintText
-          ready={paintReady}
-          liveAs="strong"
-          liveClassName={VALUE_CLASS}
-          paint={
-            <strong data-spend-value="true" data-spend-text={budgetRemaining}>
-              <span className="sr-only">{budgetRemaining}</span>
-            </strong>
-          }
-        >
-          {budgetRemaining}
-        </SpendPaintText>
-        <SpendPaintText
-          ready={paintReady}
-          liveClassName={NOTE_CLASS}
-          paint={
-            <p data-spend-note="true" data-spend-note-text={budgetNote}>
-              <span className="sr-only">{budgetNote}</span>
-            </p>
-          }
-        >
-          {budgetNote}
-        </SpendPaintText>
+        <strong data-spend-value="true" data-spend-text={budgetRemaining}>
+          <span className="sr-only">{budgetRemaining}</span>
+        </strong>
+        <p data-spend-note="true" data-spend-note-text={budgetNote}>
+          <span className="sr-only">{budgetNote}</span>
+        </p>
       </article>
     </section>
   );
 }
 
-const LABEL_CLASS =
-  "min-w-0 text-[12px] font-medium leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]";
-const VALUE_CLASS =
-  "mt-3 block min-w-0 text-[28px] font-semibold leading-none tracking-[-0.02em] text-[var(--pf-ink)] [overflow-wrap:anywhere]";
-const MODEL_CLASS =
-  "mt-3 block min-w-0 text-[20px] font-semibold leading-5 tracking-[-0.02em] text-[var(--pf-ink)] [overflow-wrap:anywhere]";
-const NOTE_CLASS =
-  "mt-1 block min-w-0 text-[11px] leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]";
-
 function ChangeChip({
   dashboard,
   view,
   changeLabel,
-  paintReady,
 }: {
   dashboard: SpendStatCardsProps["dashboard"];
   view: SpendStatCardsProps["view"];
   changeLabel: string;
-  paintReady: boolean;
 }) {
   const showTrendUp = dashboard.changePercent !== 0 && view.changeIsUp;
   const showTrendDown = dashboard.changePercent < 0;
@@ -222,20 +100,10 @@ function ChangeChip({
   );
 
   return (
-    <SpendPaintText
-      ready={paintReady}
-      liveClassName={chipClass}
-      paint={
-        <span data-lcp={changeLabel} className={chipClass}>
-          {showTrendUp ? <TrendingUp className="size-3" /> : null}
-          {showTrendDown ? <TrendingDown className="size-3" /> : null}
-          <span className="sr-only">{changeLabel}</span>
-        </span>
-      }
-    >
+    <span data-lcp={changeLabel} className={chipClass}>
       {showTrendUp ? <TrendingUp className="size-3" /> : null}
       {showTrendDown ? <TrendingDown className="size-3" /> : null}
-      {changeLabel}
-    </SpendPaintText>
+      <span className="sr-only">{changeLabel}</span>
+    </span>
   );
 }

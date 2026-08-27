@@ -125,21 +125,9 @@ export function GenerateFormPromptSection({
         <div className="min-h-9 leading-4">
           {promptEnhancerConfigured === false && !promptImprovementError ? (
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <GeneratePaintText
-                ready={paintReady}
-                liveClassName="text-[12px] leading-4 text-muted-foreground"
-                paint={
-                  <span
-                    data-generate-notice={
-                      paintReady ? undefined : "Prompt improvement needs a Gemini API key."
-                    }
-                  >
-                    <span className="sr-only">Prompt improvement needs a Gemini API key.</span>
-                  </span>
-                }
-              >
-                Prompt improvement needs a Gemini API key.
-              </GeneratePaintText>
+              <span data-generate-notice="Prompt improvement needs a Gemini API key.">
+                <span className="sr-only">Prompt improvement needs a Gemini API key.</span>
+              </span>
               <Link
                 href="/settings?tab=api-keys"
                 className="inline-flex min-h-9 items-center font-semibold text-[var(--pf-link)] hover:underline"

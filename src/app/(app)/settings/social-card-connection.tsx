@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { SettingsPaintText } from "./settings-paint-text";
 import { AccountRow } from "./social-account-row";
 import type { SocialProviderContent } from "./social-provider-content";
 import type { ConnectedAccountsModel } from "./types";
@@ -49,12 +48,10 @@ export function ConnectedAccounts({ accounts }: { accounts: ConnectedAccountsMod
 }
 
 export function DisconnectedCopy({
-  paintReady,
   content,
   notConfigured,
   unavailable,
 }: {
-  paintReady: boolean;
   content: SocialProviderContent;
   notConfigured: boolean;
   unavailable: boolean;
@@ -63,22 +60,13 @@ export function DisconnectedCopy({
     return (
       <div className="mt-3 rounded-lg border border-dashed border-border bg-[var(--pf-surface)] p-2.5">
         <b className="block text-[12px] text-muted-foreground">Server setup required</b>
-        <SettingsPaintText
-          ready={paintReady}
-          liveAs="p"
-          liveClassName="mt-1 min-w-0 text-[11px] leading-4 text-muted-foreground"
-          paint={
-            <p
-              data-settings-setup="true"
-              data-settings-text={content.setup}
-              className="mt-1 min-w-0"
-            >
-              <span className="sr-only">{content.setup}</span>
-            </p>
-          }
+        <p
+          data-settings-setup="true"
+          data-settings-text={content.setup}
+          className="mt-1 min-w-0"
         >
-          {content.setup}
-        </SettingsPaintText>
+          <span className="sr-only">{content.setup}</span>
+        </p>
         <Link
           href={content.documentation}
           target="_blank"
