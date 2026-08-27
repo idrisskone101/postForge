@@ -33,8 +33,9 @@ export function resolveAvatarGenerationPrompt(input: {
 } {
   const parsed = parseStructuredGenerationPrompt(input.prompt);
   const prompt = parsed?.prompt ?? input.prompt.trim();
-  const aspectRatio = parsed?.aspectRatio || input.aspectRatio || "9:16";
   const before = isBeforeIdentityPrompt(prompt);
+  const aspectRatio =
+    parsed?.aspectRatio || (before ? "9:16" : input.aspectRatio) || "9:16";
   const negativePrompt = joinNegativePrompts([
     input.negativePrompt,
     parsed?.negativePrompt,

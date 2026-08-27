@@ -77,7 +77,7 @@ assert.doesNotMatch(fromJson.prompt, /^\s*\{/);
 
 const fromProse = resolveAvatarGenerationPrompt({
   prompt: `  ${BEFORE_IDENTITY_PROMPT}  `,
-  aspectRatio: "9:16",
+  aspectRatio: "1:1",
 });
 assert.equal(fromProse.prompt, BEFORE_IDENTITY_PROMPT);
 assert.equal(fromProse.aspectRatio, "9:16");
