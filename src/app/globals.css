@@ -2209,8 +2209,9 @@ header:has([data-home-title]) p {
   text-overflow: ellipsis !important;
 }
 
-[data-clone-copy]::before {
-  content: attr(data-clone-copy) !important;
+[data-clone-copy]::before,
+[data-slideshow-copy]::before,
+[data-home-copy]::before {
   display: block !important;
   overflow: hidden !important;
   height: 10px !important;
@@ -2222,17 +2223,16 @@ header:has([data-home-title]) p {
   text-overflow: ellipsis !important;
 }
 
+[data-clone-copy]::before {
+  content: attr(data-clone-copy) !important;
+}
+
+[data-slideshow-copy]::before {
+  content: attr(data-slideshow-copy) !important;
+}
+
 [data-home-copy]::before {
   content: attr(data-home-copy) !important;
-  display: block !important;
-  overflow: hidden !important;
-  height: 10px !important;
-  max-width: 8rem !important;
-  font-size: 10px !important;
-  line-height: 10px !important;
-  color: #52525b !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
 }
 
 [data-home-action] {

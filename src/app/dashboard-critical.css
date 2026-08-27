@@ -1356,8 +1356,8 @@ header:has([data-home-title]) .pf-button-primary {
 }
 
 [data-clone-copy]::before,
+[data-slideshow-copy]::before,
 [data-home-copy]::before {
-  content: attr(data-clone-copy);
   display: block;
   overflow: hidden;
   height: 10px;
@@ -1367,6 +1367,14 @@ header:has([data-home-title]) .pf-button-primary {
   color: #52525b;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+[data-clone-copy]::before {
+  content: attr(data-clone-copy);
+}
+
+[data-slideshow-copy]::before {
+  content: attr(data-slideshow-copy);
 }
 
 [data-home-copy]::before {
