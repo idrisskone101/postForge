@@ -538,6 +538,27 @@ assert.match(
 );
 assert.match(source("src/app/(app)/collections/collections-empty.tsx"), /data-empty-heading="true"/);
 assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
+assert.match(source("src/app/(app)/characters/characters-empty.tsx"), /data-empty-copy=/);
+assert.doesNotMatch(
+  source("src/app/(app)/characters/characters-empty.tsx"),
+  /liveClassName=.*max-w-md/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/automations/automations-page-client.tsx"),
+  /liveClassName=.*max-w-md/,
+);
+assert.doesNotMatch(
+  source("src/app/(app)/performance/performance-empty-state.tsx"),
+  /overflow-wrap:anywhere/,
+);
+assert.match(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /max-w-\[12rem\] truncate text-\[13px\] leading-none/,
+);
+assert.match(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
+  /max-w-\[12rem\] truncate text-\[13px\] leading-none/,
+);
 assert.match(source("src/app/dashboard-critical.css"), /\[data-empty-heading="true"\]/);
 assert.match(source("src/app/globals.css"), /\.pf-empty-stage h2[\s\S]*?white-space:\s*nowrap/);
 assert.match(source("src/app/globals.css"), /\[data-empty-copy\]::before[\s\S]*?content:\s*attr\(data-empty-copy\)/);

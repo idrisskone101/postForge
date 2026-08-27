@@ -68,7 +68,14 @@ export function PerformanceEmptyState({
       </button>
       <p className="mt-7 max-w-full rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-3 text-left text-[11px] text-[var(--pf-muted)]">
         <b className="text-[var(--pf-ink)]">Expected columns</b>
-        <span className="mt-1 block break-words font-mono [overflow-wrap:anywhere]">
+        <span className="sr-only">
+          title, views, likes, comments, shares, saves, publishedAt
+        </span>
+        <span
+          aria-hidden="true"
+          title="title, views, likes, comments, shares, saves, publishedAt"
+          className="mt-1 block max-w-[12rem] truncate font-mono text-[10px] leading-none"
+        >
           title, views, likes, comments, shares, saves, publishedAt
         </span>
       </p>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { UserRound, UserRoundPlus } from "lucide-react";
 import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { CharactersPaintText, PAINT_HIDDEN_SHELL } from "./characters-paint-text";
+import { PAINT_HIDDEN_SHELL } from "./characters-paint-text";
 
 export function CharactersEmpty() {
   const paintReady = useWindowLoadReady();
@@ -22,34 +22,19 @@ export function CharactersEmpty() {
         </span>
       </div>
 
-      <CharactersPaintText
-        ready={paintReady}
-        liveAs="span"
-        liveClassName="mt-4 max-w-md text-balance text-center text-[16px] font-semibold leading-6 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
-        paint={
-          <h2 data-empty-heading="true" data-empty-title="Create a reusable character">
-            <span className="sr-only">Create a reusable character</span>
-          </h2>
-        }
+      <h2
+        data-empty-heading="true"
+        data-empty-title="Create a reusable character"
       >
-        Create a reusable character
-      </CharactersPaintText>
-
+        <span className="sr-only">Create a reusable character</span>
+      </h2>
       <p className="sr-only">
         Save identity, look, and marks once. Reuse that blueprint in later prompts.
       </p>
-      <CharactersPaintText
-        ready={paintReady}
-        liveClassName="mt-2 max-w-md text-[13px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
-        paint={
-          <p
-            aria-hidden="true"
-            data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts."
-          />
-        }
-      >
-        Save identity, look, and marks once. Reuse that blueprint in later prompts.
-      </CharactersPaintText>
+      <p
+        aria-hidden="true"
+        data-empty-copy="Save identity, look, and marks once. Reuse that blueprint in later prompts."
+      />
 
       <Link href="/characters/new" data-empty-actions="true" className="pf-button-primary mt-5">
         <UserRoundPlus className="size-3.5" /> New character

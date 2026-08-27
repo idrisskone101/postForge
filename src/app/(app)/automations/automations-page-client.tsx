@@ -24,8 +24,6 @@ import {
   calendarDayShellClass,
   calendarTodayMarkerClass,
 } from "./hub-visual";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { AutomationsPaintText } from "./automations-paint-text";
 import { ManualResolutionDialog } from "./manual-resolution-dialog";
 import { Metric } from "./metric";
 import { PublishReviewDialog } from "./publish-review-dialog";
@@ -62,7 +60,6 @@ export function AutomationsPageClient({
 
   const weekDates = currentWeekDates();
   const todayKey = localDateKey(new Date());
-  const paintReady = useWindowLoadReady();
 
   return (
     <div data-page-inset="true" className="px-5 py-5 sm:px-7 lg:px-8">
@@ -107,34 +104,19 @@ export function AutomationsPageClient({
             </div>
           </div>
 
-          <AutomationsPaintText
-            ready={paintReady}
-            liveAs="span"
-            liveClassName="mt-4 max-w-md text-balance text-center text-[16px] font-semibold leading-6 text-[var(--pf-ink)] [overflow-wrap:anywhere]"
-            paint={
-              <h2 data-empty-heading="true" data-empty-title="Build your first reviewed content plan">
-                <span className="sr-only">Build your first reviewed content plan</span>
-              </h2>
-            }
+          <h2
+            data-empty-heading="true"
+            data-empty-title="Build your first reviewed content plan"
           >
-            Build your first reviewed content plan
-          </AutomationsPaintText>
-
+            <span className="sr-only">Build your first reviewed content plan</span>
+          </h2>
           <p className="sr-only">
             Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation.
           </p>
-          <AutomationsPaintText
-            ready={paintReady}
-            liveClassName="mt-2 max-w-md text-[13px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
-            paint={
-              <p
-                aria-hidden="true"
-                data-empty-copy="Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation."
-              />
-            }
-          >
-            Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation.
-          </AutomationsPaintText>
+          <p
+            aria-hidden="true"
+            data-empty-copy="Choose a playbook and save a schedule. Manual plans can create local review drafts; connected social plans can publish an approved Gallery video only after a separate review and explicit confirmation."
+          />
 
           <Link href="/automations/new" data-empty-actions="true" className="pf-button-primary mt-5">
             <Plus className="size-3.5 shrink-0" /> Create a content plan

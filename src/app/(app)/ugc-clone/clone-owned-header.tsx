@@ -26,7 +26,7 @@ export function CloneOwnedHeader() {
           <ClonePaintText
             ready={paintReady}
             liveAs="span"
-            liveClassName="block max-w-xl text-[13px] leading-[1.35] text-muted-foreground"
+            liveClassName="block max-w-[12rem] truncate text-[13px] leading-none text-muted-foreground"
             paint={<span className="sr-only">{COPY}</span>}
           >
             {COPY}
