@@ -56,11 +56,11 @@ function StatCard({
     <Link
       href={href}
       prefetch={false}
-      className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-border bg-card px-4 py-4 transition-[border-color] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]"
+      className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
     >
       <span className="sr-only">{label}</span>
       <span aria-hidden="true" data-home-glance-label={label} />
-      <span className="text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-foreground">
+      <span className="text-[28px] font-semibold leading-none tabular-nums tracking-[-0.02em] text-[var(--pf-ink)]">
         {value}
       </span>
     </Link>

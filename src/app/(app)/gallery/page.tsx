@@ -2,7 +2,6 @@ import {
   getGalleryPage,
   normalizeGalleryReviewStatusFilter,
 } from "@/lib/gallery";
-import { GALLERY_HAIRLINE_CSS } from "./gallery-panel";
 import { GalleryPageLazy } from "./gallery-page-lazy";
 
 export const metadata = { title: "Gallery - PostForge" };
@@ -41,14 +40,11 @@ export default async function GalleryPage({
   const page = await getGalleryPage({ type, sort, reviewStatus });
 
   return (
-    <>
-      <style>{GALLERY_HAIRLINE_CSS}</style>
-      <GalleryPageLazy
-        initialPage={page}
-        initialType={type}
-        initialSort={sort}
-        initialReviewStatus={reviewStatus}
-      />
-    </>
+    <GalleryPageLazy
+      initialPage={page}
+      initialType={type}
+      initialSort={sort}
+      initialReviewStatus={reviewStatus}
+    />
   );
 }

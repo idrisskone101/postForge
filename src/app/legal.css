@@ -15,12 +15,12 @@
 
 .dark {
   color-scheme: dark;
-  --pf-canvas: #2a2a2e;
-  --pf-surface: #3a3a40;
+  --pf-canvas: #0a0a0b;
+  --pf-surface: #131316;
   --pf-ink: #fafafa;
-  --pf-muted: #c4c4cc;
-  --pf-border: #5c5c64;
-  --pf-active: #45454c;
+  --pf-muted: #a1a1aa;
+  --pf-border: #26262b;
+  --pf-active: #1c1c20;
   --pf-orange: #c2410c;
   --pf-link: #6aa7ff;
   --pf-shadow-orange:

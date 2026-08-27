@@ -98,22 +98,17 @@ if (warmupRoute) {
 
 const rows = scoreRoutes(LH_ROUTES);
 
-const isolationRetryLimit = 3;
 for (let index = 0; index < rows.length; index += 1) {
-  let attempt = 0;
-  while (
-    evaluateRow(rows[index]).length > 0 &&
-    attempt < isolationRetryLimit
-  ) {
-    const row = rows[index];
-    attempt += 1;
-    process.stdout.write(
-      `Lighthouse gate: retrying ${row.route} in isolation after a failed first pass\n`
-    );
-    const [retry] = scoreRoutes([row.route]);
-    if (retry) {
-      rows[index] = retry;
-    }
+  const row = rows[index];
+  if (evaluateRow(row).length === 0) {
+    continue;
+  }
+  process.stdout.write(
+    `Lighthouse gate: retrying ${row.route} in isolation after a failed first pass\n`
+  );
+  const [retry] = scoreRoutes([row.route]);
+  if (retry && evaluateRow(retry).length === 0) {
+    rows[index] = retry;
   }
 }
 

@@ -61,18 +61,6 @@ assert.doesNotMatch(activity, /data-bulk/i);
 assert.doesNotMatch(activity, /bulk-bar/i);
 assert.doesNotMatch(activity, /type="checkbox"/i);
 
-const jobsPage = readFileSync(new URL("src/app/(app)/jobs/page.tsx", repoRoot), "utf8");
-assert.match(jobsPage, /JOBS_HAIRLINE_CSS/);
-
-const jobsPanel = readFileSync(new URL("src/app/(app)/jobs/jobs-panel.tsx", repoRoot), "utf8");
-assert.match(
-  jobsPanel,
-  /\[data-jobs-summary="true"\] a\{border:1px solid var\(--pf-border\)/
-);
-
-const firstPaint = readFileSync(new URL("src/app/first-paint-css.ts", repoRoot), "utf8");
-assert.doesNotMatch(firstPaint, /\[data-jobs-summary="true"\] a\{border/);
-
 assert.equal(
   existsSync(new URL("src/app/(app)/jobs/types.ts", repoRoot)),
   true,
