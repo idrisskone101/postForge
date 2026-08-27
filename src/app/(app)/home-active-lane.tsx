@@ -22,7 +22,6 @@ export function ActiveJobRow({ job }: { job: HomeJob }) {
     <Link
       href={getJobDestination(job)}
       prefetch={false}
-      data-home-row="true"
       className="group flex min-w-0 items-center gap-3 border-t border-border py-3 transition-colors first:border-t-0 hover:bg-muted"
     >
       <span

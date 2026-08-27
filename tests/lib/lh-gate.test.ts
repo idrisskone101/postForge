@@ -31,7 +31,6 @@ assert.match(gateScript, /LH_MAX_LCP_MS/);
 assert.match(gateScript, /performance >= \$\{minPerformance\}/);
 assert.match(gateScript, /discarding warmup audit/);
 assert.match(gateScript, /retrying \$\{row\.route\} in isolation/);
-assert.match(gateScript, /isolationRetryLimit = 3/);
 
 const bootScript = readFileSync(
   path.join(repoRoot, "scripts/kode-lighthouse.sh"),

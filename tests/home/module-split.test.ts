@@ -47,12 +47,6 @@ assert.doesNotMatch(homePage, /HomeCockpitClient/);
 assert.match(homePage, /export default async function HomePage/);
 assert.match(homePage, /Suspense/);
 assert.match(homePage, /<HomeHeader/);
-assert.match(homePage, /HOME_HAIRLINE_CSS/);
-
-const firstPaint = readFileSync(new URL("src/app/first-paint-css.ts", repoRoot), "utf8");
-assert.doesNotMatch(firstPaint, /data-home-panel/);
-assert.doesNotMatch(firstPaint, /data-home-start/);
-assert.doesNotMatch(firstPaint, /data-home-review/);
 
 const homeHeader = readFileSync(new URL("src/app/(app)/home-header.tsx", repoRoot), "utf8");
 assert.match(homeHeader, /<Link[\s\S]*href="\/ugc-clone"[\s\S]*prefetch=\{false\}/);

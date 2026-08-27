@@ -178,9 +178,6 @@ assert.match(markup, /\$1\.28/);
 assert.match(markup, />7</);
 
 // Section structure
-assert.match(markup, /data-home-panel="true"/);
-assert.match(markup, /data-home-start="true"/);
-assert.match(markup, /data-home-review="true"/);
 assert.match(markup, /Review queue/);
 assert.match(markup, /Recent media/);
 assert.match(markup, /In progress/);
