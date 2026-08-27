@@ -8,6 +8,7 @@ import {
   buildHairstyleDirective,
   resolveIdentityReferenceUrlsForAvatar,
 } from "@/lib/ugc/avatar-identity-pack";
+import { resolveAvatarGenerationPrompt } from "@/lib/ugc/before-identity-prompt";
 import type { ImageGenerationRequest } from "@/lib/ai/types";
 
 export interface AvatarImageRequest {
@@ -99,7 +100,12 @@ export async function buildAvatarImageGenerationRequest(
       ? requestedModel
       : await getDefaultEditCapableImageModel();
 
-  const aspectRatio = request.aspectRatio ?? "9:16";
+  const resolved = resolveAvatarGenerationPrompt({
+    prompt: request.prompt,
+    aspectRatio: request.aspectRatio,
+    negativePrompt: request.negativePrompt,
+  });
+  const aspectRatio = resolved.aspectRatio;
   const numImages = request.numImages ?? 1;
   const estimatedCost = calculateEstimatedCost(modelId, { numImages });
 
@@ -118,22 +124,24 @@ export async function buildAvatarImageGenerationRequest(
     { hairstyleRole: request.hairstyleRole }
   );
 
-  const hairstyleDirective = identityReferences.appliedHairstyleRole
-    ? buildHairstyleDirective(identityReferences.appliedHairstyleRole)
-    : undefined;
+  const hairstyleDirective =
+    resolved.hairstyleDirective ??
+    (identityReferences.appliedHairstyleRole
+      ? buildHairstyleDirective(identityReferences.appliedHairstyleRole)
+      : undefined);
 
   const promptString = request.styleTemplate
     ? buildAvatarVibePrompt({
-        userPrompt: request.prompt,
+        userPrompt: resolved.prompt,
         template: request.styleTemplate,
         folded: request.styleTemplateFolded === true,
         hairstyleDirective,
       })
-    : buildAvatarScenePrompt(request.prompt, {
+    : buildAvatarScenePrompt(resolved.prompt, {
         hairstyleDirective,
       });
-  const negativePrompt = request.negativePrompt?.trim()
-    ? `${AVATAR_IMAGE_NEGATIVE_PROMPT}, ${request.negativePrompt.trim()}`
+  const negativePrompt = resolved.negativePrompt?.trim()
+    ? `${AVATAR_IMAGE_NEGATIVE_PROMPT}, ${resolved.negativePrompt.trim()}`
     : AVATAR_IMAGE_NEGATIVE_PROMPT;
 
   return {

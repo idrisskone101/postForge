@@ -19,7 +19,10 @@ import {
 } from "@/lib/automations";
 import { isCharacterRecord } from "@/lib/characters";
 import { isCollectionRecord } from "@/lib/collections";
-import { isPromptTemplateRecord } from "@/lib/prompt-templates";
+import {
+  isPromptTemplateRecord,
+  parsePromptTemplateRecords,
+} from "@/lib/prompt-templates";
 import { isSameOriginMutation } from "@/lib/http";
 import { rejectCrossOriginMutation } from "@/lib/integrations/routes";
 
@@ -102,6 +105,13 @@ function invalidFeature() {
   return NextResponse.json({ error: "Unknown workspace feature" }, { status: 404 });
 }
 
+function presentFeatureRecords(feature: WorkspaceFeature, records: StoredRecord[]) {
+  if (feature === "prompt-templates") {
+    return parsePromptTemplateRecords(records);
+  }
+  return records;
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ feature: string }> }
@@ -109,7 +119,10 @@ export async function GET(
   try {
     const { feature } = await params;
     if (!isWorkspaceFeature(feature)) return invalidFeature();
-    return NextResponse.json({ records: await readWorkspaceFeatureRecords(feature) });
+    const records = await readWorkspaceFeatureRecords(feature);
+    return NextResponse.json({
+      records: presentFeatureRecords(feature, records),
+    });
   } catch (error) {
     console.error("Failed to read workspace feature:", error);
     return NextResponse.json(
@@ -183,7 +196,9 @@ export async function PUT(
     }
 
     const records = await upsertWorkspaceFeatureRecord(feature, body.record);
-    return NextResponse.json({ records });
+    return NextResponse.json({
+      records: presentFeatureRecords(feature, records),
+    });
   } catch (error) {
     if (error instanceof UnresolvedPublicationError) {
       return NextResponse.json({ error: error.message }, { status: 409 });
@@ -227,7 +242,9 @@ export async function DELETE(
             }
           )
         : await deleteWorkspaceFeatureRecord(feature, id);
-    return NextResponse.json({ records });
+    return NextResponse.json({
+      records: presentFeatureRecords(feature, records),
+    });
   } catch (error) {
     if (error instanceof UnresolvedPublicationError) {
       return NextResponse.json({ error: error.message }, { status: 409 });
