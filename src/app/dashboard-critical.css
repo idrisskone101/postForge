@@ -1024,6 +1024,12 @@ header:has([data-home-title]) .pf-button-primary {
   overflow: hidden;
 }
 
+[data-jobs-summary="true"] a {
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  background: var(--pf-surface);
+}
+
 [data-jobs-summary="true"] span:first-child::before {
   content: attr(data-jobs-label);
   display: block;
@@ -1147,12 +1153,19 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-jobs-board="true"] {
   margin-top: 0.75rem;
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  background: var(--pf-surface);
+  box-sizing: border-box;
 }
 
 [data-jobs-filters="true"] {
   height: 7.75rem;
   overflow: hidden;
   box-sizing: border-box;
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  background: var(--pf-surface);
 }
 
 [data-spend-page="true"] > * + * {
