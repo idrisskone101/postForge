@@ -3,8 +3,6 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { MediaPreviewFrame } from "@/components/media-preview";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { downloadFile } from "@/lib/utils/download";
 import { Copy, Download, ExternalLink, Loader2, Maximize2, Send, Sparkles, Trash2, X } from "lucide-react";
@@ -86,39 +84,34 @@ export function GallerySelectionInspector({
   const title = item.filename?.trim() || `Generated ${item.type}`;
 
   return (
-    <Card
+    <aside
       data-gallery-selection-inspector
-      role="complementary"
       aria-label="Selected asset preview"
-      className="order-first min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0 min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
+      className="pf-card order-first min-w-0 overflow-hidden min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
     >
-      <div className="flex min-w-0 items-center justify-between gap-3 border-b border-border px-3 py-2.5">
-        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+      <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--pf-border)] px-3 py-2.5">
+        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
           Previewing asset
         </span>
         <div className="flex shrink-0 items-center gap-1">
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="icon"
             onClick={onOpenPreview}
             aria-label="Open selected asset preview"
             title="Open full preview"
-            className="size-7"
+            className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
           >
             <Maximize2 className="size-3.5" />
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="outline"
-            size="icon"
             onClick={onDeselect}
             aria-label="Deselect previewed asset"
             title="Deselect asset"
-            className="size-7"
+            className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
           >
             <X className="size-3.5" />
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -126,7 +119,7 @@ export function GallerySelectionInspector({
         <button
           type="button"
           onClick={onOpenPreview}
-          className="relative block min-h-0 min-w-0 bg-muted text-left"
+          className="relative block min-h-0 min-w-0 bg-[var(--pf-active)] text-left"
           aria-label="Open full preview"
         >
           <MediaPreviewFrame
@@ -137,7 +130,7 @@ export function GallerySelectionInspector({
             alt="Selected generated asset"
             cover
             variant="card"
-            className="aspect-[4/3] rounded-none border-0 bg-muted sm:h-full sm:min-h-[290px] sm:aspect-auto min-[1360px]:aspect-[4/5] min-[1360px]:h-auto min-[1360px]:min-h-0"
+            className="aspect-[4/3] rounded-none border-0 bg-[var(--pf-active)] sm:h-full sm:min-h-[290px] sm:aspect-auto min-[1360px]:aspect-[4/5] min-[1360px]:h-auto min-[1360px]:min-h-0"
             mediaClassName="object-contain"
           />
         </button>
@@ -145,13 +138,13 @@ export function GallerySelectionInspector({
         <div className="flex min-w-0 flex-col gap-3 p-3.5">
           <div className="min-w-0">
             <h2
-              className="truncate text-[15px] font-semibold tracking-[-0.01em] text-foreground"
+              className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[var(--pf-ink)]"
               title={title}
             >
               {title}
             </h2>
             <p
-              className="mt-1 truncate text-[12px] text-muted-foreground"
+              className="mt-1 truncate text-[12px] text-[var(--pf-muted)]"
               title={item.model}
             >
               {item.model}
@@ -160,20 +153,20 @@ export function GallerySelectionInspector({
 
           {children ??
             (item.prompt ? (
-              <p className="min-w-0 break-words text-[12px] leading-[1.15rem] text-muted-foreground [overflow-wrap:anywhere] line-clamp-3">
+              <p className="min-w-0 break-words text-[12px] leading-[1.15rem] text-[var(--pf-muted)] [overflow-wrap:anywhere] line-clamp-3">
                 {item.prompt}
               </p>
             ) : null)}
 
-          <dl className="divide-y divide-border border-y border-border">
+          <dl className="divide-y divide-[var(--pf-border)] border-y border-[var(--pf-border)]">
             <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-              <dt className="text-muted-foreground">Created</dt>
+              <dt className="text-[var(--pf-muted)]">Created</dt>
               <dd className="pf-data min-w-0 truncate font-medium" suppressHydrationWarning>
                 {formatRelativeDate(item.createdAt)}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-              <dt className="text-muted-foreground">Output</dt>
+              <dt className="text-[var(--pf-muted)]">Output</dt>
               <dd className="pf-data min-w-0 truncate font-medium">
                 {item.width && item.height
                   ? `${item.width} × ${item.height}`
@@ -185,31 +178,23 @@ export function GallerySelectionInspector({
 
           {item.tiktokSourceUrl && (
             <div className="flex min-w-0 items-center justify-between gap-2">
-              <span className="text-[12px] text-muted-foreground">Source</span>
+              <span className="text-[12px] text-[var(--pf-muted)]">Source</span>
               <span className="flex shrink-0 items-center gap-1">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  size="sm"
                   onClick={() => void handleCopySource()}
-                  className="h-7 gap-1 px-2 text-[11px]"
+                  className="inline-flex h-7 items-center gap-1 rounded-[8px] px-2 text-[11px] font-medium text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                 >
                   <Copy className="size-3" /> Copy
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 gap-1 px-2 text-[11px] hover:text-primary"
-                  render={
-                    <a
-                      href={item.tiktokSourceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    />
-                  }
+                </button>
+                <a
+                  href={item.tiktokSourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-7 items-center gap-1 rounded-[8px] px-2 text-[11px] font-medium text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-primary"
                 >
                   <ExternalLink className="size-3" /> Open
-                </Button>
+                </a>
               </span>
             </div>
           )}
@@ -233,12 +218,11 @@ export function GallerySelectionInspector({
                 Use in Clone
               </Link>
             )}
-            <Button
+            <button
               type="button"
-              variant="outline"
               onClick={() => void handleDownload()}
               disabled={isDownloading}
-              className="h-9 min-w-0 px-2 text-[11px]"
+              className="pf-button-secondary h-9 min-w-0 px-2 text-[11px] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isDownloading ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -246,23 +230,21 @@ export function GallerySelectionInspector({
                 <Download className="size-3.5" />
               )}
               Download
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="outline"
               onClick={() => void onHandoff?.(item)}
-              className="h-9 min-w-0 px-2 text-[11px]"
+              className="pf-button-secondary h-9 min-w-0 px-2 text-[11px]"
             >
               <Send className="size-3.5" />
               Handoff
-            </Button>
+            </button>
             <GalleryDeleteDialog
               disabled={isDeleting}
               trigger={
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  className="col-span-2 h-9 min-w-0 gap-1.5 px-2 text-[11px] text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
+                  className="col-span-2 flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-2 text-[11px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               }
               title="Delete this asset?"
@@ -280,6 +262,6 @@ export function GallerySelectionInspector({
           </div>
         </div>
       </div>
-    </Card>
+    </aside>
   );
 }

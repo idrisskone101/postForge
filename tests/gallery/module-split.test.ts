@@ -47,24 +47,6 @@ assert.ok(
   "gallery-page-client.tsx must shrink below 331 lines"
 );
 
-const galleryPage = readFileSync(new URL("src/app/(app)/gallery/page.tsx", repoRoot), "utf8");
-assert.match(galleryPage, /GALLERY_HAIRLINE_CSS/);
-
-const galleryPanel = readFileSync(
-  new URL("src/app/(app)/gallery/gallery-panel.tsx", repoRoot),
-  "utf8"
-);
-assert.match(
-  galleryPanel,
-  /\[data-gallery-toolbar="true"\],\s*\[data-gallery-bulk-bar\]/
-);
-
-const firstPaint = readFileSync(new URL("src/app/first-paint-css.ts", repoRoot), "utf8");
-assert.doesNotMatch(
-  firstPaint,
-  /\[data-gallery-toolbar="true"\],\s*\[data-gallery-bulk-bar\]/
-);
-
 const galleryRouteTsx = listFiles("src/app/(app)/gallery/").filter((file) =>
   file.endsWith(".tsx")
 );

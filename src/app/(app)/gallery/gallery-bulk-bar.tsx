@@ -11,9 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { CheckCircle2, Download, Loader2, Send, Trash2, XCircle } from "lucide-react";
-import { GalleryPanel } from "./gallery-panel";
 import type { GalleryWorkspace } from "./use-gallery-workspace";
 
 export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
@@ -33,66 +31,56 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
   if (selectionCount === 0) return null;
 
   return (
-    <GalleryPanel data-gallery-bulk-bar className="px-3 py-2">
+    <section data-gallery-bulk-bar className="pf-card px-3 py-2">
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
         <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-[8px] bg-primary text-[11px] font-bold text-primary-foreground">
           {selectionCount}
         </span>
-        <strong className="shrink-0 text-[13px] font-medium text-foreground">
+        <strong className="shrink-0 text-[13px] font-medium text-[var(--pf-ink)]">
           {selectionCount} selected
         </strong>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={() => setSelectedIds(new Set(filtered.map((item) => item.id)))}
-          className="h-auto px-0 text-[12px] font-medium text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
         >
           Select all {filtered.length}
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={() => setSelectedIds(new Set())}
-          className="h-auto px-0 text-[12px] font-medium text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
         >
           Clear
-        </Button>
+        </button>
         <span
           aria-hidden="true"
-          className="hidden h-4 w-px bg-border sm:block"
+          className="hidden h-4 w-px bg-[var(--pf-border)] sm:block"
         />
         <div className="flex min-w-0 flex-wrap items-center gap-0.5">
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
             disabled={isBulkUpdating}
             onClick={() => void updateSelectedReviewStatus("approved_output")}
-            className="h-8 gap-1.5 px-2.5 text-[12px] hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)]"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)] disabled:opacity-50"
           >
             <CheckCircle2 className="size-3.5" />
             Approve
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
             disabled={isBulkUpdating}
             onClick={() => void updateSelectedReviewStatus("rejected_output")}
-            className="h-8 gap-1.5 px-2.5 text-[12px] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
           >
             <XCircle className="size-3.5" />
             Reject
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
             disabled={isBulkDownloading}
             onClick={() => void handleBulkDownload()}
-            className="h-8 gap-1.5 px-2.5 text-[12px]"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isBulkDownloading ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -100,28 +88,24 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
               <Download className="size-3.5" />
             )}
             {isBulkDownloading ? "Downloading" : "Download"}
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
             onClick={() => void handleBulkHandoff()}
-            className="h-8 gap-1.5 px-2.5 text-[12px]"
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-active)]"
           >
             <Send className="size-3.5" />
             Handoff
-          </Button>
+          </button>
         </div>
         <span className="flex-1" />
         <AlertDialog>
           <AlertDialogTrigger
             disabled={isDeleting}
             render={
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
-                className="h-8 gap-1.5 px-2.5 text-[12px] text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
+                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
               />
             }
           >
@@ -146,6 +130,6 @@ export function GalleryBulkBar({ workspace }: { workspace: GalleryWorkspace }) {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </GalleryPanel>
+    </section>
   );
 }
