@@ -95,6 +95,7 @@ assert.match(markup, /href="\/jobs\?status=completed"/);
 assert.match(markup, /href="\/jobs\?status=failed"/);
 assert.match(markup, /href="\/jobs"/);
 assert.match(markup, /data-slot="card"/);
+assert.match(markup, /hidden md:block/);
 assert.match(markup, /pf-status-warning/);
 assert.match(markup, /pf-status-success/);
 assert.match(markup, /pf-status-danger/);
