@@ -646,11 +646,11 @@ assert.match(
   source("src/lib/use-window-load-ready.ts"),
   /window\.addEventListener\("load"/,
 );
-assert.match(
+assert.doesNotMatch(
   source("src/components/slideshow/slideshow-studio-lazy.tsx"),
   /useWindowLoadReady/,
 );
-assert.match(
+assert.doesNotMatch(
   source("src/components/generation-form-lazy.tsx"),
   /useWindowLoadReady/,
 );
@@ -658,8 +658,20 @@ assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
   /useWindowLoadReady/,
 );
-assert.match(
+assert.doesNotMatch(
   source("src/components/ugc-clone-form-lazy.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/components/generation-form.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
+  /useWindowLoadReady/,
+);
+assert.match(
+  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
   /useWindowLoadReady/,
 );
 assert.match(
