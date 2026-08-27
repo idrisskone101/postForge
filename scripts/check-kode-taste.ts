@@ -757,6 +757,27 @@ export function checkKodeTaste(options: {
   return violations;
 }
 
+export function checkKodeTasteRatchet(options: {
+  rootDir: string;
+  allowlist?: Partial<KodeTasteAllowlist>;
+}): Array<
+  Extract<
+    KodeTasteViolation,
+    { kind: "stale-allowlist" } | { kind: "missing-allowlist" }
+  >
+> {
+  return checkKodeTaste(options).filter(
+    (
+      violation
+    ): violation is Extract<
+      KodeTasteViolation,
+      { kind: "stale-allowlist" } | { kind: "missing-allowlist" }
+    > =>
+      violation.kind === "stale-allowlist" ||
+      violation.kind === "missing-allowlist"
+  );
+}
+
 export function formatKodeTasteViolations(
   violations: readonly KodeTasteViolation[]
 ): string {
@@ -865,7 +886,7 @@ function main(): void {
   }
 
   const allowlist = loadKodeTasteAllowlist(rootDir);
-  const violations = checkKodeTaste({ rootDir, allowlist });
+  const violations = checkKodeTasteRatchet({ rootDir, allowlist });
   if (violations.length > 0) {
     console.error(formatKodeTasteViolations(violations));
     process.exit(1);
