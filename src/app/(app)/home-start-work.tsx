@@ -14,20 +14,20 @@ export function HomeStartWork() {
           key={action.href}
           prefetch={false}
           href={action.href}
-          className="pf-card pf-card-hover group flex min-w-0 items-center gap-3 p-4"
+          className="group flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4 transition-[border-color] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)] transition-colors group-hover:text-[var(--pf-ink)]">
+          <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-muted text-muted-foreground transition-colors group-hover:text-foreground">
             <action.icon className="size-[18px]" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
+            <span className="block truncate text-[13px] font-semibold text-foreground">
               {action.title}
             </span>
-            <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-muted)]">
+            <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
               {action.detail}
             </span>
           </span>
-          <ArrowRight className="size-4 shrink-0 text-[var(--pf-muted)] transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </Link>
       ))}
     </section>

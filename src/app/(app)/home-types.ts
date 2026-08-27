@@ -1,3 +1,4 @@
+import type { ComponentType, ReactNode } from "react";
 import type { CostSummary } from "@/lib/costs/tracker";
 
 export type HomeJob = {
@@ -41,4 +42,27 @@ export type HomeDashboard = {
   pendingReviewCount: number;
   recentMedia: HomeMedia[];
   now?: Date;
+};
+
+export type HomePanelHeaderProps = {
+  title: string;
+  action?: ReactNode;
+};
+
+export type HomePanelLinkProps = {
+  href: string;
+  children: ReactNode;
+};
+
+export type HomeLaneEmptyProps = {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  iconTone?: "muted" | "success";
+  className?: string;
+};
+
+export type HomeReviewQueueProps = {
+  jobs: HomeJob[];
+  onReviewSaved?: () => void;
 };

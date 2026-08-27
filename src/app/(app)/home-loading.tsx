@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { HomePanel, HomePanelBody, HomePanelHeader } from "./home-panel";
 
 export default function HomeLoading() {
   return (
@@ -16,8 +17,11 @@ export default function HomeLoading() {
         className="mt-6 grid grid-cols-2 gap-3 min-[860px]:!grid-cols-4"
       >
         {["Spend today", "Jobs running", "Awaiting review", "Completed this week"].map((label) => (
-          <div key={label} className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
+          <div
+            key={label}
+            className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-border bg-card px-4 py-4"
+          >
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               {label}
             </span>
             <Skeleton className="h-7 w-12" />
@@ -26,40 +30,45 @@ export default function HomeLoading() {
       </section>
 
       <div className="mt-3 grid items-start gap-3 min-[1024px]:grid-cols-[9fr_11fr]">
-        <section aria-label="Review queue" className="pf-card min-w-0 p-4 sm:p-5">
-          <Skeleton className="h-4 w-28" />
-          <div className="mt-3">
+        <HomePanel aria-label="Review queue">
+          <HomePanelHeader title="Review queue" />
+          <HomePanelBody>
             {Array.from({ length: 3 }).map((_, index) => (
               <RowSkeleton key={index} />
             ))}
-          </div>
-        </section>
+          </HomePanelBody>
+        </HomePanel>
 
-        <section aria-label="Recent media" className="pf-card min-w-0 p-4 sm:p-5">
-          <Skeleton className="h-4 w-28" />
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square rounded-[8px]" />
-            ))}
-          </div>
-        </section>
+        <HomePanel aria-label="Recent media">
+          <HomePanelHeader title="Recent media" />
+          <HomePanelBody>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-square rounded-[8px]" />
+              ))}
+            </div>
+          </HomePanelBody>
+        </HomePanel>
       </div>
 
-      <section aria-label="In progress" className="pf-card mt-3 min-w-0 p-4 sm:p-5">
-        <Skeleton className="h-4 w-24" />
-        <div className="mt-1">
+      <HomePanel aria-label="In progress" className="mt-3">
+        <HomePanelHeader title="In progress" />
+        <HomePanelBody>
           {Array.from({ length: 2 }).map((_, index) => (
             <RowSkeleton key={index} />
           ))}
-        </div>
-      </section>
+        </HomePanelBody>
+      </HomePanel>
 
       <section
         aria-label="Start new work"
         className="mt-3 grid gap-3 sm:grid-cols-3"
       >
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="pf-card flex min-w-0 items-center gap-3 p-4">
+          <div
+            key={index}
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4"
+          >
             <Skeleton className="size-10 shrink-0 rounded-[8px]" />
             <div className="min-w-0 flex-1">
               <Skeleton className="h-3.5 w-full max-w-[140px]" />
@@ -74,7 +83,7 @@ export default function HomeLoading() {
 
 function RowSkeleton() {
   return (
-    <div className="border-t border-[var(--pf-border)] py-3 first:border-t-0">
+    <div className="border-t border-border py-3 first:border-t-0">
       <div className="flex items-center gap-3">
         <Skeleton className="size-10 shrink-0 rounded-[8px]" />
         <div className="min-w-0 flex-1">

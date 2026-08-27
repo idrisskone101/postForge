@@ -12,7 +12,6 @@ import { VideoFramePreview } from "@/components/video-frame-preview";
 import type { HomeJob } from "./home-types";
 
 export function ActiveJobRow({ job }: { job: HomeJob }) {
-  const isVideo = job.type === "video";
   const contextDetail =
     job.productionContext?.identityDetail ?? job.productionContext?.sourceDetail ?? null;
   const meta = [job.model, contextDetail, formatRelativeDate(job.createdAt)]
@@ -23,31 +22,37 @@ export function ActiveJobRow({ job }: { job: HomeJob }) {
     <Link
       href={getJobDestination(job)}
       prefetch={false}
-      className="group flex min-w-0 items-center gap-3 border-t border-[var(--pf-border)] py-3 transition-colors first:border-t-0 hover:bg-[var(--pf-active)]"
+      className="group flex min-w-0 items-center gap-3 border-t border-border py-3 transition-colors first:border-t-0 hover:bg-muted"
     >
       <span
         className={cn(
-          "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border border-[var(--pf-border)]",
-          "bg-[var(--pf-active)] text-[var(--pf-muted)]"
+          "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border border-border",
+          "bg-muted text-muted-foreground"
         )}
       >
-        {job.output ? <JobMedia job={job} /> : isVideo ? <Play className="size-3.5" /> : <ImageIcon className="size-3.5" />}
+        <JobThumb job={job} />
       </span>
       <span className="min-w-0 flex-1">
-        <strong className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
+        <strong className="block truncate text-[13px] font-semibold text-foreground">
           {getJobActivityLabel(job)}
         </strong>
-        <span className="mt-0.5 line-clamp-1 break-words text-[12px] leading-[1.35] text-[var(--pf-muted)] [overflow-wrap:anywhere]">
+        <span className="mt-0.5 line-clamp-1 break-words text-[12px] leading-[1.35] text-muted-foreground [overflow-wrap:anywhere]">
           {getJobPreview(job, 88)}
         </span>
-        <span className="mt-0.5 block truncate text-[11px] text-[var(--pf-muted)]">{meta}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{meta}</span>
       </span>
       <span className="hidden min-[720px]:inline-flex">
         <JobStatusPill status={job.status} />
       </span>
-      <ArrowRight className="size-4 shrink-0 text-[var(--pf-muted)] transition-transform group-hover:translate-x-0.5" />
+      <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
     </Link>
   );
+}
+
+function JobThumb({ job }: { job: HomeJob }) {
+  if (job.output) return <JobMedia job={job} />;
+  if (job.type === "video") return <Play className="size-3.5" />;
+  return <ImageIcon className="size-3.5" />;
 }
 
 function truncateAtWord(value: string, maxLength: number) {
@@ -87,7 +92,7 @@ function JobStatusPill({ status }: { status: string }) {
 
   return (
     <span
-      className="inline-flex max-w-full items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] px-2.5 py-0.5 text-[11px] font-medium capitalize text-[var(--pf-muted)]"
+      className="inline-flex max-w-full items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-medium capitalize text-muted-foreground"
     >
       <span className="truncate">{status}</span>
     </span>
@@ -99,7 +104,7 @@ function JobMedia({ job, priority = false }: { job: HomeJob; priority?: boolean 
     const source = `/api/files/${encodeURIComponent(job.output.id)}`;
     if (job.type === "video") {
       return (
-        <span className="absolute inset-0 bg-[var(--pf-active)]">
+        <span className="absolute inset-0 bg-muted">
           <VideoFramePreview
             src={source}
             label={`${getJobActivityLabel(job)} preview`}
@@ -124,7 +129,7 @@ function JobMedia({ job, priority = false }: { job: HomeJob; priority?: boolean 
   return (
     <span
       aria-hidden="true"
-      className="absolute inset-0 grid place-items-center bg-[var(--pf-active)] text-[var(--pf-muted)]"
+      className="absolute inset-0 grid place-items-center bg-muted text-muted-foreground"
     >
       {job.type === "video" ? <Play className="size-5" /> : <ImageIcon className="size-5" />}
     </span>
