@@ -69,7 +69,11 @@ assert.match(
   dashboardCritical,
   /\[data-home-glance="true"\] a \[data-home-glance-label\]::before[\s\S]*?color:\s*var\(--pf-muted\)/,
 );
-assert.doesNotMatch(sidebar, /hidden xl:(grid|flex|inline-flex)/);
+assert.match(
+  dashboardCritical,
+  /\[data-home-title\]::before[\s\S]*?color:\s*var\(--pf-ink\)/,
+);
+assert.match(dashboardCritical, /#workspace-shell[\s\S]*?color:\s*var\(--pf-ink\)/);
 
 assert.equal(existsSync(path.join(repoRoot, "src/components/pf-system")), false);
 assert.equal(existsSync(path.join(repoRoot, "src/components/motion")), false);

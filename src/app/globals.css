@@ -1573,7 +1573,7 @@
   height: 10px !important;
   font-size: 10px !important;
   line-height: 10px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1605,7 +1605,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 1.1 !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
@@ -1618,7 +1618,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 31px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1633,7 +1633,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 1.1 !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
 
@@ -1646,7 +1646,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 33px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1833,7 +1833,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 31px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -1846,7 +1846,7 @@ header:has([data-home-title]) p {
   font-size: 28px !important;
   font-weight: 600 !important;
   line-height: 31px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1920,7 +1920,7 @@ header:has([data-home-title]) p {
   font-size: 15px !important;
   font-weight: 600 !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -1934,7 +1934,7 @@ header:has([data-home-title]) p {
   font-size: 15px !important;
   font-weight: 600 !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -1958,7 +1958,7 @@ header:has([data-home-title]) p {
   font-size: 12px !important;
   font-weight: 600 !important;
   line-height: 12px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2001,7 +2001,7 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 600 !important;
   line-height: 10px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2014,7 +2014,7 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 600 !important;
   line-height: 10px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2027,7 +2027,7 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 600 !important;
   line-height: 10px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2236,7 +2236,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 24px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -2251,14 +2251,14 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 24px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
 
 [data-picker-open="true"] textarea.pf-input {
   color: transparent !important;
-  caret-color: #18181b !important;
+  caret-color: var(--pf-ink) !important;
 }
 
 [data-playbook-lede]::before,
@@ -2278,21 +2278,21 @@ header:has([data-home-title]) p {
   content: attr(data-playbook-lede) !important;
   font-size: 11px !important;
   font-weight: 400 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
 }
 
 [data-playbook-name]::before {
   content: attr(data-playbook-name) !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
 }
 
 [data-playbook-blurb]::before {
   content: attr(data-playbook-blurb) !important;
   font-size: 12px !important;
   font-weight: 400 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
 }
 
 [data-automation-form="true"] .pf-input {
@@ -2326,7 +2326,7 @@ header:has([data-home-title]) p {
   line-height: 17px !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -2344,7 +2344,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 1 !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -2357,7 +2357,7 @@ header:has([data-home-title]) p {
   height: 16px !important;
   font-size: 12px !important;
   line-height: 16px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2382,7 +2382,7 @@ header:has([data-home-title]) p {
   font-size: 12px !important;
   font-weight: 600 !important;
   line-height: 1rem !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2396,7 +2396,7 @@ header:has([data-home-title]) p {
   max-width: 8rem !important;
   font-size: 10px !important;
   line-height: 10px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2470,7 +2470,7 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
   font-size: 10px !important;
   line-height: 1 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -2481,7 +2481,7 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
   font-size: 15px !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -2492,7 +2492,7 @@ header:has([data-home-title]) p {
   height: 19px !important;
   font-size: 15px !important;
   line-height: 19px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2763,7 +2763,7 @@ header:has([data-home-title]) p {
   font-size: 14px !important;
   font-weight: 600 !important;
   line-height: 16px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2870,7 +2870,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 1 !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
 }
 
 [data-spend-value="true"] {
@@ -2888,7 +2888,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 1 !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
 }
 
@@ -2910,7 +2910,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 20px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2924,7 +2924,7 @@ header:has([data-home-title]) p {
   font-size: 11px !important;
   line-height: 1 !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -2961,7 +2961,7 @@ header:has([data-home-title]) p {
   font-size: 10px !important;
   font-weight: 400 !important;
   line-height: 1 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -2977,7 +2977,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 25px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
@@ -2993,7 +2993,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 25px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -3003,7 +3003,7 @@ header:has([data-home-title]) p {
   max-width: 30rem !important;
   font-size: 12px !important;
   line-height: 1.25rem !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
 }
 
 .pf-empty-stage [data-empty-icon="true"] {
@@ -3073,7 +3073,7 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
   font-size: 12px !important;
   line-height: 1rem !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -3089,7 +3089,7 @@ header:has([data-home-title]) p {
   max-width: 36rem !important;
   font-size: 12px !important;
   line-height: 1rem !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
 }
 
 [data-settings-pending="true"],
@@ -3134,7 +3134,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 25px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
 }
 
 [data-settings-heading="true"]::before {
@@ -3147,7 +3147,7 @@ header:has([data-home-title]) p {
   font-weight: 600 !important;
   line-height: 25px !important;
   letter-spacing: -0.02em !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -3194,7 +3194,7 @@ header:has([data-home-title]) p {
   line-height: 16px !important;
   font-weight: 400 !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -3207,7 +3207,7 @@ header:has([data-home-title]) p {
   font-size: 12px !important;
   line-height: 16px !important;
   font-weight: 400 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -3227,7 +3227,7 @@ header:has([data-home-title]) p {
   line-height: 11px !important;
   font-weight: 400 !important;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -3239,7 +3239,7 @@ header:has([data-home-title]) p {
   font-size: 11px !important;
   line-height: 11px !important;
   font-weight: 400 !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -3252,7 +3252,7 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
   font-size: 11px !important;
   line-height: 11px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
 }
 
@@ -3263,7 +3263,7 @@ header:has([data-home-title]) p {
   height: 11px !important;
   font-size: 11px !important;
   line-height: 11px !important;
-  color: #52525b !important;
+  color: var(--pf-muted) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }
@@ -3440,7 +3440,7 @@ header:has([data-home-title]) p {
   height: 12px !important;
   font-size: 12px !important;
   line-height: 12px !important;
-  color: #18181b !important;
+  color: var(--pf-ink) !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
 }

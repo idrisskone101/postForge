@@ -67,11 +67,13 @@ const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx")
 const galleryGrid = source("src/components/gallery-grid.tsx");
 const home = [
   source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/home-header.tsx"),
   source("src/app/(app)/home-active-lane.tsx"),
 ].join("\n");
 
 const routeSurfaces = [
   source("src/app/(app)/home-cockpit.tsx"),
+  source("src/app/(app)/home-header.tsx"),
   source("src/app/(app)/home-active-lane.tsx"),
   source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"),
   cloneStudio,
@@ -273,7 +275,7 @@ assert.match(source("src/app/(app)/generate/page.tsx"), /GenerationFormLazy/);
 assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{height:29\.625rem/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]\{height:340px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]:has\(\[data-workspace-title\]\)\{height:340px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-stats="true"\]>article\{height:158px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
@@ -500,7 +502,8 @@ assert.match(source("src/components/workspace-state-copy.tsx"), /useWindowLoadRe
 assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
-assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
+assert.match(source("src/app/(app)/home-header.tsx"), /flex-nowrap/);
+assert.match(source("src/app/(app)/home-header.tsx"), /data-home-title=\{paintReady \? undefined : TITLE\}/);
 assert.match(
   source("src/app/globals.css"),
   /\[data-character-preview-stage="true"\][\s\S]*?min-height:\s*620px/,

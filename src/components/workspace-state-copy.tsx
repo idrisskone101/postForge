@@ -20,7 +20,7 @@ export function WorkspaceStateCopy({
         data-workspace-title={paintReady ? undefined : title}
         className={cn(
           paintReady
-            ? "max-w-xl text-[15px] font-semibold tracking-tight [overflow-wrap:anywhere]"
+            ? "max-w-xl text-[15px] font-semibold tracking-tight text-[var(--pf-ink)] [overflow-wrap:anywhere]"
             : "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
           titleClassName
         )}
