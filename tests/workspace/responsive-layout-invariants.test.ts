@@ -293,10 +293,6 @@ assert.doesNotMatch(
 );
 assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-summary="true"\]\{display:grid/);
-assert.doesNotMatch(
-  source("src/app/first-paint-css.ts"),
-  /\[data-jobs-summary="true"\] a\{border/,
-);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-jobs-board="true"\]\{margin-top:\.75rem/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-gallery-filters="true"\]\{display:grid/);
 assert.match(

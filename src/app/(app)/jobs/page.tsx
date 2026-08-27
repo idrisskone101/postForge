@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { JobsActivity } from "./jobs-activity";
-import { JOBS_HAIRLINE_CSS } from "./jobs-panel";
 import { EMPTY_JOBS_ACTIVITY, type JobsStatusFilter, type JobsTypeFilter } from "./types";
 import { JobsAutoRefresh } from "./jobs-auto-refresh";
 
@@ -15,12 +14,9 @@ export default function JobsPage({
   searchParams: Promise<{ status?: string; type?: string; page?: string }>;
 }) {
   return (
-    <>
-      <style>{JOBS_HAIRLINE_CSS}</style>
-      <Suspense fallback={<JobsActivity activity={EMPTY_JOBS_ACTIVITY} />}>
-        <JobsPageData searchParams={searchParams} />
-      </Suspense>
-    </>
+    <Suspense fallback={<JobsActivity activity={EMPTY_JOBS_ACTIVITY} />}>
+      <JobsPageData searchParams={searchParams} />
+    </Suspense>
   );
 }
 
