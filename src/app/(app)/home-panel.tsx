@@ -22,6 +22,7 @@ export function HomePanel({
         className
       )}
       {...props}
+      data-home-panel="true"
     >
       {children}
     </Card>

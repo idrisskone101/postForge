@@ -64,7 +64,7 @@ export function HomeReviewQueue({ jobs, onReviewSaved }: HomeReviewQueueProps) {
   }
 
   return (
-    <div>
+    <div data-home-review="true">
       {error && (
         <p className="mb-2 rounded-[8px] border border-border bg-muted px-3 py-2 text-[12px] text-[var(--pf-danger)]">
           {error}
@@ -76,6 +76,7 @@ export function HomeReviewQueue({ jobs, onReviewSaved }: HomeReviewQueueProps) {
           return (
             <li
               key={job.id}
+              data-home-row="true"
               className={cn(
                 "flex items-center gap-3 border-t border-border py-3 first:border-t-0 first:pt-0 last:pb-0",
                 busy && "opacity-50"
