@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Images } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { downloadFile } from "@/lib/utils/download";
 import { GalleryGridCards } from "@/components/gallery/grid-cards";
@@ -149,11 +150,11 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
 
   if (items.length === 0) {
     return (
-      <div className="pf-card flex min-h-64 flex-col items-center justify-center text-[var(--pf-muted)]">
+      <Card className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-border bg-card py-0 text-muted-foreground shadow-none ring-0">
         <Images className="mb-3 size-10 opacity-40" />
         <p className="text-sm font-medium">No media yet</p>
         <p className="mt-1 text-xs">Generated images and videos will appear here</p>
-      </div>
+      </Card>
     );
   }
 
