@@ -22,6 +22,7 @@ export function HomePanel({
         className
       )}
       {...props}
+      data-home-panel="true"
     >
       {children}
     </Card>
@@ -89,3 +90,5 @@ export function HomeLaneEmpty({
     </div>
   );
 }
+
+export const HOME_HAIRLINE_CSS = `[data-home-panel="true"]{border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface)}[data-home-start="true"]{border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface)}[data-home-start="true"]:hover{border-color:var(--pf-border-strong)}[data-home-panel="true"] [data-home-row]{border-top:1px solid var(--pf-border)}[data-home-panel="true"] [data-home-row]:first-child{border-top-width:0}[data-home-review] [data-slot="button"]{border:1px solid var(--pf-border);background:var(--pf-surface)}`;

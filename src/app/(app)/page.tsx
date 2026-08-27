@@ -5,6 +5,7 @@ import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
 import { HomeCockpit, HomeHeader } from "./home-cockpit";
+import { HOME_HAIRLINE_CSS } from "./home-panel";
 import { type HomeJob } from "./home-types";
 import { HomeEmptyPanel } from "./home-start-work";
 
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   return (
     <div className="pf-content-viewport bg-background">
+      <style>{HOME_HAIRLINE_CSS}</style>
       <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
         <HomeHeader />
         <Suspense fallback={<HomeDashboardFallback />}>
