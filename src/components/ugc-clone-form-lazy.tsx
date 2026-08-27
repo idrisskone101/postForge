@@ -19,9 +19,17 @@ export function UGCCloneQueueLazy() {
   return <UGCCloneQueueDynamic />;
 }
 
+function loadUGCCloneForm() {
+  return import("@/components/ugc-clone-form");
+}
+
+function loadUGCCloneQueue() {
+  return import("@/components/ugc-clone-queue");
+}
+
 const UGCCloneFormDynamic = dynamic(
   () =>
-    import("@/components/ugc-clone-form").then((mod) => ({
+    loadUGCCloneForm().then((mod) => ({
       default: mod.UGCCloneForm,
     })),
   { ssr: false, loading: CloneFormSkeleton },
@@ -29,8 +37,11 @@ const UGCCloneFormDynamic = dynamic(
 
 const UGCCloneQueueDynamic = dynamic(
   () =>
-    import("@/components/ugc-clone-queue").then((mod) => ({
+    loadUGCCloneQueue().then((mod) => ({
       default: mod.UGCCloneQueue,
     })),
   { ssr: false, loading: CloneQueueSkeleton },
 );
+
+void loadUGCCloneForm();
+void loadUGCCloneQueue();

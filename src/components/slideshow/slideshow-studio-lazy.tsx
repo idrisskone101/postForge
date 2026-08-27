@@ -11,10 +11,16 @@ export function SlideshowStudioLazy(props: SlideshowStudioProps) {
   return <SlideshowStudioDynamic {...props} />;
 }
 
+function loadSlideshowStudio() {
+  return import("@/components/slideshow/slideshow-studio");
+}
+
 const SlideshowStudioDynamic = dynamic(
   () =>
-    import("@/components/slideshow/slideshow-studio").then((mod) => ({
+    loadSlideshowStudio().then((mod) => ({
       default: mod.SlideshowStudio,
     })),
   { ssr: false, loading: WorkspaceRouteSkeleton },
 );
+
+void loadSlideshowStudio();

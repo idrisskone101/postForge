@@ -11,10 +11,16 @@ export function GenerationFormLazy(props: GenerationFormProps) {
   return <GenerationFormDynamic {...props} />;
 }
 
+function loadGenerationForm() {
+  return import("@/components/generation-form");
+}
+
 const GenerationFormDynamic = dynamic(
   () =>
-    import("@/components/generation-form").then((mod) => ({
+    loadGenerationForm().then((mod) => ({
       default: mod.GenerationForm,
     })),
   { ssr: false, loading: GenerateFormSkeleton },
 );
+
+void loadGenerationForm();
