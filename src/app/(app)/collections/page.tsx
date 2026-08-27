@@ -1,6 +1,9 @@
 import { Suspense } from "react";
+import { COLLECTIONS_HAIRLINE_CSS } from "./collections-panel";
 import { CollectionsPageLazy } from "./collections-page-lazy";
 import { WorkspaceRouteSkeleton } from "@/components/workspace-route-skeleton";
+
+export const metadata = { title: "Collections - PostForge" };
 
 export default function CollectionsPage({
   searchParams,
@@ -8,9 +11,12 @@ export default function CollectionsPage({
   searchParams: Promise<{ upload?: string }>;
 }) {
   return (
-    <Suspense fallback={<WorkspaceRouteSkeleton />}>
-      <CollectionsPageWithParams searchParams={searchParams} />
-    </Suspense>
+    <>
+      <style>{COLLECTIONS_HAIRLINE_CSS}</style>
+      <Suspense fallback={<WorkspaceRouteSkeleton />}>
+        <CollectionsPageWithParams searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }
 
