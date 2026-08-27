@@ -34,7 +34,7 @@ export function JobsStatusPill({ job }: { job: JobActivityItem }) {
   }
 
   return (
-    <span className="inline-flex max-w-full items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] px-2.5 py-0.5 text-[11px] font-medium capitalize text-[var(--pf-muted)]">
+    <span className="inline-flex max-w-full items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-medium capitalize text-muted-foreground">
       <span className="truncate">{label}</span>
     </span>
   );

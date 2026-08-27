@@ -7,6 +7,7 @@ import {
   SUMMARY_CARDS,
   TYPE_FILTERS,
 } from "./jobs-activity-helpers";
+import { JobsPanel } from "./jobs-panel";
 import { JobsTable } from "./jobs-table";
 import type { JobsActivityViewModel, JobsStatusFilter } from "./types";
 
@@ -21,7 +22,7 @@ export function JobsActivity({ activity }: JobsActivityProps) {
   const pageCount = Math.max(1, Math.ceil(filteredTotal / pageSize));
 
   return (
-    <div className="pf-content-viewport">
+    <div className="pf-content-viewport bg-background">
       <div
         data-jobs-page="true"
         className="mx-auto max-w-[1280px] pb-12 sm:px-6 lg:px-8 lg:py-6"
@@ -43,12 +44,12 @@ export function JobsActivity({ activity }: JobsActivityProps) {
           ))}
         </section>
 
-        <div
+        <JobsPanel
           data-jobs-filters="true"
-          className="pf-card mt-3 flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
+          className="mt-3 flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
         >
           <div
-            className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-[var(--pf-active)] p-1"
+            className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-muted p-1"
             aria-label="Filter jobs by status"
           >
             {STATUS_FILTERS.map((filter) => (
@@ -57,9 +58,9 @@ export function JobsActivity({ activity }: JobsActivityProps) {
                 href={buildJobsHref(filter.value, type)}
                 aria-current={status === filter.value ? "page" : undefined}
                 className={cn(
-                  "shrink-0 rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-[var(--pf-muted)] transition-colors duration-[180ms] hover:text-[var(--pf-ink)]",
+                  "shrink-0 rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-muted-foreground transition-colors duration-[180ms] ease-[var(--pf-ease)] hover:text-foreground",
                   status === filter.value &&
-                    "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
+                    "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
                 )}
               >
                 {filter.label}
@@ -67,7 +68,7 @@ export function JobsActivity({ activity }: JobsActivityProps) {
             ))}
           </div>
           <div
-            className="flex w-fit gap-1 rounded-[8px] bg-[var(--pf-active)] p-1"
+            className="flex w-fit gap-1 rounded-[8px] bg-muted p-1"
             aria-label="Filter jobs by media type"
           >
             {TYPE_FILTERS.map((filter) => (
@@ -76,25 +77,25 @@ export function JobsActivity({ activity }: JobsActivityProps) {
                 href={buildJobsHref(status, filter.value)}
                 aria-current={type === filter.value ? "page" : undefined}
                 className={cn(
-                  "rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-[var(--pf-muted)] transition-colors duration-[180ms] hover:text-[var(--pf-ink)]",
+                  "rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-muted-foreground transition-colors duration-[180ms] ease-[var(--pf-ease)] hover:text-foreground",
                   type === filter.value &&
-                    "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
+                    "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
                 )}
               >
                 {filter.label}
               </Link>
             ))}
           </div>
-        </div>
+        </JobsPanel>
 
-        <section data-jobs-board="true" className="pf-card mt-3 overflow-hidden">
+        <JobsPanel data-jobs-board="true" className="mt-3 overflow-hidden">
           {jobs.length === 0 ? (
             <EmptyJobs status={status} />
           ) : (
             <JobsTable jobs={jobs} />
           )}
 
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--pf-border)] px-4 py-3 text-[12px] text-[var(--pf-muted)]">
+          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3 text-[12px] text-muted-foreground">
             <span className="tabular-nums">
               {filteredTotal === 0
                 ? "No jobs"
@@ -128,7 +129,7 @@ export function JobsActivity({ activity }: JobsActivityProps) {
               </Link>
             </div>
           </footer>
-        </section>
+        </JobsPanel>
       </div>
     </div>
   );
@@ -147,7 +148,7 @@ function SummaryCard({
     <Link
       href={href}
       prefetch={false}
-      className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
+      className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-border bg-card px-4 py-4 transition-[border-color] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]"
     >
       <span data-jobs-label={label}>
         <span className="sr-only">{label}</span>
@@ -167,7 +168,7 @@ function EmptyJobs({ status }: { status: JobsStatusFilter }) {
       className="flex h-[300px] flex-col items-center justify-center overflow-hidden px-5 py-10 text-center"
       style={{ height: 300, overflow: "hidden" }}
     >
-      <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
+      <span className="grid size-11 place-items-center rounded-full bg-muted text-muted-foreground">
         {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
       </span>
       <h2 data-empty-title={active ? "No jobs are running" : "No jobs match these filters"}>
