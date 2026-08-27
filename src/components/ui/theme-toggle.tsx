@@ -4,7 +4,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useState, type ComponentPropsWithoutRef } from "react";
+import { useEffect, useSyncExternalStore, type ComponentPropsWithoutRef } from "react";
 import { ActionSwapIcon } from "@/components/ui/action-swap";
 import { EASE_OUT_CSS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -117,18 +117,48 @@ function applyTheme(nextDark: boolean) {
   }
 }
 
+function subscribeNever() {
+  return () => {};
+}
+
+function getClientTrue() {
+  return true;
+}
+
+function getServerFalse() {
+  return false;
+}
+
+function subscribeTheme(onStoreChange: () => void) {
+  const root = document.documentElement;
+  const obs = new MutationObserver(onStoreChange);
+  obs.observe(root, { attributes: true, attributeFilter: ["class"] });
+  window.addEventListener("storage", onStoreChange);
+  return () => {
+    obs.disconnect();
+    window.removeEventListener("storage", onStoreChange);
+  };
+}
+
+function getThemeSnapshot() {
+  return document.documentElement.classList.contains("dark");
+}
+
 export function useThemeToggle({
   variant = "rectangle",
   start = "bottom-up",
 }: { variant?: ThemeVariant; start?: RectStart } = {}) {
   const reduce = useReducedMotion() ?? false;
-  const [mounted, setMounted] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
+  const mounted = useSyncExternalStore(
+    subscribeNever,
+    getClientTrue,
+    getServerFalse
+  );
+  const isDark = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getServerFalse
+  );
 
   useEffect(() => {
     if (document.getElementById(VT_STYLE_ID)) return;
@@ -143,7 +173,6 @@ export function useThemeToggle({
 
     const commit = () => {
       applyTheme(nextDark);
-      setIsDark(nextDark);
     };
 
     if (reduce || !("startViewTransition" in document)) {
