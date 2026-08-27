@@ -1448,6 +1448,7 @@ header:has([data-home-title]) p {
 
 [data-home-title] {
   margin: 0 !important;
+  width: 12rem !important;
   max-width: 12rem !important;
   height: 33px !important;
   overflow: hidden !important;

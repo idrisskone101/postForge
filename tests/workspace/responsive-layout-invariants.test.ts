@@ -444,8 +444,12 @@ assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
 assert.match(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /data-home-title=\{TITLE\}/,
+  source("src/components/clone/source-step.tsx"),
+  /data-clone-copy="Choose the clip and trim the part to clone."/,
+);
+assert.match(
+  source("src/app/dashboard-critical.css"),
+  /\[data-home-title\]\s*\{[^}]*width:\s*12rem/,
 );
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);

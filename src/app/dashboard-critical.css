@@ -142,6 +142,7 @@ body {
 #workspace-header-grid h1,
 [data-home-title] {
   margin: 0;
+  width: 12rem;
   max-width: 12rem;
   font-weight: 600;
   line-height: 1.1;

@@ -41,8 +41,13 @@ export function CloneSourceStep({
         <div className="flex items-center gap-3">
           <div>
             <h2 className="pf-section-title">Source &amp; trim</h2>
-            <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
-              Choose the clip and trim the part to clone.
+            <p
+              data-clone-copy="Choose the clip and trim the part to clone."
+              className="mt-1"
+            >
+              <span className="sr-only">
+                Choose the clip and trim the part to clone.
+              </span>
             </p>
           </div>
         </div>
