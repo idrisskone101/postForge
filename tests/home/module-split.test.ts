@@ -14,7 +14,6 @@ function lineCount(relativePath: string) {
 
 const files = [
   "src/app/(app)/home-cockpit.tsx",
-  "src/app/(app)/home-header.tsx",
   "src/app/(app)/home-glance-stats.tsx",
   "src/app/(app)/home-start-work.tsx",
   "src/app/(app)/home-review-queue.tsx",
@@ -48,8 +47,8 @@ assert.match(homePage, /export default async function HomePage/);
 assert.match(homePage, /Suspense/);
 assert.match(homePage, /<HomeHeader/);
 
-const homeHeader = readFileSync(new URL("src/app/(app)/home-header.tsx", repoRoot), "utf8");
-assert.match(homeHeader, /<Link[\s\S]*href="\/ugc-clone"[\s\S]*prefetch=\{false\}/);
+const homeCockpit = readFileSync(new URL("src/app/(app)/home-cockpit.tsx", repoRoot), "utf8");
+assert.match(homeCockpit, /<Link href="\/ugc-clone" prefetch=\{false\}/);
 
 console.log(
   files

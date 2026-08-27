@@ -8,7 +8,6 @@ function source(relativePath: string) {
 const pkg = source("package.json");
 const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
-const sidebarMobile = source("src/components/sidebar-mobile-nav.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
 const appLayout = source("src/app/(app)/layout.tsx");
 const legalLayout = source("src/app/(legal)/layout.tsx");
@@ -67,13 +66,11 @@ const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx")
 const galleryGrid = source("src/components/gallery-grid.tsx");
 const home = [
   source("src/app/(app)/home-cockpit.tsx"),
-  source("src/app/(app)/home-header.tsx"),
   source("src/app/(app)/home-active-lane.tsx"),
 ].join("\n");
 
 const routeSurfaces = [
   source("src/app/(app)/home-cockpit.tsx"),
-  source("src/app/(app)/home-header.tsx"),
   source("src/app/(app)/home-active-lane.tsx"),
   source("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx"),
   cloneStudio,
@@ -154,8 +151,8 @@ for (const toast of fixedToasts) {
   assert.match(toast, /min-w-0/);
 }
 assert.doesNotMatch(routeSurfaces, /fixed bottom-5/);
-assert.match(sidebarMobile, /safe-area-inset-top/);
-assert.match(sidebarMobile, /safe-area-inset-bottom/);
+assert.match(sidebar, /safe-area-inset-top/);
+assert.match(sidebar, /safe-area-inset-bottom/);
 assert.match(sheet, /safe-area-inset-top/);
 assert.match(sheet, /safe-area-inset-bottom/);
 assert.match(collections, /safe-area-inset-bottom/);
@@ -275,7 +272,7 @@ assert.match(source("src/app/(app)/generate/page.tsx"), /GenerationFormLazy/);
 assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-sidebar\{display:none\}/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-fields="true"\]\{height:29\.625rem/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]:has\(\[data-workspace-title\]\)\{height:340px/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state="empty"\]\{height:340px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-spend-stats="true"\]>article\{height:158px/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-generate-model-grid="true"\]>button\{height:8\.125rem/);
 assert.match(source("src/app/first-paint-css.ts"), /#workspace-header,#workspace-header-grid\{height:9\.1875rem/);
@@ -492,18 +489,12 @@ assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-name\]::before\{content:attr\(data-playbook-name\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-playbook-title\]::before\{content:attr\(data-playbook-title\)/);
 assert.match(source("src/app/first-paint-css.ts"), /\[data-automation-overlay="true"\]\{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:1rem;box-sizing:border-box;background:#09090b/);
-assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2\[data-workspace-title\]::before\{content:attr\(data-workspace-title\)/);
+assert.match(source("src/app/first-paint-css.ts"), /\[data-workspace-state\] h2::before\{content:attr\(data-workspace-title\)/);
 assert.match(source("src/components/workspace-state.tsx"), /data-workspace-title=\{title\}/);
-assert.match(source("src/components/workspace-state.tsx"), /data-workspace-copy=\{description\}/);
-assert.doesNotMatch(source("src/components/workspace-state.tsx"), /useWindowLoadReady/);
-assert.doesNotMatch(source("src/components/workspace-state.tsx"), /paintReady/);
 assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
 assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
 assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
-assert.match(source("src/app/(app)/home-header.tsx"), /flex-nowrap/);
-assert.match(source("src/app/(app)/home-header.tsx"), /data-home-title=\{TITLE\}/);
-assert.doesNotMatch(source("src/app/(app)/home-header.tsx"), /useWindowLoadReady/);
-assert.doesNotMatch(source("src/app/(app)/home-header.tsx"), /paintReady/);
+assert.match(source("src/app/(app)/home-cockpit.tsx"), /flex-nowrap/);
 assert.match(
   source("src/app/globals.css"),
   /\[data-character-preview-stage="true"\][\s\S]*?min-height:\s*620px/,
@@ -646,43 +637,26 @@ assert.match(
   source("src/lib/use-window-load-ready.ts"),
   /window\.addEventListener\("load"/,
 );
-assert.doesNotMatch(
+assert.match(
   source("src/components/slideshow/slideshow-studio-lazy.tsx"),
   /useWindowLoadReady/,
 );
-assert.doesNotMatch(
+assert.match(
   source("src/components/generation-form-lazy.tsx"),
   /useWindowLoadReady/,
-);
-assert.doesNotMatch(
-  source("src/components/generation-form-lazy.tsx"),
-  /next\/dynamic/,
 );
 assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
   /useWindowLoadReady/,
 );
-assert.doesNotMatch(
+assert.match(
   source("src/components/ugc-clone-form-lazy.tsx"),
-  /useWindowLoadReady/,
-);
-assert.match(
-  source("src/components/generation-form.tsx"),
-  /useWindowLoadReady/,
-);
-assert.match(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /useWindowLoadReady/,
-);
-assert.match(
-  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
   /useWindowLoadReady/,
 );
 assert.match(
   source("src/app/(app)/ugc-inspiration/inspiration-page-lazy.tsx"),
   /useWindowLoadReady/,
 );
-assert.doesNotMatch(source("src/app/(app)/home-header.tsx"), /text-\[30px\]/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-action=/);
 assert.match(source("src/components/workspace-header-gate.tsx"), /data-header-copy=/);
 assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);

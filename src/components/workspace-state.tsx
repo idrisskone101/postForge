@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -97,10 +96,10 @@ function StateActionControl({
   primary?: boolean;
 }) {
   const className = cn(
-    "inline-flex h-10 max-w-[13.5rem] items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-sm font-semibold",
+    "inline-flex h-10 max-w-[13.5rem] items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
     primary
-      ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] duration-[var(--pf-duration)] ease-[var(--pf-ease)] hover:brightness-[0.93]"
-      : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] transition-[background-color,border-color,color] duration-[var(--pf-duration)] ease-[var(--pf-ease)] hover:border-accent-coral/40 hover:text-foreground"
+      ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
+      : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"
   );
 
   const content = (
@@ -112,16 +111,16 @@ function StateActionControl({
 
   if (action.href) {
     return (
-      <Link prefetch={false} href={action.href} className={className}>
+          <Link prefetch={false} href={action.href} className={className}>
         {content}
       </Link>
     );
   }
 
   return (
-    <Button type="button" variant="ghost" onClick={action.onClick} className={className}>
+    <button type="button" onClick={action.onClick} className={className}>
       {content}
-    </Button>
+    </button>
   );
 }
 

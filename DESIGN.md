@@ -7,24 +7,24 @@ colors:
   primary-bright: "#FF6540"
   canvas: "#FAFAFA"
   surface: "#FFFFFF"
-  surface-dark: "#3A3A40"
-  canvas-dark: "#2A2A2E"
+  surface-dark: "#131316"
+  canvas-dark: "#0A0A0B"
   foreground: "#18181B"
   foreground-dark: "#FAFAFA"
   muted: "#71717A"
-  muted-dark: "#C4C4CC"
+  muted-dark: "#A1A1AA"
   border: "#E4E4E7"
-  border-dark: "#5C5C64"
+  border-dark: "#26262B"
   border-strong: "#D4D4D8"
-  border-strong-dark: "#73737C"
+  border-strong-dark: "#3A3A40"
   rail: "#FFFFFF"
-  rail-dark: "#2A2A2E"
+  rail-dark: "#0A0A0B"
   rail-accent: "#FFF1EC"
-  rail-accent-dark: "#4A322C"
+  rail-accent-dark: "#2A1710"
   rail-accent-foreground: "#E9421C"
   rail-accent-foreground-dark: "#FF8A70"
   muted-surface: "#F4F4F5"
-  muted-surface-dark: "#45454C"
+  muted-surface-dark: "#1C1C20"
   link: "#2563EB"
   link-dark: "#6AA7FF"
   success: "#16A34A"
@@ -158,7 +158,7 @@ Across the full 12-surface redesign the canon settled into a set of shared, toke
 - A single dark media stage (`#09090B`) where all focused media renders object-contain/full-frame.
 - Hairline-bordered cards (8px radius) with quiet, top-lit elevation.
 - Geist carries all UI type; Geist Mono is reserved for true data (counts, costs, job ids, dates).
-- A named motion token family (`--pf-ease-*`, `--pf-spring-*`, `--t-duration-*`) with spring/bounce reserved for named interactions (press, modal/drawer, tab indicator) — no gratuitous bounce elsewhere.
+- A single shared motion ease (`cubic-bezier(0.22,1,0.36,1)` at 180ms) — no bounce.
 
 ## Colors
 
@@ -168,15 +168,15 @@ Zinc neutrals form the canvas and chrome; a single coral accent carries intent; 
 - **Coral** (`#FF4A20` light, `#FF6540` dark; hover `#E9421C`): the platform's only brand accent. Used exclusively for primary action buttons, the quick-action in the mobile bar, active nav icons, focus rings, and the sidebar brand mark. Its rarity is the point.
 
 ### Neutral
-- **Canvas** (`#FAFAFA` light, `#2A2A2E` dark): the page floor and route-header background.
-- **Surface** (`#FFFFFF` light, `#3A3A40` dark): cards, panels, secondary buttons, popovers.
-- **Muted Surface** (`#F4F4F5` light, `#45454C` dark): pressed/hover rows, secondary fills, stat-card hover beds, segmented-control beds.
+- **Canvas** (`#FAFAFA` light, `#0A0A0B` dark): the page floor and route-header background.
+- **Surface** (`#FFFFFF` light, `#131316` dark): cards, panels, secondary buttons, popovers.
+- **Muted Surface** (`#F4F4F5` light, `#1C1C20` dark): pressed/hover rows, secondary fills, stat-card hover beds, segmented-control beds.
 - **Foreground** (`#18181B` light, `#FAFAFA` dark): primary text.
-- **Muted** (`#71717A` light, `#C4C4CC` dark): secondary text, labels, meta, inactive icons.
-- **Border** (`#E4E4E7` light, `#5C5C64` dark): hairlines around cards, rows, controls.
-- **Border Strong** (`#D4D4D8` light, `#73737C` dark): card hover stroke.
-- **Rail** (`#FFFFFF` light, `#2A2A2E` dark): sidebar and mobile top bar surface.
-- **Rail Accent** (`#FFF1EC` light, `#4A322C` dark): the active nav row bed and the selected-row tint — a pale coral wash, never the full accent.
+- **Muted** (`#71717A` light, `#A1A1AA` dark): secondary text, labels, meta, inactive icons.
+- **Border** (`#E4E4E7` light, `#26262B` dark): hairlines around cards, rows, controls.
+- **Border Strong** (`#D4D4D8` light, `#3A3A40` dark): card hover stroke.
+- **Rail** (`#FFFFFF` light, `#0A0A0B` dark): sidebar and mobile top bar surface.
+- **Rail Accent** (`#FFF1EC` light, `#2A1710` dark): the active nav row bed and the selected-row tint — a pale coral wash, never the full accent.
 - **Rail Accent Foreground** (`#E9421C` light, `#FF8A70` dark): text of the active nav row and selected rows.
 
 ### State
@@ -187,8 +187,6 @@ Zinc neutrals form the canvas and chrome; a single coral accent carries intent; 
 **The One Accent Rule.** Coral appears only on primary actions and active navigation. It is never used as a decorative flourish, a chart series, an idle icon, or a text highlight. When a surface needs more color, the operator's media and status provide it — the chrome does not.
 
 **The Content Carries Color Rule.** The interface stays zinc. All chromatic meaning beyond the single coral accent is delegated to pipeline state (green/amber/red) and to the media itself. If a panel looks colorless, that is correct; the work supplies the color.
-
-**The Charcoal Chrome Rule.** Dark mode chrome uses lighter charcoal (`#2A2A2E` canvas/rail, `#3A3A40` surface, `#45454C` muted beds, `#5C5C64` borders, `#C4C4CC` muted text). Do not land canvas or rail on `#18181B`, `#0A0A0B`, or near-black zinc. Black (`#09090B`) is reserved for the media stage only.
 
 **The No-Literal-Hex Rule.** Every route is token-driven in both themes. No literal hex color appears in component code; the only accepted literals are the `#09090B` media stage, the slide-theme palettes in the slideshow, and the `TEMPLATE_VISUALS` gradient maps (content, not chrome). The legacy dark hex-remap tables in `globals.css` remain only as a transition safety net for any literal that slips in.
 
@@ -243,20 +241,6 @@ Depth is conveyed through a quiet, top-lit shadow scale plus hairline borders �
 
 ### Named Rules
 **The Quiet-Shadow Rule.** All elevation is neutral, offset from the top light source, and softly blurred. Never a zero-offset block shadow and never a colored halo. The only colored shadow is the coral one on the primary action.
-
-## Motion
-
-Motion is **shadcn primitives + beUI widgets**. **beUI** ([motion patterns](https://beui.dev/docs/motion-patterns), [registry](https://beui.dev/r)) owns easing, springs, and the installed widgets (`ThemeToggle`, `Drawer`, `SharedLayoutBg`, `ActionSwapIcon`, spring-pressed `Button`). Values live as `--pf-ease-*` / `--pf-spring-*` custom properties beside existing `--pf-*` tokens. The same numbers are mirrored in `src/lib/ease.ts` for `motion/react`.
-
-Install widgets through the `@beui` shadcn registry into `src/components/ui` (never `src/components/motion` or `src/components/pf-system`). New UI is a shadcn component or a thin motion wrap of one. Do not dump magnetic / metallic / stateful / tilt / marquee / shader / island / agent toys.
-
-**transitions.dev** still owns the duration/distance/scale vocabulary (`--t-duration-*`, `--t-distance-*`, `--t-scale-*`) and fallback `.t-*` rules for Base UI overlays (dialog/sheet/tooltip) that keep their existing APIs. Every copied snippet ships its own `@media (prefers-reduced-motion: reduce)` block even though globals already collapses durations.
-
-**Allowlist (chrome + primitives):** beUI ThemeToggle (View Transition), Drawer (mobile nav), SharedLayoutBg (nav hover pill), spring press on Button, input error shake. **Ban:** confetti, tilt, goo, marquees, Lenis, shader backgrounds, toast/number animation in shell, bounce-sidebar, animated-sidebar rewrite.
-
-**Reduced motion:** opacity and color feedback stay; travel, scale, blur, and spring overshoot go. Global `*` duration zeroing remains; per-snippet and `useReducedMotion` guards are still required.
-
-**Default ease:** `--pf-ease` aliases `--pf-ease-smooth-out` (`cubic-bezier(0.22, 1, 0.36, 1)`). Existing `duration-[var(--pf-duration)] ease-[var(--pf-ease)]` call sites keep working.
 
 ## Shapes
 
@@ -332,7 +316,7 @@ The form language is gently rounded corners on a 0.5rem base. Cards, buttons, in
 - **Do** use the real table grammar for list views: hidden-below-md header, hairline dividers, hover bed, 40px thumbs, status pills, row actions.
 - **Do** use Geist Mono + tabular-nums for true data only (counts, ids, costs, dates) — **The Data Voice Rule**; keep stat numerals in the sans face (**The Sans Stat Rule**).
 - **Do** keep corners at the 8px canon radius and elevation within the `--pf-shadow-2xs..lg` + `--pf-shadow-orange` scale.
-- **Do** use the named motion token family (`--pf-ease`, `--pf-duration`, `--t-duration-*`, `--pf-spring-*`) for chrome and primitive transitions; spring overshoot only on allowlisted press/modal/drawer/tab surfaces.
+- **Do** use the one shared ease (`--pf-ease`) at 180ms for all state transitions.
 - **Do** use hairline borders and muted-surface beds for dividers and hovers rather than heavy fills or shadows.
 
 ### Don't:

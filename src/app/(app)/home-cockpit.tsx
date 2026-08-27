@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Check, ImageIcon, Play, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
-import { HomeHeader } from "./home-header";
 import { HomeGlanceStats } from "./home-glance-stats";
 import { HomeReviewQueue } from "./home-review-queue";
 import { HomeEmptyPanel, HomeStartWork } from "./home-start-work";
@@ -143,7 +142,27 @@ export function HomeCockpit({ dashboard, bare = false }: HomeCockpitProps) {
   );
 }
 
-export { HomeHeader } from "./home-header";
+export function HomeHeader({ now = new Date() }: { now?: Date }) {
+  const todayLabel = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(now);
+
+  return (
+    <header className="flex flex-nowrap items-end justify-between gap-3 pt-7">
+      <div className="min-w-0">
+        <h1 data-home-title="Home"><span className="sr-only">Home</span></h1>
+        <p data-home-copy={todayLabel} className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]">
+          <span className="sr-only">{todayLabel}</span>
+        </p>
+      </div>
+      <Link href="/ugc-clone" prefetch={false} data-home-action="New Clone" className="pf-button-primary shrink-0">
+        <span className="sr-only">New Clone</span>
+      </Link>
+    </header>
+  );
+}
 
 function reviewBadge(status: string) {
   if (status === "approved_output") return { label: "Approved", dot: "bg-[#4ADE80]" };
