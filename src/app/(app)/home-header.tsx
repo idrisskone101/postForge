@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 
-const TITLE = "Home";
-
 export function HomeHeader({ now = new Date() }: { now?: Date }) {
   const paintReady = useWindowLoadReady();
+  const TITLE = "Home";
   const todayLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
     month: "long",
