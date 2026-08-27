@@ -122,16 +122,16 @@ export function Sidebar() {
         aria-current={active ? "page" : undefined}
         onClick={() => mobile && mobileNavRef.current?.close()}
         className={cn(
-          "sidebar-nav-item group relative flex h-[38px] items-center gap-2.5 rounded-[8px] text-[13px] font-medium transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "sidebar-nav-item t-nav-item group relative flex h-[38px] items-center gap-2.5 rounded-[8px] text-[13px] font-medium transition-colors duration-[var(--pf-duration)] ease-[var(--pf-ease)]",
           mobile ? "justify-start px-2.5" : "justify-center px-0 xl:justify-start xl:px-2.5",
           active
-            ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
+            ? "is-active bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
             : "text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
         )}
       >
         <Icon
           className={cn(
-            "size-[17px] shrink-0 transition-colors duration-[180ms]",
+            "size-[17px] shrink-0 transition-colors duration-[var(--pf-duration)]",
             active ? "text-[var(--pf-orange)]" : "text-[var(--pf-rail-muted)] group-hover:text-[var(--pf-rail-ink)]"
           )}
           strokeWidth={1.8}
@@ -226,7 +226,7 @@ export function Sidebar() {
         <button
           type="button"
           aria-label="Open workspace navigation"
-          className="mr-2 grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+          className="t-press mr-2 grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
           onClick={() => mobileNavRef.current?.showModal()}
         >
           <Menu className="size-5" />
@@ -235,7 +235,7 @@ export function Sidebar() {
           ref={mobileNavRef}
           id="workspace-mobile-drawer"
           aria-label="Workspace navigation"
-          className="sidebar-mobile-drawer"
+          className="sidebar-mobile-drawer t-panel"
           onClick={(event) => {
             if (event.target === event.currentTarget) event.currentTarget.close();
           }}
@@ -250,7 +250,7 @@ export function Sidebar() {
         <Link
           href={quickAction.href}
           aria-label={quickAction.label}
-          className="ml-auto grid size-9 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] hover:brightness-[0.93] active:scale-[0.98]"
+          className="t-press ml-auto grid size-9 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-orange)] transition-[filter] duration-[var(--pf-duration)] ease-[var(--pf-ease)] hover:brightness-[0.93]"
         >
           <Plus className="size-4" />
         </Link>
@@ -271,7 +271,7 @@ export function Sidebar() {
               aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
+              className="t-press hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
             >
               {desktopCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
             </button>
