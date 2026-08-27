@@ -90,7 +90,12 @@ function JobRow({ job }: { job: JobActivityItem }) {
       <span className="pf-data hidden text-right text-[12px] tabular-nums text-foreground md:block">
         {cost === null ? "—" : formatCost(cost)}
       </span>
-      <ArrowRight className="hidden size-4 text-muted-foreground transition-transform duration-[180ms] ease-[var(--pf-ease)] group-hover:translate-x-0.5 md:block" />
+      <span
+        className="hidden md:block"
+        aria-hidden="true"
+      >
+        <ArrowRight className="size-4 text-muted-foreground transition-transform duration-[180ms] ease-[var(--pf-ease)] group-hover:translate-x-0.5" />
+      </span>
     </Link>
   );
 }
