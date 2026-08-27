@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   checkKodeTaste,
+  checkKodeTasteRatchet,
   collectReactModules,
   findFileLayoutIssue,
   findInnerHtml,
@@ -390,3 +391,4 @@ const repoViolations = checkKodeTaste({
   allowlist,
 });
 assert.deepEqual(repoViolations, []);
+assert.deepEqual(checkKodeTasteRatchet({ rootDir: repoRoot, allowlist }), []);

@@ -1,7 +1,6 @@
 import path from "node:path";
 import type { Rule } from "eslint";
 import {
-  PROP_BAG_LIMIT,
   USE_EFFECT_LIMIT,
   USE_STATE_LIMIT,
   HOOK_MODULE_LINE_CAP,
@@ -38,31 +37,29 @@ function posixRel(cwd: string, filename: string): string {
   return path.relative(cwd, filename).split(path.sep).join("/");
 }
 
-function isAllowlisted(
+function optionAllowlist(raw: unknown): string[] | undefined {
+  if (!raw || typeof raw !== "object" || !("allowlist" in raw)) {
+    return undefined;
+  }
+  const listed = raw.allowlist;
+  if (!Array.isArray(listed)) {
+    return undefined;
+  }
+  if (listed.some((item) => typeof item !== "string")) {
+    return undefined;
+  }
+  return listed;
+}
+
+function listedPaths(
   allowlist: KodeTasteAllowlist,
   rule: KodeTasteAllowlistRule,
-  relPath: string
-): boolean {
-  switch (rule) {
-    case "fileLayout":
-      return allowlist.fileLayout.includes(relPath);
-    case "propBags":
-      return allowlist.propBags.includes(relPath);
-    case "useState":
-      return allowlist.useState.includes(relPath);
-    case "useEffect":
-      return allowlist.useEffect.includes(relPath);
-    case "innerHtml":
-      return allowlist.innerHtml.includes(relPath);
-    case "hookSize":
-      return allowlist.hookSize.includes(relPath);
-    case "effectFns":
-      return allowlist.effectFns.includes(relPath);
-    default: {
-      const exhaustive: never = rule;
-      return exhaustive;
-    }
+  optionPaths: string[] | undefined
+): readonly string[] {
+  if (optionPaths) {
+    return optionPaths;
   }
+  return allowlist[rule];
 }
 
 function violationMessage(violation: DetectorViolation): string {
@@ -116,19 +113,34 @@ function normalizeFindings(
 
 function createKodeTasteRule(options: {
   allowlistRule: KodeTasteAllowlistRule;
-  run: (relPath: string, source: string) => DetectorViolation | DetectorViolation[] | null;
+  run: (
+    relPath: string,
+    source: string
+  ) => DetectorViolation | DetectorViolation[] | null;
   tsxOnly?: boolean;
   fixable?: boolean;
 }): Rule.RuleModule {
   return {
     meta: {
       type: "problem",
-      schema: [],
+      schema: [
+        {
+          type: "object",
+          properties: {
+            allowlist: {
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+          additionalProperties: false,
+        },
+      ],
       ...(options.fixable ? { fixable: "code" as const } : {}),
     },
     create(context) {
       const cwd = context.cwd ?? process.cwd();
       const allowlist = getAllowlist(cwd);
+      const optionPaths = optionAllowlist(context.options[0]);
 
       return {
         Program(node) {
@@ -140,7 +152,11 @@ function createKodeTasteRule(options: {
           if (options.tsxOnly && !relPath.endsWith(".tsx")) {
             return;
           }
-          if (isAllowlisted(allowlist, options.allowlistRule, relPath)) {
+          if (
+            listedPaths(allowlist, options.allowlistRule, optionPaths).includes(
+              relPath
+            )
+          ) {
             return;
           }
           const source = context.sourceCode.getText();
@@ -161,7 +177,7 @@ function createKodeTasteRule(options: {
                       if (!fixed) {
                         return null;
                       }
-                      return fixer.replaceText(context.sourceCode, fixed);
+                      return fixer.replaceTextRange([0, source.length], fixed);
                     },
                   }
                 : {}),

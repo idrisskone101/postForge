@@ -5,6 +5,7 @@ import { ESLint } from "eslint";
 import {
   checkKodeTaste,
   collectReactModules,
+  findFileLayoutIssue,
   loadKodeTasteAllowlist,
   type KodeTasteViolation,
 } from "../../scripts/check-kode-taste";
@@ -113,18 +114,37 @@ function eslintMessageKey(
 }
 
 const allowlist = loadKodeTasteAllowlist(repoRoot);
-const checkerViolations = checkKodeTaste({ rootDir: repoRoot, allowlist }).filter(
-  (item): item is DetectorViolation =>
-    item.kind !== "stale-allowlist" && item.kind !== "missing-allowlist"
-);
-const checkerKeys = new Set(checkerViolations.map(violationKey));
+const emptyAllowlist: typeof allowlist = {
+  fileLayout: [],
+  propBags: [],
+  useState: [],
+  useEffect: [],
+  innerHtml: [],
+  hookSize: [],
+  effectFns: [],
+};
 
-async function runParity(): Promise<void> {
-  const eslint = new ESLint({ cwd: repoRoot });
-  const files = collectReactModules(repoRoot);
+const emptyRuleOptions: ["error", { allowlist: string[] }] = [
+  "error",
+  { allowlist: [] },
+];
+
+function checkerKeysFor(
+  violations: KodeTasteViolation[]
+): Set<string> {
+  return new Set(
+    violations
+      .filter(
+        (item): item is DetectorViolation =>
+          item.kind !== "stale-allowlist" && item.kind !== "missing-allowlist"
+      )
+      .map(violationKey)
+  );
+}
+
+async function eslintKeysFor(eslint: ESLint, files: string[]): Promise<Set<string>> {
   const results = await eslint.lintFiles(files);
   const eslintKeys = new Set<string>();
-
   for (const result of results) {
     const relPath = path
       .relative(repoRoot, result.filePath)
@@ -139,10 +159,12 @@ async function runParity(): Promise<void> {
       );
     }
   }
+  return eslintKeys;
+}
 
+function assertSameKeys(checkerKeys: Set<string>, eslintKeys: Set<string>): void {
   const onlyInChecker = [...checkerKeys].filter((key) => !eslintKeys.has(key));
   const onlyInEslint = [...eslintKeys].filter((key) => !checkerKeys.has(key));
-
   assert.deepEqual(
     onlyInChecker,
     [],
@@ -153,6 +175,46 @@ async function runParity(): Promise<void> {
     [],
     `eslint-only violations: ${onlyInEslint.join(", ")}`
   );
+}
+
+async function runParity(): Promise<void> {
+  const files = collectReactModules(repoRoot).map((relPath) =>
+    path.join(repoRoot, relPath)
+  );
+
+  const allowlistedEslint = new ESLint({ cwd: repoRoot });
+  assertSameKeys(
+    checkerKeysFor(checkKodeTaste({ rootDir: repoRoot, allowlist })),
+    await eslintKeysFor(allowlistedEslint, files)
+  );
+
+  const emptyCheckerKeys = checkerKeysFor(
+    checkKodeTaste({ rootDir: repoRoot, allowlist: emptyAllowlist })
+  );
+  assert.ok(
+    emptyCheckerKeys.size >= 70,
+    `expected a populated empty-allowlist scan, got ${emptyCheckerKeys.size}`
+  );
+
+  const emptyEslint = new ESLint({
+    cwd: repoRoot,
+    overrideConfig: [
+      {
+        files: ["src/**/*.{ts,tsx}"],
+        ignores: ["src/generated/**", "src/components/ui/**"],
+        rules: {
+          "kode-taste/file-layout": emptyRuleOptions,
+          "kode-taste/prop-bags": emptyRuleOptions,
+          "kode-taste/use-state": emptyRuleOptions,
+          "kode-taste/use-effect": emptyRuleOptions,
+          "kode-taste/inner-html": emptyRuleOptions,
+          "kode-taste/hook-size": emptyRuleOptions,
+          "kode-taste/effect-fns": emptyRuleOptions,
+        },
+      },
+    ],
+  });
+  assertSameKeys(emptyCheckerKeys, await eslintKeysFor(emptyEslint, files));
 
   const unsafeMarkup = `export function Markup() {
   return <div dangerouslySetInnerHTML={{ __html: "<b>hi</b>" }} />;
@@ -162,7 +224,7 @@ async function runParity(): Promise<void> {
     repoRoot,
     "src/__kode-taste-eslint-fixture__.tsx"
   );
-  const fixtureResults = await eslint.lintText(unsafeMarkup, {
+  const fixtureResults = await allowlistedEslint.lintText(unsafeMarkup, {
     filePath: fixturePath,
   });
   const fixtureMessages = fixtureResults.flatMap((result) => result.messages);
@@ -176,8 +238,38 @@ async function runParity(): Promise<void> {
     /dangerouslySetInnerHTML is banned/
   );
 
+  const helperFirst = `function glyph() {
+  return 1;
+}
+
+export function Card() {
+  return <h1 />;
+}
+`;
+  const layoutPath = path.join(repoRoot, "src/__kode-taste-layout-fixture__.tsx");
+  const layoutLint = await allowlistedEslint.lintText(helperFirst, {
+    filePath: layoutPath,
+  });
+  assert.equal(
+    layoutLint
+      .flatMap((result) => result.messages)
+      .some((message) => message.ruleId === "kode-taste/file-layout"),
+    true
+  );
+
+  const fixingEslint = new ESLint({ cwd: repoRoot, fix: true });
+  const layoutFix = await fixingEslint.lintText(helperFirst, {
+    filePath: layoutPath,
+  });
+  const fixed = layoutFix[0]?.output;
+  assert.ok(fixed);
+  assert.equal(
+    findFileLayoutIssue("src/__kode-taste-layout-fixture__.tsx", fixed),
+    null
+  );
+
   console.log(
-    `kode-taste eslint parity: ${checkerKeys.size} findings match checkKodeTaste; inner-html fixture reports kode-taste/inner-html`
+    `kode-taste eslint parity: ${emptyCheckerKeys.size} empty-allowlist findings match checkKodeTaste; inner-html and file-layout fixtures report`
   );
 }
 
