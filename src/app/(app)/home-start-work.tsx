@@ -14,6 +14,7 @@ export function HomeStartWork() {
           key={action.href}
           prefetch={false}
           href={action.href}
+          data-home-start="true"
           className="group flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4 transition-[border-color] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]"
         >
           <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-muted text-muted-foreground transition-colors group-hover:text-foreground">
