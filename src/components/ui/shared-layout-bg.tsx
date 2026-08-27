@@ -38,14 +38,16 @@ function StaticSharedLayoutBg({
   children,
   as = "div",
   className,
-  pillClassName: _pillClassName,
-  pillContainerClassName: _pillContainerClassName,
-  inset: _inset,
-  ...props
+  onMouseEnter,
+  onMouseLeave,
 }: SharedLayoutBgProps) {
   const Tag = as === "ul" ? "ul" : "div";
   return (
-    <Tag className={cn("flex w-full flex-col", className)} {...props}>
+    <Tag
+      className={cn("flex w-full flex-col", className)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {children}
     </Tag>
   );
