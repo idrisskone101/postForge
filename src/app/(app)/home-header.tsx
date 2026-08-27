@@ -16,7 +16,7 @@ export function HomeHeader({ now = new Date() }: { now?: Date }) {
         </h1>
         <p
           data-home-copy={todayLabel}
-          className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-muted-foreground"
+          className="mt-1 line-clamp-1 max-w-[8rem] text-[10px] leading-none text-[var(--pf-muted)]"
         >
           <span className="sr-only">{todayLabel}</span>
         </p>

@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   return (
-    <div className="pf-content-viewport bg-background">
+    <div className="pf-content-viewport bg-[var(--pf-canvas)]">
       <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
         <HomeHeader />
         <Suspense fallback={<HomeDashboardFallback />}>
