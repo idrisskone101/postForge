@@ -3,9 +3,7 @@
 // Theme storage stays PostForge localStorage + `dark` class (no next-themes).
 
 import { Moon, Sun } from "lucide-react";
-import { useReducedMotion } from "motion/react";
 import { useEffect, useSyncExternalStore, type ComponentPropsWithoutRef } from "react";
-import { ActionSwapIcon } from "@/components/ui/action-swap";
 import { EASE_OUT_CSS } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -148,7 +146,6 @@ export function useThemeToggle({
   variant = "rectangle",
   start = "bottom-up",
 }: { variant?: ThemeVariant; start?: RectStart } = {}) {
-  const reduce = useReducedMotion() ?? false;
   const mounted = useSyncExternalStore(
     subscribeNever,
     getClientTrue,
@@ -175,7 +172,10 @@ export function useThemeToggle({
       applyTheme(nextDark);
     };
 
-    if (reduce || !("startViewTransition" in document)) {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !("startViewTransition" in document)
+    ) {
       commit();
       return;
     }
@@ -225,21 +225,29 @@ export function ThemeToggle({
       onClick={toggle}
       className={cn("flex items-center justify-center", className)}
     >
-      {mounted ? (
-        <ActionSwapIcon
-          value={isDark ? "dark" : "light"}
-          animation="blur"
-          className={iconClassName}
-        >
-          {isDark ? (
-            <Sun className={iconClassName} />
-          ) : (
-            <Moon className={iconClassName} />
-          )}
-        </ActionSwapIcon>
-      ) : (
-        <span className={iconClassName} aria-hidden="true" />
-      )}
+      <ThemeToggleGlyph
+        mounted={mounted}
+        isDark={isDark}
+        iconClassName={iconClassName}
+      />
     </button>
   );
+}
+
+function ThemeToggleGlyph({
+  mounted,
+  isDark,
+  iconClassName,
+}: {
+  mounted: boolean;
+  isDark: boolean;
+  iconClassName?: string;
+}) {
+  if (!mounted) {
+    return <span className={iconClassName} aria-hidden="true" />;
+  }
+  if (isDark) {
+    return <Sun className={iconClassName} />;
+  }
+  return <Moon className={iconClassName} />;
 }

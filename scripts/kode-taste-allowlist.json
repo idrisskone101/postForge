@@ -86,7 +86,6 @@
     "src/components/slideshow/use-slideshow-studio-bootstrap.ts",
     "src/components/video-reference-picker.tsx",
     "src/components/video-trimmer.tsx",
-    "src/lib/hooks/use-hover-capable.ts",
     "src/lib/hooks/use-polling.ts",
     "src/lib/use-window-load-ready.ts"
   ]

@@ -24,11 +24,28 @@ assert.match(componentsJson, /"@beui"\s*:\s*"https:\/\/beui\.dev\/r\/\{name\}\.j
 
 for (const relPath of [
   "src/components/ui/drawer.tsx",
+  "src/components/ui/drawer-motion.tsx",
   "src/components/ui/theme-toggle.tsx",
   "src/components/ui/shared-layout-bg.tsx",
+  "src/components/ui/shared-layout-bg-motion.tsx",
   "src/components/ui/action-swap.tsx",
 ]) {
   assert.equal(existsSync(path.join(repoRoot, relPath)), true, relPath);
+}
+
+for (const relPath of [
+  "src/components/ui/button.tsx",
+  "src/components/ui/theme-toggle.tsx",
+  "src/components/ui/drawer.tsx",
+  "src/components/ui/shared-layout-bg.tsx",
+  "src/components/sidebar.tsx",
+  "src/components/sidebar-mobile-nav.tsx",
+]) {
+  assert.doesNotMatch(
+    source(relPath),
+    /from ["']motion\/react["']/,
+    `${relPath} stays off the motion first-load graph`
+  );
 }
 
 assert.match(sidebar, /from "@\/components\/sidebar-mobile-nav"/);
