@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { canRunPromptImprovement } from "@/lib/ai/prompt-improvement-ui";
 import { cn } from "@/lib/utils";
 import { CREATIVE_SPARKS } from "./form-constants";
-import { GeneratePaintText } from "./generate-paint-text";
 import { PromptTemplatesControl } from "./prompt-templates-control";
 import type { GenerateFormActions, GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
@@ -55,18 +54,7 @@ export function GenerateFormPromptSection({
         )}
       >
         <div className="flex items-center gap-2">
-          <GeneratePaintText
-            ready={paintReady}
-            liveAs="h2"
-            liveClassName="pf-section-title"
-            paint={
-              <h2 className="max-w-[8rem] line-clamp-1 text-[10px] font-semibold leading-tight tracking-[-0.01em] text-foreground">
-                <span className="sr-only">{heading}</span>
-              </h2>
-            }
-          >
-            {heading}
-          </GeneratePaintText>
+          <h2 className="pf-section-title">{heading}</h2>
         </div>
         <div className="flex items-center gap-2">
           {canUndoPromptImprovement && (

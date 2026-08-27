@@ -654,6 +654,10 @@ assert.doesNotMatch(
   source("src/components/generation-form-lazy.tsx"),
   /useWindowLoadReady/,
 );
+assert.doesNotMatch(
+  source("src/components/generation-form-lazy.tsx"),
+  /next\/dynamic/,
+);
 assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
   /useWindowLoadReady/,
