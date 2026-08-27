@@ -1,6 +1,8 @@
 "use client";
 
 import { MediaPreviewFrame } from "@/components/media-preview";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import type { OutputReviewStatus } from "@/lib/output-review-status";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
@@ -9,6 +11,9 @@ import { GalleryDeleteDialog } from "./delete-dialog";
 import type { GalleryMediaSession } from "./media-session";
 import { GalleryReviewStatusControl } from "./review-status-control";
 import type { GalleryItem } from "./types";
+
+const galleryTileClassName =
+  "min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0";
 
 export function GalleryGridCards({
   items,
@@ -42,10 +47,11 @@ export function GalleryGridCards({
       {items.map((item) => {
         const isSelected = selectedIds.has(item.id);
         return (
-          <article
+          <Card
             key={item.id}
             className={cn(
-              "pf-card pf-card-hover group min-w-0 overflow-hidden",
+              "pf-card-hover group min-w-0 overflow-hidden transition-[border-color,box-shadow] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]",
+              galleryTileClassName,
               isSelected && "border-primary ring-1 ring-primary/25"
             )}
           >
@@ -80,7 +86,7 @@ export function GalleryGridCards({
                   alt="Generated Output"
                   cover
                   variant="card"
-                  className="aspect-square rounded-none border-0 bg-[var(--pf-active)]"
+                  className="aspect-square rounded-none border-0 bg-muted"
                   mediaClassName="object-cover"
                 />
               </button>
@@ -103,7 +109,7 @@ export function GalleryGridCards({
 
               <label
                 className={cn(
-                  "absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[8px] border transition-colors",
+                  "absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-[8px] border transition-colors duration-[180ms] ease-[var(--pf-ease)]",
                   isSelected
                     ? "border-primary bg-primary"
                     : "border-white/80 bg-black/25 backdrop-blur-sm"
@@ -132,43 +138,51 @@ export function GalleryGridCards({
                     {item.model}
                   </button>
                   <span
-                    className="pf-data shrink-0 text-[11px] text-[var(--pf-muted)]"
+                    className="pf-data shrink-0 text-[11px] text-muted-foreground"
                     suppressHydrationWarning
                   >
                     {formatRelativeDate(item.createdAt)}
                   </span>
                 </div>
                 <div className="mt-1 flex items-center justify-between gap-3">
-                  <span className="pf-data truncate text-[11px] text-[var(--pf-muted)]">
+                  <span className="pf-data truncate text-[11px] text-muted-foreground">
                     {item.width && item.height
                       ? `${item.width} × ${item.height}`
                       : `Job ${item.jobId.slice(0, 8)}`}
                   </span>
                   {item.tiktokSourceUrl && (
                     <span className="flex shrink-0 items-center gap-1">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="icon"
                         title="Copy Source URL"
                         aria-label="Copy Source URL"
                         onClick={(event) => {
                           event.stopPropagation();
                           void copySourceUrl(item.tiktokSourceUrl!);
                         }}
-                        className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
+                        className="size-7"
                       >
                         <Copy className="size-3" />
-                      </button>
-                      <a
-                        href={item.tiktokSourceUrl}
-                        target="_blank"
-                        rel="noreferrer"
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
                         title="Open Source Selection"
                         aria-label="Open Source Selection"
                         onClick={(event) => event.stopPropagation()}
-                        className="inline-flex size-7 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-primary"
+                        className="size-7 hover:text-primary"
+                        render={
+                          <a
+                            href={item.tiktokSourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          />
+                        }
                       >
                         <ExternalLink className="size-3" />
-                      </a>
+                      </Button>
                     </span>
                   )}
                 </div>
@@ -186,32 +200,36 @@ export function GalleryGridCards({
                   onFeedback={onFeedback}
                 />
                 <div className="ml-auto flex items-center gap-1">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => void downloadItem(item)}
-                    className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                     aria-label={`Download Output ${item.id}`}
                     title="Download"
                   >
                     <Download className="size-3.5" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => void onHandoff?.(item)}
-                    className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
                     aria-label={`Handoff Output ${item.id}`}
                     title="Handoff"
                   >
                     <Send className="size-3.5" />
-                  </button>
+                  </Button>
                   <GalleryDeleteDialog
                     disabled={deletingId === item.id}
                     trigger={
-                      <button
+                      <Button
                         type="button"
-                        className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
+                        variant="outline"
+                        size="icon"
                         aria-label={`Delete Output ${item.id}`}
                         title="Delete"
+                        className="hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]"
                       />
                     }
                     title="Delete this asset?"
@@ -230,7 +248,7 @@ export function GalleryGridCards({
               <span className="sr-only">Download</span>
               <span className="sr-only">Handoff</span>
             </div>
-          </article>
+          </Card>
         );
       })}
     </div>

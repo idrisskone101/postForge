@@ -3,6 +3,7 @@
 import { GalleryGrid, type GalleryGridSession } from "@/components/gallery-grid";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { WorkspaceState, WorkspaceStateSkeleton } from "@/components/workspace-state";
+import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
   ArrowUpDown,
@@ -23,6 +24,7 @@ import {
   reviewFilters,
   type GalleryPageClientProps,
 } from "./gallery-models";
+import { GalleryPanel } from "./gallery-panel";
 import { useGalleryWorkspace } from "./use-gallery-workspace";
 
 export function GalleryPageClient(props: GalleryPageClientProps) {
@@ -89,8 +91,8 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
             className={cn(
               "flex min-w-0 items-start justify-between gap-3 rounded-[8px] border px-4 py-3 text-sm",
               feedback.tone === "success"
-                ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-ink)]"
-                : "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-[var(--pf-ink)]"
+                ? "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-foreground"
+                : "border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 text-foreground"
             )}
           >
             <span className="flex min-w-0 flex-1 items-start gap-2">
@@ -103,22 +105,24 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                 {feedback.message}
               </span>
             </span>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => setFeedback(null)}
               aria-label="Dismiss notification"
-              className="inline-flex size-7 shrink-0 items-center justify-center rounded-[8px] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
+              className="size-7 shrink-0 text-muted-foreground"
             >
               <X className="size-4 shrink-0" />
-            </button>
+            </Button>
           </div>
         )}
 
-        <section data-gallery-toolbar="true" className="pf-card p-2">
+        <GalleryPanel data-gallery-toolbar="true" className="p-2">
           <div className="flex flex-col gap-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
             <div
               data-gallery-filters="true"
-              className="grid grid-cols-2 gap-1 rounded-[8px] bg-[var(--pf-active)] p-1 sm:flex sm:w-fit sm:items-center"
+              className="grid grid-cols-2 gap-1 rounded-[8px] bg-muted p-1 sm:flex sm:w-fit sm:items-center"
               aria-label="Output review status filters"
             >
               {reviewFilters.map((filter) => (
@@ -131,10 +135,10 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     replaceRouteFilters({ reviewStatus: filter.value });
                   }}
                   className={cn(
-                    "flex h-9 items-center justify-between gap-2 rounded-[6px] px-3 text-[12px] font-medium whitespace-nowrap transition-colors",
+                    "flex h-9 items-center justify-between gap-2 rounded-[6px] px-3 text-[12px] font-medium whitespace-nowrap transition-colors duration-[180ms] ease-[var(--pf-ease)]",
                     reviewFilter === filter.value
-                      ? "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-                      : "text-[var(--pf-muted)] hover:text-[var(--pf-ink)]"
+                      ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   <span>{filter.label}</span>
@@ -142,9 +146,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     data-gallery-count="true"
                     className={cn(
                       "pf-data rounded-full px-1.5 py-0.5 text-[11px]",
-                      reviewFilter === filter.value
-                        ? "bg-[var(--pf-active)]"
-                        : "bg-[var(--pf-surface)]"
+                      reviewFilter === filter.value ? "bg-muted" : "bg-card"
                     )}
                   >
                     {reviewCounts[filter.value]}
@@ -156,7 +158,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
             <div data-gallery-tools="true" className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <label
                 data-gallery-search="true"
-                className="flex h-9 min-w-0 items-center gap-2 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[var(--pf-muted)] sm:w-56"
+                className="flex h-9 min-w-0 items-center gap-2 rounded-[8px] border border-border bg-card px-3 text-muted-foreground sm:w-56"
               >
                 <Search className="size-4 shrink-0" />
                 <span className="sr-only">Search gallery</span>
@@ -168,7 +170,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     setSelectedIds(new Set());
                   }}
                   placeholder="Search gallery"
-                  className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--pf-ink)] outline-none placeholder:text-[var(--pf-muted)]"
+                  className="min-w-0 flex-1 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </label>
 
@@ -177,7 +179,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                 className="flex min-w-0 flex-nowrap items-center gap-1 overflow-hidden"
               >
                 <span className="sr-only">Media type</span>
-                <div className="flex shrink-0 gap-1 rounded-[8px] bg-[var(--pf-active)] p-1">
+                <div className="flex shrink-0 gap-1 rounded-[8px] bg-muted p-1">
                   {filterOptions.map((option) => (
                     <button
                       key={option.value}
@@ -187,10 +189,10 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                         replaceRouteFilters({ type: option.value });
                       }}
                       className={cn(
-                        "h-9 shrink-0 rounded-[6px] px-3 text-[12px] font-medium transition-colors",
+                        "h-9 shrink-0 rounded-[6px] px-3 text-[12px] font-medium transition-colors duration-[180ms] ease-[var(--pf-ease)]",
                         typeFilter === option.value
-                          ? "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-                          : "text-[var(--pf-muted)] hover:text-[var(--pf-ink)]"
+                          ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
+                          : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       {option.label}
@@ -204,21 +206,20 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     setSortOrder(nextSort);
                     replaceRouteFilters({ sort: nextSort });
                   }}
-                  className="flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[12px] font-medium text-[var(--pf-ink)] transition-colors hover:bg-[var(--pf-active)]"
+                  className="flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-border bg-card px-3 text-[12px] font-medium text-foreground transition-colors duration-[180ms] ease-[var(--pf-ease)] hover:bg-muted"
                 >
                   <ArrowUpDown className="size-3.5" />
                   {sortOrder === "newest" ? "Newest" : "Oldest"}
                 </button>
-                <div className="flex shrink-0 gap-1 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-1">
+                <div className="flex shrink-0 gap-1 rounded-[8px] border border-border bg-card p-1">
                   <button
                     type="button"
                     aria-label="Grid view"
                     aria-pressed={view === "grid"}
                     onClick={() => setView("grid")}
                     className={cn(
-                      "inline-flex size-8 items-center justify-center rounded-[6px] text-[var(--pf-muted)]",
-                      view === "grid" &&
-                        "bg-[var(--pf-active)] text-[var(--pf-ink)]"
+                      "inline-flex size-8 items-center justify-center rounded-[6px] text-muted-foreground transition-colors duration-[180ms] ease-[var(--pf-ease)]",
+                      view === "grid" && "bg-muted text-foreground"
                     )}
                   >
                     <Grid2X2 className="size-4" />
@@ -229,9 +230,8 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
                     aria-pressed={view === "list"}
                     onClick={() => setView("list")}
                     className={cn(
-                      "inline-flex size-8 items-center justify-center rounded-[6px] text-[var(--pf-muted)]",
-                      view === "list" &&
-                        "bg-[var(--pf-active)] text-[var(--pf-ink)]"
+                      "inline-flex size-8 items-center justify-center rounded-[6px] text-muted-foreground transition-colors duration-[180ms] ease-[var(--pf-ease)]",
+                      view === "list" && "bg-muted text-foreground"
                     )}
                   >
                     <List className="size-4" />
@@ -240,7 +240,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
               </div>
             </div>
           </div>
-        </section>
+        </GalleryPanel>
 
         <GalleryBulkBar workspace={workspace} />
 
@@ -290,7 +290,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
         ) : (
           <>
             <div className="flex items-center justify-between gap-4 px-1">
-              <p className="text-[12px] font-medium text-[var(--pf-muted)]">
+              <p className="text-[12px] font-medium text-muted-foreground">
                 {reviewSummary}
               </p>
             </div>
@@ -303,15 +303,16 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
             <GalleryGrid session={gridSession} />
             {hasMore && (
               <div className="flex justify-center pt-3">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => void handleLoadMore()}
                   disabled={isLoadingMore}
-                  className="pf-button-secondary h-9 gap-2 px-4 text-[12px] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-9 gap-2 px-4 text-[12px]"
                 >
                   {isLoadingMore && <Loader2 className="size-3.5 animate-spin" />}
                   {isLoadingMore ? "Loading..." : "Load more"}
-                </button>
+                </Button>
               </div>
             )}
           </>
