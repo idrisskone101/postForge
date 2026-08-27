@@ -16,23 +16,25 @@ const globals = source("src/app/globals.css");
 const dashboardCritical = source("src/app/dashboard-critical.css");
 const packageJson = source("package.json");
 const sidebar = source("src/components/sidebar.tsx");
+const componentsJson = source("components.json");
 
-const motionClasses = [
-  ".t-press",
-  ".t-panel",
-  ".t-modal-content",
-  ".t-modal-overlay",
-  ".t-tooltip-content",
-  ".t-input-shake",
-];
+assert.match(packageJson, /"motion"\s*:/);
+assert.doesNotMatch(packageJson, /"framer-motion"\s*:/);
+assert.match(componentsJson, /"@beui"\s*:\s*"https:\/\/beui\.dev\/r\/\{name\}\.json"/);
 
-for (const className of motionClasses) {
-  assert.match(globals, new RegExp(className.replace(".", "\\.")));
+for (const relPath of [
+  "src/components/ui/drawer.tsx",
+  "src/components/ui/theme-toggle.tsx",
+  "src/components/ui/shared-layout-bg.tsx",
+  "src/components/ui/action-swap.tsx",
+]) {
+  assert.equal(existsSync(path.join(repoRoot, relPath)), true, relPath);
 }
 
-assert.doesNotMatch(packageJson, /"motion"\s*:/);
-assert.doesNotMatch(packageJson, /"framer-motion"\s*:/);
-
+assert.match(sidebar, /from "@\/components\/sidebar-mobile-nav"/);
+assert.match(source("src/components/sidebar-mobile-nav.tsx"), /from "@\/components\/ui\/drawer"/);
+assert.match(sidebar, /from "@\/components\/ui\/shared-layout-bg"/);
+assert.doesNotMatch(sidebar, /<dialog/);
 assert.equal(
   [...sidebar.matchAll(/\buseEffect\s*\(/g)].length,
   2,

@@ -246,15 +246,15 @@ Depth is conveyed through a quiet, top-lit shadow scale plus hairline borders â€
 
 ## Motion
 
-Motion is CSS-first. **beUI** ([motion patterns](https://beui.dev/docs/motion-patterns)) owns easing curves and spring intent (`EASE_OUT`, `EASE_IN_OUT`, `SPRING_PRESS`, `SPRING_LAYOUT`). Values live as `--pf-ease-*` / `--pf-spring-*` custom properties beside existing `--pf-*` tokens. Springs are approximated in CSS; the trimmed `src/lib/ease.ts` mirrors the same numbers for future React-only work (View Transitions today, nothing else required).
+Motion is **shadcn primitives + beUI widgets**. **beUI** ([motion patterns](https://beui.dev/docs/motion-patterns), [registry](https://beui.dev/r)) owns easing, springs, and the installed widgets (`ThemeToggle`, `Drawer`, `SharedLayoutBg`, `ActionSwapIcon`, spring-pressed `Button`). Values live as `--pf-ease-*` / `--pf-spring-*` custom properties beside existing `--pf-*` tokens. The same numbers are mirrored in `src/lib/ease.ts` for `motion/react`.
 
-**transitions.dev** owns the duration/distance/scale vocabulary (`--t-duration-*`, `--t-distance-*`, `--t-scale-*`) and the namespaced utility rules (`.t-press`, `.t-tooltip-content`, `.t-modal-*`, `.t-panel`, `.t-tabs-indicator`, `.t-input-shake`). Every copied snippet ships its own `@media (prefers-reduced-motion: reduce)` block even though globals already collapses durations.
+Install widgets through the `@beui` shadcn registry into `src/components/ui` (never `src/components/motion` or `src/components/pf-system`). New UI is a shadcn component or a thin motion wrap of one. Do not dump magnetic / metallic / stateful / tilt / marquee / shader / island / agent toys.
 
-**shadcn/ui primitives** (`src/components/ui/*`) are the component layer. Motion is folded in via shared classes and tokenized Tailwind â€” no `components/motion/*`, no `motion` package, no `layoutId`, no parallel Button family.
+**transitions.dev** still owns the duration/distance/scale vocabulary (`--t-duration-*`, `--t-distance-*`, `--t-scale-*`) and fallback `.t-*` rules for Base UI overlays (dialog/sheet/tooltip) that keep their existing APIs. Every copied snippet ships its own `@media (prefers-reduced-motion: reduce)` block even though globals already collapses durations.
 
-**Allowlist (chrome + primitives only):** press, nav active wash, tooltip, dialog/sheet, theme toggle View Transition, input error feedback. **Ban:** confetti, tilt, goo, marquees, Lenis, shader backgrounds, toast/number animation in shell.
+**Allowlist (chrome + primitives):** beUI ThemeToggle (View Transition), Drawer (mobile nav), SharedLayoutBg (nav hover pill), spring press on Button, input error shake. **Ban:** confetti, tilt, goo, marquees, Lenis, shader backgrounds, toast/number animation in shell, bounce-sidebar, animated-sidebar rewrite.
 
-**Reduced motion:** opacity and color feedback stay; travel, scale, blur, and spring overshoot go. Global `*` duration zeroing remains; per-snippet guards are still required.
+**Reduced motion:** opacity and color feedback stay; travel, scale, blur, and spring overshoot go. Global `*` duration zeroing remains; per-snippet and `useReducedMotion` guards are still required.
 
 **Default ease:** `--pf-ease` aliases `--pf-ease-smooth-out` (`cubic-bezier(0.22, 1, 0.36, 1)`). Existing `duration-[var(--pf-duration)] ease-[var(--pf-ease)]` call sites keep working.
 

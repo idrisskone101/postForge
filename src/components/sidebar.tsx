@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
@@ -15,10 +15,8 @@ import {
   House,
   Images,
   ListChecks,
-  Menu,
   PanelLeftClose,
   PanelLeftOpen,
-  Plus,
   Settings,
   Sparkles,
   UserRoundPen,
@@ -28,6 +26,9 @@ import { cn } from "@/lib/utils";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
 import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { SharedLayoutBg } from "@/components/ui/shared-layout-bg";
+import { SidebarMobileNav } from "@/components/sidebar-mobile-nav";
 import {
   getActiveWorkspaceItem,
   workspaceNavigationGroups,
@@ -39,7 +40,6 @@ import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 export function Sidebar() {
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
-  const mobileNavRef = useRef<HTMLDialogElement>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("PostForge");
   const [notificationPreferences, setNotificationPreferences] = useState({
@@ -109,7 +109,11 @@ export function Sidebar() {
 
   if (publicPolicyPage) return null;
 
-  const renderItem = (item: WorkspaceNavigationItem, mobile = false) => {
+  const renderItem = (
+    item: WorkspaceNavigationItem,
+    mobile = false,
+    onClose?: () => void
+  ) => {
     const Icon = NAV_ICONS[item.label];
     const active = activeItem?.href === item.href;
 
@@ -120,13 +124,13 @@ export function Sidebar() {
         aria-label={item.label}
         title={item.label}
         aria-current={active ? "page" : undefined}
-        onClick={() => mobile && mobileNavRef.current?.close()}
+        onClick={() => mobile && onClose?.()}
         className={cn(
           "sidebar-nav-item t-nav-item group relative flex h-[38px] items-center gap-2.5 rounded-[8px] text-[13px] font-medium transition-colors duration-[var(--pf-duration)] ease-[var(--pf-ease)]",
           mobile ? "justify-start px-2.5" : "justify-center px-0 xl:justify-start xl:px-2.5",
           active
             ? "is-active bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
-            : "text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+            : "text-[var(--pf-rail-muted)] hover:text-[var(--pf-rail-ink)]"
         )}
       >
         <Icon
@@ -152,31 +156,43 @@ export function Sidebar() {
     </span>
   );
 
-  const navigation = (mobile = false) => (
+  const navigation = (mobile = false, onClose?: () => void) => (
     <nav className="flex flex-col" aria-label="Workspace navigation">
       {groupLabel("Primary", mobile)}
-      <div className="flex flex-col gap-0.5">
-        {workspaceNavigationGroups.primary.map((item) => renderItem(item, mobile))}
-      </div>
+      <SharedLayoutBg
+        className="gap-0.5"
+        inset={0}
+        pillClassName="rounded-[8px] bg-[var(--pf-active)]"
+      >
+        {workspaceNavigationGroups.primary.map((item) =>
+          renderItem(item, mobile, onClose)
+        )}
+      </SharedLayoutBg>
       {groupLabel("Tools", mobile)}
-      <div className="flex flex-col gap-0.5">
-        {workspaceNavigationGroups.tools.map((item) => renderItem(item, mobile))}
-      </div>
+      <SharedLayoutBg
+        className="gap-0.5"
+        inset={0}
+        pillClassName="rounded-[8px] bg-[var(--pf-active)]"
+      >
+        {workspaceNavigationGroups.tools.map((item) =>
+          renderItem(item, mobile, onClose)
+        )}
+      </SharedLayoutBg>
     </nav>
   );
 
-  const footer = (mobile = false) => (
+  const footer = (mobile = false, onClose?: () => void) => (
     <div className="mt-auto">
       {(notificationPreferences.failures || notificationPreferences.approvals) && (
         <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
           {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
-            <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
+            <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && onClose?.()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
               {/* prefetch-off: alert chip, not primary nav */}
               <Bell className="size-3 shrink-0 text-[var(--pf-danger)]" /><span className="min-w-0 flex-1 truncate">Failed generations</span><b className="pf-data">{notificationCounts.generationFailures}</b>
             </Link>
           )}
           {notificationPreferences.approvals && notificationCounts.approvalsWaiting > 0 && (
-            <Link prefetch={false} href="/gallery?reviewStatus=needs_review" onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
+            <Link prefetch={false} href="/gallery?reviewStatus=needs_review" onClick={() => mobile && onClose?.()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
               {/* prefetch-off: alert chip, not primary nav */}
               <Bell className="size-3 shrink-0 text-[var(--pf-orange)]" /><span className="min-w-0 flex-1 truncate">Outputs to review</span><b className="pf-data">{notificationCounts.approvalsWaiting}</b>
             </Link>
@@ -200,7 +216,15 @@ export function Sidebar() {
           Manage
         </Link>
       </div>
-      {workspaceNavigationGroups.utility.map((item) => renderItem(item, mobile))}
+      <SharedLayoutBg
+        className="gap-0.5"
+        inset={0}
+        pillClassName="rounded-[8px] bg-[var(--pf-active)]"
+      >
+        {workspaceNavigationGroups.utility.map((item) =>
+          renderItem(item, mobile, onClose)
+        )}
+      </SharedLayoutBg>
       <div className={cn(
         "mt-2 grid-cols-[32px_minmax(0,1fr)_32px] items-center gap-2 border-t border-[var(--pf-rail-border)] px-2 pt-3",
         mobile ? "grid" : "sidebar-expanded-only hidden xl:grid"
@@ -222,46 +246,28 @@ export function Sidebar() {
 
   return (
     <>
-      <div id="workspace-mobile-bar" className="fixed inset-x-0 top-0 z-50 flex h-[calc(58px+env(safe-area-inset-top))] items-center border-b border-[var(--pf-rail-border)] bg-[var(--pf-rail)] px-3 pt-[env(safe-area-inset-top)] md:hidden">
-        <button
-          type="button"
-          aria-label="Open workspace navigation"
-          className="t-press mr-2 grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
-          onClick={() => mobileNavRef.current?.showModal()}
-        >
-          <Menu className="size-5" />
-        </button>
-        <dialog
-          ref={mobileNavRef}
-          id="workspace-mobile-drawer"
-          aria-label="Workspace navigation"
-          className="sidebar-mobile-drawer t-panel"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) event.currentTarget.close();
-          }}
-        >
-          <div className="flex h-full flex-col px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))]">
-            <PostForgeBrand name={workspaceName} />
-            <div className="mt-5 min-h-0 flex-1 overflow-y-auto">{navigation(true)}</div>
-            {footer(true)}
-          </div>
-        </dialog>
-        <PostForgeBrand name={workspaceName} />
-        <Link
-          href={quickAction.href}
-          aria-label={quickAction.label}
-          className="t-press ml-auto grid size-9 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-orange)] transition-[filter] duration-[var(--pf-duration)] ease-[var(--pf-ease)] hover:brightness-[0.93]"
-        >
-          <Plus className="size-4" />
-        </Link>
-      </div>
+      <SidebarMobileNav
+        brand={<PostForgeBrand name={workspaceName} />}
+        quickAction={quickAction}
+      >
+        {(close) => (
+          <>
+            <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
+              {navigation(true, close)}
+            </div>
+            {footer(true, close)}
+          </>
+        )}
+      </SidebarMobileNav>
 
       <aside id="workspace-sidebar" className="fixed inset-y-0 left-0 z-40 hidden w-[72px] border-r border-[var(--pf-rail-border)] bg-[var(--pf-rail)] md:flex xl:w-64">
         <div className="sidebar-frame flex w-full flex-col px-2 py-5 xl:px-4">
           <div className="sidebar-header flex min-w-0 items-center justify-between gap-1">
             <PostForgeBrand name={workspaceName} />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 const nextCollapsed = !desktopCollapsed;
                 setDesktopCollapsed(nextCollapsed);
@@ -271,10 +277,10 @@ export function Sidebar() {
               aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="t-press hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
+              className="hidden size-7 shrink-0 rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:inline-flex"
             >
               {desktopCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-            </button>
+            </Button>
           </div>
           <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-0.5">{navigation()}</div>
           {footer()}

@@ -8,6 +8,7 @@ function source(relativePath: string) {
 const pkg = source("package.json");
 const shell = source("src/components/workspace-shell.tsx");
 const sidebar = source("src/components/sidebar.tsx");
+const sidebarMobile = source("src/components/sidebar-mobile-nav.tsx");
 const sheet = source("src/components/ui/sheet.tsx");
 const appLayout = source("src/app/(app)/layout.tsx");
 const legalLayout = source("src/app/(legal)/layout.tsx");
@@ -151,8 +152,8 @@ for (const toast of fixedToasts) {
   assert.match(toast, /min-w-0/);
 }
 assert.doesNotMatch(routeSurfaces, /fixed bottom-5/);
-assert.match(sidebar, /safe-area-inset-top/);
-assert.match(sidebar, /safe-area-inset-bottom/);
+assert.match(sidebarMobile, /safe-area-inset-top/);
+assert.match(sidebarMobile, /safe-area-inset-bottom/);
 assert.match(sheet, /safe-area-inset-top/);
 assert.match(sheet, /safe-area-inset-bottom/);
 assert.match(collections, /safe-area-inset-bottom/);

@@ -11,6 +11,10 @@ import {
   EASE_IN_OUT_CSS,
   EASE_SMOOTH_OUT,
   EASE_SMOOTH_OUT_CSS,
+  SPRING_LAYOUT,
+  SPRING_PANEL,
+  SPRING_PRESS,
+  SPRING_SWAP,
 } from "../../src/lib/ease";
 
 const repoRoot = path.resolve(
@@ -46,5 +50,9 @@ assert.equal(DURATION.instant, 100);
 assert.equal(DURATION.normal, 220);
 assert.equal(DURATION.moderate, 320);
 assert.equal(DURATION.slow, 480);
+assert.equal(SPRING_PRESS.stiffness, 500);
+assert.equal(SPRING_LAYOUT.stiffness, 360);
+assert.equal(SPRING_PANEL.stiffness, 420);
+assert.equal(SPRING_SWAP.stiffness, 460);
 
 console.log("ease JS/CSS parity passed");
