@@ -19,3 +19,5 @@ export function JobsPanel({
     </Card>
   );
 }
+
+export const JOBS_HAIRLINE_CSS = `[data-jobs-summary="true"] a{border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface)}[data-jobs-filters="true"],[data-jobs-board="true"]{border:1px solid var(--pf-border);border-radius:8px;background:var(--pf-surface);box-sizing:border-box}`;

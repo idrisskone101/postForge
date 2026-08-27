@@ -2316,12 +2316,6 @@ header:has([data-home-title]) p {
   overflow: hidden !important;
 }
 
-[data-jobs-summary="true"] a {
-  border: 1px solid var(--pf-border) !important;
-  border-radius: 8px !important;
-  background: var(--pf-surface) !important;
-}
-
 [data-jobs-summary="true"] span:first-child::before {
   content: attr(data-jobs-label) !important;
   display: block !important;
@@ -2531,19 +2525,11 @@ header:has([data-home-title]) p {
 
 [data-jobs-board="true"] {
   margin-top: 0.75rem !important;
-  border: 1px solid var(--pf-border) !important;
-  border-radius: 8px !important;
-  background: var(--pf-surface) !important;
-  box-sizing: border-box !important;
 }
 
 [data-jobs-filters="true"] {
   height: 7.75rem !important;
   overflow: hidden !important;
-  box-sizing: border-box !important;
-  border: 1px solid var(--pf-border) !important;
-  border-radius: 8px !important;
-  background: var(--pf-surface) !important;
 }
 
 [data-spend-page="true"] > * + * {
