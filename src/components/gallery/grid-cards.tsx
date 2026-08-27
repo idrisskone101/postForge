@@ -12,9 +12,6 @@ import type { GalleryMediaSession } from "./media-session";
 import { GalleryReviewStatusControl } from "./review-status-control";
 import type { GalleryItem } from "./types";
 
-const galleryTileClassName =
-  "min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0";
-
 export function GalleryGridCards({
   items,
   view,
@@ -50,8 +47,7 @@ export function GalleryGridCards({
           <Card
             key={item.id}
             className={cn(
-              "pf-card-hover group min-w-0 overflow-hidden transition-[border-color,box-shadow] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]",
-              galleryTileClassName,
+              "pf-card-hover group min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0 transition-[border-color,box-shadow] duration-[180ms] ease-[var(--pf-ease)] hover:border-[var(--pf-border-strong)]",
               isSelected && "border-primary ring-1 ring-primary/25"
             )}
           >

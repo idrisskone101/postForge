@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { downloadFile } from "@/lib/utils/download";
-import { cn } from "@/lib/utils";
 import { Copy, Download, ExternalLink, Loader2, Maximize2, Send, Sparkles, Trash2, X } from "lucide-react";
 import { GalleryDeleteDialog } from "./delete-dialog";
 import { GalleryReviewStatusControl } from "./review-status-control";
@@ -26,9 +25,6 @@ export type GallerySelection = {
   onHandoff?: (item: GalleryItem) => Promise<boolean>;
   onFeedback?: (feedback: GalleryFeedback) => void;
 };
-
-const galleryInspectorClassName =
-  "min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0";
 
 export function GallerySelectionInspector({
   selection,
@@ -94,10 +90,7 @@ export function GallerySelectionInspector({
       data-gallery-selection-inspector
       role="complementary"
       aria-label="Selected asset preview"
-      className={cn(
-        galleryInspectorClassName,
-        "order-first min-w-0 min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
-      )}
+      className="order-first min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0 min-[1360px]:order-last min-[1360px]:sticky min-[1360px]:top-4"
     >
       <div className="flex min-w-0 items-center justify-between gap-3 border-b border-border px-3 py-2.5">
         <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">

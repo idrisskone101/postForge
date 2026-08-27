@@ -14,9 +14,6 @@ import { patchGalleryReviewStatus } from "./review-api";
 import { ReviewStatePill } from "./review-state-pill";
 import type { GalleryItem } from "./types";
 
-const galleryListShellClassName =
-  "min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0";
-
 export function GalleryListTable({
   items,
   session,
@@ -65,7 +62,10 @@ export function GalleryListTable({
   };
 
   return (
-    <div data-gallery-view="list" className={cn(galleryListShellClassName, "overflow-hidden")}>
+    <div
+      data-gallery-view="list"
+      className="min-w-0 gap-0 overflow-hidden rounded-lg border border-border bg-card py-0 text-card-foreground shadow-none ring-0"
+    >
       <div className="hidden grid-cols-[2rem_3rem_minmax(0,1.6fr)_minmax(7.5rem,0.6fr)_minmax(6.5rem,0.5fr)_5.5rem_10rem] items-center gap-3 border-b border-border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground md:grid">
         <span />
         <span />
