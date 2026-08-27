@@ -8,7 +8,13 @@ import { HomeGlanceStats } from "./home-glance-stats";
 import { HomeReviewQueue } from "./home-review-queue";
 import { HomeEmptyPanel, HomeStartWork } from "./home-start-work";
 import { ActiveJobRow } from "./home-active-lane";
-import { CardHeader, CardLink } from "./home-panel";
+import {
+  HomeLaneEmpty,
+  HomePanel,
+  HomePanelBody,
+  HomePanelHeader,
+  HomePanelLink,
+} from "./home-panel";
 import type { HomeDashboard, HomeMedia } from "./home-types";
 import { VideoFramePreview } from "@/components/video-frame-preview";
 
@@ -47,84 +53,76 @@ export function HomeCockpit({ dashboard, bare = false }: HomeCockpitProps) {
         ) : (
           <>
             <div className="mt-3 grid items-start gap-3 min-[1024px]:grid-cols-[9fr_11fr]">
-              <section className="pf-card min-w-0 p-4 sm:p-5">
-                <CardHeader
+              <HomePanel>
+                <HomePanelHeader
                   title="Review queue"
                   action={
-                    <CardLink href="/gallery?reviewStatus=needs_review">Review all</CardLink>
+                    <HomePanelLink href="/gallery?reviewStatus=needs_review">
+                      Review all
+                    </HomePanelLink>
                   }
                 />
-                <div className="mt-3">
+                <HomePanelBody>
                   {visibleReviewJobs.length === 0 ? (
-                    <div className="flex min-h-[160px] flex-col items-center justify-center px-4 py-6 text-center">
-                      <span className="grid size-9 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-success)]">
-                        <Check className="size-4" />
-                      </span>
-                      <p className="mt-2 text-[13px] font-medium text-[var(--pf-ink)]">
-                        No outputs are waiting
-                      </p>
-                      <p className="mt-0.5 text-[12px] text-[var(--pf-muted)]">
-                        Completed work appears here first.
-                      </p>
-                    </div>
+                    <HomeLaneEmpty
+                      icon={Check}
+                      iconTone="success"
+                      title="No outputs are waiting"
+                      description="Completed work appears here first."
+                      className="min-h-[160px]"
+                    />
                   ) : (
                     <HomeReviewQueue jobs={visibleReviewJobs} />
                   )}
-                </div>
-              </section>
+                </HomePanelBody>
+              </HomePanel>
 
-              <section className="pf-card min-w-0 p-4 sm:p-5">
-                <CardHeader
+              <HomePanel>
+                <HomePanelHeader
                   title="Recent media"
-                  action={<CardLink href="/gallery">View all</CardLink>}
+                  action={<HomePanelLink href="/gallery">View all</HomePanelLink>}
                 />
-                {recentMedia.length === 0 ? (
-                  <div className="mt-3 flex min-h-[160px] flex-col items-center justify-center px-4 py-6 text-center">
-                    <span className="grid size-9 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
-                      <ImageIcon className="size-4" />
-                    </span>
-                    <p className="mt-2 text-[13px] font-medium text-[var(--pf-ink)]">
-                      Nothing generated yet
-                    </p>
-                    <p className="mt-0.5 text-[12px] text-[var(--pf-muted)]">
-                      Finished images and videos land here.
-                    </p>
-                  </div>
+                <HomePanelBody>
+                  {recentMedia.length === 0 ? (
+                    <HomeLaneEmpty
+                      icon={ImageIcon}
+                      title="Nothing generated yet"
+                      description="Finished images and videos land here."
+                      className="min-h-[160px]"
+                    />
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {recentMedia.map((media) => (
+                        <MediaTile key={media.id} media={media} />
+                      ))}
+                    </div>
+                  )}
+                </HomePanelBody>
+              </HomePanel>
+            </div>
+
+            <HomePanel className="mt-3">
+              <HomePanelHeader
+                title="In progress"
+                action={<HomePanelLink href="/jobs?status=active">View all jobs</HomePanelLink>}
+              />
+              <HomePanelBody className="pt-1">
+                {activeJobs.length === 0 ? (
+                  <HomeLaneEmpty
+                    icon={Sparkles}
+                    title="Your queue is clear"
+                    description="Start a Clone or Generate asset to fill this lane."
+                    className="min-h-[120px] py-5"
+                  />
                 ) : (
-                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {recentMedia.map((media) => (
-                      <MediaTile key={media.id} media={media} />
+                  <div>
+                    {activeJobs.map((job) => (
+                      <ActiveJobRow key={job.id} job={job} />
                     ))}
                   </div>
                 )}
-              </section>
-            </div>
-
-            <section className="pf-card mt-3 min-w-0 p-4 sm:p-5">
-              <CardHeader
-                title="In progress"
-                action={<CardLink href="/jobs?status=active">View all jobs</CardLink>}
-              />
-              {activeJobs.length === 0 ? (
-                <div className="mt-3 flex min-h-[120px] flex-col items-center justify-center px-4 py-5 text-center">
-                  <span className="grid size-9 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
-                    <Sparkles className="size-4" />
-                  </span>
-                  <p className="mt-2 text-[13px] font-medium text-[var(--pf-ink)]">
-                    Your queue is clear
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-[var(--pf-muted)]">
-                    Start a Clone or Generate asset to fill this lane.
-                  </p>
-                </div>
-              ) : (
-                <div className="mt-1">
-                  {activeJobs.map((job) => (
-                    <ActiveJobRow key={job.id} job={job} />
-                  ))}
-                </div>
-              )}
-            </section>
+              </HomePanelBody>
+            </HomePanel>
 
             <HomeStartWork />
           </>
@@ -135,7 +133,7 @@ export function HomeCockpit({ dashboard, bare = false }: HomeCockpitProps) {
   if (bare) return body;
 
   return (
-    <div className="pf-content-viewport bg-[var(--pf-canvas)]">
+    <div className="pf-content-viewport bg-background">
       <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
         {body}
       </div>
@@ -158,7 +156,7 @@ function MediaTile({ media }: { media: HomeMedia }) {
 
   return (
     <Link href={href} prefetch={false} className="group relative block min-w-0">
-      <span className="relative block aspect-square overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)] transition-shadow duration-[180ms] group-hover:shadow-[var(--pf-shadow-md)]">
+      <span className="relative block aspect-square overflow-hidden rounded-[8px] border border-border bg-muted transition-shadow duration-[180ms] group-hover:shadow-[var(--pf-shadow-md)]">
         {media.type === "video" ? (
           <VideoFramePreview
             src={source}
