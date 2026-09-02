@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 
 export function GalleryFirstPaint() {
@@ -39,18 +40,20 @@ export function GalleryFirstPaint() {
               id="workspace-header-accessory"
               className="flex min-w-0 flex-wrap gap-2"
             >
-              <a
+              <Link
                 href="/ugc-clone"
+                prefetch={false}
                 className="pf-button-secondary shrink-0 whitespace-nowrap"
               >
                 Start Clone
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/generate"
+                prefetch={false}
                 className="pf-button-primary shrink-0 whitespace-nowrap"
               >
                 Generate asset
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -68,12 +71,12 @@ export function GalleryFirstPaint() {
         <div data-workspace-state="empty">
           <div aria-hidden="true" />
           <div data-workspace-state-actions="true">
-            <a href="/ugc-clone" className="pf-button-primary">
+            <Link href="/ugc-clone" prefetch={false} className="pf-button-primary">
               Start Clone
-            </a>
-            <a href="/generate" className="pf-button-secondary">
+            </Link>
+            <Link href="/generate" prefetch={false} className="pf-button-secondary">
               Open Generate
-            </a>
+            </Link>
           </div>
         </div>
       </div>
