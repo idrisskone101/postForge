@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { GalleryPageClient } from "../../src/app/(app)/gallery/gallery-page-client";
+import { GalleryFirstPaint } from "../../src/app/(app)/gallery/gallery-first-paint";
 import { GalleryHeaderControls } from "../../src/app/(app)/gallery/gallery-header-controls";
 import { GalleryLoadErrorState } from "../../src/app/(app)/gallery/gallery-load-error-state";
 import { getFailedGalleryActionIds } from "../../src/app/(app)/gallery/gallery-models";
@@ -71,6 +72,7 @@ const approvedMarkup = renderToStaticMarkup(
   />
 );
 const headerControlsMarkup = renderToStaticMarkup(<GalleryHeaderControls />);
+const firstPaintMarkup = renderToStaticMarkup(<GalleryFirstPaint />);
 const emptyMarkup = renderToStaticMarkup(
   <GalleryPageClient
     initialPage={{
@@ -115,6 +117,13 @@ assert.match(headerControlsMarkup, /href="\/ugc-clone"/);
 assert.match(headerControlsMarkup, /Start Clone/);
 assert.match(headerControlsMarkup, /href="\/generate"/);
 assert.match(headerControlsMarkup, /Generate asset/);
+assert.match(firstPaintMarkup, /data-gallery-first-paint="true"/);
+assert.match(firstPaintMarkup, /data-gallery-page="true"/);
+assert.match(firstPaintMarkup, /data-gallery-toolbar="true"/);
+assert.match(firstPaintMarkup, />Start Clone</);
+assert.match(firstPaintMarkup, />Open Generate</);
+assert.match(firstPaintMarkup, /fetchPriority="high"/);
+assert.match(firstPaintMarkup, /data:image\/svg\+xml/);
 assert.match(markup, /Needs Review/);
 assert.match(markup, /Approved Output/);
 assert.match(markup, /Rejected Output/);
