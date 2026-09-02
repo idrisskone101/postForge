@@ -512,7 +512,7 @@ assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryFirstPaint/);
 assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
 assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
-  /data-gallery-first-paint/,
+  /data-gallery-first-body/,
 );
 assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
 assert.match(

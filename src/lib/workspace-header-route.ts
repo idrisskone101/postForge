@@ -1,6 +1,7 @@
 export function routeOwnsHeader(pathname: string) {
   return (
     pathname === "/" ||
+    pathname === "/gallery" ||
     pathname === "/ugc-clone" ||
     /^\/ugc-clone\/[^/]+$/.test(pathname) ||
     /^\/generate\/[^/]+$/.test(pathname) ||

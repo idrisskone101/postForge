@@ -10,7 +10,7 @@ export function GalleryPageLazy(props: GalleryPageClientProps) {
   useEffect(() => {
     if (!ready) return;
     document
-      .querySelector("[data-gallery-first-paint]")
+      .querySelector("[data-gallery-first-body]")
       ?.setAttribute("hidden", "");
   }, [ready]);
   if (!ready) return null;

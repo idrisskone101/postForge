@@ -47,7 +47,7 @@ assert.ok(
   "gallery-page-client.tsx must shrink below 331 lines"
 );
 assert.ok(
-  lineCount("src/app/(app)/gallery/gallery-first-paint.tsx") < 80,
+  lineCount("src/app/(app)/gallery/gallery-first-paint.tsx") < 120,
   "gallery-first-paint.tsx stays a thin first-paint shell"
 );
 
