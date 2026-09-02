@@ -508,7 +508,24 @@ assert.match(
   /\[data-character-blueprint\]::before\{content:attr\(data-character-blueprint\)/,
 );
 assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
+assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryFirstPaint/);
+assert.match(
+  source("src/app/(app)/gallery/page.tsx"),
+  /<Suspense fallback=\{null\}>/,
+);
 assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /data-gallery-first-body/,
+);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /workspace-header-accessory/,
+);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /replaceChildren/,
+);
 assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
 assert.match(
   source("src/app/(app)/automations/new/automation-builder-phase-form-lazy.tsx"),

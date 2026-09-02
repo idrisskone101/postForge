@@ -46,6 +46,10 @@ assert.ok(
   lineCount("src/app/(app)/gallery/gallery-page-client.tsx") < 331,
   "gallery-page-client.tsx must shrink below 331 lines"
 );
+assert.ok(
+  lineCount("src/app/(app)/gallery/gallery-first-paint.tsx") < 120,
+  "gallery-first-paint.tsx stays a thin first-paint shell"
+);
 
 const galleryRouteTsx = listFiles("src/app/(app)/gallery/").filter((file) =>
   file.endsWith(".tsx")

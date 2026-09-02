@@ -5,6 +5,7 @@ import {
   workspaceNavigationGroups,
   workspaceNavigationItems,
 } from "../../src/lib/workspace-navigation";
+import { routeOwnsHeader } from "../../src/lib/workspace-header-route";
 
 const primaryLabels = workspaceNavigationGroups.primary.map((item) => item.label);
 assert.deepEqual(primaryLabels, [
@@ -38,6 +39,8 @@ assert.equal(
   "Slideshow"
 );
 assert.equal(getActiveWorkspaceItem("/gallery")?.label, "Gallery");
+assert.equal(routeOwnsHeader("/gallery"), true);
+assert.equal(routeOwnsHeader("/jobs"), false);
 assert.equal(getActiveWorkspaceItem("/automations/new")?.label, "Automations");
 assert.equal(getActiveWorkspaceItem("/performance")?.label, "Performance");
 assert.equal(getActiveWorkspaceItem("/costs?period=30d")?.label, "Spend");

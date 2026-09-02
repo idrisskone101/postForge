@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import {
   getGalleryPage,
   normalizeGalleryReviewStatusFilter,
 } from "@/lib/gallery";
+import { GalleryFirstPaint } from "./gallery-first-paint";
 import { GalleryPageLazy } from "./gallery-page-lazy";
 
 export const metadata = { title: "Gallery - PostForge" };
@@ -13,7 +15,22 @@ type GallerySearchParams = Promise<{
   reviewStatus?: string | string[];
 }>;
 
-export default async function GalleryPage({
+export default function GalleryPage({
+  searchParams,
+}: {
+  searchParams: GallerySearchParams;
+}) {
+  return (
+    <>
+      <GalleryFirstPaint />
+      <Suspense fallback={null}>
+        <GalleryDeferredPage searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
+}
+
+async function GalleryDeferredPage({
   searchParams,
 }: {
   searchParams: GallerySearchParams;
