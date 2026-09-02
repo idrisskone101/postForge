@@ -19,7 +19,16 @@ export function GalleryFirstPaint() {
         >
           <div className="min-w-0">
             <div data-gallery-title="true" role="heading" aria-level={1}>
-              {title}
+              <img
+                alt=""
+                width={192}
+                height={31}
+                decoding="sync"
+                loading="eager"
+                fetchPriority="high"
+                src={GALLERY_TITLE_SRC}
+              />
+              <span className="sr-only">{title}</span>
             </div>
             <p data-header-copy={copy}>
               <span className="sr-only">{copy}</span>
@@ -73,4 +82,8 @@ export function GalleryFirstPaint() {
 }
 
 const GALLERY_TITLE_CSS =
-  '[data-gallery-title="true"]{margin:0!important;width:12rem!important;max-width:12rem!important;height:31px!important;overflow:hidden!important;font-size:28px!important;font-weight:600!important;line-height:31px!important;letter-spacing:-.02em!important;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;color:var(--pf-ink)!important}';
+  '[data-gallery-title="true"]{margin:0!important;width:12rem!important;max-width:12rem!important;height:31px!important;overflow:hidden!important}[data-gallery-title="true"] img{display:block!important;width:192px!important;height:31px!important;max-width:192px!important}';
+
+const GALLERY_TITLE_SRC = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="192" height="31"><text x="0" y="24" font-size="28" font-weight="600" font-family="ui-sans-serif,system-ui,sans-serif" fill="rgb(24,24,27)">Gallery</text></svg>',
+)}`;

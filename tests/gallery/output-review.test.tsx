@@ -123,6 +123,8 @@ assert.match(firstPaintMarkup, /data-gallery-toolbar="true"/);
 assert.match(firstPaintMarkup, /data-gallery-first-body="true"/);
 assert.match(firstPaintMarkup, />Gallery</);
 assert.match(firstPaintMarkup, /data-gallery-title="true"/);
+assert.match(firstPaintMarkup, /fetchPriority="high"/);
+assert.match(firstPaintMarkup, /data:image\/svg\+xml/);
 assert.match(firstPaintMarkup, />Start Clone</);
 assert.match(firstPaintMarkup, />Open Generate</);
 assert.match(firstPaintMarkup, />Generate asset</);
