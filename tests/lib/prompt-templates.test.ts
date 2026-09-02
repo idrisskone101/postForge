@@ -131,7 +131,12 @@ assert.deepEqual(
       updatedAt: "2026-08-22T11:00:00.000Z",
     },
   ]).map((record) => record.id),
-  [valid.id, "tpl-2"]
+  ["builtin-before-identity", valid.id, "tpl-2"]
+);
+
+assert.equal(
+  parsePromptTemplateRecords([]).some((record) => record.id === "builtin-before-identity"),
+  true
 );
 
 const workspaceFeatureRouteSource = readFileSync(
@@ -146,6 +151,8 @@ const workspaceFeatureStoreSource = readFileSync(
   "utf8"
 );
 assert.match(workspaceFeatureRouteSource, /isPromptTemplateRecord/);
+assert.match(workspaceFeatureRouteSource, /parsePromptTemplateRecords/);
+assert.match(workspaceFeatureRouteSource, /presentFeatureRecords/);
 assert.match(workspaceFeatureRouteSource, /case "prompt-templates":/);
 assert.match(workspaceFeatureStoreSource, /"prompt-templates"/);
 
