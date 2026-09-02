@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   getGalleryPage,
   normalizeGalleryReviewStatusFilter,
@@ -14,7 +15,22 @@ type GallerySearchParams = Promise<{
   reviewStatus?: string | string[];
 }>;
 
-export default async function GalleryPage({
+export default function GalleryPage({
+  searchParams,
+}: {
+  searchParams: GallerySearchParams;
+}) {
+  return (
+    <>
+      <GalleryFirstPaint />
+      <Suspense fallback={null}>
+        <GalleryDeferredPage searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
+}
+
+async function GalleryDeferredPage({
   searchParams,
 }: {
   searchParams: GallerySearchParams;
@@ -41,14 +57,11 @@ export default async function GalleryPage({
   const page = await getGalleryPage({ type, sort, reviewStatus });
 
   return (
-    <>
-      <GalleryFirstPaint />
-      <GalleryPageLazy
-        initialPage={page}
-        initialType={type}
-        initialSort={sort}
-        initialReviewStatus={reviewStatus}
-      />
-    </>
+    <GalleryPageLazy
+      initialPage={page}
+      initialType={type}
+      initialSort={sort}
+      initialReviewStatus={reviewStatus}
+    />
   );
 }

@@ -509,6 +509,10 @@ assert.match(
 );
 assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
 assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryFirstPaint/);
+assert.match(
+  source("src/app/(app)/gallery/page.tsx"),
+  /<Suspense fallback=\{null\}>/,
+);
 assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
 assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
