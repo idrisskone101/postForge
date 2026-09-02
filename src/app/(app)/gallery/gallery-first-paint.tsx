@@ -1,8 +1,6 @@
-import { preload } from "react-dom";
 import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 
 export function GalleryFirstPaint() {
-  preload(GALLERY_TITLE_SRC, { as: "image", fetchPriority: "high" });
   const gallery = getActiveWorkspaceItem("/gallery");
   const title = gallery?.label ?? "Gallery";
   const copy = gallery?.description ?? "";
