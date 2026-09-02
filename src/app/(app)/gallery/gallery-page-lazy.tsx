@@ -9,9 +9,7 @@ export function GalleryPageLazy(props: GalleryPageClientProps) {
   const ready = useWindowLoadReady();
   useEffect(() => {
     if (!ready) return;
-    document
-      .querySelector("[data-gallery-first-body]")
-      ?.setAttribute("hidden", "");
+    hideGalleryFirstPaint();
   }, [ready]);
   if (!ready) return null;
   return <GalleryPageDynamic {...props} />;
@@ -24,3 +22,10 @@ const GalleryPageDynamic = dynamic(
     })),
   { ssr: false },
 );
+
+function hideGalleryFirstPaint() {
+  document
+    .querySelector("[data-gallery-first-body]")
+    ?.setAttribute("hidden", "");
+  document.getElementById("workspace-header-accessory")?.replaceChildren();
+}

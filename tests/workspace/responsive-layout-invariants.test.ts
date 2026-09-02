@@ -518,6 +518,14 @@ assert.match(
   source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
   /data-gallery-first-body/,
 );
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /workspace-header-accessory/,
+);
+assert.match(
+  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
+  /replaceChildren/,
+);
 assert.match(source("src/app/(app)/ugc-inspiration/page.tsx"), /InspirationPageLazy/);
 assert.match(
   source("src/app/(app)/automations/new/automation-builder-phase-form-lazy.tsx"),
