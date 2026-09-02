@@ -7,6 +7,7 @@ export function GalleryFirstPaint() {
 
   return (
     <div data-gallery-first-paint="true">
+      <style>{GALLERY_TITLE_CSS}</style>
       <div
         id="workspace-header"
         className="border-b border-[var(--pf-border)] bg-[var(--pf-canvas)]"
@@ -17,7 +18,7 @@ export function GalleryFirstPaint() {
           className="grid min-h-[120px] gap-4 px-5 pb-6 pt-6 sm:px-7 lg:items-end lg:px-8 lg:grid-cols-[minmax(0,1fr)_auto]"
         >
           <div className="min-w-0">
-            <div role="heading" aria-level={1} style={TITLE_STYLE}>
+            <div data-gallery-title="true" role="heading" aria-level={1}>
               {title}
             </div>
             <p data-header-copy={copy}>
@@ -71,14 +72,5 @@ export function GalleryFirstPaint() {
   );
 }
 
-const TITLE_STYLE = {
-  margin: 0,
-  height: 31,
-  overflow: "hidden",
-  fontSize: 28,
-  fontWeight: 600,
-  lineHeight: 1.1,
-  letterSpacing: "-0.02em",
-  fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-  color: "var(--pf-ink)",
-} as const;
+const GALLERY_TITLE_CSS =
+  '[data-gallery-title="true"]{margin:0!important;width:12rem!important;max-width:12rem!important;height:31px!important;overflow:hidden!important;font-size:28px!important;font-weight:600!important;line-height:31px!important;letter-spacing:-.02em!important;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;color:var(--pf-ink)!important}';
