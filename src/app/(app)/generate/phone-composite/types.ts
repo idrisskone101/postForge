@@ -15,6 +15,7 @@ export type PhoneCompositeSectionProps = {
 
 export type PhoneCompositeViewModel = {
   scene: PhoneSceneId;
+  sceneDetail: string;
   usePlaceholder: boolean;
   baseLabel: string;
   screenshotLabel: string;
@@ -22,4 +23,11 @@ export type PhoneCompositeViewModel = {
   error: string | null;
   canSubmit: boolean;
   fillPromptTitle: string;
+};
+
+export type PhoneCompositeFileFieldProps = {
+  label: string;
+  accept: string;
+  fileLabel: string;
+  onFileChange: (file: File | null) => void;
 };

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { userErrorMessage } from "@/lib/user-error-message";
+import { getPhoneScene } from "@/lib/phone-composite/scenes";
 import {
   canSubmitPhoneComposite,
   fillPromptTitle,
@@ -50,6 +51,7 @@ export function usePhoneComposite() {
   return {
     view: {
       scene: state.scene,
+      sceneDetail: getPhoneScene(state.scene).detail,
       usePlaceholder: state.usePlaceholder,
       baseLabel: phoneCompositeFileLabel(
         state.baseFile,
@@ -57,7 +59,7 @@ export function usePhoneComposite() {
       ),
       screenshotLabel: phoneCompositeFileLabel(
         state.screenshotFile,
-        "Real HairTrace Today screenshot PNG",
+        "PNG of the real app UI — HairTrace Today or equivalent",
       ),
       busy: state.busy,
       error: state.error,
