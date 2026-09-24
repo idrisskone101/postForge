@@ -1,3 +1,8 @@
+import {
+  builtinBeforeIdentityTemplate,
+  BEFORE_IDENTITY_TEMPLATE_ID,
+} from "@/lib/ugc/before-identity-prompt";
+
 export const PROMPT_TEMPLATE_FEATURE = "prompt-templates" as const;
 
 export const PROMPT_TEMPLATE_NAME_MAX_LENGTH = 80;
@@ -83,7 +88,18 @@ export function sortPromptTemplates(
 export function parsePromptTemplateRecords(
   values: readonly unknown[]
 ): PromptTemplateRecord[] {
-  return sortPromptTemplates(values.filter(isPromptTemplateRecord));
+  return sortPromptTemplates(
+    withBuiltinPromptTemplates(values.filter(isPromptTemplateRecord))
+  );
+}
+
+export function withBuiltinPromptTemplates(
+  records: readonly PromptTemplateRecord[]
+): PromptTemplateRecord[] {
+  if (records.some((record) => record.id === BEFORE_IDENTITY_TEMPLATE_ID)) {
+    return [...records];
+  }
+  return [builtinBeforeIdentityTemplate(), ...records];
 }
 
 export function truncatePromptPreview(prompt: string, maxLength = 96) {

@@ -13,6 +13,7 @@ import {
   PROMPT_TEMPLATE_PROMPT_MAX_LENGTH,
   truncatePromptPreview,
 } from "@/lib/prompt-templates";
+import { BEFORE_IDENTITY_TEMPLATE_ID } from "@/lib/ugc/before-identity-prompt";
 import { usePromptTemplates } from "./use-prompt-templates";
 
 export function PromptTemplatesControl({
@@ -122,13 +123,15 @@ export function PromptTemplatesControl({
                         >
                           Use
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => void remove(template.id)}
-                          className="text-[11px] font-medium text-muted-foreground hover:text-[var(--pf-danger)]"
-                        >
-                          Delete
-                        </button>
+                        {template.id === BEFORE_IDENTITY_TEMPLATE_ID ? null : (
+                          <button
+                            type="button"
+                            onClick={() => void remove(template.id)}
+                            className="text-[11px] font-medium text-muted-foreground hover:text-[var(--pf-danger)]"
+                          >
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </li>
                   ))}
