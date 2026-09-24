@@ -123,6 +123,8 @@ const MODEL_ICON_MAP: Record<string, ComponentType<{ className?: string; strokeW
   "pixverse-swap": Layers,
   "gemini-omni-edit": Video,
   "gpt-image-2": ImageIcon,
+  "gpt-image-2.5": ImageIcon,
+  "gpt-image-2.5-sunburst": ImageIcon,
   "seedream-5.0-pro": ImageIcon,
   "flux-2-flex": Palette,
 };

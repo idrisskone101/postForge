@@ -48,6 +48,25 @@ assert.deepEqual(
   GPT_IMAGE_2_PORTRAIT_9_16,
 );
 assert.deepEqual(GPT_IMAGE_2_PORTRAIT_9_16, { width: 1152, height: 2048 });
+assert.equal(getModel("gpt-image-2.5")?.name, "GPT Image 2.5");
+assert.equal(
+  getModel("gpt-image-2.5")?.endpoint,
+  "openai/gpt-image-2.5/flare/text-to-image",
+);
+assert.equal(getModel("gpt-image-2.5")?.pricing.amount, 0.055);
+assert.deepEqual(
+  mapAspectRatioToFalFormat("9:16", "gpt-image-2.5"),
+  GPT_IMAGE_2_PORTRAIT_9_16,
+);
+assert.equal(
+  getModel("gpt-image-2.5-sunburst")?.endpoint,
+  "openai/gpt-image-2.5/sunburst/text-to-image",
+);
+assert.equal(getModel("gpt-image-2.5-sunburst")?.pricing.amount, 0.055);
+assert.deepEqual(
+  mapAspectRatioToFalFormat("1:1", "gpt-image-2.5-sunburst"),
+  "square_hd",
+);
 assert.equal(getModel("seedream-5.0-pro")?.pricing.amount, 0.0675);
 assert.equal(getModel("flux-2-flex")?.capabilities.textToImage, true);
 assert.equal(getModel("pixverse-swap")?.capabilities.subjectSwap, true);

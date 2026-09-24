@@ -78,7 +78,11 @@ const ASPECT_RATIO_FAL_MAP: Record<string, string> = {
   "4:3": "landscape_4_3",
 };
 
-// GPT Image 2 has no portrait_9_16 preset; its closest portrait options
+export function usesGptImageFalPayload(modelId: string): boolean {
+  return modelId === "gpt-image-2" || modelId.startsWith("gpt-image-2.5");
+}
+
+// GPT Image 2 / 2.5 have no portrait_9_16 preset; closest portrait options
 // are portrait_16_9 (576x1024) and portrait_4_3 (768x1024). A true 9:16
 // requires an explicit { width, height } object (multiples of 16, max edge
 // 3840px, aspect ratio <= 3:1, 655,360..8,294,400 total pixels).
@@ -124,7 +128,7 @@ export function mapAspectRatioToFalFormat(
 
   // Image models use the mapped format, video models pass through
   if (model.type === "image") {
-    if (modelId === "gpt-image-2") {
+    if (usesGptImageFalPayload(modelId)) {
       return gptImage2FalSize(aspectRatio);
     }
     if (modelId === "seedream-5.0-pro") {
