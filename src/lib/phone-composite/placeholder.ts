@@ -7,9 +7,9 @@ import {
 import { getPhoneScene, screenQuadList } from "./scenes";
 
 const SCENE_BACKDROPS: Record<PhoneSceneId, { fill: string; accent: string }> = {
-  bathroom: { fill: "#d8cfc4", accent: "#b9a89a" },
-  nightstand: { fill: "#1c1a24", accent: "#3a2f28" },
-  gym: { fill: "#4d5348", accent: "#6b7166" },
+  bathroom: { fill: "rgb(216, 207, 196)", accent: "rgb(185, 168, 154)" },
+  nightstand: { fill: "rgb(28, 26, 36)", accent: "rgb(58, 47, 40)" },
+  gym: { fill: "rgb(77, 83, 72)", accent: "rgb(107, 113, 102)" },
 };
 
 export async function renderScenePlaceholder(sceneId: PhoneSceneId): Promise<Buffer> {
@@ -47,8 +47,8 @@ function placeholderMarkup(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect width="${width}" height="${height}" fill="${backdrop.fill}"/>
   <ellipse cx="${width * 0.5}" cy="${height * 0.86}" rx="${width * 0.42}" ry="${height * 0.08}" fill="${backdrop.accent}" opacity="0.55"/>
-  <polygon points="${bezelPoints}" fill="#1a1a1a"/>
-  <polygon points="${screenPoints}" fill="#050505"/>
+  <polygon points="${bezelPoints}" fill="rgb(26, 26, 26)"/>
+  <polygon points="${screenPoints}" fill="#09090B"/>
 </svg>`;
 }
 
