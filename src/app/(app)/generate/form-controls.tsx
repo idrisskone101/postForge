@@ -4,6 +4,7 @@ import { ModelPicker } from "@/components/model-picker";
 import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import { GenerateFormFormatSection } from "./form-format-section";
 import { GenerateFormPromptSection } from "./form-prompt-section";
+import { PhoneCompositeSection } from "./phone-composite/phone-composite-section";
 import type { GenerateFormActions, GenerateFormModel } from "./form-types";
 import type { GenerateFormViewModel } from "./form-view-model";
 
@@ -66,6 +67,10 @@ export function GenerateFormControls({
       {referenceSection}
       {continuitySection}
       {swapSection}
+
+      {view.isImage ? (
+        <PhoneCompositeSection onUseScenePrompt={actions.onPromptChange} />
+      ) : null}
     </div>
   );
 }

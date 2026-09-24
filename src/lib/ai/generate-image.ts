@@ -1,5 +1,10 @@
 import type { ImageGenerationRequest } from "./types";
-import { getModel, mapAspectRatioToFalFormat, calculateEstimatedCost } from "./models";
+import {
+  getModel,
+  mapAspectRatioToFalFormat,
+  calculateEstimatedCost,
+  usesGptImageFalPayload,
+} from "./models";
 import { subscribeToGeneration } from "./fal-client";
 import { createJob, startJob, failJob } from "@/lib/jobs/queue";
 import {
@@ -27,7 +32,7 @@ export function buildImageProviderRequest(request: ImageGenerationRequest): {
 
   if (request.editEndpoint) {
     payload.aspect_ratio = aspectRatio;
-  } else if (request.model === "gpt-image-2") {
+  } else if (usesGptImageFalPayload(request.model)) {
     payload.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
     payload.quality = "high";
     payload.output_format = "png";

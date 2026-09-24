@@ -123,6 +123,8 @@ const MODEL_ICON_MAP: Record<string, ComponentType<{ className?: string; strokeW
   "pixverse-swap": Layers,
   "gemini-omni-edit": Video,
   "gpt-image-2": ImageIcon,
+  "gpt-image-2.5": ImageIcon,
+  "gpt-image-2.5-sunburst": ImageIcon,
   "seedream-5.0-pro": ImageIcon,
   "flux-2-flex": Palette,
 };
@@ -189,11 +191,6 @@ function ModelCard({
           : "border-border hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-2xs)]"
       )}
     >
-      {recommended && (
-        <span className="mb-2 inline-flex w-fit rounded-full border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-success)]">
-          Recommended
-        </span>
-      )}
       <span className="flex items-center gap-2.5">
         <span
           className={cn(
@@ -216,8 +213,15 @@ function ModelCard({
               <Circle className="size-3.5 shrink-0 text-muted-foreground" />
             )}
           </span>
-          <span className="mt-1 block truncate text-[12px] text-muted-foreground">
-            {priceLabel}
+          <span className="mt-1 flex min-w-0 items-center gap-1.5">
+            <span className="min-w-0 truncate text-[12px] text-muted-foreground">
+              {priceLabel}
+            </span>
+            {recommended ? (
+              <span className="shrink-0 rounded-full border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-success)]">
+                Recommended
+              </span>
+            ) : null}
           </span>
         </span>
       </span>
