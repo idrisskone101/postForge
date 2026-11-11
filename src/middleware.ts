@@ -11,11 +11,16 @@ import { evaluateDemoRequest } from "@/lib/demo/request-policy";
 
 const demoRateLimiter = createDemoRateLimiter();
 
+/**
+ * The address the hosting proxy saw. Proxies append to X-Forwarded-For, so
+ * only its last entry is trustworthy; anything earlier, and X-Real-IP when no
+ * proxy sets it, is whatever the client chose to send.
+ */
 function clientAddress(request: NextRequest) {
-  const forwarded = request.headers.get("x-forwarded-for");
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",") ?? [];
   return (
+    forwarded[forwarded.length - 1]?.trim() ||
     request.headers.get("x-real-ip")?.trim() ||
-    forwarded?.split(",")[0]?.trim() ||
     "unknown"
   );
 }

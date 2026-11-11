@@ -17,6 +17,14 @@ export default async function AppLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <style>{FIRST_PAINT_CSS}</style>
+        {isDemoMode() ? (
+          // The demo opens on pages full of sample media, which holds back
+          // window.load and with it the deferred stylesheet below. A first-time
+          // visitor would watch an unstyled page for about a second, so the
+          // demo takes the full stylesheet up front and the loader finds it.
+          // eslint-disable-next-line @next/next/no-css-tags
+          <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" />
+        ) : null}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,

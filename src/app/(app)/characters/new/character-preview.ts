@@ -1,5 +1,6 @@
 import { apiGet } from "@/lib/api/client";
 import type { CharacterAttributes } from "@/lib/character-attributes";
+import { isDemoMode } from "@/lib/demo/mode";
 
 async function portraitFile(sourceUrl: string, characterId: string) {
   const response = await fetch(sourceUrl, { cache: "no-store" });
@@ -29,6 +30,15 @@ export async function saveCharacterAvatar({
   previewFingerprint: string;
   previewSourceUrl: string;
 }) {
+  // The demo refuses uploads. When the portrait is still the linked Avatar
+  // there is nothing new to store, so an edit keeps that Avatar as it is.
+  if (
+    isDemoMode() &&
+    currentAvatarId &&
+    previewSourceUrl === `/api/avatars/${encodeURIComponent(currentAvatarId)}`
+  ) {
+    return currentAvatarId;
+  }
   const file = await portraitFile(previewSourceUrl, characterId);
   const formData = new FormData();
   formData.set("file", file);
