@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { DemoBlockedNotice } from "@/components/demo-blocked-notice";
 import { Sidebar } from "@/components/sidebar-lazy";
+import { isDemoMode } from "@/lib/demo/mode";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 
@@ -15,6 +17,14 @@ export default async function AppLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <style>{FIRST_PAINT_CSS}</style>
+        {isDemoMode() ? (
+          // The demo opens on pages full of sample media, which holds back
+          // window.load and with it the deferred stylesheet below. A first-time
+          // visitor would watch an unstyled page for about a second, so the
+          // demo takes the full stylesheet up front and the loader finds it.
+          // eslint-disable-next-line @next/next/no-css-tags
+          <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" />
+        ) : null}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,
@@ -47,6 +57,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           </noscript>
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
           <Sidebar />
+          {isDemoMode() ? <DemoBlockedNotice /> : null}
         </div>
       </body>
     </html>
@@ -56,8 +67,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
 
 export const metadata: Metadata = {
-  title: "PostForge",
-  description: "Self-hosted AI content generation platform",
+  title: isDemoMode() ? "PostForge demo" : "PostForge",
+  description: isDemoMode()
+    ? "Demo workspace for PostForge, a self-hosted AI content pipeline. Sample data only."
+    : "Self-hosted AI content generation platform",
 };
 
 export const viewport: Viewport = {

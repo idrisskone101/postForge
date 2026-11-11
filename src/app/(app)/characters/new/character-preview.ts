@@ -29,24 +29,46 @@ export async function saveCharacterAvatar({
   previewFingerprint: string;
   previewSourceUrl: string;
 }) {
+  const provenance = {
+    avatarProfile: {
+      characterId,
+      attributes,
+      previewSeed,
+      previewFingerprint,
+      previewKind: "photographic",
+    },
+    seedReferenceImages: [],
+  };
+
+  // When the portrait is still the linked Avatar there is no new image to
+  // store. Replacing the file anyway would discard the Identity packs and
+  // saved references made from it, so only the details are updated.
+  if (
+    currentAvatarId &&
+    previewSourceUrl === `/api/avatars/${encodeURIComponent(currentAvatarId)}`
+  ) {
+    const kept = await fetch(`/api/avatars/${encodeURIComponent(currentAvatarId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, provenance }),
+    });
+    if (kept.ok) return currentAvatarId;
+    // There is no other copy of this portrait to fall back on: the preview is
+    // the avatar itself, so a missing avatar cannot be re-uploaded from here.
+    const failure = (await kept.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(
+      kept.status === 404
+        ? "The linked avatar no longer exists. Re-render the preview to create a new one."
+        : (failure?.error ?? "Reusable avatar could not be saved.")
+    );
+  }
+
   const file = await portraitFile(previewSourceUrl, characterId);
   const formData = new FormData();
   formData.set("file", file);
   formData.set("name", name);
   formData.set("origin", "generated");
-  formData.set(
-    "provenance",
-    JSON.stringify({
-      avatarProfile: {
-        characterId,
-        attributes,
-        previewSeed,
-        previewFingerprint,
-        previewKind: "photographic",
-      },
-      seedReferenceImages: [],
-    })
-  );
+  formData.set("provenance", JSON.stringify(provenance));
   let response = currentAvatarId
     ? await fetch(`/api/avatars/${encodeURIComponent(currentAvatarId)}`, {
         method: "PUT",

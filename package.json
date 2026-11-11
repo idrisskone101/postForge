@@ -30,6 +30,8 @@
     "test:integrations": "tsx scripts/run-tests.ts tests/integrations",
     "test:workspace": "tsx scripts/run-tests.ts tests/workspace",
     "test:lib": "tsx scripts/run-tests.ts tests/lib",
+    "test:demo": "tsx scripts/run-tests.ts tests/demo",
+    "demo:seed": "tsx scripts/demo-seed.ts",
     "check:module-size": "tsx scripts/check-module-size.ts",
     "check:kode-taste": "tsx scripts/check-kode-taste.ts",
     "check:design-tokens": "tsx scripts/check-design-tokens.ts",

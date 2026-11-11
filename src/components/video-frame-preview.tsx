@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function VideoFramePreview({
@@ -29,6 +29,16 @@ export function VideoFramePreview({
       setReady(true);
     }
   }, []);
+
+  // A small or cached clip can finish loading its metadata before React
+  // hydrates, so the loadedmetadata handler below never runs and the frame
+  // stays hidden. Catch up once on mount.
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      if ((videoRef.current?.readyState ?? 0) >= 1) seekToPreviewFrame();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [seekToPreviewFrame]);
 
   if (failed) return null;
 

@@ -1,5 +1,6 @@
 import { ffmpegBinaryExists } from "@/lib/ai/slideshow-renderer";
 import { SlideshowStudioLazy } from "@/components/slideshow/slideshow-studio-lazy";
+import { isDemoMode } from "@/lib/demo/mode";
 
 import { SlideshowNewProvider } from "./slideshow-new-context";
 import { SlideshowOwnedHeader, SlideshowStudioFrame } from "./slideshow-owned-header";
@@ -19,7 +20,9 @@ export default function SlideshowPage() {
         <div className="mx-auto min-w-0 max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
           <SlideshowStudioFrame>
             <SlideshowStudioLazy
-              initialProjects={[]}
+              // The demo loads the list up front so the Drafts count shows
+              // its sample slideshows before a visitor opens that tab.
+              initialProjects={isDemoMode() ? undefined : []}
               initialProject={null}
               initialViewMode="edit"
               supportsMp4Export={ffmpegBinaryExists()}

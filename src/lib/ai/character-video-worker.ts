@@ -11,6 +11,7 @@ import {
   buildIdentityElementForAvatar,
   resolveIdentityReferenceUrlsForAvatar,
 } from "@/lib/ugc/avatar-identity-pack";
+import { isDemoMode } from "@/lib/demo/mode";
 import { buildCharacterVideoProviderRequest } from "./character-video-payload";
 import {
   CHARACTER_VIDEO_LOCK_MS,
@@ -41,6 +42,8 @@ const globalForCharacterVideoWorker = globalThis as unknown as {
 };
 
 export function ensureCharacterVideoWorkerRunning(): void {
+  // Sample jobs in the demo workspace must never be picked up and run.
+  if (isDemoMode()) return;
   if (!globalForCharacterVideoWorker.__postforge_character_video_worker_interval) {
     globalForCharacterVideoWorker.__postforge_character_video_worker_interval = setInterval(() => {
       void runCharacterVideoWorkerTick();

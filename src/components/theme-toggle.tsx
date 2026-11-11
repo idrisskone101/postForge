@@ -20,8 +20,11 @@ export function ThemeToggle() {
       aria-label="Toggle theme"
       className="grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
     >
-      <Moon className="size-4 dark:hidden" />
-      <Sun className="hidden size-4 dark:block" />
+      {/* Which icon shows is decided in globals.css. `hidden dark:block` does
+          not work here: the first-paint `.hidden` rule is unlayered and beats
+          Tailwind's layered `dark:block`, which left the button empty in dark. */}
+      <Moon className="theme-toggle-moon size-4" />
+      <Sun className="theme-toggle-sun size-4" />
     </button>
   );
 }

@@ -6,6 +6,7 @@ import {
   pollSingleJob,
   type FalJobPollOutcome,
 } from "@/lib/jobs/poll-fal-job";
+import { isDemoMode } from "@/lib/demo/mode";
 
 const POLL_INTERVAL_MS = 10_000;
 const POLL_LOCK_MS = 2 * 60 * 1000;
@@ -33,6 +34,8 @@ function isPollerRunning(): boolean {
 }
 
 export function ensurePollerRunning(): void {
+  // The demo workspace holds sample jobs only; nothing may be polled against fal.
+  if (isDemoMode()) return;
   if (isPollerRunning()) return;
 
   globalForPoller.__postforge_poller_polling = false;

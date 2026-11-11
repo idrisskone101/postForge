@@ -2156,6 +2156,34 @@ header:has([data-home-title]) .pf-button-primary {
   }
 }
 
+/* Rail controls, mirrored from globals.css so the rail does not show both
+   theme icons, or the compact-rail controls in the expanded rail, before the
+   full stylesheet arrives. */
+.theme-toggle-sun {
+  display: none;
+}
+
+.dark .theme-toggle-sun {
+  display: block;
+}
+
+.dark .theme-toggle-moon {
+  display: none;
+}
+
+#workspace-sidebar .sidebar-collapse-toggle {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  /* The compact rail is 72px wide: expanded-only rows and the collapse
+     control must not render in it before the full stylesheet arrives. */
+  #workspace-sidebar .sidebar-expanded-only,
+  #workspace-sidebar .sidebar-collapse-toggle {
+    display: none;
+  }
+}
+
 @media (min-width: 1280px) {
   #workspace-sidebar {
     width: 16rem;
@@ -2171,6 +2199,24 @@ header:has([data-home-title]) .pf-button-primary {
 
   html[data-sidebar-collapsed="true"] #workspace-shell {
     margin-left: 72px;
+  }
+
+  /* Until the full stylesheet arrives, keep expanded-only rail content out of
+     the collapsed rail (the same rule lives in globals.css). */
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {
+    display: none;
+  }
+
+  #workspace-sidebar .sidebar-collapse-toggle {
+    display: grid;
+  }
+
+  #workspace-sidebar .sidebar-compact-only {
+    display: none;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-compact-only {
+    display: flex;
   }
 
   [data-spend-stats="true"] {
@@ -2223,6 +2269,87 @@ header:has([data-home-title]) .pf-button-primary {
 
 [data-page-inset="true"] {
   padding: 1.25rem;
+}
+
+/* Demo builds only: the Home intro card and the rail badge. Styled here in
+   full so first paint and the post-load UI are the same pixels. */
+[data-demo-intro] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-color: var(--pf-border);
+  background: var(--pf-surface);
+}
+
+[data-demo-intro] > i,
+[data-demo-notice] > i {
+  flex-shrink: 0;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-top: 0.4375rem;
+  border-radius: 999px;
+  background: var(--pf-lamp-amber, #d97706);
+}
+
+[data-demo-intro] h2 {
+  margin: 0;
+  color: var(--pf-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+[data-demo-intro] p {
+  max-width: 76ch;
+  margin: 0.25rem 0 0;
+  color: var(--pf-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+[data-demo-badge] {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 1.25rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--pf-rail-border);
+  border-radius: 999px;
+  background: var(--pf-active);
+  color: var(--pf-rail-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+#workspace-mobile-bar [data-demo-badge] {
+  margin-left: 0.5rem;
+}
+
+/* In the expanded rail the badge sits beside the workspace name and pushes the
+   collapse control to the far edge. */
+#workspace-sidebar .sidebar-header [data-demo-badge] {
+  margin-right: auto;
+  margin-left: 0.125rem;
+}
+
+html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-header [data-demo-badge] {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  #workspace-sidebar .sidebar-header [data-demo-badge] {
+    display: none;
+  }
+}
+
+@media (min-width: 640px) {
+  [data-demo-intro] {
+    padding: 1.25rem;
+  }
 }
 
 .pf-empty-stage {

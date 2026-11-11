@@ -20,6 +20,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Generated media defaults to database-backed storage (`STORAGE_DRIVER="database"`), so gallery items, avatars, TikTok source clips, and UGC clone outputs persist with Postgres instead of depending on a local output folder. Legacy files already stored on disk are backfilled into Postgres automatically on server boot.
 
+## Demo workspace
+
+PostForge can be deployed a second time as a public demo with its own database and sample content, so it can be shown without exposing real work. See [`docs/demo-workspace.md`](docs/demo-workspace.md).
+
 ## Kode setup
 
 Kode setup is centralized in `scripts/kode-setup.sh`. It copies local env files from the foreground checkout when available, installs with pnpm, generates the Prisma client, and applies existing migrations when Postgres is reachable.

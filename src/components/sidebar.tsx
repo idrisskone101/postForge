@@ -35,6 +35,7 @@ import {
   type WorkspaceNavigationLabel,
 } from "@/lib/workspace-navigation";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
+import { demoResetIntervalMinutes, isDemoMode } from "@/lib/demo/mode";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -165,10 +166,16 @@ export function Sidebar() {
     </nav>
   );
 
+  // Footer rows show in the expanded rail and the mobile drawer. In the rail
+  // they are hidden by `.sidebar-expanded-only` (compact width or collapsed).
+  // Do not pair Tailwind's `hidden` with `xl:flex` in this file: the first-paint
+  // stylesheet defines an unlayered `.hidden`, which beats the layered `xl:`
+  // utility and hides the element for good. Desktop-only visibility for the rail
+  // (these rows, the collapse control) lives in globals.css instead.
   const footer = (mobile = false) => (
     <div className="mt-auto">
       {(notificationPreferences.failures || notificationPreferences.approvals) && (
-        <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
+        <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only grid")} aria-label="Workspace notifications">
           {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
             <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
               {/* prefetch-off: alert chip, not primary nav */}
@@ -189,32 +196,45 @@ export function Sidebar() {
       )}
       <div className={cn(
         "mb-2 items-center justify-between px-2 text-[11px] text-[var(--pf-rail-muted)]",
-        mobile ? "flex" : "sidebar-expanded-only hidden xl:flex"
+        mobile ? "flex" : "sidebar-expanded-only flex"
       )}>
-        <span className="flex items-center gap-1.5">
-          <i className="pf-lamp text-[var(--pf-lamp-green)]" />
-          Local workspace
-        </span>
-        <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
-          {/* prefetch-off: billing is a footer utility */}
-          Manage
-        </Link>
+        {DEMO ? (
+          <>
+            <span className="flex items-center gap-1.5">
+              <i className="pf-lamp text-[var(--pf-lamp-amber)]" />
+              Demo workspace
+            </span>
+            <span>Sample data</span>
+          </>
+        ) : (
+          <>
+            <span className="flex items-center gap-1.5">
+              <i className="pf-lamp text-[var(--pf-lamp-green)]" />
+              Local workspace
+            </span>
+            <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
+              {/* prefetch-off: billing is a footer utility */}
+              Manage
+            </Link>
+          </>
+        )}
       </div>
       {workspaceNavigationGroups.utility.map((item) => renderItem(item, mobile))}
       <div className={cn(
         "mt-2 grid-cols-[32px_minmax(0,1fr)_32px] items-center gap-2 border-t border-[var(--pf-rail-border)] px-2 pt-3",
-        mobile ? "grid" : "sidebar-expanded-only hidden xl:grid"
+        mobile ? "grid" : "sidebar-expanded-only grid"
       )}>
         <span className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] text-[11px] font-bold text-[var(--pf-rail-ink)]">
           PF
         </span>
         <span className="min-w-0">
           <strong className="block truncate text-[11px] font-semibold text-[var(--pf-rail-ink)]">{workspaceName}</strong>
-          <small className="mt-0.5 block truncate text-[11px] text-[var(--pf-rail-muted)]">Self-hosted</small>
+          <small className="mt-0.5 block truncate text-[11px] text-[var(--pf-rail-muted)]">{DEMO ? DEMO_RESET_LABEL : "Self-hosted"}</small>
         </span>
         <ThemeToggle />
       </div>
-      {!mobile && <div className="sidebar-compact-only mt-2 flex justify-center border-t border-[var(--pf-rail-border)] pt-3 xl:hidden">
+      {!mobile && <div className="sidebar-compact-only mt-2 flex flex-col items-center gap-2 border-t border-[var(--pf-rail-border)] pt-3 xl:hidden">
+          {DEMO && <DemoBadge />}
           <ThemeToggle />
         </div>}
     </div>
@@ -247,6 +267,7 @@ export function Sidebar() {
           </div>
         </dialog>
         <PostForgeBrand name={workspaceName} />
+        {DEMO && <DemoBadge />}
         <Link
           href={quickAction.href}
           aria-label={quickAction.label}
@@ -260,6 +281,7 @@ export function Sidebar() {
         <div className="sidebar-frame flex w-full flex-col px-2 py-5 xl:px-4">
           <div className="sidebar-header flex min-w-0 items-center justify-between gap-1">
             <PostForgeBrand name={workspaceName} />
+            {DEMO && <DemoBadge className="sidebar-expanded-only" />}
             <button
               type="button"
               onClick={() => {
@@ -271,7 +293,7 @@ export function Sidebar() {
               aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
+              className="sidebar-collapse-toggle size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
             >
               {desktopCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
             </button>
@@ -284,6 +306,25 @@ export function Sidebar() {
   );
 }
 
+
+const DEMO = isDemoMode();
+
+const DEMO_RESET_LABEL =
+  demoResetIntervalMinutes() === 60
+    ? "Resets every hour"
+    : `Resets every ${demoResetIntervalMinutes()} min`;
+
+function DemoBadge({ className }: { className?: string }) {
+  return (
+    <span
+      data-demo-badge="true"
+      title="Demo workspace with sample data"
+      className={className}
+    >
+      Demo
+    </span>
+  );
+}
 
 const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
   Home: House,

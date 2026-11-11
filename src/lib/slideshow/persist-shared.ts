@@ -3,6 +3,8 @@ import type {
   SlideshowSlideKind,
 } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo/mode";
+import { restrictSlideMediaToLocal } from "@/lib/demo/slide-media";
 import {
   DEFAULT_PROJECT_LAYOUT,
   DEFAULT_PROJECT_SETTINGS,
@@ -201,7 +203,7 @@ export function parseFullSlide(
 ): ParsedSlide {
   const body = requireRecord(value, "slide");
   const id = optionalId(body, "id");
-  return {
+  const parsed: ParsedSlide = {
     ...(id ? { id } : {}),
     kind: slideKindFrom(
       body,
@@ -231,6 +233,7 @@ export function parseFullSlide(
     settings: slideSettingsFrom(body, current?.settings),
     layout: slideLayoutFrom(body, current?.layout),
   };
+  return isDemoMode() ? restrictSlideMediaToLocal(parsed) : parsed;
 }
 
 export function serializeSlide(slide: SlideshowSlideRecord) {

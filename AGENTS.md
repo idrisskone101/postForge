@@ -44,6 +44,14 @@ A green Lighthouse job (performance ≥ 90, healthy CLS/LCP) does not replace th
 - Unavailable provider metrics remain unavailable (`null`), not zero. CSV imports stay a separate local data source.
 - Publishing is always an explicit, approval-gated external mutation. A connected account without the provider's publishing scope must remain unavailable as an automation destination.
 
+## Demo workspace invariant
+
+- The demo is a separate deployment built with `NEXT_PUBLIC_POSTFORGE_DEMO_MODE=1` against its own database. It exists so other people can see PostForge without seeing the owner's generations. Read `docs/demo-workspace.md` before changing it.
+- Sample content is for the fictional Loamly brand, lives in `demo/assets/` and `src/lib/demo/seed/`, and is always labelled as sample data. The demo never fakes a Connection: TikTok, Instagram, and YouTube stay "not connected" there, and Performance reads only the local sample CSV dataset.
+- A demo build never spends credits, reaches a provider, or accepts a file. Mutating API routes are an allowlist in `src/lib/demo/request-policy.ts`. A new route is closed in the demo until it is added there, and only pure local edits belong on that list.
+- The restore wipes the database it runs against. Keep the guard in `src/lib/demo/database-guard.ts` and the fatal boot path in `src/instrumentation.ts` intact.
+- Inspiration is not part of the demo. Do not link to it from a surface that renders in a demo build.
+
 ## Cursor Cloud specific instructions
 
 PostForge is a single Next.js 16 app (pnpm, React 19) backed by Postgres via Prisma. There is no separate backend service; all APIs are Next.js route handlers under `src/app/api`.
