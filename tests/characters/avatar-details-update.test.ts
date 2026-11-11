@@ -192,12 +192,18 @@ function patchRequest(id: string, body: unknown) {
       { name: "a\u0000b" },
       { provenance: "nope" },
       { provenance: { avatarProfile: { note: "x".repeat(70_000) } } },
+      // Size is measured in bytes, so multi-byte text cannot slip past the cap.
+      { provenance: { avatarProfile: { note: "\u20ac".repeat(30_000) } } },
       [],
       "not json",
     ]) {
       const rejected = await PATCH(patchRequest(avatar.id, invalid), params);
       assert.equal(rejected.status, 400, JSON.stringify(invalid));
     }
+
+    // The six characters backslash-u-0-0-0-0 typed out are ordinary text.
+    const typedOut = await PATCH(patchRequest(avatar.id, { name: "a\\u0000b" }), params);
+    assert.equal(typedOut.status, 200);
 
     // Only the name and provenance can change, whatever else is sent.
     const sneaky = await PATCH(

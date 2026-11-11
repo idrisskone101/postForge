@@ -126,6 +126,8 @@ export async function PUT(
 
 const MAX_DETAILS_BYTES = 64 * 1024;
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
+/** A real NUL as JSON.stringify writes it, not the six characters typed out. */
+const ESCAPED_NUL = /(?<!\\)(?:\\\\)*\\u0000/;
 
 /**
  * Rename an Avatar or update its provenance without touching the portrait.
@@ -147,7 +149,7 @@ export async function PATCH(
     }
     // Postgres rejects NUL in text and JSON, so refuse it here with a 400.
     const serialized = JSON.stringify(body);
-    if (serialized.includes("\\u0000") || serialized.length > MAX_DETAILS_BYTES) {
+    if (ESCAPED_NUL.test(serialized) || Buffer.byteLength(serialized) > MAX_DETAILS_BYTES) {
       return NextResponse.json(
         { error: "Avatar details are too large or contain invalid characters" },
         { status: 400 }

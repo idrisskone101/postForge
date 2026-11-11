@@ -2156,6 +2156,25 @@ header:has([data-home-title]) .pf-button-primary {
   }
 }
 
+/* Rail controls, mirrored from globals.css so the rail does not show both
+   theme icons, or the compact-rail controls in the expanded rail, before the
+   full stylesheet arrives. */
+.theme-toggle-sun {
+  display: none;
+}
+
+.dark .theme-toggle-sun {
+  display: block;
+}
+
+.dark .theme-toggle-moon {
+  display: none;
+}
+
+#workspace-sidebar .sidebar-collapse-toggle {
+  display: none;
+}
+
 @media (min-width: 768px) and (max-width: 1279.98px) {
   /* The compact rail is 72px wide: expanded-only rows and the collapse
      control must not render in it before the full stylesheet arrives. */
@@ -2186,6 +2205,18 @@ header:has([data-home-title]) .pf-button-primary {
      the collapsed rail (the same rule lives in globals.css). */
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {
     display: none;
+  }
+
+  #workspace-sidebar .sidebar-collapse-toggle {
+    display: grid;
+  }
+
+  #workspace-sidebar .sidebar-compact-only {
+    display: none;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-compact-only {
+    display: flex;
   }
 
   [data-spend-stats="true"] {
