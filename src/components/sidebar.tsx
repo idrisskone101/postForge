@@ -166,10 +166,14 @@ export function Sidebar() {
     </nav>
   );
 
+  // Footer rows show in the expanded rail and the mobile drawer. In the rail
+  // they are hidden by `.sidebar-expanded-only` (compact width or collapsed).
+  // Do not add Tailwind's `hidden` here: the first-paint stylesheet defines an
+  // unlayered `.hidden`, which beats a layered `xl:flex` and hides them for good.
   const footer = (mobile = false) => (
     <div className="mt-auto">
       {(notificationPreferences.failures || notificationPreferences.approvals) && (
-        <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
+        <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only grid")} aria-label="Workspace notifications">
           {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
             <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
               {/* prefetch-off: alert chip, not primary nav */}
@@ -190,7 +194,7 @@ export function Sidebar() {
       )}
       <div className={cn(
         "mb-2 items-center justify-between px-2 text-[11px] text-[var(--pf-rail-muted)]",
-        mobile ? "flex" : "sidebar-expanded-only hidden xl:flex"
+        mobile ? "flex" : "sidebar-expanded-only flex"
       )}>
         {DEMO ? (
           <>
@@ -216,7 +220,7 @@ export function Sidebar() {
       {workspaceNavigationGroups.utility.map((item) => renderItem(item, mobile))}
       <div className={cn(
         "mt-2 grid-cols-[32px_minmax(0,1fr)_32px] items-center gap-2 border-t border-[var(--pf-rail-border)] px-2 pt-3",
-        mobile ? "grid" : "sidebar-expanded-only hidden xl:grid"
+        mobile ? "grid" : "sidebar-expanded-only grid"
       )}>
         <span className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] text-[11px] font-bold text-[var(--pf-rail-ink)]">
           PF

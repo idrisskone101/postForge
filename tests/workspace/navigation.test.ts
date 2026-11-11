@@ -140,3 +140,10 @@ assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sid
 assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
 assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
 assert.doesNotMatch(globalStyles, /body\[data-sidebar-collapsed="true"\]/);
+
+// The first-paint stylesheet defines an unlayered `.hidden`, which beats any
+// layered responsive utility. A footer row written as `hidden xl:flex` therefore
+// never shows, which once hid the workspace name and theme toggle on desktop.
+assert.doesNotMatch(sidebarSource, /sidebar-expanded-only hidden/);
+assert.match(sidebarSource, /"sidebar-expanded-only flex"/);
+assert.match(sidebarSource, /"sidebar-expanded-only grid"/);
