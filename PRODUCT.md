@@ -39,6 +39,7 @@ Confirmed functionality:
 
 Confirmed constraints and invariants:
 - Single user, no authentication today; authentication may be added later (undecided).
+- One exception to "not built for other people": a public demo workspace, deployed separately with its own database and sample content for a fictional brand, so the product can be shown without exposing the owner's work. It is read-and-edit only (no generation, uploads, or provider connections), it is labelled as a demo, and it never fakes a Connection or provider metrics. See `docs/demo-workspace.md`.
 - TikTok/Instagram/YouTube are one server-owned connection system; Settings controls the connection, Performance reads its owned-media metrics, Automations reads the same connection and granted publishing capability.
 - Provider access/refresh tokens are never persisted in browser state, local storage, workspace-feature JSON, logs, URLs, or client-visible responses.
 - A provider is connected only after its OAuth callback succeeds; missing credentials/scopes, refresh failures, and sync failures stay visible and are never replaced with demo accounts or synthetic metrics.

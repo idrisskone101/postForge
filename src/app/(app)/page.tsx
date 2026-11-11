@@ -4,7 +4,9 @@ import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
+import { isDemoMode } from "@/lib/demo/mode";
 import { HomeCockpit, HomeHeader } from "./home-cockpit";
+import { HomeDemoIntro } from "./home-demo-intro";
 import { type HomeJob } from "./home-types";
 import { HomeEmptyPanel } from "./home-start-work";
 
@@ -15,6 +17,7 @@ export default async function HomePage() {
     <div className="pf-content-viewport bg-[var(--pf-canvas)]">
       <div className="mx-auto max-w-[1280px] px-4 pb-12 sm:px-6 lg:px-8">
         <HomeHeader />
+        {isDemoMode() ? <HomeDemoIntro /> : null}
         <Suspense fallback={<HomeDashboardFallback />}>
           <HomeDashboard />
         </Suspense>

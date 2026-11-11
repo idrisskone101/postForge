@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { DemoBlockedNotice } from "@/components/demo-blocked-notice";
 import { Sidebar } from "@/components/sidebar-lazy";
+import { isDemoMode } from "@/lib/demo/mode";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 
@@ -47,6 +49,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           </noscript>
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
           <Sidebar />
+          {isDemoMode() ? <DemoBlockedNotice /> : null}
         </div>
       </body>
     </html>
@@ -56,8 +59,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
 
 export const metadata: Metadata = {
-  title: "PostForge",
-  description: "Self-hosted AI content generation platform",
+  title: isDemoMode() ? "PostForge demo" : "PostForge",
+  description: isDemoMode()
+    ? "Demo workspace for PostForge, a self-hosted AI content pipeline. Sample data only."
+    : "Self-hosted AI content generation platform",
 };
 
 export const viewport: Viewport = {

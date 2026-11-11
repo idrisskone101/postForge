@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Compass, Copy, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, Copy, GalleryHorizontal, Sparkles } from "lucide-react";
+import { isDemoMode } from "@/lib/demo/mode";
 import { cn } from "@/lib/utils";
 import { WorkspaceState } from "@/components/workspace-state";
 
@@ -36,12 +37,20 @@ export function HomeStartWork() {
 
 
 const startActions = [
-  {
-    href: "/ugc-inspiration",
-    icon: Compass,
-    title: "Browse inspiration",
-    detail: "Pull a source clip from TikTok",
-  },
+  // The demo workspace does not carry Inspiration (other creators' posts).
+  isDemoMode()
+    ? {
+        href: "/slideshow",
+        icon: GalleryHorizontal,
+        title: "Open a slideshow",
+        detail: "Edit a carousel slide by slide",
+      }
+    : {
+        href: "/ugc-inspiration",
+        icon: Compass,
+        title: "Browse inspiration",
+        detail: "Pull a source clip from TikTok",
+      },
   {
     href: "/ugc-clone",
     icon: Copy,
@@ -62,9 +71,21 @@ export function HomeEmptyPanel({ className }: { className?: string }) {
       tone="empty"
       icon={Compass}
       title="Start today's production loop"
-      description="Pull a source from Inspiration or start a Clone when there is no active work to resume."
-      action={{ href: "/ugc-inspiration", label: "Return to Inspiration" }}
-      secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
+      description={
+        isDemoMode()
+          ? "Start a Clone or generate an asset when there is no active work to resume."
+          : "Pull a source from Inspiration or start a Clone when there is no active work to resume."
+      }
+      action={
+        isDemoMode()
+          ? { href: "/ugc-clone", label: "Start Clone" }
+          : { href: "/ugc-inspiration", label: "Return to Inspiration" }
+      }
+      secondaryAction={
+        isDemoMode()
+          ? { href: "/generate", label: "Generate Asset" }
+          : { href: "/ugc-clone", label: "Start Clone" }
+      }
       className={cn("min-h-[340px]", className)}
     />
   );

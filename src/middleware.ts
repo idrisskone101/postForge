@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
+import {
+  DEMO_BLOCKED_HEADER,
+  DEMO_BLOCKED_MESSAGE,
+  isDemoMode,
+} from "@/lib/demo/mode";
+import { evaluateDemoRequest } from "@/lib/demo/request-policy";
 
 const AUTH_CHALLENGE = 'Basic realm="postForge"';
 
@@ -62,6 +68,39 @@ function authenticationNotConfigured() {
   );
 }
 
+function demoResponse(request: NextRequest) {
+  const decision = evaluateDemoRequest({
+    method: request.method,
+    pathname: request.nextUrl.pathname,
+    contentType: request.headers.get("content-type"),
+    contentLength: request.headers.get("content-length"),
+    transferEncoding: request.headers.get("transfer-encoding"),
+  });
+
+  switch (decision.action) {
+    case "allow":
+      return nextWithPathname(request);
+    case "redirect":
+      return NextResponse.redirect(new URL(decision.to, request.url));
+    case "not-found":
+      return NextResponse.json(
+        { error: "Not found" },
+        { status: 404, headers: { "Cache-Control": "no-store" } }
+      );
+    case "block":
+      return NextResponse.json(
+        { error: DEMO_BLOCKED_MESSAGE, demo: true },
+        {
+          status: 403,
+          headers: {
+            [DEMO_BLOCKED_HEADER]: "blocked",
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+  }
+}
+
 function nextWithPathname(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
@@ -81,6 +120,13 @@ export function middleware(request: NextRequest) {
   // narrow and independently limited to a minimal database-readiness response.
   if (request.nextUrl.pathname === "/api/health") {
     return nextWithPathname(request);
+  }
+
+  // A demo build is a separate deployment whose database holds only sample
+  // content. It is open to visitors, so the operator key does not apply; the
+  // demo request policy decides what a visitor may do instead.
+  if (isDemoMode()) {
+    return demoResponse(request);
   }
 
   // Provider crawlers cannot send the operator API key. This one media route

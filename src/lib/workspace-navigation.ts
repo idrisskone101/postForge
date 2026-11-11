@@ -1,3 +1,5 @@
+import { isDemoMode } from "./demo/mode";
+
 export type WorkspaceNavigationLabel =
   | "Home"
   | "Jobs"
@@ -25,7 +27,13 @@ export type WorkspaceNavigationItem = {
   };
 };
 
-export const workspaceNavigationGroups = {
+type WorkspaceNavigationGroups = {
+  primary: readonly WorkspaceNavigationItem[];
+  tools: readonly WorkspaceNavigationItem[];
+  utility: readonly WorkspaceNavigationItem[];
+};
+
+const fullWorkspaceNavigationGroups = {
   primary: [
     {
       label: "Home",
@@ -141,6 +149,29 @@ export const workspaceNavigationGroups = {
   tools: WorkspaceNavigationItem[];
   utility: WorkspaceNavigationItem[];
 };
+
+/**
+ * The demo workspace does not carry Inspiration, which shows other creators'
+ * posts. Drop it from the rail and retarget the one action that led there.
+ */
+export function withoutInspiration(
+  groups: WorkspaceNavigationGroups
+): WorkspaceNavigationGroups {
+  return {
+    ...groups,
+    primary: groups.primary
+      .filter((item) => item.label !== "Inspiration")
+      .map((item) =>
+        item.primaryAction.href === "/ugc-inspiration"
+          ? { ...item, primaryAction: { label: "View Gallery", href: "/gallery" } }
+          : item
+      ),
+  };
+}
+
+export const workspaceNavigationGroups: WorkspaceNavigationGroups = isDemoMode()
+  ? withoutInspiration(fullWorkspaceNavigationGroups)
+  : fullWorkspaceNavigationGroups;
 
 export const workspaceNavigationItems = [
   ...workspaceNavigationGroups.primary,

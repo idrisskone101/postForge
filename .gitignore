@@ -36,6 +36,10 @@
 .cache/
 .cmux-browser
 
+# Sample media for the demo workspace is real app data and ships with the repo.
+!/demo/assets/**/*.jpg
+!/demo/assets/**/*.mp4
+
 # debug
 npm-debug.log*
 yarn-debug.log*

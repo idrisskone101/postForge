@@ -35,6 +35,7 @@ import {
   type WorkspaceNavigationLabel,
 } from "@/lib/workspace-navigation";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
+import { demoResetIntervalMinutes, isDemoMode } from "@/lib/demo/mode";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -191,14 +192,26 @@ export function Sidebar() {
         "mb-2 items-center justify-between px-2 text-[11px] text-[var(--pf-rail-muted)]",
         mobile ? "flex" : "sidebar-expanded-only hidden xl:flex"
       )}>
-        <span className="flex items-center gap-1.5">
-          <i className="pf-lamp text-[var(--pf-lamp-green)]" />
-          Local workspace
-        </span>
-        <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
-          {/* prefetch-off: billing is a footer utility */}
-          Manage
-        </Link>
+        {DEMO ? (
+          <>
+            <span className="flex items-center gap-1.5">
+              <i className="pf-lamp text-[var(--pf-lamp-amber)]" />
+              Demo workspace
+            </span>
+            <span>Sample data</span>
+          </>
+        ) : (
+          <>
+            <span className="flex items-center gap-1.5">
+              <i className="pf-lamp text-[var(--pf-lamp-green)]" />
+              Local workspace
+            </span>
+            <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
+              {/* prefetch-off: billing is a footer utility */}
+              Manage
+            </Link>
+          </>
+        )}
       </div>
       {workspaceNavigationGroups.utility.map((item) => renderItem(item, mobile))}
       <div className={cn(
@@ -210,11 +223,12 @@ export function Sidebar() {
         </span>
         <span className="min-w-0">
           <strong className="block truncate text-[11px] font-semibold text-[var(--pf-rail-ink)]">{workspaceName}</strong>
-          <small className="mt-0.5 block truncate text-[11px] text-[var(--pf-rail-muted)]">Self-hosted</small>
+          <small className="mt-0.5 block truncate text-[11px] text-[var(--pf-rail-muted)]">{DEMO ? DEMO_RESET_LABEL : "Self-hosted"}</small>
         </span>
         <ThemeToggle />
       </div>
-      {!mobile && <div className="sidebar-compact-only mt-2 flex justify-center border-t border-[var(--pf-rail-border)] pt-3 xl:hidden">
+      {!mobile && <div className="sidebar-compact-only mt-2 flex flex-col items-center gap-2 border-t border-[var(--pf-rail-border)] pt-3 xl:hidden">
+          {DEMO && <DemoBadge />}
           <ThemeToggle />
         </div>}
     </div>
@@ -247,6 +261,7 @@ export function Sidebar() {
           </div>
         </dialog>
         <PostForgeBrand name={workspaceName} />
+        {DEMO && <DemoBadge />}
         <Link
           href={quickAction.href}
           aria-label={quickAction.label}
@@ -260,6 +275,7 @@ export function Sidebar() {
         <div className="sidebar-frame flex w-full flex-col px-2 py-5 xl:px-4">
           <div className="sidebar-header flex min-w-0 items-center justify-between gap-1">
             <PostForgeBrand name={workspaceName} />
+            {DEMO && <DemoBadge className="sidebar-expanded-only" />}
             <button
               type="button"
               onClick={() => {
@@ -284,6 +300,25 @@ export function Sidebar() {
   );
 }
 
+
+const DEMO = isDemoMode();
+
+const DEMO_RESET_LABEL =
+  demoResetIntervalMinutes() === 60
+    ? "Resets every hour"
+    : `Resets every ${demoResetIntervalMinutes()} min`;
+
+function DemoBadge({ className }: { className?: string }) {
+  return (
+    <span
+      data-demo-badge="true"
+      title="Demo workspace with sample data"
+      className={className}
+    >
+      Demo
+    </span>
+  );
+}
 
 const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
   Home: House,
