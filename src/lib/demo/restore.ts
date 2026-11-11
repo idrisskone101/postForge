@@ -1,5 +1,8 @@
+import * as fs from "fs/promises";
+import * as path from "path";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { DEMO_OVERLAY_CACHE_DIRECTORY } from "@/lib/storage/demo";
 import { workspaceFeatureKey, type WorkspaceFeature } from "@/lib/workspace-feature-store";
 import { DemoDatabaseGuardError, isSafeDemoDatabase } from "./database-guard";
 import { demoResetIntervalMinutes, isDemoMode } from "./mode";
@@ -28,6 +31,11 @@ export async function restoreDemoWorkspace(now = new Date()): Promise<void> {
     },
     { timeout: 60_000, maxWait: 15_000 }
   );
+  // The rows behind these cached overlay files are gone; drop the files too
+  // so a long-running demo cannot fill its disk.
+  await fs
+    .rm(path.resolve(DEMO_OVERLAY_CACHE_DIRECTORY), { recursive: true, force: true })
+    .catch(() => undefined);
 }
 
 const globalForDemo = globalThis as unknown as {

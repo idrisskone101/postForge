@@ -34,7 +34,10 @@ export function VideoFramePreview({
   // hydrates, so the loadedmetadata handler below never runs and the frame
   // stays hidden. Catch up once on mount.
   useEffect(() => {
-    if ((videoRef.current?.readyState ?? 0) >= 1) seekToPreviewFrame();
+    const frame = window.requestAnimationFrame(() => {
+      if ((videoRef.current?.readyState ?? 0) >= 1) seekToPreviewFrame();
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [seekToPreviewFrame]);
 
   if (failed) return null;

@@ -11,6 +11,9 @@ import { normalizeStoragePath, resolveWithinBase } from "./paths";
 
 export const DEMO_ASSETS_DIRECTORY = "demo/assets";
 
+/** On-disk copies of overlay files; the restore empties it along with the rows. */
+export const DEMO_OVERLAY_CACHE_DIRECTORY = ".cache/postforge-demo-storage";
+
 /**
  * Storage for the demo workspace.
  *
@@ -24,7 +27,7 @@ export class DemoStorageDriver {
   constructor(
     private readonly seedBasePath = path.resolve(DEMO_ASSETS_DIRECTORY),
     private readonly overlay = new DatabaseStorageDriver(
-      path.resolve(".cache/postforge-demo-storage"),
+      path.resolve(DEMO_OVERLAY_CACHE_DIRECTORY),
       path.resolve(".cache/postforge-demo-legacy")
     )
   ) {}
