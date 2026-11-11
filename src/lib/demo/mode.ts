@@ -19,7 +19,7 @@ export const DEMO_BLOCKED_MESSAGE =
 export const DEMO_RATE_LIMITED_MESSAGE =
   "The demo workspace is receiving a lot of edits right now. Try again in a minute.";
 
-export const DEMO_WORKSPACE_NAME = "Loamly Studio";
+export const DEMO_WORKSPACE_NAME = "Loamly";
 
 /** Minutes between automatic restores of the sample workspace. */
 export function demoResetIntervalMinutes(): number {
