@@ -10,17 +10,21 @@ import { DEMO_BLOCKED_HEADER } from "@/lib/demo/mode";
  * action did nothing.
  */
 export function DemoBlockedNotice() {
-  const [blockedAt, setBlockedAt] = useState<number | null>(null);
+  const [notice, setNotice] = useState<{ kind: DemoRefusal; at: number } | null>(null);
 
-  useEffect(() => observeBlockedRequests(() => setBlockedAt(Date.now())), []);
+  useEffect(
+    () => observeRefusedRequests((kind) => setNotice({ kind, at: Date.now() })),
+    []
+  );
 
   useEffect(() => {
-    if (blockedAt === null) return;
-    const timer = window.setTimeout(() => setBlockedAt(null), VISIBLE_MS);
+    if (notice === null) return;
+    const timer = window.setTimeout(() => setNotice(null), VISIBLE_MS);
     return () => window.clearTimeout(timer);
-  }, [blockedAt]);
+  }, [notice]);
 
-  if (blockedAt === null) return null;
+  if (notice === null) return null;
+  const copy = NOTICE_COPY[notice.kind];
 
   return (
     <div
@@ -32,17 +36,16 @@ export function DemoBlockedNotice() {
       <i aria-hidden="true" />
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-semibold text-[var(--pf-ink)]">
-          Turned off in the demo
+          {copy.title}
         </p>
         <p className="mt-0.5 text-[12px] leading-[1.4] text-[var(--pf-muted)]">
-          Generation, uploads, and external connections are disabled here. You
-          can still browse and edit the sample content.
+          {copy.body}
         </p>
       </div>
       <button
         type="button"
         aria-label="Dismiss"
-        onClick={() => setBlockedAt(null)}
+        onClick={() => setNotice(null)}
         className="grid size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
       >
         <X className="size-4" />
@@ -53,11 +56,25 @@ export function DemoBlockedNotice() {
 
 const VISIBLE_MS = 7_000;
 
-function observeBlockedRequests(onBlocked: () => void) {
+type DemoRefusal = "blocked" | "limited";
+
+const NOTICE_COPY: Record<DemoRefusal, { title: string; body: string }> = {
+  blocked: {
+    title: "Turned off in the demo",
+    body: "Generation, uploads, and external connections are disabled here. You can still browse and edit the sample content.",
+  },
+  limited: {
+    title: "Too many edits right now",
+    body: "The demo limits how fast its sample content can be changed. Try again in a minute.",
+  },
+};
+
+function observeRefusedRequests(onRefused: (kind: DemoRefusal) => void) {
   const original = window.fetch;
   const observed: typeof window.fetch = async (...args) => {
     const response = await original.apply(window, args);
-    if (response.headers.get(DEMO_BLOCKED_HEADER) === "blocked") onBlocked();
+    const refusal = response.headers.get(DEMO_BLOCKED_HEADER);
+    if (refusal === "blocked" || refusal === "limited") onRefused(refusal);
     return response;
   };
   window.fetch = observed;

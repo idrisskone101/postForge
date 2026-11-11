@@ -20,7 +20,7 @@ export const DEMO_OVERLAY_CACHE_DIRECTORY = ".cache/postforge-demo-storage";
  * Sample media ships with the repository and is served straight from disk, so
  * it is read-only: a visitor deleting a sample output removes the row, never
  * the file, and the scheduled restore brings the row back. Anything the app
- * writes while the demo runs (an export, an avatar made from a sample output)
+ * writes while the demo runs
  * lands in the demo database as an overlay and is cleared by the restore.
  */
 export class DemoStorageDriver {

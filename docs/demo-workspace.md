@@ -17,10 +17,11 @@ inlines the flag, so the shell, the middleware and the server always agree.
 | --- | --- |
 | Access | Open to visitors. `POSTFORGE_API_KEY` is not consulted. |
 | Data | A dedicated database, wiped and re-seeded at boot and every `POSTFORGE_DEMO_RESET_MINUTES` (default 60). Sample rows keep stable ids, so open links survive a restore. |
-| Media | Served read-only from `demo/assets/`. Deleting a sample output removes the row, never the file. Anything written at runtime (an export, an avatar made from an output) goes to the demo database and is cleared by the next restore. `STORAGE_DRIVER` is ignored, so the operator's bucket is never touched. |
+| Media | Served read-only from `demo/assets/`. Deleting a sample output removes the row, never the file. Anything the app writes at runtime goes to the demo database as an overlay and is cleared by the next restore. `STORAGE_DRIVER` is ignored, so the operator's bucket is never touched. |
 | Editing | Visitors can review, edit, reorder and delete the sample content. |
 | Generation, uploads, providers | Refused by the middleware with a 403 and a visible notice. Mutating routes are an allowlist in `src/lib/demo/request-policy.ts`; a new route is closed until it is added there. |
 | Inspiration | Not part of the demo. The tab is removed, `/ugc-inspiration` redirects to Home, and its API returns 404. |
+| Limits | Open access means anyone can write, so writes are bounded: request bodies over 64 KB are refused, edits and heavy renders (exports, thumbnails) are capped at 30 a minute per visitor and 120 overall, and the workspace is restored early if it grows past 1,500 rows or 25 MB of stored JSON. |
 | Background work | The fal poller, clone worker, automation scheduler, slideshow automation worker and storage backfills do not start. |
 | Slides | May only reference media already in the workspace, so a visitor cannot point a slide at a remote or inline image. |
 | Connections | TikTok, Instagram and YouTube stay "not connected". Performance reads one local CSV dataset named `loamly-sample-posts.csv`. |

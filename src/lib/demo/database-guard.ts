@@ -16,3 +16,15 @@ export class DemoDatabaseGuardError extends Error {
 export function isSafeDemoDatabase(state: { hasMarker: boolean; contentRows: number }) {
   return state.hasMarker || state.contentRows === 0;
 }
+
+/** The seed is about 150 rows and 30 KB of JSON; these leave room to edit. */
+export const DEMO_SIZE_LIMITS = { rows: 1_500, storedBytes: 25 * 1024 * 1024 } as const;
+
+/**
+ * Visitors can add rows and edit JSON. Past these limits the workspace is
+ * restored right away instead of waiting for the timer, so the demo database
+ * cannot be grown without bound.
+ */
+export function isOversizedDemoWorkspace(size: { rows: number; storedBytes: number }) {
+  return size.rows > DEMO_SIZE_LIMITS.rows || size.storedBytes > DEMO_SIZE_LIMITS.storedBytes;
+}

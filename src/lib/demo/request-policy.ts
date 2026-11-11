@@ -16,13 +16,14 @@ export type DemoRequest = {
 };
 
 export type DemoRequestDecision =
-  | { action: "allow" }
+  /** `metered` requests count against the demo's write and render budget. */
+  | { action: "allow"; metered: boolean }
   | { action: "redirect"; to: string }
   | { action: "not-found" }
   | { action: "block" };
 
 /** JSON edits in the app are small; anything larger is an upload in disguise. */
-export const DEMO_MAX_BODY_BYTES = 256 * 1024;
+export const DEMO_MAX_BODY_BYTES = 64 * 1024;
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
@@ -34,7 +35,6 @@ const ALLOWED_MUTATIONS: ReadonlyArray<readonly [string, RegExp]> = [
   ["DELETE", route(`/api/files/${ID}`)],
   ["DELETE", route(`/api/jobs/${ID}`)],
   ["DELETE", route(`/api/avatars/${ID}`)],
-  ["POST", route("/api/avatars/from-generation")],
   ["DELETE", route(`/api/collection-assets/${ID}`)],
   ["DELETE", route(`/api/ugc-clone/sources/${ID}`)],
   ["POST", route("/api/slideshows")],
@@ -54,6 +54,12 @@ const ALLOWED_MUTATIONS: ReadonlyArray<readonly [string, RegExp]> = [
   ["PUT", route(`/api/workspace-features/${ID}`)],
   ["DELETE", route(`/api/workspace-features/${ID}`)],
   ["PUT", route("/api/settings/models")],
+];
+
+/** Reads that render with sharp, satori, or ffmpeg on every call. */
+const COSTLY_READS: readonly RegExp[] = [
+  route(`/api/slideshows/${ID}/export`),
+  route("/api/ugc-clone/thumbnails"),
 ];
 
 /** Read routes that start an external flow or exist only for provider crawlers and cron. */
@@ -78,18 +84,23 @@ export function evaluateDemoRequest(request: DemoRequest): DemoRequestDecision {
     return { action: "not-found" };
   }
 
-  if (!pathname.startsWith("/api/")) return { action: "allow" };
+  if (!pathname.startsWith("/api/")) return { action: "allow", metered: false };
 
   if (CLOSED_READS.some((pattern) => pattern.test(pathname))) {
     return { action: "block" };
   }
-  if (SAFE_METHODS.has(method)) return { action: "allow" };
+  if (SAFE_METHODS.has(method)) {
+    return {
+      action: "allow",
+      metered: COSTLY_READS.some((pattern) => pattern.test(pathname)),
+    };
+  }
 
   const allowed = ALLOWED_MUTATIONS.some(
     ([allowedMethod, pattern]) => allowedMethod === method && pattern.test(pathname)
   );
   if (!allowed || carriesUpload(request)) return { action: "block" };
-  return { action: "allow" };
+  return { action: "allow", metered: true };
 }
 
 function carriesUpload(request: DemoRequest): boolean {

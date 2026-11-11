@@ -3,9 +3,22 @@ import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 import {
   DEMO_BLOCKED_HEADER,
   DEMO_BLOCKED_MESSAGE,
+  DEMO_RATE_LIMITED_MESSAGE,
   isDemoMode,
 } from "@/lib/demo/mode";
+import { createDemoRateLimiter } from "@/lib/demo/rate-limit";
 import { evaluateDemoRequest } from "@/lib/demo/request-policy";
+
+const demoRateLimiter = createDemoRateLimiter();
+
+function clientAddress(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  return (
+    request.headers.get("x-real-ip")?.trim() ||
+    forwarded?.split(",")[0]?.trim() ||
+    "unknown"
+  );
+}
 
 const AUTH_CHALLENGE = 'Basic realm="postForge"';
 
@@ -79,6 +92,19 @@ function demoResponse(request: NextRequest) {
 
   switch (decision.action) {
     case "allow":
+      if (decision.metered && !demoRateLimiter.take(clientAddress(request))) {
+        return NextResponse.json(
+          { error: DEMO_RATE_LIMITED_MESSAGE, demo: true },
+          {
+            status: 429,
+            headers: {
+              [DEMO_BLOCKED_HEADER]: "limited",
+              "Retry-After": "60",
+              "Cache-Control": "no-store",
+            },
+          }
+        );
+      }
       return nextWithPathname(request);
     case "redirect":
       return NextResponse.redirect(new URL(decision.to, request.url));

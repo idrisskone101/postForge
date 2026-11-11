@@ -16,6 +16,9 @@ export const DEMO_BLOCKED_HEADER = "x-postforge-demo";
 export const DEMO_BLOCKED_MESSAGE =
   "This is the PostForge demo workspace. Generation, uploads, and external connections are turned off here.";
 
+export const DEMO_RATE_LIMITED_MESSAGE =
+  "The demo workspace is receiving a lot of edits right now. Try again in a minute.";
+
 export const DEMO_WORKSPACE_NAME = "Loamly Studio";
 
 /** Minutes between automatic restores of the sample workspace. */

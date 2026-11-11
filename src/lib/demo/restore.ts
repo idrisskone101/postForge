@@ -4,7 +4,11 @@ import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { DEMO_OVERLAY_CACHE_DIRECTORY } from "@/lib/storage/demo";
 import { workspaceFeatureKey, type WorkspaceFeature } from "@/lib/workspace-feature-store";
-import { DemoDatabaseGuardError, isSafeDemoDatabase } from "./database-guard";
+import {
+  DemoDatabaseGuardError,
+  isOversizedDemoWorkspace,
+  isSafeDemoDatabase,
+} from "./database-guard";
 import { demoResetIntervalMinutes, isDemoMode } from "./mode";
 import { buildDemoSeed, loadDemoManifest, type DemoSeed } from "./seed";
 
@@ -40,11 +44,15 @@ export async function restoreDemoWorkspace(now = new Date()): Promise<void> {
 
 const globalForDemo = globalThis as unknown as {
   __postforge_demo_restore_interval?: ReturnType<typeof setInterval>;
+  __postforge_demo_size_interval?: ReturnType<typeof setInterval>;
 };
 
+const SIZE_CHECK_MS = 60_000;
+
 /**
- * Boot step for a demo build: restore once, then on a timer. A failed first
- * restore is fatal on purpose, so a misconfigured demo never serves anything.
+ * Boot step for a demo build: restore once, then on a timer, and early
+ * whenever the workspace outgrows its limits. A failed first restore is fatal
+ * on purpose, so a misconfigured demo never serves anything.
  */
 export async function startDemoWorkspace(): Promise<void> {
   await restoreDemoWorkspace();
@@ -57,6 +65,35 @@ export async function startDemoWorkspace(): Promise<void> {
   }, demoResetIntervalMinutes() * 60_000);
   interval.unref?.();
   globalForDemo.__postforge_demo_restore_interval = interval;
+
+  const sizeCheck = setInterval(() => {
+    restoreIfOversized().catch((error) => {
+      console.error("[demo] size check failed", error);
+    });
+  }, SIZE_CHECK_MS);
+  sizeCheck.unref?.();
+  globalForDemo.__postforge_demo_size_interval = sizeCheck;
+}
+
+async function restoreIfOversized() {
+  const [bytes, ...counts] = await Promise.all([
+    prisma.$queryRaw<Array<{ total: bigint | number | null }>>`
+      SELECT COALESCE(SUM(octet_length("data")), 0) AS "total" FROM "StoredAsset"
+    `,
+    prisma.generationJob.count(),
+    prisma.slideshowProject.count(),
+    prisma.slideshowSlide.count(),
+    prisma.slideshowAutomation.count(),
+    prisma.avatar.count(),
+    prisma.storedAsset.count(),
+  ]);
+  const size = {
+    storedBytes: Number(bytes[0]?.total ?? 0),
+    rows: counts.reduce((total, count) => total + count, 0),
+  };
+  if (!isOversizedDemoWorkspace(size)) return;
+  console.warn("[demo] workspace outgrew its limits; restoring now", size);
+  await restoreDemoWorkspace();
 }
 
 async function readDatabaseState(tx: Prisma.TransactionClient) {

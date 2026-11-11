@@ -4,7 +4,12 @@ import {
   evaluateDemoRequest,
   type DemoRequest,
 } from "../../src/lib/demo/request-policy";
-import { isSafeDemoDatabase } from "../../src/lib/demo/database-guard";
+import {
+  DEMO_SIZE_LIMITS,
+  isOversizedDemoWorkspace,
+  isSafeDemoDatabase,
+} from "../../src/lib/demo/database-guard";
+import { createDemoRateLimiter } from "../../src/lib/demo/rate-limit";
 
 function decide(method: string, pathname: string, extra: Partial<DemoRequest> = {}) {
   return evaluateDemoRequest({ method, pathname, ...extra }).action;
@@ -63,6 +68,8 @@ const closed: Array<[string, string]> = [
   ["PUT", "/api/avatars/abc"],
   ["POST", "/api/avatars/abc/identity-pack"],
   ["POST", "/api/avatars/import-candidate"],
+  // Copies an output's bytes into the database on every call.
+  ["POST", "/api/avatars/from-generation"],
   ["POST", "/api/collection-assets"],
   ["POST", "/api/collection-assets/pinterest-import"],
   ["POST", "/api/collection-assets/vibe"],
@@ -112,5 +119,39 @@ assert.equal(decide("PUT", edit, { transferEncoding: "chunked" }), "block");
 assert.equal(isSafeDemoDatabase({ hasMarker: true, contentRows: 500 }), true);
 assert.equal(isSafeDemoDatabase({ hasMarker: false, contentRows: 0 }), true);
 assert.equal(isSafeDemoDatabase({ hasMarker: false, contentRows: 1 }), false);
+
+assert.equal(
+  isOversizedDemoWorkspace({ rows: 200, storedBytes: 40_000 }),
+  false
+);
+assert.equal(
+  isOversizedDemoWorkspace({ rows: DEMO_SIZE_LIMITS.rows + 1, storedBytes: 0 }),
+  true
+);
+assert.equal(
+  isOversizedDemoWorkspace({ rows: 0, storedBytes: DEMO_SIZE_LIMITS.storedBytes + 1 }),
+  true
+);
+
+// Edits and heavy renders are metered; plain reads and pages are not.
+function metered(method: string, pathname: string) {
+  const decision = evaluateDemoRequest({ method, pathname });
+  return decision.action === "allow" && decision.metered;
+}
+assert.equal(metered("PATCH", "/api/slideshows/abc"), true);
+assert.equal(metered("GET", "/api/slideshows/abc/export"), true);
+assert.equal(metered("GET", "/api/ugc-clone/thumbnails"), true);
+assert.equal(metered("GET", "/api/gallery"), false);
+assert.equal(metered("GET", "/gallery"), false);
+
+// One visitor cannot use the whole budget, and the budget resets each window.
+const limiter = createDemoRateLimiter({ windowMs: 1_000, perClient: 2, overall: 3 });
+assert.equal(limiter.take("a", 0), true);
+assert.equal(limiter.take("a", 10), true);
+assert.equal(limiter.take("a", 20), false);
+assert.equal(limiter.take("b", 30), true);
+assert.equal(limiter.take("c", 40), false);
+assert.equal(limiter.take("a", 1_000), true);
+assert.equal(limiter.take("c", 1_010), true);
 
 console.log("demo request policy tests passed");
