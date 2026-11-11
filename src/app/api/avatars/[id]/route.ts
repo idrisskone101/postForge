@@ -124,6 +124,9 @@ export async function PUT(
   }
 }
 
+const MAX_DETAILS_BYTES = 64 * 1024;
+const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
+
 /**
  * Rename an Avatar or update its provenance without touching the portrait.
  * Unlike PUT, which replaces the image and so discards the Identity packs and
@@ -142,7 +145,19 @@ export async function PATCH(
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json({ error: "Expected a JSON object" }, { status: 400 });
     }
-    if (body.name !== undefined && (typeof body.name !== "string" || !body.name.trim())) {
+    // Postgres rejects NUL in text and JSON, so refuse it here with a 400.
+    const serialized = JSON.stringify(body);
+    if (serialized.includes("\\u0000") || serialized.length > MAX_DETAILS_BYTES) {
+      return NextResponse.json(
+        { error: "Avatar details are too large or contain invalid characters" },
+        { status: 400 }
+      );
+    }
+    const name =
+      typeof body.name === "string"
+        ? body.name.replace(CONTROL_CHARACTERS, " ").trim().slice(0, 80)
+        : undefined;
+    if (body.name !== undefined && !name) {
       return NextResponse.json({ error: "name must be a non-empty string" }, { status: 400 });
     }
     const provenance =
@@ -158,7 +173,7 @@ export async function PATCH(
     const avatar = await prisma.avatar.update({
       where: { id },
       data: {
-        ...(typeof body.name === "string" ? { name: body.name.trim().slice(0, 80) } : {}),
+        ...(name ? { name } : {}),
         ...(provenance ? { provenance } : {}),
       },
     });

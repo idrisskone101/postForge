@@ -2156,6 +2156,15 @@ header:has([data-home-title]) .pf-button-primary {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  /* The compact rail is 72px wide: expanded-only rows and the collapse
+     control must not render in it before the full stylesheet arrives. */
+  #workspace-sidebar .sidebar-expanded-only,
+  #workspace-sidebar .sidebar-collapse-toggle {
+    display: none;
+  }
+}
+
 @media (min-width: 1280px) {
   #workspace-sidebar {
     width: 16rem;
@@ -2171,6 +2180,12 @@ header:has([data-home-title]) .pf-button-primary {
 
   html[data-sidebar-collapsed="true"] #workspace-shell {
     margin-left: 72px;
+  }
+
+  /* Until the full stylesheet arrives, keep expanded-only rail content out of
+     the collapsed rail (the same rule lives in globals.css). */
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {
+    display: none;
   }
 
   [data-spend-stats="true"] {

@@ -168,8 +168,10 @@ export function Sidebar() {
 
   // Footer rows show in the expanded rail and the mobile drawer. In the rail
   // they are hidden by `.sidebar-expanded-only` (compact width or collapsed).
-  // Do not add Tailwind's `hidden` here: the first-paint stylesheet defines an
-  // unlayered `.hidden`, which beats a layered `xl:flex` and hides them for good.
+  // Do not pair Tailwind's `hidden` with `xl:flex` in this file: the first-paint
+  // stylesheet defines an unlayered `.hidden`, which beats the layered `xl:`
+  // utility and hides the element for good. Desktop-only visibility for the rail
+  // (these rows, the collapse control) lives in globals.css instead.
   const footer = (mobile = false) => (
     <div className="mt-auto">
       {(notificationPreferences.failures || notificationPreferences.approvals) && (
@@ -291,7 +293,7 @@ export function Sidebar() {
               aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
+              className="sidebar-collapse-toggle size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
             >
               {desktopCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
             </button>

@@ -142,8 +142,52 @@ assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: non
 assert.doesNotMatch(globalStyles, /body\[data-sidebar-collapsed="true"\]/);
 
 // The first-paint stylesheet defines an unlayered `.hidden`, which beats any
-// layered responsive utility. A footer row written as `hidden xl:flex` therefore
-// never shows, which once hid the workspace name and theme toggle on desktop.
-assert.doesNotMatch(sidebarSource, /sidebar-expanded-only hidden/);
+// layered responsive or dark-mode utility. Rail controls written as
+// `hidden xl:flex` or `hidden dark:block` therefore never show: that once hid
+// the workspace name, the theme toggle, the collapse control, and the dark-mode
+// toggle icon. Their visibility lives in globals.css instead.
+const themeToggleSource = readFileSync(
+  new URL("../../src/components/theme-toggle.tsx", import.meta.url),
+  "utf8"
+);
+const criticalStyles = readFileSync(
+  new URL("../../src/app/dashboard-critical.css", import.meta.url),
+  "utf8"
+);
+const SHOW_VARIANT = /(?:sm|md|lg|xl|2xl|dark):(?:flex|grid|block|inline-flex|inline)\b/;
+for (const [file, source] of [
+  ["sidebar.tsx", sidebarSource],
+  ["theme-toggle.tsx", themeToggleSource],
+] as const) {
+  for (const classList of source.match(/"[^"\n]*\bhidden\b[^"\n]*"/g) ?? []) {
+    // The rail itself is the one exception: `#workspace-sidebar { display: flex }`
+    // in the first-paint stylesheet outranks `.hidden` by id.
+    if (classList.includes("fixed inset-y-0 left-0")) continue;
+    assert.doesNotMatch(classList, SHOW_VARIANT, `${file}: ${classList}`);
+  }
+}
+assert.match(
+  criticalStyles,
+  /@media \(min-width: 768px\) \{[\s\S]*?#workspace-sidebar \{\s*display: flex;/
+);
+assert.match(criticalStyles, /^\.hidden \{\s*display: none;/m);
 assert.match(sidebarSource, /"sidebar-expanded-only flex"/);
 assert.match(sidebarSource, /"sidebar-expanded-only grid"/);
+assert.match(sidebarSource, /sidebar-collapse-toggle/);
+assert.match(
+  globalStyles,
+  /#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: none;/
+);
+assert.match(
+  globalStyles,
+  /@media \(min-width: 1280px\) \{\s*#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: grid;/
+);
+assert.match(themeToggleSource, /theme-toggle-moon/);
+assert.match(themeToggleSource, /theme-toggle-sun/);
+assert.match(globalStyles, /\.dark \.theme-toggle-sun \{\s*display: block;/);
+assert.match(globalStyles, /\.dark \.theme-toggle-moon \{\s*display: none;/);
+// Before the full stylesheet loads, expanded-only rows stay out of the compact rail.
+assert.match(
+  criticalStyles,
+  /#workspace-sidebar \.sidebar-expanded-only,\s*#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: none;/
+);

@@ -4,6 +4,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Rail controls whose visibility cannot use Tailwind's `hidden` plus a
+   responsive or dark variant: the first-paint `.hidden` rule is unlayered and
+   would win over the layered variant. */
+#workspace-sidebar .sidebar-collapse-toggle {
+  display: none;
+}
+
+.theme-toggle-sun {
+  display: none;
+}
+
+.dark .theme-toggle-sun {
+  display: block;
+}
+
+.dark .theme-toggle-moon {
+  display: none;
+}
+
 @media (min-width: 768px) and (max-width: 1279.98px) {
   #workspace-sidebar .sidebar-expanded-only {
     display: none;
@@ -15,6 +34,10 @@
 }
 
 @media (min-width: 1280px) {
+  #workspace-sidebar .sidebar-collapse-toggle {
+    display: grid;
+  }
+
   html[data-sidebar-collapsed="true"] #workspace-sidebar {
     width: 72px;
   }

@@ -53,10 +53,14 @@ export async function saveCharacterAvatar({
       body: JSON.stringify({ name, provenance }),
     });
     if (kept.ok) return currentAvatarId;
-    if (kept.status !== 404) {
-      const failure = (await kept.json().catch(() => null)) as { error?: string } | null;
-      throw new Error(failure?.error ?? "Reusable avatar could not be saved.");
-    }
+    // There is no other copy of this portrait to fall back on: the preview is
+    // the avatar itself, so a missing avatar cannot be re-uploaded from here.
+    const failure = (await kept.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(
+      kept.status === 404
+        ? "The linked avatar no longer exists. Re-render the preview to create a new one."
+        : (failure?.error ?? "Reusable avatar could not be saved.")
+    );
   }
 
   const file = await portraitFile(previewSourceUrl, characterId);
