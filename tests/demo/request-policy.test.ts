@@ -38,6 +38,7 @@ const allowedEdits: Array<[string, string]> = [
   ["PATCH", "/api/files/abc/review-status"],
   ["DELETE", "/api/files/abc"],
   ["DELETE", "/api/jobs/abc"],
+  ["PATCH", "/api/avatars/abc"],
   ["DELETE", "/api/avatars/abc"],
   ["DELETE", "/api/collection-assets/abc"],
   ["POST", "/api/slideshows"],

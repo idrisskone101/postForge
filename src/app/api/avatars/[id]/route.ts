@@ -124,6 +124,51 @@ export async function PUT(
   }
 }
 
+/**
+ * Rename an Avatar or update its provenance without touching the portrait.
+ * Unlike PUT, which replaces the image and so discards the Identity packs and
+ * saved references made from it, this keeps everything derived from the image.
+ */
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = (await request.json().catch(() => null)) as {
+      name?: unknown;
+      provenance?: unknown;
+    } | null;
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "Expected a JSON object" }, { status: 400 });
+    }
+    if (body.name !== undefined && (typeof body.name !== "string" || !body.name.trim())) {
+      return NextResponse.json({ error: "name must be a non-empty string" }, { status: 400 });
+    }
+    const provenance =
+      body.provenance === undefined ? null : normalizeAvatarProvenance(body.provenance);
+    if (body.provenance !== undefined && !provenance) {
+      return NextResponse.json({ error: "provenance must be an object" }, { status: 400 });
+    }
+
+    const current = await prisma.avatar.findUnique({ where: { id }, select: { id: true } });
+    if (!current) {
+      return NextResponse.json({ error: "Avatar not found" }, { status: 404 });
+    }
+    const avatar = await prisma.avatar.update({
+      where: { id },
+      data: {
+        ...(typeof body.name === "string" ? { name: body.name.trim().slice(0, 80) } : {}),
+        ...(provenance ? { provenance } : {}),
+      },
+    });
+    return NextResponse.json(serializeAvatarApiRecord(avatar));
+  } catch (error) {
+    console.error("Failed to update avatar details:", error);
+    return NextResponse.json({ error: "Failed to update avatar" }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

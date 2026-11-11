@@ -34,6 +34,7 @@ const ALLOWED_MUTATIONS: ReadonlyArray<readonly [string, RegExp]> = [
   ["PATCH", route(`/api/files/${ID}/review-status`)],
   ["DELETE", route(`/api/files/${ID}`)],
   ["DELETE", route(`/api/jobs/${ID}`)],
+  ["PATCH", route(`/api/avatars/${ID}`)],
   ["DELETE", route(`/api/avatars/${ID}`)],
   ["DELETE", route(`/api/collection-assets/${ID}`)],
   ["DELETE", route(`/api/ugc-clone/sources/${ID}`)],

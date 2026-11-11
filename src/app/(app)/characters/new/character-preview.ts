@@ -1,6 +1,5 @@
 import { apiGet } from "@/lib/api/client";
 import type { CharacterAttributes } from "@/lib/character-attributes";
-import { isDemoMode } from "@/lib/demo/mode";
 
 async function portraitFile(sourceUrl: string, characterId: string) {
   const response = await fetch(sourceUrl, { cache: "no-store" });
@@ -30,33 +29,42 @@ export async function saveCharacterAvatar({
   previewFingerprint: string;
   previewSourceUrl: string;
 }) {
-  // The demo refuses uploads. When the portrait is still the linked Avatar
-  // there is nothing new to store, so an edit keeps that Avatar as it is.
+  const provenance = {
+    avatarProfile: {
+      characterId,
+      attributes,
+      previewSeed,
+      previewFingerprint,
+      previewKind: "photographic",
+    },
+    seedReferenceImages: [],
+  };
+
+  // When the portrait is still the linked Avatar there is no new image to
+  // store. Replacing the file anyway would discard the Identity packs and
+  // saved references made from it, so only the details are updated.
   if (
-    isDemoMode() &&
     currentAvatarId &&
     previewSourceUrl === `/api/avatars/${encodeURIComponent(currentAvatarId)}`
   ) {
-    return currentAvatarId;
+    const kept = await fetch(`/api/avatars/${encodeURIComponent(currentAvatarId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, provenance }),
+    });
+    if (kept.ok) return currentAvatarId;
+    if (kept.status !== 404) {
+      const failure = (await kept.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(failure?.error ?? "Reusable avatar could not be saved.");
+    }
   }
+
   const file = await portraitFile(previewSourceUrl, characterId);
   const formData = new FormData();
   formData.set("file", file);
   formData.set("name", name);
   formData.set("origin", "generated");
-  formData.set(
-    "provenance",
-    JSON.stringify({
-      avatarProfile: {
-        characterId,
-        attributes,
-        previewSeed,
-        previewFingerprint,
-        previewKind: "photographic",
-      },
-      seedReferenceImages: [],
-    })
-  );
+  formData.set("provenance", JSON.stringify(provenance));
   let response = currentAvatarId
     ? await fetch(`/api/avatars/${encodeURIComponent(currentAvatarId)}`, {
         method: "PUT",
