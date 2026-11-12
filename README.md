@@ -4,7 +4,7 @@ A self-hosted pipeline I built to make AI marketing content for my iOS apps. It 
 
 **Live demo:** [postforge-demo-production.up.railway.app](https://postforge-demo-production.up.railway.app) (sample content for a fictional brand; generation and uploads are turned off)
 
-![The PostForge gallery in the demo workspace](docs/screenshot.jpg)
+![The PostForge gallery in the demo workspace](docs/readme-gallery.webp)
 
 ## Built with
 
