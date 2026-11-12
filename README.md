@@ -1,65 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PostForge
 
-## Getting Started
+A self-hosted pipeline I built to make AI marketing content for my iOS apps. It generates images and video, packages them into slideshows and UGC-style clips, queues them for review and publishing, and tracks what each one cost and how it performed.
 
-First, run the development server:
+**Live demo:** [postforge-demo-production.up.railway.app](https://postforge-demo-production.up.railway.app) (sample content for a fictional brand; generation and uploads are turned off)
+
+![The PostForge gallery in the demo workspace](docs/readme-gallery.webp)
+
+## Built with
+
+- **App:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
+- **Data:** PostgreSQL, Prisma 7
+- **AI:** fal.ai for image and video models, Ollama for text (stories, prompt improvement)
+- **Media:** sharp, satori, FFmpeg
+- **Storage:** Postgres-backed by default, S3-compatible optional
+- **Deploy:** Railway
+- **CI:** GitHub Actions (tests, typecheck, lint, production build, boot smoke test)
+
+## Features
+
+- **Generate:** images and video across a registry of models, run through an async job queue (queued → processing → completed → failed)
+- **Gallery and collections:** preview, review, download and organise every output
+- **Slideshow studio:** generate a story, edit slide by slide, generate an image per slide, reorder, export
+- **UGC clone studio:** reference images, source clips, trimming, download
+- **Characters:** a reusable character library and builder
+- **Automations:** templates with scheduling; publishing is always approval-gated
+- **Performance:** metrics from connected TikTok, Instagram and YouTube accounts, or a CSV import
+- **Costs:** every model call is logged with its price, so spend is visible per job
+- **REST API:** the dashboard and my own AI agent drive the same endpoints
+
+## How I built it
+
+PostForge started because I was paying middleman platforms to call the same AI models I could call directly. It is a single Next.js app: the UI and the API are route handlers in one codebase, with Postgres underneath.
+
+A few decisions shaped it:
+
+- **One connection system.** TikTok, Instagram and YouTube share one server-owned OAuth connection. Settings controls it, Performance reads from it, Automations publishes through it. Tokens never reach the browser.
+- **No fake data.** A missing credential or a failed sync stays visibly unavailable. Unavailable metrics are `null`, never zero.
+- **A demo that cannot leak.** The public demo is the same code built with a demo flag against its own database. Mutating routes are an allowlist, so a new route is closed in the demo until it is explicitly opened. The database is wiped and re-seeded on a timer, and the app refuses to boot in demo mode against a database holding real content.
+- **A gate before merge.** `pnpm kode:check` runs the test suite, module-size and design-token checks, typecheck, lint, a production build and a boot smoke test. Pull requests run it in CI.
+
+## What I learned
+
+- Designing long-running work: job states, polling a provider, and recovering cleanly from failures.
+- OAuth across three providers with different scopes and token lifetimes, behind one model.
+- Making a single-user tool safe to show publicly without building full authentication.
+- Treating cost as a feature. Logging spend per call changed which models I reached for.
+
+## What I'd improve
+
+- Authentication and multi-user workspaces.
+- Move background workers out of the web process into their own service.
+- More publishing destinations.
+
+## Run it locally
+
+Needs Node.js, pnpm and Docker (for Postgres).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d                 # Postgres 16 on :5432
+cp .env.example .env                 # set DATABASE_URL, add FAL_KEY to generate media
+pnpm install
+pnpm exec prisma migrate deploy
+pnpm dev                             # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Storage
-
-Generated media defaults to database-backed storage (`STORAGE_DRIVER="database"`), so gallery items, avatars, TikTok source clips, and UGC clone outputs persist with Postgres instead of depending on a local output folder. Legacy files already stored on disk are backfilled into Postgres automatically on server boot.
-
-## Demo workspace
-
-PostForge can be deployed a second time as a public demo with its own database and sample content, so it can be shown without exposing real work. See [`docs/demo-workspace.md`](docs/demo-workspace.md).
-
-## Kode setup
-
-Kode setup is centralized in `scripts/kode-setup.sh`. It copies local env files from the foreground checkout when available, installs with pnpm, generates the Prisma client, and applies existing migrations when Postgres is reachable.
-
-Use these commands in environment settings:
+The dashboard, characters, collections, slideshow drafts and automation drafts work without any API keys. Generation needs `FAL_KEY`; publishing and sync need provider credentials.
 
 ```bash
-bash scripts/kode-setup.sh
+pnpm test         # test suite
+pnpm kode:check   # full gate: tests, typecheck, lint, build, smoke
 ```
 
-Use these actions:
-
-```bash
-pnpm dev
-pnpm kode:check
-pnpm kode:smoke
-pnpm exec prisma migrate status
-```
-
-`pnpm kode:check` already runs `pnpm kode:smoke` last. The smoke reuses the `.next` build from the gate, boots `next start`, and requires HTTP 200 from `GET /api/health` (a Postgres readiness ping). It does not exercise the product UI. Pull requests targeting `main` run the `kode` GitHub Actions job (`pnpm kode:check`). Merge stays a click in GitHub. Require the `kode` check on `main` so a red PR cannot merge.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+More detail: [`docs/demo-workspace.md`](docs/demo-workspace.md), [`PRODUCT.md`](PRODUCT.md), [`DESIGN.md`](DESIGN.md).
