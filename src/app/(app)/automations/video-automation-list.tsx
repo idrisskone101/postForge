@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
 import {
   EmptyState,
   Segmented,
   StatusChip,
+  buttonClass,
   iconButtonClass,
 } from "@/components/workbench";
 import { isAutomationExecutionEnabled } from "@/lib/automations";
@@ -22,6 +24,7 @@ export function VideoAutomationList({
   hub: AutomationsWorkspace;
 }) {
   const {
+    records,
     filtered,
     filter,
     setFilter,
@@ -45,7 +48,7 @@ export function VideoAutomationList({
     <section className="flex min-w-0 flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
       <div className="flex flex-wrap items-center gap-3 pb-3">
         <h2 className="wb-panel-title min-w-0 flex-1">Your automations</h2>
-        <div className="max-w-full overflow-x-auto">
+        <div className="max-w-full overflow-x-auto" hidden={records.length === 0}>
           <Segmented
             label="Filter automations"
             value={filter}
@@ -59,7 +62,13 @@ export function VideoAutomationList({
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {records.length === 0 ? (
+        <EmptyState icon="automations" title="No video automations yet" className="flex-1">
+          <Link href="/automations/new" className={buttonClass("strong", 36)}>
+            Choose a playbook
+          </Link>
+        </EmptyState>
+      ) : filtered.length === 0 ? (
         <EmptyState icon="automations" title="No automations in this filter" className="flex-1" />
       ) : (
         <div className="flex flex-col">
@@ -166,6 +175,7 @@ export function VideoAutomationList({
                         },
                         onDuplicate: () => duplicate(record),
                         onRemove: () => remove(record),
+                        onClose: () => setMenu(null),
                       }}
                     />
                   )}

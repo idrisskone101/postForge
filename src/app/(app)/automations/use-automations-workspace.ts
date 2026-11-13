@@ -34,7 +34,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   const [filter, setFilter] = useState<AutomationHubFilter>("All");
   const [menu, setMenu] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<HubToast | null>(null);
   const [integrationStatuses, setIntegrationStatuses] = useState<
     PublicIntegrationStatus[]
   >([]);
@@ -47,15 +47,24 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   const [slideshowDeleteId, setSlideshowDeleteId] = useState<string | null>(null);
 
   const notify = useCallback((message: string) => {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1700);
+    setToast({ id: `ok-${Date.now()}`, tone: "ok", message });
+  }, []);
+  const reportActionError = useCallback((message: string | null) => {
+    if (message) {
+      setToast({ id: `bad-${Date.now()}`, tone: "bad", message });
+    } else {
+      setToast((current) => (current?.tone === "bad" ? null : current));
+    }
+  }, []);
+  const dismissToast = useCallback((id: string) => {
+    setToast((current) => (current?.id === id ? null : current));
   }, []);
 
   const publish = useVideoPublish({
     setRecords,
     setBusy,
     setMenu,
-    setError,
+    setError: reportActionError,
     notify,
   });
   async function load() {
@@ -122,7 +131,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
       setSlideshowAutomations((current) =>
         current.map((item) => (item.id === automation.id ? automation : item))
       );
-      setSlideshowError(
+      reportActionError(
         cause instanceof Error ? cause.message : "Could not update automation"
       );
     } finally {
@@ -140,7 +149,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
       );
       notify(`${automation.name} deleted. Existing drafts are kept.`);
     } catch (cause) {
-      setSlideshowError(
+      reportActionError(
         cause instanceof Error ? cause.message : "Could not delete automation"
       );
     } finally {
@@ -155,7 +164,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
       setRecords(await duplicateAutomationRecord(record));
       notify("Automation duplicated as an inactive draft");
     } catch (cause) {
-      setError(
+      reportActionError(
         cause instanceof Error ? cause.message : "Unable to duplicate automation"
       );
     } finally {
@@ -169,7 +178,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   ) {
     setBusy(record.id);
     setMenu(null);
-    setError(null);
+    reportActionError(null);
     try {
       setRecords(await postLocalSchedule(record.id, action));
       notify(
@@ -178,7 +187,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
           : "Local review-draft schedule paused"
       );
     } catch (cause) {
-      setError(
+      reportActionError(
         cause instanceof Error
           ? cause.message
           : "Unable to update the local schedule"
@@ -200,7 +209,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
       setRecords(await deleteAutomationRecord(record.id));
       notify("Automation deleted");
     } catch (cause) {
-      setError(
+      reportActionError(
         cause instanceof Error ? cause.message : "Unable to delete automation"
       );
     } finally {
@@ -212,7 +221,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   async function generateReviewDraft(record: AutomationRecord) {
     setBusy(record.id);
     setMenu(null);
-    setError(null);
+    reportActionError(null);
     try {
       const body = await postReviewDraft(record);
       if (body.automation && isAutomationRecord(body.automation)) {
@@ -226,7 +235,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
       }
       router.push(`/generate/${encodeURIComponent(body.id)}`);
     } catch (cause) {
-      setError(
+      reportActionError(
         cause instanceof Error
           ? cause.message
           : "Unable to submit the review draft"
@@ -247,9 +256,35 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
     (record) =>
       record.status === "active" && isAutomationExecutionEnabled(record)
   ).length;
-  const scheduledDays = new Set(
-    records.flatMap((record) => record.schedule.days)
-  ).size;
+  const carouselSchedules = slideshowAutomations.filter(
+    (automation) => automation.status !== "archived"
+  );
+  const activeCarouselSchedules = carouselSchedules.filter(
+    (automation) => automation.status === "active"
+  );
+  const planCount = records.length + carouselSchedules.length;
+  const calendarEntries = [
+    ...records.map((record) => ({
+      id: record.id,
+      name: record.name,
+      time: record.schedule.time,
+      days: record.schedule.days,
+      needsAttention: automationNeedsAttention(
+        record,
+        integrationStatuses,
+        integrationsLoading
+      ),
+    })),
+    ...activeCarouselSchedules
+      .filter((automation) => automation.weekdays?.length && automation.time)
+      .map((automation) => ({
+        id: automation.id,
+        name: automation.name,
+        time: automation.time ?? "",
+        days: automation.weekdays ?? [],
+        needsAttention: false,
+      })),
+  ];
 
   return {
     records,
@@ -262,6 +297,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
     setMenu,
     busy,
     toast,
+    dismissToast,
     integrationStatuses,
     integrationsLoading,
     integrationsError,
@@ -277,11 +313,14 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
     changeLocalSchedule,
     remove,
     generateReviewDraft,
-    readyPlanCount,
+    readyPlanCount: readyPlanCount + activeCarouselSchedules.length,
+    planCount,
     attentionCount,
     activeScheduleCount,
-    scheduledDays,
+    calendarEntries,
   };
 }
+
+export type HubToast = { id: string; tone: "ok" | "bad"; message: string };
 
 export type AutomationsWorkspace = ReturnType<typeof useAutomationsWorkspace>;

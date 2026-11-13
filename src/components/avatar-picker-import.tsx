@@ -59,7 +59,7 @@ export function AvatarImportPanel({
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <AvatarPickerModeHead title="Import Avatar" onBack={onBack} />
+      <AvatarPickerModeHead title="Import avatar" onBack={onBack} />
 
       <div className="wb-field">
         <label htmlFor={`${fieldId}-name`} className="wb-label">
@@ -72,14 +72,14 @@ export function AvatarImportPanel({
           onChange={(event) => onAvatarNameChange?.(event.target.value)}
           maxLength={40}
           className="wb-input"
-          placeholder="Imported Avatar"
+          placeholder="Imported avatar"
         />
       </div>
 
       <div className="wb-field">
         <div className="flex items-center justify-between gap-3">
           <label htmlFor={`${fieldId}-json`} className="wb-label">
-            Avatar Profile JSON
+            Avatar profile JSON
           </label>
           <label className={cn(buttonClass("quiet", 32), FILE_PILL)}>
             Upload JSON
@@ -109,7 +109,7 @@ export function AvatarImportPanel({
       <div className="wb-field">
         <div className="flex items-center justify-between gap-3">
           <span className="flex items-center gap-2">
-            <span className="wb-label">Seed Reference Images</span>
+            <span className="wb-label">Seed reference images</span>
             <span className="wb-mono text-fg-muted">{seedReferenceImages.length} / 5</span>
           </span>
           <label className={cn(buttonClass("quiet", 32), FILE_PILL)}>

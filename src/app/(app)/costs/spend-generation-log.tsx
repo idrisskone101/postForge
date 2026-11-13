@@ -6,7 +6,7 @@ import { IconButton } from "@/components/workbench/icon-button";
 import { Panel } from "@/components/workbench/panel";
 import { COST_LOG_PAGE_SIZE } from "@/lib/costs/spend-period";
 import { formatCost } from "@/lib/utils/format-cost";
-import { createdLabel, logRangeLabel, typeLabel } from "./spend-format";
+import { createdLabel, logRangeLabel, modelLabel, shortJobId, typeLabel } from "./spend-format";
 import { SpendLogEmpty } from "./spend-log-empty";
 import type { SpendGenerationLogProps } from "./types";
 
@@ -20,7 +20,7 @@ export function SpendGenerationLog({
   return (
     <Panel pad="none" className="min-w-0 gap-0 p-5 max-md:p-4" aria-labelledby="spend-log-title">
       <div className="flex flex-wrap items-center gap-2 pb-3">
-        <h2 id="spend-log-title" className="wb-panel-title flex-1 whitespace-nowrap">
+        <h2 id="spend-log-title" className="wb-panel-title min-w-max flex-1 whitespace-nowrap">
           Generation log
         </h2>
         <label className="wb-input-wrap w-[240px] rounded-full px-3 max-md:order-last max-md:w-auto max-md:min-w-[150px] max-md:flex-1" data-size="36">
@@ -34,7 +34,7 @@ export function SpendGenerationLog({
           />
         </label>
         <label className="relative inline-flex h-9 max-w-[220px] shrink-0 items-center gap-1.5 rounded-full bg-raised pl-3.5 pr-2.5 text-[13px] font-semibold leading-4 text-fg transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf focus-within:shadow-[0_0_0_2px_var(--pf-ember)] hover:bg-raised-strong max-md:order-last">
-          <span className="truncate">{dashboard.model ?? "All models"}</span>
+          <span className="truncate">{dashboard.model ? modelLabel(dashboard.model) : "All models"}</span>
           <Icon name="chevron-down" size={16} className="shrink-0 text-fg-muted" />
           <select
             value={dashboard.model ?? "all"}
@@ -48,7 +48,7 @@ export function SpendGenerationLog({
             <option value="all">All models</option>
             {view.modelOptions.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {modelLabel(name)}
               </option>
             ))}
           </select>
@@ -78,14 +78,14 @@ export function SpendGenerationLog({
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="wb-mono truncate text-fg" title={log.jobId}>
-                    {log.jobId}
+                    {shortJobId(log.jobId)}
                   </span>
                   <span className="truncate text-[12px] leading-4 text-fg-muted lg:hidden">
-                    {log.model} - {typeLabel(log.type)} - {createdLabel(log.createdAt, now)}
+                    {modelLabel(log.model)} - {typeLabel(log.type)} - {createdLabel(log.createdAt, now)}
                   </span>
                 </span>
                 <span className="w-[170px] shrink-0 truncate text-[13px] leading-[18px] text-fg max-lg:hidden" title={log.model}>
-                  {log.model}
+                  {modelLabel(log.model)}
                 </span>
                 <span className="w-[90px] shrink-0 text-[13px] leading-[18px] text-fg-secondary max-lg:hidden">
                   {typeLabel(log.type)}

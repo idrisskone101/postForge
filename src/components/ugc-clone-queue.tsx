@@ -5,6 +5,7 @@ import Link from "next/link";
 import { apiGet } from "@/lib/api/client";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { cloneJobLabel } from "@/components/clone/clone-job-label";
 import {
   Button,
   EmptyState,
@@ -17,7 +18,7 @@ interface CloneJob {
   id: string;
   model: string;
   status: "queued" | "processing" | "completed" | "failed";
-  prompt: string;
+  input?: unknown;
   estimatedCost: number;
   error: string | null;
   createdAt: string;
@@ -123,6 +124,7 @@ const MONO = "wb-mono shrink-0 text-fg-secondary";
 
 function CloneJobRow({ job }: { job: CloneJob }) {
   const output = job.status === "completed" ? job.outputs[0] : undefined;
+  const label = cloneJobLabel(job);
   return (
     <Link
       href={`/ugc-clone/${job.id}`}
@@ -140,8 +142,12 @@ function CloneJobRow({ job }: { job: CloneJob }) {
         <span aria-hidden="true" className="h-12 w-9 shrink-0 rounded-sm bg-media" />
       )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
-          {job.prompt}
+        <span className="truncate text-[14px] font-semibold leading-[18px] text-fg max-md:whitespace-normal max-md:[overflow-wrap:anywhere]">
+          {label.source ?? (
+            <>
+              Clone <span className="wb-mono text-fg-secondary">{label.shortId}</span>
+            </>
+          )}
         </span>
         <span
           className={
@@ -150,7 +156,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
               : "truncate text-[13px] leading-4 text-fg-muted"
           }
         >
-          {job.error ? `${job.model} · ${job.error}` : job.model}
+          {job.error ? `${label.sub} · ${job.error}` : label.sub}
         </span>
       </span>
       <span className="flex w-[120px] shrink-0 max-md:w-auto">

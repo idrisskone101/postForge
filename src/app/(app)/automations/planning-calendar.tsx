@@ -2,17 +2,12 @@
 
 import { Panel } from "@/components/workbench";
 import { cn } from "@/lib/utils";
-import {
-  DAYS,
-  automationNeedsAttention,
-  currentWeekDates,
-  localDateKey,
-} from "./hub-status";
+import { DAYS, currentWeekDates, localDateKey } from "./hub-status";
 import { weekRangeLabel } from "./hub-visual";
 import type { AutomationsWorkspace } from "./use-automations-workspace";
 
 export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
-  const { records, integrationStatuses, integrationsLoading } = hub;
+  const { calendarEntries } = hub;
   const weekDates = currentWeekDates();
   const todayKey = localDateKey(new Date());
 
@@ -29,7 +24,7 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
         {DAYS.map((day, index) => {
-          const matching = records.filter((record) => record.schedule.days.includes(day));
+          const matching = calendarEntries.filter((entry) => entry.days.includes(day));
           const date = weekDates[index];
           const isToday = localDateKey(date) === todayKey;
           return (
@@ -44,13 +39,13 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
               <p className="text-[14px] font-bold leading-[18px] text-fg" title={date.toLocaleDateString()}>
                 {day} {date.getDate()}
               </p>
-              {matching.slice(0, VISIBLE_PER_DAY).map((record) => (
-                <div key={record.id} className="flex min-w-0 flex-col gap-0.5">
-                  <span className="wb-mono text-fg-secondary">{record.schedule.time}</span>
-                  <span className="truncate text-[13px] font-semibold leading-[17px] text-fg" title={record.name}>
-                    {record.name}
+              {matching.slice(0, VISIBLE_PER_DAY).map((entry) => (
+                <div key={entry.id} className="flex min-w-0 flex-col gap-0.5">
+                  <span className="wb-mono text-fg-secondary">{entry.time}</span>
+                  <span className="truncate text-[13px] font-semibold leading-[17px] text-fg" title={entry.name}>
+                    {entry.name}
                   </span>
-                  {automationNeedsAttention(record, integrationStatuses, integrationsLoading) ? (
+                  {entry.needsAttention ? (
                     <span className="text-[12px] font-semibold leading-4 text-warn">
                       Needs attention
                     </span>

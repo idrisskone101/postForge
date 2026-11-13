@@ -72,9 +72,9 @@ export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCoun
   }
 
   if (seedReferenceImageCount < 1) {
-    seedError = "Add at least 1 Seed Reference Image.";
+    seedError = "Add at least 1 seed reference image.";
   } else if (seedReferenceImageCount > 5) {
-    seedError = "Use no more than 5 Seed Reference Images.";
+    seedError = "Use no more than 5 seed reference images.";
   }
 
   return {

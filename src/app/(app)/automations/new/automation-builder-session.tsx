@@ -54,6 +54,7 @@ export function AutomationBuilderSession({
         back={{ href: "/automations", label: "Back to automations" }}
         title={
           <label className="flex min-w-0 items-center gap-2">
+            <span className="sr-only">{record.name || "Untitled automation"}</span>
             <input
               value={record.name}
               onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))}

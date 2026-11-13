@@ -1,4 +1,4 @@
-import { fetchSlideshowProjects } from "@/lib/slideshow/client";
+import { fetchSlideshowProjectPage } from "@/lib/slideshow/list-client";
 
 import type { SlideshowProjectListItem } from "./types";
 
@@ -9,15 +9,15 @@ function draftsErrorMessage(error: unknown, fallback: string) {
 export function watchStudioDrafts(input: {
   apiBaseUrl: string;
   enabled: boolean;
-  onLoaded: (projects: SlideshowProjectListItem[]) => void;
+  onLoaded: (projects: SlideshowProjectListItem[], total: number) => void;
   onError: (message: string) => void;
   onFinally?: () => void;
 }): () => void {
   if (!input.enabled) return () => undefined;
   let active = true;
-  void fetchSlideshowProjects(input.apiBaseUrl)
-    .then((loaded) => {
-      if (active) input.onLoaded(loaded);
+  void fetchSlideshowProjectPage({ apiBaseUrl: input.apiBaseUrl })
+    .then((page) => {
+      if (active) input.onLoaded(page.projects, page.total);
     })
     .catch((error) => {
       if (active) {
@@ -37,14 +37,14 @@ export function watchStudioDrafts(input: {
 export function watchStudioDraftsRefresh(input: {
   apiBaseUrl: string;
   enabled: boolean;
-  onLoaded: (projects: SlideshowProjectListItem[]) => void;
+  onLoaded: (projects: SlideshowProjectListItem[], total: number) => void;
   onError: (message: string) => void;
 }): () => void {
   if (!input.enabled) return () => undefined;
   let active = true;
-  void fetchSlideshowProjects(input.apiBaseUrl)
-    .then((loaded) => {
-      if (active) input.onLoaded(loaded);
+  void fetchSlideshowProjectPage({ apiBaseUrl: input.apiBaseUrl })
+    .then((page) => {
+      if (active) input.onLoaded(page.projects, page.total);
     })
     .catch((error) => {
       if (active) {

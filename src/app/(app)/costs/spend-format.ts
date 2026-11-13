@@ -1,3 +1,4 @@
+import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
 import type { SpendPeriod } from "@/lib/costs/spend-period";
 import { formatCost } from "@/lib/utils/format-cost";
 
@@ -51,4 +52,13 @@ export function logRangeLabel(page: number, pageSize: number, total: number) {
 
 export function typeLabel(type: string) {
   return type ? type[0].toUpperCase() + type.slice(1) : "-";
+}
+
+/** The registry display name; a model that left the registry keeps its stored id. */
+export function modelLabel(model: string) {
+  return MODEL_REGISTRY[model]?.name ?? model;
+}
+
+export function shortJobId(jobId: string) {
+  return jobId.slice(0, 8);
 }

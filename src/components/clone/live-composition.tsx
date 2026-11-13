@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { Pause, Play } from "lucide-react";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 import type { CloneSetupStep } from "@/components/clone/types";
@@ -73,23 +77,16 @@ export function CloneLiveComposition({
               className="size-full object-cover"
             />
           ) : sourcePreviewSrc && videoInfo ? (
-            <video
-              src={sourcePreviewSrc}
-              width={videoInfo.width}
-              height={videoInfo.height}
-              muted
-              playsInline
-              controls
-              preload="metadata"
-              className="size-full object-cover"
+            <CompositionVideo
+              clip={{ src: sourcePreviewSrc, width: videoInfo.width, height: videoInfo.height }}
             />
           ) : (
             <span className="grid size-full place-items-center rounded-lg border border-dashed border-edge text-fg-muted">
               <Icon name="clone" size={20} />
             </span>
           )}
-          {videoInfo && (referencePreview || avatarPreview) ? (
-            <span className="wb-tile-duration left-2 right-auto">
+          {videoInfo ? (
+            <span className="wb-tile-duration pointer-events-none left-2 right-auto">
               {formatClock(videoInfo.durationSec)}
             </span>
           ) : null}
@@ -127,6 +124,57 @@ export function CloneLiveComposition({
         </div>
       </div>
     </aside>
+  );
+}
+
+/**
+ * The source clip in the live composition. The frame is one button that
+ * toggles playback, so there are no native browser controls on the tile.
+ */
+function CompositionVideo({
+  clip,
+}: {
+  clip: { src: string; width: number; height: number };
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const Glyph = playing ? Pause : Play;
+
+  return (
+    <button
+      type="button"
+      aria-label={playing ? "Pause source preview" : "Play source preview"}
+      onClick={() => {
+        const video = videoRef.current;
+        if (!video) return;
+        if (video.paused) void video.play();
+        else video.pause();
+      }}
+      className="group relative block size-full overflow-hidden rounded-lg outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+    >
+      <video
+        ref={videoRef}
+        src={clip.src}
+        width={clip.width}
+        height={clip.height}
+        muted
+        playsInline
+        preload="metadata"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        className="size-full object-cover"
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)]",
+          "transition-opacity duration-[160ms] ease-pf",
+          playing && "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+        )}
+      >
+        <Glyph className={cn("size-4 fill-current", !playing && "translate-x-px")} strokeWidth={1.5} />
+      </span>
+    </button>
   );
 }
 

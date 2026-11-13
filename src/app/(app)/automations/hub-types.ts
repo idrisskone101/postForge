@@ -75,4 +75,5 @@ export type VideoAutomationMenuModel = {
   onSetManualResolutionDialog: (state: ManualResolutionDialogState) => void;
   onDuplicate: () => void;
   onRemove: () => void;
+  onClose: () => void;
 };

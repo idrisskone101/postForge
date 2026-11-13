@@ -23,6 +23,7 @@ export function useSlideshowStudioBootstrap(input: {
   setSelectedImageModel: Dispatch<SetStateAction<string | null>>;
   setCollections: Dispatch<SetStateAction<SlideshowCollection[]>>;
   setProjects: Dispatch<SetStateAction<SlideshowProjectListItem[]>>;
+  setProjectsTotal: Dispatch<SetStateAction<number | null>>;
   setProjectsError: Dispatch<SetStateAction<string | null>>;
   setLoadingProjects: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -35,6 +36,7 @@ export function useSlideshowStudioBootstrap(input: {
     setSelectedImageModel,
     setCollections,
     setProjects,
+    setProjectsTotal,
     setProjectsError,
     setLoadingProjects,
   } = input;
@@ -73,7 +75,10 @@ export function useSlideshowStudioBootstrap(input: {
     void connectStudioDrafts({
       apiBaseUrl,
       enabled: initialProjects === undefined,
-      onLoaded: setProjects,
+      onLoaded: (loaded, total) => {
+        setProjects(loaded);
+        setProjectsTotal(total);
+      },
       onError: setProjectsError,
       onFinally: () => {
         if (!controller.signal.aborted) setLoadingProjects(false);
@@ -98,6 +103,7 @@ export function useSlideshowStudioBootstrap(input: {
     setLoadingProjects,
     setProjects,
     setProjectsError,
+    setProjectsTotal,
     setSelectedImageModel,
   ]);
 
@@ -107,8 +113,9 @@ export function useSlideshowStudioBootstrap(input: {
     void connectStudioDraftsRefresh({
       apiBaseUrl,
       enabled: section === "drafts" && !activeProject,
-      onLoaded: (loaded) => {
+      onLoaded: (loaded, total) => {
         setProjects(loaded);
+        setProjectsTotal(total);
         setProjectsError(null);
       },
       onError: setProjectsError,
@@ -123,5 +130,5 @@ export function useSlideshowStudioBootstrap(input: {
       cancelled = true;
       stopRefresh();
     };
-  }, [activeProject, apiBaseUrl, section, setProjects, setProjectsError]);
+  }, [activeProject, apiBaseUrl, section, setProjects, setProjectsError, setProjectsTotal]);
 }

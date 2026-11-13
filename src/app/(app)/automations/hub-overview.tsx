@@ -8,23 +8,21 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
   const {
     records,
     readyPlanCount,
+    planCount,
     attentionCount,
-    scheduledDays,
+    calendarEntries,
     integrationStatuses,
     integrationsLoading,
-    integrationsError,
     setFilter,
-    load,
   } = hub;
   const blockedDays = new Set(
-    records
-      .filter((record) =>
-        automationNeedsAttention(record, integrationStatuses, integrationsLoading)
-      )
-      .flatMap((record) => record.schedule.days)
+    calendarEntries.filter((entry) => entry.needsAttention).flatMap((entry) => entry.days)
   );
-  const plannedDays = new Set(records.flatMap((record) => record.schedule.days));
-  const planParts: MeterPart[] = records.map((_, index) => ({
+  const plannedDays = new Set(
+    calendarEntries.flatMap((entry) => entry.days).filter((day) => DAYS.includes(day))
+  );
+  const scheduledDays = plannedDays.size;
+  const planParts: MeterPart[] = Array.from({ length: planCount }, (_, index) => ({
     value: 1,
     tone: index < readyPlanCount ? "neutral" : "empty",
   }));
@@ -43,12 +41,12 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
         <RatioStat
           label="Ready plans"
           value={readyPlanCount}
-          total={records.length}
+          total={planCount}
           meter={
             <SplitMeter
               equal
               className="w-[120px] max-w-full"
-              label={`${readyPlanCount} of ${records.length} plans ready`}
+              label={`${readyPlanCount} of ${planCount} plans ready`}
               parts={planParts.slice(0, 12)}
             />
           }
@@ -67,14 +65,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
           }
         />
       </section>
-      {integrationsError ? (
-        <AttentionNote
-          title="Connection status unavailable"
-          detail={integrationsError}
-          action="Check again"
-          onAction={load}
-        />
-      ) : attentionCount > 0 && firstBlocked ? (
+      {attentionCount > 0 && firstBlocked ? (
         <AttentionNote
           title={
             attentionCount === 1

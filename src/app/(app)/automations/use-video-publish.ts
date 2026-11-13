@@ -25,7 +25,7 @@ export function useVideoPublish({
   setRecords: Dispatch<SetStateAction<AutomationRecord[]>>;
   setBusy: Dispatch<SetStateAction<string | null>>;
   setMenu: Dispatch<SetStateAction<string | null>>;
-  setError: Dispatch<SetStateAction<string | null>>;
+  setError: (message: string | null) => void;
   notify: (message: string) => void;
 }) {
   const [publishDialog, setPublishDialog] = useState<PublishDialogState | null>(
@@ -49,6 +49,7 @@ export function useVideoPublish({
   async function openPublishReview(record: AutomationRecord) {
     const assetId = record.content.sourceFileId;
     if (!assetId) {
+      setMenu(null);
       setError("Choose and approve a generated Gallery video before publishing");
       return;
     }

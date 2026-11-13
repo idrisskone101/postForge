@@ -88,7 +88,7 @@ function RowTile({ tile }: { tile: IntegrationRowView["tile"] }) {
       <SocialProviderIcon
         provider={tile.provider}
         label={tile.label}
-        className={tile.provider === "youtube" ? "size-6" : "size-6 rounded-md"}
+        className="size-[22px]"
       />
     </span>
   );
