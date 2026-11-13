@@ -448,6 +448,28 @@
     }
   }
 
+  /* A bar pinned to the viewport bottom below 1280: the page fades out over the 24px above it, so
+     what it cuts reads as scroll. The fade leaves over the last 24px of the page, where the bar
+     comes to rest in flow, and never shows on a page that does not scroll. Set --wb-stuck-fade-color to the bar's own fill. */
+  @supports (animation-timeline: scroll()) {
+    @media (max-width: 1279.98px) {
+      .wb-stuck-fade::before {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        top: -24px;
+        z-index: -1;
+        height: 36px;
+        background: linear-gradient(to bottom, transparent, var(--wb-stuck-fade-color, var(--pf-panel)) 24px);
+        opacity: 0;
+        pointer-events: none;
+        animation: wb-stuck-fade-out linear both;
+        animation-timeline: scroll(root block);
+        animation-range: calc(100% - 24px) 100%;
+      }
+    }
+  }
+
   @supports (animation-timeline: scroll()) {
     .wb-segmented,
     .wb-scroll-fade {

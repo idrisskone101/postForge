@@ -58,6 +58,15 @@
   initial-value: 0px;
 }
 
+@keyframes wb-stuck-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes wb-scroll-fade-deep {
   0% {
     --wb-fade-start: 0px;
