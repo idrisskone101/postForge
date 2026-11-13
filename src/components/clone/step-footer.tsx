@@ -31,7 +31,7 @@ export function CloneStepFooter({
       )}
       {next ? (
         <Button variant="primary" size={40} onClick={() => onSelectStep(next.id)}>
-          Continue
+          <span>Continue</span>
           <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
         </Button>
       ) : (

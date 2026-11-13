@@ -47,12 +47,12 @@ export function CloneActionBar({
 
   return (
     <Panel
-      title="Generation settings"
       pad="wide"
       data-clone-primary-action-bar="true"
       data-clone-generation-settings-bar="true"
       className="pb-[22px]"
     >
+      <h2 className="wb-panel-title">Generation settings</h2>
       <div className="flex min-w-0 items-end gap-3 max-md:flex-col max-md:items-stretch">
         <Field label={videoSelect.label} className="min-w-0 flex-1">
           <CloneModelSelect model={videoSelect} />

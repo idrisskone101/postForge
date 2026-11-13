@@ -94,7 +94,7 @@ export function UGCCloneQueue() {
       ) : isLoading ? (
         <div aria-hidden="true" className="flex flex-col">
           {[0, 1, 2].map((index) => (
-            <div key={index} className={ROW}>
+            <div key={index} className={`${ROW} border-t border-hairline`}>
               <Skeleton shape="tile" className="h-12 w-9 shrink-0 rounded-sm" />
               <div className="flex flex-1 flex-col gap-2">
                 <Skeleton className="w-48 max-w-full" />
@@ -108,7 +108,7 @@ export function UGCCloneQueue() {
       ) : (
         <ul className="flex flex-col">
           {jobs.map((job) => (
-            <li key={job.id}>
+            <li key={job.id} className="border-t border-hairline">
               <CloneJobRow job={job} />
             </li>
           ))}
@@ -118,7 +118,7 @@ export function UGCCloneQueue() {
   );
 }
 
-const ROW = "flex min-w-0 items-center gap-3.5 border-t border-hairline py-2.5";
+const ROW = "flex min-w-0 items-center gap-3.5 py-2.5";
 const MONO = "wb-mono shrink-0 text-fg-secondary";
 
 function CloneJobRow({ job }: { job: CloneJob }) {
