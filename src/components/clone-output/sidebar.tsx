@@ -14,6 +14,7 @@ export function CloneOutputReviewSidebar({ review }: { review: CloneOutputReview
     <>
       <section aria-label="Clone details" className="wb-panel gap-3">
         <KeyValueList
+          className="[&_dd]:font-normal"
           rows={[
             { label: "Cost", value: formatCost(job.actualCost ?? job.estimatedCost), mono: true },
             { label: "Time", value: formatRunDuration(job.durationMs) },
@@ -107,7 +108,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
         )}
       </div>
       <div className={ROW}>
-        <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-media text-fg-muted">
+        <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[var(--pf-radius-pill)] bg-media text-fg-muted">
           {avatarPreviewUrl ? (
             <FileImage src={avatarPreviewUrl} alt={`${identityName} avatar`} sizes="36px" />
           ) : (
@@ -167,7 +168,7 @@ function CloneOutputChecks({ review }: { review: CloneOutputReviewView }) {
         {checks.map((check) => (
           <li key={check.label} className="flex h-8 min-w-0 flex-[1_0_140px] items-center gap-2.5">
             <span
-              className="wb-status-badge size-5"
+              className="wb-status-badge size-5 [&>svg]:size-[11px]"
               data-tone={check.ready ? "ok" : "neutral"}
             >
               <Icon name={check.ready ? "check" : "x"} size={11} strokeWidth={3} />

@@ -14,7 +14,7 @@ export function CostChart({ data, max }: CostChartProps) {
   const lastIndex = data.length - 1;
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barCategoryGap="18%">
+      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barCategoryGap={2} maxBarSize={14}>
         <XAxis dataKey="date" hide />
         <YAxis hide domain={[0, max]} />
         <Tooltip

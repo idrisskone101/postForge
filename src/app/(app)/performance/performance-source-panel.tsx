@@ -173,7 +173,7 @@ function AccountTrailing({
   const chip = workspace.busyProvider === row.entry.provider ? HEALTH_CHIPS.syncing : HEALTH_CHIPS[row.health];
   return (
     <>
-      {chip ? <span className={cn(CHIP, chip.className)}>{chip.label}</span> : <StatusBadge tone="ok" label="Synced" />}
+      {chip ? <span className={cn(CHIP, chip.className)}>{chip.label}</span> : <StatusBadge tone="ok" label="Synced" className="[&>svg]:size-3.5" />}
       <IconButton
         icon="refresh"
         label={`Sync ${row.name} ${row.sub.split(" - ")[0]}`}
@@ -189,7 +189,7 @@ function AccountTrailing({
 const INTEGRATIONS_HREF = "/settings?tab=integrations";
 const SMALL_PILL = "h-7 px-3 text-[12px] leading-4";
 const CHIP =
-  "inline-flex h-6 shrink-0 items-center whitespace-pre rounded-full px-2.5 text-[12px] font-semibold leading-4";
+  "inline-flex h-6 shrink-0 items-center whitespace-pre rounded-[var(--pf-radius-pill)] px-2.5 text-[12px] font-semibold leading-4";
 
 const HEALTH_CHIPS: Record<"syncing" | "failed" | "partial" | "never" | "synced", { label: string; className: string } | null> = {
   syncing: { label: "Syncing", className: "bg-raised text-fg-secondary" },

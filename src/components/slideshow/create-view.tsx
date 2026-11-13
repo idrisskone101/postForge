@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { AlignLeft, FilePlus2, LayoutGrid, Lightbulb } from "lucide-react";
 
 import { Icon } from "@/components/workbench/icon";
 import { cn } from "@/lib/utils";
@@ -19,8 +18,6 @@ export function CreateView() {
   const [mode, setMode] = useState<CreateMode>("one-idea");
   const chosen = MODES[mode];
   const other = mode === "one-idea" ? "own-copy" : "one-idea";
-  const OtherIcon = MODES[other].icon;
-  const ChosenIcon = chosen.icon;
 
   return (
     <>
@@ -35,7 +32,7 @@ export function CreateView() {
           >
             <div className="flex items-center gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-ember-wash text-ember-text">
-                <ChosenIcon className="size-5" strokeWidth={1.5} />
+                <StartIcon name={mode} />
               </span>
               <h2 className="min-w-0 flex-1 text-[18px] font-bold leading-[22px] tracking-[-0.01em] text-fg">
                 {chosen.title}
@@ -55,13 +52,13 @@ export function CreateView() {
           >
             <button type="button" onClick={() => setMode(other)} className={START_TILE}>
               <span className={TILE_ICON}>
-                <OtherIcon className="size-5" strokeWidth={1.5} />
+                <StartIcon name={other} />
               </span>
               <span className={TILE_TITLE}>{MODES[other].title}</span>
             </button>
             <button type="button" onClick={onCustom} className={START_TILE}>
               <span className={TILE_ICON}>
-                <FilePlus2 className="size-5" strokeWidth={1.5} />
+                <StartIcon name="blank" />
               </span>
               <span className={TILE_TITLE}>Blank slideshow</span>
             </button>
@@ -71,15 +68,15 @@ export function CreateView() {
                 onClick={onBrowseTemplates}
                 className="group flex items-center gap-3 rounded-lg text-left outline-none focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]"
               >
-                <span className={TILE_ICON}>
-                  <LayoutGrid className="size-5" strokeWidth={1.5} />
+                <span
+                  className={cn(
+                    TILE_ICON,
+                    "transition-colors duration-[160ms] ease-pf group-hover:bg-[var(--pf-strong-hover)]",
+                  )}
+                >
+                  <StartIcon name="templates" />
                 </span>
                 <span className={TILE_TITLE}>Template library</span>
-                <Icon
-                  name="chevron-right"
-                  size={16}
-                  className="shrink-0 text-fg-muted transition-colors duration-[160ms] ease-pf group-hover:text-fg"
-                />
               </button>
               <div className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-4">
                 {templates.slice(0, 4).map((template) => (
@@ -94,7 +91,7 @@ export function CreateView() {
                       visualKey={template.visualKeys[0] ?? "coral-glow"}
                       className="h-[92px] w-full rounded-sm transition-opacity duration-[160ms] ease-pf group-hover:opacity-80"
                     />
-                    <span className="line-clamp-2 min-h-[34px] break-words text-[13px] font-semibold leading-[17px] text-fg">
+                    <span className="line-clamp-2 break-words text-[12px] font-semibold leading-4 text-fg">
                       {template.name}
                     </span>
                   </button>
@@ -109,10 +106,49 @@ export function CreateView() {
   );
 }
 
-const MODES: Record<CreateMode, { title: string; icon: typeof Lightbulb }> = {
-  "one-idea": { title: "One idea", icon: Lightbulb },
-  "own-copy": { title: "Bring your own copy", icon: AlignLeft },
+const MODES: Record<CreateMode, { title: string }> = {
+  "one-idea": { title: "One idea" },
+  "own-copy": { title: "Bring your own copy" },
 };
+
+const START_ICONS = {
+  "one-idea": (
+    <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" />
+  ),
+  "own-copy": <path d="M5 6h14M5 10.5h14M5 15h9M5 19.5h6" />,
+  blank: (
+    <>
+      <rect x="6" y="4" width="12" height="16" rx="2.5" />
+      <path d="M12 9.5v5M9.5 12h5" />
+    </>
+  ),
+  templates: (
+    <>
+      <rect x="4" y="4" width="7" height="7" rx="2" />
+      <rect x="13" y="4" width="7" height="7" rx="2" />
+      <rect x="4" y="13" width="7" height="7" rx="2" />
+      <rect x="13" y="13" width="7" height="7" rx="2" />
+    </>
+  ),
+};
+
+function StartIcon({ name }: { name: keyof typeof START_ICONS }) {
+  return (
+    <svg
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {START_ICONS[name]}
+    </svg>
+  );
+}
 
 const START_TILE =
   "flex min-h-[72px] flex-1 items-center gap-3 rounded-lg bg-raised p-4 text-left outline-none transition-colors duration-[160ms] ease-pf hover:bg-raised-strong focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] active:scale-[0.99]";

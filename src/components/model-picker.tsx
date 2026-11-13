@@ -46,7 +46,7 @@ export function ModelPicker({
         <div className="max-w-full max-sm:w-full">
           <Segmented
             label="Generation type"
-            className="max-sm:grid max-sm:h-auto max-sm:w-full max-sm:grid-cols-2 max-sm:rounded-[20px] max-sm:[&>button]:h-[30px] max-sm:[&>button]:justify-center"
+            className="gap-0 max-sm:grid max-sm:h-auto max-sm:w-full max-sm:grid-cols-2 max-sm:rounded-[20px] max-sm:[&>button]:h-[30px] max-sm:[&>button]:justify-center"
             options={options}
             value={activeMode}
             onChange={selectMode}
@@ -141,13 +141,13 @@ function ModelCard({
       <span
         className={
           recommended
-            ? "min-h-8 text-[12px] font-semibold leading-4 text-fg-secondary"
-            : "line-clamp-2 min-h-8 text-[12px] leading-4 text-fg-muted"
+            ? "text-[12px] font-semibold leading-4 text-fg-secondary"
+            : "line-clamp-2 text-[12px] leading-4 text-fg-muted"
         }
       >
         {line}
       </span>
-      <span className="wb-mono pt-1 text-fg-secondary">{priceLabel(model)}</span>
+      <span className="wb-mono mt-auto pt-1 text-fg-secondary">{priceLabel(model)}</span>
     </button>
   );
 }

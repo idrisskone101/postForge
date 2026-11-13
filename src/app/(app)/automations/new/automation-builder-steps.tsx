@@ -72,28 +72,33 @@ export function HookStep({ workspace }: StepProps) {
             id="builder-hook-prompt"
             value={record.hook.prompt}
             onChange={(event) => updateHook({ prompt: event.target.value })}
-            className="wb-input h-[84px] resize-none py-2.5"
+            className="wb-input h-16 min-h-16 resize-none py-2.5"
           />
         </Field>
         <Field label="Selected hook" htmlFor="builder-hook-selected">
-          <input
-            id="builder-hook-selected"
-            value={record.hook.selected}
-            onChange={(event) => updateHook({ selected: event.target.value })}
-            className="wb-input"
-          />
-          <Button
-            className="mt-0.5 self-start"
-            title="Composed locally from your prompt and strategy. No network request."
-            disabled={!record.hook.prompt.trim()}
-            onClick={() =>
-              updateHook({
-                selected: composeAutomationHook(record.hook.strategy, record.hook.prompt),
-              })
-            }
-          >
-            Compose from prompt
-          </Button>
+          <div className="wb-input-wrap pr-[5px]">
+            <input
+              id="builder-hook-selected"
+              value={record.hook.selected}
+              onChange={(event) => updateHook({ selected: event.target.value })}
+              className="text-[14px] leading-[18px]"
+            />
+            <Button
+              variant="strong"
+              size={32}
+              className="shrink-0"
+              aria-label="Compose from prompt"
+              title="Composed locally from your prompt and strategy. No network request."
+              disabled={!record.hook.prompt.trim()}
+              onClick={() =>
+                updateHook({
+                  selected: composeAutomationHook(record.hook.strategy, record.hook.prompt),
+                })
+              }
+            >
+              Compose
+            </Button>
+          </div>
         </Field>
       </div>
     </>

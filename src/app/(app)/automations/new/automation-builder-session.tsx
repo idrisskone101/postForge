@@ -53,7 +53,7 @@ export function AutomationBuilderSession({
       <PageHeader
         back={{ href: "/automations", label: "Back to automations" }}
         title={
-          <label className="flex min-w-0 items-center gap-2">
+          <label className="flex min-w-0 items-center gap-2 pl-2 leading-[34px]">
             <span className="sr-only">{record.name || "Untitled automation"}</span>
             <input
               value={record.name}

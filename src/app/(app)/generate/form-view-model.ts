@@ -51,7 +51,9 @@ export function getGenerateFormViewModel({
         enableAudio: enableAudio && model.capabilities.nativeAudio === true,
       })
     : 0;
-  const availableRatios = model?.limits.aspectRatios ?? ["9:16", "1:1", "16:9"];
+  const availableRatios = [...(model?.limits.aspectRatios ?? ["9:16", "1:1", "16:9"])].sort(
+    (a, b) => ratioValue(a) - ratioValue(b)
+  );
   const outputOptions = Array.from(
     { length: Math.max(1, model?.limits.maxImages ?? 1) },
     (_, index) => index + 1
@@ -82,3 +84,9 @@ export function getGenerateFormViewModel({
 }
 
 export type GenerateFormViewModel = ReturnType<typeof getGenerateFormViewModel>;
+
+/** Narrowest to widest, so the tiles read as one portrait-to-landscape run. */
+function ratioValue(ratio: string) {
+  const [width, height] = ratio.split(":").map(Number);
+  return width > 0 && height > 0 ? width / height : 1;
+}

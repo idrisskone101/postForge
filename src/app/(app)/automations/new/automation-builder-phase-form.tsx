@@ -42,7 +42,7 @@ export function AutomationBuilderPhaseForm({
       className="flex min-w-0 flex-1 flex-col justify-between gap-6 rounded-xl bg-panel p-6 shadow-panel"
     >
       <div className="flex min-w-0 flex-col gap-6">
-        <div className="overflow-x-auto p-0.5">
+        <div className="-m-0.5 overflow-x-auto p-0.5">
           <ol className="wb-step-rail min-w-[420px]">
             {BUILDER_STEPS.map((step, index) => {
               const state =

@@ -67,14 +67,14 @@ export function EditorTypeControls() {
           value={text.align}
           options={ALIGN_OPTIONS}
           onChange={(align) => updateTextSettings({ align })}
-          className="[&>.wb-segment]:w-[30px]"
+          className="[&>.wb-segment]:w-[30px] [&_svg]:size-[15px]"
         />
         <Segmented<SlideshowTextPosition>
           label="Text position"
           value={text.position}
           options={POSITION_OPTIONS}
           onChange={(position) => updateTextSettings({ position })}
-          className="wb-segmented-block min-w-0 flex-1"
+          className="wb-segmented-block min-w-0 flex-1 [&>.wb-segment]:px-0"
         />
       </div>
       <div role="group" aria-label="Text style" className="flex flex-wrap gap-1.5">
@@ -84,7 +84,7 @@ export function EditorTypeControls() {
             check={false}
             chosen={text.style === option.value}
             onClick={() => updateTextSettings({ style: option.value })}
-            className="h-[34px] px-3"
+            className="h-[34px] px-3 aria-pressed:shadow-[0_0_0_1.5px_var(--pf-ember)]"
           >
             {option.label}
           </Chip>

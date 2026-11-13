@@ -46,7 +46,7 @@ const creationMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(creationMarkup, /New avatar/);
+assert.match(creationMarkup, /New character/);
 assert.doesNotMatch(creationMarkup, /New Identity/);
 assert.match(creationMarkup, /data-avatar-action="upload"/);
 assert.match(creationMarkup, /data-avatar-action="generate"/);

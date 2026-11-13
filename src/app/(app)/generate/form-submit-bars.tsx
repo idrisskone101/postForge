@@ -79,7 +79,7 @@ export function GenerateFormSubmitBars({
         type="submit"
         disabled={!canSubmit}
         aria-busy={isSubmitting}
-        className="wb-btn wb-btn-primary wb-btn-block h-12 max-h-12 flex-none gap-2 text-[15px] leading-5"
+        className="wb-btn wb-btn-primary wb-btn-block h-12 max-h-12 flex-none gap-2 text-[15px] leading-5 [&>svg]:size-[18px]"
       >
         <Icon name="generate" strokeWidth={1.8} />
         {isSubmitting ? "Generating" : isSwap ? "Swap subject" : "Generate now"}

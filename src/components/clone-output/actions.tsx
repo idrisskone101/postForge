@@ -60,7 +60,7 @@ function ReviewButtons({ review }: { review: CloneOutputReviewView }) {
         disabled={locked}
         onClick={() => featured && onReviewStatusChange?.(featured, "rejected_output")}
         className={cn(
-          "h-11 w-full gap-2 text-[14px] leading-[18px]",
+          "h-11 w-full gap-2 px-[18px] text-[14px] leading-[18px]",
           rejected && "bg-bad-tint text-bad hover:bg-bad-tint disabled:bg-bad-tint disabled:text-bad",
           !rejected && "disabled:bg-transparent disabled:shadow-[inset_0_0_0_1px_var(--pf-hairline)]"
         )}
@@ -72,7 +72,7 @@ function ReviewButtons({ review }: { review: CloneOutputReviewView }) {
   );
 }
 
-const DECISION = "h-12 w-full gap-2 text-[14px] leading-[18px]";
+const DECISION = "h-12 w-full gap-2 px-[18px] text-[14px] leading-[18px]";
 
 const DECISION_LABELS = {
   approve: { pending: "Approving", active: "Approved", idle: "Approve output" },

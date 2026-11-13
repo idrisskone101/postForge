@@ -17,7 +17,7 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
       className="shrink-0 p-5 [&>.wb-panel-head]:h-9"
       title="Planning calendar"
       action={
-        <span className="inline-flex h-9 items-center rounded-full bg-raised px-3.5 text-[13px] font-semibold leading-4 text-fg">
+        <span className="inline-flex h-9 items-center rounded-[var(--pf-radius-pill)] bg-raised px-3.5 text-[13px] font-semibold leading-4 text-fg">
           {weekRangeLabel(weekDates)}
         </span>
       }
@@ -41,8 +41,8 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
               </p>
               {matching.slice(0, VISIBLE_PER_DAY).map((entry) => (
                 <div key={entry.id} className="flex min-w-0 flex-col gap-0.5">
-                  <span className="wb-mono text-fg-secondary">{entry.time}</span>
-                  <span className="truncate text-[13px] font-semibold leading-[17px] text-fg" title={entry.name}>
+                  <span className="wb-mono text-fg-muted">{entry.time}</span>
+                  <span className="line-clamp-2 break-words text-[13px] font-semibold leading-[17px] text-fg" title={entry.name}>
                     {entry.name}
                   </span>
                   {entry.needsAttention ? (

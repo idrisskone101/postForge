@@ -90,7 +90,7 @@ function VideoPlayer({
           </span>
         </figcaption>
       ) : (
-        <figcaption className="absolute inset-x-3 bottom-3 flex h-9 items-center gap-2.5 rounded-full bg-[var(--pf-scrim)] px-3 text-[var(--pf-on-media)]">
+        <figcaption className="absolute inset-x-3 bottom-3 flex h-9 items-center gap-2.5 rounded-[var(--pf-radius-pill)] bg-[var(--pf-scrim)] px-3 text-[var(--pf-on-media)]">
           <ControlButton label={playing ? "Pause" : "Play"} onClick={togglePlay}>
             {playing ? (
               <Pause className="size-3.5 fill-current" strokeWidth={1.5} />
@@ -119,7 +119,7 @@ function VideoPlayer({
               className="absolute inset-0 w-full cursor-pointer opacity-0"
             />
           </span>
-          <span className="shrink-0 font-mono text-[12px] leading-4 tabular-nums">
+          <span className="shrink-0 font-mono text-[12px] leading-4 tabular-nums text-[var(--pf-media-action)]">
             {clock(time.current)} / {clock(time.duration)}
           </span>
           <ControlButton label={muted ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)}>

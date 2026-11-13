@@ -40,7 +40,7 @@ export function GenerateFormPromptSection({
 
   return (
     <section className="wb-panel gap-3 p-5">
-      <div className="flex min-h-7 items-center gap-2.5">
+      <div className="flex h-7 items-center gap-2.5">
         <h2 className="wb-panel-title flex-1">Creative prompt</h2>
         <PromptTemplatesControl prompt={prompt} onPromptChange={onPromptChange} />
       </div>
@@ -53,7 +53,7 @@ export function GenerateFormPromptSection({
           maxLength={PROMPT_MAX_LENGTH}
           rows={3}
           onChange={(event) => onPromptChange(event.target.value.slice(0, PROMPT_MAX_LENGTH))}
-          className="min-h-[63px] w-full resize-y bg-transparent text-[14px] leading-[21px] text-fg outline-none placeholder:text-fg-muted"
+          className="min-h-[72px] max-h-[320px] w-full resize-none bg-transparent [field-sizing:content] text-[14px] leading-[21px] text-fg outline-none placeholder:text-fg-muted"
         />
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="wb-mono mr-auto text-fg-secondary">
@@ -69,7 +69,7 @@ export function GenerateFormPromptSection({
             onClick={onImprovePrompt}
             disabled={!canImprove}
             aria-busy={isImprovingPrompt}
-            className="inline-flex h-[30px] items-center gap-1.5 rounded-full bg-strong pl-2.5 pr-3 text-[13px] font-semibold leading-4 text-strong-fg transition-[background-color,transform] duration-160 ease-pf hover:bg-[var(--pf-strong-hover)] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-raised-strong disabled:text-fg-disabled disabled:active:scale-100"
+            className="inline-flex h-[30px] items-center gap-1.5 rounded-[999px] bg-strong pl-2.5 pr-3 text-[13px] font-semibold leading-4 text-strong-fg transition-[background-color,transform] duration-160 ease-pf hover:bg-[var(--pf-strong-hover)] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-raised-strong disabled:text-fg-disabled disabled:active:scale-100"
           >
             <Icon name="generate" size={14} strokeWidth={1.8} />
             {isImprovingPrompt ? "Improving" : "Improve prompt"}
@@ -101,7 +101,7 @@ export function GenerateFormPromptSection({
             <Chip
               key={spark}
               chosen={chosen}
-              className="h-8 px-3 aria-pressed:pl-[9px] [&>svg]:size-3.5"
+              className="h-8 px-3 aria-pressed:pl-[9px] [&>svg]:ml-0 [&>svg]:size-3.5"
               onClick={() =>
                 chosen ? onPromptChange(withoutSpark(prompt, spark)) : onAppendToPrompt(spark)
               }

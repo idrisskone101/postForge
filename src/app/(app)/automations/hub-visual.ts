@@ -46,10 +46,8 @@ export function slideshowNextRunLabel(input: {
 }) {
   if (!input.active) return "Paused";
   if (!input.nextRunAt) return "Not scheduled";
-  return new Date(input.nextRunAt).toLocaleString([], {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const date = new Date(input.nextRunAt);
+  const part = (options: Intl.DateTimeFormatOptions) => date.toLocaleDateString([], options);
+  const clock = [date.getHours(), date.getMinutes()].map((value) => String(value).padStart(2, "0")).join(":");
+  return `${part({ weekday: "short" })} ${date.getDate()} ${part({ month: "short" })} ${clock}`;
 }

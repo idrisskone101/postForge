@@ -15,14 +15,14 @@ export function JobDetailHeader({
   return (
     <>
       <header
-        className="wb-page-header flex-nowrap max-lg:grid max-lg:grid-cols-[minmax(0,1fr)_auto] max-lg:gap-y-2"
+        className="wb-page-header flex-nowrap pr-1 max-lg:grid max-lg:grid-cols-[minmax(0,1fr)_auto] max-lg:gap-y-2"
         data-back="true"
       >
         <div className="wb-page-header-lead max-lg:contents">
           <button
             type="button"
             onClick={actions.onBack}
-            className="wb-btn wb-btn-40 wb-back-pill flex-none justify-self-start pl-2.5"
+            className="wb-btn wb-btn-40 wb-back-pill flex-none justify-self-start gap-1.5 pl-2.5"
           >
             <Icon name="chevron-left" />
             Back

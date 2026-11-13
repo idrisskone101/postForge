@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Chip, Field, Toggle } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 import { isAutomationSocialDestination } from "@/lib/automations";
 import { TIMEZONES } from "./automation-builder-fields";
 import { DestinationSelector } from "./destination-selector";
@@ -106,7 +107,10 @@ export function AutomationBuilderPlanSettings({
               chosen={record.schedule.days.includes(day)}
               onClick={() => toggleDay(day)}
               aria-label={`Toggle ${day}`}
-              className="min-w-0 flex-1 justify-center px-0"
+              className={cn(
+                "min-w-0 flex-1 justify-center px-0",
+                !record.schedule.days.includes(day) && "text-fg-secondary"
+              )}
             >
               {day}
             </Chip>

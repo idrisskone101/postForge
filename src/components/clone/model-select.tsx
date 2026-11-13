@@ -29,7 +29,7 @@ export function CloneModelSelect({
     >
       <SelectTrigger
         aria-label={label}
-        className={cn("h-[42px]! w-full min-w-0 [&>span]:min-w-0 [&>span]:flex-1", className)}
+        className={cn("h-[42px]! w-full min-w-0 py-0 pr-3 [&>span]:min-w-0 [&>span]:flex-1 [&>svg]:size-3.5", className)}
       >
         <SelectValue>
           {() => (

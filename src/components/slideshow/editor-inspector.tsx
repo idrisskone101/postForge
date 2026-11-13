@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 
 import { EditorAdvancedSettings, EditorSlideSettings } from "./editor-slide-settings";
 import { EditorTypeControls } from "./editor-type-controls";
@@ -34,6 +35,7 @@ export function EditorInspector() {
         </label>
         <CopyField
           label="Headline"
+          strong
           value={activeSlide.headline}
           max={HEADLINE_MAX}
           onChange={(headline) => updateActiveSlide({ headline })}
@@ -55,7 +57,7 @@ export function EditorInspector() {
             value={activeSlide.prompt}
             rows={3}
             onChange={(event) => updateActiveSlide({ prompt: event.target.value })}
-            className="wb-input field-sizing-content max-h-[176px] min-h-[76px] resize-none py-2 leading-5"
+            className="wb-input field-sizing-content max-h-[176px] min-h-[76px] resize-none py-2.5 leading-5"
           />
         </label>
         <div className="flex gap-2">
@@ -86,11 +88,13 @@ export function EditorInspector() {
 
 function CopyField({
   label,
+  strong = false,
   value,
   max,
   onChange,
 }: {
   label: string;
+  strong?: boolean;
   value: string;
   max: number;
   onChange: (value: string) => void;
@@ -113,7 +117,10 @@ function CopyField({
         maxLength={max}
         rows={1}
         onChange={(event) => onChange(event.target.value)}
-        className="wb-input field-sizing-content min-h-[42px] resize-none py-[11px] leading-5"
+        className={cn(
+          "wb-input field-sizing-content min-h-[42px] resize-none py-2.5 leading-5",
+          strong && "font-medium",
+        )}
       />
     </label>
   );

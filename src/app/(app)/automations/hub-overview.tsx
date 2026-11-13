@@ -37,7 +37,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
 
   return (
     <div className="flex shrink-0 flex-col gap-3 lg:flex-row">
-      <section className="wb-stat-strip min-w-0 flex-1 flex-wrap gap-y-4">
+      <section className="wb-stat-strip min-w-0 flex-1 flex-wrap gap-y-4 [&>.wb-stat:last-child]:pr-6">
         <RatioStat
           label="Ready plans"
           value={readyPlanCount}
@@ -45,7 +45,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
           meter={
             <SplitMeter
               equal
-              className="w-[120px] max-w-full"
+              className="w-[120px] max-w-full gap-[3px]"
               label={`${readyPlanCount} of ${planCount} plans ready`}
               parts={planParts.slice(0, 12)}
             />
@@ -58,7 +58,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
           meter={
             <SplitMeter
               equal
-              className="w-[168px] max-w-full"
+              className="w-[168px] max-w-full gap-[3px]"
               label={`${scheduledDays} of 7 days planned, ${blockedDays.size} need attention`}
               parts={dayParts}
             />

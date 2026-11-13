@@ -735,3 +735,24 @@
     box-shadow: var(--pf-panel-shadow);
   }
 }
+
+@layer components {
+  /* Step rail at the 28px size drawn on 04 Clone: wider gap, 1px upcoming ring, 600 numerals */
+  .wb-step-rail[data-size="28"] {
+    gap: 14px;
+  }
+
+  .wb-step-rail[data-size="28"] .wb-step-dot {
+    width: 28px;
+    height: 28px;
+  }
+
+  .wb-step-rail[data-size="28"] .wb-step[data-state="upcoming"] > .wb-step-dot {
+    box-shadow: inset 0 0 0 1px var(--pf-hairline);
+    font-weight: 600;
+  }
+
+  .wb-step-rail[data-size="28"] .wb-step[data-state="done"] {
+    font-weight: 600;
+  }
+}

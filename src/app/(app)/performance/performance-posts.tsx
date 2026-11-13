@@ -20,7 +20,7 @@ export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
         <h2 id="performance-posts-title" className="wb-panel-title min-w-0 flex-1">
           Top posts
         </h2>
-        <label className="wb-input-wrap w-[240px] rounded-full px-3 max-md:order-last max-md:w-full" data-size="36">
+        <label className="wb-input-wrap w-[240px] rounded-[var(--pf-radius-pill)] px-3 [&>svg]:size-4 max-md:order-last max-md:w-full" data-size="36">
           <Icon name="search" size={16} />
           <input
             type="search"
@@ -35,7 +35,7 @@ export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
           value={view}
           onChange={onView}
           options={VIEW_OPTIONS}
-          className="h-9 p-[3px] max-md:hidden"
+          className="h-9 gap-0 p-[3px] max-md:hidden [&>.wb-segment[aria-pressed=false]:not(:hover)]:text-fg-muted [&_svg]:size-4"
         />
       </div>
       {posts.length === 0 ? <PostsEmpty model={model} /> : null}
