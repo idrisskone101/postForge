@@ -13,27 +13,16 @@ export function CloneIdentityStep({
   return (
     <section
       data-clone-identity-section="true"
-      className={cn(
-        "pf-card p-4 sm:p-5",
-        hidden && "hidden"
-      )}
+      aria-labelledby="clone-identity-heading"
+      className={cn("flex min-w-0 flex-col gap-2.5", hidden && "hidden")}
     >
-      <div className="mb-6 flex items-center gap-3">
-        <div>
-          <h2 className="pf-section-title">Identity</h2>
-          <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
-            Choose who appears in the clone.
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-4">
+      <div className="flex min-h-9 flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <h2 id="clone-identity-heading" className="wb-panel-title">
+          Choose who appears
+        </h2>
         <CloneIdentityStatusPanel identity={draft} />
-        <AvatarPicker
-          selectedId={draft.avatarId}
-          onSelect={draft.onSelectAvatar}
-        />
       </div>
+      <AvatarPicker selectedId={draft.avatarId} onSelect={draft.onSelectAvatar} />
     </section>
   );
 }

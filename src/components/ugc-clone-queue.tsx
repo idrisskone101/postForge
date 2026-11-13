@@ -5,15 +5,13 @@ import Link from "next/link";
 import { apiGet } from "@/lib/api/client";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import { cn } from "@/lib/utils";
 import {
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ExternalLink,
-  History,
-} from "lucide-react";
+  Button,
+  EmptyState,
+  Panel,
+  Skeleton,
+  StatusBadge,
+} from "@/components/workbench";
 
 interface CloneJob {
   id: string;
@@ -76,150 +74,104 @@ export function UGCCloneQueue() {
   }, [fetchJobs, hasActiveJobs]);
 
   return (
-    <section className="pf-card">
-      <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/35">
-            <History className="size-4 text-muted-foreground" />
-          </span>
-          <div>
-            <h2 className="pf-section-title">Recent clone activity</h2>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
-              {hasActiveJobs ? "Active jobs update automatically." : "Latest generated, queued, and failed clones."}
-            </p>
-          </div>
-        </div>
-        {jobs.length > 0 && (
-          <span className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
-            {jobs.length} recent
-          </span>
-        )}
+    <Panel pad="wide" className="wb-fade-in gap-1.5 pb-2.5">
+      <div className="flex h-8 shrink-0 items-center">
+        <h2 className="wb-panel-title">Recent clone activity</h2>
       </div>
 
       {loadError && jobs.length === 0 ? (
-        <div className="flex w-full min-w-0 flex-col items-center px-5 py-7 text-center">
-          <XCircle className="size-5 shrink-0 text-destructive" />
-          <p className="mt-2 text-sm font-semibold">Couldn&apos;t load clone activity</p>
-          <p className="mt-1 min-w-0 max-w-md break-words text-xs leading-5 text-muted-foreground [overflow-wrap:anywhere]">
-            {loadError}
-          </p>
-          <button
-            type="button"
-            onClick={() => void fetchJobs()}
-            className="mt-3 h-8 rounded-lg border border-border bg-card px-3 text-xs font-semibold pf-button-secondary"
-          >
+        <EmptyState
+          icon="alert"
+          tone="error"
+          title="Clone activity could not load"
+          detail={loadError}
+          className="mb-2.5 [overflow-wrap:anywhere]"
+        >
+          <Button variant="strong" onClick={() => void fetchJobs()}>
             Try again
-          </button>
-        </div>
+          </Button>
+        </EmptyState>
       ) : isLoading ? (
-        <div className="space-y-2 p-4">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-12 animate-pulse rounded-lg bg-muted/60" />
+        <div aria-hidden="true" className="flex flex-col">
+          {[0, 1, 2].map((index) => (
+            <div key={index} className={ROW}>
+              <Skeleton shape="tile" className="h-12 w-9 shrink-0 rounded-sm" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="w-48 max-w-full" />
+                <Skeleton className="w-32 max-w-full" />
+              </div>
+            </div>
           ))}
         </div>
       ) : jobs.length === 0 ? (
-        <div className="px-5 py-8 text-center">
-          <p className="text-sm font-medium">No clone jobs yet</p>
-          <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-muted-foreground">
-            Completed and in-progress clones will appear here after the first reference is approved.
-          </p>
-        </div>
+        <EmptyState icon="clone" title="No clone jobs yet" className="mb-2.5" />
       ) : (
-        <div className="space-y-2 p-4">
-        {jobs.map((job) => {
-          const config = STATUS_CONFIG[job.status];
-          const StatusIcon = config.icon;
-          const isActive =
-            job.status === "queued" || job.status === "processing";
-
-          return (
-            <Link
-              key={job.id}
-              href={`/ugc-clone/${job.id}`}
-              className={cn(
-                "group flex items-center gap-3 rounded-lg border border-border p-2.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-foreground/20 hover:bg-muted/50 hover:shadow-[var(--pf-shadow-2xs)]",
-                isActive && "border-[var(--pf-lamp-amber)]/30 bg-[var(--pf-lamp-amber)]/5"
-              )}
-            >
-              <div
-                className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-md",
-                  config.bgClassName
-                )}
-              >
-                <StatusIcon
-                  className={cn(
-                    "size-3.5",
-                    config.className,
-                    job.status === "processing" && "animate-spin"
-                  )}
-                />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-2">
-                  <p className="text-sm font-medium truncate">
-                    {job.prompt.length > 40
-                      ? job.prompt.slice(0, 40) + "..."
-                      : job.prompt}
-                  </p>
-                  <span className={cn("shrink-0 pf-data text-[12px] font-semibold uppercase tracking-wider", config.className)}>
-                    {config.label}
-                  </span>
-                </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 pf-data text-[12px] text-muted-foreground">
-                  <span>{job.model}</span>
-                  <span className="text-border">|</span>
-                  <span>{formatCost(job.estimatedCost)}</span>
-                  <span className="text-border">|</span>
-                  <span>{formatRelativeDate(job.createdAt)}</span>
-                </div>
-              </div>
-
-              {job.status === "completed" && job.outputs[0] && (
-                <div className="size-9 shrink-0 rounded-md overflow-hidden border border-border">
-                  <video
-                    src={`/api/files/${job.outputs[0].id}`}
-                    className="size-full object-cover"
-                    muted
-                  />
-                </div>
-              )}
-
-              <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-            </Link>
-          );
-        })}
-        </div>
+        <ul className="flex flex-col">
+          {jobs.map((job) => (
+            <li key={job.id}>
+              <CloneJobRow job={job} />
+            </li>
+          ))}
+        </ul>
       )}
-    </section>
+    </Panel>
   );
 }
 
+const ROW = "flex min-w-0 items-center gap-3.5 border-t border-hairline py-2.5";
+const MONO = "wb-mono shrink-0 text-fg-secondary";
 
-const STATUS_CONFIG = {
-  queued: {
-    icon: Clock,
-    label: "Queued",
-    className: "text-[var(--pf-lamp-amber)]",
-    bgClassName: "bg-[var(--pf-lamp-amber)]/10",
-  },
-  processing: {
-    icon: Loader2,
-    label: "Processing",
-    className: "text-[var(--pf-lamp-amber)]",
-    bgClassName: "bg-[var(--pf-lamp-amber)]/10",
-  },
-  completed: {
-    icon: CheckCircle2,
-    label: "Completed",
-    className: "text-[var(--pf-success)]",
-    bgClassName: "bg-[var(--pf-success)]/10",
-  },
-  failed: {
-    icon: XCircle,
-    label: "Failed",
-    className: "text-[var(--pf-danger)]",
-    bgClassName: "bg-[var(--pf-danger)]/10",
-  },
-} as const;
+function CloneJobRow({ job }: { job: CloneJob }) {
+  const output = job.status === "completed" ? job.outputs[0] : undefined;
+  return (
+    <Link
+      href={`/ugc-clone/${job.id}`}
+      className={`${ROW} -mx-2 rounded-lg px-2 transition-colors duration-[160ms] ease-pf hover:bg-raised max-md:flex-wrap`}
+    >
+      {output ? (
+        <video
+          src={`/api/files/${output.id}#t=0.1`}
+          muted
+          preload="metadata"
+          aria-hidden="true"
+          className="h-12 w-9 shrink-0 rounded-sm bg-media object-cover"
+        />
+      ) : (
+        <span aria-hidden="true" className="h-12 w-9 shrink-0 rounded-sm bg-media" />
+      )}
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+          {job.prompt}
+        </span>
+        <span
+          className={
+            job.error
+              ? "line-clamp-2 text-[13px] leading-4 text-bad [overflow-wrap:anywhere]"
+              : "truncate text-[13px] leading-4 text-fg-muted"
+          }
+        >
+          {job.error ? `${job.model} · ${job.error}` : job.model}
+        </span>
+      </span>
+      <span className="flex w-[120px] shrink-0 max-md:w-auto">
+        <CloneJobStatus status={job.status} />
+      </span>
+      <span className={`${MONO} w-[120px] max-md:ml-[50px] max-md:w-auto max-md:basis-full max-md:order-last`}>
+        {formatRelativeDate(job.createdAt)}
+        <span className="md:hidden"> · {formatCost(job.estimatedCost)}</span>
+      </span>
+      <span className={`${MONO} w-14 text-right max-md:hidden`}>
+        {formatCost(job.estimatedCost)}
+      </span>
+    </Link>
+  );
+}
+
+function CloneJobStatus({ status }: { status: CloneJob["status"] }) {
+  if (status === "completed") return <StatusBadge tone="ok" label="Completed" />;
+  if (status === "failed") return <StatusBadge tone="bad" label="Failed" />;
+  if (status === "queued") return <StatusBadge tone="warn" label="Queued" />;
+  return (
+    <span className="text-[13px] font-semibold leading-[22px] text-ember-text">Running</span>
+  );
+}

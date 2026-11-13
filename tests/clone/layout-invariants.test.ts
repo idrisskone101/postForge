@@ -14,8 +14,12 @@ const videoTrimmer = source("src/components/video-trimmer.tsx");
 const avatarPicker = source("src/components/avatar-picker.tsx");
 const avatarPickerImport = source("src/components/avatar-picker-import.tsx");
 const avatarPickerGenerate = source("src/components/avatar-picker-generate.tsx");
-assert.match(cloneStudio, /lg:grid-cols-\[minmax\(420px,45fr\)_minmax\(0,55fr\)\]/);
-assert.match(cloneLoading, /max-w-\[1280px\][^"\n]*px-4 py-6[^"\n]*lg:py-7/);
+// The shell owns page padding and width. The route renders its header and
+// panels as direct children, and stacks the 380px rail below 1280.
+assert.match(cloneStudio, /flex min-w-0 gap-3 max-xl:flex-col/);
+assert.match(cloneStudio, /w-\[380px\] shrink-0[^"\n]*max-xl:w-full/);
+assert.doesNotMatch(cloneLoading, /max-w-\[|px-4|pf-content-viewport/);
+assert.match(cloneLoading, /<PageHeader title="Clone">/);
 
 // Provider and media failures can contain long opaque tokens. They must wrap
 
@@ -45,22 +49,14 @@ assert.match(cloneStudio, /CloneReferenceReview/);
 assert.match(cloneReferenceReview, /selectedRef\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?selectedRef\.prompt/);
 assert.doesNotMatch(source("src/app/(app)/ugc-clone/page.tsx"), /Suspense/);
 assert.match(source("src/app/(app)/ugc-clone/page.tsx"), /UGCCloneFormLazy/);
-assert.match(
-  source("src/components/clone/source-step.tsx"),
-  /data-clone-copy="Choose the clip and trim the part to clone."/,
-);
-assert.match(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /data-clone-studio=\{paintReady \? undefined : "true"\}/,
-);
-assert.doesNotMatch(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /ClonePaintText/,
-);
-assert.match(
-  source("src/app/(app)/ugc-clone/clone-owned-header.tsx"),
-  /data-clone-copy=\{COPY\}/,
-);
+for (const file of [
+  "src/app/(app)/ugc-clone/clone-owned-header.tsx",
+  "src/components/clone/source-step.tsx",
+  "src/components/ugc-clone-form.tsx",
+]) {
+  assert.doesNotMatch(source(file), /data-clone-copy|sr-only|data-home-title/);
+}
+assert.doesNotMatch(source("src/app/styles/transitional.css"), /data-clone-copy/);
 assert.match(
   source("src/components/ugc-clone-form-lazy.tsx"),
   /useWindowLoadReady/,

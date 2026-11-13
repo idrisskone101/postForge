@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Button, StatusChip } from "@/components/workbench";
 import type { CloneIdentityModel } from "@/components/clone/view-models";
 
 export function CloneIdentityStatusPanel({
@@ -22,59 +22,46 @@ export function CloneIdentityStatusPanel({
     identityPack?.status === "completed" &&
     missingHairstyleCount > 0 &&
     !isBackfillingHairstyles;
-
-  const detail = avatarReady
-    ? identityPack?.status === "completed"
-      ? isBackfillingHairstyles
-        ? "Generating extra hairstyle options; existing references stay usable."
-        : `${identityPack.images.length} identity references ready.`
-      : identityPack?.status === "failed"
-        ? "Reference prep failed; the original avatar is still usable."
-        : identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack
-          ? "Preparing identity references; original avatar remains usable."
-          : "Original avatar is available."
-    : "Choose a saved identity, upload one, or create a new one.";
+  const preparing =
+    identityPack?.status === "queued" ||
+    identityPack?.status === "processing" ||
+    isStartingIdentityPack;
   const error = identityPackError || identityPack?.error;
+  if (!avatarReady && !error) return null;
 
   return (
-    <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
-      <div className="min-w-0 max-w-xl flex-1">
-        <p className="text-xs leading-5 text-muted-foreground">
-          {detail}
+    <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
+      {avatarReady && identityPack?.status === "completed" && !isBackfillingHairstyles ? (
+        <StatusChip tone="ok" icon="check">
+          {identityPack.images.length} identity references ready
+        </StatusChip>
+      ) : null}
+      {avatarReady && identityPack?.status === "failed" ? (
+        <StatusChip tone="bad" icon="alert">
+          Reference prep failed, original avatar is still usable
+        </StatusChip>
+      ) : null}
+      {avatarReady && identityPack?.status !== "failed" && (preparing || isBackfillingHairstyles) ? (
+        <StatusChip tone="live">
+          <span className="wb-live-dot" />
+          {isBackfillingHairstyles ? "Generating hairstyles" : "Preparing identity references, original avatar remains usable"}
+        </StatusChip>
+      ) : null}
+      {canGenerateHairstyles && (
+        <Button size={32} onClick={onGenerateHairstyles}>
+          Generate hairstyles
+        </Button>
+      )}
+      {identityPack?.status === "failed" && (
+        <Button size={32} onClick={onRetry} disabled={isStartingIdentityPack}>
+          {isStartingIdentityPack ? "Retrying" : "Retry identity prep"}
+        </Button>
+      )}
+      {error && (
+        <p className="w-full min-w-0 text-right text-[13px] leading-[18px] text-bad [overflow-wrap:anywhere]">
+          {error}
         </p>
-        {error && (
-          <p className="mt-2 min-w-0 break-words text-xs text-destructive [overflow-wrap:anywhere]">
-            {error}
-          </p>
-        )}
-      </div>
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        {(canGenerateHairstyles || isBackfillingHairstyles) && (
-          <button
-            type="button"
-            onClick={onGenerateHairstyles}
-            disabled={!canGenerateHairstyles}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-semibold text-foreground transition-colors hover:bg-[var(--pf-active)] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isBackfillingHairstyles ? "Generating hairstyles..." : "Generate hairstyles"}
-          </button>
-        )}
-        {identityPack?.status === "failed" && (
-          <button
-            type="button"
-            onClick={onRetry}
-            disabled={isStartingIdentityPack}
-            className="rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-1.5 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/15 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isStartingIdentityPack ? "Retrying..." : "Retry identity prep"}
-          </button>
-        )}
-        {avatarReady && (
-          <Badge variant="outline" className="pf-status-success">
-            Active
-          </Badge>
-        )}
-      </div>
+      )}
     </div>
   );
 }
