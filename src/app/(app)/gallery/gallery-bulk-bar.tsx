@@ -37,6 +37,7 @@ export function GalleryBulkBar({
 
   return (
     <div
+      ref={publishDockHeight}
       data-gallery-bulk-bar
       data-leaving={leaving ? "true" : undefined}
       inert={leaving}
@@ -121,6 +122,23 @@ const DOCK_CLASS = [
   "xl:max-[1439.98px]:left-[calc(var(--pf-page-pad)+var(--pf-sidebar-w)+var(--pf-gap)+env(safe-area-inset-left))] xl:max-[1439.98px]:in-data-[sidebar-collapsed=true]:left-[calc(var(--pf-rail-w)+env(safe-area-inset-left))]",
   "xl:max-[1439.98px]:fixed xl:max-[1439.98px]:top-auto xl:max-[1439.98px]:right-[calc(var(--pf-page-pad)+320px+var(--pf-gap))] xl:max-[1439.98px]:bottom-4 xl:max-[1439.98px]:z-[45]",
 ].join(" ");
+
+/** Publishes the dock's rendered height so the page can reserve room under the grid for it. */
+function publishDockHeight(dock: HTMLDivElement) {
+  const root = document.documentElement;
+  const observer = new ResizeObserver(() => {
+    root.style.setProperty("--gallery-dock-h", `${dock.offsetHeight}px`);
+  });
+  observer.observe(dock);
+  return () => {
+    observer.disconnect();
+    root.style.removeProperty("--gallery-dock-h");
+  };
+}
+
+/** Room for the floating dock below the grid, so the last row and "Load more" scroll clear of it. */
+export const DOCK_RESERVE_CLASS =
+  "h-[calc(var(--gallery-dock-h,0px)+16px)] shrink-0 lg:max-xl:hidden min-[1440px]:hidden";
 
 /** Lifts the toast above the dock at the widths where the dock floats. */
 export const TOAST_ABOVE_DOCK_CLASS =

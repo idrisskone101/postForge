@@ -8,7 +8,7 @@ import { Button, buttonClass } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { Toast } from "@/components/workbench/toast";
 import { cn } from "@/lib/utils";
-import { GalleryBulkBar, TOAST_ABOVE_DOCK_CLASS } from "./gallery-bulk-bar";
+import { DOCK_RESERVE_CLASS, GalleryBulkBar, TOAST_ABOVE_DOCK_CLASS } from "./gallery-bulk-bar";
 import { GalleryLoadErrorState } from "./gallery-load-error-state";
 import type { GalleryPageClientProps } from "./gallery-models";
 import { GalleryToolbar } from "./gallery-toolbar";
@@ -69,6 +69,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
           </Button>
         </div>
       )}
+      {selectedIds.size > 0 && <div aria-hidden="true" className={DOCK_RESERVE_CLASS} />}
     </>
   );
 
