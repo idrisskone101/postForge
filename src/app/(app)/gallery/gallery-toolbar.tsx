@@ -64,7 +64,7 @@ export function GalleryToolbar({
   };
 
   return (
-    <div data-gallery-toolbar="true" className="flex min-w-0 flex-col gap-3">
+    <div data-gallery-toolbar="true" className="contents">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <label
           data-gallery-search="true"
@@ -127,8 +127,9 @@ export function GalleryToolbar({
 }
 
 // Where the dock fits one row it sits in this row, which follows the scroll while a selection is active.
+// The toolbar root is display: contents so the media panel, not the toolbar, bounds the sticky row.
 const DOCK_ROW_CLASS = [
-  "relative flex min-h-12 items-center pl-1",
+  "relative flex min-h-12 min-w-0 items-center pl-1",
   "lg:max-xl:data-[selecting=true]:sticky lg:max-xl:data-[selecting=true]:top-3 lg:max-xl:data-[selecting=true]:z-20",
   "min-[1440px]:data-[selecting=true]:sticky min-[1440px]:data-[selecting=true]:top-3 min-[1440px]:data-[selecting=true]:z-20",
 ].join(" ");

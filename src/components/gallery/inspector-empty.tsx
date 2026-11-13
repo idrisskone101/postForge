@@ -5,4 +5,7 @@ export function GalleryInspectorEmpty() {
   return <EmptyState icon="gallery" title="Select media to inspect" className="min-h-[312px]" />;
 }
 
-export const GALLERY_INSPECTOR_CLASS = "wb-panel sticky top-4 hidden w-[320px] shrink-0 xl:flex";
+export const GALLERY_INSPECTOR_CLASS = [
+  "wb-panel sticky top-4 hidden w-[320px] shrink-0 xl:flex",
+  "max-h-[calc(100dvh-2*var(--pf-page-pad))] overflow-y-auto overscroll-contain [scrollbar-width:none]",
+].join(" ");

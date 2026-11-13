@@ -156,7 +156,7 @@ export function GallerySelectionInspector({
         </div>
       )}
 
-      <div className="mt-auto flex flex-col gap-2">
+      <div className="sticky bottom-0 z-10 -mt-2 -mb-5 flex flex-col gap-2 bg-panel pt-2 pb-5">
         <div className="flex gap-2">
           {showSource ? (
             <>

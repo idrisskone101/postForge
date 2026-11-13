@@ -109,7 +109,8 @@ export function GalleryBulkBar({
 /*
  * The dock needs about 700px for one row. From 1440, and from 1024 to 1279, it lies over the reserved
  * count row. Narrower, and from 1280 to 1439 where the inspector column takes 332px, it would wrap and
- * cover the first row of tiles, so it floats at the bottom of the content area instead.
+ * cover the first row of tiles, so it floats at the bottom instead. From 1280 its right edge is the
+ * media panel's (page padding, the 320px inspector, the gap), so it never lies over the inspector.
  */
 const DOCK_CLASS = [
   "wb-dock absolute top-0 z-20 max-xl:inset-x-0 min-[1440px]:inset-x-0",
@@ -117,9 +118,9 @@ const DOCK_CLASS = [
   "max-lg:right-[max(12px,env(safe-area-inset-right))] max-lg:left-[max(12px,env(safe-area-inset-left))]",
   "md:max-lg:left-[calc(var(--pf-rail-w)+env(safe-area-inset-left))] md:max-lg:right-4 md:max-lg:bottom-4",
   "xl:max-[1439.98px]:left-[calc(var(--pf-page-pad)+var(--pf-sidebar-w)+var(--pf-gap)+env(safe-area-inset-left))] xl:max-[1439.98px]:in-data-[sidebar-collapsed=true]:left-[calc(var(--pf-rail-w)+env(safe-area-inset-left))]",
-  "xl:max-[1439.98px]:fixed xl:max-[1439.98px]:top-auto xl:max-[1439.98px]:right-4 xl:max-[1439.98px]:bottom-4 xl:max-[1439.98px]:z-[60]",
+  "xl:max-[1439.98px]:fixed xl:max-[1439.98px]:top-auto xl:max-[1439.98px]:right-[calc(var(--pf-page-pad)+320px+var(--pf-gap))] xl:max-[1439.98px]:bottom-4 xl:max-[1439.98px]:z-[60]",
 ].join(" ");
 
 /** Lifts the toast above the dock at the widths where the dock floats. */
 export const TOAST_ABOVE_DOCK_CLASS =
-  "max-md:bottom-[calc(max(12px,env(safe-area-inset-bottom))+140px)] md:max-lg:bottom-[114px] xl:max-[1439.98px]:bottom-[76px]";
+  "max-md:bottom-[calc(max(12px,env(safe-area-inset-bottom))+140px)] md:max-lg:bottom-[114px] xl:max-[1439.98px]:bottom-[114px]";
