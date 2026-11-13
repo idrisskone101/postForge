@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { JobsActivity } from "./jobs-activity";
-import { EMPTY_JOBS_ACTIVITY, type JobsStatusFilter, type JobsTypeFilter } from "./types";
+import { JobsSkeleton } from "./jobs-skeleton";
+import type { JobsStatusFilter, JobsTypeFilter } from "./types";
 import { JobsAutoRefresh } from "./jobs-auto-refresh";
 
 export const metadata = { title: "Jobs - PostForge" };
@@ -14,7 +15,7 @@ export default function JobsPage({
   searchParams: Promise<{ status?: string; type?: string; page?: string }>;
 }) {
   return (
-    <Suspense fallback={<JobsActivity activity={EMPTY_JOBS_ACTIVITY} />}>
+    <Suspense fallback={<JobsSkeleton />}>
       <JobsPageData searchParams={searchParams} />
     </Suspense>
   );
@@ -29,8 +30,11 @@ async function JobsPageData({
   const status = parseStatus(params.status);
   const type = parseType(params.type);
   const page = parsePage(params.page);
-  const historyCutoff = new Date();
+  const now = new Date();
+  const historyCutoff = new Date(now);
   historyCutoff.setDate(historyCutoff.getDate() - HISTORY_DAYS);
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
   const activeStatuses = ["queued", "processing"];
 
   const visibleWindow: Prisma.GenerationJobWhereInput = {
@@ -54,7 +58,7 @@ async function JobsPageData({
     AND: [visibleWindow, statusWhere, typeWhere],
   };
 
-  const [jobs, filteredTotal, activeCount, completedCount, failedCount, totalCreated] =
+  const [jobs, filteredTotal, processingCount, queuedCount, completedCount, failedCount, failedToday] =
     await Promise.all([
       prisma.generationJob.findMany({
         where,
@@ -77,42 +81,51 @@ async function JobsPageData({
           createdAt: true,
           startedAt: true,
           completedAt: true,
+          outputs: {
+            select: { id: true, type: true },
+            orderBy: { createdAt: "asc" },
+            take: 1,
+          },
         },
       }),
       prisma.generationJob.count({ where }),
-      prisma.generationJob.count({ where: { status: { in: activeStatuses } } }),
+      prisma.generationJob.count({ where: { status: "processing" } }),
+      prisma.generationJob.count({ where: { status: "queued" } }),
       prisma.generationJob.count({
         where: { status: "completed", createdAt: { gte: historyCutoff } },
       }),
       prisma.generationJob.count({
         where: { status: "failed", createdAt: { gte: historyCutoff } },
       }),
-      prisma.generationJob.count({ where: { createdAt: { gte: historyCutoff } } }),
+      prisma.generationJob.count({
+        where: { status: "failed", createdAt: { gte: startOfToday } },
+      }),
     ]);
 
   return (
     <>
-      <JobsAutoRefresh enabled={activeCount > 0} />
+      <JobsAutoRefresh enabled={processingCount + queuedCount > 0} />
       <JobsActivity
         activity={{
           jobs,
           counts: {
-            active: activeCount,
+            processing: processingCount,
+            queued: queuedCount,
             completed: completedCount,
             failed: failedCount,
-            total: totalCreated,
+            failedToday,
           },
           status,
           type,
           page,
           pageSize: PAGE_SIZE,
           filteredTotal,
+          now,
         }}
       />
     </>
   );
 }
-
 
 const HISTORY_DAYS = 30;
 const PAGE_SIZE = 40;

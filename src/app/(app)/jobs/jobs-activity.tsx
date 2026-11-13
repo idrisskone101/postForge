@@ -1,193 +1,184 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Clock3, ListChecks } from "lucide-react";
+import { buttonClass } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { iconButtonClass } from "@/components/workbench/icon-button";
+import { Panel } from "@/components/workbench/panel";
 import { cn } from "@/lib/utils";
-import {
-  buildJobsHref,
-  STATUS_FILTERS,
-  SUMMARY_CARDS,
-  TYPE_FILTERS,
-} from "./jobs-activity-helpers";
+import { buildJobsHref, STATUS_FILTERS, TYPE_FILTERS } from "./jobs-activity-helpers";
+import { JobsStats } from "./jobs-stats";
 import { JobsTable } from "./jobs-table";
-import type { JobsActivityViewModel, JobsStatusFilter } from "./types";
+import type {
+  JobsActivityViewModel,
+  JobsStatusFilter,
+  JobsTypeFilter,
+} from "./types";
 
-type JobsActivityProps = {
-  activity: JobsActivityViewModel;
-};
-
-export function JobsActivity({ activity }: JobsActivityProps) {
-  const { jobs, counts, status, type, page, pageSize, filteredTotal } = activity;
-  const firstVisible = filteredTotal === 0 ? 0 : (page - 1) * pageSize + 1;
-  const lastVisible = Math.min(page * pageSize, filteredTotal);
-  const pageCount = Math.max(1, Math.ceil(filteredTotal / pageSize));
+export function JobsActivity({ activity }: { activity: JobsActivityViewModel }) {
+  const { jobs, counts, status, type, page, pageSize, filteredTotal, now } = activity;
 
   return (
-    <div className="pf-content-viewport">
-      <div
-        data-jobs-page="true"
-        className="mx-auto max-w-[1280px] pb-12 sm:px-6 lg:px-8 lg:py-6"
-        style={{ paddingTop: 20, paddingLeft: 16, paddingRight: 16 }}
-      >
-        <section
-          data-jobs-summary="true"
-          aria-label="Job activity summary"
-          className="grid grid-cols-2 gap-3"
-          style={{ height: "10.75rem", overflow: "hidden" }}
-        >
-          {SUMMARY_CARDS.map((card) => (
-            <SummaryCard
-              key={card.label}
-              href={card.href}
-              label={card.label}
-              value={counts[card.countKey]}
-            />
-          ))}
-        </section>
+    <>
+      <JobsStats counts={counts} />
+      <Panel pad="none" className="min-w-0 gap-0 px-4 pb-3 pt-4 md:px-5">
+        <JobsFilters status={status} type={type} />
+        {jobs.length > 0 ? (
+          <JobsTable jobs={jobs} now={now} />
+        ) : (
+          <JobsEmpty status={status} type={type} pastEnd={filteredTotal > 0} />
+        )}
+        {jobs.length > 0 ? (
+          <JobsPager
+            status={status}
+            type={type}
+            page={page}
+            pageCount={Math.max(1, Math.ceil(filteredTotal / pageSize))}
+            range={`${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filteredTotal)} / ${filteredTotal}`}
+          />
+        ) : null}
+      </Panel>
+    </>
+  );
+}
 
-        <div
-          data-jobs-filters="true"
-          className="pf-card mt-3 flex flex-col gap-3 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between"
-        >
-          <div
-            className="flex max-w-full gap-1 overflow-x-auto rounded-[8px] bg-[var(--pf-active)] p-1"
-            aria-label="Filter jobs by status"
+function JobsFilters({ status, type }: { status: JobsStatusFilter; type: JobsTypeFilter }) {
+  return (
+    <div className="flex flex-col items-start gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+      <nav aria-label="Filter jobs by status" className="wb-segmented gap-0">
+        {STATUS_FILTERS.map((filter) => (
+          <Link
+            key={filter.value}
+            href={buildJobsHref(filter.value, type)}
+            aria-current={status === filter.value ? "page" : undefined}
+            className="wb-segment max-sm:px-3"
           >
-            {STATUS_FILTERS.map((filter) => (
-              <Link
-                key={filter.value}
-                href={buildJobsHref(filter.value, type)}
-                aria-current={status === filter.value ? "page" : undefined}
-                className={cn(
-                  "shrink-0 rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-[var(--pf-muted)] transition-colors duration-[180ms] hover:text-[var(--pf-ink)]",
-                  status === filter.value &&
-                    "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-                )}
-              >
-                {filter.label}
-              </Link>
-            ))}
-          </div>
-          <div
-            className="flex w-fit gap-1 rounded-[8px] bg-[var(--pf-active)] p-1"
-            aria-label="Filter jobs by media type"
+            {filter.label}
+          </Link>
+        ))}
+      </nav>
+      <nav aria-label="Filter jobs by media type" className="wb-segmented gap-0">
+        {TYPE_FILTERS.map((filter) => (
+          <Link
+            key={filter.value}
+            href={buildJobsHref(status, filter.value)}
+            aria-current={type === filter.value ? "page" : undefined}
+            className="wb-segment"
           >
-            {TYPE_FILTERS.map((filter) => (
-              <Link
-                key={filter.value}
-                href={buildJobsHref(status, filter.value)}
-                aria-current={type === filter.value ? "page" : undefined}
-                className={cn(
-                  "rounded-[6px] px-3 py-1.5 text-[12px] font-medium text-[var(--pf-muted)] transition-colors duration-[180ms] hover:text-[var(--pf-ink)]",
-                  type === filter.value &&
-                    "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-                )}
-              >
-                {filter.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <section data-jobs-board="true" className="pf-card mt-3 overflow-hidden">
-          {jobs.length === 0 ? (
-            <EmptyJobs status={status} />
-          ) : (
-            <JobsTable jobs={jobs} />
-          )}
-
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--pf-border)] px-4 py-3 text-[12px] text-[var(--pf-muted)]">
-            <span className="tabular-nums">
-              {filteredTotal === 0
-                ? "No jobs"
-                : `${firstVisible}–${lastVisible} of ${filteredTotal} jobs`}
-            </span>
-            <div className="flex items-center gap-2">
-              <Link
-                href={buildJobsHref(status, type, Math.max(1, page - 1))}
-                aria-disabled={page <= 1}
-                prefetch={false}
-                className={cn(
-                  "pf-button-secondary inline-flex h-8 items-center gap-1.5 px-2.5 text-[12px]",
-                  page <= 1 && "pointer-events-none opacity-40"
-                )}
-              >
-                <ArrowLeft className="size-3.5" /> Previous
-              </Link>
-              <span className="pf-data px-1 text-[11px]">
-                {page} / {pageCount}
-              </span>
-              <Link
-                href={buildJobsHref(status, type, Math.min(pageCount, page + 1))}
-                aria-disabled={page >= pageCount}
-                prefetch={false}
-                className={cn(
-                  "pf-button-secondary inline-flex h-8 items-center gap-1.5 px-2.5 text-[12px]",
-                  page >= pageCount && "pointer-events-none opacity-40"
-                )}
-              >
-                Next <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-          </footer>
-        </section>
-      </div>
+            {filter.label}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
 
-function SummaryCard({
-  href,
+type JobsPagerProps = {
+  status: JobsStatusFilter;
+  type: JobsTypeFilter;
+  page: number;
+  pageCount: number;
+  range: string;
+};
+
+function JobsPager({ status, type, page, pageCount, range }: JobsPagerProps) {
+  return (
+    <footer className="flex h-[52px] shrink-0 items-center justify-between border-t border-hairline pt-2 md:h-11">
+      <span className="wb-mono text-fg-muted">{range}</span>
+      <div className="flex gap-1.5">
+        <PagerLink
+          icon="chevron-left"
+          label="Previous page"
+          href={page > 1 ? buildJobsHref(status, type, page - 1) : null}
+        />
+        <PagerLink
+          icon="chevron-right"
+          label="Next page"
+          href={page < pageCount ? buildJobsHref(status, type, page + 1) : null}
+        />
+      </div>
+    </footer>
+  );
+}
+
+function PagerLink({
+  icon,
   label,
-  value,
+  href,
 }: {
-  href: string;
+  icon: "chevron-left" | "chevron-right";
   label: string;
-  value: number;
+  href: string | null;
 }) {
+  const className = cn(iconButtonClass("quiet", 34), "max-md:size-11");
+  if (!href) {
+    return (
+      <span aria-disabled="true" aria-label={label} className={cn(className, "opacity-50")}>
+        <Icon name={icon} size={16} />
+      </span>
+    );
+  }
   return (
     <Link
       href={href}
-      prefetch={false}
-      className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]"
+      prefetch={false} // prefetch-off: each page reruns the stat counts over the whole job table
+      aria-label={label}
+      title={label}
+      className={className}
     >
-      <span data-jobs-label={label}>
-        <span className="sr-only">{label}</span>
-      </span>
-      <strong data-jobs-value={String(value)}>
-        <span className="sr-only">{value}</span>
-      </strong>
+      <Icon name={icon} size={16} />
     </Link>
   );
 }
 
-function EmptyJobs({ status }: { status: JobsStatusFilter }) {
-  const active = status === "active";
-  return (
-    <div
-      data-jobs-empty="true"
-      className="flex h-[300px] flex-col items-center justify-center overflow-hidden px-5 py-10 text-center"
-      style={{ height: 300, overflow: "hidden" }}
-    >
-      <span className="grid size-11 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-muted)]">
-        {active ? <Clock3 className="size-5" /> : <ListChecks className="size-5" />}
-      </span>
-      <h2 data-empty-title={active ? "No jobs are running" : "No jobs match these filters"}>
-        <span className="sr-only">
-          {active ? "No jobs are running" : "No jobs match these filters"}
-        </span>
-      </h2>
-      <p className="sr-only">
-        {active
-          ? "New image, video, reference, slideshow, and identity generations will appear here as soon as they start."
-          : "Try another status or media type. This view keeps completed and failed activity for 30 days."}
-      </p>
-      <Link
-        href="/generate"
-        data-empty-cta="Create asset"
-        className="pf-button-primary mt-4"
+function JobsEmpty({
+  status,
+  type,
+  pastEnd,
+}: {
+  status: JobsStatusFilter;
+  type: JobsTypeFilter;
+  pastEnd: boolean;
+}) {
+  if (pastEnd) {
+    return (
+      <EmptyState icon="jobs" title="This page is past the last job" className="min-h-[300px]">
+        <Link href={buildJobsHref(status, type)} className={buttonClass("strong")}>
+          Back to first page
+        </Link>
+      </EmptyState>
+    );
+  }
+  if (type === "all" && (status === "all" || status === "active")) {
+    return (
+      <EmptyState
+        icon={status === "active" ? "clock" : "jobs"}
+        title={status === "active" ? "No jobs are running" : "No jobs in the last 30 days"}
+        className="min-h-[300px]"
       >
-        <span className="sr-only">Create asset</span>
-        <ArrowRight className="size-3.5" />
+        <Link href="/generate" className={buttonClass("strong")}>
+          Create asset
+        </Link>
+      </EmptyState>
+    );
+  }
+  return (
+    <EmptyState icon="jobs" title={emptyFilterTitle(status, type)} className="min-h-[300px]">
+      <Link href="/jobs" className={buttonClass("strong")}>
+        Show all jobs
       </Link>
-    </div>
+    </EmptyState>
   );
 }
+
+function emptyFilterTitle(status: JobsStatusFilter, type: JobsTypeFilter) {
+  const noun = TYPE_NOUN[type];
+  if (status === "active") return `No ${noun} are running`;
+  const adjective = status === "all" ? "" : `${status} `;
+  return `No ${adjective}${noun} in the last 30 days`;
+}
+
+const TYPE_NOUN: Record<JobsTypeFilter, string> = {
+  all: "jobs",
+  image: "images",
+  video: "videos",
+};
