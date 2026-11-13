@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { isAutomationSocialDestination } from "@/lib/automations";
 import { TIMEZONES } from "./automation-builder-fields";
 import { DestinationSelector } from "./destination-selector";
+import { TimeSelect } from "./time-select";
 import type { AutomationBuilderWorkspace } from "./use-automation-builder";
 
 export function AutomationBuilderPlanSettings({
@@ -123,18 +124,15 @@ export function AutomationBuilderPlanSettings({
           htmlFor="builder-time"
           className="w-[128px] shrink-0"
         >
-          <input
+          <TimeSelect
             id="builder-time"
-            type="time"
-            data-mono="true"
             value={record.schedule.time}
-            onChange={(event) =>
+            onChange={(time) =>
               setRecord((current) => ({
                 ...current,
-                schedule: { ...current.schedule, time: event.target.value },
+                schedule: { ...current.schedule, time },
               }))
             }
-            className="wb-input"
           />
         </Field>
         <Field

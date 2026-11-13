@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { TikTokVideoInfo } from "@/components/tiktok-input";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import type { CloneProductionState } from "@/components/clone/view-models";
 
 type ReadinessRow = {
@@ -34,7 +35,7 @@ export function CloneProductionStatePanel({
     {
       label: "Source",
       ready: sourceReady,
-      value: sourceReady ? videoInfo?.label || "Selected" : "Required",
+      value: sourceReady ? (cloneSourceTitle(videoInfo?.label)?.title ?? "Selected") : "Required",
       detail: sourceDetail,
     },
     {

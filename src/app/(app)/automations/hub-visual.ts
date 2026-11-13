@@ -51,3 +51,9 @@ export function slideshowNextRunLabel(input: {
   const clock = [date.getHours(), date.getMinutes()].map((value) => String(value).padStart(2, "0")).join(":");
   return `${part({ weekday: "short" })} ${date.getDate()} ${part({ month: "short" })} ${clock}`;
 }
+
+export function visualPolicyCopy(policy: "fresh-ai" | "reuse" | undefined) {
+  return policy === "fresh-ai"
+    ? { short: "Fresh AI, $0.08 a slide", full: "Fresh AI images, $0.08 per slide" }
+    : { short: "Saved visuals, no cost", full: "Reuses saved visuals, no image cost" };
+}

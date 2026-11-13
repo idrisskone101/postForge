@@ -1,8 +1,12 @@
 import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
 
+import { cloneSourceTitle } from "./clone-source-title";
+
 export type CloneJobLabel = {
-  /** The source label when the job stored one. */
+  /** The source's creator handle (or stored label) when the job stored one. */
   source: string | null;
+  /** Shortened TikTok video id of the source, for the meta line. */
+  sourceId: string | null;
   /** First 8 characters of the job id, shown in mono after "Clone" when there is no source label. */
   shortId: string;
   sub: string;
@@ -18,12 +22,14 @@ export function cloneJobLabel(job: {
   input?: unknown;
 }): CloneJobLabel {
   const input = isRecord(job.input) ? job.input : {};
-  const source =
-    readLabel(input.sourceVideo) ?? readLabel(input.sourceVideoSnapshot);
+  const source = cloneSourceTitle(
+    readLabel(input.sourceVideo) ?? readLabel(input.sourceVideoSnapshot),
+  );
   const identity = typeof input.identityName === "string" ? input.identityName.trim() : "";
   const model = MODEL_REGISTRY[job.model]?.name ?? job.model;
   return {
-    source,
+    source: source?.title ?? null,
+    sourceId: source?.shortId ?? null,
     shortId: job.id.slice(0, 8),
     sub: identity ? `${identity} · ${model}` : model,
   };

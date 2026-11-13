@@ -4,18 +4,21 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recha
 import { formatCost } from "@/lib/utils/format-cost";
 
 interface CostChartProps {
-  data: Array<{ date: string; image: number; video: number }>;
+  /** One bar per day or per week; `label` names it in the tooltip. */
+  data: Array<{ label: string; image: number; video: number }>;
   /** Top of the value axis; the panel draws the matching gridlines. */
   max: number;
+  /** Whole pixels, at least 3, leaving at least 1px between bars. */
+  barSize: number;
 }
 
-/** Stacked daily bars: video chart-1 below image chart-2, ember only on today's video. */
-export function CostChart({ data, max }: CostChartProps) {
+/** Stacked bars: video chart-1 below image chart-2, ember only on the latest bar's video. */
+export function CostChart({ data, max, barSize }: CostChartProps) {
   const lastIndex = data.length - 1;
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barCategoryGap={2} maxBarSize={14}>
-        <XAxis dataKey="date" hide />
+      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barSize={barSize}>
+        <XAxis dataKey="label" hide />
         <YAxis hide domain={[0, max]} />
         <Tooltip
           content={<SpendTooltip />}
@@ -51,7 +54,7 @@ function Segment({ x, y, width, height, fill }: SegmentProps) {
   const inset = height > 3 ? 1 : 0;
   return (
     <rect
-      x={x}
+      x={Math.round(x)}
       y={y + inset}
       width={width}
       height={Math.max(1, height - inset * 2)}

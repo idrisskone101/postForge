@@ -1,4 +1,5 @@
 import { Button } from "@/components/workbench";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSourceSummary({
@@ -16,6 +17,7 @@ export function CloneSourceSummary({
     onTogglePicker,
   } = draft;
   if (!videoInfo) return null;
+  const sourceName = cloneSourceTitle(videoInfo.label);
   const fullDuration = originalVideoInfo?.durationSec ?? videoInfo.durationSec;
   const trimmed = Math.round(videoInfo.durationSec) < Math.round(fullDuration);
 
@@ -32,9 +34,12 @@ export function CloneSourceSummary({
       />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="truncate text-[14px] font-semibold leading-[18px] text-fg">
-          {videoInfo.label || "Selected source"}
+          {sourceName?.title ?? "Selected source"}
         </p>
         <p className="truncate text-[13px] leading-4 text-fg-secondary">
+          {sourceName?.shortId ? (
+            <span className="wb-mono mr-2">{sourceName.shortId}</span>
+          ) : null}
           {trimmed
             ? `${formatSeconds(videoInfo.durationSec)} of ${formatSeconds(fullDuration)}`
             : formatSeconds(videoInfo.durationSec)}

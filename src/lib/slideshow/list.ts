@@ -9,6 +9,7 @@ import {
   LIST_PREVIEW_SLIDE_COUNT,
   type SlideshowProjectListItem,
   type SlideshowProjectListPage,
+  type SlideshowStatusCounts,
 } from "@/lib/slideshow/list-types";
 
 const listProjectInclude = {
@@ -68,6 +69,14 @@ export function toSlideshowProjectListDto(
   };
 }
 
+export function toSlideshowStatusCounts(
+  groups: Array<{ status: SlideshowProjectStatus; _count: { _all: number } }>,
+): SlideshowStatusCounts {
+  const counts: SlideshowStatusCounts = {};
+  for (const group of groups) counts[group.status] = group._count._all;
+  return counts;
+}
+
 export async function listSlideshowProjects(options: {
   status?: string | null;
   limit: number;
@@ -79,7 +88,7 @@ export async function listSlideshowProjects(options: {
   const where = status
     ? { status: status as SlideshowProjectStatus }
     : undefined;
-  const [projects, total] = await Promise.all([
+  const [projects, groups] = await Promise.all([
     prisma.slideshowProject.findMany({
       where,
       include: listProjectInclude,
@@ -87,12 +96,16 @@ export async function listSlideshowProjects(options: {
       take: options.limit,
       skip: options.offset,
     }),
-    prisma.slideshowProject.count({ where }),
+    prisma.slideshowProject.groupBy({ by: ["status"], _count: { _all: true } }),
   ]);
+  const statusCounts = toSlideshowStatusCounts(groups);
 
   return {
     projects: projects.map(toSlideshowProjectListDto),
-    total,
+    total: status
+      ? (statusCounts[status as SlideshowProjectStatus] ?? 0)
+      : Object.values(statusCounts).reduce((sum, count) => sum + count, 0),
+    statusCounts,
     limit: options.limit,
     offset: options.offset,
   };

@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { MoreHorizontal } from "lucide-react";
 import {
   EmptyState,
   Segmented,
   StatusChip,
   buttonClass,
-  iconButtonClass,
 } from "@/components/workbench";
 import { isAutomationExecutionEnabled } from "@/lib/automations";
 import { AutomationDestinationCell } from "./destination-cell";
@@ -15,6 +13,7 @@ import { FILTERS, automationNeedsAttention } from "./hub-status";
 import { automationListStatusLabel, automationListStatusTone } from "./hub-visual";
 import { publicationActionState } from "./publication-actions";
 import { PublicationStatus } from "./publication-status";
+import { RowActionsMenu } from "./row-actions-menu";
 import type { AutomationsWorkspace } from "./use-automations-workspace";
 import { VideoAutomationMenu } from "./video-automation-menu";
 
@@ -89,16 +88,16 @@ export function VideoAutomationList({
               <article
                 key={record.id}
                 aria-busy={isBusy || undefined}
-                className="relative grid min-h-[58px] min-w-0 grid-cols-[minmax(0,1fr)_30px] items-center gap-x-4 gap-y-2 border-b border-hairline px-3 py-2 last:border-b-0 md:grid-cols-[minmax(0,1fr)_150px_140px_160px_30px]"
+                className="relative grid min-h-[58px] min-w-0 grid-cols-[minmax(0,1fr)_30px] items-center gap-x-4 gap-y-2 border-b border-hairline px-3 py-2 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_150px_140px_124px_30px]"
               >
-                <div className="min-w-0 md:col-start-1">
+                <div className="min-w-0 lg:col-start-1">
                   <p className="wb-row-title">{record.name}</p>
                   <p className="wb-row-sub">
                     {templateLabel(record.template)}, {record.content.slideCount} slides
                   </p>
                 </div>
 
-                <div className="col-start-1 min-w-0 md:col-start-2">
+                <div className="col-start-1 min-w-0 lg:col-start-2">
                   <AutomationDestinationCell
                     record={record}
                     providers={integrationStatuses}
@@ -106,7 +105,7 @@ export function VideoAutomationList({
                   />
                 </div>
 
-                <div className="col-start-1 flex min-w-0 flex-col md:col-start-3">
+                <div className="col-start-1 flex min-w-0 flex-col lg:col-start-3">
                   <span className="text-[13px] leading-[18px] text-fg">
                     {record.schedule.days.join(", ") || "No days"}
                   </span>
@@ -133,53 +132,45 @@ export function VideoAutomationList({
                   )}
                 </div>
 
-                <div className="col-start-1 min-w-0 md:col-start-4">
+                <div className="col-start-1 min-w-0 lg:col-start-4">
                   <StatusChip tone={automationListStatusTone(needsAttention, scheduleActive)}>
                     {automationListStatusLabel(record, needsAttention)}
                   </StatusChip>
                   {record.publication && <PublicationStatus publication={record.publication} />}
                 </div>
 
-                <div className="relative col-start-2 row-start-1 self-start md:col-start-5 md:self-center">
-                  <button
-                    type="button"
-                    onClick={() => setMenu(menu === record.id ? null : record.id)}
-                    className={iconButtonClass("ghost", 30)}
-                    aria-label={`Actions for ${record.name}`}
-                    aria-haspopup="menu"
-                    aria-expanded={menu === record.id}
-                  >
-                    <MoreHorizontal className="size-[18px]" strokeWidth={1.5} />
-                  </button>
-                  {menu === record.id && (
-                    <VideoAutomationMenu
-                      menu={{
-                        record,
-                        scheduleActive,
-                        canControlLocalSchedule,
-                        pendingRecoverable: actionState.pendingRecoverable,
-                        canRefreshPublication: actionState.canRefreshPublication,
-                        failedReconciliationStage: actionState.failedReconciliationStage,
-                        manualOutcomeStage: actionState.manualOutcomeStage,
-                        manualOutcomeResolvable: actionState.manualOutcomeResolvable,
-                        negativeOutcomeResolvable: actionState.negativeOutcomeResolvable,
-                        onChangeLocalSchedule: () =>
-                          changeLocalSchedule(record, scheduleActive ? "pause" : "activate"),
-                        onGenerateReviewDraft: () => generateReviewDraft(record),
-                        onOpenPublishReview: () => openPublishReview(record),
-                        onRefreshPublication: () => refreshPublication(record),
-                        onRecoverPendingPublication: () => recoverPendingPublication(record),
-                        onSetManualResolutionDialog: (state) => {
-                          setMenu(null);
-                          setManualResolutionDialog(state);
-                        },
-                        onDuplicate: () => duplicate(record),
-                        onRemove: () => remove(record),
-                        onClose: () => setMenu(null),
-                      }}
-                    />
-                  )}
-                </div>
+                <RowActionsMenu
+                  className="relative col-start-2 row-start-1 self-start lg:col-start-5 lg:self-center"
+                  label={`Actions for ${record.name}`}
+                  open={menu === record.id}
+                  onOpenChange={(open) => setMenu(open ? record.id : null)}
+                >
+                  <VideoAutomationMenu
+                    menu={{
+                      record,
+                      scheduleActive,
+                      canControlLocalSchedule,
+                      pendingRecoverable: actionState.pendingRecoverable,
+                      canRefreshPublication: actionState.canRefreshPublication,
+                      failedReconciliationStage: actionState.failedReconciliationStage,
+                      manualOutcomeStage: actionState.manualOutcomeStage,
+                      manualOutcomeResolvable: actionState.manualOutcomeResolvable,
+                      negativeOutcomeResolvable: actionState.negativeOutcomeResolvable,
+                      onChangeLocalSchedule: () =>
+                        changeLocalSchedule(record, scheduleActive ? "pause" : "activate"),
+                      onGenerateReviewDraft: () => generateReviewDraft(record),
+                      onOpenPublishReview: () => openPublishReview(record),
+                      onRefreshPublication: () => refreshPublication(record),
+                      onRecoverPendingPublication: () => recoverPendingPublication(record),
+                      onSetManualResolutionDialog: (state) => {
+                        setMenu(null);
+                        setManualResolutionDialog(state);
+                      },
+                      onDuplicate: () => duplicate(record),
+                      onRemove: () => remove(record),
+                    }}
+                  />
+                </RowActionsMenu>
 
                 {isBusy && (
                   <div className="absolute inset-0 grid place-items-center rounded-lg bg-panel/80 text-[13px] font-semibold text-fg-secondary">

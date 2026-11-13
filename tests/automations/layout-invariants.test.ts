@@ -14,8 +14,8 @@ const automationBuilder = [
 assert.match(automations, /data-automations-hub="true" className="flex min-h-0 flex-1 flex-col gap-3"/);
 assert.doesNotMatch(automations, /data-page-inset|max-w-\[1280px\]|px-5 py-5/);
 assert.match(source("src/app/(app)/automations/planning-calendar.tsx"), /grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7/);
-assert.match(source("src/app/(app)/automations/video-automation-list.tsx"), /md:grid-cols-\[minmax\(0,1fr\)_150px_140px_160px_30px\]/);
-assert.match(source("src/app/(app)/automations/slideshow-automation-list.tsx"), /xl:w-\[340px\]/);
+assert.match(source("src/app/(app)/automations/video-automation-list.tsx"), /lg:grid-cols-\[minmax\(0,1fr\)_150px_140px_124px_30px\]/);
+assert.match(source("src/app/(app)/automations/slideshow-automation-list.tsx"), /min-\[1380px\]:w-\[340px\]/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-preview-pane.tsx"), /xl:w-\[372px\]/);
 assert.match(automationBuilder, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
 assert.match(automationBuilder, /pf-safe-overlay/);

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   CircleAlert,
@@ -19,6 +18,7 @@ import {
   publicationIsUnresolved,
 } from "@/lib/automations";
 import type { VideoAutomationMenuModel } from "./hub-types";
+import { menuDangerItemClass, menuItemClass } from "./row-actions-menu";
 
 export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }) {
   const {
@@ -39,38 +39,13 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
     onSetManualResolutionDialog,
     onDuplicate,
     onRemove,
-    onClose,
   } = menu;
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const listeners = new AbortController();
-    const anchor = menuRef.current?.parentElement;
-    document.addEventListener(
-      "keydown",
-      (event) => {
-        if (event.key !== "Escape") return;
-        onClose();
-        anchor?.querySelector<HTMLElement>('[aria-haspopup="menu"]')?.focus();
-      },
-      { signal: listeners.signal }
-    );
-    document.addEventListener(
-      "pointerdown",
-      (event) => {
-        if (!anchor?.contains(event.target as Node)) onClose();
-      },
-      { signal: listeners.signal }
-    );
-    return () => listeners.abort();
-  }, [onClose]);
-
   return (
-    <div ref={menuRef} role="menu" className="wb-float wb-fade-in absolute right-0 top-9 z-30 max-h-[min(70dvh,440px)] w-64 min-w-0 overscroll-contain overflow-y-auto p-1.5">
+    <>
       {canControlLocalSchedule ? (
         <button
           onClick={onChangeLocalSchedule}
-          className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+          className={menuItemClass}
         >
           {scheduleActive ? <Pause className="size-4 shrink-0" strokeWidth={1.5} /> : <Play className="size-4 shrink-0" strokeWidth={1.5} />}
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">
@@ -88,7 +63,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <button
         onClick={onGenerateReviewDraft}
-        className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+        className={menuItemClass}
       >
         <WandSparkles className="size-4 shrink-0" strokeWidth={1.5} />
         Generate review draft
@@ -101,7 +76,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
         record.publication?.providerStatus !== "LOCAL_RETENTION_OUTCOME_UNKNOWN" && (
           <button
             onClick={onOpenPublishReview}
-            className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+            className={menuItemClass}
           >
             <Send className="size-4 shrink-0" strokeWidth={1.5} />
             <span className="min-w-0 break-words [overflow-wrap:anywhere]">
@@ -115,7 +90,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {canRefreshPublication && (
         <button
           onClick={onRefreshPublication}
-          className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+          className={menuItemClass}
         >
           <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
           Refresh provider status
@@ -125,7 +100,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {pendingRecoverable && (
         <button
           onClick={onRecoverPendingPublication}
-          className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+          className={menuItemClass}
         >
           <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
           Recover interrupted attempt
@@ -182,14 +157,14 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <Link
         href={`/automations/new?id=${encodeURIComponent(record.id)}`}
-        className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+        className={menuItemClass}
       >
         <Edit3 className="size-4 shrink-0" strokeWidth={1.5} /> Edit workflow
       </Link>
 
       <button
         onClick={onDuplicate}
-        className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong"
+        className={menuItemClass}
       >
         <Copy className="size-4 shrink-0" strokeWidth={1.5} /> Duplicate
       </button>
@@ -204,11 +179,11 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       ) : (
         <button
           onClick={onRemove}
-          className="flex min-h-9 w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium leading-4 text-bad transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-bad-tint"
+          className={menuDangerItemClass}
         >
           <Trash2 className="size-4 shrink-0" strokeWidth={1.5} /> Delete
         </button>
       )}
-    </div>
+    </>
   );
 }

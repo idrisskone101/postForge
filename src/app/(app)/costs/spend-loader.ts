@@ -4,7 +4,9 @@ import {
   getCostTotalForRange,
   getDailyCostSeries,
   listCostLogsPage,
+  type CostLogEntry,
 } from "@/lib/costs/tracker";
+import { prisma } from "@/lib/db";
 import {
   hasCostLogFilter,
   parseCostLogModel,
@@ -14,7 +16,8 @@ import {
   periodChangePercent,
   spendWindow,
 } from "@/lib/costs/spend-period";
-import type { CostsPageClientProps } from "./types";
+import { joinCostLogJobs } from "./spend-log-jobs";
+import type { CostsPageClientProps, SpendLogRow } from "./types";
 
 export async function loadSpendDashboard(params: {
   period?: string;
@@ -41,7 +44,7 @@ export async function loadSpendDashboard(params: {
         end: range.end,
         pageIndex: requestedPage,
         filter,
-      }),
+      }).then(async (page) => ({ ...page, rows: await withCostLogJobs(page.entries) })),
     ]);
 
   const currentTotal = windowSummary.totalCost;
@@ -63,6 +66,9 @@ export async function loadSpendDashboard(params: {
     totalCost: allTimeSummary.totalCost,
     currentPeriodCost: currentTotal,
     changePercent,
+    previousPeriodCost: hasSpendBefore(allTimeSummary.byModel, windowSummary.byModel)
+      ? previousTotal
+      : null,
     avgCycleCost,
     totalJobs,
     topModel: topModel
@@ -71,7 +77,7 @@ export async function loadSpendDashboard(params: {
     chartData,
     byModel,
     breakdown,
-    logs: logPage.entries,
+    logs: logPage.rows,
     logPage: logPage.pageIndex,
     logTotalCount: logPage.totalCount,
     logHasNext: logPage.hasNext,
@@ -80,4 +86,39 @@ export async function loadSpendDashboard(params: {
     model: filter.model,
     period,
   };
+}
+
+function hasSpendBefore(
+  allTime: Record<string, { count: number }>,
+  window: Record<string, { count: number }>,
+) {
+  const count = (byModel: Record<string, { count: number }>) =>
+    Object.values(byModel).reduce((sum, stats) => sum + stats.count, 0);
+  return count(allTime) > count(window);
+}
+
+async function withCostLogJobs(entries: CostLogEntry[]): Promise<SpendLogRow[]> {
+  const jobIds = [...new Set(entries.map((entry) => entry.jobId))];
+  const jobs =
+    jobIds.length === 0
+      ? []
+      : await prisma.generationJob.findMany({
+          where: { id: { in: jobIds } },
+          select: {
+            id: true,
+            type: true,
+            status: true,
+            model: true,
+            prompt: true,
+            tags: true,
+            input: true,
+            outputs: {
+              where: { type: "image" },
+              orderBy: { createdAt: "asc" },
+              take: 1,
+              select: { id: true, type: true },
+            },
+          },
+        });
+  return joinCostLogJobs(entries, jobs);
 }

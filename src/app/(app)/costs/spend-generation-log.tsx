@@ -1,15 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { BrowserLocalText } from "@/components/browser-local-text";
 import { Button } from "@/components/workbench/button";
+import { MediaImage } from "@/components/workbench/media-image";
 import { Icon } from "@/components/workbench/icon";
 import { IconButton } from "@/components/workbench/icon-button";
 import { Panel } from "@/components/workbench/panel";
+import { cn } from "@/lib/utils";
 import { COST_LOG_PAGE_SIZE } from "@/lib/costs/spend-period";
 import { formatCost } from "@/lib/utils/format-cost";
 import { createdLabel, logRangeLabel, modelLabel, shortJobId, typeLabel } from "./spend-format";
 import { SpendLogEmpty } from "./spend-log-empty";
-import type { SpendGenerationLogProps } from "./types";
+import type { SpendGenerationLogProps, SpendLogRow } from "./types";
 
 export function SpendGenerationLog({
   dashboard,
@@ -73,29 +76,8 @@ export function SpendGenerationLog({
           </div>
           <ul className="flex min-w-0 flex-col">
             {dashboard.logs.map((log) => (
-              <li
-                key={log.id}
-                className="wb-row min-h-[54px] transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 max-lg:gap-3 max-lg:px-0 max-lg:py-2.5 lg:h-[54px]"
-              >
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="wb-mono truncate text-fg" title={log.jobId}>
-                    {shortJobId(log.jobId)}
-                  </span>
-                  <span className="truncate text-[12px] leading-4 text-fg-muted lg:hidden">
-                    {modelLabel(log.model)} - {typeLabel(log.type)}
-                    <BrowserLocalText>{` - ${createdLabel(log.createdAt, now)}`}</BrowserLocalText>
-                  </span>
-                </span>
-                <span className="w-[170px] shrink-0 truncate text-[13px] leading-[18px] text-fg max-lg:hidden" title={log.model}>
-                  {modelLabel(log.model)}
-                </span>
-                <span className="w-[90px] shrink-0 text-[13px] leading-[18px] text-fg-secondary max-lg:hidden">
-                  {typeLabel(log.type)}
-                </span>
-                <BrowserLocalText className="wb-mono w-[120px] shrink-0 whitespace-nowrap text-fg-secondary max-lg:hidden">
-                  {createdLabel(log.createdAt, now)}
-                </BrowserLocalText>
-                <span className="wb-mono w-16 shrink-0 text-right text-fg">{formatCost(log.amount)}</span>
+              <li key={log.id} className="min-w-0 border-b border-hairline last:border-b-0">
+                <SpendLogRowLink log={log} now={now} />
               </li>
             ))}
           </ul>
@@ -128,3 +110,50 @@ export function SpendGenerationLog({
     </Panel>
   );
 }
+
+function SpendLogRowLink({ log, now }: { log: SpendLogRow; now: Date }) {
+  const cells = (
+    <>
+      <span className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="wb-thumb size-[34px]">
+          {log.job?.thumbnailSrc ? (
+            <MediaImage src={log.job.thumbnailSrc} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+          ) : null}
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="flex min-w-0 items-baseline gap-2">
+            {log.job ? (
+              <span className="truncate text-[14px] font-semibold leading-5 text-fg">{log.job.title}</span>
+            ) : null}
+            <span className={log.job ? "wb-mono shrink-0 text-fg-muted" : "wb-mono truncate text-fg"} title={log.jobId}>
+              {shortJobId(log.jobId)}
+            </span>
+          </span>
+          <span className="truncate text-[12px] leading-4 text-fg-muted lg:hidden">
+            {modelLabel(log.model)} - {typeLabel(log.type)}
+            <BrowserLocalText>{` - ${createdLabel(log.createdAt, now)}`}</BrowserLocalText>
+          </span>
+        </span>
+      </span>
+      <span className="w-[170px] shrink-0 truncate text-[13px] leading-[18px] text-fg max-lg:hidden" title={log.model}>
+        {modelLabel(log.model)}
+      </span>
+      <span className="w-[90px] shrink-0 text-[13px] leading-[18px] text-fg-secondary max-lg:hidden">
+        {typeLabel(log.type)}
+      </span>
+      <BrowserLocalText className="wb-mono w-[120px] shrink-0 whitespace-nowrap text-fg-secondary max-lg:hidden">
+        {createdLabel(log.createdAt, now)}
+      </BrowserLocalText>
+      <span className="wb-mono w-16 shrink-0 text-right text-fg">{formatCost(log.amount)}</span>
+    </>
+  );
+  if (!log.job) return <div className={ROW}>{cells}</div>;
+  return (
+    <Link href={log.job.href} className={cn(ROW, "hover:bg-raised/60 focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)] focus-visible:outline-none")}>
+      {cells}
+    </Link>
+  );
+}
+
+const ROW =
+  "wb-row min-h-[54px] transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf max-lg:gap-3 max-lg:px-0 max-lg:py-2.5 lg:h-[54px]";

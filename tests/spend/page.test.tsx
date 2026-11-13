@@ -20,6 +20,7 @@ const populatedDashboard: CostsPageClientProps = {
   totalCost: 12.75,
   currentPeriodCost: 4.82,
   changePercent: -12,
+  previousPeriodCost: 5.48,
   avgCycleCost: 0.24,
   totalJobs: 20,
   topModel: { name: "kling-3.0-motion", cost: 8.5, pct: "67" },
@@ -43,10 +44,24 @@ const populatedDashboard: CostsPageClientProps = {
       type: "video",
       amount: 1.2,
       createdAt: "2026-06-12T12:00:00.000Z",
+      job: {
+        title: "Morning routine clone",
+        href: "/generate/job-1",
+        thumbnailSrc: "/api/files/file-1/thumbnail?w=240",
+      },
+    },
+    {
+      id: "log-2",
+      jobId: "job-gone-123456",
+      model: "flux-pro",
+      type: "image",
+      amount: 0.25,
+      createdAt: "2026-06-12T12:00:00.000Z",
+      job: null,
     },
   ],
   logPage: 0,
-  logTotalCount: 1,
+  logTotalCount: 2,
   logHasNext: false,
   logFilterActive: false,
   search: "",
@@ -59,6 +74,7 @@ const emptyDashboard: CostsPageClientProps = {
   totalCost: 0,
   currentPeriodCost: 0,
   changePercent: 0,
+  previousPeriodCost: null,
   avgCycleCost: 0,
   totalJobs: 0,
   topModel: null,
@@ -113,8 +129,9 @@ assert.match(markup, /Generations/);
 assert.match(markup, /Budget left/);
 assert.match(markup, /Edit budget/);
 assert.match(markup, /\$4\.82/, "period spend is real text");
-assert.match(markup, /\$12\.75 all time/);
-assert.match(markup, /-12%/, "change against the previous period");
+assert.match(markup, /<span class="font-mono">\$12\.75<\/span> all time/, "only the figure is mono");
+assert.match(markup, />-\$0\.66</, "dollar change against the previous period");
+assert.doesNotMatch(emptyMarkup, />[+-]\$/, "no change chip without a previous period");
 assert.match(markup, /\$4\.82 \/ \$250/, "budget split as x / y");
 assert.match(markup, /By day/);
 assert.match(markup, /By format/);
@@ -124,7 +141,11 @@ assert.match(markup, /Export CSV/);
 assert.match(markup, /Search cost log/);
 assert.match(markup, /kling-3\.0-motion/);
 assert.match(markup, /flux-pro/);
-assert.match(markup, /job-1/);
+assert.match(markup, /href="\/generate\/job-1"/, "a row links to its job");
+assert.match(markup, /Morning routine clone/);
+assert.match(markup, /src="\/api\/files\/file-1\/thumbnail\?w=240"/);
+assert.match(markup, /title="job-gone-123456">job-gone</, "a row without a job shows its short id and no link");
+assert.doesNotMatch(markup, /href="\/generate\/job-gone/);
 assert.doesNotMatch(markup, /data-spend-|sr-only|—|–/);
 assert.ok(markup.indexOf("Budget left") < markup.indexOf("By day"));
 assert.ok(markup.indexOf("By day") < markup.indexOf("By format"));
@@ -148,6 +169,7 @@ const pagedLogs = Array.from({ length: 10 }, (_, index) => ({
   type: "image" as const,
   amount: 0.25,
   createdAt: "2026-06-12T12:00:00.000Z",
+  job: null,
 }));
 const pagedMarkup = renderToStaticMarkup(
   <TooltipProvider>

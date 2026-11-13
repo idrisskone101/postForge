@@ -4,12 +4,12 @@ import Link from "next/link";
 import {
   Button,
   EmptyState,
-  Skeleton,
   Toast,
   buttonClass,
 } from "@/components/workbench";
 import type { AutomationRecord } from "@/lib/automations";
 import { HubOverview } from "./hub-overview";
+import { HubSkeleton } from "./hub-skeleton";
 import { ManualResolutionDialog } from "./manual-resolution-dialog";
 import { PlanningCalendar } from "./planning-calendar";
 import { PublishReviewDialog } from "./publish-review-dialog";
@@ -88,7 +88,7 @@ export function AutomationsPageClient({
         <div className="wb-fade-in flex min-h-0 flex-1 flex-col gap-3">
           <HubOverview hub={hub} />
           <PlanningCalendar hub={hub} />
-          <div className="flex min-h-0 flex-1 flex-col gap-3 xl:flex-row">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 min-[1380px]:flex-row">
             <VideoAutomationList hub={hub} />
             <SlideshowAutomationList hub={hub} />
           </div>
@@ -127,17 +127,3 @@ export function AutomationsPageClient({
     </div>
   );
 }
-
-function HubSkeleton() {
-  return (
-    <div aria-busy="true" aria-label="Loading automations" className="flex min-h-0 flex-1 flex-col gap-3">
-      <Skeleton shape="panel" className="h-[98px] shrink-0" />
-      <Skeleton shape="panel" className="h-[212px] shrink-0" />
-      <div className="flex min-h-[320px] flex-1 flex-col gap-3 xl:flex-row">
-        <Skeleton shape="panel" className="min-h-[240px] flex-1" />
-        <Skeleton shape="panel" className="min-h-[240px] xl:w-[340px]" />
-      </div>
-    </div>
-  );
-}
-

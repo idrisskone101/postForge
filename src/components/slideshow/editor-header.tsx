@@ -16,6 +16,8 @@ export function EditorHeader() {
     onBack,
     onPublish,
   } = useSlideshowEditor();
+  const setTitle = (title: string) =>
+    updateProject((current) => ({ ...current, title }));
   return (
     <>
       <header className="wb-page-header pr-1" data-back="true">
@@ -30,16 +32,24 @@ export function EditorHeader() {
           <input
             aria-label="Slideshow title"
             value={draft.title}
-            onChange={(event) =>
-              updateProject((current) => ({
-                ...current,
-                title: event.target.value,
-              }))
-            }
+            onChange={(event) => setTitle(event.target.value)}
             placeholder="Untitled slideshow"
             size={1}
-            className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]"
+            className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] max-md:hidden"
           />
+          <span className="relative grid min-h-10 min-w-0 flex-1 items-center md:hidden">
+            <textarea
+              aria-label="Slideshow title"
+              value={draft.title}
+              rows={1}
+              onChange={(event) => setTitle(event.target.value.replace(/\n/g, " "))}
+              placeholder="Untitled slideshow"
+              className={`peer absolute inset-0 resize-none opacity-0 focus:static focus:opacity-100 focus:shadow-[0_0_0_2px_var(--pf-ember)] ${MOBILE_TITLE}`}
+            />
+            <span aria-hidden="true" className={`line-clamp-2 peer-focus:hidden ${MOBILE_TITLE}`}>
+              {draft.title || <span className="text-fg-muted">Untitled slideshow</span>}
+            </span>
+          </span>
         </div>
         <div className="wb-page-actions max-sm:w-full">
           <span className="flex flex-1 sm:flex-none">
@@ -71,3 +81,6 @@ export function EditorHeader() {
     </>
   );
 }
+
+const MOBILE_TITLE =
+  "field-sizing-content w-full rounded-lg bg-transparent px-1 text-[28px] font-bold leading-8 tracking-[-0.02em] text-fg outline-none [overflow-wrap:anywhere]";

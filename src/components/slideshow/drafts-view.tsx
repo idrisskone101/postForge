@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
@@ -22,13 +22,11 @@ export function DraftsView() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
 
-  const counts = useMemo(() => {
-    const base: Record<string, number> = { all: projects.length };
-    projects.forEach((project) => {
-      base[project.status] = (base[project.status] ?? 0) + 1;
-    });
-    return base;
-  }, [projects]);
+  const serverCounts = loading || error ? null : draftPages.statusCounts;
+  const counts: Record<string, number> | null =
+    serverCounts && draftPages.total !== null
+      ? { ...serverCounts, all: draftPages.total }
+      : null;
 
   const visible = projects.filter((project) => {
     const matchesQuery = project.title.toLowerCase().includes(query.toLowerCase());
@@ -62,9 +60,11 @@ export function DraftsView() {
               className="wb-segment"
             >
               {label}
-              <span className="text-[12px] font-semibold tabular-nums text-fg-muted">
-                {counts[id] ?? 0}
-              </span>
+              {counts ? (
+                <span className="text-[12px] font-semibold tabular-nums text-fg-muted">
+                  {counts[id] ?? 0}
+                </span>
+              ) : null}
             </button>
           ))}
         </div>
@@ -132,7 +132,7 @@ export function DraftsView() {
   );
 }
 
-const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 md:grid-cols-2 2xl:grid-cols-3";
+const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 lg:grid-cols-2 2xl:grid-cols-3";
 
 const STATUS_FILTERS: Array<{ id: string; label: string }> = [
   { id: "all", label: "All" },

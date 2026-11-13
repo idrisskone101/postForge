@@ -28,7 +28,7 @@ export function JobDetailHeader({
             Back
           </button>
           <h1
-            className="wb-page-title min-w-0 pl-2 max-lg:col-span-2 max-lg:row-start-2 max-lg:line-clamp-2 max-lg:min-h-16 max-lg:whitespace-normal max-lg:pl-1"
+            className="wb-page-title line-clamp-2 min-w-0 whitespace-normal pl-2 [overflow-wrap:anywhere] max-lg:col-span-2 max-lg:row-start-2 max-lg:min-h-16 max-lg:pl-1"
             title={getEditorTitle(job.prompt)}>
             {getEditorTitle(job.prompt)}
           </h1>

@@ -102,7 +102,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
     setSelectedImageModel,
     setCollections,
     setProjects,
-    setProjectsTotal: draftPages.setReportedTotal,
+    setProjectsTotal: draftPages.reportTotals,
     setProjectsError,
     setLoadingProjects,
   });

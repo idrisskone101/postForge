@@ -53,14 +53,14 @@ export function CloneActionBar({
       className="pb-[22px]"
     >
       <h2 className="wb-panel-title">Generation settings</h2>
-      <div className="flex min-w-0 items-end gap-3 max-md:flex-col max-md:items-stretch">
+      <div className="flex min-w-0 items-end gap-3 max-md:flex-col max-md:items-stretch xl:max-[1399px]:flex-wrap">
         <Field label={videoSelect.label} className="min-w-0 flex-1">
           <CloneModelSelect model={videoSelect} />
         </Field>
         <Field label={referenceSelect.label} className="min-w-0 flex-1">
           <CloneModelSelect model={referenceSelect} />
         </Field>
-        <div className="flex shrink-0 flex-col gap-2.5 pl-3 max-md:pl-0 max-md:pt-1">
+        <div className="flex shrink-0 flex-col gap-2.5 pl-3 max-md:pl-0 max-md:pt-1 xl:max-[1399px]:basis-full xl:max-[1399px]:flex-row xl:max-[1399px]:gap-6 xl:max-[1399px]:pl-0 xl:max-[1399px]:pt-1">
           <div className="flex items-center gap-2.5">
             <Toggle
               size={26}

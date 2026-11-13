@@ -210,7 +210,7 @@ function CloneOutputLoading() {
       <CloneOutputHeader />
       <div className="flex min-w-0 flex-1 flex-col gap-3 xl:flex-row">
         <Skeleton shape="panel" className="block min-h-[420px] flex-1 xl:min-h-[682px]" />
-        <div className="grid content-start gap-3 md:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
+        <div className="grid content-start gap-3 lg:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
           <Skeleton shape="panel" className="block h-[178px]" />
           <Skeleton shape="panel" className="block h-[188px]" />
           <Skeleton shape="panel" className="block h-[128px]" />

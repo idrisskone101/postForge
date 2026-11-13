@@ -2,6 +2,7 @@ import { MediaPreviewFrame } from "@/components/media-preview";
 import { Button, Field, IconButton, Panel, StatusBadge, StatusChip } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { CloneProductionStatePanel } from "@/components/clone/production-state";
 import type { CloneReferenceWorkspace } from "@/components/clone/view-models";
 
@@ -36,6 +37,7 @@ export function CloneReferenceReview({
   } = workspace;
   const busy = isSubmitting || isGenerating;
 
+  const sourceName = cloneSourceTitle(videoInfo?.label);
   return (
     <div className="flex min-w-0 gap-3 max-xl:flex-col">
       <Panel pad="roomy" className="min-w-0 flex-1 gap-5">
@@ -55,14 +57,15 @@ export function CloneReferenceReview({
                 src={sourcePreviewSrc}
                 width={videoInfo.width}
                 height={videoInfo.height}
-                alt={videoInfo.label || "Selected source preview"}
+                alt={sourceName?.title ?? "Selected source preview"}
                 variant="work"
                 showMetadata
               />
               <p className="truncate text-[13px] font-semibold leading-4 text-fg">
-                {videoInfo.label || "Selected TikTok source"}
+                {sourceName?.title ?? "Selected TikTok source"}
               </p>
               <p className="wb-mono text-fg-muted">
+                {sourceName?.shortId ? `${sourceName.shortId}  ` : null}
                 {durationSec}s · {videoInfo.width}x{videoInfo.height}
               </p>
             </div>

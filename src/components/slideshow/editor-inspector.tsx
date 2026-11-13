@@ -20,67 +20,71 @@ export function EditorInspector() {
   return (
     <aside
       aria-label="Slide inspector"
-      className="wb-panel justify-between gap-4 p-0 xl:w-[320px] xl:shrink-0"
+      className="wb-panel gap-0 p-0 xl:w-[320px] xl:shrink-0"
     >
-      <div className="flex min-h-0 flex-col gap-3.5 px-5 pt-[18px] xl:flex-1 xl:overflow-y-auto">
-        <label className="wb-field group">
-          <span className="wb-label transition-colors duration-160 ease-pf group-focus-within:text-ember-text">
-            Eyebrow
-          </span>
-          <input
-            value={activeSlide.eyebrow}
-            onChange={(event) => updateActiveSlide({ eyebrow: event.target.value })}
-            className="wb-input"
+      <div className="min-h-0 xl:flex-1 xl:overflow-y-auto" data-inspector-scroll>
+        <div className="flex flex-col gap-3.5 px-5 pb-6 pt-[18px]">
+          <label className="wb-field group">
+            <span className="wb-label transition-colors duration-160 ease-pf group-focus-within:text-ember-text">
+              Eyebrow
+            </span>
+            <input
+              value={activeSlide.eyebrow}
+              onChange={(event) => updateActiveSlide({ eyebrow: event.target.value })}
+              className="wb-input"
+            />
+          </label>
+          <CopyField
+            label="Headline"
+            strong
+            value={activeSlide.headline}
+            max={HEADLINE_MAX}
+            onChange={(headline) => updateActiveSlide({ headline })}
           />
-        </label>
-        <CopyField
-          label="Headline"
-          strong
-          value={activeSlide.headline}
-          max={HEADLINE_MAX}
-          onChange={(headline) => updateActiveSlide({ headline })}
-        />
-        <CopyField
-          label="Supporting copy"
-          value={activeSlide.body}
-          max={BODY_MAX}
-          onChange={(body) => updateActiveSlide({ body })}
-        />
-        <EditorTypeControls />
-        <EditorSlideSettings />
-        <EditorAdvancedSettings />
-      </div>
-      <div className="flex shrink-0 flex-col gap-2.5 px-5 pb-5">
-        <label className="flex flex-col gap-2.5 border-t border-hairline pt-4">
-          <span className="wb-panel-title">AI direction</span>
-          <textarea
-            value={activeSlide.prompt}
-            rows={3}
-            onChange={(event) => updateActiveSlide({ prompt: event.target.value })}
-            className="wb-input field-sizing-content max-h-[176px] min-h-[76px] resize-none py-2.5 leading-5"
+          <CopyField
+            label="Supporting copy"
+            value={activeSlide.body}
+            max={BODY_MAX}
+            onChange={(body) => updateActiveSlide({ body })}
           />
-        </label>
-        <div className="flex gap-2">
-          <Button
-            size={38}
-            className="min-w-0 flex-1 px-2"
-            aria-busy={regenerating || undefined}
-            disabled={regenerating}
-            onClick={() => void onRegenerateText()}
-          >
-            {regenerating ? "Rewriting" : "Regenerate text"}
-          </Button>
-          <Button
-            variant="strong"
-            size={38}
-            className="min-w-0 flex-1 px-2"
-            aria-busy={regeneratingImage || undefined}
-            disabled={regeneratingImage || saveState === "saving"}
-            onClick={() => void onRegenerateImage()}
-          >
-            {regeneratingImage ? "Rendering" : "Regenerate image"}
-          </Button>
+          <EditorTypeControls />
+          <EditorSlideSettings />
+          <EditorAdvancedSettings />
+          <label className="flex flex-col gap-2.5 border-t border-hairline pt-4">
+            <span className="wb-panel-title">AI direction</span>
+            <textarea
+              value={activeSlide.prompt}
+              rows={3}
+              onChange={(event) => updateActiveSlide({ prompt: event.target.value })}
+              className="wb-input h-[76px] min-h-[76px] resize-none overflow-y-auto py-2.5 leading-5"
+            />
+          </label>
         </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none sticky bottom-0 -mt-6 h-6 bg-gradient-to-t from-panel to-transparent max-xl:hidden"
+        />
+      </div>
+      <div className="flex shrink-0 gap-2 px-5 pb-5 pt-3">
+        <Button
+          size={38}
+          className="min-w-0 flex-1 px-2"
+          aria-busy={regenerating || undefined}
+          disabled={regenerating}
+          onClick={() => void onRegenerateText()}
+        >
+          {regenerating ? "Rewriting" : "Regenerate text"}
+        </Button>
+        <Button
+          variant="strong"
+          size={38}
+          className="min-w-0 flex-1 px-2"
+          aria-busy={regeneratingImage || undefined}
+          disabled={regeneratingImage || saveState === "saving"}
+          onClick={() => void onRegenerateImage()}
+        >
+          {regeneratingImage ? "Rendering" : "Regenerate image"}
+        </Button>
       </div>
     </aside>
   );

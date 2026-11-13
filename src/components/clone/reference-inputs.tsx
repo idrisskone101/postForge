@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { FileImage } from "@/components/file-image";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { Button, Icon, StatusChip } from "@/components/workbench";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
 import { useCloneReference } from "@/components/clone/clone-reference-provider";
 import { cn } from "@/lib/utils";
@@ -57,7 +58,7 @@ export function CloneReferenceInputs() {
                   src={sourcePreviewSrc}
                   width={videoInfo.width}
                   height={videoInfo.height}
-                  alt={videoInfo.label || "Selected source preview"}
+                  alt={cloneSourceTitle(videoInfo.label)?.title ?? "Selected source preview"}
                   variant="card"
                   frameAspectRatio="9/16"
                   className="size-full"

@@ -7,7 +7,7 @@ import { budgetMoney, changeLabel } from "./spend-format";
 import type { SpendStatCardsProps } from "./types";
 
 export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCardsProps) {
-  const change = changeLabel(dashboard.changePercent);
+  const change = changeLabel(dashboard.currentPeriodCost, dashboard.previousPeriodCost);
   const over = dashboard.currentPeriodCost > view.budget;
   return (
     <StatStrip
@@ -16,20 +16,26 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
         {
           label: "Spend",
           value: formatCost(dashboard.currentPeriodCost),
-          aside: change ? (
-            <span className={CHIP} title="Against the previous period of the same length">
-              {change}
-            </span>
-          ) : null,
-          foot: <span className="wb-mono">{formatCost(dashboard.totalCost)} all time</span>,
+          aside: (
+            <>
+              {change ? (
+                <span className={CHIP} title="Against the previous period of the same length">
+                  {change}
+                </span>
+              ) : null}
+              <span className={SIDE_FIGURE}>
+                <span className="font-mono">{formatCost(dashboard.totalCost)}</span> all time
+              </span>
+            </>
+          ),
         },
         {
           label: "Generations",
           value: dashboard.totalJobs,
-          foot: (
-            <span>
+          aside: (
+            <span className={SIDE_FIGURE}>
               Avg cost{" "}
-              <span className="wb-mono">
+              <span className="font-mono">
                 {dashboard.totalJobs > 0 ? formatCost(dashboard.avgCycleCost) : "-"}
               </span>
             </span>
@@ -60,13 +66,16 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
 const CHIP =
   "inline-flex h-[22px] shrink-0 items-center whitespace-pre rounded-full bg-raised px-[9px] font-mono text-[12px] font-normal leading-4 tracking-normal text-fg-secondary";
 
+const SIDE_FIGURE =
+  "ml-auto shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:basis-full max-md:text-right";
+
 const STRIP_CLASS = cn(
   "shrink-0 [&>.wb-stat:nth-child(2)]:flex-[0.8] [&>.wb-stat:nth-child(3)]:flex-[1.6]",
   "lg:max-xl:[&>.wb-stat:nth-child(3)]:flex-[2.2]",
   "max-md:flex-col max-md:px-5 max-md:py-1",
   "max-md:[&>.wb-stat]:min-h-[60px] max-md:[&>.wb-stat]:flex-none max-md:[&>.wb-stat]:flex-row max-md:[&>.wb-stat]:flex-wrap max-md:[&>.wb-stat]:items-center max-md:[&>.wb-stat]:justify-between max-md:[&>.wb-stat]:py-3",
   "max-md:[&>.wb-stat]:border-l-0 max-md:[&>.wb-stat]:px-0 max-md:[&_.wb-stat-value]:text-[28px] max-md:[&_.wb-stat-value]:leading-8",
-  "max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:flex-wrap max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:justify-end max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:gap-y-3",
+  "max-md:[&_.wb-stat-value]:flex-wrap max-md:[&_.wb-stat-value]:justify-end max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:gap-y-3",
   "max-md:[&>.wb-stat+.wb-stat]:border-t max-md:[&>.wb-stat+.wb-stat]:border-hairline",
   "md:max-lg:flex-wrap md:max-lg:gap-y-4 md:max-lg:[&>.wb-stat:nth-child(3)]:basis-full md:max-lg:[&>.wb-stat:nth-child(3)]:border-l-0 md:max-lg:[&>.wb-stat:nth-child(3)]:border-t md:max-lg:[&>.wb-stat:nth-child(3)]:border-hairline md:max-lg:[&>.wb-stat:nth-child(3)]:pl-0 md:max-lg:[&>.wb-stat:nth-child(3)]:pt-4",
 );

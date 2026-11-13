@@ -3,6 +3,7 @@ import { Field } from "@/components/workbench/field";
 import { KeyValueList } from "@/components/workbench/key-value-list";
 import { Panel } from "@/components/workbench/panel";
 import { Toggle } from "@/components/workbench/toggle";
+import { TimeSelect } from "./time-select";
 import type { SlideshowAutomationFieldsModel } from "./types";
 
 export function SlideshowAutomationBuilderSide({
@@ -38,14 +39,7 @@ export function SlideshowAutomationBuilderSide({
           )}
         </div>
         <Field label="Run time" htmlFor="slideshow-automation-time" className="w-[132px]">
-          <input
-            id="slideshow-automation-time"
-            type="time"
-            className="wb-input"
-            data-mono="true"
-            value={time}
-            onChange={(event) => fields.onTimeChange(event.target.value)}
-          />
+          <TimeSelect id="slideshow-automation-time" value={time} onChange={fields.onTimeChange} />
         </Field>
         <div className="flex items-center gap-3 border-t border-hairline pt-3">
           <span className="flex-1 text-[14px] font-semibold leading-5 text-fg" aria-hidden="true">

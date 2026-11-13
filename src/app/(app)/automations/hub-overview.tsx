@@ -14,7 +14,9 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
     integrationStatuses,
     integrationsLoading,
     setFilter,
+    error,
   } = hub;
+  const unavailable = Boolean(error);
   const blockedDays = new Set(
     calendarEntries.filter((entry) => entry.needsAttention).flatMap((entry) => entry.days)
   );
@@ -40,7 +42,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
       <section className="wb-stat-strip min-w-0 flex-1 flex-wrap gap-y-4 [&>.wb-stat:last-child]:pr-6">
         <RatioStat
           label="Ready plans"
-          value={readyPlanCount}
+          value={unavailable ? null : readyPlanCount}
           total={planCount}
           meter={
             <SplitMeter
@@ -53,7 +55,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
         />
         <RatioStat
           label="Planned days"
-          value={scheduledDays}
+          value={unavailable ? null : scheduledDays}
           total={DAYS.length}
           meter={
             <SplitMeter
@@ -88,7 +90,7 @@ function RatioStat({
   meter,
 }: {
   label: string;
-  value: number;
+  value: number | null;
   total: number;
   meter: React.ReactNode;
 }) {
@@ -96,9 +98,13 @@ function RatioStat({
     <div className="wb-stat">
       <span className="wb-label">{label}</span>
       <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-        <span className="wb-stat-value">{value}</span>
-        <span className="text-[16px] font-semibold leading-[18px] text-fg-muted">/ {total}</span>
-        <span className="flex min-w-0 max-w-full self-center sm:ml-2">{meter}</span>
+        <span className="wb-stat-value">{value ?? "-"}</span>
+        {value === null ? null : (
+          <>
+            <span className="text-[16px] font-semibold leading-[18px] text-fg-muted">/ {total}</span>
+            <span className="flex min-w-0 max-w-full self-center sm:ml-2">{meter}</span>
+          </>
+        )}
       </div>
     </div>
   );

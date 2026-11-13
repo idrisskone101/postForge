@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button, Icon, IconButton } from "@/components/workbench";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import type {
   CloneOutputHandoffState,
   CloneOutputReviewView,
@@ -18,11 +19,12 @@ export function CloneOutputPanelHead({ review }: { review: CloneOutputReviewView
     onHandoff,
   } = review;
   const title =
-    sourceVideo?.label ?? job.tikTokSource?.label ?? `Clone ${job.id.slice(0, 8)}`;
+    cloneSourceTitle(sourceVideo?.label ?? job.tikTokSource?.label)?.title ??
+    `Clone ${job.id.slice(0, 8)}`;
 
   return (
     <div className="flex min-h-[34px] shrink-0 flex-wrap items-center justify-between gap-3">
-      <h2 className="wb-panel-title min-w-0 [overflow-wrap:anywhere]">{title}</h2>
+      <h2 className="wb-panel-title min-w-0 truncate">{title}</h2>
       {(featured || isCompleted) && (
         <div className="flex shrink-0 items-center gap-2">
           {featured && (

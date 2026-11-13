@@ -27,7 +27,7 @@ export function CloneOutputReviewDetail({ review }: { review: CloneOutputReviewM
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-3 xl:flex-row">
       <CloneOutputReviewPreview review={view} />
-      <div className="grid min-w-0 content-start gap-3 md:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
+      <div className="grid min-w-0 content-start gap-3 lg:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
         <CloneOutputReviewActions review={view} />
         <CloneOutputReviewSidebar review={view} />
       </div>
