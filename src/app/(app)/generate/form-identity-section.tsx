@@ -38,13 +38,15 @@ export function GenerateIdentitySection({
         }
       >
         {(close) => (
-          <AvatarPicker
-            selectedId={avatarId}
-            onSelect={(id) => {
-              onSelect(id);
-              if (id) close();
-            }}
-          />
+          <div data-avatar-stacked className="contents">
+            <AvatarPicker
+              selectedId={avatarId}
+              onSelect={(id) => {
+                onSelect(id);
+                if (id) close();
+              }}
+            />
+          </div>
         )}
       </ReferencePickerPopover>
       {avatarId && identityStatus.tone === "ready" ? (

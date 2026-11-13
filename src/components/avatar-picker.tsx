@@ -164,7 +164,7 @@ export function AvatarPicker({
   );
 
   return (
-    <div className="@container flex min-w-0 flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -180,7 +180,7 @@ export function AvatarPicker({
         />
       )}
 
-      <div className="flex flex-col gap-3 @[640px]:flex-row @[640px]:items-start">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
         <div className="-m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1">
           {orderedAvatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
