@@ -54,6 +54,13 @@ export const STRIP_CLASS = cn(
  * second column's left edge and the second row's top edge each run unbroken. The cells
  * have square corners at every width, since a radius curls the ends of a one-sided border.
  */
+/**
+ * The focus ring is drawn 12px around the stat's content, not on the cell: the cells have no radius
+ * and the outer ones no side padding, so a ring on the cell would sit tight on the label.
+ */
+const STAT_BODY =
+  "relative flex min-w-0 flex-col gap-0.5 after:pointer-events-none after:absolute after:-inset-3 after:rounded-[8px] after:opacity-0 after:shadow-[inset_0_0_0_2px_var(--pf-ember)] group-focus-visible:after:opacity-100";
+
 export const GRID_CELL = [
   "max-[1023px]:pr-4 max-[1023px]:pb-4",
   "max-[1023px]:pl-4 max-[1023px]:pr-0 max-[1023px]:pb-4",
@@ -75,12 +82,14 @@ function StatLink({
   children: ReactNode;
 }) {
   return (
-    <Link href={href} className={cn("wb-stat group", GRID_CELL[index])}>
-      <span className="wb-label transition-colors duration-[var(--pf-dur-feedback)] ease-pf group-hover:text-fg-secondary">
-        {label}
+    <Link href={href} className={cn("wb-stat group outline-none", GRID_CELL[index])}>
+      <span className={STAT_BODY}>
+        <span className="wb-label transition-colors duration-[var(--pf-dur-feedback)] ease-pf group-hover:text-fg-secondary">
+          {label}
+        </span>
+        <span className="wb-stat-value">{value}</span>
+        {children ? <span className="wb-stat-foot">{children}</span> : null}
       </span>
-      <span className="wb-stat-value">{value}</span>
-      {children ? <span className="wb-stat-foot">{children}</span> : null}
     </Link>
   );
 }
