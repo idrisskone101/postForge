@@ -249,11 +249,13 @@ export function ModelsPanel({ onSaved }: { onSaved: (message: string) => void })
           {group("Video models", videoModels, defaultVideoModelId, setDefaultVideoModelId)}
         </div>
       )}
-      <PanelFoot>
-        <Button variant="primary" size={40} onClick={() => void handleSave()} disabled={saving || !catalog}>
-          {saving ? "Saving" : "Save model settings"}
-        </Button>
-      </PanelFoot>
+      {!loading && (
+        <PanelFoot>
+          <Button variant="primary" size={40} onClick={() => void handleSave()} disabled={saving || !catalog}>
+            {saving ? "Saving" : "Save model settings"}
+          </Button>
+        </PanelFoot>
+      )}
     </Panel>
   );
 }

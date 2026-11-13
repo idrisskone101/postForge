@@ -25,7 +25,7 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
     <div className="flex flex-col gap-4 border-t border-hairline py-[22px]">
       <div className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 @min-[720px]:flex @min-[720px]:gap-3.5">
         <RowTile tile={view.tile} />
-        <div className="flex min-w-0 flex-col gap-0.5 @min-[720px]:flex-1">
+        <div className="flex min-w-0 flex-col justify-center gap-0.5 @max-[270px]:min-h-[52px] @min-[720px]:flex-1">
           <span className="text-sm font-semibold leading-[18px] text-fg">{view.name}</span>
           {view.sub && <span className="break-words text-[13px] leading-4 text-fg-muted">{view.sub}</span>}
           {!view.sub && view.chip === null && (
