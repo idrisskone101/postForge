@@ -258,10 +258,12 @@ export function JobVariationStrip({
  * Below 1280 the action dock is pinned to the viewport bottom. With variations the stage gives up
  * height, down to 200px, so the strip lands above the dock on the first screen instead of under it.
  * The offset is everything else on that screen: page top and header, the 149px strip, the dock and
- * its 12px foot, the 12px gap above the strip and the 24px fade gap above the dock.
+ * its 12px foot, the 12px gap above the strip and the 24px fade gap above the dock. Under 680px tall
+ * the dock is in flow, so the stage keeps a 300px floor and the page scrolls.
  */
 const STAGE_ABOVE_STRIP = [
   "max-xl:[--first-screen-rest:485px] md:max-xl:[--first-screen-rest:393px] lg:max-xl:[--first-screen-rest:345px]",
-  "max-sm:min-h-[max(200px,min(420px,calc(100dvh-var(--first-screen-rest))))]",
-  "sm:max-xl:min-h-[max(200px,min(520px,calc(100dvh-var(--first-screen-rest))))]",
+  "[--stage-floor:200px] [@media(max-height:679.98px)]:[--stage-floor:300px]",
+  "max-sm:min-h-[max(var(--stage-floor),min(420px,calc(100dvh-var(--first-screen-rest))))]",
+  "sm:max-xl:min-h-[max(var(--stage-floor),min(520px,calc(100dvh-var(--first-screen-rest))))]",
 ].join(" ");
