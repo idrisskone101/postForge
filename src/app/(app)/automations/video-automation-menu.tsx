@@ -45,6 +45,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {canControlLocalSchedule ? (
         <button
           onClick={onChangeLocalSchedule}
+          role="menuitem"
           className={menuItemClass}
         >
           {scheduleActive ? <Pause className="size-4 shrink-0" strokeWidth={1.5} /> : <Play className="size-4 shrink-0" strokeWidth={1.5} />}
@@ -63,6 +64,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <button
         onClick={onGenerateReviewDraft}
+        role="menuitem"
         className={menuItemClass}
       >
         <WandSparkles className="size-4 shrink-0" strokeWidth={1.5} />
@@ -76,6 +78,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
         record.publication?.providerStatus !== "LOCAL_RETENTION_OUTCOME_UNKNOWN" && (
           <button
             onClick={onOpenPublishReview}
+            role="menuitem"
             className={menuItemClass}
           >
             <Send className="size-4 shrink-0" strokeWidth={1.5} />
@@ -90,6 +93,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {canRefreshPublication && (
         <button
           onClick={onRefreshPublication}
+          role="menuitem"
           className={menuItemClass}
         >
           <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
@@ -100,6 +104,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {pendingRecoverable && (
         <button
           onClick={onRecoverPendingPublication}
+          role="menuitem"
           className={menuItemClass}
         >
           <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
@@ -157,6 +162,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <Link
         href={`/automations/new?id=${encodeURIComponent(record.id)}`}
+        role="menuitem"
         className={menuItemClass}
       >
         <Edit3 className="size-4 shrink-0" strokeWidth={1.5} /> Edit workflow
@@ -164,6 +170,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <button
         onClick={onDuplicate}
+        role="menuitem"
         className={menuItemClass}
       >
         <Copy className="size-4 shrink-0" strokeWidth={1.5} /> Duplicate
@@ -179,6 +186,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       ) : (
         <button
           onClick={onRemove}
+          role="menuitem"
           className={menuDangerItemClass}
         >
           <Trash2 className="size-4 shrink-0" strokeWidth={1.5} /> Delete
