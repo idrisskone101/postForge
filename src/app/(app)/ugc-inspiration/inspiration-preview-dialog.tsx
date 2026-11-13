@@ -78,7 +78,9 @@ function PreviewBody({
             <span className="truncate text-[14px] leading-[18px] font-semibold text-fg">
               {video.creatorDisplayName || video.creatorHandle}
             </span>
-            <span className="truncate text-[12px] leading-4 text-fg-muted">{video.creatorHandle}</span>
+            {video.creatorDisplayName && video.creatorDisplayName !== video.creatorHandle ? (
+              <span className="truncate text-[12px] leading-4 text-fg-muted">{video.creatorHandle}</span>
+            ) : null}
           </span>
           <StatusChip tone={STATUS_CHIP_TONE[tone]}>{inspirationSourceStatusLabel(video)}</StatusChip>
         </div>
