@@ -68,7 +68,7 @@ export function GalleryToolbar({
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <label
           data-gallery-search="true"
-          className="wb-input-wrap min-w-0 flex-[1_1_220px]"
+          className="wb-input-wrap min-w-0 flex-[1_1_140px]"
           data-size="36"
         >
           <Icon name="search" size={15} className="shrink-0 text-fg-muted" />
@@ -91,7 +91,7 @@ export function GalleryToolbar({
           options={filterOptions}
           className="max-sm:w-full max-sm:[&>.wb-segment]:flex-1"
         />
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <SortMenu value={sortOrder} onChange={chooseSort} />
           <Segmented<GalleryView>
             label="Layout"
