@@ -15,11 +15,11 @@ export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function statusLabel(record: AutomationRecord) {
   if (record.status === "active") {
     return isAutomationExecutionEnabled(record)
-      ? "Local schedule active"
-      : "Local schedule off";
+      ? "Active"
+      : "Schedule off";
   }
   return record.status === "paused"
-    ? "Local schedule paused"
+    ? "Paused"
     : record.status === "needs_connection"
       ? "Needs connection"
       : record.status[0].toUpperCase() + record.status.slice(1);
