@@ -1143,7 +1143,13 @@
  * Ad-hoc controls opt in with .wb-hit. The toggle uses ::before because ::after is its thumb.
  */
 @media (pointer: coarse) {
-  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, .wb-step, .wb-hit, label.wb-input-wrap) {
+  /* A control that is already positioned (a corner badge, a sheet close button) keeps its own position:
+     it is a containing block for the hit area as it stands. */
+  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, .wb-step, .wb-hit, label.wb-input-wrap):not(
+      [class*="absolute"],
+      [class*="fixed"],
+      [class*="sticky"]
+    ) {
     position: relative;
   }
 
@@ -1181,9 +1187,15 @@
     margin-right: 3px;
   }
 
-  /* Segments touch their neighbours: the area grows only into the 2px gap. */
-  .wb-segment::after {
-    width: calc(100% + 2px);
+  /* Segments touch their neighbours and sit in a bed that scrolls: the area stays inside the segment's
+     own width and grows only into the bed's 4px block padding, so it never adds scroll range. */
+  .wb-segmented {
+    overflow-y: hidden;
+  }
+
+  .wb-segmented .wb-segment::after {
+    width: 100%;
+    height: min(44px, calc(100% + 8px));
   }
 
   /* Chips and 32px pills stack with 8px gaps: 40px splits that gap exactly. */
