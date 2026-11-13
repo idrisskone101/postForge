@@ -1,9 +1,11 @@
 "use client";
 
-import { Check, CircleAlert, Loader2, ShieldCheck } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Button, Icon } from "@/components/workbench";
 import { automationDestinationLabel } from "@/lib/automations";
 import { cn } from "@/lib/utils";
 import type { ManualResolutionDialogState } from "./hub-types";
+import { keepTabInDialog } from "./publish-dialog-controls";
 
 export function ManualResolutionDialog({
   state,
@@ -18,89 +20,82 @@ export function ManualResolutionDialog({
 }) {
   const published = state.resolution === "published";
   const provider = automationDestinationLabel(state.record.destination);
-  return (
+  return createPortal(
     <div
-      className="pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-black/55 backdrop-blur-sm"
+      className="pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="manual-resolution-title"
+      onKeyDown={keepTabInDialog}
     >
-      <div className="max-h-full w-full min-w-0 max-w-[470px] overflow-y-auto rounded-[12px] border border-border bg-[var(--pf-surface)] p-5 shadow-2xl sm:p-6">
+      <div className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
         <span
           className={cn(
-            "grid size-10 place-items-center rounded-full",
-            published
-              ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-              : "bg-[var(--pf-lamp-amber)]/10 text-[var(--pf-lamp-amber)]"
+            "grid size-9 shrink-0 place-items-center rounded-full",
+            published ? "bg-ok-tint text-ok" : "bg-warn-tint text-warn"
           )}
         >
-          {published ? (
-            <Check className="size-4" />
-          ) : (
-            <CircleAlert className="size-4" />
-          )}
+          <Icon name={published ? "check" : "alert"} size={18} strokeWidth={2} />
         </span>
 
-        <h2
-          id="manual-resolution-title"
-          className="mt-1 min-w-0 break-words text-[20px] font-semibold tracking-[-0.035em] [overflow-wrap:anywhere]"
-        >
-          {published
-            ? `Confirm this exact ${provider} post is live`
-            : `Confirm ${provider} did not publish this attempt`}
-        </h2>
-        <p className="mt-2 min-w-0 break-words text-[11px] leading-5 text-muted-foreground [overflow-wrap:anywhere] dark:text-[var(--pf-muted)]">
-          {published
-            ? "Only continue after you personally found this exact video on the connected account. PostForge will record your confirmation as the final outcome."
-            : "Only continue after checking the connected account after the provider settling window. This unlocks a new explicit review and could duplicate a delayed post if the verification is wrong."}
-        </p>
-        <div className="mt-3 min-w-0 rounded-lg bg-[var(--pf-active)] p-3 text-[11px] text-muted-foreground dark:bg-[var(--pf-active)] dark:text-[var(--pf-muted)]">
-          <b className="block min-w-0 break-words [overflow-wrap:anywhere]">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h2
+            id="manual-resolution-title"
+            className="wb-panel-title break-words [overflow-wrap:anywhere]"
+          >
+            {published
+              ? `Confirm this exact ${provider} post is live`
+              : `Confirm ${provider} did not publish this attempt`}
+          </h2>
+          <p className="min-w-0 break-words text-[13px] leading-5 text-fg-secondary [overflow-wrap:anywhere]">
+            {published
+              ? "Only continue after you personally found this exact video on the connected account. PostForge will record your confirmation as the final outcome."
+              : "Only continue after checking the connected account after the provider settling window. This unlocks a new explicit review and could duplicate a delayed post if the verification is wrong."}
+          </p>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-raised px-3.5 py-3">
+          <span className="min-w-0 break-words text-[13px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]">
             {state.record.name}
-          </b>
-          <span className="mt-1 block min-w-0 break-words [overflow-wrap:anywhere]">
+          </span>
+          <span className="min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
             Account {state.record.accountLabel || state.record.accountId || "unknown"}
           </span>
         </div>
+
         {state.error && (
           <p
             role="alert"
-            className="mt-3 min-w-0 break-words rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 p-3 text-[11px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]"
+            className="wb-notice min-w-0 break-words [overflow-wrap:anywhere]"
+            data-tone="bad"
           >
             {state.error}
           </p>
         )}
-        <div className="mt-5 flex min-w-0 flex-col-reverse gap-2 min-[420px]:flex-row min-[420px]:justify-end pb-[max(0px,env(safe-area-inset-bottom))]">
-          <button
-            type="button"
+
+        <div className="flex min-w-0 flex-col-reverse gap-2.5 pt-1 pb-[max(0px,env(safe-area-inset-bottom))] min-[420px]:flex-row min-[420px]:justify-end">
+          <Button
+            size={40}
+            autoFocus
             onClick={onClose}
             disabled={busy}
-            className="pf-button-secondary justify-center disabled:opacity-45"
+            className="w-full min-[420px]:w-auto"
           >
             Cancel
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="strong"
+            size={40}
             onClick={onConfirm}
             disabled={busy}
-            className={cn(
-              "inline-flex h-9 items-center justify-center gap-2 rounded-lg px-3 text-[13px] font-semibold text-white disabled:opacity-45",
-              published ? "bg-[var(--pf-success)]" : "bg-[var(--pf-lamp-amber)]"
-            )}
+            aria-busy={busy || undefined}
+            className="w-full min-[420px]:w-auto"
           >
-            {busy ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : published ? (
-              <Check className="size-3.5" />
-            ) : (
-              <ShieldCheck className="size-3.5" />
-            )}
-            {published
-              ? "I verified it is published"
-              : "I verified it was not published"}
-          </button>
+            {published ? "I verified it is published" : "I verified it was not published"}
+          </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
+import { armPlaybookFirstPaint } from "./playbook-first-paint";
 
 export function AutomationBuilderClientLazy({
   search,
@@ -13,18 +14,8 @@ export function AutomationBuilderClientLazy({
   const [ready, setReady] = useState(needsSession);
   useEffect(() => {
     if (needsSession) return;
-    const go = () => setReady(true);
-    window.addEventListener("pointerdown", go, { once: true });
-    window.addEventListener("keydown", go, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", go);
-      window.removeEventListener("keydown", go);
-    };
+    return armPlaybookFirstPaint(() => setReady(true));
   }, [needsSession]);
-  useEffect(() => {
-    if (!ready) return;
-    document.querySelector("[data-playbook-first-paint]")?.setAttribute("hidden", "");
-  }, [ready]);
   if (!ready) return null;
   return <AutomationBuilderClientDynamic search={search} />;
 }

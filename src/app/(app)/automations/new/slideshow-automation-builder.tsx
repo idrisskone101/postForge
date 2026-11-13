@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import {
   createSlideshowAutomation,
   fetchSlideshowAutomations,
@@ -11,8 +10,12 @@ import {
 import { fetchAllSlideshowProjectPages } from "@/lib/slideshow/list-client";
 import type { SlideshowAutomation, SlideshowProjectListItem } from "@/components/slideshow/types";
 import { fetchPlatformCollections, type PlatformCollectionSummary } from "@/lib/collections-client";
-import { SlideshowAutomationBuilderChrome } from "./slideshow-automation-builder-chrome";
+import {
+  SlideshowAutomationBuilderChrome,
+  SlideshowAutomationBuilderSkeleton,
+} from "./slideshow-automation-builder-chrome";
 import { SlideshowAutomationBuilderFields } from "./slideshow-automation-builder-fields";
+import { SlideshowAutomationBuilderSide } from "./slideshow-automation-builder-side";
 
 export function SlideshowAutomationBuilder({
   search,
@@ -136,60 +139,44 @@ export function SlideshowAutomationBuilder({
     }
   };
 
-  if (loading) {
-    return (
-      <div className="grid min-h-[480px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-[var(--pf-orange)]" />
-      </div>
-    );
-  }
+  if (loading) return <SlideshowAutomationBuilderSkeleton />;
+
+  const model = {
+    name,
+    projectId,
+    days,
+    time,
+    active,
+    visualPolicy,
+    imageCollectionId,
+    hooks,
+    projects,
+    collections,
+    expectedSlideCount,
+    estimatedImageCost,
+    saving,
+    saveError,
+    existing: Boolean(existing),
+    onNameChange: setName,
+    onProjectChange: (value: string) => {
+      setProjectId(value);
+      if (value) setImageCollectionId("");
+    },
+    onVisualPolicyChange: setVisualPolicy,
+    onImageCollectionChange: setImageCollectionId,
+    onHooksChange: setHooks,
+    onToggleDay: toggleDay,
+    onTimeChange: setTime,
+    onActiveChange: setActive,
+    onSubmit: submit,
+    saveLabel: slideshowSaveLabel(saving, Boolean(existing)),
+  };
 
   return (
-    <div className="mx-auto max-w-[720px] px-5 py-6 sm:px-7 lg:px-8">
-      <SlideshowAutomationBuilderChrome existing={Boolean(existing)} />
-
-      {loadError ? (
-        <p
-          role="alert"
-          className="mt-4 rounded-[8px] bg-[var(--pf-danger)]/10 p-3 text-[11px] text-[var(--pf-danger)]"
-        >
-          {loadError}
-        </p>
-      ) : null}
-
-      <SlideshowAutomationBuilderFields
-        fields={{
-          name,
-          projectId,
-          days,
-          time,
-          active,
-          visualPolicy,
-          imageCollectionId,
-          hooks,
-          projects,
-          collections,
-          expectedSlideCount,
-          estimatedImageCost,
-          saving,
-          saveError,
-          existing: Boolean(existing),
-          onNameChange: setName,
-          onProjectChange: (value) => {
-            setProjectId(value);
-            if (value) setImageCollectionId("");
-          },
-          onVisualPolicyChange: setVisualPolicy,
-          onImageCollectionChange: setImageCollectionId,
-          onHooksChange: setHooks,
-          onToggleDay: toggleDay,
-          onTimeChange: setTime,
-          onActiveChange: setActive,
-          onSubmit: submit,
-          saveLabel: slideshowSaveLabel(saving, Boolean(existing)),
-        }}
-      />
-    </div>
+    <SlideshowAutomationBuilderChrome title={name.trim() || "Untitled automation"}>
+      <SlideshowAutomationBuilderFields fields={model} loadError={loadError} />
+      <SlideshowAutomationBuilderSide fields={model} />
+    </SlideshowAutomationBuilderChrome>
   );
 }
 

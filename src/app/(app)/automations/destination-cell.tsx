@@ -1,13 +1,6 @@
 "use client";
 
 import {
-  Check,
-  CircleAlert,
-  Inbox,
-  Loader2,
-} from "lucide-react";
-import { SocialProviderIcon } from "@/components/social-provider-icon";
-import {
   automationDestinationLabel,
   isAutomationSocialDestination,
   resolveAutomationDestination,
@@ -27,16 +20,11 @@ export function AutomationDestinationCell({
 }) {
   if (!isAutomationSocialDestination(record.destination)) {
     return (
-      <div className="flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground">
-        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-          <Inbox className="size-3.5" />
+      <div className="flex min-w-0 flex-col">
+        <span className="truncate text-[13px] font-semibold leading-[18px] text-fg">
+          Review queue
         </span>
-        <span className="min-w-0">
-          <b className="block truncate text-[11px]">Review queue</b>
-          <small className="mt-0.5 block truncate text-[11px] text-muted-foreground">
-            No external account
-          </small>
-        </span>
+        <span className="truncate text-[12px] leading-4 text-fg-muted">No external account</span>
       </div>
     );
   }
@@ -52,40 +40,24 @@ export function AutomationDestinationCell({
   const accountLabel = readiness.accountLabel ?? record.accountLabel;
 
   return (
-    <div className="flex min-w-0 items-start gap-2 text-[11px] text-muted-foreground">
-      <SocialProviderIcon
-        provider={record.destination}
-        label={providerName}
-        youtubeVariant="shorts"
-        className="size-7 shrink-0"
-      />
-      <span className="min-w-0">
-        <b className="block truncate text-[11px]">{providerName}</b>
-        <small className="mt-0.5 block truncate text-[11px] text-muted-foreground">
-          {accountLabel ?? "No connected account"}
-        </small>
-        {loading ? (
-          <small className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Loader2 className="size-2.5 animate-spin" /> Checking live connection
-          </small>
-        ) : readiness.ready ? (
-          <small className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-success)]">
-            <Check className="size-2.5" /> Connection verified
-          </small>
-        ) : (
-          <small
-            className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-danger)]"
-            title={readiness.message}
-          >
-            <CircleAlert className="size-2.5 shrink-0" />{" "}
-            {destinationWarningLabel(readiness.code)}
-          </small>
-        )}
+    <div className="flex min-w-0 flex-col">
+      <span className="truncate text-[13px] font-semibold leading-[18px] text-fg">
+        {providerName}
       </span>
+      {loading ? (
+        <span className="truncate text-[12px] leading-4 text-fg-muted">Checking connection</span>
+      ) : readiness.ready ? (
+        <span className="truncate text-[12px] leading-4 text-fg-muted" title={accountLabel ?? undefined}>
+          {record.approvalRequired ? "Approval required" : (accountLabel ?? "Connection verified")}
+        </span>
+      ) : (
+        <span className="truncate text-[12px] font-semibold leading-4 text-warn" title={readiness.message}>
+          {destinationWarningLabel(readiness.code)}
+        </span>
+      )}
     </div>
   );
 }
-
 
 function destinationWarningLabel(
   code: AutomationDestinationReadiness["code"]

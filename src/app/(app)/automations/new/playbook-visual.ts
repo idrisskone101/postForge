@@ -1,43 +1,39 @@
 import { cn } from "@/lib/utils";
+import { TEMPLATE_VISUALS } from "./playbook-model";
 
-export const PLAYBOOK_HEADER_CLASS =
-  "flex shrink-0 items-start justify-between gap-4 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-4 sm:px-5";
-
-export function playbookCardShellClass(selected: boolean, previewing: boolean, listView: boolean) {
-  let border = "border-[var(--pf-border)] hover:border-[var(--pf-border-strong)]";
-  if (selected) {
-    border = "border-[var(--pf-orange)] ring-2 ring-[var(--pf-orange)]/10";
-  } else if (previewing) {
-    border = "border-[var(--pf-border-strong)]";
-  }
-  return cn(
-    "relative overflow-hidden rounded-[8px] border bg-[var(--pf-surface)] transition-colors",
-    border,
-    listView && "grid sm:grid-cols-[124px_minmax(0,1fr)]"
-  );
+export function playbookArtClass(templateId: string, className?: string) {
+  return cn("relative shrink-0 overflow-hidden", TEMPLATE_VISUALS[templateId], className);
 }
 
-export function playbookCategoryButtonClass(active: boolean) {
-  return cn(
-    "flex h-9 shrink-0 items-center justify-between gap-4 rounded-[8px] px-2.5 text-left text-[11px] font-medium transition-colors",
-    active
-      ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
-      : "text-[var(--pf-muted)] hover:bg-[var(--pf-active)]"
-  );
+export const PLAYBOOK_ART_NUMBER =
+  "absolute left-4 top-3.5 font-bold text-[var(--pf-on-media)]";
+
+/**
+ * The server first paint renders the picker without handlers. Binding through
+ * here keeps a missing handler `undefined`, never a function the server would
+ * have to serialise.
+ */
+export function bindPlaybookHandler<T>(
+  handler: ((value: T) => void) | undefined,
+  value: T
+) {
+  return handler ? () => handler(value) : undefined;
 }
 
-export function playbookCategoryCountClass(active: boolean) {
-  return cn(
-    "rounded-full px-1.5 py-0.5 text-[11px] tabular-nums",
-    active ? "bg-[var(--pf-surface)]/20" : "bg-[var(--pf-active)] text-[var(--pf-muted)]"
-  );
+export function playbookFieldProps(
+  value: string,
+  onChange: ((value: string) => void) | undefined
+) {
+  if (!onChange) return { defaultValue: value };
+  return {
+    value,
+    onChange: (event: { target: { value: string } }) => onChange(event.target.value),
+  };
 }
 
-export function playbookSelectButtonClass(selected: boolean) {
+export function playbookSegmentCountClass(active: boolean) {
   return cn(
-    "flex h-7 flex-1 items-center justify-center gap-1 rounded-[8px] text-[12px] font-semibold",
-    selected
-      ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-      : "pf-button-primary !min-h-7 !h-7 !px-2"
+    "text-[12px] font-normal tabular-nums",
+    active ? "text-fg-secondary" : "text-fg-muted"
   );
 }

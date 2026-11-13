@@ -80,30 +80,6 @@
   content: attr(data-lcp);
 }
 
-[data-playbook-blurb]::before {
-  content: attr(data-playbook-blurb);
-}
-
-[data-playbook-lede]::before {
-  content: attr(data-playbook-lede);
-}
-
-[data-playbook-name]::before {
-  content: attr(data-playbook-name);
-}
-
-[data-playbook-scratch]::before {
-  content: attr(data-playbook-scratch);
-}
-
-[data-playbook-scratch-copy]::before {
-  content: attr(data-playbook-scratch-copy);
-}
-
-[data-playbook-title]::before {
-  content: attr(data-playbook-title);
-}
-
 [data-settings-text]::before {
   content: attr(data-settings-text);
 }

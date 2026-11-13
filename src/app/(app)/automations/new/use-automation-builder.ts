@@ -176,9 +176,9 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
       : undefined
   );
   const saveStatus = saving
-    ? "Saving draft…"
+    ? "Saving draft"
     : saveFailed
-      ? "Save failed — try again"
+      ? "Save failed, try again"
       : savedRecordSignature === recordSignature
         ? "Draft saved"
         : "Unsaved changes";
