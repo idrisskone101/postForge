@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button, Icon } from "@/components/workbench";
 
 export default function GlobalError({
   error,
@@ -17,35 +15,30 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[80dvh] min-w-0 items-center justify-center p-6">
-      <Card className="w-full min-w-0 max-w-md border-[#DADBD2] bg-white">
-        <CardContent className="flex min-w-0 flex-col items-center space-y-4 px-6 pb-8 pt-8 text-center">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-red-500/10">
-            <AlertTriangle className="size-7 shrink-0 text-red-500" />
-          </div>
-          <div className="w-full min-w-0 space-y-2">
-            <h2 className="text-lg font-semibold text-[#1C1B17]">
-              Something went wrong
-            </h2>
-            <p className="min-w-0 break-words text-sm leading-relaxed text-[#777873] [overflow-wrap:anywhere]">
-              {error.message ||
-                "An unexpected error occurred. Please try again."}
+    <div className="flex min-h-[60dvh] min-w-0 items-center justify-center p-4">
+      <section
+        role="alert"
+        className="wb-panel w-full max-w-[460px] items-start gap-4 wb-fade-in"
+        data-pad="roomy"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-bad-tint text-bad">
+          <Icon name="alert" size={18} strokeWidth={2} />
+        </span>
+        <div className="flex w-full min-w-0 flex-col gap-2">
+          <h2 className="wb-panel-title">Something went wrong</h2>
+          <p className="min-w-0 break-words text-[13px] leading-5 text-fg-secondary [overflow-wrap:anywhere]">
+            {error.message || "An unexpected error occurred. Please try again."}
+          </p>
+          {error.digest && (
+            <p className="wb-mono min-w-0 break-words text-fg-muted [overflow-wrap:anywhere]">
+              Error ID {error.digest}
             </p>
-            {error.digest && (
-              <p className="min-w-0 break-words font-mono text-xs text-[#92938E] [overflow-wrap:anywhere]">
-                Error ID: {error.digest}
-              </p>
-            )}
-          </div>
-          <Button
-            onClick={reset}
-            variant="destructive"
-            className="mt-2 shrink-0"
-          >
-            Try Again
-          </Button>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+        <Button variant="strong" onClick={reset}>
+          Try again
+        </Button>
+      </section>
     </div>
   );
 }

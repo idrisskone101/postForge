@@ -1,52 +1,34 @@
-import { Webhook } from "lucide-react";
+import { Button, EmptyState, Panel, StatusChip } from "@/components/workbench";
+import { SettingsRow } from "./settings-row";
 
 export function DeveloperSettingsPanel() {
   return (
-    <div data-developer-settings-panel="webhooks">
-      <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-        <Webhook className="size-4" />
-      </span>
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="pf-section-title mt-1">Webhooks</h2>
-          <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
-            Deliver signed workflow events only after endpoint validation, secret storage, retries, and delivery logs exist.
-          </p>
-        </div>
-        <span className="rounded-full border border-border bg-[var(--pf-active)] px-2.5 py-1 text-[12px] font-bold text-muted-foreground">
-          NOT CONFIGURED
-        </span>
+    <Panel
+      pad="wide"
+      title="Webhooks"
+      data-developer-settings-panel="webhooks"
+      action={<StatusChip tone="neutral">Not configured</StatusChip>}
+    >
+      <EmptyState
+        icon="link"
+        title="No webhook endpoints are registered"
+        detail="No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."
+      >
+        <Button disabled>Webhook delivery not configured</Button>
+      </EmptyState>
+      <div className="flex flex-col">
+        {REQUIREMENTS.map(([title, detail]) => (
+          <SettingsRow key={title} label={title} detail={detail}>
+            <span className="text-sm font-medium leading-[18px] text-fg-muted">Not available</span>
+          </SettingsRow>
+        ))}
       </div>
-      <div className="pf-card mt-6 max-w-[720px] p-5">
-        <div className="rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-surface)] px-5 py-8 text-center">
-          <Webhook className="mx-auto size-6 text-muted-foreground" />
-          <h3 className="mt-3 text-[13px] font-semibold">No webhook endpoints are registered</h3>
-          <p className="mx-auto mt-2 max-w-[480px] text-[11px] leading-4 text-muted-foreground">
-            No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured.
-          </p>
-          <button
-            type="button"
-            disabled
-            className="mt-4 h-9 rounded-lg bg-[var(--pf-active)] px-4 text-[13px] font-semibold text-muted-foreground disabled:cursor-not-allowed"
-          >
-            Webhook delivery not configured
-          </button>
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
-          {(
-            [
-              ["Signed events", "Server-owned signing secret"],
-              ["Reliable delivery", "Retries and failure handling"],
-              ["Delivery history", "Status and response audit log"],
-            ] as const
-          ).map(([title, detail]) => (
-            <div key={title} className="rounded-lg border border-border bg-[var(--pf-surface)] p-3">
-              <b className="block text-[11px]">{title}</b>
-              <span className="mt-1 block text-[12px] leading-4 text-muted-foreground">{detail}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    </Panel>
   );
 }
+
+const REQUIREMENTS = [
+  ["Signed events", "Server-owned signing secret"],
+  ["Reliable delivery", "Retries and failure handling"],
+  ["Delivery history", "Status and response audit log"],
+] as const;

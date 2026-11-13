@@ -1,282 +1,182 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { ExternalLink, Plug } from "lucide-react";
-import { SocialProviderIcon } from "@/components/social-provider-icon";
-import type { PublicIntegrationStatus } from "@/lib/integrations-client";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { useId, useState } from "react";
+import { Button, Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
-import { SettingsPaintText } from "./settings-paint-text";
-import { ConnectedAccounts, DisconnectedCopy } from "./social-card-connection";
+import { AccountRow } from "./social-account-row";
+import { PolicyLinks, SetupDetail, YouTubeConsent } from "./social-card-connection";
+import { IntegrationRow, type IntegrationRowView } from "./integration-row";
+import {
+  providerChip,
+  providerState,
+  UNAVAILABLE_CELL,
+  type ProviderState,
+} from "./integration-row-model";
 import { PROVIDER_CONTENT } from "./social-provider-content";
 import type { SocialIntegrationCardModel } from "./types";
 
 export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardModel }) {
-  const {
-    provider,
-    status,
-    loading,
-    busy,
-    onConnect,
-    onSync,
-    onDisconnect,
-  } = card;
-  const paintReady = useWindowLoadReady();
+  const { provider, status, loading, busy, onConnect, onRefresh } = card;
   const [youtubePolicyConsent, setYouTubePolicyConsent] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
+  const setupId = useId();
   const content = PROVIDER_CONTENT[provider];
-  const displayName = status?.displayName ?? provider[0].toUpperCase() + provider.slice(1);
-  const notConfigured = status?.configuration === "not_configured";
-  const connected = Boolean(status?.connected && status.accounts.length > 0);
-  const unavailable = !loading && !status;
-  const youtubeCompliance = status?.youtubeCompliance;
+  const displayName = status?.displayName ?? PROVIDER_NAMES[provider];
+  const state = providerState(status, loading);
+  const youtubeCompliance = status?.youtubeCompliance ?? null;
   const youtubeOAuthNeedsConsent =
     provider === "youtube" &&
     status?.configuration === "ready" &&
-    (!connected || status.accounts.some((account) => account.authorization.status !== "healthy"));
+    (state.kind !== "connected" ||
+      status.accounts.some((account) => account.authorization.status !== "healthy"));
   const canStartOAuth =
-    provider !== "youtube" ||
-    (Boolean(youtubeCompliance) && youtubePolicyConsent);
-  const connectionSummary = status?.connected
-    ? `${status.accounts.length} connected`
-    : "No account connected";
-  const statusPill = providerStatusPill(unavailable, connected, notConfigured);
+    provider !== "youtube" || (Boolean(youtubeCompliance) && youtubePolicyConsent);
+  const connect = () => status && onConnect(status, youtubePolicyConsent);
+  const policyLinks =
+    content.policyLinks && state.kind !== "not_configured" && state.kind !== "loading"
+      ? content.policyLinks
+      : null;
+  const consentBlock =
+    provider === "youtube" && youtubeCompliance ? (
+      <YouTubeConsent
+        compliance={youtubeCompliance}
+        needsConsent={youtubeOAuthNeedsConsent}
+        consent={youtubePolicyConsent}
+        onConsentChange={setYouTubePolicyConsent}
+      />
+    ) : null;
+
+  if (state.kind === "connected" && status) {
+    return (
+      <div data-social-provider={provider} className="flex flex-col">
+        {status.accounts.map((account, index) => (
+          <AccountRow
+            key={account.account.id}
+            row={{
+              providerStatus: status,
+              account,
+              busy,
+              primaryReconnect: card.primaryReconnectId === account.account.id,
+              canStartOAuth,
+              canConnectAnother:
+                index === status.accounts.length - 1 && status.configuration === "ready",
+              onSync: card.onSync,
+              onDisconnect: card.onDisconnect,
+              onReconnect: () =>
+                onConnect(
+                  { ...status, connected: false, accounts: [], accountCount: 0 },
+                  youtubePolicyConsent
+                ),
+              onConnectAnother: connect,
+            }}
+          />
+        ))}
+        {consentBlock && <div className="pb-4">{consentBlock}</div>}
+        {policyLinks && <PolicyLinks links={policyLinks} />}
+      </div>
+    );
+  }
+
+  const view: IntegrationRowView = {
+    tile: { provider, label: `${displayName} logo`, dashed: state.kind !== "loading" },
+    name: displayName,
+    sub: providerSub(state, Boolean(status?.connectUrl)),
+    chip: state.kind === "loading" ? null : providerChip(state),
+    metrics: state.kind === "loading" ? null : UNAVAILABLE_CELL,
+    publishing: state.kind === "loading" ? null : UNAVAILABLE_CELL,
+    action: providerAction(state, {
+      displayName,
+      setupId,
+      setupOpen,
+      onToggleSetup: () => setSetupOpen((open) => !open),
+      canConnect: Boolean(status?.connectUrl) && canStartOAuth && !busy,
+      onConnect: connect,
+      onRefresh,
+    }),
+  };
 
   return (
-    <article data-social-provider={provider} className="pf-card p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <SocialProviderIcon provider={provider} label={`${displayName} logo`} className="size-9 shrink-0" />
-          <div className="min-w-0 flex-1">
-            <SettingsPaintText
-              ready={paintReady}
-              liveAs="h3"
-              liveClassName="truncate text-[13px] font-semibold text-[var(--pf-ink)]"
-              paint={
-                <h3 data-lcp={displayName}>
-                  <span className="sr-only">{displayName}</span>
-                </h3>
-              }
-            >
-              {displayName}
-            </SettingsPaintText>
-            <SettingsPaintText
-              ready={paintReady}
-              liveAs="p"
-              liveClassName="text-[11px] leading-4 text-muted-foreground"
-              paint={
-                <p data-lcp={connectionSummary}>
-                  <span className="sr-only">{connectionSummary}</span>
-                </p>
-              }
-            >
-              {connectionSummary}
-            </SettingsPaintText>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {loading && !status ? (
-            <span className="h-5 w-20 animate-pulse rounded-full bg-[var(--pf-active)]" />
-          ) : (
-            <SettingsPaintText
-              ready={paintReady}
-              liveAs="span"
-              liveClassName={cn(
-                "rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]",
-                statusPill.className
-              )}
-              paint={
-                <span data-lcp={statusPill.label} className={statusPill.className}>
-                  <span className="sr-only">{statusPill.label}</span>
-                </span>
-              }
-            >
-              {statusPill.label}
-            </SettingsPaintText>
-          )}
-          {status?.configuration === "ready" && !loading && status.connected && (
-            <button
-              type="button"
-              onClick={() => onConnect(status, youtubePolicyConsent)}
-              disabled={busy || !canStartOAuth}
-              className="pf-button-secondary h-8 px-2.5 text-[12px]"
-              title={`Connect another ${displayName} account`}
-            >
-              <Plug className="size-3" /> Connect another
-            </button>
-          )}
-        </div>
-      </div>
-      <p data-settings-copy="true" data-settings-text={content.description}>
-        <span className="sr-only">{content.description}</span>
-      </p>
-
-      {status?.connected && status.accounts.length > 0 ? (
-        <ConnectedAccounts
-          accounts={{
-            status,
-            displayName,
-            busy,
-            canStartOAuth,
-            youtubePolicyConsent,
-            onSync,
-            onDisconnect,
-            onConnect,
-          }}
-        />
-      ) : loading && !status ? null : (
-        <DisconnectedCopy
-          content={content}
-          notConfigured={notConfigured}
-          unavailable={unavailable}
-        />
-      )}
-
-      {content.policyLinks && !notConfigured && (
-        <div className="mt-3 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
-          {content.policyLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]"
-            >
-              {link.label} <ExternalLink className="size-2.5 shrink-0" />
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {provider === "youtube" && youtubeCompliance && (
-        <div data-youtube-owner-policies className="mt-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-2.5">
-          <b className="block text-[12px] text-[var(--pf-link)]">
-            PostForge policies for YouTube API Services
-          </b>
-          <div className="mt-1.5 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
-            {[
-              ["Privacy Policy", youtubeCompliance.privacyPolicyUrl],
-              ["Terms", youtubeCompliance.termsUrl],
-              ["Data deletion", youtubeCompliance.dataDeletionUrl],
-            ].map(([label, href]) => (
-              <Link
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]"
-              >
-                {label} <ExternalLink className="size-2.5 shrink-0" />
-              </Link>
-            ))}
-          </div>
-          {youtubeOAuthNeedsConsent && (
-            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-[var(--pf-link)]/30 pt-2 text-[11px] leading-4 text-[var(--pf-link)]">
-              <input
-                type="checkbox"
-                aria-label="Accept policies before connecting YouTube"
-                checked={youtubePolicyConsent}
-                disabled={busy}
-                onChange={(event) =>
-                  setYouTubePolicyConsent(event.currentTarget.checked)
-                }
-                className="mt-0.5 size-3 shrink-0 accent-[var(--pf-orange)]"
-              />
-              <span>
-                I have reviewed and accept PostForge&apos;s Privacy Policy and
-                Terms. I also agree that using YouTube API Services means
-                accepting YouTube&apos;s Terms of Service.
-              </span>
-            </label>
-          )}
-        </div>
-      )}
-
-      {!status?.connected && (
-        <div className="mt-3 flex">
-          <button
-            type="button"
-            onClick={() => status && onConnect(status, youtubePolicyConsent)}
-            disabled={
-              !status ||
-              status.configuration !== "ready" ||
-              !status.connectUrl ||
-              loading ||
-              busy ||
-              !canStartOAuth
-            }
-            className={connectButtonClass(
-              Boolean(
-                status?.configuration === "ready" && status.connectUrl && canStartOAuth
-              )
-            )}
-          >
-            {connectButtonLabel({
-              loading,
-              status,
-              notConfigured,
-              unavailable,
-              displayName,
-            })}
-          </button>
-        </div>
-      )}
-    </article>
+    <div data-social-provider={provider} className="flex flex-col">
+      <IntegrationRow view={view}>
+        {state.kind === "not_configured" && (
+          <SetupDetail id={setupId} open={setupOpen} content={content} />
+        )}
+        {state.kind === "ready" && consentBlock}
+      </IntegrationRow>
+      {policyLinks && <PolicyLinks links={policyLinks} />}
+    </div>
   );
 }
 
-function providerStatusPill(
-  unavailable: boolean,
-  connected: boolean,
-  notConfigured: boolean
-): { label: string; className: string } {
-  if (unavailable) {
-    return {
-      label: "Status unavailable",
-      className:
-        "border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]",
-    };
+const PROVIDER_NAMES = { tiktok: "TikTok", instagram: "Instagram", youtube: "YouTube" } as const;
+
+function providerSub(state: ProviderState, hasConnectUrl: boolean): string | undefined {
+  switch (state.kind) {
+    case "loading":
+      return undefined;
+    case "unavailable":
+      return "The integration service did not return this provider";
+    case "not_configured":
+      return "Setup required";
+    case "ready":
+      return hasConnectUrl ? "No account connected" : "Connect endpoint unavailable";
+    case "connected":
+      return undefined;
   }
-  if (connected) {
-    return {
-      label: "Connected",
-      className:
-        "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
-    };
-  }
-  if (notConfigured) {
-    return {
-      label: "Not configured",
-      className: "border-border bg-[var(--pf-active)] text-muted-foreground",
-    };
-  }
-  return {
-    label: "Ready to connect",
-    className: "border-border bg-[var(--pf-active)] text-muted-foreground",
-  };
 }
 
-function connectButtonClass(canConnect: boolean): string {
-  if (canConnect) return "pf-button-primary h-9 w-full";
-  return "h-9 w-full cursor-not-allowed rounded-lg bg-[var(--pf-active)] text-[13px] font-semibold text-muted-foreground";
-}
-
-function connectButtonLabel({
-  loading,
-  status,
-  notConfigured,
-  unavailable,
-  displayName,
-}: {
-  loading: boolean;
-  status: PublicIntegrationStatus | null;
-  notConfigured: boolean;
-  unavailable: boolean;
-  displayName: string;
-}): string {
-  if (loading && !status) return "Checking configuration…";
-  if (notConfigured) return "Setup required";
-  if (unavailable) return "Status unavailable";
-  if (status?.connectUrl) return `Connect ${displayName}`;
-  return "Connect endpoint unavailable";
+function providerAction(
+  state: ProviderState,
+  options: {
+    displayName: string;
+    setupId: string;
+    setupOpen: boolean;
+    onToggleSetup: () => void;
+    canConnect: boolean;
+    onConnect: () => void;
+    onRefresh?: () => void;
+  }
+) {
+  switch (state.kind) {
+    case "loading":
+      return <span aria-hidden="true" className="wb-skeleton h-9 w-[88px] rounded-full" />;
+    case "unavailable":
+      return options.onRefresh ? (
+        <Button onClick={options.onRefresh}>Refresh</Button>
+      ) : null;
+    case "not_configured":
+      return (
+        <Button
+          variant="strong"
+          aria-expanded={options.setupOpen}
+          aria-controls={options.setupId}
+          aria-label={`Set up ${options.displayName}`}
+          onClick={options.onToggleSetup}
+          className="pr-3"
+        >
+          Set up
+          <Icon
+            name="chevron-down"
+            size={14}
+            className={cn(
+              "text-fg-secondary transition-transform duration-[var(--pf-dur-state)] ease-pf",
+              options.setupOpen && "rotate-180"
+            )}
+          />
+        </Button>
+      );
+    case "ready":
+      return (
+        <Button
+          variant="strong"
+          aria-label={`Connect ${options.displayName}`}
+          disabled={!options.canConnect}
+          onClick={options.onConnect}
+        >
+          Connect
+        </Button>
+      );
+    case "connected":
+      return null;
+  }
 }

@@ -4,7 +4,7 @@ import {
   isSettingsTab,
   SETTINGS_NAVIGATION,
   SettingsNavigation,
-} from "../../src/app/(app)/settings/settings-page-client";
+} from "../../src/app/(app)/settings/settings-navigation";
 import { DeveloperSettingsPanel } from "../../src/app/(app)/settings/webhooks-panel";
 
 assert.deepEqual(
@@ -42,7 +42,7 @@ const webhooksMarkup = renderToStaticMarkup(
   <DeveloperSettingsPanel />
 );
 assert.match(webhooksMarkup, /data-developer-settings-panel="webhooks"/);
-assert.match(webhooksMarkup, /NOT CONFIGURED/);
+assert.match(webhooksMarkup, /Not configured/);
 assert.match(webhooksMarkup, /No webhook endpoints are registered/);
 assert.match(webhooksMarkup, /No events are being delivered/);
 assert.match(webhooksMarkup, /Webhook delivery not configured/);
