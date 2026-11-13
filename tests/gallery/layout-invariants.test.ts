@@ -33,9 +33,22 @@ for (const [name, text] of [
   assert.doesNotMatch(text, /max-w-\[1280px\]|mx-auto|sm:p-6|lg:p-8/, `${name} adds its own page padding`);
 }
 
-assert.match(grid, /w-\[320px\]/);
-assert.match(grid, /xl:flex/);
+const inspectorEmpty = source("src/components/gallery/inspector-empty.tsx");
+assert.match(inspectorEmpty, /GALLERY_INSPECTOR_CLASS = "[^"]*w-\[320px\][^"]*xl:flex/);
+assert.match(grid, /<aside aria-label="Selected output" className=\{GALLERY_INSPECTOR_CLASS\}>/);
+assert.doesNotMatch(grid, /\{selection && \(\s*<aside/, "the inspector column is always present from 1280");
+assert.match(firstPaint, /GALLERY_INSPECTOR_CLASS/, "first paint holds the inspector column too");
 assert.match(grid, /<Sheet/);
 assert.match(cards, /<MediaTile/);
-assert.match(cards, /\[@media\(hover:none\)\]:\[&>\.wb-tile-check\]:after:-inset-2/);
-assert.match(cards, /\[@media\(hover:none\)\]:\[&_\.wb-tile-action\]:h-10/);
+const tileCss = source("src/app/styles/workbench-data.css");
+assert.match(
+  tileCss,
+  /@media \(hover: none\) \{[\s\S]*?\.wb-tile > \.wb-tile-actions \{\s*display: none;/,
+  "touch tiles draw no action row"
+);
+assert.match(
+  source("src/app/styles/workbench.css"),
+  /@media \(pointer: coarse\) \{[\s\S]*?\.wb-tile-check[^{]*::after/,
+  "the tile check gets its touch hit area from the shared coarse-pointer rule"
+);
+assert.doesNotMatch(cards, /hover:none/);
