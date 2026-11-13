@@ -33,12 +33,14 @@ export function CloneOutputPanelHead({ review }: { review: CloneOutputReviewView
             />
           )}
           {isCompleted && (
-            <IconButton
-              icon="refresh"
-              label={isRetrying ? "Retrying clone" : "Retry clone"}
+            <Button
+              className="h-[34px] gap-2 px-3.5 text-[13px] leading-[18px]"
               disabled={isRetrying}
               onClick={onRetry}
-            />
+            >
+              <Icon name="refresh" size={16} />
+              {isRetrying ? "Retrying clone" : "Retry clone"}
+            </Button>
           )}
           {featured && (
             <Button

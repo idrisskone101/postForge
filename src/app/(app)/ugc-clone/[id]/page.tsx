@@ -10,10 +10,10 @@ import {
 } from "@/components/clone-output-review-detail";
 import {
   EmptyState,
-  PageHeader,
   Skeleton,
   buttonClass,
 } from "@/components/workbench";
+import { CloneOutputHeader } from "./clone-output-header";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { downloadFile } from "@/lib/utils/download";
@@ -154,7 +154,7 @@ export default function UGCCloneJobPage() {
     const notFound = error.message === "Job not found";
     return (
       <div className="pf-content-viewport flex min-w-0 flex-col gap-3">
-        <PageHeader title="Clone output" />
+        <CloneOutputHeader />
         <section className="wb-panel flex-1 justify-center">
           <EmptyState
             icon={notFound ? "clone" : "alert"}
@@ -184,7 +184,7 @@ export default function UGCCloneJobPage() {
 
   return (
     <div className="pf-content-viewport flex min-w-0 flex-col gap-3">
-      <PageHeader title="Clone output" />
+      <CloneOutputHeader />
       <CloneOutputReviewDetail
         review={{
           job: displayedJob,
@@ -207,7 +207,7 @@ export default function UGCCloneJobPage() {
 function CloneOutputLoading() {
   return (
     <div className="pf-content-viewport flex min-w-0 flex-col gap-3" aria-busy="true">
-      <PageHeader title="Clone output" />
+      <CloneOutputHeader />
       <div className="flex min-w-0 flex-1 flex-col gap-3 xl:flex-row">
         <Skeleton shape="panel" className="block min-h-[420px] flex-1 xl:min-h-[682px]" />
         <div className="grid content-start gap-3 md:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
