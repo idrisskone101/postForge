@@ -492,6 +492,23 @@
     }
   }
 
+  /* A sideways rail that turns into a column from 1280 fades along the block axis there. */
+  @supports (animation-timeline: scroll()) {
+    @media (min-width: 1280px) {
+      .wb-scroll-fade-xl-y {
+        scroll-snap-type: none;
+        animation-timeline: scroll(self block);
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          #000 var(--wb-fade-start),
+          #000 calc(100% - var(--wb-fade-end)),
+          transparent
+        );
+      }
+    }
+  }
+
   .wb-segment {
     display: inline-flex;
     height: 30px;
