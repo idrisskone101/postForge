@@ -100,7 +100,8 @@ const editorSource = readFileSync(
   "utf8"
 );
 assert.match(editorSource, /onClick=\{copyPrompt\}/);
-assert.match(editorSource, /onSelectSection\(next\.id\)/);
+assert.match(editorSource, /goTo\(next\.id\)/);
+assert.match(editorSource, /markStepChange\(\);\s+onSelectSection\(sectionId\)/);
 assert.match(editorSource, /selectAttribute\(group\.key, option\)/);
 assert.match(editorSource, /selectAttribute\(group\.key, event\.target\.value\)/);
 assert.doesNotMatch(editorSource, /createContext|useContext/);

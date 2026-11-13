@@ -268,6 +268,11 @@ On small screens a header never reaches a second row by wrapping. A header whose
 
 From 1280 down, panels reflow and never clip. Check 1440, 1280, 1024, 768 and 390.
 
+### Named Rules
+**The Scroll Cut Rule.** Where content scrolls under an edge, the edge fades. A control is never sliced by a hard line at rest. A row that scrolls sideways carries `.wb-scroll-fade` (16px, and `.wb-scroll-fade-xl-y` when the row turns into a column from 1280). A block that scrolls down carries `.wb-scroll-fade-y`: 16px for a text bed, plus `.wb-scroll-fade-deep` (24px) for a body that scrolls over buttons, tiles or cards, such as a sheet body, a dialog body or a menu. The fade goes on the scroller itself, never on an element that carries a shadow, because a mask clips the shadow. A bar pinned to the viewport bottom carries `.wb-stuck-fade`: a 24px fade to the bar's own fill above it, which leaves when the page reaches its end and never shows on a page that does not scroll. A sheet first shrinks its media (down to 200px) so its body fits without scrolling. A text bed keeps its padding outside the scroller and cuts on whole lines.
+
+**The Step Entry Rule.** A step change in a multi-step form scrolls the page to the top at once (no smooth scroll) and moves focus to the step: its heading, or the labelled step group where the step has no single heading (`useStepEntry`). The focus ring shows only for keyboard use.
+
 ### Subtraction rules
 - The page header is the title only. No description line.
 - No sidebar group labels. Groups are separated by a 20px gap. The sidebar footer is one row: Settings with the theme toggle at its end.
@@ -324,7 +329,7 @@ The primitives live in `src/components/workbench` (one component per file) with 
 - **Outline:** transparent with a 1px inset ring, for buttons sitting on a raised surface such as the bulk dock.
 - **Danger:** red tint with red text. Always labelled.
 - **Icon buttons (`IconButton`):** round, 28 to 40px: quiet, strong, outline or ghost.
-- **Disabled:** raised fill with `#6F6E6A` text. No opacity fade on text buttons.
+- **Disabled:** raised fill with `#6F6E6A` text. No opacity fade on text buttons. The primary has its own disabled tokens (`--pf-action-disabled`, `--pf-action-disabled-fg`): the same values in dark, and in light the raised-strong fill `#E9E9E6` with muted `#666666` ink, because the raised fill is 1.09:1 on a white panel.
 
 ### Inputs
 42px on the raised colour, no border, 12px radius, 14px text, muted placeholder (`.wb-input`, `ui/input`). Search fields are the 36px variant with a leading 15px icon. A `Field` is a 12px / 600 muted label 6px above the control.
@@ -350,16 +355,19 @@ A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 sec
 - **Live dot:** 8px ember dot with a 4px ember-wash halo.
 
 ### Stat strip
-`StatStrip`: stats in one panel split by hairlines. Each is a 12px / 600 muted label over a 34px / 700 numeral, with an optional inline bar or chip.
+`StatStrip`: stats in one panel split by hairlines. Each is a 12px / 600 muted label over a 34px / 700 numeral, with an optional inline bar or chip. A stat that links draws its focus ring 12px around its content, a 2px ember ring with an 8px radius, since the cells have square corners and the outer ones no side padding.
 
 ### Meters
-`Meter`: a 4px bar. Neutral fill for budgets, ember for running work (with the sweep). `SplitMeter`: weighted parts with 2px gaps for a split such as completed against failed, or equal segments for a step count.
+`Meter`: a 4px bar on the control track token, so an empty meter stays visible on a white panel. Neutral fill for budgets, ember for running work (with the sweep). A meter beside a figure keeps at least 96px; the figure wraps under it when the row is too narrow. `SplitMeter`: weighted parts with 2px gaps for a split such as completed against failed, or equal segments for a step count.
 
 ### Step rail
 `StepRail`: a 30px numbered circle and a name per step, joined by 2px connectors. The current step has a 2px ember ring and an ember numeral. Done steps are a filled `#3A3C40` circle with a check. A rail never scrolls its current step out of view: where the names do not fit (below 640 in the Clone and automation builder rails, below 1280 in the character builder) it shows a dot for every step and the name on the current one only.
 
 ### Media tile
 `MediaTile`: 12px radius on the media placeholder colour. Status badge top right, duration chip bottom right in Geist Mono on a dark scrim, selection check top left. Selected tiles carry the ember selection ring. The hover action row holds a bone "Preview" and a translucent second action; it is drawn only where hover exists (see Touch).
+
+### Menus
+A row menu (`RowActionsMenu`) opens with focus on its first item. ArrowDown, ArrowUp, Home and End move between items and wrap, Escape closes and returns focus to the trigger, Tab closes and leaves from the trigger. Its height is capped to the room on the side it opens, with the scroll and the 24px fade on an inner body.
 
 ### Rows
 - **Key-value rows (`KeyValueList`):** 30px inspector rows split by hairlines, muted label left, value right.
