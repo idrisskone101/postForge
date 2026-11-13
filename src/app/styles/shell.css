@@ -66,8 +66,8 @@
     transition:
       opacity var(--pf-dur-exit) var(--pf-ease),
       transform var(--pf-dur-exit) var(--pf-ease),
-      display var(--pf-dur-exit) allow-discrete,
-      overlay var(--pf-dur-exit) allow-discrete;
+      display var(--pf-dur-exit) var(--pf-ease) allow-discrete,
+      overlay var(--pf-dur-exit) var(--pf-ease) allow-discrete;
   }
 
   .sidebar-mobile-drawer {
