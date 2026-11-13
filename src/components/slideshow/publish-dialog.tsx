@@ -141,7 +141,7 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-h-[92vh] gap-[18px] px-4 py-5 sm:max-w-[880px] sm:px-6"
+        className="max-h-[92vh] gap-[18px] px-4 py-5 sm:max-w-[min(880px,calc(100%-2rem))] sm:px-6"
       >
         <div className="flex h-8 items-center justify-between gap-3">
           <DialogTitle className="text-[18px] leading-[22px] font-bold tracking-[-0.01em] text-fg">

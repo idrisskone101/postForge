@@ -26,7 +26,7 @@ export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
     >
       <DialogContent
         showCloseButton={false}
-        className="max-h-[90vh] gap-[18px] px-4 py-5 sm:max-w-[720px] sm:px-6"
+        className="max-h-[90vh] gap-[18px] px-4 py-5 sm:max-w-[min(720px,calc(100%-2rem))] sm:px-6"
       >
         <div className="flex h-8 items-center justify-between gap-3">
           <DialogTitle className="text-[18px] leading-[22px] font-bold tracking-[-0.01em] text-fg">
