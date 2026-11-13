@@ -140,7 +140,7 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
   if (identityFailed) metaTone = "text-bad";
 
   return (
-    <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 flex-col gap-2">
+    <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 snap-start flex-col gap-2">
       <button
         type="button"
         aria-label={label}

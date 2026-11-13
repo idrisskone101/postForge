@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { apiDelete, apiGet } from "@/lib/api/client";
 import { getAvatarOptionLabel } from "@/lib/avatar-workflow";
 import type {
@@ -181,11 +181,11 @@ export function AvatarPicker({
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
-        <div className="-m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1">
+        <div className="-m-1 max-h-[560px] min-w-0 flex-1 snap-x snap-proximity overflow-y-auto p-1 [scroll-padding-inline:4px]">
           {orderedAvatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+            <div className={AVATAR_ROW} style={avatarRowStyle(orderedAvatars.length)}>
               {orderedAvatars.map((avatar, index) => {
           const isSelected = selectedId === avatar.id;
           const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
@@ -227,4 +227,19 @@ export function AvatarPicker({
       )}
     </div>
   );
+}
+
+const AVATAR_ROW =
+  "grid grid-flow-col gap-3 auto-cols-[max(120px,calc((100%-var(--avatar-gaps))/var(--avatar-cols)))] [[data-avatar-stacked]_&]:grid-flow-row [[data-avatar-stacked]_&]:auto-cols-auto [[data-avatar-stacked]_&]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]";
+
+/**
+ * One row. Up to four identities share the width; from five on, four and a
+ * part of the fifth show, so the row reads as scrollable.
+ */
+function avatarRowStyle(count: number): CSSProperties {
+  const visible = count > 4 ? 4.4 : Math.max(count, 3);
+  return {
+    "--avatar-cols": visible,
+    "--avatar-gaps": `${(Math.ceil(visible) - 1) * 12}px`,
+  } as CSSProperties;
 }
