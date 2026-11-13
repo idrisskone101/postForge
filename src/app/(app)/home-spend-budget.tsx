@@ -22,7 +22,7 @@ export function HomeSpendBudget({ monthSpend }: { monthSpend: number }) {
         label={`Spend this month, ${formatCost(monthSpend)} of ${budgetLabel}`}
         value={(monthSpend / budget) * 100}
       />
-      <span className="wb-mono shrink-0 text-fg-secondary">
+      <span className="wb-mono ml-0.5 shrink-0 text-fg-secondary">
         {formatCost(monthSpend)} / {budgetLabel}
       </span>
     </>

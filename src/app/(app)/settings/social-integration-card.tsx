@@ -129,7 +129,7 @@ function providerSub(state: ProviderState, hasConnectUrl: boolean): string | und
     case "not_configured":
       return "Setup required";
     case "ready":
-      return hasConnectUrl ? "No account connected" : "Connect endpoint unavailable";
+      return hasConnectUrl ? undefined : "Connect endpoint unavailable";
     case "connected":
       return undefined;
   }

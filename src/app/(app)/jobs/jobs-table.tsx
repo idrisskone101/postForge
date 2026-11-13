@@ -14,7 +14,7 @@ export function JobsTable({
   now: Date;
 }) {
   return (
-    <div className="flex min-w-0 flex-col">
+    <div className="flex min-w-0 flex-1 flex-col">
       <div className="wb-table-head max-lg:hidden" aria-hidden="true">
         <span className="min-w-0 flex-1">Activity</span>
         <span className="w-[130px] shrink-0">Status</span>
@@ -23,7 +23,7 @@ export function JobsTable({
         <span className="w-16 shrink-0 text-right">Cost</span>
         <span className="w-16 shrink-0" />
       </div>
-      <div className="flex min-w-0 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         {jobs.map((job) => (
           <JobRow key={job.id} row={toJobRow(job, now)} />
         ))}

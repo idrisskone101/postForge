@@ -22,7 +22,7 @@ export function JobsActivity({ activity }: { activity: JobsActivityViewModel }) 
   return (
     <>
       <JobsStats counts={counts} />
-      <Panel pad="none" className="min-w-0 gap-0 px-4 pb-3 pt-4 md:px-5">
+      <Panel pad="none" className="min-w-0 flex-1 gap-0 px-4 pb-3 pt-4 md:px-5">
         <JobsFilters status={status} type={type} />
         {jobs.length > 0 ? (
           <JobsTable jobs={jobs} now={now} />

@@ -44,11 +44,11 @@ export function CharacterAttributeEditor({
       ) : null}
       {active ? <AttributeGroups view={view} active={active} /> : null}
       <div className="flex shrink-0 items-center justify-between gap-3">
-        <Button size={40} disabled={!previous} onClick={() => previous && onSelectSection(previous.id)}>
+        <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && onSelectSection(previous.id)}>
           Back
         </Button>
         {next ? (
-          <Button variant="strong" size={40} onClick={() => onSelectSection(next.id)}>
+          <Button variant="strong" size={40} className="gap-1.5 pr-3.5 pl-[18px]" onClick={() => onSelectSection(next.id)}>
             Next: {next.label}
             <Icon name="chevron-right" />
           </Button>
@@ -70,7 +70,7 @@ function AttributeGroups({
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div
         data-character-options
-        className="flex min-h-0 flex-col gap-6 lg:-mx-1 lg:overflow-y-auto lg:px-1 lg:py-0.5"
+        className="flex min-h-0 flex-col gap-6 lg:-mx-1 lg:-my-0.5 lg:overflow-y-auto lg:px-1 lg:py-0.5"
       >
       {active.groups.map((group) => (
         <fieldset key={group.key} className="flex shrink-0 flex-col gap-2">

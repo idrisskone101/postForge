@@ -95,7 +95,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
             <span data-source-feed-filter={filter.value} className="contents">
               {filter.label}
               {filter.value === "unused" && sourceUsageCounts.unused > 0 ? (
-                <span className="ml-1.5 inline-flex h-[18px] min-w-5 items-center justify-center rounded-full bg-raised-strong px-1.5 text-[11px] leading-[14px] font-semibold text-fg">
+                <span className="-mr-1.5 inline-flex h-[18px] min-w-5 items-center justify-center rounded-full bg-raised-strong px-1.5 text-[11px] leading-[14px] font-semibold text-fg">
                   {sourceUsageCounts.unused}
                 </span>
               ) : null}
@@ -118,7 +118,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
           value={sourceSort}
           onChange={(event) => setSourceSort(parseInspirationSourceSort(event.target.value))}
           aria-label="Sort source library"
-          className="h-9 cursor-pointer appearance-none rounded-full bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg outline-none transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+          className="h-9 cursor-pointer appearance-none rounded-full [field-sizing:content] bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg outline-none transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
         >
           <option value="recent">Newest first</option>
           <option value="views">Most viewed</option>
@@ -170,7 +170,7 @@ function LibraryBody({
     pageError,
     reloadVideos,
   } = workspace;
-  const gridClass = cn("grid gap-3", largeTiles ? GRID_LARGE : GRID_DENSE);
+  const gridClass = cn("grid gap-x-3 gap-y-3.5", largeTiles ? GRID_LARGE : GRID_DENSE);
 
   if (accounts.length === 0) {
     return (
@@ -270,7 +270,7 @@ function LibraryBody({
 
 function ColumnsGlyph({ count }: { count: 2 | 3 }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="size-[15px]">
       {count === 3 ? (
         <>
           <rect x="4" y="4" width="4" height="16" rx="1" />

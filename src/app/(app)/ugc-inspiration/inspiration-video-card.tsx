@@ -133,7 +133,7 @@ export function InspirationVideoCard({
   );
 }
 
-export const TILE_ASPECT_CLASS = "aspect-[9/16] @[680px]:aspect-[129/266]";
+export const TILE_ASPECT_CLASS = "aspect-[9/16] @[680px]:aspect-[193/399]";
 
 const FOOT_CLASS =
   "inline-flex h-[30px] w-full items-center justify-center rounded-full text-[12px] leading-4 font-semibold transition-[background-color,transform] duration-[var(--pf-dur-feedback)] ease-pf active:scale-[0.98] disabled:cursor-default disabled:text-fg-disabled [@media(hover:none)]:h-10";
@@ -174,7 +174,7 @@ function TileFootAction({
         FOOT_CLASS,
         tone === "used"
           ? OUTLINE_FOOT_CLASS
-          : "bg-raised text-fg hover:bg-raised-strong"
+          : "bg-raised text-fg hover:bg-raised-strong dark:text-[var(--pf-on-media)]"
       )}
     >
       {tone === "used" ? "Use again" : "Use in Clone"}

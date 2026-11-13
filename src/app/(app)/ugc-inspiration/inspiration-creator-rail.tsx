@@ -152,7 +152,7 @@ function CreatorRow({
             aria-label={`Refresh ${account.handleDisplay}`}
             className="wb-btn wb-btn-strong h-[30px] min-h-0 flex-1 gap-1.5 px-0 text-[12px] leading-4"
           >
-            <Icon name="refresh" size={14} />
+            <Icon name="refresh" size={14} className="size-3.5" />
             {isRefreshing ? "Refreshing" : "Refresh"}
           </button>
           <button

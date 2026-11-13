@@ -39,9 +39,9 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
         <div className="wb-panel-head">
           <h2 id="visual-systems-title" className="wb-panel-title flex items-center gap-2.5">
             Visual systems
-            <CountBadge count={collections.length} label={`${collections.length} collections`} />
+            <CountBadge className="tracking-normal" count={collections.length} label={`${collections.length} collections`} />
           </h2>
-          <Button size={32} onClick={() => setCreating(true)}>
+          <Button size={32} className="pl-2.5" onClick={() => setCreating(true)}>
             <Icon name="plus" size={16} />
             New collection
           </Button>
@@ -71,9 +71,12 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
         <div className="wb-panel-head min-h-9 flex-wrap gap-y-3">
           <h2 id="loose-assets-title" className="wb-panel-title flex items-center gap-2.5">
             Loose assets
-            <CountBadge count={assets.length} label={`${assets.length} images`} />
+            <CountBadge className="tracking-normal" count={assets.length} label={`${assets.length} images`} />
           </h2>
-          <label className="wb-input-wrap w-[260px] max-sm:w-full" data-size="36">
+          <label
+            className="wb-input-wrap w-[260px] px-3 max-sm:w-full [&>input]:text-[14px] [&>input]:leading-[18px] [&>svg]:size-4"
+            data-size="36"
+          >
             <Icon name="search" size={16} />
             <input
               type="search"
