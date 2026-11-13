@@ -1,38 +1,53 @@
-"use client";
-
-import Link from "next/link";
-import { ArrowLeft, Layers } from "lucide-react";
+import type { ReactNode } from "react";
+import { PageHeader } from "@/components/workbench/page-header";
+import { Panel } from "@/components/workbench/panel";
+import { Skeleton } from "@/components/workbench/skeleton";
 
 export function SlideshowAutomationBuilderChrome({
-  existing,
+  title,
+  children,
 }: {
-  existing: boolean;
+  title: ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <>
-      <Link
-        href="/automations"
-        className="inline-flex h-8 items-center gap-1.5 rounded-[8px] text-[13px] font-semibold text-[var(--pf-muted)] transition hover:text-[var(--pf-ink)]"
-      >
-        <ArrowLeft className="size-3.5" />
-        Automations
-      </Link>
-
-      <div className="mt-3 flex items-center gap-3">
-        <span className="grid size-10 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)]">
-          <Layers className="size-4.5" />
-        </span>
-        <div>
-          <h1 className="text-[20px] font-semibold tracking-[-0.02em] text-[var(--pf-ink)]">
-            {existing ? "Edit slideshow automation" : "New slideshow automation"}
-          </h1>
-          <p className="mt-0.5 text-[11px] text-[var(--pf-muted)]">
-            {existing
-              ? "Update the source, hook pool, visuals, and schedule for future runs."
-              : "Define the hook pool and schedule. Generated runs stay in Slideshow Drafts for review."}
-          </p>
-        </div>
-      </div>
-    </>
+    <div data-slideshow-automation-builder="true" className="flex min-h-0 flex-1 flex-col gap-3">
+      <PageHeader title={title} back={BACK} />
+      <div className="flex min-h-0 flex-1 flex-col gap-3 xl:flex-row">{children}</div>
+    </div>
   );
 }
+
+export function SlideshowAutomationBuilderSkeleton() {
+  return (
+    <SlideshowAutomationBuilderChrome
+      title={<Skeleton className="inline-block h-7 w-64 max-w-full align-middle" />}
+    >
+      <Panel pad="roomy" aria-busy="true" aria-label="Loading automation" className="flex-1 gap-6">
+        <div className="flex flex-col gap-2.5 sm:flex-row">
+          <Skeleton shape="tile" className="h-[64px] flex-1" />
+          <Skeleton shape="tile" className="h-[64px] flex-1" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton shape="tile" className="h-[60px]" />
+          <Skeleton shape="tile" className="h-[60px]" />
+        </div>
+        <Skeleton shape="tile" className="h-[128px]" />
+      </Panel>
+      <div className="flex shrink-0 flex-col gap-3 xl:w-[372px]">
+        <Panel pad="none" className="gap-3 p-5">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton shape="tile" className="h-9" />
+          <Skeleton shape="tile" className="h-[64px] w-[132px]" />
+        </Panel>
+        <Panel pad="none" className="gap-3 p-5">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton shape="tile" className="h-[90px]" />
+        </Panel>
+      </div>
+    </SlideshowAutomationBuilderChrome>
+  );
+}
+
+const BACK = { href: "/automations", label: "Back to automations" };
