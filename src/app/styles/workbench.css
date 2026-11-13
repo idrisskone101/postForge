@@ -296,6 +296,13 @@
     background: transparent;
   }
 
+  /* The primary keeps a readable disabled fill: on a white panel the raised fill disappears. */
+  .wb-btn-primary:disabled,
+  .wb-btn-primary[aria-disabled="true"] {
+    background: var(--pf-action-disabled);
+    color: var(--pf-action-disabled-fg);
+  }
+
   /* Round icon buttons */
   .wb-icon-btn {
     display: inline-flex;

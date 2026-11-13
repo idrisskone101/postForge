@@ -55,6 +55,8 @@
   --pf-action-hover: #000000;
   --pf-action-pressed: #333333;
   --pf-action-fg: #ffffff;
+  --pf-action-disabled: var(--pf-raised-strong);
+  --pf-action-disabled-fg: var(--pf-text-muted);
 
   --pf-ember: #ff4a20;
   --pf-ember-text: #c2330f;
@@ -201,6 +203,8 @@
   --pf-action-hover: #ffffff;
   --pf-action-pressed: #d9d6cf;
   --pf-action-fg: #141516;
+  --pf-action-disabled: var(--pf-raised);
+  --pf-action-disabled-fg: var(--pf-disabled-fg);
 
   --pf-ember: #ff5b2e;
   --pf-ember-text: #ff8254;
