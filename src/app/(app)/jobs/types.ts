@@ -41,6 +41,8 @@ export type JobsActivityViewModel = {
   page: number;
   pageSize: number;
   filteredTotal: number;
+  /** Finished jobs exist before the history window, so the list is not the whole record. */
+  hasOlderJobs?: boolean;
   /** Render time: anchors "Today" and the elapsed time of running jobs. */
   now: Date;
 };

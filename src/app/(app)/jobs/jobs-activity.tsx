@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/workbench/empty-state";
 import { Icon } from "@/components/workbench/icon";
 import { iconButtonClass } from "@/components/workbench/icon-button";
 import { Panel } from "@/components/workbench/panel";
+import { JOBS_HISTORY_DAYS } from "@/lib/jobs/history-window";
 import { cn } from "@/lib/utils";
 import { buildJobsHref, STATUS_FILTERS, TYPE_FILTERS } from "./jobs-activity-helpers";
 import { JobsStats } from "./jobs-stats";
@@ -16,6 +17,7 @@ import type {
 
 export function JobsActivity({ activity }: { activity: JobsActivityViewModel }) {
   const { jobs, counts, status, type, page, pageSize, filteredTotal, now } = activity;
+  const pageCount = Math.max(1, Math.ceil(filteredTotal / pageSize));
 
   return (
     <>
@@ -27,14 +29,19 @@ export function JobsActivity({ activity }: { activity: JobsActivityViewModel }) 
         ) : (
           <JobsEmpty status={status} type={type} pastEnd={filteredTotal > 0} />
         )}
-        {jobs.length > 0 ? (
+        {jobs.length > 0 && pageCount > 1 ? (
           <JobsPager
             status={status}
             type={type}
             page={page}
-            pageCount={Math.max(1, Math.ceil(filteredTotal / pageSize))}
+            pageCount={pageCount}
             range={`${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, filteredTotal)} / ${filteredTotal}`}
           />
+        ) : null}
+        {jobs.length > 0 && activity.hasOlderJobs && page >= pageCount ? (
+          <p className="wb-meta pt-3">
+            Showing the last {JOBS_HISTORY_DAYS} days
+          </p>
         ) : null}
       </Panel>
     </>
@@ -152,7 +159,7 @@ function JobsEmpty({
     return (
       <EmptyState
         icon={status === "active" ? "clock" : "jobs"}
-        title={status === "active" ? "No jobs are running" : "No jobs in the last 30 days"}
+        title={status === "active" ? "No jobs are running" : `No jobs in the last ${JOBS_HISTORY_DAYS} days`}
         className="min-h-[300px]"
       >
         <Link href="/generate" className={buttonClass("strong")}>
@@ -174,7 +181,7 @@ function emptyFilterTitle(status: JobsStatusFilter, type: JobsTypeFilter) {
   const noun = TYPE_NOUN[type];
   if (status === "active") return `No ${noun} are running`;
   const adjective = status === "all" ? "" : `${status} `;
-  return `No ${adjective}${noun} in the last 30 days`;
+  return `No ${adjective}${noun} in the last ${JOBS_HISTORY_DAYS} days`;
 }
 
 const TYPE_NOUN: Record<JobsTypeFilter, string> = {

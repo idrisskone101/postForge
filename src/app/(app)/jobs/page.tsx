@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { jobsHistoryCutoff } from "@/lib/jobs/history-window";
 import { JobsActivity } from "./jobs-activity";
 import { JobsSkeleton } from "./jobs-skeleton";
 import type { JobsStatusFilter, JobsTypeFilter } from "./types";
@@ -31,8 +32,7 @@ async function JobsPageData({
   const type = parseType(params.type);
   const page = parsePage(params.page);
   const now = new Date();
-  const historyCutoff = new Date(now);
-  historyCutoff.setDate(historyCutoff.getDate() - HISTORY_DAYS);
+  const historyCutoff = jobsHistoryCutoff(now);
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
   const activeStatuses = ["queued", "processing"];
@@ -58,7 +58,7 @@ async function JobsPageData({
     AND: [visibleWindow, statusWhere, typeWhere],
   };
 
-  const [jobs, filteredTotal, processingCount, queuedCount, completedCount, failedCount, failedToday] =
+  const [jobs, filteredTotal, processingCount, queuedCount, completedCount, failedCount, failedToday, olderJob] =
     await Promise.all([
       prisma.generationJob.findMany({
         where,
@@ -100,6 +100,10 @@ async function JobsPageData({
       prisma.generationJob.count({
         where: { status: "failed", createdAt: { gte: startOfToday } },
       }),
+      prisma.generationJob.findFirst({
+        where: { status: { in: ["completed", "failed"] }, createdAt: { lt: historyCutoff } },
+        select: { id: true },
+      }),
     ]);
 
   return (
@@ -120,6 +124,7 @@ async function JobsPageData({
           page,
           pageSize: PAGE_SIZE,
           filteredTotal,
+          hasOlderJobs: olderJob !== null,
           now,
         }}
       />
@@ -127,7 +132,6 @@ async function JobsPageData({
   );
 }
 
-const HISTORY_DAYS = 30;
 const PAGE_SIZE = 40;
 
 function parseStatus(value: string | undefined): JobsStatusFilter {

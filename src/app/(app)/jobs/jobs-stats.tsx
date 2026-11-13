@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/workbench/skeleton";
 import { StatStrip } from "@/components/workbench/stat-strip";
+import { JOBS_HISTORY_DAYS } from "@/lib/jobs/history-window";
 import { cn } from "@/lib/utils";
 import type { JobsCounts } from "./types";
 
@@ -9,7 +10,7 @@ export function JobsStats({ counts }: { counts: JobsCounts | null }) {
     return (
       <StatStrip
         className={STRIP_CLASS}
-        stats={["Running now", "Completed 30 days", "Failed 30 days"].map((label) => ({
+        stats={["Running now", COMPLETED_LABEL, FAILED_LABEL].map((label) => ({
           label,
           value: <Skeleton shape="tile" className="h-7 w-11 rounded-sm" />,
         }))}
@@ -34,9 +35,9 @@ export function JobsStats({ counts }: { counts: JobsCounts | null }) {
             </>
           ),
         },
-        { label: "Completed 30 days", value: counts.completed },
+        { label: COMPLETED_LABEL, value: counts.completed },
         {
-          label: "Failed 30 days",
+          label: FAILED_LABEL,
           value: counts.failed,
           aside:
             counts.failedToday > 0 ? (
@@ -60,3 +61,6 @@ const STRIP_CLASS = cn(
 
 const STAT_CHIP =
   "inline-flex h-[22px] shrink-0 items-center whitespace-pre rounded-full px-[9px] text-[12px] font-semibold leading-4 tracking-normal";
+
+const COMPLETED_LABEL = `Completed ${JOBS_HISTORY_DAYS} days`;
+const FAILED_LABEL = `Failed ${JOBS_HISTORY_DAYS} days`;

@@ -123,7 +123,11 @@ assert.match(markup, /href="\/slideshow"/);
 assert.match(markup, /href="\/characters\?avatarId=avatar-1"/);
 assert.match(markup, /href="\/ugc-clone\/failed-clone-job"/);
 assert.match(markup, /href="\/generate\/queued-video-job"/);
-assert.match(markup, /1-5 \/ 5/);
+// A list that fits one page has no pager footer; older history is named in one quiet line
+assert.doesNotMatch(markup, /1-5 \/ 5/);
+assert.doesNotMatch(markup, /Previous page|Next page/);
+assert.doesNotMatch(markup, /Showing the last 30 days/);
+assert.match(render({ hasOlderJobs: true }), /<p class="wb-meta pt-3">Showing the last 30 days</);
 assert.doesNotMatch(markup, /[\u2013\u2014]/);
 
 assert.match(markup, /href="\/jobs\?status=active"/);
@@ -138,6 +142,8 @@ assert.match(markup, /aria-label="Filter jobs by status"/);
 
 const secondPage = render({ page: 2, filteredTotal: 85 });
 assert.match(secondPage, /41-80 \/ 85/);
+assert.doesNotMatch(render({ page: 2, filteredTotal: 85, hasOlderJobs: true }), /Showing the last/);
+assert.match(render({ page: 3, filteredTotal: 85, hasOlderJobs: true }), /Showing the last 30 days/);
 assert.match(secondPage, /href="\/jobs\?page=3"/);
 assert.match(secondPage, /href="\/jobs"[^>]*aria-label="Previous page"|aria-label="Previous page"[^>]*href="\/jobs"/);
 
