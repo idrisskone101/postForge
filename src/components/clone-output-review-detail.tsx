@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Toast } from "@/components/workbench";
 import { CloneOutputReviewActions } from "@/components/clone-output/actions";
-import { CloneOutputReviewHeader } from "@/components/clone-output/header";
 import { CloneOutputReviewPreview } from "@/components/clone-output/preview";
 import { CloneOutputReviewSidebar } from "@/components/clone-output/sidebar";
 import type {
@@ -19,26 +19,33 @@ export type {
   CloneOutputReviewOutput,
 };
 
-export function CloneOutputReviewDetail({
-  review,
-}: {
-  review: CloneOutputReviewModel;
-}) {
+export function CloneOutputReviewDetail({ review }: { review: CloneOutputReviewModel }) {
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const view = bindCloneOutputReview(review, featuredIndex, setFeaturedIndex);
+  const { actionFeedback, onDismissFeedback } = review;
 
   return (
-    <div className="pf-content-viewport min-w-0 bg-[var(--pf-canvas)]">
-      <CloneOutputReviewHeader review={view} />
-
-      <div className="mx-auto grid min-w-0 max-w-[1280px] gap-5 px-5 py-6 sm:px-6 lg:grid-cols-[minmax(0,64fr)_minmax(340px,36fr)] lg:px-8">
-        <div className="min-w-0 space-y-4">
-          <CloneOutputReviewPreview review={view} />
-          <CloneOutputReviewActions review={view} />
-        </div>
-
+    <div className="flex min-w-0 flex-1 flex-col gap-3 xl:flex-row">
+      <CloneOutputReviewPreview review={view} />
+      <div className="grid min-w-0 content-start gap-3 md:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
+        <CloneOutputReviewActions review={view} />
         <CloneOutputReviewSidebar review={view} />
       </div>
+      {actionFeedback && (
+        <div className="wb-toast-region">
+          <Toast
+            key={`${actionFeedback.tone}:${actionFeedback.message}`}
+            toast={{
+              id: `${actionFeedback.tone}:${actionFeedback.message}`,
+              tone: actionFeedback.tone === "success" ? "ok" : "bad",
+              message: actionFeedback.message,
+            }}
+            onDismiss={onDismissFeedback ?? noop}
+          />
+        </div>
+      )}
     </div>
   );
 }
+
+function noop() {}
