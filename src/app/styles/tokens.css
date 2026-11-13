@@ -180,7 +180,7 @@
   --pf-hairline: #2e3033;
   --pf-outline: #45474c;
   --pf-segment: #3a3c40;
-  --pf-segment-shadow: none;
+  --pf-segment-shadow: 0 0 #0000;
   --pf-media: #2a2b2e;
   --pf-thumb: #f2f0eb;
   --pf-well: #141516;

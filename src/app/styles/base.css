@@ -42,6 +42,36 @@
   }
 }
 
+/* Edge fades of a sideways-scrolling pill row. Registered so the scroll timeline can interpolate them;
+   with nothing to scroll the timeline is inactive and both stay 0. */
+@property --wb-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --wb-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes wb-scroll-fade {
+  0% {
+    --wb-fade-start: 0px;
+    --wb-fade-end: 16px;
+  }
+  4%,
+  96% {
+    --wb-fade-start: 16px;
+    --wb-fade-end: 16px;
+  }
+  100% {
+    --wb-fade-start: 16px;
+    --wb-fade-end: 0px;
+  }
+}
+
 @keyframes wb-media-reveal {
   from {
     opacity: 0;

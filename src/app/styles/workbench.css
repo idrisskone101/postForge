@@ -414,6 +414,33 @@
     display: flex;
   }
 
+  /* A pill row that scrolls sideways reads as scrollable: the overflowing edge fades over 16px and
+     items settle on a snap point clear of the fade. */
+  .wb-segmented,
+  .wb-scroll-fade {
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 19px;
+  }
+
+  :is(.wb-segmented, .wb-scroll-fade) > * {
+    scroll-snap-align: start;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .wb-segmented,
+    .wb-scroll-fade {
+      animation: wb-scroll-fade linear both;
+      animation-timeline: scroll(self inline);
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 var(--wb-fade-start),
+        #000 calc(100% - var(--wb-fade-end)),
+        transparent
+      );
+    }
+  }
+
   .wb-segment {
     display: inline-flex;
     height: 30px;
@@ -454,6 +481,11 @@
 
   .wb-segment:hover {
     color: var(--pf-text);
+  }
+
+  /* The bed clips at its 3px padding, so the ring sits 1px out and stays whole. */
+  .wb-segment:focus-visible {
+    outline-offset: 1px;
   }
 
   .wb-segment[aria-selected="true"],
@@ -908,9 +940,7 @@
   }
 
   .wb-toast[data-leaving="true"] {
-    animation: none;
-    opacity: 0;
-    transition: opacity var(--pf-dur-exit) var(--pf-ease);
+    animation: wb-drop-out var(--pf-dur-exit) var(--pf-ease) both;
   }
 
   .wb-toast-message {
