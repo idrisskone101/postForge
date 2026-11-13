@@ -243,9 +243,7 @@ a {
   font-weight: 600;
 }
 
-.policy-brand:focus-visible,
-.policy-copy a:focus-visible,
-.policy-footer a:focus-visible {
+.policy-page :is(a, button, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--pf-ember);
   outline-offset: 3px;
 }
