@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { structuredPromptLead } from "@/lib/ai/prompt-presentation";
 
-const TEXT_CLASS = "m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]";
-
 /** The real prompt. A structured prompt leads with its sentence and keeps the full JSON one click away. */
 export function JobPromptText({ prompt }: { prompt: string }) {
   const [showFull, setShowFull] = useState(false);
@@ -35,3 +33,5 @@ export function JobPromptText({ prompt }: { prompt: string }) {
     </div>
   );
 }
+
+const TEXT_CLASS = "m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]";

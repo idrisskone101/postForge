@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-/** Four lines of 13px text in the inspector bed hold about this many characters. */
-const CLAMPED_LENGTH = 180;
-
 export function CharacterPromptBed({ prompt }: { prompt: string }) {
   const [expanded, setExpanded] = useState(false);
   const expandable = prompt.length > CLAMPED_LENGTH;
@@ -41,3 +38,6 @@ export function CharacterPromptBed({ prompt }: { prompt: string }) {
     </div>
   );
 }
+
+/** Four lines of 13px text in the inspector bed hold about this many characters. */
+const CLAMPED_LENGTH = 180;

@@ -16,8 +16,6 @@ import type { HomeDashboard as HomeDashboardData, HomeJob } from "./home-types";
 
 export const dynamic = "force-dynamic";
 
-const HOME_PRIMARY = workspaceNavigationGroups.overview[0].primaryAction;
-
 export default async function HomePage() {
   return (
     <>
@@ -220,3 +218,5 @@ async function loadProductionContext(jobs: Array<{ id: string; input: unknown }>
     return { sourceDetail, identityDetail };
   };
 }
+
+const HOME_PRIMARY = workspaceNavigationGroups.overview[0].primaryAction;
