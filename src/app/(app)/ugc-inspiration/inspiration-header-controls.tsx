@@ -27,7 +27,7 @@ export function InspirationHeaderControls({
 
   return (
     <form
-      className="relative flex min-w-0 items-center gap-2 max-sm:flex-wrap max-sm:justify-end"
+      className="relative flex min-w-0 items-center gap-2 max-sm:w-full max-sm:flex-wrap max-sm:justify-end"
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -76,7 +76,7 @@ export function InspirationHeaderControls({
 }
 
 const FIELD_CLASS = [
-  "flex h-10 w-[min(300px,calc(100vw-108px))] min-w-0 shrink-0 items-center gap-2 rounded-lg bg-raised px-4 text-fg-muted",
+  "flex h-10 w-[min(300px,calc(100vw-108px))] min-w-0 shrink-0 items-center gap-2 rounded-lg bg-raised px-4 text-fg-muted max-sm:w-auto max-sm:flex-1",
   "shadow-[inset_0_0_0_0_var(--pf-ember)] transition-shadow duration-[var(--pf-dur-feedback)] ease-pf",
   "focus-within:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
   "has-[[aria-invalid=true]]:shadow-[inset_0_0_0_2px_var(--pf-bad)]",
