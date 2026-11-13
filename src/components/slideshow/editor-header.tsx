@@ -21,7 +21,7 @@ export function EditorHeader() {
   return (
     <>
       <header className="wb-page-header pr-1" data-back="true">
-        <div className="wb-page-header-lead">
+        <div className="wb-page-header-lead md:basis-0">
           <IconButton
             icon="chevron-left"
             label="Back to drafts"
@@ -35,18 +35,18 @@ export function EditorHeader() {
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Untitled slideshow"
             size={1}
-            className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] max-md:hidden"
+            className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] max-[1439.98px]:hidden"
           />
-          <span className="relative grid min-h-10 min-w-0 flex-1 items-center md:hidden">
+          <span className="relative grid min-h-10 min-w-0 flex-1 items-center min-[1440px]:hidden">
             <textarea
               aria-label="Slideshow title"
               value={draft.title}
               rows={1}
               onChange={(event) => setTitle(event.target.value.replace(/\n/g, " "))}
               placeholder="Untitled slideshow"
-              className={`peer absolute inset-0 resize-none opacity-0 focus:static focus:opacity-100 focus:shadow-[0_0_0_2px_var(--pf-ember)] ${MOBILE_TITLE}`}
+              className={`peer absolute inset-0 resize-none opacity-0 focus:static focus:opacity-100 focus:shadow-[0_0_0_2px_var(--pf-ember)] ${WRAPPING_TITLE}`}
             />
-            <span aria-hidden="true" className={`line-clamp-2 peer-focus:hidden ${MOBILE_TITLE}`}>
+            <span aria-hidden="true" className={`line-clamp-2 peer-focus:hidden ${WRAPPING_TITLE}`}>
               {draft.title || <span className="text-fg-muted">Untitled slideshow</span>}
             </span>
           </span>
@@ -82,5 +82,5 @@ export function EditorHeader() {
   );
 }
 
-const MOBILE_TITLE =
+const WRAPPING_TITLE =
   "field-sizing-content w-full rounded-lg bg-transparent px-1 text-[28px] font-bold leading-8 tracking-[-0.02em] text-fg outline-none [overflow-wrap:anywhere]";
