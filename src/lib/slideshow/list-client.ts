@@ -7,6 +7,7 @@ import {
   LIST_PREVIEW_SLIDE_COUNT,
   type SlideshowProjectListItem,
   type SlideshowProjectListPage,
+  type SlideshowStatusCounts,
 } from "@/lib/slideshow/list-types";
 import type { SlideshowProject } from "@/lib/slideshow/project";
 
@@ -43,6 +44,18 @@ function parsePreviewImageUrls(value: unknown): Array<string | null> {
   return value.slice(0, LIST_PREVIEW_SLIDE_COUNT).map((item) =>
     typeof item === "string" && item.length > 0 ? item : null,
   );
+}
+
+function parseStatusCounts(value: unknown): SlideshowStatusCounts | null {
+  if (!isRecord(value)) return null;
+  const counts: SlideshowStatusCounts = {};
+  for (const status of SLIDESHOW_PROJECT_STATUSES) {
+    const count = value[status];
+    if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) {
+      counts[status] = count;
+    }
+  }
+  return counts;
 }
 
 export function parseSlideshowProjectListItem(
@@ -98,6 +111,7 @@ export function parseSlideshowProjectListPage(
   return {
     projects: rawProjects.map(parseSlideshowProjectListItem),
     total: reportedTotal,
+    statusCounts: parseStatusCounts(record.statusCounts),
     limit: asNonNegativeInteger(record.limit, fallback.limit),
     offset: asNonNegativeInteger(record.offset, fallback.offset),
   };

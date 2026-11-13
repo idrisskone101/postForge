@@ -2,7 +2,7 @@ import "dotenv/config";
 import assert from "node:assert/strict";
 
 import { prisma } from "../../src/lib/db";
-import { listSlideshowProjects } from "../../src/lib/slideshow/list";
+import { listSlideshowProjects, toSlideshowStatusCounts } from "../../src/lib/slideshow/list";
 import { getSlideshowProject } from "../../src/lib/slideshow/service";
 
 async function run() {
@@ -68,6 +68,23 @@ async function run() {
     assert.equal(page.limit, 1);
     assert.equal(page.offset, 0);
     assert.ok(page.total >= 2);
+    assert.ok(page.statusCounts);
+    assert.ok((page.statusCounts.draft ?? 0) >= 1);
+    assert.ok((page.statusCounts.ready ?? 0) >= 1);
+    assert.equal(
+      Object.values(page.statusCounts).reduce((sum, count) => sum + count, 0),
+      page.total,
+    );
+    const readyOnly = await listSlideshowProjects({ limit: 1, offset: 0, status: "ready" });
+    assert.equal(readyOnly.total, page.statusCounts.ready);
+    assert.deepEqual(readyOnly.statusCounts, page.statusCounts);
+    assert.deepEqual(
+      toSlideshowStatusCounts([
+        { status: "draft", _count: { _all: 29 } },
+        { status: "failed", _count: { _all: 2 } },
+      ]),
+      { draft: 29, failed: 2 },
+    );
 
     const detail = await getSlideshowProject(projectId);
     assert.equal(detail.slides.length, 5);

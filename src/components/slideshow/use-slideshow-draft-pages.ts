@@ -1,6 +1,7 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 
 import { fetchSlideshowProjectPage } from "@/lib/slideshow/list-client";
+import type { SlideshowStatusCounts } from "@/lib/slideshow/list-types";
 
 import type { SlideshowProjectListItem } from "./types";
 
@@ -14,7 +15,15 @@ export function useSlideshowDraftPages(input: {
 }) {
   const { apiBaseUrl, projects, setProjects, setProjectsError } = input;
   const [reportedTotal, setReportedTotal] = useState<number | null>(null);
+  const [statusCounts, setStatusCounts] = useState<SlideshowStatusCounts | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const reportTotals = useCallback(
+    (total: number, counts: SlideshowStatusCounts | null) => {
+      setReportedTotal(total);
+      setStatusCounts(counts);
+    },
+    [],
+  );
   const loaded = projects.length;
   const total = reportedTotal === null ? null : Math.max(reportedTotal, loaded);
 
@@ -30,7 +39,7 @@ export function useSlideshowDraftPages(input: {
         const known = new Set(current.map((project) => project.id));
         return [...current, ...page.projects.filter((project) => !known.has(project.id))];
       });
-      setReportedTotal(page.total);
+      reportTotals(page.total, page.statusCounts);
       setProjectsError(null);
     } catch (error) {
       setProjectsError(
@@ -42,10 +51,11 @@ export function useSlideshowDraftPages(input: {
   }
 
   return {
-    setReportedTotal,
+    reportTotals,
     pages: {
       loaded,
       total,
+      statusCounts,
       hasMore: total === null ? loaded > 0 && loaded % PAGE_SIZE === 0 : loaded < total,
       loadingMore,
       onLoadMore: loadMore,

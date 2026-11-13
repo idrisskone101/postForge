@@ -2,6 +2,7 @@ import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 import { fetchModelsCatalog } from "@/lib/ai/models-client";
 import { fetchPlatformCollections } from "@/lib/collections-client";
+import type { SlideshowStatusCounts } from "@/lib/slideshow/list-types";
 
 import {
   connectStudioDrafts,
@@ -23,7 +24,7 @@ export function useSlideshowStudioBootstrap(input: {
   setSelectedImageModel: Dispatch<SetStateAction<string | null>>;
   setCollections: Dispatch<SetStateAction<SlideshowCollection[]>>;
   setProjects: Dispatch<SetStateAction<SlideshowProjectListItem[]>>;
-  setProjectsTotal: Dispatch<SetStateAction<number | null>>;
+  setProjectsTotal: (total: number, statusCounts: SlideshowStatusCounts | null) => void;
   setProjectsError: Dispatch<SetStateAction<string | null>>;
   setLoadingProjects: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -75,9 +76,9 @@ export function useSlideshowStudioBootstrap(input: {
     void connectStudioDrafts({
       apiBaseUrl,
       enabled: initialProjects === undefined,
-      onLoaded: (loaded, total) => {
+      onLoaded: (loaded, total, statusCounts) => {
         setProjects(loaded);
-        setProjectsTotal(total);
+        setProjectsTotal(total, statusCounts);
       },
       onError: setProjectsError,
       onFinally: () => {
@@ -113,9 +114,9 @@ export function useSlideshowStudioBootstrap(input: {
     void connectStudioDraftsRefresh({
       apiBaseUrl,
       enabled: section === "drafts" && !activeProject,
-      onLoaded: (loaded, total) => {
+      onLoaded: (loaded, total, statusCounts) => {
         setProjects(loaded);
-        setProjectsTotal(total);
+        setProjectsTotal(total, statusCounts);
         setProjectsError(null);
       },
       onError: setProjectsError,
