@@ -1,4 +1,5 @@
 import type { TikTokVideoInfo } from "@/components/tiktok-input";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { formatIdentityRole } from "@/components/clone/constants";
 import type {
   AvatarIdentityPack,
@@ -166,7 +167,7 @@ export function getCloneStudioViewModel({
     ? `/api/ugc-clone/preview?path=${encodeURIComponent(videoInfo.localPath)}`
     : null;
   const sourceDetail = videoInfo
-    ? videoInfo.label || "Selected TikTok source"
+    ? (cloneSourceTitle(videoInfo.label)?.title ?? "Selected TikTok source")
     : "Paste a TikTok URL or choose a saved source.";
   const trimDetail = videoInfo
     ? !trimReady

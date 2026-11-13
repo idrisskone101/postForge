@@ -44,15 +44,21 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
   const {
     sourceVideo,
     sourceTitle,
+    sourceShortId,
     sourceUrl,
     sourcePreviewUrl,
     avatarPreviewUrl,
     identityName,
     reference,
   } = review;
-  const sourceMeta = sourceVideo
-    ? `${sourceVideo.width} x ${sourceVideo.height} - ${formatDuration(sourceVideo.durationSec)}`
-    : "Original source context";
+  const sourceMeta = (
+    <>
+      {sourceShortId ? <span className="wb-mono mr-2">{sourceShortId}</span> : null}
+      {sourceVideo
+        ? `${sourceVideo.width} x ${sourceVideo.height} - ${formatDuration(sourceVideo.durationSec)}`
+        : "Original source context"}
+    </>
+  );
 
   return (
     <section aria-label="Clone inputs" className="wb-panel gap-0 py-2">

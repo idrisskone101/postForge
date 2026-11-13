@@ -3,6 +3,7 @@ import {
   getStringInput,
   parseSourceVideo,
 } from "@/components/clone-output/parse";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import type {
   CloneOutputReviewModel,
   CloneOutputReviewView,
@@ -46,8 +47,8 @@ export function bindCloneOutputReview(
             previewUrl: `/api/files/${encodeURIComponent(referenceImageFileId)}`,
           }
         : null;
-  const sourceTitle =
-    sourceVideo?.label ?? job.tikTokSource?.label ?? "Source clip unavailable";
+  const sourceName = cloneSourceTitle(sourceVideo?.label ?? job.tikTokSource?.label);
+  const sourceTitle = sourceName?.title ?? "Source clip unavailable";
   const sourceUrl = sourceVideo?.originalUrl ?? job.tikTokSource?.originalUrl;
   const sourcePreviewUrl = sourceVideo
     ? `/api/ugc-clone/preview?path=${encodeURIComponent(sourceVideo.localPath)}`
@@ -74,6 +75,7 @@ export function bindCloneOutputReview(
     isFailed: job.status === "failed",
     sourceVideo,
     sourceTitle,
+    sourceShortId: sourceName?.shortId ?? null,
     sourceUrl,
     sourcePreviewUrl,
     avatarId,

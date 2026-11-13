@@ -1,6 +1,7 @@
 import type { MouseEvent } from "react";
 import { Button, CountBadge, Icon } from "@/components/workbench";
 import { MediaImage } from "@/components/workbench/media-image";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { cn } from "@/lib/utils";
 
 export interface SavedTikTokSource {
@@ -78,6 +79,7 @@ export function TikTokSavedSources({
         >
           {savedSources.map((source, index) => {
             const isSelected = selectedSourceId === source.id;
+            const name = cloneSourceTitle(source.label) ?? { title: "Saved source", shortId: null };
             return (
               <div key={source.id} className="wb-tile-cell group relative">
                 <button
@@ -113,15 +115,18 @@ export function TikTokSavedSources({
                   <span className="flex min-w-0 flex-col">
                     <span
                       className={cn(
-                        "line-clamp-2 text-[13px] leading-4 text-fg [overflow-wrap:anywhere]",
+                        "truncate text-[13px] leading-4 text-fg",
                         isSelected ? "font-bold" : "font-semibold"
                       )}
                     >
-                      {source.label}
+                      {name.title}
                     </span>
-                    {source.fileSizeBytes ? (
-                      <span className="text-[12px] leading-4 text-fg-muted">
-                        {formatSize(source.fileSizeBytes)}
+                    {name.shortId || source.fileSizeBytes ? (
+                      <span className="flex min-w-0 items-center gap-2 text-[12px] leading-4 text-fg-muted">
+                        {name.shortId ? <span className="wb-mono">{name.shortId}</span> : null}
+                        {source.fileSizeBytes ? (
+                          <span className="truncate">{formatSize(source.fileSizeBytes)}</span>
+                        ) : null}
                       </span>
                     ) : null}
                   </span>

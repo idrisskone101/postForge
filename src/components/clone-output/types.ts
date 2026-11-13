@@ -87,6 +87,7 @@ export type CloneOutputReviewView = CloneOutputReviewModel & {
   isCompleted: boolean;
   sourceVideo: SourceVideoInput | null;
   sourceTitle: string;
+  sourceShortId: string | null;
   sourceUrl: string | null | undefined;
   sourcePreviewUrl: string | null;
   avatarId: string | null;
