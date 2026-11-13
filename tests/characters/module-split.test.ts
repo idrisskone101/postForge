@@ -49,19 +49,6 @@ for (const file of charactersTsxFiles) {
   assert.doesNotMatch(source, /export type /, `${file} must not export types`);
   assert.doesNotMatch(source, /pf-masthead/, `${file} must not use pf-masthead`);
 
-  if (file === "src/app/(app)/characters/new/character-builder-static.tsx") {
-    const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-    assert.deepEqual(hexMatches, ["#111113"], `${file} may only contain #111113`);
-    continue;
-  }
-  if (
-    file === "src/app/(app)/characters/new/character-preview-stage.tsx" ||
-    file === "src/app/(app)/characters/characters-detail-panel.tsx"
-  ) {
-    const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-    assert.deepEqual(hexMatches, ["#09090B"], `${file} may only contain #09090B`);
-    continue;
-  }
   assert.doesNotMatch(source, /#(?:[0-9A-Fa-f]{3,8})\b/, `${file} must not use literal hex`);
 }
 
@@ -95,7 +82,7 @@ const emptySource = readFileSync(
   "utf8"
 );
 assert.match(emptySource, /data-characters-empty/);
-assert.match(emptySource, /data-empty-heading/);
+assert.match(emptySource, /<EmptyState icon="characters" title="No characters yet">/);
 
 console.log(
   files

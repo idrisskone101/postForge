@@ -4,46 +4,6 @@
  * and deletes its lines here; the file goes away with the last one.
  */
 
-[data-character-action]::before {
-  content: attr(data-character-action);
-}
-
-[data-character-blueprint]::before {
-  content: attr(data-character-blueprint);
-}
-
-[data-character-cost]::before {
-  content: attr(data-character-cost);
-}
-
-[data-character-preview-label]::before {
-  content: attr(data-character-preview-label);
-}
-
-[data-character-rail-copy]::before {
-  content: attr(data-character-rail-copy);
-}
-
-[data-character-rail-kicker]::before {
-  content: attr(data-character-rail-kicker);
-}
-
-[data-character-rail-pct]::before {
-  content: attr(data-character-rail-pct);
-}
-
-[data-character-section]::before {
-  content: attr(data-character-section);
-}
-
-[data-character-status]::before {
-  content: attr(data-character-status);
-}
-
-[data-character-title]::before {
-  content: attr(data-character-title);
-}
-
 [data-empty-copy]::before {
   content: attr(data-empty-copy);
 }

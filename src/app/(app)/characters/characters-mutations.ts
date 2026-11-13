@@ -6,7 +6,6 @@ import {
 } from "@/lib/workspace-features-client";
 
 export type RemoveCharacterResult =
-  | { kind: "cancelled" }
   | { kind: "deleted"; records: CharacterRecord[] }
   | {
       kind: "failed";
@@ -23,13 +22,6 @@ export async function removeCharacter(
   record: CharacterRecord,
   records: CharacterRecord[]
 ): Promise<RemoveCharacterResult> {
-  const deletionDetail = record.avatarId
-    ? "Its reusable avatar will also be removed. Existing generated outputs stay available."
-    : "Existing generated outputs stay available.";
-  if (!window.confirm(`Delete ${record.name}? ${deletionDetail}`)) {
-    return { kind: "cancelled" };
-  }
-
   let linkedAvatarRemoved = false;
   try {
     const avatarIsShared = Boolean(
@@ -92,6 +84,12 @@ export async function removeCharacter(
       };
     }
   }
+}
+
+export function characterDeletionDetail(record: CharacterRecord): string {
+  return record.avatarId
+    ? "Its reusable avatar will also be removed. Existing generated outputs stay available."
+    : "Existing generated outputs stay available.";
 }
 
 export async function duplicateCharacter(

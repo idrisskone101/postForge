@@ -15,12 +15,14 @@ function editorView(
 ): CharacterAttributeEditorViewModel {
   return {
     attributes: DEFAULT_CHARACTER_ATTRIBUTES,
-    activeSection: "overview",
-    active: undefined,
+    activeSection: "identity",
+    active: CHARACTER_ATTRIBUTE_SECTIONS[0],
     error: null,
     onDismissError() {},
     onSelectSection() {},
     copyPrompt() {},
+    onImport() {},
+    copyAttributes() {},
     selectAttribute() {},
     ...overrides,
   };
@@ -35,28 +37,23 @@ const faceDetails = CHARACTER_ATTRIBUTE_SECTIONS.find(
 assert.ok(identity);
 assert.ok(faceDetails);
 
-const overviewMarkup = renderToStaticMarkup(
-  <CharacterAttributeEditor view={editorView()} />
-);
-assert.match(overviewMarkup, /data-character-attribute-editor="true"/);
-assert.match(overviewMarkup, /Copy prompt/);
-assert.match(overviewMarkup, /Character blueprint/);
-assert.match(overviewMarkup, /Identity/);
-assert.match(overviewMarkup, /Skin Details/);
-assert.doesNotMatch(overviewMarkup, /aria-pressed/);
-
 const identityMarkup = renderToStaticMarkup(
   <CharacterAttributeEditor
     view={editorView({ activeSection: "identity", active: identity })}
   />
 );
+assert.match(identityMarkup, /data-character-attribute-editor/);
 assert.match(identityMarkup, />Identity</);
+assert.match(identityMarkup, /Copy prompt/);
+assert.match(identityMarkup, /Import prompt or JSON/);
+assert.match(identityMarkup, /Copy attributes JSON/);
+assert.match(identityMarkup, /&quot;identity&quot;: \{/);
+assert.match(identityMarkup, /Next: Ethnicity/);
 assert.match(identityMarkup, /Gender/);
 assert.match(identityMarkup, /Female/);
 assert.match(identityMarkup, /Male/);
 assert.match(identityMarkup, /Non-binary/);
 assert.match(identityMarkup, /aria-pressed="true"/);
-assert.doesNotMatch(identityMarkup, /Copy prompt/);
 
 const faceMarkup = renderToStaticMarkup(
   <CharacterAttributeEditor
@@ -93,7 +90,7 @@ const editorSource = readFileSync(
   "utf8"
 );
 assert.match(editorSource, /onClick=\{copyPrompt\}/);
-assert.match(editorSource, /onSelectSection\(section\.id\)/);
+assert.match(editorSource, /onSelectSection\(next\.id\)/);
 assert.match(editorSource, /selectAttribute\(group\.key, option\)/);
 assert.match(editorSource, /selectAttribute\(group\.key, event\.target\.value\)/);
 assert.doesNotMatch(editorSource, /createContext|useContext/);
