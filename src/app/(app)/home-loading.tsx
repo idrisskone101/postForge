@@ -1,87 +1,75 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Panel } from "@/components/workbench/panel";
+import { Skeleton } from "@/components/workbench/skeleton";
+import { cn } from "@/lib/utils";
+import {
+  PANEL_MOBILE_PAD,
+  REVIEW_LIST_PAD,
+  REVIEW_PANEL_CLASS,
+  SIDE_PANEL_CLASS,
+  WORK_ROW_CLASS,
+} from "./home-cockpit";
+import { GRID_CELL, STRIP_CLASS } from "./home-glance-stats";
 
+/** Static skeleton in the final layout: real labels and titles, placeholders where numbers land. */
 export default function HomeLoading() {
   return (
-    <div className="mx-auto max-w-[1280px] px-4 pb-12 pt-7 sm:px-6 lg:px-8">
-      <header className="flex flex-nowrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <Skeleton className="h-[33px] w-28" />
-          <Skeleton className="mt-2.5 h-3.5 w-72 max-w-full" />
-        </div>
-        <Skeleton className="h-9 w-32 shrink-0 rounded-[8px]" />
-      </header>
-
-      <section
-        aria-label="Today at a glance"
-        className="mt-6 grid grid-cols-2 gap-3 min-[860px]:!grid-cols-4"
-      >
-        {["Spend today", "Jobs running", "Awaiting review", "Completed this week"].map((label) => (
-          <div key={label} className="pf-card flex min-w-0 flex-col gap-1.5 px-4 py-4">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-              {label}
+    <div aria-busy="true" aria-label="Loading home" className="contents">
+      <div className={STRIP_CLASS}>
+        {STATS.map((stat, index) => (
+          <div key={stat.label} className={cn("wb-stat", GRID_CELL[index])}>
+            <span className="wb-label">{stat.label}</span>
+            <span className="flex h-10 items-center">
+              <Skeleton shape="tile" className={cn("h-7 rounded-sm", stat.value)} />
             </span>
-            <Skeleton className="h-7 w-12" />
+            <span className="flex h-4 items-center">
+              <Skeleton className={stat.foot} />
+            </span>
           </div>
         ))}
-      </section>
-
-      <div className="mt-3 grid items-start gap-3 min-[1024px]:grid-cols-[9fr_11fr]">
-        <section aria-label="Review queue" className="pf-card min-w-0 p-4 sm:p-5">
-          <Skeleton className="h-4 w-28" />
-          <div className="mt-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <RowSkeleton key={index} />
-            ))}
-          </div>
-        </section>
-
-        <section aria-label="Recent media" className="pf-card min-w-0 p-4 sm:p-5">
-          <Skeleton className="h-4 w-28" />
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square rounded-[8px]" />
-            ))}
-          </div>
-        </section>
       </div>
-
-      <section aria-label="In progress" className="pf-card mt-3 min-w-0 p-4 sm:p-5">
-        <Skeleton className="h-4 w-24" />
-        <div className="mt-1">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <RowSkeleton key={index} />
+      <div className={WORK_ROW_CLASS}>
+        <Panel title="Review queue" className={cn(REVIEW_PANEL_CLASS, REVIEW_LIST_PAD)}>
+          <div className="flex flex-col">
+            {REVIEW_ROWS.map((width) => (
+              <div key={width} className="flex items-center gap-3.5 border-t border-hairline py-2.5">
+                <Skeleton shape="tile" className="h-16 w-12 shrink-0" />
+                <span className="flex min-w-0 flex-1 flex-col gap-2">
+                  <Skeleton className={width} />
+                  <Skeleton className="w-32 max-w-full" />
+                </span>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel title="In progress" className={SIDE_PANEL_CLASS}>
+          {ACTIVE_ROWS.map((width) => (
+            <div key={width} className="flex flex-col gap-2">
+              <Skeleton className={width} />
+              <Skeleton className="h-1" />
+            </div>
+          ))}
+        </Panel>
+      </div>
+      <Panel title="Recent media" className={PANEL_MOBILE_PAD}>
+        <div className="flex gap-3 overflow-hidden min-[1024px]:grid min-[1024px]:grid-cols-5">
+          {MEDIA_TILES.map((key) => (
+            <div key={key} className="wb-tile-cell w-[150px] shrink-0 min-[768px]:w-[180px] min-[1024px]:w-auto">
+              <Skeleton shape="tile" className="aspect-[212/316] w-full" />
+              <Skeleton className="w-3/4" />
+            </div>
           ))}
         </div>
-      </section>
-
-      <section
-        aria-label="Start new work"
-        className="mt-3 grid gap-3 sm:grid-cols-3"
-      >
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="pf-card flex min-w-0 items-center gap-3 p-4">
-            <Skeleton className="size-10 shrink-0 rounded-[8px]" />
-            <div className="min-w-0 flex-1">
-              <Skeleton className="h-3.5 w-full max-w-[140px]" />
-              <Skeleton className="mt-1.5 h-3 w-24 max-w-full" />
-            </div>
-          </div>
-        ))}
-      </section>
+      </Panel>
     </div>
   );
 }
 
-function RowSkeleton() {
-  return (
-    <div className="border-t border-[var(--pf-border)] py-3 first:border-t-0">
-      <div className="flex items-center gap-3">
-        <Skeleton className="size-10 shrink-0 rounded-[8px]" />
-        <div className="min-w-0 flex-1">
-          <Skeleton className="h-3.5 w-full max-w-[240px]" />
-          <Skeleton className="mt-1.5 h-3 w-32 max-w-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
+const STATS = [
+  { label: "Jobs running", value: "w-11", foot: "w-28" },
+  { label: "Awaiting review", value: "w-11", foot: "w-36" },
+  { label: "Completed this week", value: "w-11", foot: "h-1 w-full" },
+  { label: "Spend today", value: "w-24", foot: "w-28" },
+];
+const REVIEW_ROWS = ["w-56 max-w-full", "w-44 max-w-full"];
+const ACTIVE_ROWS = ["w-40 max-w-full", "w-52 max-w-full"];
+const MEDIA_TILES = ["a", "b", "c", "d", "e"];

@@ -13,14 +13,16 @@ function lineCount(relativePath: string) {
 }
 
 const files = [
+  "src/app/(app)/page.tsx",
   "src/app/(app)/home-cockpit.tsx",
   "src/app/(app)/home-glance-stats.tsx",
-  "src/app/(app)/home-start-work.tsx",
   "src/app/(app)/home-review-queue.tsx",
   "src/app/(app)/home-active-lane.tsx",
-  "src/app/(app)/home-panel.tsx",
-  "src/app/(app)/home-types.ts",
+  "src/app/(app)/home-recent-media.tsx",
   "src/app/(app)/home-loading.tsx",
+  "src/app/(app)/home-failed.tsx",
+  "src/app/(app)/home-format.ts",
+  "src/app/(app)/home-types.ts",
 ];
 
 for (const file of files) {
@@ -28,27 +30,23 @@ for (const file of files) {
   assert.ok(count <= CAP, `${file} is ${count} lines (cap ${CAP})`);
 }
 
-assert.ok(
-  lineCount("src/app/(app)/home-cockpit.tsx") < 496,
-  "home-cockpit.tsx must shrink"
-);
+assert.equal(existsSync(new URL("src/app/(app)/home-start-work.tsx", repoRoot)), false);
+assert.equal(existsSync(new URL("src/app/(app)/home-panel.tsx", repoRoot)), false);
 assert.equal(existsSync(new URL("src/app/home/index.ts", repoRoot)), false);
-assert.equal(existsSync(new URL("src/app/index.ts", repoRoot)), false);
 
 const reviewQueue = readFileSync(new URL("src/app/(app)/home-review-queue.tsx", repoRoot), "utf8");
 assert.doesNotMatch(reviewQueue, /useRouter/);
-assert.doesNotMatch(reviewQueue, /rules-of-hooks/);
 assert.match(reviewQueue, /onReviewSaved\?/);
+assert.match(reviewQueue, /\/api\/files\/\$\{encodeURIComponent\(outputId\)\}\/review-status/);
+assert.match(reviewQueue, /method: "PATCH"/);
+assert.match(reviewQueue, /key=\{item\.outputId\}/);
 
 const homePage = readFileSync(new URL("src/app/(app)/page.tsx", repoRoot), "utf8");
 assert.match(homePage, /<HomeCockpit/);
-assert.doesNotMatch(homePage, /HomeCockpitClient/);
 assert.match(homePage, /export default async function HomePage/);
-assert.match(homePage, /Suspense/);
-assert.match(homePage, /<HomeHeader/);
-
-const homeCockpit = readFileSync(new URL("src/app/(app)/home-cockpit.tsx", repoRoot), "utf8");
-assert.match(homeCockpit, /<Link href="\/ugc-clone" prefetch=\{false\}/);
+assert.match(homePage, /<Suspense fallback=\{<HomeLoading \/>\}>/);
+assert.match(homePage, /<PageHeader title="Home" \/>/);
+assert.match(homePage, /<HomeLoadFailed \/>/);
 
 console.log(
   files

@@ -1,31 +1,33 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Check, ImageIcon, Play, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { HomeJob } from "./home-types";
-import { FileImage } from "@/components/file-image";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { IconButton } from "@/components/workbench/icon-button";
 import { VideoFramePreview } from "@/components/video-frame-preview";
-import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
+import { cn } from "@/lib/utils";
+import type { HomeReviewItem } from "./home-types";
+
+type Decision = "approved_output" | "rejected_output";
 
 export function HomeReviewQueue({
-  jobs,
+  items,
   onReviewSaved,
 }: {
-  jobs: HomeJob[];
+  items: HomeReviewItem[];
   onReviewSaved?: () => void;
 }) {
-  const [decided, setDecided] = useState<Record<string, "approved_output" | "rejected_output">>({});
+  const [decided, setDecided] = useState<Record<string, Decision>>({});
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function decide(job: HomeJob, reviewStatus: "approved_output" | "rejected_output") {
-    if (!job.output || pendingId) return;
-    const outputId = job.output.id;
+  async function decide(outputId: string, reviewStatus: Decision) {
+    if (pendingId) return;
     setError(null);
     setPendingId(outputId);
-    setDecided((current) => ({ ...current, [job.id]: reviewStatus }));
+    setDecided((current) => ({ ...current, [outputId]: reviewStatus }));
     try {
       const response = await fetch(`/api/files/${encodeURIComponent(outputId)}/review-status`, {
         method: "PATCH",
@@ -40,7 +42,7 @@ export function HomeReviewQueue({
     } catch (cause) {
       setDecided((current) => {
         const next = { ...current };
-        delete next[job.id];
+        delete next[outputId];
         return next;
       });
       setError(
@@ -53,78 +55,62 @@ export function HomeReviewQueue({
     }
   }
 
-  const visibleJobs = jobs.filter((job) => !decided[job.id]);
+  const visible = items.filter((item) => !decided[item.outputId]);
 
-  if (visibleJobs.length === 0) {
-    return (
-      <div className="flex min-h-[160px] flex-col items-center justify-center px-4 py-6 text-center">
-        <span className="grid size-9 place-items-center rounded-full bg-[var(--pf-active)] text-[var(--pf-success)]">
-          <Check className="size-4" />
-        </span>
-        <p className="mt-2 text-[13px] font-medium text-[var(--pf-ink)]">Queue cleared</p>
-        <p className="mt-0.5 text-[12px] text-[var(--pf-muted)]">
-          Every visible output has a decision.
-        </p>
-      </div>
-    );
+  if (visible.length === 0) {
+    return <EmptyState icon="check" title="Nothing to review" />;
   }
 
   return (
-    <div>
+    <div className="flex min-w-0 flex-col">
       {error && (
-        <p className="mb-2 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)] px-3 py-2 text-[12px] text-[var(--pf-danger)]">
+        <p role="alert" className="wb-notice mb-2" data-tone="bad">
+          <Icon name="alert" size={16} className="shrink-0 text-bad" />
           {error}
         </p>
       )}
       <ul className="flex flex-col">
-        {visibleJobs.map((job) => {
-          const busy = pendingId === job.output?.id;
+        {visible.map((item) => {
+          const busy = pendingId === item.outputId;
           return (
             <li
-              key={job.id}
+              key={item.outputId}
               className={cn(
-                "flex items-center gap-3 border-t border-[var(--pf-border)] py-3 first:border-t-0 first:pt-0 last:pb-0",
+                "flex min-w-0 items-center gap-3.5 border-t border-hairline py-2.5 transition-opacity duration-[var(--pf-dur-state)] ease-pf max-[767px]:gap-3",
                 busy && "opacity-50"
               )}
             >
               <Link
-                href={getJobHref(job)}
+                href={item.href}
+                // prefetch-off: one link per queued output; each would prefetch its detail route on load.
                 prefetch={false}
-                className="group flex min-w-0 flex-1 items-center gap-3"
+                className="group flex min-w-0 flex-1 items-center gap-3.5 rounded-lg max-[767px]:gap-3"
               >
-                <span className="relative size-14 shrink-0 overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)]">
-                  <ReviewThumb job={job} />
+                <span className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg bg-media">
+                  <ReviewThumb item={item} />
                 </span>
-                <span className="min-w-0">
-                  <span className="line-clamp-2 break-words text-[13px] font-medium leading-[1.35] text-[var(--pf-ink)] [overflow-wrap:anywhere] group-hover:underline">
-                    {summarizeGenerationPrompt(job.prompt) || "Open this production job."}
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <span className="line-clamp-2 text-[14px] min-[768px]:line-clamp-1 font-semibold leading-[18px] text-fg [overflow-wrap:anywhere] group-hover:underline group-hover:decoration-fg-muted group-hover:underline-offset-2">
+                    {item.title}
                   </span>
-                  <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-muted)]">
-                    {job.model} · {job.type === "video" ? "Video" : "Image"}
-                  </span>
+                  <span className="wb-meta truncate">{item.meta}</span>
                 </span>
               </Link>
               <span className="flex shrink-0 items-center gap-1.5">
-                <button
-                  type="button"
-                  disabled={!job.output || busy}
-                  onClick={() => void decide(job, "approved_output")}
-                  aria-label="Approve output"
-                  title="Approve"
-                  className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)] transition-colors duration-[180ms] hover:border-[var(--pf-success)] hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <Check className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  disabled={!job.output || busy}
-                  onClick={() => void decide(job, "rejected_output")}
-                  aria-label="Reject output"
-                  title="Reject"
-                  className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)] transition-colors duration-[180ms] hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <X className="size-4" />
-                </button>
+                <IconButton
+                  icon="x"
+                  label="Reject output"
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => void decide(item.outputId, "rejected_output")}
+                />
+                <IconButton
+                  icon="check"
+                  label="Approve output"
+                  variant="strong"
+                  disabled={busy}
+                  onClick={() => void decide(item.outputId, "approved_output")}
+                />
               </span>
             </li>
           );
@@ -134,39 +120,21 @@ export function HomeReviewQueue({
   );
 }
 
-
-function getJobHref(job: HomeJob) {
-  const isClone = job.type === "video" && job.tags?.includes("ugc-clone") === true;
-  return isClone ? `/ugc-clone/${job.id}` : `/generate/${job.id}`;
-}
-
-function ReviewThumb({ job }: { job: HomeJob }) {
-  if (job.output) {
-    const source = `/api/files/${encodeURIComponent(job.output.id)}`;
-    if (job.type === "video") {
-      return (
-        <VideoFramePreview
-          src={source}
-          label="Output preview"
-          className="size-full object-cover"
-        />
-      );
-    }
+function ReviewThumb({ item }: { item: HomeReviewItem }) {
+  const source = `/api/files/${encodeURIComponent(item.outputId)}`;
+  if (item.mediaType === "video") {
     return (
-      <FileImage
-        src={source}
-        alt="Output preview"
-        sizes="56px"
-      />
+      <VideoFramePreview src={source} label="Output preview" className="size-full object-cover" />
     );
   }
-
   return (
-    <span
-      aria-hidden="true"
-      className="grid size-full place-items-center bg-[var(--pf-active)] text-[var(--pf-muted)]"
-    >
-      {job.type === "video" ? <Play className="size-4" /> : <ImageIcon className="size-4" />}
-    </span>
+    <Image
+      src={source}
+      alt=""
+      fill
+      sizes="48px"
+      unoptimized
+      className="object-cover"
+    />
   );
 }

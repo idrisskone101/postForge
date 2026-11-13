@@ -64,18 +64,6 @@
   content: attr(data-generate-notice);
 }
 
-[data-home-action]::before {
-  content: attr(data-home-action);
-}
-
-[data-home-copy]::before {
-  content: attr(data-home-copy);
-}
-
-[data-home-glance-label]::before {
-  content: attr(data-home-glance-label);
-}
-
 [data-home-title]::before {
   content: attr(data-home-title);
 }
