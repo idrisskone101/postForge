@@ -75,7 +75,7 @@ export function TikTokSavedSources({
           data-saved-source-grid="true"
           className="-m-1 grid max-h-[520px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-x-3 gap-y-4 overflow-y-auto p-1"
         >
-          {savedSources.map((source) => {
+          {savedSources.map((source, index) => {
             const isSelected = selectedSourceId === source.id;
             return (
               <div key={source.id} className="wb-tile-cell group relative">
@@ -97,7 +97,9 @@ export function TikTokSavedSources({
                       <img
                         src={`/api/ugc-clone/sources/${source.id}/thumbnail`}
                         alt=""
-                        loading="lazy"
+                        // The first thumbnail is the largest image in the first viewport.
+                        loading={index === 0 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "auto"}
                         className="size-full object-cover"
                       />
                     ) : null}

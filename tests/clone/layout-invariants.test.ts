@@ -61,3 +61,10 @@ assert.match(
   source("src/components/ugc-clone-form-lazy.tsx"),
   /useWindowLoadReady/,
 );
+
+// Output previews in the recent-clones list load only near the viewport, and only the
+// first saved-source thumbnail is fetched eagerly.
+assert.match(cloneQueue, /<DeferredVideoFrame\s+src=\{`\/api\/files\/\$\{output\.id\}#t=0\.1`\}/);
+assert.doesNotMatch(cloneQueue, /<video/);
+assert.match(source("src/components/deferred-video-frame.tsx"), /src=\{near \? src : undefined\}/);
+assert.match(source("src/components/tiktok-saved-sources.tsx"), /loading=\{index === 0 \? "eager" : "lazy"\}/);

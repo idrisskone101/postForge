@@ -6,6 +6,7 @@ import { apiGet } from "@/lib/api/client";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cloneJobLabel } from "@/components/clone/clone-job-label";
+import { DeferredVideoFrame } from "@/components/deferred-video-frame";
 import {
   Button,
   EmptyState,
@@ -131,11 +132,8 @@ function CloneJobRow({ job }: { job: CloneJob }) {
       className={`${ROW} -mx-2 rounded-lg px-2 transition-colors duration-[160ms] ease-pf hover:bg-raised max-md:flex-wrap`}
     >
       {output ? (
-        <video
+        <DeferredVideoFrame
           src={`/api/files/${output.id}#t=0.1`}
-          muted
-          preload="metadata"
-          aria-hidden="true"
           className="h-12 w-9 shrink-0 rounded-sm bg-media object-cover"
         />
       ) : (
