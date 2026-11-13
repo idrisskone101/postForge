@@ -8,7 +8,7 @@ import {
   type PlaybookPickerState,
   type PlaybookPickerView,
 } from "./playbook-model";
-import { PlaybookEscape } from "./playbook-escape";
+import { PlaybookEscape, usePlaybookExit } from "./playbook-escape";
 import { PlaybookPicker } from "./playbook-picker";
 import { bindPlaybookHandler, playbookArtClass } from "./playbook-visual";
 
@@ -21,17 +21,24 @@ export function AutomationPlaybookOverlay({
   selectedTemplate: AutomationTemplate;
   onApply: (templateId: string) => void;
 }) {
+  const { leaving, leaveThen } = usePlaybookExit();
+  const exiting = { ...picker, onClose: () => leaveThen(picker.onClose) };
   return (
-    <PlaybookOverlayShell picker={picker} selectedTemplate={selectedTemplate} onApply={onApply}>
-      <PlaybookEscape onClose={picker.onClose} />
-      <PlaybookPicker picker={picker} />
+    <PlaybookOverlayShell
+      picker={{ ...exiting, leaving }}
+      selectedTemplate={selectedTemplate}
+      onApply={(templateId) => leaveThen(() => onApply(templateId))}
+    >
+      <PlaybookEscape onClose={exiting.onClose} />
+      <PlaybookPicker picker={exiting} />
     </PlaybookOverlayShell>
   );
 }
 
 /**
  * Scrim, dialog, title row and footer. Rendered by the client overlay and, with
- * no handlers, by the server first paint, so both draw the same boxes.
+ * no handlers, by the server first paint, so both draw the same boxes. It has no
+ * entrance, because it is the first paint of the page; it leaves like every dialog.
  */
 export function PlaybookOverlayShell({
   picker,
@@ -50,7 +57,8 @@ export function PlaybookOverlayShell({
   return (
     <div
       data-automation-overlay="true"
-      className="pf-safe-overlay fixed inset-0 z-[80] grid place-items-center bg-[var(--pf-scrim)] max-sm:p-0 max-sm:pt-[env(safe-area-inset-top)]"
+      data-leaving={picker.leaving ? "true" : undefined}
+      className="group pf-safe-overlay fixed inset-0 z-[80] grid place-items-center bg-[var(--pf-scrim)] transition-opacity duration-[var(--pf-dur-exit)] ease-pf data-[leaving=true]:pointer-events-none data-[leaving=true]:opacity-0 max-sm:p-0 max-sm:pt-[env(safe-area-inset-top)]"
       style={{ position: "fixed", inset: 0, zIndex: 80 }}
       role="dialog"
       aria-modal="true"
@@ -66,7 +74,7 @@ export function PlaybookOverlayShell({
       <div
         data-automation-dialog="true"
         tabIndex={firstPaint ? undefined : -1}
-        className="flex h-full outline-none max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden bg-panel shadow-float max-sm:max-h-full sm:rounded-xl"
+        className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden bg-panel shadow-float outline-none transition-[scale] duration-[var(--pf-dur-exit)] ease-pf group-data-[leaving=true]:scale-[0.98] max-sm:max-h-full sm:rounded-xl"
       >
         <header
           data-playbook-chrome="true"

@@ -42,7 +42,10 @@ type PlaybookPickerHandlers = Pick<
 
 /** The picker as rendered: the server first paint has the data and no handlers yet. */
 export type PlaybookPickerView = Omit<PlaybookPickerState, keyof PlaybookPickerHandlers> &
-  Partial<PlaybookPickerHandlers>;
+  Partial<PlaybookPickerHandlers> & {
+    /** True while the overlay plays its exit. */
+    leaving?: boolean;
+  };
 
 export const PHASES: Phase[] = ["Hook", "Content", "CTA"];
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
