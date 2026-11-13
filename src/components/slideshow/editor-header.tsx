@@ -1,11 +1,9 @@
 "use client";
 
-import { ChevronLeft, Download, Images } from "lucide-react";
+import { Button, Icon, IconButton } from "@/components/workbench";
 
 import { AutosaveStatus } from "./editor-controls";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
-import { SlideshowViewSwitcher } from "./slideshow-view-modes";
-import { SECONDARY_BTN } from "./studio-ui";
 
 export function EditorHeader() {
   const {
@@ -14,64 +12,60 @@ export function EditorHeader() {
     saveError,
     viewMode,
     updateProject,
-    changeViewMode,
     setPickerOpen,
     onBack,
     onPublish,
   } = useSlideshowEditor();
   return (
     <>
-      <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
-        <button
-          type="button"
-          onClick={() => void onBack()}
-          disabled={saveState === "saving"}
-          className={SECONDARY_BTN}
-        >
-          <ChevronLeft className="size-3.5" />
-          Drafts
-        </button>
-        <span className="max-sm:hidden h-5 w-px bg-border sm:block" />
-        <input
-          aria-label="Slideshow title"
-          value={draft.title}
-          onChange={(event) =>
-            updateProject((current) => ({
-              ...current,
-              title: event.target.value,
-            }))
-          }
-          className="h-8 min-w-0 flex-1 bg-transparent px-1 text-[15px] font-semibold tracking-[-0.01em] text-foreground outline-none placeholder:text-muted-foreground sm:max-w-sm"
-          placeholder="Untitled slideshow"
-        />
-        <AutosaveStatus state={saveState} />
-        <SlideshowViewSwitcher value={viewMode} onChange={changeViewMode} />
-        <div className="ml-auto flex items-center gap-2">
+      <header className="wb-page-header" data-back="true">
+        <div className="wb-page-header-lead">
+          <IconButton
+            icon="chevron-left"
+            label="Back to drafts"
+            size={40}
+            onClick={() => void onBack()}
+            disabled={saveState === "saving"}
+          />
+          <input
+            aria-label="Slideshow title"
+            value={draft.title}
+            onChange={(event) =>
+              updateProject((current) => ({
+                ...current,
+                title: event.target.value,
+              }))
+            }
+            placeholder="Untitled slideshow"
+            size={1}
+            className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]"
+          />
+        </div>
+        <div className="wb-page-actions max-sm:w-full">
+          <span className="flex-1 sm:flex-none">
+            <AutosaveStatus state={saveState} />
+          </span>
           {viewMode !== "play" ? (
-            <button type="button" className={SECONDARY_BTN} onClick={() => setPickerOpen(true)}>
-              <Images className="size-3.5" />
-              <span className="max-sm:hidden sm:inline">Images</span>
-            </button>
+            <Button size={40} className="px-[18px]" onClick={() => setPickerOpen(true)}>
+              Images
+            </Button>
           ) : null}
-          <button
-            type="button"
-            onClick={() => void onPublish()}
-            className="pf-button-primary"
-          >
-            <Download className="size-3.5" />
+          <Button variant="primary" size={40} onClick={() => void onPublish()}>
+            <Icon name="upload" size={16} strokeWidth={2} />
             Publish / Export
-          </button>
+          </Button>
         </div>
       </header>
 
       {saveError ? (
-        <div
-          role="alert"
-          className="border-b border-destructive/20 bg-destructive/10 px-5 py-2 text-[11px] text-destructive"
-        >
-          {saveError.includes("imagePrompt")
-            ? "AI direction is too long to save. Shorten it to 2,000 characters or fewer."
-            : saveError} Changes remain only in this browser until autosave succeeds; leaving now can lose them.
+        <div role="alert" className="wb-notice wb-fade-in" data-tone="bad">
+          <Icon name="alert" size={16} className="shrink-0 text-bad" />
+          <span>
+            {saveError.includes("imagePrompt")
+              ? "AI direction is too long to save. Shorten it to 2,000 characters or fewer."
+              : saveError}{" "}
+            Changes remain only in this browser until autosave succeeds; leaving now can lose them.
+          </span>
         </div>
       ) : null}
     </>

@@ -1,39 +1,29 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 function source(relativePath: string) {
   return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
+const page = source("src/app/(app)/slideshow/page.tsx");
+assert.match(page, /SlideshowStudioLazy/);
+assert.doesNotMatch(page, /max-w-|pf-content-viewport|px-\d|border-b/, "the route root adds no page chrome of its own");
+
+const lazy = source("src/components/slideshow/slideshow-studio-lazy.tsx");
+assert.match(lazy, /useWindowLoadReady/);
+assert.match(lazy, /ssr:\s*false/);
+assert.match(lazy, /<PageHeader title="Slideshow" \/>/, "first paint shows the real page header");
+
+const studio = source("src/components/slideshow/slideshow-studio.tsx");
+assert.doesNotMatch(studio, /fixed inset-0/, "the editor renders inside the shell, not as an overlay");
+
+const home = source("src/components/slideshow/studio-home.tsx");
+assert.match(home, /<PageHeader title="Slideshow">/);
+assert.match(home, /role="tablist"/);
+
 assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);
-assert.match(
-  source("src/components/slideshow/create-idea-form.tsx"),
-  /data-slideshow-idea-submit=\{paintReady \? undefined : "true"\}/,
+assert.equal(
+  existsSync(new URL("../../src/app/(app)/slideshow/slideshow-owned-header.tsx", import.meta.url)),
+  false,
 );
-assert.match(
-  source("src/components/slideshow/create-idea-form.tsx"),
-  /data-slideshow-idea=\{paintReady \? undefined : "true"\}/,
-);
-assert.doesNotMatch(
-  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /SlideshowPaintText/,
-);
-assert.match(
-  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /data-home-title=\{TITLE\}/,
-);
-assert.match(
-  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /data-slideshow-copy=\{COPY\}/,
-);
-assert.match(
-  source("src/app/(app)/slideshow/slideshow-owned-header.tsx"),
-  /data-slideshow-studio=\{paintReady \? undefined : "true"\}/,
-);
-assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioLazy/);
-assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowOwnedHeader/);
-assert.match(source("src/app/(app)/slideshow/page.tsx"), /SlideshowStudioFrame/);
-assert.match(
-  source("src/components/slideshow/slideshow-studio-lazy.tsx"),
-  /useWindowLoadReady/,
-);
+assert.doesNotMatch(source("src/app/styles/transitional.css"), /data-slideshow-copy/);

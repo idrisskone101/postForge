@@ -1,17 +1,9 @@
 "use client";
 
-import { Check } from "lucide-react";
-
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button, IconButton } from "@/components/workbench";
 
-import { SECONDARY_BTN } from "./studio-ui";
 import type { CreatorDraft } from "./view-models";
 
 export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
@@ -32,43 +24,39 @@ export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
         if (!open) onClose();
       }}
     >
-      <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
-        <DialogHeader>
-          <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+      <DialogContent
+        showCloseButton={false}
+        className="max-h-[90vh] gap-[18px] px-4 py-5 sm:max-w-[min(720px,calc(100%-2rem))] sm:px-6"
+      >
+        <div className="flex h-8 items-center justify-between gap-3">
+          <DialogTitle className="text-[18px] leading-[22px] font-bold tracking-[-0.01em] text-fg">
             Image for {pickerLabel}
           </DialogTitle>
-          <DialogDescription className="text-[11px] text-muted-foreground">
-            Pick one image from Collections. This slide keeps your copy and uses the photo as-is.
-          </DialogDescription>
-        </DialogHeader>
+          <IconButton icon="x" label="Close" size={30} onClick={onClose} />
+        </div>
         <CollectionReferencePicker
           selectedAssetIds={pickerAssetIds}
-            onChange={onPickerAssetIdsChange}
+          onChange={onPickerAssetIdsChange}
           maxSelection={1}
           refreshKey={referenceRefreshKey}
           preferredAssetIds={preferredReferenceAssetIds}
         />
-        <div className="flex items-center justify-between border-t border-border pt-4">
-          <span className="text-[12px] text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-hairline pt-4">
+          <span className="wb-meta" role="status">
             {pickerAssetIds.length ? "1 image selected" : "No image selected"}
           </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className={SECONDARY_BTN}
-              onClick={onClose}
-            >
+          <div className="flex gap-2.5">
+            <Button size={40} onClick={onClose}>
               Cancel
-            </button>
-            <button
-              type="button"
-              className="pf-button-primary"
+            </Button>
+            <Button
+              variant="primary"
+              size={40}
               disabled={!pickerAssetIds.length}
               onClick={onApply}
             >
-              <Check className="size-3.5" />
               Apply to {pickerLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </DialogContent>

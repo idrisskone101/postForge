@@ -1,18 +1,6 @@
 "use client";
 
-import {
-  CalendarClock,
-  Check,
-  Download,
-  ExternalLink,
-  LoaderCircle,
-  Lock,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button, KeyValueList, StatusChip } from "@/components/workbench";
 
 import type { SlideshowPublishWorkspace } from "./view-models";
 
@@ -25,126 +13,66 @@ export function PublishSidebar({
     project,
     tiktokConnected,
     format,
-    destination,
     formatBlocked,
     destinationBlocked,
-    canSubmit,
-    exporting,
     error,
     exported,
-    scheduleEnabled,
-    onSubmit,
   } = publish;
   return (
-          <aside className="space-y-4">
-            <div
-              className={cn(
-                "rounded-[6px] border p-4",
-                tiktokConnected
-                  ? "border-accent-green/30 bg-accent-green/5"
-                  : "border-amber-500/25 bg-amber-500/5",
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  className={cn(
-                    "flex size-9 shrink-0 items-center justify-center rounded-lg",
-                    tiktokConnected
-                      ? "bg-accent-green/10 text-accent-green"
-                      : "bg-amber-500/10 text-amber-600 dark:text-amber-300",
-                  )}
-                >
-                  {tiktokConnected ? (
-                    <ShieldCheck className="size-4" />
-                  ) : (
-                    <Lock className="size-4" />
-                  )}
-                </span>
-                <div>
-                  <p className="text-xs font-semibold">
-                    {tiktokConnected ? "TikTok connected" : "TikTok not connected"}
-                  </p>
-                  <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
-                    {tiktokConnected
-                      ? "Direct posts and TikTok drafts are available."
-                      : "Connect an approved TikTok Content Posting account to enable dispatch."}
-                  </p>
-                  {!tiktokConnected ? (
-                    <Button variant="outline" size="sm" className="mt-3" disabled>
-                      Connect account
-                      <ExternalLink />
-                    </Button>
-                  ) : null}
-                </div>
-              </div>
-            </div>
+    <aside
+      aria-label="Summary"
+      className="flex w-full shrink-0 flex-col gap-3.5 rounded-lg bg-raised p-4 md:w-[280px]"
+    >
+      <div className="flex flex-col items-start gap-2.5">
+        {tiktokConnected ? (
+          <StatusChip tone="ok" icon="check">TikTok connected</StatusChip>
+        ) : (
+          <>
+            <StatusChip tone="warn" icon="alert">TikTok not connected</StatusChip>
+            <Button size={32} disabled className="disabled:bg-raised-strong">
+              Connect account
+            </Button>
+          </>
+        )}
+      </div>
 
-            <div className="rounded-[6px] border border-border bg-[var(--pf-active)] p-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Slides</span>
-                <span className="font-semibold">{project.slides.length}</span>
-              </div>
-              <div className="mt-3 flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Ratio</span>
-                <span className="font-semibold">{project.aspectRatio}</span>
-              </div>
-              <div className="mt-3 flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Format</span>
-                <span className="font-semibold">
-                  {format === "photo-carousel" ? "Photo carousel" : "MP4"}
-                </span>
-              </div>
-            </div>
+      <KeyValueList
+        rows={[
+          { label: "Slides", value: project.slides.length },
+          { label: "Ratio", value: project.aspectRatio },
+          {
+            label: "Format",
+            value: format === "photo-carousel" ? "Photo carousel" : "MP4",
+          },
+        ]}
+      />
 
-            {formatBlocked ? (
-              <p className="rounded-lg bg-amber-500/10 p-3 text-[12px] leading-4 text-amber-700 dark:text-amber-300">
-                MP4 rendering is visible for workflow parity, but remains disabled
-                until a video renderer is configured.
-              </p>
-            ) : null}
-            {destinationBlocked ? (
-              <p className="rounded-lg bg-amber-500/10 p-3 text-[12px] leading-4 text-amber-700 dark:text-amber-300">
-                TikTok publishing is disabled until an approved account and posting
-                scope are connected. Download remains available now.
-              </p>
-            ) : null}
-            {error ? (
-              <p role="alert" className="rounded-lg bg-destructive/10 p-3 text-xs text-destructive">
-                {error}
-              </p>
-            ) : null}
-            {exported ? (
-              <p role="status" className="flex items-center gap-2 rounded-lg bg-accent-green/10 p-3 text-xs font-medium text-accent-green">
-                <Check className="size-4" />
-                Slideshow prepared successfully.
-              </p>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={() => void onSubmit()}
-              disabled={!canSubmit}
-              className="pf-button-primary h-11 w-full"
-            >
-              {exporting ? (
-                <LoaderCircle className="size-3.5 animate-spin" />
-              ) : destination === "download" ? (
-                <Download className="size-3.5" />
-              ) : scheduleEnabled ? (
-                <CalendarClock className="size-3.5" />
-              ) : (
-                <Sparkles className="size-3.5" />
-              )}
-              {exporting
-                ? "Preparing..."
-                : destination === "download"
-                  ? "Export slideshow"
-                  : scheduleEnabled
-                    ? "Schedule slideshow"
-                    : destination === "tiktok-draft"
-                      ? "Send to TikTok drafts"
-                      : "Publish to TikTok"}
-            </button>
-          </aside>
+      {formatBlocked ? (
+        <p className="wb-notice" data-tone="warn">
+          <span>
+            <strong className="font-semibold text-warn">MP4 is off.</strong> It needs a
+            video renderer.
+          </span>
+        </p>
+      ) : null}
+      {destinationBlocked ? (
+        <p className="wb-notice" data-tone="warn">
+          <span>
+            <strong className="font-semibold text-warn">TikTok publishing is off.</strong>{" "}
+            Connect an account with posting scope. Download still works.
+          </span>
+        </p>
+      ) : null}
+      {error ? (
+        <p role="alert" className="wb-notice" data-tone="bad">
+          <strong>{error}</strong>
+        </p>
+      ) : null}
+      {exported ? (
+        <p role="status" className="wb-notice" data-tone="ok">
+          <strong>Slideshow prepared.</strong>
+        </p>
+      ) : null}
+    </aside>
   );
 }

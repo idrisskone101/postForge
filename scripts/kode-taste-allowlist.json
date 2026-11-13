@@ -9,7 +9,6 @@
     "src/components/media-preview.tsx",
     "src/components/pinterest-import-dialog.tsx",
     "src/components/public-policy-page.tsx",
-    "src/components/slideshow/editor-controls.tsx",
     "src/components/slideshow/slide-preview.tsx",
     "src/components/slideshow/template-dialog.tsx",
     "src/components/swap-input-section.tsx",
