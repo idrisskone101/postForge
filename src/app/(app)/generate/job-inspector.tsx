@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { Button, Icon, Panel, Toggle } from "@/components/workbench";
+import { Button, Icon, Toggle } from "@/components/workbench";
 import { getModel } from "@/lib/ai/models";
 import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -37,7 +37,7 @@ export function JobQuickEdits({
           </button>
         ))}
       </div>
-      <label htmlFor="enhancement-instruction" className="wb-label pt-1.5">
+      <label htmlFor="enhancement-instruction" className="wb-label">
         Instruction
       </label>
       <textarea
@@ -45,7 +45,7 @@ export function JobQuickEdits({
         rows={2}
         value={view.enhancementInstruction}
         onChange={(event) => actions.onInstructionChange(event.target.value)}
-        className="wb-input h-auto min-h-[60px] resize-none py-2.5 text-[13px] leading-[18px]"
+        className="wb-input h-auto min-h-14 resize-none py-2.5 text-[13px] leading-[18px]"
       />
     </section>
   );
@@ -60,7 +60,10 @@ export function JobRefinePanel({
 }) {
   const { featured, isCompleted, isApplying, enhancementInstruction, editStrength, preserveSubject } = view;
   return (
-    <Panel title="Refine" className="flex-none gap-3 py-[18px] [&_.wb-panel-head]:h-5">
+    <section aria-labelledby="job-refine-title" className="wb-panel flex-none gap-3 py-[18px]">
+      <h2 id="job-refine-title" className="wb-panel-title">
+        Refine
+      </h2>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <label htmlFor="edit-strength" className="wb-label">
@@ -100,7 +103,7 @@ export function JobRefinePanel({
       >
         {isApplying ? "Starting enhancement…" : "Apply"}
       </Button>
-    </Panel>
+    </section>
   );
 }
 
@@ -121,18 +124,21 @@ export function JobDetailsPanel({ job, featured }: { job: JobDetail; featured: J
     },
   ];
   return (
-    <Panel title="Details" className="flex-none gap-2.5 py-[18px] [&_.wb-panel-head]:h-5">
+    <section aria-labelledby="job-details-title" className="wb-panel flex-none gap-2.5 py-[18px]">
+      <h2 id="job-details-title" className="wb-panel-title">
+        Details
+      </h2>
       <dl className="m-0 flex gap-5">
         <DetailColumn rows={left} className="min-w-0 flex-1" />
         <DetailColumn rows={right} className="w-[128px] flex-none" />
       </dl>
-      <div className="flex items-baseline justify-between gap-3 border-t border-hairline pt-2.5">
+      <div className="flex items-baseline justify-between gap-3">
         <span className="text-[13px] leading-[18px] text-fg-muted">Job</span>
         <span className="wb-mono min-w-0 text-right leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
           {job.id}
         </span>
       </div>
-    </Panel>
+    </section>
   );
 }
 
@@ -175,7 +181,7 @@ export function JobPromptPanel({
   const negativePrompt = asString(job.input?.negativePrompt);
   const canContinueVideo = job.type === "video" && !job.tags.includes("video-swap");
   return (
-    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[240px] gap-3 py-[18px] xl:flex-1">
+    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[190px] gap-3 py-[18px] xl:flex-1">
       <div className="flex h-7 flex-none items-center gap-2.5">
         <h2 id="job-prompt-title" className="wb-panel-title flex-1">
           Prompt
@@ -189,7 +195,7 @@ export function JobPromptPanel({
           Copy
         </button>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto max-xl:max-h-[320px]">
         <p className="m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">{job.prompt}</p>
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>
@@ -218,13 +224,12 @@ function formatBytes(bytes: number | null) {
 }
 
 const RANGE_CLASS = [
-  "h-[18px] w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none",
+  "h-[18px] w-full cursor-pointer appearance-none rounded-full bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember",
   "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full",
   "[&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
   "[&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:size-[18px] [&::-webkit-slider-thumb]:appearance-none",
   "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--pf-thumb)]",
   "[&::-webkit-slider-thumb]:shadow-[0_0_0_2px_var(--pf-ember)]",
-  "focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_2px_var(--pf-ember),0_0_0_6px_var(--pf-ember-wash)]",
   "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full",
   "[&::-moz-range-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
   "[&::-moz-range-thumb]:size-[18px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0",

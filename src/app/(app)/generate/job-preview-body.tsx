@@ -27,8 +27,8 @@ export function JobStage({
       aria-label="Preview"
       className="flex min-h-[420px] min-w-0 flex-1 flex-col gap-3.5 rounded-xl bg-floor p-3.5 shadow-[inset_0_0_0_1px_var(--pf-hairline)] sm:min-h-[520px] xl:min-h-0"
     >
-      <div className="flex min-h-10 flex-none flex-wrap items-center justify-between gap-2">
-        <div className="flex sm:w-[150px]">
+      <div className="flex min-h-10 flex-none flex-wrap items-center justify-between gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+        <div className="flex min-w-0">
           <JobStatusChip status={job.status} queueStage={job.queueStage} />
         </div>
         {hasMedia && (
@@ -36,7 +36,7 @@ export function JobStage({
             <JobPreviewToolbar view={toolbar} />
           </div>
         )}
-        <span className="wb-mono text-right text-fg-secondary sm:w-[150px]">
+        <span className="wb-mono text-right text-fg-secondary sm:col-start-3 sm:justify-self-end">
           {hasMedia && formatDimensions(featured)}
         </span>
       </div>
@@ -121,7 +121,7 @@ function formatDimensions(output: JobOutput | undefined) {
 function JobPreviewToolbar({ view }: { view: JobPreviewToolbarView }) {
   const { previewZoom, cropMode, isFullscreen, onZoomOut, onZoomIn, onToggleCrop, onFullscreen } = view;
   const tool =
-    "inline-flex h-8 flex-none items-center justify-center rounded-full text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent aria-pressed:bg-strong";
+    "inline-flex h-8 flex-none items-center justify-center rounded-full text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent aria-pressed:bg-panel aria-pressed:shadow-[0_1px_2px_rgb(0_0_0/0.08)] dark:aria-pressed:bg-strong dark:aria-pressed:shadow-none";
   return (
     <div role="toolbar" aria-label="Preview controls" className="flex h-10 items-center gap-0.5 rounded-full bg-raised px-1.5">
       <button type="button" aria-label="Zoom out" onClick={onZoomOut} disabled={previewZoom <= 50} className={cn(tool, "w-[34px]")}>
