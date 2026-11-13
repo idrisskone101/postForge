@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "./icon";
 
@@ -23,15 +23,23 @@ type ToastProps = {
  */
 export function Toast({ toast, onDismiss }: ToastProps) {
   const { id, tone } = toast;
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    if (tone === "bad") return;
-    const timer = window.setTimeout(() => onDismiss(id), AUTO_DISMISS_MS);
+    if (tone === "bad" && !leaving) return;
+    const timer = window.setTimeout(
+      () => (leaving ? onDismiss(id) : setLeaving(true)),
+      leaving ? EXIT_MS : AUTO_DISMISS_MS
+    );
     return () => window.clearTimeout(timer);
-  }, [id, tone, onDismiss]);
+  }, [id, tone, leaving, onDismiss]);
 
   return (
-    <div className="wb-toast" role={tone === "bad" ? "alert" : "status"}>
+    <div
+      className="wb-toast"
+      role={tone === "bad" ? "alert" : "status"}
+      data-leaving={leaving ? "true" : undefined}
+    >
       <span className={cn("wb-status-badge", "size-5")} data-tone={tone}>
         <Icon name={tone === "bad" ? "exclamation" : "check"} size={12} strokeWidth={3} />
       </span>
@@ -42,7 +50,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           className="wb-toast-action"
           onClick={() => {
             toast.action?.onClick();
-            onDismiss(id);
+            setLeaving(true);
           }}
         >
           {toast.action.label}
@@ -53,7 +61,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           type="button"
           aria-label="Dismiss"
           className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-30"
-          onClick={() => onDismiss(id)}
+          onClick={() => setLeaving(true)}
         >
           <Icon name="x" />
         </button>
@@ -63,3 +71,4 @@ export function Toast({ toast, onDismiss }: ToastProps) {
 }
 
 const AUTO_DISMISS_MS = 5000;
+const EXIT_MS = 160;

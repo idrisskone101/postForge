@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { resolveSidebarStatus } from "../../src/lib/use-workspace-notifications";
 
 function countUseEffect(source: string) {
   return [...source.matchAll(/\buseEffect\s*\(/g)].length;
@@ -37,9 +38,10 @@ const notifications = readFileSync(
   "utf8"
 );
 
-assert.equal(countUseEffect(sidebar), 1, "sidebar keeps only the hydrate effect");
+assert.equal(countUseEffect(sidebar), 2, "sidebar keeps the hydrate effect and the drawer breakpoint listener");
+assert.match(sidebar, /useEffect\(\(\) => closeDrawerAtDesktopWidth\(mobileNavRef\), \[\]\)/);
 assert.equal(countUseEffect(notifications), 1, "the notifications hook owns the poll effect");
-assert.match(sidebar, /useWorkspaceNotifications\(!publicPolicyPage\)/);
+assert.match(sidebar, /= useWorkspaceNotifications\(!publicPolicyPage\)/);
 
 assert.match(
   sidebar,
@@ -63,5 +65,27 @@ assert.match(notifications, /setInterval\(refresh,\s*POLL_INTERVAL_MS\)/);
 assert.match(notifications, /addEventListener\("focus",\s*refresh\)/);
 assert.match(notifications, /removeEventListener\("focus",\s*refresh\)/);
 assert.match(notifications, /fetch\("\/api\/workspace-notifications", \{ cache: "no-store" \}\)/);
+
+// The Settings > Notifications toggles and the workspace name still drive the sidebar.
+const stored = { id: "workspace-settings", workspaceName: " Studio ", emailFailures: true, emailApprovals: false };
+const polled = { generationFailures: 3, approvalsWaiting: 12 };
+assert.deepEqual(resolveSidebarStatus(stored, polled), {
+  workspaceName: "Studio",
+  counts: { generationFailures: 3, approvalsWaiting: 0 },
+});
+assert.deepEqual(resolveSidebarStatus({ ...stored, emailFailures: false, emailApprovals: true }, polled).counts, {
+  generationFailures: 0,
+  approvalsWaiting: 12,
+});
+assert.deepEqual(resolveSidebarStatus(undefined, polled), {
+  workspaceName: "PostForge",
+  counts: { generationFailures: 0, approvalsWaiting: 0 },
+});
+assert.deepEqual(
+  resolveSidebarStatus({ ...stored, emailApprovals: true }, { generationFailures: -1, approvalsWaiting: 2 }).counts,
+  { generationFailures: 0, approvalsWaiting: 0 },
+  "malformed counts never reach the badges"
+);
+assert.match(notifications, /fetchWorkspaceFeature<WorkspaceSidebarSettings>\("connections"\)/);
 
 console.log("sidebar effect hygiene pins passed");

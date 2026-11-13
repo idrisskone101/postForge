@@ -6,8 +6,12 @@ import { iconButtonClass } from "./icon-button";
 
 type PageHeaderProps = {
   title: ReactNode;
-  /** Renders the 40px round back button before the title. */
-  back?: { href: string; label: string };
+  /**
+   * Back control before the title. Default is the 40px round button (automation
+   * builder). `labelled` draws the 40px quiet pill with the label (generation
+   * detail "Back", character builder "Characters").
+   */
+  back?: { href: string; label: string; labelled?: boolean };
   /** Actions slot: at most the one bone primary plus one quiet secondary. */
   children?: ReactNode;
   className?: string;
@@ -26,11 +30,12 @@ export function PageHeader({ title, back, children, className, id }: PageHeaderP
         {back && (
           <Link
             href={back.href}
-            aria-label={back.label}
-            title={back.label}
-            className={iconButtonClass("quiet", 40)}
+            aria-label={back.labelled ? undefined : back.label}
+            title={back.labelled ? undefined : back.label}
+            className={back.labelled ? "wb-btn wb-btn-40 wb-back-pill" : iconButtonClass("quiet", 40)}
           >
             <Icon name="chevron-left" />
+            {back.labelled ? back.label : null}
           </Link>
         )}
         <h1 className="wb-page-title">{title}</h1>

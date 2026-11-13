@@ -156,7 +156,7 @@ assert.match(tokens, /--pf-page-pad: 16px;/);
 assert.match(shellStyles, /@media \(min-width: 768px\) \{\s*#workspace-mobile-bar \{\s*display: none;/);
 assert.match(shellStyles, /@media \(min-width: 768px\) and \(max-width: 1279\.98px\)/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sidebar \{[\s\S]*?width: var\(--pf-rail-w\);/);
-assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell \{\s*margin-left: var\(--pf-rail-w\);/);
+assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell \{\s*margin-left: calc\(var\(--pf-rail-w\)/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] \.workspace-sidebar-offset-left/);
 assert.match(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
 

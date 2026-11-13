@@ -342,14 +342,9 @@
   }
 
   .wb-tile[data-selected="true"] {
-    overflow: visible;
     box-shadow:
       0 0 0 2px var(--pf-panel),
       0 0 0 4px var(--pf-ember);
-  }
-
-  .wb-tile[data-selected="true"] > :is(img, video) {
-    border-radius: inherit;
   }
 
   .wb-tile-check {
@@ -369,6 +364,7 @@
     color: transparent;
     opacity: 0;
     padding: 0;
+    pointer-events: none;
     transition: opacity var(--pf-dur-feedback) var(--pf-ease);
   }
 
@@ -381,6 +377,7 @@
   .wb-tile:focus-within > .wb-tile-check,
   .wb-tile[data-selecting="true"] > .wb-tile-check {
     opacity: 1;
+    pointer-events: auto;
   }
 
   .wb-tile[data-selected="true"] > .wb-tile-check {
@@ -388,6 +385,7 @@
     background: var(--pf-ember);
     color: var(--pf-on-ember);
     opacity: 1;
+    pointer-events: auto;
   }
 
   .wb-tile[data-selected="true"] > .wb-tile-check > svg {
@@ -428,6 +426,7 @@
     background: linear-gradient(180deg, transparent, rgb(22 22 22 / 0.7));
     padding: 40px 8px 8px;
     opacity: 0;
+    pointer-events: none;
     transform: translateY(4px);
     transition:
       opacity var(--pf-dur-feedback) var(--pf-ease),
@@ -437,7 +436,22 @@
   .wb-tile:hover > .wb-tile-actions,
   .wb-tile:focus-within > .wb-tile-actions {
     opacity: 1;
+    pointer-events: auto;
     transform: translateY(0);
+  }
+
+  /* Touch has no hover: the check is always there and the action row stays visible. */
+  @media (hover: none) {
+    .wb-tile > .wb-tile-check,
+    .wb-tile > .wb-tile-actions {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+
+    .wb-tile > .wb-tile-actions ~ .wb-tile-duration {
+      opacity: 0;
+    }
   }
 
   .wb-tile:hover > .wb-tile-actions ~ .wb-tile-duration,

@@ -30,6 +30,8 @@
   --pf-strong: #1a1a1a;
   --pf-strong-hover: #333333;
   --pf-strong-fg: #ffffff;
+  --pf-raised-pressed: #dcdcd8;
+  --pf-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234D4D4D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");
   --pf-hairline: #dcdcd8;
   --pf-outline: #c9c9c4;
   --pf-segment: #ffffff;
@@ -169,6 +171,8 @@
   --pf-strong: #3a3c40;
   --pf-strong-hover: #45474c;
   --pf-strong-fg: #f2f0eb;
+  --pf-raised-pressed: #3a3c40;
+  --pf-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B9B7B1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");
   --pf-hairline: #2e3033;
   --pf-outline: #45474c;
   --pf-segment: #3a3c40;

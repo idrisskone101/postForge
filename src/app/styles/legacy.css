@@ -133,7 +133,7 @@
   }
 
   .pf-button-secondary:active {
-    background: var(--pf-strong);
+    background: var(--pf-raised-pressed);
     transform: scale(0.98);
   }
 

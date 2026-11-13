@@ -169,7 +169,7 @@
   }
 
   .wb-btn:active {
-    background: var(--pf-strong);
+    background: var(--pf-raised-pressed);
     transform: scale(0.98);
   }
 
@@ -324,7 +324,7 @@
   }
 
   .wb-icon-btn:active {
-    background: var(--pf-strong);
+    background: var(--pf-raised-pressed);
     transform: scale(0.98);
   }
 
@@ -615,7 +615,7 @@
 
   select.wb-input {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B9B7B1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");
+    background-image: var(--pf-select-chevron);
     background-position: right 10px center;
     background-repeat: no-repeat;
     background-size: 16px 16px;
@@ -811,6 +811,7 @@
   }
 
   .wb-toast[data-leaving="true"] {
+    animation: none;
     opacity: 0;
     transition: opacity var(--pf-dur-exit) var(--pf-ease);
   }

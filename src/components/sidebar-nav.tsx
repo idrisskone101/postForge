@@ -41,21 +41,17 @@ export function SidebarNav({ activeHref, counts, onNavigate }: SidebarNavProps) 
               item={item}
               active={item.href === activeHref}
               onNavigate={onNavigate}
+              status={navItemStatus(item.label, counts)}
             >
               {item.label === "Jobs" && (
                 <CountBadge
                   count={counts.generationFailures}
                   tone="bad"
-                  label={`${counts.generationFailures} failed`}
                   className="sidebar-expanded-only"
                 />
               )}
               {item.label === "Gallery" && (
-                <CountBadge
-                  count={counts.approvalsWaiting}
-                  label={`${counts.approvalsWaiting} to review`}
-                  className="sidebar-expanded-only"
-                />
+                <CountBadge count={counts.approvalsWaiting} className="sidebar-expanded-only" />
               )}
             </SidebarNavItem>
           ))}
@@ -69,14 +65,22 @@ type SidebarNavItemProps = {
   item: WorkspaceNavigationItem;
   active: boolean;
   onNavigate?: () => void;
+  /** Spoken after the label, e.g. "3 failed". The link name overrides its content. */
+  status?: string;
   children?: React.ReactNode;
 };
 
-export function SidebarNavItem({ item, active, onNavigate, children }: SidebarNavItemProps) {
+export function SidebarNavItem({
+  item,
+  active,
+  onNavigate,
+  status,
+  children,
+}: SidebarNavItemProps) {
   return (
     <Link
       href={item.href}
-      aria-label={item.label}
+      aria-label={status ? `${item.label}, ${status}` : item.label}
       title={item.label}
       aria-current={active ? "page" : undefined}
       onClick={onNavigate}
@@ -87,6 +91,16 @@ export function SidebarNavItem({ item, active, onNavigate, children }: SidebarNa
       {children}
     </Link>
   );
+}
+
+function navItemStatus(label: WorkspaceNavigationLabel, counts: WorkspaceNotificationCounts) {
+  if (label === "Jobs" && counts.generationFailures > 0) {
+    return `${counts.generationFailures} failed`;
+  }
+  if (label === "Gallery" && counts.approvalsWaiting > 0) {
+    return `${counts.approvalsWaiting} to review`;
+  }
+  return undefined;
 }
 
 const NAV_ICONS: Record<WorkspaceNavigationLabel, IconName> = {

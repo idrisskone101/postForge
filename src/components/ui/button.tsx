@@ -14,7 +14,7 @@ const buttonVariants = cva(
         outline:
           "bg-transparent text-fg shadow-[inset_0_0_0_1px_var(--pf-outline)] hover:bg-fg/8 active:bg-fg/14 aria-expanded:bg-fg/8",
         secondary:
-          "bg-raised text-fg hover:bg-raised-strong active:bg-strong aria-expanded:bg-raised-strong",
+          "bg-raised text-fg hover:bg-raised-strong active:bg-[var(--pf-raised-pressed)] aria-expanded:bg-raised-strong",
         ghost:
           "bg-transparent text-fg-secondary hover:bg-raised hover:text-fg aria-expanded:bg-raised aria-expanded:text-fg",
         destructive:

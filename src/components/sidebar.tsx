@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { SidebarNav, SidebarNavItem } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icon } from "@/components/workbench/icon";
@@ -19,7 +19,7 @@ export function Sidebar() {
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const mobileNavRef = useRef<HTMLDialogElement>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
-  const counts = useWorkspaceNotifications(!publicPolicyPage);
+  const { counts, workspaceName } = useWorkspaceNotifications(!publicPolicyPage);
   const activeItem = getActiveWorkspaceItem(pathname);
 
   useEffect(() => {
@@ -30,6 +30,8 @@ export function Sidebar() {
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => closeDrawerAtDesktopWidth(mobileNavRef), []);
 
   if (publicPolicyPage) return null;
 
@@ -66,7 +68,7 @@ export function Sidebar() {
           <div className="sidebar-mobile-frame">
             <div className="sidebar-top">
               <div className="sidebar-header">
-                <PostForgeBrand onNavigate={closeMobileNav} />
+                <PostForgeBrand name={workspaceName} onNavigate={closeMobileNav} />
                 <button
                   type="button"
                   aria-label="Close workspace navigation"
@@ -85,13 +87,13 @@ export function Sidebar() {
             <SidebarFoot active={settingsActive} onNavigate={closeMobileNav} />
           </div>
         </dialog>
-        <PostForgeBrand />
+        <PostForgeBrand name={workspaceName} />
       </div>
 
       <aside id="workspace-sidebar">
         <div className="sidebar-top">
           <div className="sidebar-header">
-            <PostForgeBrand />
+            <PostForgeBrand name={workspaceName} />
             <button
               type="button"
               onClick={toggleCollapsed}
@@ -125,6 +127,14 @@ function SidebarFoot({ active, onNavigate }: { active: boolean; onNavigate?: () 
   );
 }
 
+/** A modal drawer left open while the mobile bar disappears would make the page inert. */
+function closeDrawerAtDesktopWidth(drawer: RefObject<HTMLDialogElement | null>) {
+  const desktop = window.matchMedia("(min-width: 768px)");
+  const close = () => drawer.current?.close();
+  desktop.addEventListener("change", close);
+  return () => desktop.removeEventListener("change", close);
+}
+
 function applySidebarCollapsedDataset(collapsed: boolean) {
   if (collapsed) {
     document.documentElement.dataset.sidebarCollapsed = "true";
@@ -133,13 +143,13 @@ function applySidebarCollapsedDataset(collapsed: boolean) {
   }
 }
 
-function PostForgeBrand({ onNavigate }: { onNavigate?: () => void }) {
+function PostForgeBrand({ name, onNavigate }: { name: string; onNavigate?: () => void }) {
   return (
-    <Link href="/" className="sidebar-brand" aria-label="PostForge" onClick={onNavigate}>
+    <Link href="/" className="sidebar-brand" aria-label={name} onClick={onNavigate}>
       <span aria-hidden="true" className="sidebar-brand-tile">
         <Icon name="logo" strokeWidth={2} />
       </span>
-      <span className="sidebar-expanded-only sidebar-brand-name">PostForge</span>
+      <span className="sidebar-expanded-only sidebar-brand-name">{name}</span>
     </Link>
   );
 }

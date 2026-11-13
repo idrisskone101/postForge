@@ -188,6 +188,11 @@
     transition: color var(--pf-dur-feedback) var(--pf-ease);
   }
 
+  /* The sidebar scrolls, so an outset ring would be clipped at its edges. */
+  .sidebar-nav-item:focus-visible {
+    outline-offset: -2px;
+  }
+
   .sidebar-nav-item::before {
     position: absolute;
     inset: 0;
@@ -262,10 +267,6 @@
     z-index: 2;
   }
 
-  .sidebar-compact-only {
-    display: none;
-  }
-
   @keyframes wb-drawer-in {
     from {
       opacity: 0;
@@ -301,6 +302,12 @@
   .wb-page-header[data-back="true"] {
     padding-left: 4px;
     padding-right: 8px;
+  }
+
+  .wb-btn.wb-back-pill {
+    gap: 4px;
+    padding-left: 10px;
+    padding-right: 16px;
   }
 
   .wb-page-title {
@@ -348,8 +355,14 @@
   }
 
   #workspace-shell {
-    margin-left: var(--pf-rail-w);
-    padding: var(--pf-page-pad) var(--pf-page-pad) var(--pf-page-pad) 0;
+    margin-left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
+    padding: max(var(--pf-page-pad), env(safe-area-inset-top))
+      max(var(--pf-page-pad), env(safe-area-inset-right))
+      max(var(--pf-page-pad), env(safe-area-inset-bottom)) 0;
+  }
+
+  #workspace-sidebar {
+    left: env(safe-area-inset-left);
   }
 
   .pf-content-viewport {
@@ -360,10 +373,6 @@
 @media (min-width: 768px) and (max-width: 1279.98px) {
   #workspace-sidebar .sidebar-expanded-only {
     display: none;
-  }
-
-  #workspace-sidebar .sidebar-compact-only {
-    display: flex;
   }
 
   #workspace-sidebar .sidebar-header {
@@ -393,13 +402,15 @@
 /* 1280 and up: 248px sidebar on the floor, collapsible to the rail */
 @media (min-width: 1280px) {
   #workspace-sidebar {
-    left: var(--pf-page-pad);
+    left: calc(var(--pf-page-pad) + env(safe-area-inset-left));
     width: var(--pf-sidebar-w);
     padding-inline: 0;
   }
 
   #workspace-shell {
-    margin-left: calc(var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap));
+    margin-left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left)
+    );
   }
 
   .workspace-sidebar-offset-left {
@@ -407,13 +418,13 @@
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar {
-    left: 0;
+    left: env(safe-area-inset-left);
     width: var(--pf-rail-w);
     padding-inline: 14px;
   }
 
   html[data-sidebar-collapsed="true"] #workspace-shell {
-    margin-left: var(--pf-rail-w);
+    margin-left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
   }
 
   html[data-sidebar-collapsed="true"] .workspace-sidebar-offset-left {
@@ -431,10 +442,6 @@
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {
     display: none;
-  }
-
-  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-compact-only {
-    display: flex;
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-nav-item {

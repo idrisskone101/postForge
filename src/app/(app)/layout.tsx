@@ -15,6 +15,13 @@ export default async function AppLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link
+          rel="preload"
+          href="/fonts/hanken-grotesk-latin-wght-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <style>{FIRST_PAINT_CSS}</style>
         <script
           dangerouslySetInnerHTML={{

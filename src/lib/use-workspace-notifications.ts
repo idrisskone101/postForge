@@ -1,24 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
 
 export type WorkspaceNotificationCounts = {
   generationFailures: number;
   approvalsWaiting: number;
 };
 
-/** Failed-job and needs-review counts for the sidebar badges. Polls every minute and on focus. */
-export function useWorkspaceNotifications(enabled: boolean): WorkspaceNotificationCounts {
-  const [counts, setCounts] = useState(EMPTY_COUNTS);
+export type WorkspaceSidebarStatus = {
+  /** Counts already gated by the Settings > Notifications toggles: a hidden count is 0. */
+  counts: WorkspaceNotificationCounts;
+  workspaceName: string;
+};
 
-  useEffect(() => (enabled ? startPolling(setCounts) : undefined), [enabled]);
+/**
+ * Sidebar status: the workspace name and the failed-job and needs-review
+ * counts. A count shows only while its Settings > Notifications toggle is on.
+ * Polls every minute and on focus.
+ */
+export function useWorkspaceNotifications(enabled: boolean): WorkspaceSidebarStatus {
+  const [status, setStatus] = useState(EMPTY_STATUS);
 
-  return counts;
+  useEffect(() => (enabled ? startPolling(setStatus) : undefined), [enabled]);
+
+  return status;
 }
 
-const EMPTY_COUNTS: WorkspaceNotificationCounts = {
-  generationFailures: 0,
-  approvalsWaiting: 0,
+export type WorkspaceSidebarSettings = {
+  id: string;
+  workspaceName?: string;
+  emailFailures?: boolean;
+  emailApprovals?: boolean;
+};
+
+const DEFAULT_WORKSPACE_NAME = "PostForge";
+const EMPTY_STATUS: WorkspaceSidebarStatus = {
+  counts: { generationFailures: 0, approvalsWaiting: 0 },
+  workspaceName: DEFAULT_WORKSPACE_NAME,
 };
 const POLL_INTERVAL_MS = 60_000;
 
@@ -26,28 +45,43 @@ function isCount(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0;
 }
 
-async function fetchNotificationCounts(): Promise<WorkspaceNotificationCounts | null> {
+/** Pure merge of the stored settings and the polled counts. Exported for tests. */
+export function resolveSidebarStatus(
+  settings: WorkspaceSidebarSettings | undefined,
+  counts: Partial<WorkspaceNotificationCounts>
+): WorkspaceSidebarStatus {
+  const valid = isCount(counts.generationFailures) && isCount(counts.approvalsWaiting);
+  return {
+    workspaceName: settings?.workspaceName?.trim() || DEFAULT_WORKSPACE_NAME,
+    counts: {
+      generationFailures:
+        valid && settings?.emailFailures === true ? counts.generationFailures ?? 0 : 0,
+      approvalsWaiting:
+        valid && settings?.emailApprovals === true ? counts.approvalsWaiting ?? 0 : 0,
+    },
+  };
+}
+
+async function fetchSidebarStatus(): Promise<WorkspaceSidebarStatus | null> {
   try {
-    const response = await fetch("/api/workspace-notifications", { cache: "no-store" });
-    if (!response.ok) return null;
-    const counts: Partial<WorkspaceNotificationCounts> = await response.json();
-    if (!isCount(counts.generationFailures) || !isCount(counts.approvalsWaiting)) {
-      return null;
-    }
-    return {
-      generationFailures: counts.generationFailures,
-      approvalsWaiting: counts.approvalsWaiting,
-    };
+    const [{ records }, response] = await Promise.all([
+      fetchWorkspaceFeature<WorkspaceSidebarSettings>("connections"),
+      fetch("/api/workspace-notifications", { cache: "no-store" }),
+    ]);
+    return resolveSidebarStatus(
+      records.find((record) => record.id === "workspace-settings"),
+      response.ok ? await response.json() : {}
+    );
   } catch {
     return null;
   }
 }
 
-function startPolling(onCounts: (counts: WorkspaceNotificationCounts) => void) {
+function startPolling(onStatus: (status: WorkspaceSidebarStatus) => void) {
   let cancelled = false;
   const refresh = () => {
-    void fetchNotificationCounts().then((next) => {
-      if (next && !cancelled) onCounts(next);
+    void fetchSidebarStatus().then((next) => {
+      if (next && !cancelled) onStatus(next);
     });
   };
 

@@ -14,6 +14,8 @@ export type MediaTileState = {
   duration?: string;
   /** Name used by the selection control, e.g. the output title. */
   name?: string;
+  /** Keep every check visible, e.g. while a multi-select is in progress. */
+  selecting?: boolean;
 };
 
 type MediaTileProps = {
@@ -28,9 +30,13 @@ type MediaTileProps = {
 
 /** 12px media tile. Hover lifts the action row 4px; the image never zooms. */
 export function MediaTile({ children, state = {}, actions, className }: MediaTileProps) {
-  const { selected = false, onSelectedChange, status, duration, name } = state;
+  const { selected = false, onSelectedChange, status, duration, name, selecting } = state;
   return (
-    <div className={cn("wb-tile", className)} data-selected={selected ? "true" : undefined}>
+    <div
+      className={cn("wb-tile", className)}
+      data-selected={selected ? "true" : undefined}
+      data-selecting={selecting ? "true" : undefined}
+    >
       {children}
       {onSelectedChange && (
         <button
