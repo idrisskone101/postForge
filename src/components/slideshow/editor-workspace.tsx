@@ -25,7 +25,7 @@ export function EditorWorkspace() {
       {viewMode === "edit" ? (
         <div
           data-slideshow-view="edit"
-          className="flex min-h-0 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] xl:flex xl:h-[calc(100dvh-100px)] xl:min-h-[728px] xl:flex-row"
+          className="wb-fade-in flex min-h-0 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] xl:flex xl:h-[calc(100dvh-100px)] xl:min-h-[728px] xl:flex-row"
         >
           <EditorSlideRail />
           <EditorPreview />

@@ -12,13 +12,13 @@ assert.doesNotMatch(page, /max-w-|pf-content-viewport|px-\d|border-b/, "the rout
 const lazy = source("src/components/slideshow/slideshow-studio-lazy.tsx");
 assert.match(lazy, /useWindowLoadReady/);
 assert.match(lazy, /ssr:\s*false/);
-assert.match(lazy, /<PageHeader title="Slideshow" \/>/, "first paint shows the real page header");
+assert.match(lazy, /<PageHeader title="Slideshow" stackBelow=\{480\} \/>/, "first paint shows the real page header with its small-screen rows");
 
 const studio = source("src/components/slideshow/slideshow-studio.tsx");
 assert.doesNotMatch(studio, /fixed inset-0/, "the editor renders inside the shell, not as an overlay");
 
 const home = source("src/components/slideshow/studio-home.tsx");
-assert.match(home, /<PageHeader title="Slideshow">/);
+assert.match(home, /<PageHeader title="Slideshow" stackBelow=\{480\}>/);
 assert.match(home, /role="tablist"/);
 
 assert.match(source("src/components/slideshow/slideshow-studio-islands.tsx"), /ssr:\s*false/);

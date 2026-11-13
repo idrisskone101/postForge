@@ -310,4 +310,4 @@ function playSlideWidth(aspectRatio: string) {
 
 export { SlideshowViewSwitcher } from "./editor-stage-head";
 
-const VIEW_PANEL = "wb-panel min-h-0 xl:h-[calc(100dvh-100px)] xl:min-h-[728px]";
+const VIEW_PANEL = "wb-panel wb-fade-in min-h-0 xl:h-[calc(100dvh-100px)] xl:min-h-[728px]";

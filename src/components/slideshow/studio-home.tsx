@@ -33,7 +33,9 @@ export function StudioHome() {
           ))}
         </div>
       </PageHeader>
-      {section === "create" ? <CreateView /> : <DraftsView />}
+      <div key={section} className="wb-fade-in flex min-w-0 flex-col gap-3">
+        {section === "create" ? <CreateView /> : <DraftsView />}
+      </div>
     </>
   );
 }
