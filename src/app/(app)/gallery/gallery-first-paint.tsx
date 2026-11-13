@@ -8,7 +8,7 @@ import {
   GalleryToolbarSkeleton,
 } from "@/components/gallery/skeletons";
 import {
-  GALLERY_INSPECTOR_CLASS,
+  GALLERY_INSPECTOR_EMPTY_CLASS,
   GalleryInspectorEmpty,
 } from "@/components/gallery/inspector-empty";
 import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
@@ -38,7 +38,7 @@ export function GalleryFirstPaint() {
           <GalleryToolbarSkeleton />
           <GalleryTileSkeletons />
         </Panel>
-        <aside aria-hidden="true" className={GALLERY_INSPECTOR_CLASS}>
+        <aside aria-hidden="true" className={GALLERY_INSPECTOR_EMPTY_CLASS}>
           <GalleryInspectorEmpty />
         </aside>
       </div>

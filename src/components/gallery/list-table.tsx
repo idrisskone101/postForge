@@ -35,8 +35,8 @@ export function GalleryListTable({
         <span className="w-[22px] shrink-0" />
         <span className="min-w-0 flex-1">Output</span>
         <span className="w-12 shrink-0">Status</span>
-        {showSize && <span className="w-[88px] shrink-0">Size</span>}
-        <span className="w-[60px] shrink-0">Duration</span>
+        {showSize && <span className={cn("w-[88px] shrink-0", WIDE_COLUMN_CLASS)}>Size</span>}
+        <span className={cn("w-[60px] shrink-0", WIDE_COLUMN_CLASS)}>Duration</span>
         <span className="w-[100px] shrink-0">Created</span>
         <span className="w-14 shrink-0" />
       </div>
@@ -98,11 +98,11 @@ export function GalleryListTable({
                 />
               </span>
               {showSize && (
-                <span className="wb-mono w-[88px] shrink-0 text-fg-secondary max-md:hidden">
+                <span className={cn("wb-mono w-[88px] shrink-0 text-fg-secondary", WIDE_COLUMN_CLASS)}>
                   {galleryItemSize(item) ?? "-"}
                 </span>
               )}
-              <span className="wb-mono w-[60px] shrink-0 text-fg-secondary max-md:hidden">
+              <span className={cn("wb-mono w-[60px] shrink-0 text-fg-secondary", WIDE_COLUMN_CLASS)}>
                 {formatGalleryDuration(item.durationSec) ?? "-"}
               </span>
               <span
@@ -130,6 +130,12 @@ export function GalleryListTable({
     </div>
   );
 }
+
+/*
+ * Size and Duration need room the title would otherwise lose: they show from 1024 while the inspector
+ * column is away (below 1280) and again from 1440, where the table is wide enough beside it.
+ */
+const WIDE_COLUMN_CLASS = "hidden lg:max-xl:block min-[1440px]:block";
 
 function RowCheck({
   selected,

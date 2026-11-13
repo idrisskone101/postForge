@@ -154,7 +154,7 @@ assert.match(markup, /class="wb-tile-duration">0:15</);
 assert.match(markup, />Preview</);
 assert.match(markup, /<a class="wb-tile-action"[^>]*href="\/generate\/job-clone-1">Open<\/a>/);
 assert.doesNotMatch(markup, /class="wb-tile-action"[^>]*>Download</);
-assert.match(markup, /class="wb-tile-meta">Video - wan-2\.2-video - Jun 1\d</);
+assert.match(markup, /class="wb-tile-meta">Video - wan-2\.2-video</, "the tile caption carries kind and model, not the date");
 assert.match(markup, /Load more/);
 assert.doesNotMatch(markup, /\/api\/files\/file-approved"/);
 assert.doesNotMatch(markup, /data-gallery-bulk-bar/);
