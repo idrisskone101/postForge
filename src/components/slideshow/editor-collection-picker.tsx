@@ -1,17 +1,9 @@
 "use client";
 
-import { Check } from "lucide-react";
-
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/workbench";
 
-import { SECONDARY_BTN } from "./studio-ui";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
 
 export function EditorCollectionPicker() {
@@ -23,48 +15,43 @@ export function EditorCollectionPicker() {
     applyPickedAssets,
   } = useSlideshowEditor();
   return (
-      <Dialog open={open} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto rounded-lg border-border">
-          <DialogHeader>
-            <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
-              Select slide images
-            </DialogTitle>
-            <DialogDescription className="text-[11px] text-muted-foreground">
-              Pick images from the shared Collections library. The same collections feed Generate, Clone, and Automations.
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog open={open} onOpenChange={setPickerOpen}>
+      <DialogContent className="flex max-h-[min(90dvh,820px)] flex-col gap-4 p-0 sm:max-w-[760px]">
+        <div className="flex min-h-14 shrink-0 items-center pl-6 pr-14 pt-2">
+          <DialogTitle className="wb-panel-title text-[18px] leading-6">
+            Select slide images
+          </DialogTitle>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-6">
           <CollectionReferencePicker
             selectedAssetIds={pickerAssetIds}
             onChange={(ids) => setPickerAssetIds(ids)}
-            maxSelection={4}
+            maxSelection={MAX_PICKED}
           />
-          <div className="flex items-center justify-between border-t border-border pt-4">
-            <span className="text-[12px] text-muted-foreground">
-              {pickerAssetIds.length} selected · applied to this slide
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className={SECONDARY_BTN}
-                onClick={() => {
-                  setPickerOpen(false);
-                  setPickerAssetIds([]);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="pf-button-primary"
-                disabled={!pickerAssetIds.length}
-                onClick={applyPickedAssets}
-              >
-                <Check className="size-3.5" />
-                Apply to slide
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2.5 border-t border-hairline px-6 py-4">
+          <span className="wb-meta mr-auto tabular-nums">
+            {pickerAssetIds.length} / {MAX_PICKED} selected
+          </span>
+          <Button
+            onClick={() => {
+              setPickerOpen(false);
+              setPickerAssetIds([]);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            disabled={!pickerAssetIds.length}
+            onClick={applyPickedAssets}
+          >
+            Apply to slide
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
+
+const MAX_PICKED = 4;
