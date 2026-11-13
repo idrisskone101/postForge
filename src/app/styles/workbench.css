@@ -782,6 +782,94 @@
     background: var(--pf-strong-on-raised-hover);
   }
 
+  /*
+   * Overlay motion, shared by ui/dialog, alert-dialog, sheet, menus, selects, popovers and tooltips.
+   * base-ui sets data-starting-style on mount and data-ending-style before unmount, and waits for the
+   * transition. Only opacity and the individual transform properties move: 220ms in, 160ms out.
+   */
+  .wb-overlay-backdrop,
+  .wb-overlay-dialog,
+  .wb-overlay-sheet {
+    transition-duration: var(--pf-dur-enter);
+    transition-timing-function: var(--pf-ease);
+  }
+
+  .wb-overlay-backdrop {
+    transition-property: opacity;
+  }
+
+  .wb-overlay-dialog {
+    transition-property: opacity, scale;
+  }
+
+  .wb-overlay-sheet {
+    transition-property: opacity, translate;
+  }
+
+  .wb-overlay-menu {
+    transition-property: opacity, translate;
+    transition-duration: var(--pf-dur-exit);
+    transition-timing-function: var(--pf-ease);
+  }
+
+  :is(.wb-overlay-backdrop, .wb-overlay-dialog, .wb-overlay-sheet)[data-ending-style] {
+    transition-duration: var(--pf-dur-exit);
+  }
+
+  :is(.wb-overlay-backdrop, .wb-overlay-dialog, .wb-overlay-sheet, .wb-overlay-menu):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    opacity: 0;
+  }
+
+  .wb-overlay-dialog:is([data-starting-style], [data-ending-style]) {
+    scale: 0.98;
+  }
+
+  .wb-overlay-sheet[data-side="right"]:is([data-starting-style], [data-ending-style]) {
+    translate: 100% 0;
+  }
+
+  .wb-overlay-sheet[data-side="left"]:is([data-starting-style], [data-ending-style]) {
+    translate: -100% 0;
+  }
+
+  .wb-overlay-sheet[data-side="top"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 -100%;
+  }
+
+  .wb-overlay-sheet[data-side="bottom"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 100%;
+  }
+
+  .wb-overlay-menu:is([data-starting-style], [data-ending-style]) {
+    translate: 0 -4px;
+  }
+
+  .wb-overlay-menu[data-side="top"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 4px;
+  }
+
+  .wb-overlay-menu:is([data-side="left"], [data-side="inline-start"]):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    translate: 4px 0;
+  }
+
+  .wb-overlay-menu:is([data-side="right"], [data-side="inline-end"]):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    translate: -4px 0;
+  }
+
+  /* A select laid over its trigger only fades: a slide would move the chosen item off the trigger. */
+  .wb-overlay-menu[data-align-trigger="true"]:is([data-starting-style], [data-ending-style]) {
+    translate: none;
+  }
+
   /* Toast: bottom centre of the content area */
   .wb-toast-region {
     position: fixed;

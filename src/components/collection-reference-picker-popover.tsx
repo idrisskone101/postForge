@@ -79,7 +79,7 @@ export function ReferencePickerPopover({
             ref={popupRef}
             initialFocus={popupRef}
             aria-label={label}
-            className="wb-float flex max-h-[min(520px,var(--available-height))] w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto p-3 outline-none transition-[opacity,transform] duration-220 ease-pf data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 data-[ending-style]:duration-160 data-[starting-style]:translate-y-3 data-[starting-style]:opacity-0"
+            className="wb-float wb-overlay-menu flex max-h-[min(520px,var(--available-height))] w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto p-3 outline-none"
           >
             {children(() => setOpen(false))}
           </Popover.Popup>
