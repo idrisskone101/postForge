@@ -24,11 +24,14 @@ export function ReferencePickerPopover({
   summary,
   label,
   disabled = false,
+  wide = false,
   children,
 }: {
   summary: ReferenceRowSummary;
   label: string;
   disabled?: boolean;
+  /** 560px instead of 400px, for a picker that shows a three-column grid. */
+  wide?: boolean;
   children: (close: () => void) => ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -79,7 +82,12 @@ export function ReferencePickerPopover({
             ref={popupRef}
             initialFocus={popupRef}
             aria-label={label}
-            className="wb-float wb-overlay-menu flex max-h-[min(520px,var(--available-height))] w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto p-3 outline-none"
+            className={cn(
+              "wb-float wb-overlay-menu flex max-h-[min(520px,var(--available-height))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto p-3 outline-none",
+              wide
+                ? "w-[max(var(--anchor-width),min(560px,calc(100vw-32px)))]"
+                : "w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))]"
+            )}
           >
             {children(() => setOpen(false))}
           </Popover.Popup>

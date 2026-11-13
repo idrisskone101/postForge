@@ -74,7 +74,7 @@ export function AvatarCreationCard({
   return (
     <div
       data-avatar-creation="true"
-      className="w-full shrink-0 rounded-lg bg-raised sm:h-[216px] sm:w-[132px]"
+      className="w-full shrink-0 rounded-lg bg-raised @[640px]:h-[216px] @[640px]:w-[132px]"
       onKeyDown={(event) => {
         if (open && event.key === "Escape") {
           event.stopPropagation();
@@ -89,7 +89,7 @@ export function AvatarCreationCard({
         aria-expanded={open}
         aria-controls={menuId}
         onClick={openChooser}
-        className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-0 bg-transparent text-fg sm:h-full sm:flex-col sm:gap-2.5"
+        className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-0 bg-transparent text-fg @[640px]:h-full @[640px]:flex-col @[640px]:gap-2.5"
       >
         <span className="grid size-9 place-items-center rounded-full bg-strong text-strong-fg">
           <Icon name="plus" size={16} />
@@ -102,7 +102,7 @@ export function AvatarCreationCard({
           <span className="text-[13px] font-semibold leading-4 text-fg">New avatar</span>
           <IconButton icon="x" label="Close new avatar options" variant="ghost" size={28} onClick={closeChooser} />
         </div>
-        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-1">
+        <div className="grid grid-cols-2 gap-1.5 @[640px]:grid-cols-1">
           {actions.map((action, index) => (
             <button
               key={action.key}
@@ -191,16 +191,18 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
 
 export function AvatarPickerSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading avatars" className="flex flex-col gap-3 sm:flex-row">
-      <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="flex flex-col gap-2">
-            <Skeleton shape="tile" className="h-[216px]" />
-            <Skeleton className="w-3/5" />
-          </div>
-        ))}
+    <div aria-busy="true" aria-label="Loading avatars" className="@container">
+      <div className="flex flex-col gap-3 @[640px]:flex-row">
+        <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex flex-col gap-2">
+              <Skeleton shape="tile" className="h-[216px]" />
+              <Skeleton className="w-3/5" />
+            </div>
+          ))}
+        </div>
+        <Skeleton shape="tile" className="h-14 w-full @[640px]:h-[216px] @[640px]:w-[132px]" />
       </div>
-      <Skeleton shape="tile" className="h-14 w-full sm:h-[216px] sm:w-[132px]" />
     </div>
   );
 }

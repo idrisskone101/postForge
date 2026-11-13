@@ -24,6 +24,7 @@ export function GenerateIdentitySection({
     <ReferenceField label="Character identity" onClear={avatarId ? () => onSelect("") : undefined}>
       <ReferencePickerPopover
         label="Character identity"
+        wide
         summary={
           avatarId
             ? {
