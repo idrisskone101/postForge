@@ -25,15 +25,15 @@ export function CharacterDetailPanel({
   const sheet = variant === "sheet";
 
   return (
-    <div className={cn("flex min-h-0 min-w-0 flex-col gap-4", !sheet && "flex-1")} aria-busy={busy}>
-      <div className={cn("flex min-w-0 gap-3.5", sheet ? "items-center" : "min-h-0 flex-[0_1_auto] flex-col gap-4")}>
+    <div className={cn("flex min-w-0 flex-col gap-4", sheet ? "min-h-0" : "flex-[1_0_auto]")} aria-busy={busy}>
+      <div className={cn("flex min-w-0 gap-3.5", sheet ? "items-center" : "shrink-0 flex-col gap-4")}>
         <div
           className={cn(
             "grid shrink-0 place-items-center",
-            sheet ? "h-28 w-[84px]" : "min-h-[220px] flex-[0_1_370px] rounded-lg bg-floor max-xl:h-[320px]"
+            sheet ? "h-28 w-[84px]" : "h-[370px] rounded-lg bg-floor max-xl:h-[320px]"
           )}
         >
-          <span className={cn("block overflow-hidden", sheet ? "h-28 w-[84px] rounded-[10px]" : "aspect-[236/308] h-[calc(100%-62px)] max-h-[308px] rounded-sm")}>
+          <span className={cn("block overflow-hidden", sheet ? "h-28 w-[84px] rounded-[10px]" : "h-[308px] w-[236px] rounded-sm [&_img]:rounded-sm")}>
             <CharacterPhoto
               avatarId={ready ? record.avatarId : null}
               alt={`${record.name} portrait`}
@@ -69,7 +69,7 @@ export function CharacterDetailPanel({
         <CharacterPromptBed key={record.id} prompt={buildCharacterPrompt(record.attributes)} />
       )}
 
-      <div className="flex shrink-0 flex-col gap-2">
+      <div className={cn("flex shrink-0 flex-col gap-2", !sheet && "sticky -bottom-5 z-10 -mt-2 -mb-5 bg-panel pt-2 pb-5")}>
         <div className="flex gap-2">
           <Link
             href={`/characters/new?id=${encodeURIComponent(record.id)}`}

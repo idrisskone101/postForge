@@ -10,16 +10,13 @@ export function CharacterPromptBed({ prompt }: { prompt: string }) {
   return (
     <div
       data-character-prompt-bed
-      className={cn(
-        "flex min-w-0 flex-col items-start gap-1.5 rounded-lg bg-raised px-3.5 py-3",
-        expanded ? "min-h-[96px] flex-[0_1_auto]" : "shrink-0"
-      )}
+      className="flex min-w-0 shrink-0 flex-col items-start gap-1.5 rounded-lg bg-raised px-3.5 py-3"
     >
       <p
         id="character-prompt-text"
         className={cn(
-          "min-h-0 text-[13px] leading-[19px] text-fg-secondary [overflow-wrap:anywhere]",
-          expanded ? "overflow-y-auto" : "line-clamp-4"
+          "text-[13px] leading-[19px] text-fg-secondary [overflow-wrap:anywhere]",
+          !expanded && "line-clamp-4"
         )}
       >
         {prompt}
