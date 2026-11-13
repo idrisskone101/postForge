@@ -50,6 +50,7 @@ function DetailBody({ detail }: { detail: CollectionsDetailModel }) {
                     <button
                       type="button"
                       className="wb-tile-action"
+                      data-tone="neutral"
                       aria-label={`Remove ${asset.name} from ${collection.name}`}
                       onClick={() => onToggleAsset(asset.id)}
                     >

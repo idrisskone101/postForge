@@ -479,6 +479,12 @@
     color: var(--pf-media-action-fg);
   }
 
+  /* A first action that is not the tile's primary (Remove): dark translucent, never bone. */
+  .wb-tile-action[data-tone="neutral"] {
+    background: var(--pf-scrim);
+    color: var(--pf-on-media);
+  }
+
   .wb-tile-title {
     overflow: hidden;
     color: var(--pf-text);
