@@ -50,11 +50,9 @@ export type AccountRowModel = {
   busy: boolean;
   primaryReconnect: boolean;
   canStartOAuth: boolean;
-  canConnectAnother: boolean;
   onSync: AccountHandler;
   onDisconnect: AccountHandler;
   onReconnect: () => void;
-  onConnectAnother: () => void;
 };
 
 export type SettingsFormModel = {

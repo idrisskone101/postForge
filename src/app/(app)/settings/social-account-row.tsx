@@ -97,16 +97,6 @@ export function AccountRow({ row }: { row: AccountRowModel }) {
                 {busy ? "Syncing" : "Sync"}
               </Button>
             )}
-            {row.canConnectAnother && (
-              <Button
-                className="bg-panel"
-                disabled={busy || !row.canStartOAuth}
-                title={`Connect another ${providerStatus.displayName} account`}
-                onClick={row.onConnectAnother}
-              >
-                Connect another
-              </Button>
-            )}
             <Button
               variant="danger"
               disabled={busy}

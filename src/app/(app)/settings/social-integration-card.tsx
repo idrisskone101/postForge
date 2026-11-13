@@ -49,7 +49,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
   if (state.kind === "connected" && status) {
     return (
       <div data-social-provider={provider} className="flex flex-col">
-        {status.accounts.map((account, index) => (
+        {status.accounts.map((account) => (
           <AccountRow
             key={account.account.id}
             row={{
@@ -58,8 +58,6 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
               busy,
               primaryReconnect: card.primaryReconnectId === account.account.id,
               canStartOAuth,
-              canConnectAnother:
-                index === status.accounts.length - 1 && status.configuration === "ready",
               onSync: card.onSync,
               onDisconnect: card.onDisconnect,
               onReconnect: () =>
@@ -67,10 +65,22 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
                   { ...status, connected: false, accounts: [], accountCount: 0 },
                   youtubePolicyConsent
                 ),
-              onConnectAnother: connect,
             }}
           />
         ))}
+        {status.configuration === "ready" && (
+          <div className="-mt-2 flex justify-end pb-4">
+            <Button
+              size={32}
+              disabled={busy || !canStartOAuth}
+              aria-label={`Connect another ${displayName} account`}
+              onClick={connect}
+            >
+              <Icon name="plus" size={14} strokeWidth={2} />
+              Connect another
+            </Button>
+          </div>
+        )}
         {consentBlock && <div className="pb-4">{consentBlock}</div>}
         {policyLinks && <PolicyLinks links={policyLinks} />}
       </div>

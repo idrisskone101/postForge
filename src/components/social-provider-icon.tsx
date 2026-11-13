@@ -1,4 +1,4 @@
-import Image from "next/image";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 export type SocialProviderIconName = "tiktok" | "instagram" | "youtube";
@@ -11,10 +11,9 @@ type SocialProviderIconProps = {
 };
 
 /**
- * The provider's own logo asset. TikTok and Instagram sit on a white chip so
- * the black and gradient marks read on both themes. The logo is sized as a
- * share of the chip, never with percentage padding: that resolves against the
- * parent's width and collapsed the image to 0x0.
+ * The provider's own logo asset, drawn as a mask filled with the text colour:
+ * bone in dark, ink in light, so ember stays the only colour on the page.
+ * Each asset is a single-path silhouette, so the mark keeps its shape.
  */
 export function SocialProviderIcon({
   provider,
@@ -29,33 +28,17 @@ export function SocialProviderIcon({
   const accessibility = label
     ? { role: "img" as const, "aria-label": label }
     : { "aria-hidden": true as const };
+  const mask = `url(${source}) center / contain no-repeat`;
+  const style: CSSProperties = { mask, WebkitMask: mask };
 
   return (
     <span
-      className={cn(
-        "relative flex size-5 shrink-0 items-center justify-center overflow-hidden",
-        provider !== "youtube" && "rounded-[22%] bg-white",
-        className
-      )}
+      className={cn("block size-5 shrink-0 bg-current text-fg", className)}
+      style={style}
       {...accessibility}
-    >
-      <Image
-        src={source}
-        alt=""
-        width={24}
-        height={24}
-        unoptimized
-        className={cn("block object-contain", LOGO_SCALE[provider])}
-      />
-    </span>
+    />
   );
 }
-
-const LOGO_SCALE: Record<SocialProviderIconName, string> = {
-  tiktok: "size-[70%]",
-  instagram: "size-[84%]",
-  youtube: "size-full",
-};
 
 const BRAND_ASSETS = {
   tiktok: "/brands/tiktok.svg",
