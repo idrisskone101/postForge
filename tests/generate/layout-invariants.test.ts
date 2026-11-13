@@ -30,8 +30,10 @@ assert.match(generationInspector, /negativePrompt[\s\S]*?\[overflow-wrap:anywher
 assert.match(generatePage, /GenerationFormLazy/);
 assert.match(generatePage, /Suspense/);
 assert.match(generatePage, /GenerateFormSkeleton/);
-assert.match(generatePage, /getAvailableModelsNow/);
-assert.doesNotMatch(generatePage, /getAvailableModels\(/);
+// The page awaits the stored availability. The synchronous read falls back to
+// every registry model while its cache is cold.
+assert.match(generatePage, /await Promise\.all\(\[searchParams, getAvailableModels\(\)\]\)/);
+assert.doesNotMatch(generatePage, /getAvailableModelsNow/);
 assert.match(source("src/components/generation-form-lazy.tsx"), /useWindowLoadReady/);
 
 // Copy is real text: no attribute-painted labels or sr-only twins.
