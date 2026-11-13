@@ -27,7 +27,7 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
         <RowTile tile={view.tile} />
         <div className="flex min-w-0 flex-col justify-center gap-0.5 @max-[270px]:min-h-[52px] @min-[720px]:flex-1">
           <span className="text-sm font-semibold leading-[18px] text-fg">{view.name}</span>
-          {view.sub && <span className="break-words text-[13px] leading-4 text-fg-muted">{view.sub}</span>}
+          {view.sub && <span className="text-balance break-words text-[13px] leading-4 text-fg-muted">{view.sub}</span>}
           {!view.sub && view.chip === null && (
             <span aria-hidden="true" className="wb-skeleton my-0.5 h-3 w-28 rounded-full" />
           )}
@@ -108,7 +108,7 @@ function RowCell({ label, cell, className }: { label: string; cell: Cell | null;
       {cell ? (
         <>
           <span className={cn("text-sm font-medium leading-[18px]", CELL_TONE[cell.tone])}>{cell.text}</span>
-          {cell.sub && <span className="text-[13px] leading-4 text-fg-muted">{cell.sub}</span>}
+          {cell.sub && <span className="text-balance text-[13px] leading-4 text-fg-muted">{cell.sub}</span>}
         </>
       ) : (
         <span aria-hidden="true" className="wb-skeleton mt-1 h-3 w-20 rounded-full" />

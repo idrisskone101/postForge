@@ -162,6 +162,12 @@ a {
   margin: 0;
 }
 
+/* Reading copy never leaves one word alone on its last line. */
+.policy-page p,
+.policy-page li {
+  text-wrap: pretty;
+}
+
 .policy-copy p + p,
 .policy-copy p + ul,
 .policy-copy p + ol,

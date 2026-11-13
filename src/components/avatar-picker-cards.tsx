@@ -175,14 +175,9 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
         >
           {label}
         </p>
-        <p
-          className={cn(
-            "text-[12px] leading-4",
-            metaTone
-          )}
-        >
-          {originLabel ? `${originLabel} · ` : ""}
-          {identityStatusLabel}
+        <p className={cn("flex flex-wrap gap-x-[11px] overflow-hidden text-[12px] leading-4", metaTone)}>
+          {originLabel ? <span>{originLabel}</span> : null}
+          <span className={originLabel ? WRAPPING_DOT : undefined}>{identityStatusLabel}</span>
         </p>
       </div>
     </div>
@@ -204,3 +199,6 @@ export function AvatarPickerSkeleton() {
     </div>
   );
 }
+
+/** A middle dot that sits in the gap before its item and is clipped away when the item wraps to a new line. */
+const WRAPPING_DOT = "relative before:absolute before:left-[-7px] before:content-['·']";

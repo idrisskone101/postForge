@@ -78,7 +78,7 @@ export function IntegrationsPanel({
           </span>
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="text-sm font-semibold leading-[18px] text-fg">Custom webhook</span>
-            <span className="text-[13px] leading-4 text-fg-muted">No endpoint is registered</span>
+            <span className="text-balance text-[13px] leading-4 text-fg-muted">No endpoint is registered</span>
           </div>
           <StatusChip tone="neutral" className="shrink-0">
             Not configured
