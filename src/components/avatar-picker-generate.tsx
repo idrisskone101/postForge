@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Loader2, Sparkles, X } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { getModelsByType } from "@/lib/ai/models";
 import { buildAvatarGenerationPrompt } from "@/lib/avatar-workflow";
 import type { Avatar, AvatarCreatedHandoff, AvatarJobResult } from "@/lib/avatar-picker-model";
 import { userErrorMessage } from "@/lib/user-error-message";
-import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
+import { Button, Chip, Icon } from "@/components/workbench";
 import { AvatarActionErrorNotice } from "@/components/avatar-picker-cards";
+import { AvatarPickerModeHead } from "@/components/avatar-picker-mode-head";
 
 export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff) {
   const imageModels = getModelsByType("image");
@@ -19,6 +18,8 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
   const [genJob, setGenJob] = useState<AvatarJobResult | null>(null);
   const [isSavingGenerated, setIsSavingGenerated] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const promptId = useId();
+  const modelLabelId = useId();
 
   const handleGenerate = async () => {
     if (!genPrompt.trim()) return;
@@ -100,122 +101,90 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
   const isFailed = genJob?.status === "failed";
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-w-0 flex-col gap-4">
+      <AvatarPickerModeHead title="Generate an Avatar" onBack={onBack} />
       {actionError && (
         <AvatarActionErrorNotice
           message={actionError}
           onDismiss={() => setActionError(null)}
         />
       )}
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="size-4" />
-        Back to avatars
-      </button>
 
       {!genJobId && (
         <>
-          <Textarea
-            placeholder="Describe the person: age, gender, hair, skin tone, expression. e.g. 'Woman in her late 20s, dark wavy hair, warm smile, light skin'"
-            value={genPrompt}
-            onChange={(e) => setGenPrompt(e.target.value.slice(0, 500))}
-            maxLength={500}
-            className="min-h-[100px] resize-none bg-muted border-2 border-transparent focus:border-accent-green/30 focus:bg-card rounded-2xl p-4 text-sm transition-all"
-          />
-          <p className="text-[12px] text-muted-foreground">
-            Quality modifiers (studio lighting, clean background, etc.) are added automatically.
-          </p>
+          <div className="wb-field">
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor={promptId} className="wb-label">
+                Describe the person
+              </label>
+              <span className="wb-mono text-fg-muted">{genPrompt.length} / 500</span>
+            </div>
+            <textarea
+              id={promptId}
+              className="wb-input resize-none"
+              placeholder="Woman in her late 20s, dark wavy hair, warm smile, light skin"
+              value={genPrompt}
+              onChange={(e) => setGenPrompt(e.target.value.slice(0, 500))}
+              maxLength={500}
+            />
+          </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          <div className="wb-field">
+            <span id={modelLabelId} className="wb-label">
               Model
-            </label>
-            <div className="flex flex-wrap gap-2">
+            </span>
+            <div role="group" aria-labelledby={modelLabelId} className="flex flex-wrap gap-2">
               {imageModels.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => setGenModel(m.id)}
-                  className={cn(
-                    "rounded-xl border px-3 py-1.5 text-xs font-medium transition-all",
-                    genModel === m.id
-                      ? "border-accent-green bg-accent-green/10 text-accent-green"
-                      : "border-border text-muted-foreground hover:border-accent-green/50"
-                  )}
-                >
+                <Chip key={m.id} chosen={genModel === m.id} onClick={() => setGenModel(m.id)}>
                   {m.name}
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={!genPrompt.trim()}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:opacity-50"
-          >
-            <Sparkles className="size-4" />
-            Generate Avatar
-          </button>
+          <div className="flex justify-end">
+            <Button variant="strong" onClick={handleGenerate} disabled={!genPrompt.trim()}>
+              <Icon name="generate" size={16} />
+              Generate Avatar
+            </Button>
+          </div>
         </>
       )}
 
       {isGenerating && (
-        <div className="flex flex-col items-center justify-center py-10 gap-3">
-          <div className="size-12 animate-spin rounded-full border-4 border-muted border-t-accent-green" />
-          <p className="text-sm font-medium">Generating avatar...</p>
-          <p className="text-xs text-muted-foreground">This may take a moment</p>
-        </div>
+        <p role="status" className="flex items-center gap-2.5 rounded-lg bg-raised px-4 py-3.5 text-[14px] font-semibold leading-[18px] text-fg">
+          <span className="wb-live-dot" />
+          Generating avatar
+        </p>
       )}
 
       {isFailed && (
-        <div className="flex min-w-0 flex-col items-center justify-center gap-3 py-8">
-          <p className="min-w-0 max-w-full break-words text-center text-sm text-destructive [overflow-wrap:anywhere]">Generation failed{genJob?.error ? `: ${genJob.error}` : ""}</p>
-          <button
-            type="button"
-            onClick={() => setGenJobId(null)}
-            className="text-sm text-accent-green hover:underline"
-          >
+        <div role="alert" className="wb-notice items-start py-2 pr-2" data-tone="bad">
+          <p className="min-w-0 flex-1 break-words pt-[7px] [overflow-wrap:anywhere]">
+            <strong className="text-bad">Generation failed.</strong>
+            {genJob?.error ? ` ${genJob.error}` : ""}
+          </p>
+          <Button variant="strong" size={32} onClick={() => setGenJobId(null)}>
             Try again
-          </button>
+          </Button>
         </div>
       )}
 
       {isCompleted && genJob && (
-        <div className="space-y-4">
-          <div className="relative aspect-square max-w-[200px] mx-auto rounded-2xl overflow-hidden border-2 border-accent-green">
-            <img
-              src={`/api/files/${genJob.outputs[0].id}`}
-              alt="Generated avatar"
-              className="size-full object-cover"
-            />
+        <div className="wb-fade-in flex flex-wrap items-end gap-4">
+          <div className="wb-tile size-[200px] shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/api/files/${genJob.outputs[0].id}`} alt="Generated avatar" />
           </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setGenJobId(null)}
-              className="flex-1 rounded-2xl border border-border px-4 py-3 text-sm font-medium transition-colors hover:bg-muted flex items-center justify-center gap-2"
-            >
-              <X className="size-4" />
-              Regenerate
-            </button>
-            <button
-              type="button"
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => setGenJobId(null)}>Regenerate</Button>
+            <Button
+              variant="strong"
               onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
               disabled={isSavingGenerated}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:opacity-50"
             >
-              {isSavingGenerated ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Check className="size-4" />
-              )}
-              Use as Avatar
-            </button>
+              {isSavingGenerated ? "Saving" : "Use as Avatar"}
+            </Button>
           </div>
         </div>
       )}

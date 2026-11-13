@@ -44,10 +44,6 @@
   content: attr(data-character-title);
 }
 
-[data-clone-copy]::before {
-  content: attr(data-clone-copy);
-}
-
 [data-empty-copy]::before {
   content: attr(data-empty-copy);
 }

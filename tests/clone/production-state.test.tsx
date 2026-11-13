@@ -30,19 +30,18 @@ const emptyState = renderToStaticMarkup(
   />
 );
 
-assert.match(emptyState, /Production State/);
+assert.match(emptyState, /Clone readiness/);
+assert.match(emptyState, /0 \/ 4/);
 assert.match(emptyState, /Source/);
 assert.match(emptyState, /Trim/);
 assert.match(emptyState, /Identity/);
 assert.match(emptyState, /Reference/);
-assert.match(emptyState, /Generate readiness/);
+assert.equal(emptyState.match(/Required/g)?.length, 4);
 assert.match(emptyState, /Add source/);
-assert.match(emptyState, /data-workspace-state="empty"/);
 
 const sourcePlaceholder = renderToStaticMarkup(<CloneSourceEmptyState />);
-assert.match(sourcePlaceholder, /data-workspace-state="empty"/);
+assert.match(sourcePlaceholder, /wb-empty/);
 assert.match(sourcePlaceholder, /Add source/);
-assert.match(sourcePlaceholder, /Your selected clip appears here/);
 
 assert.equal(
   getClonePrimaryAction({

@@ -16,76 +16,46 @@ export function CloneModelSelect({
   model: CloneModelSelectModel;
   className?: string;
 }) {
-  const {
-    label,
-    description,
-    accentClassName,
-    models,
-    selectedValue,
-    onValueChange,
-    getCost,
-  } = model;
+  const { label, models, selectedValue, onValueChange, getCost } = model;
   const selectedModel = models.find((entry) => entry.id === selectedValue) ?? models[0];
-  const compactLabel = label === "Final video" ? "Video" : label === "Reference image" ? "Reference" : label;
   const selectedModelLabel = selectedModel?.name.replace(" Motion Control", "");
 
   return (
-    <fieldset className={cn("min-w-0", className)}>
-      <legend className="sr-only">
-        {label}
-      </legend>
-      <Select
-        value={selectedValue}
-        onValueChange={(value) => {
-          if (value) onValueChange(value);
-        }}
+    <Select
+      value={selectedValue}
+      onValueChange={(value) => {
+        if (value) onValueChange(value);
+      }}
+    >
+      <SelectTrigger
+        aria-label={label}
+        className={cn("h-[42px]! w-full min-w-0 [&>span]:min-w-0 [&>span]:flex-1", className)}
       >
-        <SelectTrigger
-          aria-label={label}
-          className="h-10! min-h-10 w-full min-w-0 border-border bg-[var(--pf-surface)] px-3 py-2 text-foreground hover:bg-[var(--pf-active)] [&>span]:min-w-0 [&>span]:flex-1"
-        >
-          <SelectValue>
-            {() => (
-              <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
-                <span className="min-w-0 flex-1 overflow-hidden text-left">
-                  <span className={cn("block text-[12px] font-bold uppercase tracking-wider", accentClassName)}>
-                    {compactLabel}
-                  </span>
-                  <span className="block truncate text-[13px] font-semibold leading-4">
-                    {selectedModelLabel ?? "Select model"}
-                  </span>
-                </span>
-                {selectedModel ? (
-                  <span className="shrink-0 pf-data text-[12px] text-muted-foreground">
-                    {getCost(selectedModel.id)}
-                  </span>
-                ) : null}
+        <SelectValue>
+          {() => (
+            <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
+              <span className="min-w-0 truncate text-left text-[14px] font-medium leading-[18px]">
+                {selectedModelLabel ?? "Select model"}
               </span>
-            )}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent alignItemWithTrigger={false} className="min-w-[260px]">
-          <SelectGroup>
-            {models.map((model) => (
-              <SelectItem key={model.id} value={model.id}>
-                <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
-                  <span className="min-w-0 flex-1 overflow-hidden">
-                    <span className="block truncate text-xs font-bold">
-                      {model.name}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                      {description}
-                    </span>
-                  </span>
-                  <span className="shrink-0 pf-data text-[12px] text-muted-foreground">
-                    {getCost(model.id)}
-                  </span>
-                </span>
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </fieldset>
+              {selectedModel ? (
+                <span className="wb-mono shrink-0 text-fg-muted">{getCost(selectedModel.id)}</span>
+              ) : null}
+            </span>
+          )}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent alignItemWithTrigger={false} className="min-w-[260px]">
+        <SelectGroup>
+          {models.map((entry) => (
+            <SelectItem key={entry.id} value={entry.id}>
+              <span className="flex min-w-0 flex-1 items-center justify-between gap-3 overflow-hidden">
+                <span className="min-w-0 truncate text-[14px] font-medium">{entry.name}</span>
+                <span className="wb-mono shrink-0 text-fg-muted">{getCost(entry.id)}</span>
+              </span>
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

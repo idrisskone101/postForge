@@ -27,6 +27,7 @@ export interface CloneOutputReviewJob {
   type: "image" | "video";
   model: string;
   status: "queued" | "processing" | "completed" | "failed";
+  queueStage?: string | null;
   prompt: string;
   input: Record<string, unknown>;
   output: unknown;
@@ -65,7 +66,7 @@ export type CloneOutputReviewModel = {
   pendingReviewStatus?: OutputReviewStatus | null;
   handoffState?: CloneOutputHandoffState;
   actionFeedback?: CloneOutputActionFeedback | null;
-  onBack: () => void;
+  onDismissFeedback?: () => void;
   onRetry: () => void;
   onDownload: (output: CloneOutputReviewOutput) => void;
   onReviewStatusChange?: (

@@ -15,7 +15,6 @@
     "src/components/tiktok-input.tsx",
     "src/components/tiktok-saved-sources.tsx",
     "src/components/video-reference-picker.tsx",
-    "src/components/video-trim-range-fields.tsx",
     "src/components/video-trim-timeline.tsx",
     "src/components/video-trimmer.tsx",
     "src/components/workspace-state.tsx"

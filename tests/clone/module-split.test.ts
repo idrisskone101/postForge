@@ -80,19 +80,8 @@ assert.ok(
   "generate-clone.ts must drop under cap"
 );
 
-const MEDIA_STAGE = "#09090B";
-const MEDIA_STAGE_FILES = new Set([
-  "src/components/clone/live-composition.tsx",
-  "src/components/clone/reference-inputs.tsx",
-  "src/components/clone/reference-library.tsx",
-  "src/components/clone/reference-review.tsx",
-  "src/components/clone-output/preview.tsx",
-  "src/components/clone-output/sidebar.tsx",
-]);
-
 const cloneChromeFiles = [
   "src/app/(app)/ugc-clone/clone-owned-header.tsx",
-  "src/app/(app)/ugc-clone/clone-paint-text.tsx",
   "src/app/(app)/ugc-clone/[id]/page.tsx",
   "src/components/ugc-clone-form.tsx",
   "src/components/ugc-clone-queue.tsx",
@@ -105,21 +94,8 @@ for (const file of cloneChromeFiles) {
   if (!file.endsWith(".tsx")) continue;
   const source = readFileSync(new URL(file, repoRoot), "utf8");
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-  if (MEDIA_STAGE_FILES.has(file)) {
-    assert.ok(
-      hexMatches.every((value) => value === MEDIA_STAGE),
-      `${file} may only use ${MEDIA_STAGE} for the media stage`
-    );
-  } else {
-    assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
-  }
+  assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
 }
-
-assert.equal(
-  lineCount("src/app/(app)/ugc-clone/clone-paint-text.tsx") > 0,
-  true,
-  "clone-paint-text.tsx must exist"
-);
 
 const chromeSource = [
   "src/app/(app)/ugc-clone/clone-owned-header.tsx",
@@ -131,19 +107,11 @@ const chromeSource = [
   .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
   .join("\n");
 
-assert.match(chromeSource, /data-home-title=\{TITLE\}/);
-assert.match(chromeSource, /data-clone-copy=\{COPY\}/);
-assert.match(chromeSource, /paintReady \? undefined/);
-assert.match(chromeSource, /pf-button-primary/);
-assert.match(chromeSource, /pf-section-title/);
-assert.match(
-  readFileSync(new URL("src/components/clone/action-bar.tsx", repoRoot), "utf8"),
-  /max-lg:hidden/
-);
 assert.doesNotMatch(
-  readFileSync(new URL("src/components/clone/action-bar.tsx", repoRoot), "utf8"),
-  /className="hidden /
+  chromeSource,
+  /pf-button-primary|pf-section-title|pf-card|data-clone-copy|data-home-title/
 );
+assert.match(chromeSource, /wb-step-rail/);
 
 console.log(
   files

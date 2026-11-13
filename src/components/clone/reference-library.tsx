@@ -1,7 +1,8 @@
-import { Check, ChevronDown, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 import { CollectionReferencePicker } from "@/components/collection-reference-picker";
+import { Button, CountBadge, Icon, StatusBadge } from "@/components/workbench";
 import { useCloneReference } from "@/components/clone/clone-reference-provider";
+import { cn } from "@/lib/utils";
 
 export function CloneReferenceLibrary() {
   const {
@@ -18,8 +19,6 @@ export function CloneReferenceLibrary() {
     referenceLibraryOpen,
     showAvatarReferences,
     avatarReferencePreviews,
-    identityPack,
-    isStartingIdentityPack,
     onCollectionChange,
     onSelectGenerated,
     onToggleLibrary,
@@ -27,215 +26,190 @@ export function CloneReferenceLibrary() {
     onLoadMore,
     onToggleAvatarReferences,
   } = useCloneReference();
+  const generatedSelected = !selectedCollectionAssetId && !selectedSavedReference;
 
   return (
     <>
-      <div className="space-y-3 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
-        <div>
-          <p className="text-xs font-semibold text-foreground">Visual collections</p>
-          <p className="mt-0.5 text-[12px] leading-4 text-muted-foreground">
-            Use one owned collection image directly, or keep generating a new reference below.
-          </p>
-        </div>
-        <CollectionReferencePicker
-          selectedAssetIds={
-            selectedCollectionAssetId ? [selectedCollectionAssetId] : []
-          }
-          onChange={onCollectionChange}
-          maxSelection={1}
-        />
-      </div>
-
       {refImages.length > 0 && (
-        <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3 sm:p-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold text-foreground">This run</p>
-            <span className="pf-data text-[12px] text-muted-foreground/80">
-              {refImages.length} generated
+        <div className="flex min-w-0 flex-col gap-2">
+          <p className="wb-label">
+            This run{" "}
+            <span className="ml-1 font-normal text-fg-secondary">
+              {generatedSelected ? selectedRefIndex + 1 : 0} / {refImages.length}
             </span>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          </p>
+          <div className="-m-1 flex gap-2.5 overflow-x-auto p-1">
             {refImages.map((entry, index) => (
               <button
                 key={entry.jobId}
                 type="button"
                 onClick={() => onSelectGenerated(index)}
-                className={cn(
-                  "relative aspect-[9/16] w-24 shrink-0 overflow-hidden rounded-lg border bg-[#09090B] transition-colors hover:border-[var(--pf-orange)] sm:w-28",
-                  !selectedCollectionAssetId &&
-                  !selectedSavedReference &&
-                  selectedRefIndex === index
-                    ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
-                    : "border-border"
-                )}
+                aria-pressed={generatedSelected && selectedRefIndex === index}
+                aria-label={`Generated reference variant ${index + 1}, ${entry.status}`}
+                className={cn(THUMB, "w-[84px] shrink-0")}
               >
                 {entry.status === "completed" && entry.fileId ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`/api/files/${entry.fileId}`}
-                    alt={`Generated reference variant ${index + 1}`}
-                    className="size-full object-cover"
-                  />
+                  <img src={`/api/files/${entry.fileId}`} alt="" className="size-full object-cover" />
                 ) : entry.status === "generating" ? (
-                  <span className="grid size-full place-items-center bg-muted/50 text-muted-foreground">
-                    <Loader2 className="size-4 animate-spin" />
+                  <span className="grid size-full place-items-center bg-raised">
+                    <span className="wb-live-dot" />
                   </span>
                 ) : (
-                  <span className="grid size-full place-items-center bg-destructive/10 text-[12px] font-semibold uppercase text-destructive">
-                    Failed
+                  <span className="grid size-full place-items-center bg-raised">
+                    <StatusBadge tone="bad" label="Failed" />
                   </span>
                 )}
-                <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[12px] font-bold text-white">
-                  #{index + 1}
-                </span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {isLoadingSavedReferences && (
-        <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-          Loading saved references...
-        </div>
-      )}
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="wb-label">Visual collections</p>
+        <CollectionReferencePicker
+          selectedAssetIds={selectedCollectionAssetId ? [selectedCollectionAssetId] : []}
+          onChange={onCollectionChange}
+          maxSelection={1}
+        />
+      </div>
 
       {savedReferencesError && (
-        <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive [overflow-wrap:anywhere]">
-          {savedReferencesError}
-        </div>
+        <p role="alert" className="wb-notice min-w-0 [overflow-wrap:anywhere]" data-tone="bad">
+          <span className="min-w-0">
+            <strong className="font-semibold text-bad">Saved references did not load.</strong>{" "}
+            {savedReferencesError}
+          </span>
+        </p>
       )}
 
-      {savedReferences.length > 0 && (
-        <div className="rounded-lg border border-border bg-muted/40">
-          <button
-            type="button"
-            onClick={onToggleLibrary}
-            aria-expanded={referenceLibraryOpen}
-            aria-controls="reference-library-grid"
-            className="flex w-full items-center justify-between gap-3 p-3 text-left transition-colors hover:bg-muted/40 sm:p-4"
+      <div className="flex min-w-0 flex-col">
+        {(savedReferences.length > 0 || isLoadingSavedReferences) && (
+          <Disclosure
+            title="Reference library"
+            count={savedReferences.length}
+            open={referenceLibraryOpen}
+            controls="reference-library-grid"
+            onToggle={onToggleLibrary}
+            disabled={savedReferences.length === 0}
           >
-            <div>
-              <p className="text-xs font-semibold text-foreground">Reference library</p>
-              <p className="mt-0.5 text-[12px] text-muted-foreground">
-                Browse a saved look only when you need one.
-              </p>
-            </div>
-            <span className="flex shrink-0 items-center gap-2">
-              <span className="pf-data text-[12px] text-muted-foreground/80">
-                {savedReferences.length} saved
-              </span>
-              <span className="rounded-lg border border-border bg-muted/50 p-1.5 text-muted-foreground">
-                <ChevronDown className={cn(
-                  "size-3.5 transition-transform",
-                  referenceLibraryOpen && "rotate-180"
-                )} />
-              </span>
-            </span>
-          </button>
-          {referenceLibraryOpen && (
             <div
               id="reference-library-grid"
               data-reference-thumbnail-grid="true"
-              className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2 border-t border-border p-3 sm:grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:p-4"
+              className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2.5 p-1 pb-4"
             >
               {savedReferences.map((reference) => (
                 <button
                   key={reference.id}
                   type="button"
                   onClick={() => onSelectSavedReference(reference.id)}
-                  className={cn(
-                    "relative aspect-[9/16] overflow-hidden rounded-lg border bg-[#09090B] transition-colors hover:border-[var(--pf-orange)]",
-                    reference.id === selectedSavedReferenceId
-                      ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
-                      : "border-border"
-                  )}
+                  aria-pressed={reference.id === selectedSavedReferenceId}
+                  aria-label="Saved reference"
+                  className={THUMB}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={reference.previewUrl}
-                    alt=""
-                    className="size-full object-cover"
-                  />
-                  {reference.id === selectedSavedReferenceId && (
-                    <span className="absolute inset-0 grid place-items-center bg-[var(--pf-orange)]/15 text-[var(--pf-orange)]">
-                      <Check className="size-4" />
-                    </span>
-                  )}
+                  <img src={reference.previewUrl} alt="" className="size-full object-cover" />
+                  {reference.id === selectedSavedReferenceId && <ChosenCheck />}
                 </button>
               ))}
+              {savedReferencesNextCursor && (
+                <div className="col-span-full flex justify-center pt-1">
+                  <Button size={32} onClick={onLoadMore} disabled={isLoadingMoreSavedReferences}>
+                    {isLoadingMoreSavedReferences ? "Loading" : "Load more"}
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
-          {referenceLibraryOpen && savedReferencesNextCursor && (
-            <div className="flex flex-col gap-2 border-t border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-end sm:px-4">
-              <button
-                type="button"
-                onClick={onLoadMore}
-                disabled={isLoadingMoreSavedReferences}
-                className="h-8 rounded-lg border border-border bg-muted/50 px-3 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isLoadingMoreSavedReferences ? "Loading..." : "Load more"}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+          </Disclosure>
+        )}
 
-      <div className="space-y-2">
-        <button
-          type="button"
-          onClick={onToggleAvatarReferences}
+        <Disclosure
+          title="Identity references"
+          count={avatarReferencePreviews.length}
+          open={showAvatarReferences && avatarReferencePreviews.length > 0}
+          controls="identity-reference-grid"
+          onToggle={onToggleAvatarReferences}
           disabled={avatarReferencePreviews.length === 0}
-          aria-expanded={showAvatarReferences}
-          className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2 text-left transition-colors hover:bg-muted/60 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <span className="min-w-0">
-            <span className="block text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-              Identity references
-            </span>
-            <span className="mt-0.5 block truncate text-[12px] text-muted-foreground/70">
-              {avatarReferencePreviews.length > 0
-                ? `${avatarReferencePreviews.length} available to inspect`
-                : "Choose an identity to view references"}
-            </span>
-          </span>
-          <span className="shrink-0 rounded-full border border-border px-2 py-1 text-[12px] font-bold uppercase tracking-widest text-muted-foreground">
-            {showAvatarReferences ? "Hide" : "Show"}
-          </span>
-        </button>
-
-        {showAvatarReferences && avatarReferencePreviews.length > 0 && (
           <div
+            id="identity-reference-grid"
             data-avatar-reference-inspector="true"
-            className="grid max-h-80 grid-cols-3 gap-2 overflow-y-auto pr-1"
+            className="grid max-h-80 grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2.5 overflow-y-auto p-1 pb-4"
           >
             {avatarReferencePreviews.map((reference) => (
-              <div
-                key={reference.id}
-                className="relative aspect-[9/16] overflow-hidden rounded-lg border border-border bg-[#09090B]"
-                title={`${reference.label} • ${reference.detail}`}
-              >
+              <figure key={reference.id} className="flex min-w-0 flex-col gap-1.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={reference.previewUrl}
                   alt={reference.label}
-                  className="size-full object-cover"
+                  title={`${reference.label} · ${reference.detail}`}
+                  className="aspect-[9/16] w-full rounded-lg bg-media object-cover"
                 />
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[12px] font-medium text-white">
-                  <span className="block truncate">{reference.label}</span>
-                </span>
-              </div>
+                <figcaption className="truncate text-[12px] leading-4 text-fg-secondary">
+                  {reference.label}
+                </figcaption>
+              </figure>
             ))}
           </div>
-        )}
-
-        {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-          <div className="flex items-center gap-2 rounded-lg border border-[var(--pf-success)]/20 bg-[var(--pf-success)]/5 px-3 py-2 text-xs text-[var(--pf-success)]">
-            <Loader2 className="size-3.5 animate-spin" />
-            Preparing identity references...
-          </div>
-        ) : null}
+        </Disclosure>
       </div>
     </>
+  );
+}
+
+const THUMB =
+  "relative aspect-[9/16] overflow-hidden rounded-lg bg-media transition-shadow duration-[160ms] ease-pf aria-pressed:shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]";
+
+function ChosenCheck() {
+  return (
+    <span className="absolute left-1.5 top-1.5 grid size-[22px] place-items-center rounded-full bg-ember text-[var(--pf-on-ember)]">
+      <Icon name="check" size={12} strokeWidth={3} />
+    </span>
+  );
+}
+
+function Disclosure({
+  title,
+  count,
+  open,
+  controls,
+  onToggle,
+  disabled,
+  children,
+}: {
+  title: string;
+  count: number;
+  open: boolean;
+  controls: string;
+  onToggle: () => void;
+  disabled: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className="border-t border-hairline">
+      <button
+        type="button"
+        onClick={onToggle}
+        disabled={disabled}
+        aria-expanded={open}
+        aria-controls={controls}
+        className="flex h-11 w-full items-center justify-between gap-3 rounded-sm text-left disabled:cursor-not-allowed disabled:text-fg-disabled"
+      >
+        <span className="flex items-center gap-2 text-[14px] font-semibold leading-[18px]">
+          {title}
+          <CountBadge count={count} />
+        </span>
+        <Icon
+          name="chevron-down"
+          size={16}
+          className={cn(
+            "text-fg-secondary transition-transform duration-[200ms] ease-pf",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+      {open ? children : null}
+    </div>
   );
 }
