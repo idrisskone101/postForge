@@ -119,14 +119,12 @@ export function SpendPageContent({
         </>
       )}
 
-      {budgetOpen ? (
-        <SpendBudgetDialog
-          budgetInput={budgetInput}
-          onBudgetInputChange={setBudgetInput}
-          onClose={closeBudget}
-          onSave={saveBudget}
-        />
-      ) : null}
+      <SpendBudgetDialog
+        open={budgetOpen}
+        draft={{ value: budgetInput, onChange: setBudgetInput }}
+        onClose={closeBudget}
+        onSave={saveBudget}
+      />
 
       {toast ? (
         <div className="wb-toast-region">

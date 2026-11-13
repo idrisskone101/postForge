@@ -85,8 +85,8 @@ export type SpendGenerationLogProps = {
 export type SpendLoadState = "loading" | "ready" | "error";
 
 export type SpendBudgetDialogProps = {
-  budgetInput: string;
-  onBudgetInputChange: (value: string) => void;
+  open: boolean;
+  draft: { value: string; onChange: (value: string) => void };
   onClose: () => void;
   onSave: () => void;
 };

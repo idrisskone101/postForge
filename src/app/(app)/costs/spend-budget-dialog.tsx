@@ -11,16 +11,16 @@ import { Button } from "@/components/workbench/button";
 import type { SpendBudgetDialogProps } from "./types";
 
 export function SpendBudgetDialog({
-  budgetInput,
-  onBudgetInputChange,
+  open,
+  draft,
   onClose,
   onSave,
 }: SpendBudgetDialogProps) {
-  const amount = Number(budgetInput);
+  const amount = Number(draft.value);
   const invalid = !Number.isFinite(amount) || amount <= 0;
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 p-0 sm:max-w-[400px]">
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent showCloseButton={false} className="max-w-[400px] gap-0 p-0">
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -46,11 +46,10 @@ export function SpendBudgetDialog({
                   inputMode="decimal"
                   min="1"
                   step="1"
-                  autoFocus
-                  value={budgetInput}
+                  value={draft.value}
                   aria-invalid={invalid}
                   aria-describedby={invalid ? "spend-budget-error" : undefined}
-                  onChange={(event) => onBudgetInputChange(event.target.value)}
+                  onChange={(event) => draft.onChange(event.target.value)}
                   className="font-mono [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
               </span>
