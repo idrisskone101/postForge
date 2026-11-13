@@ -235,8 +235,8 @@
   }
 
   .wb-btn-strong:active {
-    background: var(--pf-raised-strong);
-    color: var(--pf-text);
+    background: var(--pf-strong-pressed);
+    color: var(--pf-strong-fg);
   }
 
   .wb-btn-outline {
@@ -361,6 +361,10 @@
 
   .wb-icon-btn-strong:hover {
     background: var(--pf-strong-hover);
+  }
+
+  .wb-icon-btn-strong:active {
+    background: var(--pf-strong-pressed);
   }
 
   .wb-icon-btn-outline {

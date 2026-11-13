@@ -10,7 +10,7 @@ colors:
   raised-dark: "#27282B"
   raised-strong: "#E9E9E6"
   raised-strong-dark: "#34363A"
-  strong: "#1A1A1A"
+  strong: "#D4D4CF"
   strong-dark: "#3A3C40"
   hairline: "#DCDCD8"
   hairline-dark: "#2E3033"
@@ -197,7 +197,8 @@ All colour, radius, shadow and motion values live in `src/app/styles/tokens.css`
 | Panel | `--pf-panel` | `bg-panel` | `#1D1E20` | `#FFFFFF` |
 | Raised, inset bed | `--pf-raised` | `bg-raised` | `#27282B` | `#F5F5F3` |
 | Stronger raised | `--pf-raised-strong` | `bg-raised-strong` | `#34363A` | `#E9E9E6` |
-| Strong secondary | `--pf-strong` / `--pf-strong-fg` | `bg-strong text-strong-fg` | `#3A3C40` / bone | `#1A1A1A` / white |
+| Strong secondary | `--pf-strong` / `--pf-strong-fg` | `bg-strong text-strong-fg` | `#3A3C40` / bone | `#D4D4CF` / ink `#1A1A1A` |
+| Strong hover, pressed | `--pf-strong-hover`, `--pf-strong-pressed` | | `#45474C`, `#34363A` | `#C9C9C4`, `#BDBDB8` |
 | Hairline | `--pf-hairline` | `border-hairline` | `#2E3033` | `#DCDCD8` |
 | Outline on raised | `--pf-outline` | `border-edge` | `#45474C` | `#C9C9C4` |
 | Media placeholder | `--pf-media` | `bg-media` | `#2A2B2E` | `#E4E4E1` |
@@ -299,7 +300,7 @@ The primitives live in `src/components/workbench` (one component per file) with 
 
 ### Buttons
 - **Primary (`Button variant="primary"`, `.wb-btn-primary`):** bone pill, ink text, 40px, 14px / 600. Hover `#FFFFFF`, pressed `#D9D6CF`.
-- **Strong:** `#3A3C40` pill, the second most important action and the action in an empty state.
+- **Strong:** `#3A3C40` pill (light: `#D4D4CF` with ink text, so the primary stays the only ink pill), the second most important action and the action in an empty state.
 - **Quiet:** raised pill, 32 to 40px, 13px / 600. The default.
 - **Outline:** transparent with a 1px inset ring, for buttons sitting on a raised surface such as the bulk dock.
 - **Danger:** red tint with red text. Always labelled.
