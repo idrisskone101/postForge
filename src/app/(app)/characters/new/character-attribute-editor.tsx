@@ -5,7 +5,7 @@ import {
   type CharacterAttributeSection,
   type CharacterAttributes,
 } from "@/lib/character-attributes";
-import { Button, Icon } from "@/components/workbench";
+import { Button, Icon, IconButton } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
 
@@ -29,9 +29,7 @@ export function CharacterAttributeEditor({
         <h2 id="character-section-title" className="text-base font-bold leading-5 tracking-[-0.01em] text-fg">
           {active?.label}
         </h2>
-        <Button size={32} onClick={copyPrompt}>
-          Copy prompt
-        </Button>
+        <IconButton icon="copy" label="Copy prompt" size={30} onClick={copyPrompt} />
       </div>
       {error ? (
         <div role="alert" className="wb-notice wb-fade-in items-start justify-between" data-tone="bad">
@@ -69,10 +67,20 @@ function AttributeGroups({
 }) {
   const { attributes, selectAttribute, onImport, copyAttributes } = view;
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-6 lg:-mx-1 lg:overflow-y-auto lg:px-1 lg:py-0.5">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div
+        data-character-options
+        className="flex min-h-0 flex-col gap-6 lg:-mx-1 lg:overflow-y-auto lg:px-1 lg:py-0.5"
+      >
       {active.groups.map((group) => (
         <fieldset key={group.key} className="flex shrink-0 flex-col gap-2">
-          <legend className="mb-2 flex w-full items-center justify-between gap-3 text-xs font-semibold leading-4 text-fg-muted">
+          <legend
+            className={cn(
+              group.label === active.label
+                ? "sr-only"
+                : "mb-2 flex w-full items-center justify-between gap-3 text-xs font-semibold leading-4 text-fg-muted"
+            )}
+          >
             <span>{group.label}</span>
             {group.key === "lipFullness" ? <span className="wb-mono text-fg-secondary">{attributes[group.key]}%</span> : null}
           </legend>
@@ -109,7 +117,8 @@ function AttributeGroups({
           )}
         </fieldset>
       ))}
-      <div className="flex min-h-[180px] flex-1 flex-col gap-2">
+      </div>
+      <div className="flex shrink-0 grow basis-[196px] flex-col gap-2">
         <div className="flex items-center gap-1.5">
           <span className="flex-1 text-xs font-semibold leading-4 text-fg-muted">Recipe</span>
           <Button size={32} className="h-7 px-3 text-xs" onClick={onImport} aria-label="Import prompt or JSON">
@@ -119,7 +128,7 @@ function AttributeGroups({
             Copy JSON
           </Button>
         </div>
-        <pre className="wb-mono min-h-0 flex-1 overflow-auto whitespace-pre rounded-lg bg-raised px-4 py-3.5 text-xs leading-5 text-fg-secondary">
+        <pre className="wb-mono min-h-[160px] flex-1 basis-0 overflow-auto whitespace-pre rounded-lg bg-raised px-4 py-3.5 text-xs leading-5 text-fg-secondary">
           {sectionRecipe(active, attributes)}
         </pre>
       </div>

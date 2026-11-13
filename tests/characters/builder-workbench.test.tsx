@@ -101,11 +101,11 @@ assert.match(builderSource, /previewKind: readyPreviewFingerprint \? "photograph
 assert.match(builderSource, /readyPreviewFingerprint\s*\? "Character saved and added to reusable avatars"/);
 assert.match(builderSource, /: "Character saved as a draft"/);
 assert.match(builderSource, /if \(readyPreviewFingerprint\)/);
-assert.match(builderSource, /Save as a draft without generating/);
+assert.doesNotMatch(builderSource, /Save as a draft without generating/);
 assert.match(builderSource, /useState<string \| null>\(null\)/);
 assert.match(builderSource, /savingRef\.current/);
 assert.match(builderSource, /Uses one paid image generation per click/);
-assert.match(builderSource, /aria-describedby="character-preview-generation-cost"/);
+assert.match(builderSource, /aria-describedby=\{previewRequiresRender \? "character-preview-generation-cost" : undefined\}/);
 assert.match(builderSource, /aria-busy=\{rendering\}/);
 assert.match(builderSource, /disabled=\{saving \|\| rendering \|\| missingEditRecord \|\| previewSaveBlocked\}/);
 assert.match(builderSource, /if \(!previewFileId\) return/);

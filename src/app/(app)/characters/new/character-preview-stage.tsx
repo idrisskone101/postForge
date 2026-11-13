@@ -24,10 +24,6 @@ export function CharacterPreviewStage({
     onLoadError,
   } = view;
   const status = previewStatus(rendering, previewSaveBlocked, previewRequiresRender);
-  const costText = previewRequiresRender
-    ? "Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe."
-    : "Save as a draft without generating. Render a preview when you want to make this identity reusable.";
-
   return (
     <section
       aria-label="Photographic recipe preview"
@@ -56,16 +52,18 @@ export function CharacterPreviewStage({
           <span role="status" aria-live="polite">{status.label}</span>
         </StatusChip>
       </div>
-      <p id="character-preview-generation-cost" className="text-[13px] leading-[19px] text-fg-muted">
-        {costText}
-      </p>
+      {previewRequiresRender ? (
+        <p id="character-preview-generation-cost" className="text-[13px] leading-[19px] text-fg-muted">
+          Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe.
+        </p>
+      ) : null}
       <Button
         size={40}
         block
         className="flex-none"
         onClick={rerender}
         disabled={saving || rendering}
-        aria-describedby="character-preview-generation-cost"
+        aria-describedby={previewRequiresRender ? "character-preview-generation-cost" : undefined}
       >
         <Icon name="rerender" size={16} />
         Re-render preview

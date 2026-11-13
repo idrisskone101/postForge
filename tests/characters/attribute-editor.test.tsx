@@ -44,7 +44,17 @@ const identityMarkup = renderToStaticMarkup(
 );
 assert.match(identityMarkup, /data-character-attribute-editor/);
 assert.match(identityMarkup, />Identity</);
-assert.match(identityMarkup, /Copy prompt/);
+assert.match(identityMarkup, /<button[^>]*aria-label="Copy prompt"[^>]*class="wb-icon-btn/);
+assert.doesNotMatch(identityMarkup, />Copy prompt</);
+assert.match(identityMarkup, /min-h-\[160px\]/);
+
+// A group named like its step keeps its legend for assistive tech only
+const ethnicity = CHARACTER_ATTRIBUTE_SECTIONS.find((section) => section.id === "ethnicity");
+assert.ok(ethnicity);
+const ethnicityMarkup = renderToStaticMarkup(
+  <CharacterAttributeEditor view={editorView({ activeSection: "ethnicity", active: ethnicity })} />
+);
+assert.match(ethnicityMarkup, /<legend class="sr-only"><span>Ethnicity<\/span><\/legend>/);
 assert.match(identityMarkup, /Import prompt or JSON/);
 assert.match(identityMarkup, /Copy attributes JSON/);
 assert.match(identityMarkup, /&quot;identity&quot;: \{/);
