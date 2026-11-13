@@ -46,7 +46,7 @@ export function GalleryLightbox({
     >
       <DialogContent
         showCloseButton={false}
-        className="w-[calc(100vw-2rem)] max-w-[1040px] gap-0 overflow-y-auto p-0 sm:max-w-[1040px] lg:h-[min(680px,calc(100dvh-2rem))] lg:overflow-hidden"
+        className="flex w-[calc(100vw-2rem)] max-w-[1040px] flex-col gap-0 overflow-hidden p-0 sm:max-w-[1040px] lg:h-[min(680px,calc(100dvh-2rem))]"
       >
         {item && <LightboxBody item={item} session={session} />}
       </DialogContent>
@@ -64,101 +64,109 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
   const source = item.tiktokSourceUrl;
 
   return (
-    <div className="grid min-h-0 lg:h-full lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="flex min-h-[280px] min-w-0 items-center justify-center bg-[#09090B] p-4 lg:p-6">
-        <MediaPreviewFrame
-          type={item.type}
-          src={item.url}
-          width={item.width}
-          height={item.height}
-          alt={galleryItemName(item)}
-          variant="detail"
-          className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full [&>div]:h-[42dvh] [&>div]:max-h-none [&>div]:min-h-0 lg:[&>div]:h-full"
-          mediaClassName="object-contain"
-        />
-      </div>
-      <aside className="flex min-h-0 min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-5 lg:overflow-y-auto">
-        <div className="wb-panel-head">
-          <DialogTitle className="wb-panel-title">Preview</DialogTitle>
-          <DialogClose
-            className={iconButtonClass("quiet", 30)}
-            aria-label="Close preview"
-          >
-            <Icon name="x" size={14} />
-          </DialogClose>
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex min-w-0 items-center justify-between gap-2">
-            <h3 className="min-w-0 truncate text-[15px] font-bold leading-5 text-fg" title={title}>
-              {title}
-            </h3>
-            <StatusChip tone={reviewStatusTone[item.reviewStatus.value]}>
-              {reviewStatusLabel[item.reviewStatus.value]}
-            </StatusChip>
-          </div>
-          <KeyValueList
-            rows={[
-              { label: "Type", value: galleryItemKind(item) },
-              { label: "Model", value: galleryItemModel(item) },
-              ...(size ? [{ label: "Size", value: size, mono: true }] : []),
-              ...(item.type === "video" && duration
-                ? [{ label: "Duration", value: duration, mono: true }]
-                : []),
-              { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
-              { label: "Job", value: <GalleryJobLink item={item} />, mono: true },
-              ...(source
-                ? [{ label: "Source", value: <SourceLinks url={source} onCopy={copySourceUrl} /> }]
-                : []),
-            ]}
+    <div className="flex min-h-0 flex-col lg:grid lg:h-full lg:grid-cols-[minmax(0,1fr)_320px] lg:grid-rows-[minmax(0,1fr)_auto]">
+      <div
+        data-lightbox-scroll
+        className="wb-scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain lg:contents"
+      >
+        <div className="flex min-h-[280px] min-w-0 items-center justify-center bg-[#09090B] p-4 lg:row-span-2 lg:p-6">
+          <MediaPreviewFrame
+            type={item.type}
+            src={item.url}
+            width={item.width}
+            height={item.height}
+            alt={galleryItemName(item)}
+            variant="detail"
+            className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full [&>div]:h-[42dvh] [&>div]:max-h-none [&>div]:min-h-0 lg:[&>div]:h-full"
+            mediaClassName="object-contain"
           />
         </div>
-
-        {prompt && (
-          <p className="line-clamp-5 min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
-            {prompt}
-          </p>
-        )}
-
-        <GalleryReviewStatusControl
-          outputId={item.id}
-          reviewStatus={item.reviewStatus}
-          onStatusChange={(reviewStatus) => {
-            onReviewStatusChange?.(item.id, reviewStatus);
-            session.openPreview({ ...item, reviewStatus });
-          }}
-          onFeedback={onFeedback}
-        />
-
-        <div className="mt-auto flex flex-col gap-2 border-t border-hairline pt-4">
-          <div className="flex gap-2">
-            <Button size={38} className="flex-1" onClick={() => void downloadItem(item)}>
-              Download
-            </Button>
-            <Button size={38} className="flex-1" onClick={() => void onHandoff?.(item)}>
-              Handoff
-            </Button>
-            <GalleryDeleteDialog
-              disabled={deletingId === item.id}
-              trigger={<button type="button" className={cn(buttonClass("danger", 38), "flex-1")} />}
-              title="Delete this asset?"
-              description="This permanently removes the generated file and cannot be undone."
-              actionLabel="Delete asset"
-              onConfirm={() => void deleteItem(item)}
+        <aside className="flex min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-4 lg:min-h-0 lg:overflow-y-auto">
+          <div className="wb-panel-head">
+            <DialogTitle className="wb-panel-title">Preview</DialogTitle>
+            <DialogClose
+              className={iconButtonClass("quiet", 30)}
+              aria-label="Close preview"
             >
-              {deletingId === item.id ? "Deleting" : "Delete"}
-            </GalleryDeleteDialog>
+              <Icon name="x" size={14} />
+            </DialogClose>
           </div>
-          {item.type === "image" && (
-            <Link
-              href={`/ugc-clone?referenceFileId=${encodeURIComponent(item.id)}`}
-              className={cn(buttonClass("strong", 40), "w-full text-[13px] leading-4")}
-            >
-              Use in Clone
-            </Link>
+
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <h3 className="min-w-0 truncate text-[15px] font-bold leading-5 text-fg" title={title}>
+                {title}
+              </h3>
+              <StatusChip tone={reviewStatusTone[item.reviewStatus.value]}>
+                {reviewStatusLabel[item.reviewStatus.value]}
+              </StatusChip>
+            </div>
+            <KeyValueList
+              rows={[
+                { label: "Type", value: galleryItemKind(item) },
+                { label: "Model", value: galleryItemModel(item) },
+                ...(size ? [{ label: "Size", value: size, mono: true }] : []),
+                ...(item.type === "video" && duration
+                  ? [{ label: "Duration", value: duration, mono: true }]
+                  : []),
+                { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
+                { label: "Job", value: <GalleryJobLink item={item} />, mono: true },
+                ...(source
+                  ? [{ label: "Source", value: <SourceLinks url={source} onCopy={copySourceUrl} /> }]
+                  : []),
+              ]}
+            />
+          </div>
+
+          {prompt && (
+            <p className="line-clamp-5 min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+              {prompt}
+            </p>
           )}
+
+          <GalleryReviewStatusControl
+            outputId={item.id}
+            reviewStatus={item.reviewStatus}
+            onStatusChange={(reviewStatus) => {
+              onReviewStatusChange?.(item.id, reviewStatus);
+              session.openPreview({ ...item, reviewStatus });
+            }}
+            onFeedback={onFeedback}
+          />
+        </aside>
+      </div>
+
+      <div
+        data-lightbox-actions
+        className="mx-5 flex shrink-0 flex-col gap-2 border-t border-hairline pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-5"
+      >
+        <div className="flex gap-2">
+          <Button size={38} className="flex-1" onClick={() => void downloadItem(item)}>
+            Download
+          </Button>
+          <Button size={38} className="flex-1" onClick={() => void onHandoff?.(item)}>
+            Handoff
+          </Button>
+          <GalleryDeleteDialog
+            disabled={deletingId === item.id}
+            trigger={<button type="button" className={cn(buttonClass("danger", 38), "flex-1")} />}
+            title="Delete this asset?"
+            description="This permanently removes the generated file and cannot be undone."
+            actionLabel="Delete asset"
+            onConfirm={() => void deleteItem(item)}
+          >
+            {deletingId === item.id ? "Deleting" : "Delete"}
+          </GalleryDeleteDialog>
         </div>
-      </aside>
+        {item.type === "image" && (
+          <Link
+            href={`/ugc-clone?referenceFileId=${encodeURIComponent(item.id)}`}
+            className={cn(buttonClass("strong", 40), "w-full text-[13px] leading-4")}
+          >
+            Use in Clone
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
