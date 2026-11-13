@@ -13,7 +13,7 @@ export default function LegalLayout({
       <head>
         <link
           rel="preload"
-          href="/fonts/hanken-grotesk-latin-wght-normal.woff2"
+          href="/fonts/figtree-latin-wght-normal.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

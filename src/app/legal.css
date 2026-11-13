@@ -8,7 +8,7 @@ body {
   min-height: 100%;
   background: var(--pf-floor);
   color: var(--pf-text);
-  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  font-family: "Figtree", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
 }
@@ -24,7 +24,7 @@ a {
 }
 
 .policy-page {
-  /* About 68 characters of 15px Hanken Grotesk. */
+  /* About 68 characters of 15px Figtree. */
   --policy-column: 600px;
 
   display: flex;

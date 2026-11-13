@@ -136,9 +136,9 @@ assert.match(tokens, /\.dark \{[\s\S]*?--pf-floor: #141516;/);
 assert.match(tokens, /:root \{[\s\S]*?--pf-floor: #ededeb;/);
 
 // Fonts are self-hosted woff2 with swap; next/font stays out.
-assert.match(tokens, /font-family: "Hanken Grotesk";[\s\S]*?font-display: swap;[\s\S]*?\/fonts\/hanken-grotesk-latin-wght-normal\.woff2/);
+assert.match(tokens, /font-family: "Figtree";[\s\S]*?font-display: swap;[\s\S]*?\/fonts\/figtree-latin-wght-normal\.woff2/);
 assert.match(tokens, /font-family: "Geist Mono";[\s\S]*?font-display: swap;/);
-assert.match(source("src/app/globals.css"), /--font-sans: "Hanken Grotesk"/);
+assert.match(source("src/app/globals.css"), /--font-sans: "Figtree"/);
 
 // Shell landmarks and the responsive contract live in one stylesheet.
 assert.match(shell, /<main id="workspace-shell" tabIndex=\{-1\}/);

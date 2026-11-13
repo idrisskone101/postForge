@@ -51,41 +51,41 @@ colors:
   chart-secondary-dark: "#6B6D72"
 typography:
   display:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "28px"
     fontWeight: 700
     lineHeight: "32px"
     letterSpacing: "-0.02em"
   headline:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "28px"
     fontWeight: 700
     lineHeight: "32px"
     letterSpacing: "-0.02em"
   stat:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "34px"
     fontWeight: 700
     lineHeight: "40px"
     letterSpacing: "-0.02em"
   title:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 700
     lineHeight: "20px"
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: "21px"
   meta:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: "16px"
   label:
-    fontFamily: "Hanken Grotesk, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 600
     lineHeight: "16px"
@@ -184,7 +184,7 @@ Dark is the default theme. Light stays available behind the theme toggle with th
 - One accent. Ember is reserved for what is live, current or selected: the active nav icon, a running bar, a selection ring, a chosen chip, an on toggle, a focus ring.
 - One primary. The bone pill appears at most once per screen. Everything else is a strong, quiet or outline pill.
 - Controls are full pills. Tiles, thumbnails and inputs are 12px. Panels are 16px.
-- Hanken Grotesk carries all UI type. Geist Mono is only for ids, costs, timestamps and durations.
+- Figtree carries all UI type. Geist Mono is only for ids, costs, timestamps and durations.
 - Motion confirms an action or a state change and never bounces.
 
 ## Tokens
@@ -231,7 +231,7 @@ The shadcn tokens (`--background`, `--card`, `--primary`, `--border`, `--ring`, 
 
 ## Typography
 
-**UI font:** Hanken Grotesk, variable, weights 400 to 700, self-hosted as woff2 in `public/fonts` (SIL Open Font License) with `font-display: swap`.
+**UI font:** Figtree, variable, weights 400 to 700, self-hosted as woff2 in `public/fonts` (SIL Open Font License) with `font-display: swap`.
 **Data font:** Geist Mono, self-hosted the same way.
 
 ### Hierarchy
