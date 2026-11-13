@@ -40,13 +40,14 @@ const studioSource = readFileSync(
   new URL("../../src/components/slideshow/slideshow-studio.tsx", import.meta.url),
   "utf8",
 );
-assert.match(studioSource, /overflow-hidden/);
-assert.match(editorWorkspaceSource, /h-full min-h-0/);
-assert.match(editorHeaderSource, /SlideshowViewSwitcher/);
+assert.match(studioSource, /<SlideshowEditor/);
+assert.match(editorWorkspaceSource, /xl:flex-row/);
+assert.doesNotMatch(editorHeaderSource, /SlideshowViewSwitcher/);
+assert.match(editorPreviewSource, /EditorStageHead/);
 assert.match(editorWorkspaceSource, /SlideshowBoardView/);
 assert.match(editorWorkspaceSource, /SlideshowPlayView/);
 assert.match(editorPreviewSource, /slideCoverImage/);
-assert.match(editorPreviewSource, /ArrowLeft/);
+assert.match(editorPreviewSource, /label="Previous slide"/);
 assert.match(pageSource, /SlideshowStudio/);
 assert.match(pageSource, /supportsMp4Export=\{ffmpegBinaryExists\(\)\}/);
 assert.match(previewSource, /imageUrl\?:/);
@@ -153,7 +154,7 @@ assert.doesNotMatch(editMarkup, /100cqw/);
 assert.doesNotMatch(editMarkup, /slideshow-text-shadow-/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="board"/);
 assert.doesNotMatch(editMarkup, /data-slideshow-view="play"/);
-assert.ok((editMarkup.match(/data-slideshow-text-overlay=/g) ?? []).length >= 2);
+assert.equal((editMarkup.match(/data-slideshow-text-overlay=/g) ?? []).length, 1);
 
 const boardMarkup = renderEditor("board");
 assert.match(boardMarkup, /data-slideshow-view="board"/);
