@@ -157,7 +157,12 @@ assert.match(shellStyles, /@media \(min-width: 768px\) and \(max-width: 1279\.98
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sidebar \{[\s\S]*?width: var\(--pf-rail-w\);/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell \{\s*margin-left: calc\(var\(--pf-rail-w\)/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] \.workspace-sidebar-offset-left/);
-assert.match(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
+// The collapsed rail keeps the 32px brand tile visible
+assert.doesNotMatch(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
+assert.match(
+  shellStyles,
+  /html\[data-sidebar-collapsed="true"\] #workspace-sidebar \.sidebar-brand \{\s*flex: 0 0 auto;/
+);
 
 // Safe areas: the mobile bar, the drawer and the shell all respect the insets.
 assert.match(shellStyles, /#workspace-mobile-bar \{[\s\S]*?env\(safe-area-inset-top\)/);

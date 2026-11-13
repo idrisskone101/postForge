@@ -434,13 +434,18 @@
     left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
   }
 
+  /* The rail keeps the brand tile; the expand button sits under it. */
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-header {
+    height: auto;
+    flex-direction: column;
     justify-content: center;
+    gap: 8px;
     padding-inline: 0;
+    padding-top: 4px;
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-brand {
-    display: none;
+    flex: 0 0 auto;
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {

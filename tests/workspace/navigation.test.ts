@@ -143,7 +143,12 @@ assert.match(layoutSource, /postforge-sidebar-collapsed/);
 assert.match(layoutSource, /r\.dataset\.sidebarCollapsed="true"/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sidebar/);
 assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
-assert.match(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
+// The collapsed rail keeps the 32px brand tile visible
+assert.doesNotMatch(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
+assert.match(
+  shellStyles,
+  /html\[data-sidebar-collapsed="true"\] #workspace-sidebar \.sidebar-brand \{\s*flex: 0 0 auto;/
+);
 assert.doesNotMatch(shellStyles, /body\[data-sidebar-collapsed="true"\]/);
 
 // Subtraction: no group labels, no workspace card, one footer row.
