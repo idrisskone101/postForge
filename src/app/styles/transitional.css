@@ -1,0 +1,149 @@
+/*
+ * Transitional. Route interiors still keep their visible copy in an attribute
+ * with the real text in an sr-only span. Each route rebuild renders real text
+ * and deletes its lines here; the file goes away with the last one.
+ */
+
+[data-character-action]::before {
+  content: attr(data-character-action);
+}
+
+[data-character-blueprint]::before {
+  content: attr(data-character-blueprint);
+}
+
+[data-character-cost]::before {
+  content: attr(data-character-cost);
+}
+
+[data-character-preview-label]::before {
+  content: attr(data-character-preview-label);
+}
+
+[data-character-rail-copy]::before {
+  content: attr(data-character-rail-copy);
+}
+
+[data-character-rail-kicker]::before {
+  content: attr(data-character-rail-kicker);
+}
+
+[data-character-rail-pct]::before {
+  content: attr(data-character-rail-pct);
+}
+
+[data-character-section]::before {
+  content: attr(data-character-section);
+}
+
+[data-character-status]::before {
+  content: attr(data-character-status);
+}
+
+[data-character-title]::before {
+  content: attr(data-character-title);
+}
+
+[data-clone-copy]::before {
+  content: attr(data-clone-copy);
+}
+
+[data-empty-copy]::before {
+  content: attr(data-empty-copy);
+}
+
+[data-empty-cta]::before {
+  content: attr(data-empty-cta);
+}
+
+[data-empty-title]::before {
+  content: attr(data-empty-title);
+}
+
+[data-generate-history]::before {
+  content: attr(data-generate-history);
+}
+
+[data-generate-notice]::before {
+  content: attr(data-generate-notice);
+}
+
+[data-home-action]::before {
+  content: attr(data-home-action);
+}
+
+[data-home-copy]::before {
+  content: attr(data-home-copy);
+}
+
+[data-home-glance-label]::before {
+  content: attr(data-home-glance-label);
+}
+
+[data-home-title]::before {
+  content: attr(data-home-title);
+}
+
+[data-jobs-label]::before {
+  content: attr(data-jobs-label);
+}
+
+[data-jobs-value]::before {
+  content: attr(data-jobs-value);
+}
+
+[data-lcp]::before {
+  content: attr(data-lcp);
+}
+
+[data-playbook-blurb]::before {
+  content: attr(data-playbook-blurb);
+}
+
+[data-playbook-lede]::before {
+  content: attr(data-playbook-lede);
+}
+
+[data-playbook-name]::before {
+  content: attr(data-playbook-name);
+}
+
+[data-playbook-scratch]::before {
+  content: attr(data-playbook-scratch);
+}
+
+[data-playbook-scratch-copy]::before {
+  content: attr(data-playbook-scratch-copy);
+}
+
+[data-playbook-title]::before {
+  content: attr(data-playbook-title);
+}
+
+[data-settings-text]::before {
+  content: attr(data-settings-text);
+}
+
+[data-settings-title]::before {
+  content: attr(data-settings-title);
+}
+
+[data-slideshow-copy]::before {
+  content: attr(data-slideshow-copy);
+}
+
+[data-spend-budget-label]::before {
+  content: attr(data-spend-budget-label);
+}
+
+[data-spend-intro-text]::before {
+  content: attr(data-spend-intro-text);
+}
+
+[data-spend-note-text]::before {
+  content: attr(data-spend-note-text);
+}
+
+[data-spend-text]::before {
+  content: attr(data-spend-text);
+}

@@ -15,9 +15,6 @@
 .audit/
 
 
-# Generated Tailwind bundle loaded after first paint on dashboard routes.
-/public/dashboard.css
-
 # next.js
 /.next/
 /out/

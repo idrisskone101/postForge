@@ -1,0 +1,317 @@
+/*
+ * Pre-Workbench class names, restyled to the Workbench language so existing
+ * usages move with the theme. New code uses the wb-* classes and the
+ * components in src/components/workbench instead.
+ */
+@layer components {
+  .policy-copy p,
+  .policy-copy li {
+    text-wrap: wrap;
+  }
+
+  .policy-copy strong {
+    color: var(--pf-text);
+    font-weight: 600;
+  }
+
+  .policy-copy a {
+    color: var(--pf-text);
+    font-weight: 600;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .pf-safe-overlay {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+  }
+
+  .pf-safe-dialog-viewport {
+    --pf-dialog-safe-gutter: max(1rem, env(safe-area-inset-top), env(safe-area-inset-bottom));
+    max-height: calc(100dvh - var(--pf-dialog-safe-gutter) - var(--pf-dialog-safe-gutter));
+  }
+
+  @media (min-width: 640px) {
+    .pf-safe-overlay {
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      padding-left: max(1rem, env(safe-area-inset-left));
+    }
+  }
+
+  .pf-eyebrow {
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .pf-page-title {
+    color: var(--pf-text);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 32px;
+  }
+
+  .pf-section-title {
+    color: var(--pf-text);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 20px;
+  }
+
+  .pf-card {
+    border: 0;
+    border-radius: var(--pf-radius-panel);
+    background: var(--pf-panel);
+    box-shadow: var(--pf-panel-shadow);
+  }
+
+  .pf-card-hover {
+    transition: background-color var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .pf-card-hover:hover {
+    background: color-mix(in srgb, var(--pf-panel) 60%, var(--pf-raised));
+  }
+
+  .pf-empty-stage {
+    border: 1.5px dashed var(--pf-outline);
+    border-radius: var(--pf-radius-tile);
+  }
+
+  .pf-button-primary,
+  .pf-button-secondary {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+    transition:
+      background-color var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .pf-button-primary {
+    min-height: 40px;
+    background: var(--pf-action);
+    padding: 0 18px;
+    color: var(--pf-action-fg);
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .pf-button-primary:hover {
+    background: var(--pf-action-hover);
+  }
+
+  .pf-button-primary:active {
+    background: var(--pf-action-pressed);
+    transform: scale(0.98);
+  }
+
+  .pf-button-secondary {
+    background: var(--pf-raised);
+    color: var(--pf-text);
+  }
+
+  .pf-button-secondary:hover {
+    background: var(--pf-raised-strong);
+  }
+
+  .pf-button-secondary:active {
+    background: var(--pf-strong);
+    transform: scale(0.98);
+  }
+
+  :is(.pf-button-primary, .pf-button-secondary):is(:disabled, [disabled], [aria-disabled="true"]) {
+    cursor: not-allowed;
+    background: var(--pf-raised);
+    color: var(--pf-disabled-fg);
+    transform: none;
+    transition: none;
+  }
+
+  .pf-input {
+    border: 0;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    color: var(--pf-text);
+    outline: none;
+    box-shadow: 0 0 0 0 var(--pf-ember);
+    transition: box-shadow var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .pf-input::placeholder {
+    color: var(--pf-text-muted);
+  }
+
+  .pf-input:focus,
+  .pf-input:focus-visible {
+    box-shadow: 0 0 0 2px var(--pf-ember);
+  }
+
+  .pf-status-success,
+  .pf-status-warning,
+  .pf-status-danger {
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    font-weight: 600;
+  }
+
+  .pf-status-success {
+    background: var(--pf-ok-tint);
+    color: var(--pf-ok);
+  }
+
+  .pf-status-warning {
+    background: var(--pf-warn-tint);
+    color: var(--pf-warn);
+  }
+
+  .pf-status-danger {
+    background: var(--pf-bad-tint);
+    color: var(--pf-bad);
+  }
+
+  .pf-lamp {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: var(--pf-radius-pill);
+    background: currentColor;
+  }
+
+  .pf-data {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pf-review-stamp {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    z-index: 10;
+    border-radius: var(--pf-radius-pill);
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    pointer-events: none;
+  }
+
+  .pf-review-stamp--approved {
+    background: var(--pf-ok-tint);
+    color: var(--pf-ok);
+  }
+
+  .pf-review-stamp--rejected {
+    background: var(--pf-bad-tint);
+    color: var(--pf-bad);
+  }
+
+  .pf-stamp-slam {
+    animation: wb-check-in var(--pf-dur-feedback) var(--pf-ease) both;
+  }
+
+  .pf-masthead {
+    position: relative;
+    background: var(--pf-floor);
+    color: var(--pf-text);
+  }
+
+  .pf-masthead-title {
+    color: var(--pf-text);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .pf-masthead-muted,
+  .pf-masthead-plate {
+    color: var(--pf-text-muted);
+  }
+
+  .pf-masthead-plate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .pf-tear {
+    position: relative;
+    height: 0;
+    border-top: 1px solid var(--pf-hairline);
+  }
+
+  .glass {
+    border: 0;
+    background: var(--pf-raised);
+    box-shadow: var(--pf-float-shadow);
+  }
+
+  .glass-overlay {
+    background: var(--pf-scrim);
+  }
+
+  .launch-card {
+    border-radius: var(--pf-radius-tile);
+  }
+
+  .animate-success-pulse,
+  .animate-content-enter {
+    animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  .press {
+    transition: transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .press:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: scale(0.98);
+  }
+
+  .editor-slider {
+    width: 100%;
+    height: 4px;
+    appearance: none;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised-strong);
+    outline: none;
+  }
+
+  .editor-slider::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    cursor: pointer;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-text);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
