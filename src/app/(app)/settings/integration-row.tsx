@@ -57,12 +57,12 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
 export function RowNotice({ notice, children }: { notice: Notice; children?: ReactNode }) {
   return (
     <p
-      className="wb-notice min-w-0 break-words py-1.5 pr-1.5 [overflow-wrap:anywhere]"
+      className="wb-notice min-w-0 break-words py-[3px] pr-1.5 [overflow-wrap:anywhere]"
       data-tone={notice.tone}
       role={notice.tone === "bad" ? "alert" : undefined}
     >
       <span className="min-w-0 flex-1 py-1">
-        <strong className={notice.tone === "bad" ? "text-bad" : "text-warn"}>{notice.lead}</strong>{" "}
+        <strong className={cn("font-semibold", notice.tone === "bad" ? "text-bad" : "text-warn")}>{notice.lead}</strong>{" "}
         {notice.text}
       </span>
       {children}
