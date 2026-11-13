@@ -44,7 +44,7 @@ export function CharactersLibrary({
           value={filters.view}
           onChange={(view) => onFiltersChange({ view })}
           options={VIEW_OPTIONS}
-          className="shrink-0 gap-0 [&>.wb-segment]:w-[30px] [&>.wb-segment>svg]:size-4 [&>.wb-segment[aria-pressed=false]>svg]:text-fg-muted"
+          className="shrink-0 gap-0 [&>.wb-segment]:w-[30px] [&>.wb-segment>svg]:size-4 [&>.wb-segment[aria-pressed=false]>svg]:text-fg-muted [&>.wb-segment[aria-pressed=false]:hover>svg]:text-fg"
         />
       </div>
       <div className="min-h-0 xl:-mx-1 xl:flex-1 xl:-mt-1 xl:overflow-y-auto xl:px-1 xl:pb-1 xl:pt-1">
