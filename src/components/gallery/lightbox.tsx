@@ -10,6 +10,7 @@ import { KeyValueList } from "@/components/workbench/key-value-list";
 import { StatusChip } from "@/components/workbench/status-chip";
 import { cn } from "@/lib/utils";
 import { GalleryDeleteDialog } from "./delete-dialog";
+import { GalleryJobLink } from "./job-link";
 import {
   formatGalleryCreated,
   formatGalleryDuration,
@@ -105,6 +106,7 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
                 ? [{ label: "Duration", value: duration, mono: true }]
                 : []),
               { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
+              { label: "Job", value: <GalleryJobLink item={item} />, mono: true },
               ...(source
                 ? [{ label: "Source", value: <SourceLinks url={source} onCopy={copySourceUrl} /> }]
                 : []),

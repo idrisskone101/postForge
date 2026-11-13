@@ -43,7 +43,7 @@ export function InspirationVideoCard({
       className="wb-tile-cell"
     >
       <MediaTile
-        className={cn(workspace.largeTiles ? "aspect-[9/16]" : TILE_ASPECT_CLASS, TOUCH_TILE_CLASS)}
+        className={workspace.largeTiles ? "aspect-[9/16]" : TILE_ASPECT_CLASS}
         state={{ status: inspirationStatusBadge(video), duration: formatDuration(video.durationSec) }}
         actions={
           <>
@@ -135,13 +135,8 @@ export function InspirationVideoCard({
 
 export const TILE_ASPECT_CLASS = "aspect-[9/16] @[680px]:aspect-[129/266]";
 
-const TOUCH_TILE_CLASS = [
-  "[@media(hover:none)]:[&_.wb-tile-action]:h-10",
-  "[@media(hover:none)]:[&>.wb-tile-duration]:bottom-14",
-].join(" ");
-
 const FOOT_CLASS =
-  "inline-flex h-[30px] w-full items-center justify-center rounded-full text-[12px] leading-4 font-semibold transition-[background-color,transform] duration-[var(--pf-dur-feedback)] ease-pf active:scale-[0.98] focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] disabled:cursor-default disabled:text-fg-disabled [@media(hover:none)]:h-10";
+  "inline-flex h-[30px] w-full items-center justify-center rounded-full text-[12px] leading-4 font-semibold transition-[background-color,transform] duration-[var(--pf-dur-feedback)] ease-pf active:scale-[0.98] disabled:cursor-default disabled:text-fg-disabled [@media(hover:none)]:h-10";
 
 const OUTLINE_FOOT_CLASS =
   "text-fg-secondary shadow-[inset_0_0_0_1px_var(--pf-outline)] hover:bg-raised dark:shadow-[inset_0_0_0_1px_var(--pf-strong)]";

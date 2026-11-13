@@ -35,7 +35,7 @@ export function GalleryGridCards({
         return (
           <div key={item.id} className="wb-tile-cell">
             <MediaTile
-              className={cn(GALLERY_TILE_HEIGHT_CLASS, TOUCH_TILE_CLASS)}
+              className={GALLERY_TILE_HEIGHT_CLASS}
               state={{
                 selected: selectedIds.has(item.id),
                 onSelectedChange: () => toggleSelection(item.id),
@@ -102,12 +102,3 @@ export function GalleryGridCards({
     </div>
   );
 }
-
-const TOUCH_TILE_CLASS = [
-  "[@media(hover:none)]:[&>.wb-tile-check]:size-7",
-  "[@media(hover:none)]:[&>.wb-tile-check]:after:absolute",
-  "[@media(hover:none)]:[&>.wb-tile-check]:after:-inset-2",
-  "[@media(hover:none)]:[&>.wb-tile-check]:after:content-['']",
-  "[@media(hover:none)]:[&_.wb-tile-action]:h-10",
-  "[@media(hover:none)]:[&>.wb-tile-duration]:bottom-14",
-].join(" ");

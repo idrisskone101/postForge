@@ -16,6 +16,8 @@ export type MediaTileState = {
   name?: string;
   /** Keep every check visible, e.g. while a multi-select is in progress. */
   selecting?: boolean;
+  /** Keep the action row on touch screens. Only for a row that is the sole way to its action. */
+  touchActions?: boolean;
 };
 
 type MediaTileProps = {
@@ -30,7 +32,7 @@ type MediaTileProps = {
 
 /** 12px media tile. Hover lifts the action row 4px; the image never zooms. */
 export function MediaTile({ children, state = {}, actions, className }: MediaTileProps) {
-  const { selected = false, onSelectedChange, status, duration, name, selecting } = state;
+  const { selected = false, onSelectedChange, status, duration, name, selecting, touchActions } = state;
   return (
     <div
       className={cn("wb-tile", className)}
@@ -53,7 +55,11 @@ export function MediaTile({ children, state = {}, actions, className }: MediaTil
       {status && (
         <StatusBadge tone={status.tone} label={status.label} className="wb-tile-badge" />
       )}
-      {actions && <div className="wb-tile-actions">{actions}</div>}
+      {actions && (
+        <div className="wb-tile-actions" data-touch={touchActions ? "keep" : undefined}>
+          {actions}
+        </div>
+      )}
       {duration && <span className="wb-tile-duration">{duration}</span>}
     </div>
   );

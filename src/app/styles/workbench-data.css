@@ -436,16 +436,26 @@
     transform: translateY(0);
   }
 
-  /* Touch has no hover: the check and the action row stay visible, and the duration sits above the row. */
+  /* Touch has no hover: the check stays visible, the action row is not drawn (a tap on the media opens the
+     preview, which carries the secondary actions). A row that is the only way to its action opts back in. */
   @media (hover: none) {
-    .wb-tile > .wb-tile-check,
+    .wb-tile > .wb-tile-check {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .wb-tile > .wb-tile-actions {
+      display: none;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="keep"] {
+      display: flex;
       opacity: 1;
       pointer-events: auto;
       transform: none;
     }
 
-    .wb-tile > .wb-tile-actions ~ .wb-tile-duration {
+    .wb-tile > .wb-tile-actions[data-touch="keep"] ~ .wb-tile-duration {
       bottom: 46px;
     }
   }

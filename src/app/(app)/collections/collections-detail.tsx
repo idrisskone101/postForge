@@ -46,6 +46,7 @@ function DetailBody({ detail }: { detail: CollectionsDetailModel }) {
                 <MediaTile
                   key={asset.id}
                   className="aspect-[3/4]"
+                  state={{ touchActions: true }}
                   actions={
                     <button
                       type="button"

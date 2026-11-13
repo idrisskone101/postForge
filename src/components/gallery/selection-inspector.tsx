@@ -23,6 +23,7 @@ import {
   reviewStatusTone,
   sourceHost,
 } from "./format";
+import { GalleryJobLink } from "./job-link";
 import type { GalleryItem } from "./types";
 
 export type GallerySelection = {
@@ -211,7 +212,7 @@ function inspectorRows(item: GalleryItem) {
     ...(size ? [{ label: "Size", value: size, mono: true }] : []),
     ...(item.type === "video" && duration ? [{ label: "Duration", value: duration, mono: true }] : []),
     { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
-    { label: "Job", value: item.jobId.slice(0, 8), mono: true },
+    { label: "Job", value: <GalleryJobLink item={item} />, mono: true },
   ];
 }
 
