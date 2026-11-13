@@ -66,6 +66,7 @@ export function PerformancePageClient() {
     csvDataset,
     selectedSource: activeSource,
     selectable: sourceOptions.length > 1,
+    lastUpdatedAt: providerData.lastUpdatedAt,
     busyProvider,
     importing,
     syncAll:

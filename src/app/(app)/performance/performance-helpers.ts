@@ -231,9 +231,19 @@ function accountRow(entry: ConnectedAccountView): PerformanceSourceRow {
     key: entry.sourceKey,
     name: entry.status.displayName,
     sub: `${handle} - ${synced}`,
+    warning: sync.warnings.join(" ").trim() || null,
     health,
     entry,
   };
+}
+
+/** The foot line of the Sources panel. Null means the provider data has no refresh time. */
+export function providerRefreshLabel(value: string | null) {
+  if (!value) return "Provider data not refreshed yet";
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.valueOf())
+    ? "Provider data refresh time unavailable"
+    : `Provider data last refreshed ${dayMonthTime.format(parsed)}`;
 }
 
 function syncedLabel(value: string) {

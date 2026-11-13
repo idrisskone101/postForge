@@ -7,7 +7,7 @@ import { Panel } from "@/components/workbench/panel";
 import { StatusBadge } from "@/components/workbench/status-badge";
 import { canAggregateConnectedProviders } from "@/lib/performance/metrics";
 import { cn } from "@/lib/utils";
-import { buildSourceRows } from "./performance-helpers";
+import { buildSourceRows, providerRefreshLabel } from "./performance-helpers";
 import type { PerformanceSourceRow, PerformanceSourceWorkspace } from "./types";
 
 export function PerformanceSourcePanel({
@@ -46,6 +46,9 @@ export function PerformanceSourcePanel({
           <SourceRow key={row.key} row={row} workspace={workspace} />
         ))}
       </ul>
+      <p className="pt-3 text-[12px] leading-4 text-fg-muted">
+        {providerRefreshLabel(workspace.lastUpdatedAt)}
+      </p>
     </Panel>
   );
 }
@@ -62,6 +65,7 @@ function SourceRow({
     (row.kind === "account" || row.kind === "all-connected" || row.kind === "csv");
   const selected = selectable && workspace.selectedSource === row.key;
   const sub = "sub" in row ? row.sub : null;
+  const warning = row.kind === "account" ? row.warning : null;
   const text = (
     <>
       <span className="flex items-center gap-2 text-[14px] font-semibold leading-[19px] text-fg">
@@ -69,8 +73,13 @@ function SourceRow({
         <span className="truncate">{row.name}</span>
       </span>
       {sub ? (
-        <span title={sub} className="max-w-full truncate text-[12px] leading-4 text-fg-muted">
+        <span className="max-w-full text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
           {sub}
+        </span>
+      ) : null}
+      {warning ? (
+        <span className="max-w-full text-[12px] leading-4 text-warn [overflow-wrap:anywhere]">
+          {warning}
         </span>
       ) : null}
     </>
