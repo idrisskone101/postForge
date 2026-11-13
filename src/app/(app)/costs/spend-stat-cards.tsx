@@ -39,10 +39,10 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
           label: "Budget left",
           value: <span className={cn(over && "text-bad")}>{formatCost(view.budgetRemaining)}</span>,
           aside: (
-            <span className="flex min-w-0 flex-1 items-center gap-4 text-[12px] font-normal leading-4 tracking-normal max-md:basis-full">
+            <span className="flex min-w-0 flex-1 items-center gap-4 md:ml-1.5 text-[12px] font-normal leading-4 tracking-normal max-md:basis-full">
               <span className="flex min-w-0 flex-1 items-center gap-2.5">
                 <Meter label="Budget used" value={view.budgetPercent} tone={over ? "bad" : "ember"} />
-                <span className="wb-mono shrink-0 text-fg-secondary">
+                <span className="wb-mono shrink-0 leading-[18px] text-fg-secondary">
                   {formatCost(dashboard.currentPeriodCost)} / {budgetMoney(view.budget)}
                 </span>
               </span>

@@ -17,6 +17,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
     { key: "video", name: "Video", cost: dashboard.breakdown.video.cost, swatch: "bg-chart-1" },
     { key: "image", name: "Image", cost: dashboard.breakdown.image.cost, swatch: "bg-chart-2" },
   ].filter((entry) => entry.cost > 0);
+  const formatTotal = formats.reduce((sum, entry) => sum + entry.cost, 0);
   const models = view.modelEntries.slice(0, 6);
   const topModelCost = models[0]?.[1].cost ?? 0;
 
@@ -57,7 +58,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             <span
               key={entry.key}
               className={cn("min-w-1 basis-0 rounded-[4px]", entry.swatch)}
-              style={{ flexGrow: entry.cost }}
+              style={{ flexGrow: entry.cost / formatTotal }}
             />
           ))}
         </div>
@@ -83,9 +84,9 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
                 </span>
                 <span className="wb-mono shrink-0 text-fg">{formatCost(data.cost)}</span>
               </span>
-              <span className="flex h-1.5 shrink-0 rounded-full bg-raised">
+              <span className="flex h-1.5 shrink-0 rounded-[var(--pf-radius-pill)] bg-raised">
                 <span
-                  className={cn("rounded-full", index < 3 ? "bg-chart-1" : "bg-chart-2")}
+                  className={cn("rounded-[var(--pf-radius-pill)]", index < 3 ? "bg-chart-1" : "bg-chart-2")}
                   style={{ width: `${topModelCost > 0 ? Math.max(2, (data.cost / topModelCost) * 100) : 0}%` }}
                 />
               </span>

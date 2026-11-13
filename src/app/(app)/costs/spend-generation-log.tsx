@@ -24,7 +24,7 @@ export function SpendGenerationLog({
         <h2 id="spend-log-title" className="wb-panel-title min-w-max flex-1 whitespace-nowrap">
           Generation log
         </h2>
-        <label className="wb-input-wrap w-[240px] rounded-full px-3 max-md:order-last max-md:w-auto max-md:min-w-[150px] max-md:flex-1" data-size="36">
+        <label className="wb-input-wrap w-[240px] rounded-[var(--pf-radius-pill)] px-3 [&>svg]:size-4 max-md:order-last max-md:w-auto max-md:min-w-[150px] max-md:flex-1" data-size="36">
           <Icon name="search" size={16} />
           <input
             type="search"
