@@ -1,5 +1,4 @@
 import {
-  formatOutputDate,
   modelDisplayName,
   outputAccessibleName,
   outputMeta,
