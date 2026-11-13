@@ -84,25 +84,37 @@ export function InspirationVideoCard({
           className="relative block size-full cursor-pointer"
         >
           {thumbnailFailed ? (
-            <span aria-hidden="true" className="block size-full bg-media" />
+            <span
+              data-inspiration-thumbnail="missing"
+              className="flex size-full flex-col items-center justify-center gap-2 bg-media px-3"
+            >
+              <span aria-hidden="true" className="text-fg-muted">
+                <PlayGlyph size={28} />
+              </span>
+              <span className="max-w-full truncate text-[12px] leading-4 text-fg-secondary">
+                {video.creatorHandle}
+              </span>
+            </span>
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="block size-full object-cover"
-              onError={() => markThumbnailError(video.id)}
-              onLoad={() => clearThumbnailError(video.id)}
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="block size-full object-cover"
+                onError={() => markThumbnailError(video.id)}
+                onLoad={() => clearThumbnailError(video.id)}
+              />
+              <span
+                aria-hidden="true"
+                className="absolute bottom-2 left-2 flex size-[26px] items-center justify-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)]"
+              >
+                <PlayGlyph />
+              </span>
+            </>
           )}
-          <span
-            aria-hidden="true"
-            className="absolute bottom-2 left-2 flex size-[26px] items-center justify-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)]"
-          >
-            <PlayGlyph />
-          </span>
         </button>
       </MediaTile>
 
@@ -187,9 +199,9 @@ function Metric({ label, value, glyph }: { label: string; value: number | null; 
   );
 }
 
-function PlayGlyph() {
+function PlayGlyph({ size = 13 }: { size?: number }) {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
       <path d="M8 5.5l10.5 6.5L8 18.5z" />
     </svg>
   );
