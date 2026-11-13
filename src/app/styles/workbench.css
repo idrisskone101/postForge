@@ -426,6 +426,21 @@
     scroll-snap-align: start;
   }
 
+  /* The same cue for a block that scrolls down inside a fixed-height column. */
+  @supports (animation-timeline: scroll()) {
+    .wb-scroll-fade-y {
+      animation: wb-scroll-fade linear both;
+      animation-timeline: scroll(self block);
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        #000 var(--wb-fade-start),
+        #000 calc(100% - var(--wb-fade-end)),
+        transparent
+      );
+    }
+  }
+
   @supports (animation-timeline: scroll()) {
     .wb-segmented,
     .wb-scroll-fade {
