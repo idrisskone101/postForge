@@ -36,11 +36,8 @@ export function CharacterImportDialog({
             Recognized fields merge into the current character. Everything else is ignored.
           </DialogDescription>
         </DialogHeader>
-        <label className="sr-only" htmlFor="character-import-value">
-          Prompt or attributes JSON
-        </label>
         <textarea
-          id="character-import-value"
+          aria-label="Prompt or attributes JSON"
           value={value}
           onChange={(event) => actions.onValueChange(event.target.value)}
           aria-invalid={error ? true : undefined}

@@ -6,8 +6,6 @@ import type { CharacterRecord } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 import { characterDateMeta, formatShortDate, photoReady } from "./characters-helpers";
 
-const TILE_SIZES = "(min-width: 1024px) 200px, (min-width: 640px) 33vw, 50vw";
-
 export function CharacterTile({
   record,
   selected,
@@ -94,3 +92,5 @@ export function CharacterRow({
     </button>
   );
 }
+
+const TILE_SIZES = "(min-width: 1024px) 200px, (min-width: 640px) 33vw, 50vw";

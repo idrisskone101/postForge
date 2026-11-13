@@ -6,16 +6,6 @@ import { CharacterRow, CharacterTile } from "./characters-card";
 import { GENDER_FILTER_OPTIONS } from "./characters-helpers";
 import type { CharactersLibraryModel, CharactersView } from "./types";
 
-const GENDER_OPTIONS = GENDER_FILTER_OPTIONS.map((value) => ({
-  value,
-  label: value === "All identities" ? <AllIdentitiesLabel /> : value,
-}));
-
-const VIEW_OPTIONS: Array<{ value: CharactersView; label: ReactNode; ariaLabel: string }> = [
-  { value: "grid", label: <Icon name="grid" size={16} />, ariaLabel: "Grid view" },
-  { value: "list", label: <Icon name="list" size={16} />, ariaLabel: "List view" },
-];
-
 export function CharactersLibrary({
   library,
   onClearFilters,
@@ -131,3 +121,13 @@ function AllIdentitiesLabel() {
     </>
   );
 }
+
+const GENDER_OPTIONS = GENDER_FILTER_OPTIONS.map((value) => ({
+  value,
+  label: value === "All identities" ? <AllIdentitiesLabel /> : value,
+}));
+
+const VIEW_OPTIONS: Array<{ value: CharactersView; label: ReactNode; ariaLabel: string }> = [
+  { value: "grid", label: <Icon name="grid" size={16} />, ariaLabel: "Grid view" },
+  { value: "list", label: <Icon name="list" size={16} />, ariaLabel: "List view" },
+];
