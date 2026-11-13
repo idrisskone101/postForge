@@ -14,7 +14,11 @@ import {
   reviewStatusTone,
 } from "./format";
 import type { GalleryMediaSession } from "./media-session";
-import { GALLERY_GRID_CLASS, GALLERY_TILE_HEIGHT_CLASS } from "./skeletons";
+import {
+  GALLERY_GRID_CLASS,
+  GALLERY_TILE_HEIGHT_CLASS,
+  GALLERY_TILE_THUMBNAIL_SIZES,
+} from "./skeletons";
 import type { GalleryItem } from "./types";
 
 export function GalleryGridCards({
@@ -28,12 +32,14 @@ export function GalleryGridCards({
   const selecting = selectedIds.size > 0;
 
   return (
-    <div data-gallery-view="grid" className={cn(GALLERY_GRID_CLASS, "wb-fade-in")}>
-      {items.map((item) => {
+    <div data-gallery-view="grid" className={GALLERY_GRID_CLASS}>
+      {items.map((item, index) => {
         const title = galleryItemTitle(item);
         const name = galleryItemName(item);
         return (
-          <div key={item.id} className="wb-tile-cell">
+          // Every tile fades in except the first: an image first painted at opacity 0 is
+          // never counted as the largest contentful paint, and the first tile is that image.
+          <div key={item.id} className={cn("wb-tile-cell", index > 0 && "wb-fade-in")}>
             <MediaTile
               className={GALLERY_TILE_HEIGHT_CLASS}
               state={{
@@ -85,6 +91,8 @@ export function GalleryGridCards({
                   variant="card"
                   className="size-full rounded-none bg-media"
                   mediaClassName="rounded-none object-cover"
+                  // Only the first tile is fetched eagerly; the rest wait until they are near the viewport.
+                  thumbnail={{ sizes: GALLERY_TILE_THUMBNAIL_SIZES, priority: index === 0 }}
                 />
               </button>
             </MediaTile>

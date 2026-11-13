@@ -129,6 +129,7 @@ export function GallerySelectionInspector({
                 !(item.width && item.height) && "w-[158px]"
               )}
               mediaClassName="rounded-lg object-cover"
+              thumbnail={{ sizes: "280px" }}
             />
             {duration && <span className="wb-tile-duration">{duration}</span>}
           </button>

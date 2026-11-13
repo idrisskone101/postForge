@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fileThumbnailSources, type MediaThumbnail } from "@/lib/file-thumbnail";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
 
@@ -24,6 +25,8 @@ interface MediaPreviewFrameProps extends MediaPreviewProps {
   showMetadata?: boolean;
   frameAspectRatio?: string;
   mediaClassName?: string;
+  /** Show a resized variant of a stored image; the original is the fallback if it fails. */
+  thumbnail?: MediaThumbnail;
 }
 
 export function MediaPreview({
@@ -107,9 +110,13 @@ export function MediaPreviewFrame({
   showMetadata = false,
   frameAspectRatio,
   mediaClassName,
+  thumbnail,
 }: MediaPreviewFrameProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [failedThumbnailSrc, setFailedThumbnailSrc] = useState<string | null>(null);
+  const resized =
+    thumbnail && type === "image" && failedThumbnailSrc !== src ? fileThumbnailSources(src) : null;
   const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -142,6 +149,52 @@ export function MediaPreviewFrame({
     mediaClassName
   );
 
+  const image =
+    resized && thumbnail ? (
+      // eslint-disable-next-line @next/next/no-img-element -- fixed-width variants need their own srcset
+      <img
+        ref={setImageRef}
+        src={resized.src}
+        srcSet={resized.srcSet}
+        sizes={thumbnail.sizes}
+        alt={alt}
+        width={fillFrame ? undefined : mediaWidth}
+        height={fillFrame ? undefined : mediaHeight}
+        loading={thumbnail.priority ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={thumbnail.priority ? "high" : "auto"}
+        onLoad={markLoaded}
+        onError={() => setFailedThumbnailSrc(src)}
+        className={cn(
+          fillFrame && "absolute inset-0",
+          mediaClass,
+          // Chrome never counts an image first painted at opacity 0, so the priority image skips the fade.
+          thumbnail.priority && "opacity-100 transition-none",
+        )}
+      />
+    ) : (
+      <Image
+        ref={setImageRef}
+        src={src}
+        alt={alt}
+        fill={fillFrame}
+        width={fillFrame ? undefined : mediaWidth}
+        height={fillFrame ? undefined : mediaHeight}
+        sizes={fillFrame ? "100vw" : undefined}
+        unoptimized
+        onLoad={(event) => {
+          const { naturalWidth, naturalHeight } = event.currentTarget;
+          if (!cover && naturalWidth > 0) setNatural({ width: naturalWidth, height: naturalHeight });
+          markLoaded();
+        }}
+        onError={() => {
+          setIsLoading(false);
+          setHasError(true);
+        }}
+        className={mediaClass}
+      />
+    );
+
   return (
     <figure
       data-media-preview-frame={variant}
@@ -162,26 +215,7 @@ export function MediaPreviewFrame({
             <span className="text-xs">Failed to load</span>
           </div>
         ) : type === "image" ? (
-          <Image
-            ref={setImageRef}
-            src={src}
-            alt={alt}
-            fill={fillFrame}
-            width={fillFrame ? undefined : mediaWidth}
-            height={fillFrame ? undefined : mediaHeight}
-            sizes={fillFrame ? "100vw" : undefined}
-            unoptimized
-            onLoad={(event) => {
-              const { naturalWidth, naturalHeight } = event.currentTarget;
-              if (!cover && naturalWidth > 0) setNatural({ width: naturalWidth, height: naturalHeight });
-              markLoaded();
-            }}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
-            className={mediaClass}
-          />
+          image
         ) : (
           <video
             ref={setVideoRef}

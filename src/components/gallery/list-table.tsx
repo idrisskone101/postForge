@@ -71,6 +71,7 @@ export function GalleryListTable({
                     variant="card"
                     className="size-full rounded-none bg-media"
                     mediaClassName="rounded-none object-cover"
+                    thumbnail={{ sizes: "40px" }}
                   />
                 </span>
                 <div className="flex min-w-0 flex-col">

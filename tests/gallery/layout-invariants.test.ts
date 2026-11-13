@@ -52,3 +52,17 @@ assert.match(
   "the tile check gets its touch hit area from the shared coarse-pointer rule"
 );
 assert.doesNotMatch(cards, /hover:none/);
+
+// Tiles show resized variants, never the full-size originals. Only the first tile is
+// fetched eagerly, and it is the one tile that does not fade in: an image first painted
+// at opacity 0 is not counted as the largest contentful paint.
+assert.match(
+  cards,
+  /thumbnail=\{\{ sizes: GALLERY_TILE_THUMBNAIL_SIZES, priority: index === 0 \}\}/,
+);
+assert.match(cards, /index > 0 && "wb-fade-in"/);
+assert.match(source("src/components/gallery/list-table.tsx"), /thumbnail=\{\{ sizes: "40px" \}\}/);
+assert.match(
+  source("src/app/api/files/[id]/thumbnail/route.ts"),
+  /"Cache-Control": "public, max-age=31536000, immutable"/,
+);

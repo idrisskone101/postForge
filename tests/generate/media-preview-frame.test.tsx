@@ -54,3 +54,58 @@ const cardVideoMarkup = renderToStaticMarkup(
 assert.match(cardVideoMarkup, /preload="metadata"/);
 assert.match(cardVideoMarkup, /aspect-ratio:9\/16/);
 assert.doesNotMatch(cardVideoMarkup, /controls=""/);
+
+const thumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/api/files/abc"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px" }}
+  />
+);
+
+assert.match(thumbnailMarkup, /src="\/api\/files\/abc\/thumbnail\?w=480"/);
+assert.match(thumbnailMarkup, /srcSet="[^"]*\/api\/files\/abc\/thumbnail\?w=240 240w[^"]*720w"/);
+assert.match(thumbnailMarkup, /sizes="236px"/);
+assert.match(thumbnailMarkup, /loading="lazy"/);
+assert.match(thumbnailMarkup, /opacity-0/, "a lazy thumbnail keeps the fade-in");
+
+const priorityThumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/api/files/abc"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px", priority: true }}
+  />
+);
+
+assert.match(priorityThumbnailMarkup, /loading="eager"/);
+assert.match(priorityThumbnailMarkup, /fetchPriority="high"/i);
+assert.doesNotMatch(
+  priorityThumbnailMarkup,
+  /<img[^>]*opacity-0/,
+  "the priority thumbnail must not first paint at opacity 0"
+);
+
+const originalMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/landscape.jpg"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px" }}
+  />
+);
+
+assert.doesNotMatch(originalMarkup, /thumbnail\?w=/, "only stored files have resized variants");
+
+const videoThumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame type="video" src="/api/files/abc" variant="card" thumbnail={{ sizes: "236px" }} />
+);
+
+assert.doesNotMatch(videoThumbnailMarkup, /thumbnail\?w=/, "videos keep their own element");
