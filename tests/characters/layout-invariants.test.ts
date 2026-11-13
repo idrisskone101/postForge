@@ -25,7 +25,7 @@ assert.match(library, /grid-cols-2 gap-x-3\.5 gap-y-\[18px\] sm:grid-cols-3 lg:g
 assert.match(library, /priority=\{index === 0\}/, "only the first tile is fetched with high priority");
 
 const card = source("src/app/(app)/characters/characters-card.tsx");
-assert.match(card, /wb-tile aspect-\[4\/7\]/);
+assert.match(card, /wb-tile aspect-\[343\/600\]/);
 assert.match(card, /sizes=\{TILE_SIZES\}/);
 
 const photo = source("src/components/character-photo.tsx");
