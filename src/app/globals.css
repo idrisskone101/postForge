@@ -11,6 +11,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* A transition utility with no duration or ease of its own gets the Workbench feedback timing, not
+   Tailwind's 150ms default curve. */
+@theme {
+  --default-transition-duration: 160ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @theme inline {
   --font-sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
