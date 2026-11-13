@@ -67,9 +67,9 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
     <div className="flex min-h-0 flex-col lg:grid lg:h-full lg:grid-cols-[minmax(0,1fr)_320px] lg:grid-rows-[minmax(0,1fr)_auto]">
       <div
         data-lightbox-scroll
-        className="wb-scroll-fade-y min-h-0 flex-1 overflow-y-auto overscroll-contain lg:contents"
+        className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain lg:contents"
       >
-        <div className="flex min-h-[280px] min-w-0 items-center justify-center bg-[#09090B] p-4 lg:row-span-2 lg:p-6">
+        <div className="flex h-[calc(42dvh+2rem)] min-h-[200px] min-w-0 shrink items-center justify-center bg-[#09090B] p-4 lg:row-span-2 lg:h-auto lg:p-6">
           <MediaPreviewFrame
             type={item.type}
             src={item.url}
@@ -77,11 +77,11 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
             height={item.height}
             alt={galleryItemName(item)}
             variant="detail"
-            className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full [&>div]:h-[42dvh] [&>div]:max-h-none [&>div]:min-h-0 lg:[&>div]:h-full"
+            className="h-full max-h-full min-h-0 w-full bg-transparent [&>div]:h-full [&>div]:max-h-none [&>div]:min-h-0"
             mediaClassName="object-contain"
           />
         </div>
-        <aside className="flex min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-4 lg:min-h-0 lg:overflow-y-auto">
+        <aside className="flex min-w-0 shrink-0 flex-col gap-3.5 px-5 pt-[18px] pb-4 lg:min-h-0 lg:shrink lg:overflow-y-auto">
           <div className="wb-panel-head">
             <DialogTitle className="wb-panel-title">Preview</DialogTitle>
             <DialogClose
