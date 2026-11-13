@@ -51,6 +51,8 @@ export type JobRowView = {
   created: string;
   duration: string;
   cost: string;
+  /** The job has not been charged yet, so the figure is the estimate and reads quieter. */
+  costEstimated: boolean;
   preview: { src: string; type: "image" | "video" } | null;
 };
 
@@ -78,6 +80,7 @@ export function toJobRow(job: JobActivityItem, now: Date): JobRowView {
     created: formatJobDate(job.createdAt, now),
     duration: formatDuration(jobDurationMs(job, now)),
     cost: cost === null ? "-" : formatCost(cost),
+    costEstimated: job.actualCost === null && job.estimatedCost !== null,
     preview: output
       ? {
           src: `/api/files/${encodeURIComponent(output.id)}`,
