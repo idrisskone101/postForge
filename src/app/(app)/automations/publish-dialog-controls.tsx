@@ -1,27 +1,38 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, type KeyboardEvent, type ReactNode } from "react";
+import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 
 export function FieldLabel({
   label,
   detail,
+  mono = false,
   children,
 }: {
   label: string;
   detail: string;
-  children: ReactNode;
+  mono?: boolean;
+  children: (id: string) => ReactNode;
 }) {
+  const id = useId();
   return (
-    <label className="block min-w-0">
-      <span className="mb-1.5 flex min-w-0 items-start justify-between gap-2 text-[13px] font-semibold">
-        <span className="min-w-0 break-words [overflow-wrap:anywhere]">{label}</span>
-        <small className="shrink-0 font-normal text-muted-foreground dark:text-[var(--pf-muted)]">
+    <div className="wb-field">
+      <div className="flex min-w-0 items-baseline justify-between gap-3">
+        <label htmlFor={id} className="wb-label min-w-0 break-words [overflow-wrap:anywhere]">
+          {label}
+        </label>
+        <span
+          className={cn(
+            "min-w-0 text-right text-[12px] leading-4 text-fg-muted",
+            mono && "wb-mono shrink-0"
+          )}
+        >
           {detail}
-        </small>
-      </span>
-      {children}
-    </label>
+        </span>
+      </div>
+      {children(id)}
+    </div>
   );
 }
 
@@ -30,30 +41,66 @@ export function CheckControl({
   checked,
   disabled = false,
   onChange,
+  children,
+  className,
 }: {
   label: string;
   checked: boolean;
   disabled?: boolean;
   onChange: (checked: boolean) => void;
+  children?: ReactNode;
+  className?: string;
 }) {
   return (
-    <label
-      className={cn(
-        "flex min-w-0 items-start gap-2 rounded-lg border border-border bg-[var(--pf-surface)] px-2.5 py-2 text-[11px] leading-4",
-        disabled && "cursor-not-allowed opacity-50"
-      )}
-    >
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-        className="mt-0.5 size-3.5 shrink-0 accent-[var(--pf-orange)]"
-      />
-      <span className="min-w-0 break-words [overflow-wrap:anywhere]">
-        {label}
-        {disabled ? " (disabled by creator settings)" : ""}
-      </span>
-    </label>
+    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
+      <label
+        className={cn(
+          "flex min-w-0 cursor-pointer items-start gap-2.5 text-[14px] leading-5 text-fg",
+          disabled && "cursor-not-allowed text-fg-disabled"
+        )}
+      >
+        <span className="relative mt-0.5 grid size-4 shrink-0 place-items-center">
+          <input
+            type="checkbox"
+            checked={checked}
+            disabled={disabled}
+            onChange={(event) => onChange(event.target.checked)}
+            className="peer size-4 cursor-[inherit] appearance-none rounded-[6px] bg-raised shadow-[inset_0_0_0_1.5px_var(--pf-outline)] transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf checked:bg-ember checked:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember disabled:opacity-50"
+          />
+          <Icon
+            name="check"
+            size={12}
+            strokeWidth={3}
+            className="pointer-events-none absolute text-[var(--pf-on-ember)] opacity-0 transition-opacity duration-[var(--pf-dur-feedback)] ease-pf peer-checked:opacity-100"
+          />
+        </span>
+        <span className="min-w-0 break-words [overflow-wrap:anywhere]">
+          {label}
+          {disabled ? " (disabled by creator settings)" : ""}
+        </span>
+      </label>
+      {children ? <div className="min-w-0 pl-[26px]">{children}</div> : null}
+    </div>
   );
+}
+
+export const publishLinkClass =
+  "inline-flex min-w-0 items-center gap-1 break-words text-[13px] font-semibold leading-[18px] text-fg underline decoration-1 underline-offset-4 [overflow-wrap:anywhere]";
+
+const FOCUSABLE =
+  'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
+
+export function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
+  if (event.key !== "Tab") return;
+  const items = [...event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE)];
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
