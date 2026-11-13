@@ -195,10 +195,10 @@ assert.match(markup, /href="\/gallery"[^>]*>View all/);
 assert.match(markup, /href="\/ugc-clone\/job-processing"/);
 assert.match(markup, /href="\/ugc-clone\/job-completed"/);
 
-// Review queue shows outputs only (one row per output) and caps at four rows
+// Review queue shows outputs only (one row per output) and caps at two rows
 assert.match(markup, /src="\/api\/files\/output-1"|aria-label="Output preview"/);
-assert.match(markup, /href="\/ugc-clone\/job-completed-4"/);
-assert.doesNotMatch(markup, /job-completed-5/);
+assert.match(markup, /href="\/ugc-clone\/job-completed-2"/);
+assert.doesNotMatch(markup, /job-completed-3/);
 
 // Inline review controls are real buttons wired to outputs
 assert.match(markup, /aria-label="Approve output"/);
@@ -207,9 +207,10 @@ assert.match(markup, /aria-label="Reject output"/);
 // Review rows carry identity and age, no status chip
 assert.match(markup, /Avery Chen - just now|kling-3.0-motion - just now|Kling[^<]* - just now/);
 
-// In progress: running job shows its stage in ember with a stage bar
+// In progress: running job shows its stage in ember with one continuous stage bar
 assert.match(markup, /Generating|Processing|Preparing/);
-assert.match(markup, /role="img" aria-label="[^"]*stage \d of 3"/);
+assert.match(markup, /role="progressbar" aria-label="[^"]*stage \d of 3"/);
+assert.match(markup, /data-running="true"><span class="wb-meter-fill" style="transform:scaleX\(0\.\d+\)"/, "one continuous bar filled to stage over total");
 
 // Recent media status words are round icon badges that map real review states
 assert.match(markup, /class="wb-status-badge[^"]*" data-tone="ok"/);

@@ -55,7 +55,8 @@ export function HomeCockpit({ dashboard }: { dashboard: HomeDashboard }) {
   );
 }
 
-const REVIEW_ROWS = 4;
+/** The artboard shows two rows; "Review all" carries the rest and Recent media stays in the first fold. */
+const REVIEW_ROWS = 2;
 
 /** Review queue and In progress share a row from 1280; below that they stack. */
 export const WORK_ROW_CLASS = "flex min-w-0 flex-col gap-3 min-[1280px]:flex-row";
