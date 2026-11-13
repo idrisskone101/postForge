@@ -16,6 +16,7 @@ import {
 import { JobDetailHeader } from "../job-header";
 import { JobDetailsPanel, JobPromptPanel, JobQuickEdits, JobRefinePanel } from "../job-inspector";
 import { JobActionDock } from "../job-inspector-footer";
+import { cn } from "@/lib/utils";
 import { JobStage, JobVariationStrip, SCROLL_FOCUS_RING } from "../job-preview-body";
 import { useJobDetail } from "../use-job-detail";
 
@@ -129,7 +130,11 @@ export default function JobDetailPage() {
 
         <aside
           aria-label="Inspector"
-          className={`flex min-w-0 flex-col gap-3 rounded-xl max-xl:order-1 md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:items-start xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1 ${SCROLL_FOCUS_RING}`}
+          className={cn(
+            "flex min-w-0 flex-col gap-3 rounded-xl max-xl:order-1 xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1",
+            showEnhance && INSPECTOR_TWO_COLUMNS,
+            SCROLL_FOCUS_RING,
+          )}
         >
           {showEnhance && <JobQuickEdits view={view} actions={actions} />}
           {showEnhance && <JobRefinePanel view={view} actions={actions} />}
@@ -178,3 +183,15 @@ function JobDetailLoading() {
     </div>
   );
 }
+
+/*
+ * From 768 to 1279 the inspector is two columns: the edit panels and Details stack on the left and the
+ * prompt takes the right, so neither column leaves a long empty band under a short panel. A short
+ * prompt panel stretches to the left column's height, as it does from 1280, and the last row takes any
+ * height a long prompt adds.
+ */
+const INSPECTOR_TWO_COLUMNS = [
+  "md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:grid-rows-[auto_auto_1fr] md:max-xl:items-start",
+  "md:max-xl:[&>*]:col-start-1 md:max-xl:[&>*:last-child]:col-start-2",
+  "md:max-xl:[&>*:last-child]:row-span-3 md:max-xl:[&>*:last-child]:row-start-1 md:max-xl:[&>*:last-child]:self-stretch",
+].join(" ");
