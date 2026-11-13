@@ -1,4 +1,4 @@
-import { Button, EmptyState, Panel, StatusChip } from "@/components/workbench";
+import { EmptyState, Panel, StatusChip } from "@/components/workbench";
 import { SettingsRow } from "./settings-row";
 
 export function DeveloperSettingsPanel() {
@@ -12,15 +12,12 @@ export function DeveloperSettingsPanel() {
       <EmptyState
         icon="link"
         title="No webhook endpoints are registered"
-        detail="No events are being delivered. PostForge will not claim a webhook is active until a server-owned signing and retry pipeline is configured."
-      >
-        <Button disabled>Webhook delivery not configured</Button>
-      </EmptyState>
+        detail="No events are being delivered."
+      />
       <div className="flex flex-col">
+        <h3 className="wb-label pb-2">Required before delivery</h3>
         {REQUIREMENTS.map(([title, detail]) => (
-          <SettingsRow key={title} label={title} detail={detail}>
-            <span className="text-sm font-medium leading-[18px] text-fg-muted">Not available</span>
-          </SettingsRow>
+          <SettingsRow key={title} label={title} detail={detail} />
         ))}
       </div>
     </Panel>
