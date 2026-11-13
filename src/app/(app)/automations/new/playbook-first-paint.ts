@@ -57,6 +57,10 @@ export function handOffPlaybookFirstPaint() {
 
   root.hidden = true;
   root.style.display = "none";
+  // The hidden server copy must not stay in the tree as a second modal dialog.
+  for (const copy of root.querySelectorAll("[data-automation-overlay]")) {
+    for (const name of ["role", "aria-modal", "aria-labelledby"]) copy.removeAttribute(name);
+  }
   if (!live) return;
 
   const keyed = (key: string) =>

@@ -65,7 +65,8 @@ export function PlaybookOverlayShell({
     >
       <div
         data-automation-dialog="true"
-        className="flex h-full max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden bg-panel shadow-float max-sm:max-h-full sm:rounded-xl"
+        tabIndex={firstPaint ? undefined : -1}
+        className="flex h-full outline-none max-h-[860px] w-full max-w-[1180px] flex-col overflow-hidden bg-panel shadow-float max-sm:max-h-full sm:rounded-xl"
       >
         <header
           data-playbook-chrome="true"
