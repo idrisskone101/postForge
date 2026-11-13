@@ -28,8 +28,8 @@ export function CloneQueueSkeleton() {
   );
 }
 
-// The form always opens on the source step, whose panel holds the step rail, the URL row and the fixed
-// 512px source grid. These are its measured heights; the URL row stacks below 640 and the action bar
-// below 768.
-const SOURCE_STEP_PANEL_HEIGHT = "h-[803px] max-sm:h-[835px]";
+// The form always opens on the source step, whose panel holds the step rail, the URL row and the saved
+// sources. These are its measured heights: from 640 the fixed 512px source grid is open, below 640 the
+// saved sources open collapsed and the URL row stacks. The action bar stacks below 768.
+const SOURCE_STEP_PANEL_HEIGHT = "h-[803px] max-sm:h-[313px]";
 const ACTION_BAR_HEIGHT = "h-[140px] max-md:h-[296px]";

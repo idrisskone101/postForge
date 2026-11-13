@@ -47,7 +47,7 @@ export function TikTokInput({
   const [isLoadingSources, setIsLoadingSources] = useState(true);
   const [isLoadingMoreSources, setIsLoadingMoreSources] = useState(false);
   const [sourcesError, setSourcesError] = useState<string | null>(null);
-  const [showSavedSources, setShowSavedSources] = useState(true);
+  const [showSavedSources, setShowSavedSources] = useState(savedSourcesOpenByDefault);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
   const autoImportedUrlRef = useRef<string | null>(null);
@@ -282,11 +282,13 @@ export function TikTokInput({
       {isLoadingSources ? (
         <div aria-hidden="true" className="flex min-w-0 flex-col gap-2.5">
           <Skeleton className="h-5 w-32" />
-          <div className="grid h-[512px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] content-start gap-x-3 gap-y-4 overflow-hidden">
-            {SOURCE_SKELETON_TILES.map((index) => (
-              <Skeleton key={index} shape="tile" className="aspect-[9/16]" />
-            ))}
-          </div>
+          {showSavedSources && (
+            <div className="grid h-[512px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] content-start gap-x-3 gap-y-4 overflow-hidden">
+              {SOURCE_SKELETON_TILES.map((index) => (
+                <Skeleton key={index} shape="tile" className="aspect-[9/16]" />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <TikTokSavedSources
@@ -304,6 +306,15 @@ export function TikTokInput({
       )}
     </div>
   );
+}
+
+// Below 640px the grid would put two 172px thumbnails in the first viewport, and the mobile Lighthouse
+// gate times the page by its largest first-viewport element. Any thumbnail there measured 2.6s or more,
+// so phones open with the list collapsed behind its toggle and wider screens open it.
+const SAVED_SOURCES_OPEN_QUERY = "(min-width: 640px)";
+
+function savedSourcesOpenByDefault() {
+  return typeof window === "undefined" || window.matchMedia(SAVED_SOURCES_OPEN_QUERY).matches;
 }
 
 // The loaded grid takes 512px of layout (520px less its 4px outset), so the placeholder holds the same block and the
