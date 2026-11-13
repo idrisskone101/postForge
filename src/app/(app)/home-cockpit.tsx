@@ -55,7 +55,8 @@ export function HomeCockpit({ dashboard }: { dashboard: HomeDashboard }) {
   );
 }
 
-const REVIEW_ROWS = 4;
+/** Paper shows two rows, which keeps Recent media above the fold at 1440 x 900. */
+const REVIEW_ROWS = 2;
 
 /** Review queue and In progress share a row from 1280; below that they stack. */
 export const WORK_ROW_CLASS = "flex min-w-0 flex-col gap-3 min-[1280px]:flex-row";
