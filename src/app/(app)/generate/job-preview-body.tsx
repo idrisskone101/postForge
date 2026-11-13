@@ -221,7 +221,7 @@ export function JobVariationStrip({
           {position} / {job.outputs.length}
         </span>
       </div>
-      <div className="-m-1 flex gap-3 overflow-x-auto p-1">
+      <div className="wb-scroll-fade -m-1 flex gap-3 overflow-x-auto p-1">
         {job.outputs.map((output, index) => {
           const selected = featured?.id === output.id;
           return (

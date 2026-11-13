@@ -50,7 +50,7 @@ export function InspirationCreatorRail({ workspace }: { workspace: InspirationWo
 
       <ul
         aria-label="Creators"
-        className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 max-lg:snap-x max-lg:overscroll-x-contain lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
+        className="wb-scroll-fade -mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 max-lg:snap-x max-lg:overscroll-x-contain lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:[mask-image:none]"
       >
         <li className="max-lg:w-[200px] max-lg:flex-none max-lg:snap-start">
           <button

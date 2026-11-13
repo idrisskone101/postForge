@@ -21,7 +21,7 @@ export function EditorSlideRail() {
       aria-label="Slides"
       className="wb-panel gap-2 p-0 lg:col-span-2 max-xl:flex-row max-xl:items-center xl:w-[148px] xl:shrink-0"
     >
-      <ol className="flex min-h-0 min-w-0 flex-1 gap-2 overflow-x-auto px-3.5 pb-1 pt-[18px] xl:flex-col xl:overflow-x-visible xl:overflow-y-auto xl:pb-1">
+      <ol className="wb-scroll-fade wb-scroll-fade-xl-y flex min-h-0 min-w-0 flex-1 gap-2 overflow-x-auto px-3.5 pb-1 pt-[18px] xl:flex-col xl:overflow-x-visible xl:overflow-y-auto xl:pb-1">
         {draft.slides.map((slide, index) => (
           <li key={slide.id} className="flex shrink-0 items-center gap-2 max-xl:flex-col-reverse max-xl:gap-1">
             <span

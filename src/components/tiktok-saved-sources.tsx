@@ -75,7 +75,7 @@ export function TikTokSavedSources({
         <div
           id="saved-source-grid"
           data-saved-source-grid="true"
-          className="-m-1 grid max-h-[520px] grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-x-3 gap-y-4 overflow-y-auto p-1"
+          className="wb-scroll-fade-y wb-scroll-fade-deep -m-1 grid max-h-[520px] grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-x-3 gap-y-4 overflow-y-auto p-1"
         >
           {savedSources.map((source, index) => {
             const isSelected = selectedSourceId === source.id;
