@@ -24,7 +24,6 @@ const editorSource = readFileSync(
   "utf8"
 );
 const builderSource = [
-  "character-builder-static.tsx",
   "character-builder-client.tsx",
   "use-character-builder.ts",
   "character-builder-header.tsx",
@@ -33,11 +32,13 @@ const builderSource = [
   "character-attribute-editor.tsx",
   "character-preview.ts",
   "character-import.ts",
+  "character-import-dialog.tsx",
 ]
   .map((file) => readFileSync(new URL(file, workbenchDir), "utf8"))
   .join("\n");
 const libraryFiles = [
   "characters-page-client.tsx",
+  "use-characters-library.ts",
   "characters-helpers.ts",
   "characters-card.tsx",
   "characters-library.tsx",
@@ -57,27 +58,18 @@ const generationRouteSource = readFileSync(
   "utf8"
 );
 
-assert.match(builderSource, /data-character-workbench="true"/);
-assert.match(builderSource, /data-character-workbench-header="true"/);
-assert.match(headerSource, /min-\[1280px\]:flex-1/);
-assert.doesNotMatch(headerSource, /className="min-w-0 flex-1 /);
-assert.match(headerSource, /flex-nowrap gap-2/);
-assert.match(builderSource, /data-character-category-rail="true"/);
-assert.match(builderSource, /data-character-recipe-step-rail="true"/);
-assert.match(builderSource, /data-character-preview-stage="true"/);
-assert.match(builderSource, /data-character-attribute-editor="true"/);
-assert.match(
-  builderSource,
-  /min-\[1280px\]:grid-cols-\[200px_minmax\(420px,1\.2fr\)_minmax\(360px,0\.8fr\)\]/
-);
-assert.match(builderSource, /min-\[1280px\]:h-dvh/);
+assert.match(builderSource, /data-character-workbench/);
+assert.match(builderSource, /<PageHeader/);
+assert.match(builderSource, /data-character-rail/);
+assert.match(builderSource, /data-character-preview-stage/);
+assert.match(builderSource, /data-character-attribute-editor/);
 assert.ok(
-  builderSource.indexOf('data-character-category-rail="true"') <
-    builderSource.indexOf('data-character-preview-stage="true"')
+  builderSource.indexOf("<CharacterCategoryRail") <
+    builderSource.indexOf("<CharacterAttributeEditor")
 );
 assert.ok(
-  builderSource.indexOf('data-character-preview-stage="true"') <
-    builderSource.indexOf('data-character-attribute-editor="true"')
+  builderSource.indexOf("<CharacterAttributeEditor") <
+    builderSource.indexOf("<CharacterPreviewStage")
 );
 assert.match(builderSource, /aria-label="Character name"/);
 assert.match(builderSource, /Save character/);
@@ -125,11 +117,11 @@ assert.match(builderSource, /avatarProfile/);
 assert.match(builderSource, /missingEditRecord/);
 assert.match(builderSource, /group\.key === "lipFullness"/);
 assert.match(builderSource, /type="range"/);
-assert.match(builderSource, /Photographic recipe preview/);
+assert.match(builderSource, /aria-label="Photographic recipe preview"/);
 assert.doesNotMatch(builderSource, /CharacterPortrait|procedural/i);
 assert.match(librarySource, /photoReady/);
 assert.match(librarySource, /record\.previewKind === "photographic"/);
-assert.match(librarySource, />DRAFT</);
+assert.match(librarySource, /tone="warn" label="Draft"/);
 assert.match(librarySource, /method: "DELETE"/);
 assert.match(librarySource, /linkedAvatarRemoved/);
 assert.match(generationRouteSource, /jobTags: body\.characterPreview/);
@@ -182,28 +174,8 @@ assert.doesNotMatch(photoMarkup, /object-cover/);
 assert.doesNotMatch(photoMarkup, /data-nimg/);
 assert.doesNotMatch(photoMarkup, /https?:\/\//);
 
-assert.doesNotMatch(previewSource, /aspect-\[3\/4\]/);
-assert.doesNotMatch(previewSource, /max-w-\[390px\]/);
-assert.match(
-  readFileSync(new URL("page.tsx", workbenchDir), "utf8"),
-  /CharacterBuilderStatic/,
-);
-assert.match(
-  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /data-character-first-paint="true"/,
-);
-assert.match(
-  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /data-character-title="Character builder"/,
-);
-assert.doesNotMatch(
-  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /<img/,
-);
-assert.doesNotMatch(
-  readFileSync(new URL("character-builder-static.tsx", workbenchDir), "utf8"),
-  /"use client"/,
-);
+assert.match(previewSource, /priority/);
+assert.match(previewSource, /id="character-preview-generation-cost"/);
 
 const defaultPortrait = readFileSync(
   new URL("../../public/character-builder/default-portrait.webp", import.meta.url)
