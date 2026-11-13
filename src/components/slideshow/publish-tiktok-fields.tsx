@@ -77,6 +77,7 @@ export function PublishTikTokFields({
               checked={scheduleEnabled}
               onCheckedChange={onScheduleEnabledChange}
               label="Schedule publishing"
+              size={26}
             />
           </div>
         </div>
@@ -89,7 +90,7 @@ export function PublishTikTokFields({
             className="flex min-h-11 cursor-pointer items-center justify-between gap-4 border-b border-hairline text-[14px] leading-5 font-medium text-fg last:border-b-0"
           >
             {text}
-            <Toggle checked={checked} onCheckedChange={onChange} label={ariaLabel} />
+            <Toggle checked={checked} onCheckedChange={onChange} label={ariaLabel} size={26} />
           </label>
         ))}
       </div>

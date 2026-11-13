@@ -118,7 +118,7 @@ export function CreateIdeaForm() {
             onChange={(event) =>
               setForm((current) => ({ ...current, language: event.target.value }))
             }
-            className="wb-input w-auto min-w-full max-w-full font-medium"
+            className="wb-input w-full font-medium"
           >
             {LANGUAGES.map((option) => (
               <option key={option}>{option}</option>
@@ -137,7 +137,7 @@ export function CreateIdeaForm() {
                 ? STORY_MODELS.find((m) => m.id === form.model)?.description
                 : "Uses the intelligence model chosen in Settings"
             }
-            className="wb-input w-auto min-w-full max-w-full font-medium"
+            className="wb-input w-full font-medium"
           >
             <option value="">
               {workspaceModelName
@@ -187,11 +187,11 @@ export function CreateIdeaForm() {
   );
 }
 
-// A select is as wide as its longest option, so each field takes that width and the row wraps when the
-// three no longer fit. A fixed share clipped "Workspace default" at 1280 and 390.
-const SELECT_FIELD = "max-w-full min-w-[140px] flex-[1_0_auto]";
+// Equal shares like the drawing, but never narrower than the longest option: a fixed share clipped
+// "Workspace default" at 1280 and 390, so the row wraps instead.
+const SELECT_FIELD = "min-w-fit flex-[1_1_0%]";
 
 const LANGUAGES = ["English", "Spanish", "French", "German", "Portuguese", "Italian"];
 
 const STEP_BTN =
-  "wb-hit grid size-8 shrink-0 place-items-center rounded-full bg-strong text-strong-fg outline-none transition-[background-color,transform] duration-[160ms] ease-pf hover:bg-[var(--pf-strong-hover)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] active:scale-[0.96] disabled:opacity-50";
+  "wb-hit grid size-8 shrink-0 place-items-center rounded-[999px] bg-strong text-strong-fg outline-none transition-[background-color,transform] duration-[160ms] ease-pf hover:bg-[var(--pf-strong-hover)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] active:scale-[0.96] disabled:opacity-50";

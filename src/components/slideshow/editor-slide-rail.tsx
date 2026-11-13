@@ -53,7 +53,7 @@ export function EditorSlideRail() {
         ))}
       </ol>
       <div className="shrink-0 px-3.5 pb-3.5 max-xl:pb-0 max-xl:pl-0">
-        <Button block onClick={addSlide} disabled={atMax}>
+        <Button block onClick={addSlide} disabled={atMax} className="[&>svg]:size-3.5">
           <Icon name="plus" size={14} />
           Add slide
         </Button>

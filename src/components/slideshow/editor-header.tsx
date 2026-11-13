@@ -18,7 +18,7 @@ export function EditorHeader() {
   } = useSlideshowEditor();
   return (
     <>
-      <header className="wb-page-header" data-back="true">
+      <header className="wb-page-header pr-1" data-back="true">
         <div className="wb-page-header-lead">
           <IconButton
             icon="chevron-left"
@@ -42,7 +42,7 @@ export function EditorHeader() {
           />
         </div>
         <div className="wb-page-actions max-sm:w-full">
-          <span className="flex-1 sm:flex-none">
+          <span className="flex flex-1 sm:flex-none">
             <AutosaveStatus state={saveState} />
           </span>
           {viewMode !== "play" ? (
@@ -50,7 +50,7 @@ export function EditorHeader() {
               Images
             </Button>
           ) : null}
-          <Button variant="primary" size={40} onClick={() => void onPublish()}>
+          <Button variant="primary" size={40} onClick={() => void onPublish()} className="[&>svg]:size-4">
             <Icon name="upload" size={16} strokeWidth={2} />
             Publish / Export
           </Button>

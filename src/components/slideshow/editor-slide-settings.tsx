@@ -181,7 +181,7 @@ function ToggleRow({
   return (
     <div className="flex min-h-9 items-center justify-between gap-3">
       <span className="text-[14px] font-medium text-fg">{label}</span>
-      <Toggle checked={checked} onCheckedChange={onChange} label={label} />
+      <Toggle checked={checked} onCheckedChange={onChange} label={label} size={26} />
     </div>
   );
 }
