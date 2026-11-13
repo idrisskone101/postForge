@@ -47,7 +47,7 @@ assert.match(collectionsSource, /uploadedAssetIds/);
 assert.match(collectionsSource, /targetCollection/);
 assert.match(generationFormSource, /\[overflow-wrap:anywhere\]/);
 assert.match(generationDetailSource, /\[overflow-wrap:anywhere\]/);
-assert.match(generationDetailSource, /flex flex-wrap justify-center gap-2/);
+assert.match(generationDetailSource, /<EmptyState[\s\S]*?tone="error"[\s\S]*?Back to Generate/);
 
 assert.equal(clampPreviewZoom(31), 50);
 assert.equal(clampPreviewZoom(106), 110);

@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent } from "react";
-import { Film, ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { useState, type ChangeEvent } from "react";
+import { Film, ImageIcon, Loader2 } from "lucide-react";
+import { Button, Icon, Segmented } from "@/components/workbench";
+import { VideoFramePreview } from "@/components/video-frame-preview";
 import { cn } from "@/lib/utils";
 import type { SwapMode } from "@/lib/ai/types";
 
@@ -26,205 +28,213 @@ export type SwapInputSectionProps = {
   value: SwapInputValue;
   onChange: (value: SwapInputValue) => void;
   disabled?: boolean;
+  /** Kept for callers; the wells reflow on their container width instead. */
   compact?: boolean;
   requireReference?: boolean;
 };
+
+type SwapField = "video" | "reference";
+type UploadStatus =
+  | { kind: "idle" }
+  | { kind: "uploading"; field: SwapField }
+  | { kind: "error"; field: SwapField; message: string; file: File };
 
 export function SwapInputSection({
   value,
   onChange,
   disabled = false,
-  compact = false,
   requireReference = false,
 }: SwapInputSectionProps) {
-  const [uploading, setUploading] = useState<"video" | "reference" | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
-  const referenceInputRef = useRef<HTMLInputElement>(null);
+  const [status, setStatus] = useState<UploadStatus>({ kind: "idle" });
+  const [previews, setPreviews] = useState<Record<string, string>>({});
 
-  const handleFile = async (
-    field: "video" | "reference",
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setUploading(field);
-    setError(null);
+  const upload = async (field: SwapField, file: File) => {
+    setStatus({ kind: "uploading", field });
     try {
       const asset = await uploadAsset(field, file);
-      onChange(
-        field === "video"
-          ? { ...value, video: asset }
-          : { ...value, reference: asset }
-      );
+      const preview = URL.createObjectURL(file);
+      setPreviews((current) => ({ ...current, [asset.id]: preview }));
+      onChange(field === "video" ? { ...value, video: asset } : { ...value, reference: asset });
+      setStatus({ kind: "idle" });
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Upload failed.");
-    } finally {
-      setUploading(null);
-      if (field === "video" && videoInputRef.current) {
-        videoInputRef.current.value = "";
-      }
-      if (field === "reference" && referenceInputRef.current) {
-        referenceInputRef.current.value = "";
-      }
+      setStatus({
+        kind: "error",
+        field,
+        file,
+        message: cause instanceof Error ? cause.message : "Upload failed.",
+      });
     }
   };
 
-  const clear = (field: "video" | "reference") => {
-    onChange(
-      field === "video"
-        ? { ...value, video: null }
-        : { ...value, reference: null }
-    );
+  const handleFile = (field: SwapField, event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (file) void upload(field, file);
   };
 
-  const fileCard = (
-    label: string,
-    asset: SwapUploadedAsset | null,
-    field: "video" | "reference",
-    inputRef: React.RefObject<HTMLInputElement | null>,
-    uploadingState: "video" | "reference" | null
-  ) => {
-    const isUploading = uploading === uploadingState;
-    return (
-      <div className="min-w-0">
-        <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
-          {label}
-        </span>
-        {asset ? (
-          <div className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5">
-            {field === "video" ? (
-              <Film className="size-3.5 shrink-0 text-[var(--pf-link)]" />
-            ) : (
-              <ImageIcon className="size-3.5 shrink-0 text-[var(--pf-success)]" />
-            )}
-            <span className="min-w-0 flex-1">
-              <b className="block truncate text-[12px] font-semibold text-foreground">
-                {asset.filename}
-              </b>
-              <small className="mt-0.5 block text-[12px] text-muted-foreground">
-                {formatBytes(asset.fileSizeBytes)}
-                {asset.durationSec ? ` · ${Math.round(asset.durationSec)}s` : ""}
-                {asset.width ? ` · ${asset.width}×${asset.height}` : ""}
-              </small>
-            </span>
-            <button
-              type="button"
-              aria-label={`Clear ${label.toLowerCase()}`}
-              onClick={() => clear(field)}
-              disabled={disabled}
-              className="grid size-6 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-[var(--pf-active)] hover:text-[var(--pf-danger)] disabled:opacity-40"
-            >
-              <X className="size-3" />
-            </button>
-          </div>
-        ) : (
-          <label
-            className={cn(
-              "flex min-h-16 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-[12px] font-semibold text-muted-foreground transition-colors hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]",
-              disabled && "cursor-not-allowed opacity-50"
-            )}
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="size-3.5 animate-spin" /> Uploading…
-              </>
-            ) : (
-              <>
-                <Upload className="size-3.5" /> Choose {field === "video" ? "video" : "image"}
-              </>
-            )}
-            <input
-              ref={inputRef}
-              type="file"
-              accept={field === "video" ? "video/mp4,video/quicktime,video/webm,video/x-m4v" : "image/*"}
-              className="sr-only"
-              disabled={disabled || isUploading}
-              onChange={(event) => void handleFile(field, event)}
-            />
-          </label>
-        )}
-      </div>
-    );
+  const clear = (field: SwapField) => {
+    const asset = value[field];
+    const preview = asset ? previews[asset.id] : undefined;
+    if (preview) URL.revokeObjectURL(preview);
+    onChange(field === "video" ? { ...value, video: null } : { ...value, reference: null });
   };
+
+  const well = (field: SwapField, label: string) => (
+    <SwapWell
+      field={field}
+      label={label}
+      asset={value[field]}
+      state={{
+        disabled,
+        uploading: status.kind === "uploading" && status.field === field,
+        preview: value[field] ? previews[value[field].id] : undefined,
+        onFile: (event) => handleFile(field, event),
+        onRemove: () => clear(field),
+      }}
+    />
+  );
 
   return (
-    <div className={cn("space-y-3", compact && "space-y-2.5")}>
-      <div className={cn("grid gap-3", compact ? "sm:grid-cols-2" : "sm:grid-cols-2")}>
-        {fileCard(
-          "Source video",
-          value.video,
-          "video",
-          videoInputRef,
-          "video"
-        )}
-        {fileCard(
-          requireReference ? "Swap reference" : "Swap reference (optional)",
-          value.reference,
-          "reference",
-          referenceInputRef,
-          "reference"
-        )}
+    <div className="@container flex min-w-0 flex-col gap-3">
+      <div className="grid min-w-0 gap-3 @min-[560px]:grid-cols-2">
+        {well("video", "Source video")}
+        {well("reference", requireReference ? "Swap reference" : "Swap reference (optional)")}
       </div>
 
-      {requireReference && !value.reference && !value.video && (
-        <p className="text-[12px] leading-4 text-muted-foreground">
-          Upload a video and a reference image of the subject that should replace it.
-        </p>
-      )}
-
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="mr-1 text-[12px] font-semibold uppercase tracking-[0.09em] text-muted-foreground">
-          Swap mode
-        </span>
-        {SWAP_MODES.map((mode) => (
-          <button
-            key={mode.id}
-            type="button"
-            aria-pressed={value.swapMode === mode.id}
+      {status.kind === "error" ? (
+        <div role="alert" className="wb-notice" data-tone="bad">
+          <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+            <strong>Upload failed.</strong> {status.message}
+          </span>
+          <Button
+            variant="link"
+            size={32}
             disabled={disabled}
-            onClick={() => onChange({ ...value, swapMode: mode.id })}
-            className={cn(
-              "h-7 rounded-lg border px-2.5 text-[12px] font-medium transition-colors",
-              value.swapMode === mode.id
-                ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
-                : "border-border bg-white text-muted-foreground hover:border-[var(--pf-border-strong)]",
-              disabled && "opacity-50"
-            )}
+            onClick={() => void upload(status.field, status.file)}
           >
-            {mode.label}
-          </button>
-        ))}
-      </div>
+            Retry
+          </Button>
+        </div>
+      ) : null}
 
-      {error && (
-        <p
-          role="alert"
-          className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]"
+      <fieldset disabled={disabled} className="flex min-w-0 flex-col gap-1.5">
+        <span className="wb-label" aria-hidden="true">Swap mode</span>
+        <Segmented
+          label="Swap mode"
+          value={value.swapMode}
+          onChange={(swapMode) => onChange({ ...value, swapMode })}
+          options={SWAP_MODES}
+          className="self-start"
+        />
+      </fieldset>
+    </div>
+  );
+}
+
+const SWAP_MODES: Array<{ value: SwapMode; label: string }> = [
+  { value: "person", label: "Person" },
+  { value: "object", label: "Object" },
+  { value: "background", label: "Background" },
+];
+
+type SwapWellState = {
+  disabled: boolean;
+  uploading: boolean;
+  preview: string | undefined;
+  onFile: (event: ChangeEvent<HTMLInputElement>) => void;
+  onRemove: () => void;
+};
+
+function SwapWell({
+  field,
+  label,
+  asset,
+  state,
+}: {
+  field: SwapField;
+  label: string;
+  asset: SwapUploadedAsset | null;
+  state: SwapWellState;
+}) {
+  const kind = field === "video" ? "video" : "image";
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="wb-label">{label}</span>
+      {asset ? (
+        <div className="flex min-h-24 min-w-0 items-center gap-3 rounded-lg bg-raised p-3">
+          <span className="relative grid h-[72px] w-[54px] shrink-0 place-items-center overflow-hidden rounded-[10px] bg-media text-fg-muted [&>:is(img,video)]:absolute [&>:is(img,video)]:inset-0 [&>:is(img,video)]:size-full [&>:is(img,video)]:object-cover">
+            {field === "video" ? <Film className="size-4" /> : <ImageIcon className="size-4" />}
+            {state.preview && field === "video" ? (
+              <VideoFramePreview src={state.preview} label={asset.filename} />
+            ) : state.preview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={state.preview} alt={asset.filename} />
+            ) : null}
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            <b className="truncate text-[14px] font-semibold leading-[18px] text-fg">{asset.filename}</b>
+            <span className="wb-mono text-fg-secondary">{assetMeta(asset)}</span>
+          </span>
+          <Button
+            variant="outline"
+            size={32}
+            aria-label={`Remove ${label.toLowerCase()}`}
+            onClick={state.onRemove}
+            disabled={state.disabled}
+            className="shrink-0"
+          >
+            Remove
+          </Button>
+        </div>
+      ) : (
+        <label
+          className={cn(
+            "flex min-h-24 cursor-pointer items-center justify-center gap-2.5 rounded-lg border border-dashed border-edge bg-raised px-3 text-[14px] font-semibold leading-[18px] text-fg transition-colors duration-160 ease-pf hover:bg-raised-strong has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ember",
+            (state.disabled || state.uploading) && "cursor-not-allowed text-fg-muted hover:bg-raised"
+          )}
         >
-          {error}
-        </p>
+          <span className="grid size-8 shrink-0 place-items-center rounded-full bg-raised-strong text-fg-secondary">
+            {state.uploading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Icon name="upload" size={16} />
+            )}
+          </span>
+          {state.uploading ? "Uploading…" : `Choose ${kind}`}
+          <input
+            type="file"
+            accept={field === "video" ? "video/mp4,video/quicktime,video/webm,video/x-m4v" : "image/*"}
+            className="sr-only"
+            disabled={state.disabled || state.uploading}
+            onChange={state.onFile}
+          />
+        </label>
       )}
     </div>
   );
 }
 
+function assetMeta(asset: SwapUploadedAsset) {
+  return [
+    asset.durationSec ? formatDuration(asset.durationSec) : null,
+    formatBytes(asset.fileSizeBytes),
+    asset.width && asset.height ? `${asset.width}×${asset.height}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
 
-const SWAP_MODES: Array<{ id: SwapMode; label: string }> = [
-  { id: "person", label: "Person" },
-  { id: "object", label: "Object" },
-  { id: "background", label: "Background" },
-];
+function formatDuration(seconds: number) {
+  const total = Math.round(seconds);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+}
 
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-async function uploadAsset(
-  field: "video" | "reference",
-  file: File
-): Promise<SwapUploadedAsset> {
+async function uploadAsset(field: SwapField, file: File): Promise<SwapUploadedAsset> {
   const formData = new FormData();
   formData.append(field, file);
   const response = await fetch("/api/swap-assets", {
@@ -232,9 +242,7 @@ async function uploadAsset(
     body: formData,
   });
   if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as {
-      error?: string;
-    } | null;
+    const body = (await response.json().catch(() => null)) as { error?: string } | null;
     throw new Error(
       body?.error ?? (field === "video" ? "Video upload failed." : "Reference image upload failed.")
     );

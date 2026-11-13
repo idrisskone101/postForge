@@ -1,20 +1,8 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  Download,
-  GalleryHorizontal,
-  Loader2,
-  Share2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { JobStatusBadge } from "./job-status-badge";
-import {
-  getEditorTitle,
-  type JobDetailActions,
-  type JobDetailViewModel,
-} from "./job-enhancements";
+import { Button, Icon } from "@/components/workbench";
+import { JobIcon } from "./job-icons";
+import { getEditorTitle, type JobDetailActions, type JobDetailViewModel } from "./job-enhancements";
 
 export function JobDetailHeader({
   view,
@@ -23,81 +11,40 @@ export function JobDetailHeader({
   view: JobDetailViewModel;
   actions: JobDetailActions;
 }) {
-  const { job, featured, isCompleted, isDownloading, error } = view;
-  const { onBack, onShare, onGallery, onDownload } = actions;
+  const { job, error } = view;
   return (
-    <header className="border-b border-border bg-[var(--pf-canvas)] px-4 py-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
+    <>
+      <header className="wb-page-header flex-nowrap" data-back="true">
+        <div className="wb-page-header-lead">
           <button
             type="button"
-            aria-label="Back"
-            onClick={onBack}
-            className="pf-button-secondary grid size-9 shrink-0 place-items-center px-0"
+            onClick={actions.onBack}
+            className="wb-btn wb-btn-40 wb-back-pill flex-none pl-2.5"
           >
-            <ArrowLeft className="size-3.5" />
+            <Icon name="chevron-left" />
+            Back
           </button>
-          <div className="min-w-0">
-            <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-              <h1 className="max-w-2xl truncate text-[20px] font-semibold tracking-[-0.02em] text-foreground sm:text-[24px]">
-                {getEditorTitle(job.prompt)}
-              </h1>
-              <JobStatusBadge status={job.status} queueStage={job.queueStage} />
-            </div>
-            <p className="pf-data mt-1 truncate text-[12px] text-muted-foreground">
-              {job.model} · Job {job.id.slice(0, 8)}
-            </p>
-          </div>
+          <h1 className="wb-page-title pl-2" title={job.prompt}>
+            {getEditorTitle(job.prompt)}
+          </h1>
         </div>
-
-        <div className="flex min-w-0 w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onShare}
-            className="pf-button-secondary h-9 shrink-0 px-3 text-[12px]"
-          >
-            <Share2 className="size-3.5 shrink-0" /> Share
+        <div className="wb-page-actions flex-none">
+          <Button size={40} aria-label="Share" onClick={actions.onShare} className="max-sm:w-10 max-sm:px-0">
+            <JobIcon name="share" />
+            <span className="max-sm:hidden">Share</span>
           </Button>
-          {featured && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onGallery}
-              className="pf-button-secondary h-9 shrink-0 px-3 text-[12px]"
-            >
-              <GalleryHorizontal className="size-3.5 shrink-0" /> Gallery
-            </Button>
-          )}
-          {isCompleted && featured && (
-            <Button
-              type="button"
-              disabled={isDownloading}
-              onClick={onDownload}
-              className="pf-button-primary h-9 shrink-0 px-3.5 text-[12px]"
-            >
-              {isDownloading ? (
-                <Loader2 className="size-3.5 shrink-0 animate-spin" />
-              ) : (
-                <Download className="size-3.5 shrink-0" />
-              )}
-              Download
-            </Button>
-          )}
         </div>
-      </div>
+      </header>
 
-      {error && job && (
-        <div
-          role="alert"
-          className="mt-3 flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]"
-        >
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            Live status could not refresh: {error.message}. Showing the last known state.
+      {error && (
+        <div role="alert" className="wb-notice flex-none items-start" data-tone="bad">
+          <Icon name="alert" size={16} className="mt-px flex-none text-bad" />
+          <span className="min-w-0 [overflow-wrap:anywhere]">
+            <strong className="font-semibold text-bad">Live status could not refresh.</strong>{" "}
+            {error.message}. Showing the last known state.
           </span>
         </div>
       )}
-    </header>
+    </>
   );
 }

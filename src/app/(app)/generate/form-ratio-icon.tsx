@@ -1,15 +1,14 @@
 export function RatioIcon({ ratio }: { ratio: string }) {
   const [width, height] = ratio.split(":").map(Number);
-  const safeWidth = Number.isFinite(width) ? width : 1;
-  const safeHeight = Number.isFinite(height) ? height : 1;
-  const max = Math.max(safeWidth, safeHeight);
+  const safeWidth = Number.isFinite(width) && width > 0 ? width : 1;
+  const safeHeight = Number.isFinite(height) && height > 0 ? height : 1;
 
   return (
     <span
-      className="block rounded-[2px] border-[1.5px] border-current"
+      aria-hidden="true"
+      className="block h-[18px] shrink-0 rounded-[3px] border-[1.5px] border-current"
       style={{
-        width: `${Math.max(7, Math.round((safeWidth / max) * 13))}px`,
-        height: `${Math.max(7, Math.round((safeHeight / max) * 13))}px`,
+        width: `${Math.min(34, Math.max(8, Math.round((18 * safeWidth) / safeHeight)))}px`,
       }}
     />
   );

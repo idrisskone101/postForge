@@ -1,13 +1,4 @@
 /*
- * Transitional. Route interiors still keep their visible copy in an attribute
- * with the real text in an sr-only span. Each route rebuild renders real text
- * and deletes its lines here; the file goes away with the last one.
+ * Transitional copy rules. Every route now renders real text, so this file
+ * holds no rules. Route tests assert that it stays that way.
  */
-
-[data-generate-history]::before {
-  content: attr(data-generate-history);
-}
-
-[data-generate-notice]::before {
-  content: attr(data-generate-notice);
-}

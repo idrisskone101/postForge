@@ -3,12 +3,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const CAP = 400;
 const repoRoot = new URL("../../", import.meta.url);
-const MEDIA_STAGE = "#09090B";
-const MEDIA_STAGE_FILES = new Set([
-  "src/app/(app)/generate/[id]/page.tsx",
-  "src/components/generation-form.tsx",
-]);
-
 function lineCount(relativePath: string) {
   const text = readFileSync(new URL(relativePath, repoRoot), "utf8");
   if (text.length === 0) return 0;
@@ -50,18 +44,7 @@ for (const file of generateTsxFiles) {
   assert.doesNotMatch(source, /pf-masthead/, `${file} must not use pf-masthead`);
 
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-  if (MEDIA_STAGE_FILES.has(file)) {
-    assert.ok(
-      hexMatches.every((value) => value === MEDIA_STAGE),
-      `${file} may only use ${MEDIA_STAGE} for the media stage`
-    );
-  } else {
-    assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
-  }
-
-  if (file.endsWith("generate-paint-text.tsx")) {
-    continue;
-  }
+  assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
 
   assert.doesNotMatch(
     source,
@@ -70,35 +53,11 @@ for (const file of generateTsxFiles) {
   );
 }
 
-for (const file of MEDIA_STAGE_FILES) {
-  const source = readFileSync(new URL(file, repoRoot), "utf8");
-  const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-  assert.ok(
-    hexMatches.every((value) => value === MEDIA_STAGE),
-    `${file} may only use ${MEDIA_STAGE} for the media stage`
-  );
-  assert.match(source, /bg-\[#09090B\]/, `${file} must keep the media stage bed`);
-}
-
 assert.equal(
   existsSync(new URL("src/app/(app)/generate/generate-paint-text.tsx", repoRoot)),
-  true,
-  "generate-paint-text.tsx must exist"
+  false,
+  "the paint-text shim is gone: Generate renders real text"
 );
-
-const chromeSource = [
-  "src/app/(app)/generate/form-controls.tsx",
-  "src/app/(app)/generate/form-prompt-section.tsx",
-  "src/app/(app)/generate/form-format-section.tsx",
-  "src/app/(app)/generate/generate-header-accessory.tsx",
-  "src/app/(app)/generate/job-inspector.tsx",
-  "src/components/model-picker.tsx",
-]
-  .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
-  .join("\n");
-
-assert.match(chromeSource, /GeneratePaintText/);
-assert.match(chromeSource, /paintReady \? undefined/);
 
 const formChrome = [
   "form-controls.tsx",
@@ -113,9 +72,9 @@ const formChrome = [
   )
   .join("\n");
 
-assert.match(formChrome, /pf-card/);
-assert.match(formChrome, /pf-button-primary/);
-assert.match(formChrome, /pf-section-title/);
+assert.match(formChrome, /@\/components\/workbench/);
+assert.match(formChrome, /wb-btn-primary/);
+assert.doesNotMatch(formChrome, /pf-card|pf-button-|pf-section-title/);
 
 assert.equal(
   existsSync(new URL("src/app/(app)/generate/form-types.ts", repoRoot)),

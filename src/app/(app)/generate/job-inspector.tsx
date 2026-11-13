@@ -1,280 +1,237 @@
 "use client";
 
-import { Loader2, Redo2, WandSparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  getGenerationStatusCopy,
-  type JobDetail,
-  type JobOutput,
-} from "@/lib/generation-editor";
-import { cn } from "@/lib/utils";
+import type { CSSProperties } from "react";
+import { Button, Icon, Toggle } from "@/components/workbench";
+import { getModel } from "@/lib/ai/models";
+import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { JobIcon } from "./job-icons";
 import {
   ENHANCEMENT_TOOLS,
   asString,
-  type InspectorTab,
   type JobDetailActions,
   type JobDetailViewModel,
 } from "./job-enhancements";
 
-export function JobInspectorTabs({
-  activeTab,
-  onTabChange,
-}: {
-  activeTab: InspectorTab;
-  onTabChange: (tab: InspectorTab) => void;
-}) {
-  return (
-    <div className="border-b border-border p-3">
-      <div
-        role="tablist"
-        aria-label="Generation editor panels"
-        className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--pf-active)] p-1"
-      >
-        {(["enhance", "details", "prompts"] as const).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab}
-            onClick={() => onTabChange(tab)}
-            className={cn(
-              "flex h-9 items-center justify-center rounded-lg text-[12px] font-semibold capitalize transition-colors",
-              activeTab === tab
-                ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function JobEnhancePanel({
+export function JobQuickEdits({
   view,
   actions,
 }: {
   view: JobDetailViewModel;
   actions: JobDetailActions;
 }) {
-  const {
-    job,
-    featured,
-    selectedEnhancement,
-    enhancementInstruction,
-    editStrength,
-    preserveSubject,
-    isCompleted,
-    isApplying,
-  } = view;
-  const {
-    onSelectTool,
-    onInstructionChange,
-    onEditStrengthChange,
-    onPreserveSubjectChange,
-    onApply,
-  } = actions;
-  const selectedTool =
-    ENHANCEMENT_TOOLS.find((tool) => tool.id === selectedEnhancement) ??
-    ENHANCEMENT_TOOLS[0];
-
   return (
-    <div className="space-y-4 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Quick actions
-          </p>
-          <h2 className="mt-1 pf-section-title">
-            Refine this output
-          </h2>
-        </div>
-        <span className="rounded-full bg-[var(--pf-link)]/10 px-2 py-1 text-[13px] font-semibold text-[var(--pf-link)]">
-          AI
-        </span>
-      </div>
-
+    <section aria-label="Quick edits" className="wb-panel flex-none gap-2.5 py-[18px]">
       <div className="grid grid-cols-2 gap-2">
-        {ENHANCEMENT_TOOLS.map((tool) => {
-          const Icon = tool.icon;
-          const active = selectedEnhancement === tool.id;
-          return (
-            <button
-              key={tool.id}
-              type="button"
-              aria-pressed={active}
-              onClick={() => onSelectTool(tool.id)}
-              className={cn(
-                "min-w-0 rounded-lg border p-2.5 text-left transition-colors",
-                active
-                  ? "border-[var(--pf-orange)] bg-[var(--pf-surface)] ring-1 ring-[var(--pf-orange)]/25"
-                  : "border-border bg-[var(--pf-surface)] hover:bg-[var(--pf-active)]"
-              )}
-            >
-              <span className="flex items-start gap-2">
-                <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-                  <Icon className="size-3.5" />
-                </span>
-                <span className="min-w-0">
-                  <strong className="block truncate text-[12px] font-semibold text-foreground">
-                    {tool.title}
-                  </strong>
-                  <small className="mt-1 block text-[12px] leading-3.5 text-muted-foreground">
-                    {tool.detail}
-                  </small>
-                </span>
-              </span>
-            </button>
-          );
-        })}
+        {ENHANCEMENT_TOOLS.map((tool) => (
+          <button
+            key={tool.id}
+            type="button"
+            aria-pressed={view.selectedEnhancement === tool.id}
+            onClick={() => actions.onSelectTool(tool.id)}
+            className="flex h-[38px] min-w-0 items-center gap-2 rounded-lg bg-raised px-3 text-left text-[13px] font-semibold leading-4 text-fg transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong aria-pressed:bg-ember-wash aria-pressed:text-ember-text aria-pressed:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+          >
+            <JobIcon name={tool.icon} size={16} className="flex-none" />
+            <span className="truncate">{tool.title}</span>
+          </button>
+        ))}
       </div>
+      <label htmlFor="enhancement-instruction" className="wb-label">
+        Instruction
+      </label>
+      <textarea
+        id="enhancement-instruction"
+        rows={2}
+        value={view.enhancementInstruction}
+        onChange={(event) => actions.onInstructionChange(event.target.value)}
+        className="wb-input h-auto min-h-14 resize-none py-2.5 text-[13px] leading-[18px]"
+      />
+    </section>
+  );
+}
 
-      <div className="border-t border-border pt-4">
-        <label
-          htmlFor="enhancement-instruction"
-          className="mb-1.5 block text-[12px] font-semibold text-muted-foreground"
-        >
-          Instruction · {selectedTool.title}
-        </label>
-        <Textarea
-          id="enhancement-instruction"
-          value={enhancementInstruction}
-          onChange={(event) => onInstructionChange(event.target.value)}
-          className="min-h-[104px] resize-none rounded-lg border-border bg-card text-[12px] leading-4 shadow-none"
-        />
-      </div>
-
-      <label className="block">
-        <span className="mb-2 flex items-center justify-between text-[12px] font-semibold text-muted-foreground">
-          Edit strength <strong className="text-foreground">{editStrength}%</strong>
-        </span>
+export function JobRefinePanel({
+  view,
+  actions,
+}: {
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
+}) {
+  const { featured, isCompleted, isApplying, enhancementInstruction, editStrength, preserveSubject } = view;
+  return (
+    <section aria-labelledby="job-refine-title" className="wb-panel flex-none gap-3 py-[18px]">
+      <h2 id="job-refine-title" className="wb-panel-title">
+        Refine
+      </h2>
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
+          <label htmlFor="edit-strength" className="wb-label">
+            Edit strength
+          </label>
+          <span className="wb-mono text-fg">{editStrength}%</span>
+        </div>
         <input
+          id="edit-strength"
           type="range"
           min={0}
           max={100}
           step={1}
           value={editStrength}
-          onChange={(event) => onEditStrengthChange(Number(event.target.value))}
-          className="h-1.5 w-full cursor-pointer accent-[var(--pf-orange)]"
+          onChange={(event) => actions.onEditStrengthChange(Number(event.target.value))}
+          style={{ "--fill": `${editStrength}%` } as CSSProperties}
+          className={RANGE_CLASS}
         />
-      </label>
-
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-[var(--pf-active)] px-3 py-2.5">
-        <span>
-          <strong className="block text-[12px] font-semibold text-foreground">
-            Preserve subject
-          </strong>
-          <small className="mt-0.5 block text-[12px] text-muted-foreground">
-            Lock identity and camera geometry
-          </small>
+      </div>
+      <div className="flex items-center gap-3">
+        <span id="preserve-subject-label" className="flex-1 text-[14px] font-semibold leading-5 text-fg">
+          Preserve subject
         </span>
-        <Switch
-          aria-label="Preserve subject"
+        <Toggle
+          aria-labelledby="preserve-subject-label"
           checked={preserveSubject}
-          onCheckedChange={onPreserveSubjectChange}
+          onCheckedChange={actions.onPreserveSubjectChange}
         />
       </div>
-
       <Button
-        type="button"
+        variant="strong"
+        size={40}
+        block
         disabled={!featured || !isCompleted || isApplying || !enhancementInstruction.trim()}
-        onClick={onApply}
-        className="pf-button-primary h-11 w-full text-[12px]"
+        onClick={actions.onApply}
+        className="flex-none"
       >
-        {isApplying ? (
-          <Loader2 className="size-3.5 animate-spin" />
-        ) : job.type === "video" ? (
-          <Redo2 className="size-3.5" />
-        ) : (
-          <WandSparkles className="size-3.5" />
-        )}
-        {isApplying
-          ? "Starting enhancement…"
-          : job.type === "video"
-            ? job.tags.includes("video-swap")
-              ? "Remix video in Generate"
-              : "Continue this video"
-            : "Apply enhancement"}
-        {isCompleted && job.type === "image" && (
-          <span className="ml-auto opacity-75">{formatCost(job.estimatedCost)}</span>
-        )}
+        {isApplying ? "Starting enhancement…" : "Apply"}
       </Button>
-    </div>
+    </section>
   );
 }
 
-export function JobDetailsPanel({
-  job,
-  featured,
-}: {
-  job: JobDetail;
-  featured: JobOutput | undefined;
-}) {
-  const statusCopy = getGenerationStatusCopy(job.status, job.queueStage);
+export function JobDetailsPanel({ job, featured }: { job: JobDetail; featured: JobOutput | undefined }) {
   const input = job.input ?? {};
-
+  const left = [
+    { label: "Model", value: getModel(job.model)?.name ?? job.model, mono: false },
+    { label: "Created", value: formatRelativeDate(job.createdAt), mono: true },
+    { label: "Cost", value: formatCost(job.actualCost ?? job.estimatedCost), mono: true },
+  ];
+  const right = [
+    { label: "Size", value: formatBytes(featured?.fileSizeBytes ?? null), mono: true },
+    { label: "Aspect", value: asString(input.aspectRatio) ?? "-", mono: true },
+    {
+      label: "Time",
+      value: job.durationMs !== null ? `${(job.durationMs / 1000).toFixed(1)}s` : "-",
+      mono: true,
+    },
+  ];
   return (
-    <div className="p-4">
-      <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        Output details
-      </p>
-      <h2 className="mt-1 pf-section-title">
-        Generation record
+    <section aria-labelledby="job-details-title" className="wb-panel flex-none gap-2.5 py-[18px]">
+      <h2 id="job-details-title" className="wb-panel-title">
+        Details
       </h2>
-      <dl className="mt-4 divide-y divide-border rounded-lg border border-border px-3">
-        {[
-          ["Status", statusCopy.label],
-          ["Type", job.type],
-          ["Model", job.model],
-          ["Created", formatRelativeDate(job.createdAt)],
-          [
-            "Size",
-            featured?.width && featured?.height
-              ? `${featured.width} × ${featured.height} px`
-              : "Not available",
-          ],
-          ["Aspect", asString(input.aspectRatio) ?? "Not available"],
-          [
-            "Generation time",
-            job.durationMs !== null
-              ? `${(job.durationMs / 1000).toFixed(1)}s`
-              : "Not available",
-          ],
-          ["Cost", formatCost(job.actualCost ?? job.estimatedCost)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="grid grid-cols-[110px_minmax(0,1fr)] gap-3 py-2.5 text-[12px]"
-          >
-            <dt className="text-muted-foreground">{label}</dt>
-            <dd className="truncate text-right font-semibold capitalize text-foreground">
-              {label === "Cost" || label === "Created" ? (
-                <span className="pf-data">{value}</span>
-              ) : (
-                value
-              )}
-            </dd>
-          </div>
-        ))}
+      <dl className="m-0 flex gap-5">
+        <DetailColumn rows={left} className="min-w-0 flex-1" />
+        <DetailColumn rows={right} className="w-[128px] flex-none" />
       </dl>
-      <div className="mt-3 rounded-lg bg-[var(--pf-canvas)] p-3">
-        <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Source
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-[13px] leading-[18px] text-fg-muted">Job</span>
+        <span className="wb-mono min-w-0 text-right leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+          {job.id}
         </span>
-        <strong className="mt-1 block text-[12px] font-semibold text-foreground">
-          Generate Studio
-        </strong>
-        <small className="pf-data mt-1 block min-w-0 break-words text-[12px] text-muted-foreground [overflow-wrap:anywhere]">
-          Job {job.id}
-        </small>
       </div>
+    </section>
+  );
+}
+
+function DetailColumn({
+  rows,
+  className,
+}: {
+  rows: { label: string; value: string; mono: boolean }[];
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-1.5 ${className ?? ""}`}>
+      {rows.map((row) => (
+        <div key={row.label} className="flex min-w-0 justify-between gap-3">
+          <dt className="flex-none text-[13px] leading-[18px] text-fg-muted">{row.label}</dt>
+          <dd
+            className={
+              row.mono
+                ? "m-0 truncate font-mono text-[12px] leading-[18px] text-fg"
+                : "m-0 truncate text-[13px] font-semibold leading-[18px] text-fg"
+            }
+            title={row.value}
+          >
+            {row.value}
+          </dd>
+        </div>
+      ))}
     </div>
   );
 }
 
+export function JobPromptPanel({
+  view,
+  actions,
+}: {
+  view: JobDetailViewModel;
+  actions: JobDetailActions;
+}) {
+  const { job } = view;
+  const negativePrompt = asString(job.input?.negativePrompt);
+  const canContinueVideo = job.type === "video" && !job.tags.includes("video-swap");
+  return (
+    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[190px] gap-3 py-[18px] xl:flex-1">
+      <div className="flex h-7 flex-none items-center gap-2.5">
+        <h2 id="job-prompt-title" className="wb-panel-title flex-1">
+          Prompt
+        </h2>
+        <button
+          type="button"
+          onClick={actions.onCopyPrompt}
+          className="wb-btn h-7 gap-1.5 pl-2.5 pr-3 text-[12px] leading-4"
+        >
+          <JobIcon name="copy" size={14} />
+          Copy
+        </button>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto max-xl:max-h-[320px]">
+        <p className="m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">{job.prompt}</p>
+        <div className="flex flex-col gap-[3px]">
+          <span className="wb-label">Negative</span>
+          <p className="m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">{negativePrompt ?? "-"}</p>
+        </div>
+      </div>
+      <div className="flex flex-none gap-2">
+        {canContinueVideo && (
+          <Button size={40} block onClick={actions.onContinueVideo}>
+            Continue video
+          </Button>
+        )}
+        <Button size={40} block onClick={actions.onGenerateSimilar}>
+          Remix in Generate
+          <Icon name="chevron-right" size={16} />
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function formatBytes(bytes: number | null) {
+  if (bytes === null) return "-";
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+const RANGE_CLASS = [
+  "h-[18px] w-full cursor-pointer appearance-none rounded-full bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember",
+  "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full",
+  "[&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
+  "[&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:size-[18px] [&::-webkit-slider-thumb]:appearance-none",
+  "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--pf-thumb)]",
+  "[&::-webkit-slider-thumb]:shadow-[0_0_0_2px_var(--pf-ember)]",
+  "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full",
+  "[&::-moz-range-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
+  "[&::-moz-range-thumb]:size-[18px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0",
+  "[&::-moz-range-thumb]:bg-[var(--pf-thumb)] [&::-moz-range-thumb]:shadow-[0_0_0_2px_var(--pf-ember)]",
+].join(" ");

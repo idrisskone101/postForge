@@ -1,11 +1,10 @@
 "use client";
 
-import { Sparkles, ImageIcon, Video } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { WorkspaceState } from "@/components/workspace-state";
+import { EmptyState, buttonClass } from "@/components/workbench";
 import { userErrorMessage } from "@/lib/user-error-message";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { cn } from "@/lib/utils";
+import { GENERATE_LAYOUT } from "@/app/(app)/generate/form-constants";
 import { GenerateFormControls } from "@/app/(app)/generate/form-controls";
 import { GenerateIdentitySection } from "@/app/(app)/generate/form-identity-section";
 import { buildGenerateFormView } from "@/app/(app)/generate/form-session";
@@ -165,15 +164,19 @@ export function GenerationForm({ models, initialQuery = "" }: GenerationFormProp
 
 export function GenerateEmptyState() {
   return (
-    <WorkspaceState
-      tone="empty"
-      icon={Sparkles}
+    <EmptyState
+      icon="generate"
       title="No generation models available"
-      description="Model configuration could not be loaded. Use Clone or return Home while the Generate engines are unavailable."
-      action={{ href: "/ugc-clone", label: "Open Clone" }}
-      secondaryAction={{ href: "/", label: "Return Home" }}
+      detail="Model configuration could not be loaded."
       className="min-h-96"
-    />
+    >
+      <Link href="/ugc-clone" className={buttonClass("strong")}>
+        Open Clone
+      </Link>
+      <Link href="/" className={buttonClass("quiet")}>
+        Return Home
+      </Link>
+    </EmptyState>
   );
 }
 
@@ -185,67 +188,21 @@ export function GenerateFormView({
   actions: GenerateFormActions;
 }) {
   const view = getGenerateFormViewModel(form);
-  const { prompt, aspectRatio, numImages } = form;
-  const paintReady = useWindowLoadReady();
 
   return (
     <form
-      data-generate-form={paintReady ? undefined : "true"}
       onSubmit={(event) => {
         event.preventDefault();
         actions.onSubmit();
       }}
-      className="grid items-start gap-4 pb-20 md:pb-0 xl:grid-cols-[minmax(360px,0.72fr)_minmax(500px,1.28fr)]"
+      className={`wb-fade-in ${GENERATE_LAYOUT.root}`}
     >
-      <span className="sr-only">
-        Creative Prompt Model Selection Current Config {view.isImage ? `${numImages} img` : ""}
-      </span>
-
       <GenerateFormControls form={form} actions={actions} view={view} />
-
-      <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)] shadow-[var(--pf-shadow-sm)] xl:sticky xl:top-4">
-        <div className="flex h-12 items-center justify-between border-b border-border px-4">
-          <span className="pf-section-title">Preview</span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold text-muted-foreground">
-            {view.isVideo ? <Video className="size-3" /> : <ImageIcon className="size-3" />}
-            {view.ratioLabel}
-          </span>
-        </div>
-
-        <div className="grid min-h-[470px] place-items-center bg-[#09090B] p-5 sm:min-h-[560px] sm:p-8 xl:min-h-[590px]">
-          <div
-            aria-label={`${aspectRatio} output preview`}
-            className={cn(
-              "relative grid max-h-[520px] min-h-[220px] place-items-center overflow-hidden rounded-lg border border-white/10",
-              view.previewWidthClass
-            )}
-            style={{ aspectRatio: aspectRatio.replace(":", " / ") }}
-          >
-            <div className="relative mx-6 min-w-0 max-w-full text-center">
-              <Sparkles className="mx-auto size-5 text-[var(--pf-orange)]" />
-              <strong className="mt-3 block text-[13px] font-semibold text-white">
-                {view.model ? "Ready to generate" : "Choose a model"}
-              </strong>
-              <span className="mt-1.5 block min-w-0 max-w-52 break-words text-[12px] leading-4 text-white/50 [overflow-wrap:anywhere]">
-                {prompt.trim()
-                  ? prompt.trim().slice(0, 112)
-                  : "Your prompt and output settings will appear here before submission."}
-              </span>
-            </div>
-            {view.model && (
-              <span className="absolute bottom-3 left-3 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/80">
-                {view.model.name}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <GenerateFormSubmitBars
-          form={form}
-          view={view}
-          desktopBarClassName="sticky bottom-0 max-md:hidden gap-3 border-t border-border bg-[var(--pf-surface)] px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
-        />
-      </aside>
+      <GenerateFormSubmitBars
+        form={form}
+        view={view}
+        className="sticky bottom-0 z-20 max-xl:pb-[max(12px,env(safe-area-inset-bottom))] xl:bottom-auto xl:top-4 xl:z-auto"
+      />
     </form>
   );
 }

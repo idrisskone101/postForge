@@ -1,7 +1,8 @@
 "use client";
 
 import { ModelPicker } from "@/components/model-picker";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { Panel } from "@/components/workbench";
+import { GENERATE_LAYOUT } from "./form-constants";
 import { GenerateFormFormatSection } from "./form-format-section";
 import { GenerateFormPromptSection } from "./form-prompt-section";
 import { PhoneCompositeSection } from "./phone-composite/phone-composite-section";
@@ -17,56 +18,35 @@ export function GenerateFormControls({
   actions: GenerateFormActions;
   view: GenerateFormViewModel;
 }) {
-  const paintReady = useWindowLoadReady();
-  const {
-    models,
-    selectedModel,
-    avatarSection,
-    referenceSection,
-    continuitySection,
-    swapSection,
-  } = form;
-  const { onModelSelect } = actions;
-  const { recommendedModelId } = view;
+  const { avatarSection, referenceSection, continuitySection, swapSection } = form;
+  const hasReferences = Boolean(avatarSection || referenceSection || (view.isVideo && continuitySection));
 
   return (
-    <div
-      data-generate-controls={paintReady ? undefined : "true"}
-      className="flex min-w-0 flex-col gap-3"
-    >
-      <GenerateFormPromptSection
-        form={form}
-        actions={actions}
-        view={view}
-        paintReady={paintReady}
-      />
-
-      <section
-        data-generate-models={paintReady ? undefined : "true"}
-        className="pf-card p-4"
-      >
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <h2 className="pf-section-title">Choose a model</h2>
-          </div>
-          <span className="rounded-full bg-[var(--pf-success)]/10 px-2 py-1 text-[13px] font-semibold text-[var(--pf-success)]">
-            Live pricing
-          </span>
-        </div>
+    <div className={GENERATE_LAYOUT.controls}>
+      <Panel pad="roomy" className="gap-3 p-5">
         <ModelPicker
-          selectedModel={selectedModel}
-          onModelSelect={onModelSelect}
-          models={models}
-          recommendedModelId={recommendedModelId}
+          selectedModel={form.selectedModel}
+          onModelSelect={actions.onModelSelect}
+          models={form.models}
+          recommendedModelId={view.recommendedModelId}
         />
-      </section>
+      </Panel>
+
+      <GenerateFormPromptSection form={form} actions={actions} view={view} />
+
+      {view.isSwap ? swapSection : null}
+
+      {hasReferences && !view.isSwap ? (
+        <Panel title="References" className="gap-3 p-5">
+          <div className="grid gap-3 md:grid-cols-2">
+            {avatarSection}
+            {referenceSection}
+            {continuitySection}
+          </div>
+        </Panel>
+      ) : null}
 
       <GenerateFormFormatSection form={form} actions={actions} view={view} />
-
-      {avatarSection}
-      {referenceSection}
-      {continuitySection}
-      {swapSection}
 
       {view.isImage ? (
         <PhoneCompositeSection onUseScenePrompt={actions.onPromptChange} />

@@ -1,46 +1,50 @@
-import type { ComponentType } from "react";
-import { Expand, ImageUpscale, Paintbrush, Sparkles } from "lucide-react";
 import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 
-export type InspectorTab = "enhance" | "details" | "prompts";
+export type JobIconName =
+  | "share"
+  | "zoom-out"
+  | "zoom-in"
+  | "crop"
+  | "fullscreen"
+  | "upscale"
+  | "relight"
+  | "remove-object"
+  | "expand-frame"
+  | "copy"
+  | "retry";
 export type JobFeedback = { tone: "success" | "error"; message: string } | null;
 
 export interface EnhancementTool {
   id: "upscale" | "relight" | "remove-object" | "expand-frame";
   title: string;
-  detail: string;
   instruction: string;
-  icon: ComponentType<{ className?: string }>;
+  icon: JobIconName;
 }
 
 export const ENHANCEMENT_TOOLS: EnhancementTool[] = [
   {
     id: "upscale",
     title: "Upscale",
-    detail: "Increase detail while preserving texture",
     instruction: "Increase fine detail and resolution without smoothing skin or changing composition.",
-    icon: ImageUpscale,
+    icon: "upscale",
   },
   {
     id: "relight",
     title: "Relight",
-    detail: "Balance subject and product lighting",
     instruction: "Balance the subject and product lighting while keeping the scene natural.",
-    icon: Sparkles,
+    icon: "relight",
   },
   {
     id: "remove-object",
     title: "Remove object",
-    detail: "Describe a distracting object to remove",
     instruction: "Remove the distracting object while reconstructing the background naturally.",
-    icon: Paintbrush,
+    icon: "remove-object",
   },
   {
     id: "expand-frame",
     title: "Expand frame",
-    detail: "Recompose with more space around the subject",
     instruction: "Expand the frame naturally and preserve the subject scale and camera perspective.",
-    icon: Expand,
+    icon: "expand-frame",
   },
 ];
 
@@ -89,10 +93,11 @@ export interface JobDetailViewModel {
 export interface JobDetailActions {
   onBack: () => void;
   onShare: () => void;
-  onGallery: () => void;
   onDownload: () => void;
   onRetry: () => void;
   onGenerateSimilar: () => void;
+  onContinueVideo: () => void;
+  onCopyPrompt: () => void;
   onSelectTool: (id: EnhancementTool["id"]) => void;
   onInstructionChange: (value: string) => void;
   onEditStrengthChange: (value: number) => void;

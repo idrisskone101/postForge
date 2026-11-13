@@ -55,11 +55,11 @@ export function usePhoneComposite() {
       usePlaceholder: state.usePlaceholder,
       baseLabel: phoneCompositeFileLabel(
         state.baseFile,
-        "Optional lifestyle photo with a blank matte-black screen",
+        "Optional photo with a blank matte-black screen",
       ),
       screenshotLabel: phoneCompositeFileLabel(
         state.screenshotFile,
-        "PNG of the real app UI — HairTrace Today or equivalent",
+        "PNG of the real app UI",
       ),
       busy: state.busy,
       error: state.error,

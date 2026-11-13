@@ -1,15 +1,5 @@
-import {
-  AlertCircle,
-  CheckCircle2,
-  Download,
-  GalleryHorizontal,
-  Loader2,
-  RefreshCw,
-  Sparkles,
-  Users,
-  Workflow,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 
 export type GenerateOutputActionsView = {
   canDownload: boolean;
@@ -26,6 +16,10 @@ export type GenerateOutputActionsView = {
   onAddToAutomation?: () => void;
 };
 
+/**
+ * The output cluster of the generation action dock. The last handoff is the
+ * screen's one bone primary: Use in Clone for images, Automate otherwise.
+ */
 export function GenerateOutputActions({
   view,
 }: {
@@ -45,104 +39,55 @@ export function GenerateOutputActions({
     onGenerateSimilar,
     onAddToAutomation,
   } = view;
+  const message = actionError ?? actionNotice;
 
   return (
-    <div className="grid gap-2.5">
-      {(actionError || actionNotice) && (
-        <div
+    <div className="flex min-w-0 items-center gap-2 max-sm:contents">
+      {message && (
+        <p
           role={actionError ? "alert" : "status"}
-          className={
-            actionError
-              ? "flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]"
-              : "flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-success)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-success)]"
-          }
+          className="wb-notice min-w-0 flex-1 py-2 [overflow-wrap:anywhere]"
+          data-tone={actionError ? "bad" : "ok"}
         >
-          {actionError ? (
-            <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-          ) : (
-            <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
-          )}
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            {actionError ?? actionNotice}
-          </span>
-        </div>
+          {message}
+        </p>
       )}
-
-      <Button
-        type="button"
-        onClick={onDownload}
-        disabled={!canDownload || isDownloading}
-        className="pf-button-primary h-10 justify-center gap-2 text-[13px]"
-      >
-        {isDownloading ? (
-          <Loader2 className="size-3.5 animate-spin" />
-        ) : (
-          <Download className="size-3.5" />
-        )}
-        {isDownloading ? "Preparing download…" : "Download"}
-      </Button>
-
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-none items-center gap-2 max-sm:ml-auto">
+        <IconButton
+          icon="download"
+          label={isDownloading ? "Preparing download" : "Download"}
+          variant="outline"
+          size={40}
+          onClick={onDownload}
+          disabled={!canDownload || isDownloading}
+        />
+        <IconButton icon="gallery" label="Save to Gallery" variant="outline" size={40} onClick={onSaveToGallery} />
+      </div>
+      <div className="flex min-w-0 items-center gap-2 max-sm:basis-full max-sm:[&>*]:flex-1">
         {showRetry && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onRetry}
-            disabled={isRetrying}
-            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
-          >
-            {isRetrying ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <RefreshCw className="size-3.5" />
-            )}
+          <Button variant="outline" size={40} onClick={onRetry} disabled={isRetrying}>
             {isRetrying ? "Retrying…" : "Retry"}
           </Button>
         )}
-        <Button
-          type="button"
-          variant="outline"
-          aria-label="Save to Gallery"
-          onClick={onSaveToGallery}
-          className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
-        >
-          <GalleryHorizontal className="size-3.5" />
-          View in Gallery
-        </Button>
         {onGenerateSimilar && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onGenerateSimilar}
-            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
-          >
-            <Sparkles className="size-3.5" />
+          <Button variant="outline" size={40} onClick={onGenerateSimilar}>
             Generate similar
-          </Button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
-        {onUseInClone && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onUseInClone}
-            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
-          >
-            <Users className="size-3.5" />
-            Use in Clone
           </Button>
         )}
         {onAddToAutomation && (
           <Button
-            type="button"
-            variant="outline"
+            variant={onUseInClone ? "outline" : "primary"}
+            size={40}
+            aria-label="Add to automation"
             onClick={onAddToAutomation}
-            className="pf-button-secondary h-10 justify-center gap-2 text-[12px]"
+            className={cn(!onUseInClone && "px-5")}
           >
-            <Workflow className="size-3.5" />
-            Add to automation
+            Automate
+          </Button>
+        )}
+        {onUseInClone && (
+          <Button variant="primary" size={40} onClick={onUseInClone} className="px-5">
+            Use in Clone
           </Button>
         )}
       </div>
