@@ -51,7 +51,7 @@ export function AutomationDestinationCell({
           {record.approvalRequired ? "Approval required" : (accountLabel ?? "Connection verified")}
         </span>
       ) : (
-        <span className="truncate text-[12px] font-semibold leading-4 text-warn" title={readiness.message}>
+        <span className="line-clamp-2 text-[12px] font-semibold leading-4 text-warn" title={readiness.message}>
           {destinationWarningLabel(readiness.code)}
         </span>
       )}

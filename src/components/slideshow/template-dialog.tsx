@@ -81,7 +81,7 @@ export function TemplateDialog({
                     <span className="break-words text-[13px] leading-4 text-fg-secondary">
                       {template.category} - {template.slides.length} slides
                     </span>
-                    <span className="truncate text-[12px] leading-4 text-fg-muted">
+                    <span className="line-clamp-2 text-[12px] leading-4 text-fg-muted">
                       {template.hook}
                     </span>
                   </span>
