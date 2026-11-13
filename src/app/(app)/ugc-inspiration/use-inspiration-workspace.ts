@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
   type InspirationSourceFeedFilter,
@@ -14,7 +13,6 @@ import {
   applySourceDecisionToCounts,
   filterVideosBySourceUsage,
   inspirationPageError,
-  SOURCE_FEED_FILTERS,
   type VideoPageQuery,
   withId,
   withoutId,
@@ -45,7 +43,7 @@ export function useInspirationWorkspace({
     useState<InspirationSourceFeedFilter>("all");
   const [sourceSearch, setSourceSearch] = useState("");
   const [sourceSort, setSourceSort] = useState<InspirationSourceSort>("recent");
-  const [compactGrid, setCompactGrid] = useState(false);
+  const [largeTiles, setLargeTiles] = useState(false);
   const [videoItems, setVideoItems] = useState(initialVideoPage.items);
   const [videoCursor, setVideoCursor] = useState(initialVideoPage.nextCursor);
   const [videoHasMore, setVideoHasMore] = useState(initialVideoPage.hasMore);
@@ -201,12 +199,6 @@ export function useInspirationWorkspace({
     0
   );
   const remainingVideoCount = Math.max(0, videoTotal - videoItems.length);
-  const activeSourceLabel = selectedAccount
-    ? selectedAccount.handleDisplay
-    : "Creator Feed";
-  const activeFeedFilterLabel =
-    SOURCE_FEED_FILTERS.find((filter) => filter.value === sourceFeedFilter)
-      ?.label ?? "All";
 
   useEffect(() => {
     if (!selectedVideo) {
@@ -267,10 +259,6 @@ export function useInspirationWorkspace({
       setActiveFilterAndReload,
       replaceVideoPage,
     });
-  }
-
-  function handleUseInClone(video: InspirationVideoCard) {
-    window.location.assign(buildCloneSourceUrlHandoffHref(video.originalUrl));
   }
 
   async function handleSetVideoRejection(
@@ -345,8 +333,8 @@ export function useInspirationWorkspace({
     setSourceSearch,
     sourceSort,
     setSourceSort: setSourceSortAndReload,
-    compactGrid,
-    setCompactGrid,
+    largeTiles,
+    setLargeTiles,
     videoItems,
     videoCursor,
     videoHasMore,
@@ -372,16 +360,14 @@ export function useInspirationWorkspace({
     selectedVideo,
     trackedVideoCount,
     remainingVideoCount,
-    activeSourceLabel,
-    activeFeedFilterLabel,
     handleTrackAccount,
     handleRefreshAccount,
     handleDeleteAccount,
-    handleUseInClone,
     handleSetVideoRejection,
     handleCopySourceUrl,
     handleLoadMore,
     handleLoadMoreAccounts,
+    reloadVideos: () => void replaceVideoPage(),
     markThumbnailError,
     clearThumbnailError,
   };

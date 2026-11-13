@@ -13,11 +13,9 @@ export default async function UGCInspirationPage() {
   ]);
 
   return (
-    <div className="min-w-0 bg-background">
-      <InspirationPageLazy
-        initialAccountPage={initialAccountPage}
-        initialVideoPage={initialVideoPage}
-      />
-    </div>
+    <InspirationPageLazy
+      initialAccountPage={initialAccountPage}
+      initialVideoPage={initialVideoPage}
+    />
   );
 }

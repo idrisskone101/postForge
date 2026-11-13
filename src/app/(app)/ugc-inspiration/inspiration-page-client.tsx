@@ -1,8 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { RefreshCw, Sparkles, TriangleAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCallback } from "react";
+import { Toast } from "@/components/workbench/toast";
 import { WorkspaceHeaderAccessory } from "@/components/workspace-header-accessory";
 import { InspirationCreatorRail } from "./inspiration-creator-rail";
 import { InspirationHeaderControls } from "./inspiration-header-controls";
@@ -20,13 +20,12 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
     pageError,
     setPageError,
     accounts,
-    refreshingIds,
-    handleRefreshAccount,
-    trackedVideoCount,
-    sourceUsageCounts,
-    setActiveFilter,
-    setSourceFeedFilter,
+    videoItems,
+    isLoadingVideos,
   } = workspace;
+  const loadFailed =
+    pageError !== null && accounts.length > 0 && videoItems.length === 0 && !isLoadingVideos;
+  const dismissError = useCallback(() => setPageError(null), [setPageError]);
 
   return (
     <>
@@ -39,118 +38,20 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
         />
       </WorkspaceHeaderAccessory>
 
-      <div className="min-w-0">
-        <section className="min-w-0 px-4 py-5 sm:px-6 lg:px-8 lg:py-7 overflow-x-clip">
-          <div className="mx-auto flex w-full min-w-0 max-w-[1280px] flex-col gap-5 overflow-x-clip">
-            {pageError && (
-              <div
-                role="alert"
-                className="flex min-w-0 items-start gap-3 rounded-[8px] border border-[var(--pf-danger)]/30 bg-[var(--pf-danger)]/10 px-4 py-3 text-[13px] text-[var(--pf-danger)]"
-              >
-                <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-                <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-                  {pageError}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setPageError(null)}
-                  className="shrink-0 text-[12px] font-semibold text-[var(--pf-danger)] hover:underline"
-                >
-                  Dismiss
-                </button>
-              </div>
-            )}
-
-            <div className="pf-card flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveFilter("all");
-                  document
-                    .getElementById("tracked-creators-heading")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                title="Show all tracked creators"
-                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
-              >
-                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
-                  {accounts.length}
-                </strong>
-                <span className="ml-2 text-[12px] text-[var(--pf-muted)] underline-offset-2">
-                  tracked creators
-                </span>
-              </button>
-              <span className="hidden h-6 w-px bg-[var(--pf-border)] sm:block" />
-              <button
-                type="button"
-                onClick={() => {
-                  setSourceFeedFilter("all");
-                  document
-                    .getElementById("source-library-heading")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                title="Show every saved source"
-                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
-              >
-                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
-                  {trackedVideoCount}
-                </strong>
-                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
-                  saved sources
-                </span>
-              </button>
-              <span className="hidden h-6 w-px bg-[var(--pf-border)] sm:block" />
-              <button
-                type="button"
-                onClick={() => {
-                  setSourceFeedFilter("unused");
-                  document
-                    .getElementById("source-library-heading")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                title="Filter the library to fresh sources"
-                className="rounded-[8px] text-left transition-colors hover:text-[var(--pf-ink)]"
-              >
-                <strong className="text-[15px] font-semibold tabular-nums text-[var(--pf-ink)]">
-                  {sourceUsageCounts.unused}
-                </strong>
-                <span className="ml-2 text-[12px] text-[var(--pf-muted)]">
-                  ready to use
-                </span>
-              </button>
-              <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
-                <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-[var(--pf-muted)]">
-                  <Sparkles className="size-3.5 shrink-0" />
-                  <span className="min-w-0">Fresh posts stay at the front</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    accounts.forEach((account) => {
-                      if (!refreshingIds.includes(account.id)) {
-                        void handleRefreshAccount(account.id);
-                      }
-                    })
-                  }
-                  disabled={accounts.length === 0 || refreshingIds.length > 0}
-                  className="pf-button-secondary h-10 shrink-0 px-3 text-[12px]"
-                >
-                  <RefreshCw
-                    className={cn(
-                      "size-4 shrink-0",
-                      refreshingIds.length > 0 && "animate-spin"
-                    )}
-                  />
-                  Refresh all
-                </button>
-              </div>
-            </div>
-
-            <InspirationCreatorRail workspace={workspace} />
-            <InspirationSourceLibrary workspace={workspace} />
-          </div>
-        </section>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 lg:flex-row lg:items-stretch">
+        <InspirationCreatorRail workspace={workspace} />
+        <InspirationSourceLibrary workspace={workspace} loadFailed={loadFailed} />
       </div>
+
+      {pageError && !loadFailed ? (
+        <div className="wb-toast-region">
+          <Toast
+            key={pageError}
+            toast={{ id: pageError, tone: "bad", message: pageError }}
+            onDismiss={dismissError}
+          />
+        </div>
+      ) : null}
 
       <InspirationPreviewDialog workspace={workspace} />
     </>
