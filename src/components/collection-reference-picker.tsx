@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, FolderOpen, ImageIcon, Loader2 } from "lucide-react";
+import Link from "next/link";
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
   type CollectionFeatureRecord,
+  type CollectionRecord,
 } from "@/lib/collections";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
-import { cn } from "@/lib/utils";
+import { Button, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
+import {
+  ReferencePickerPopover,
+  ReferenceTile,
+  type ReferenceRowSummary,
+} from "./collection-reference-picker-popover";
 
 interface CollectionReferencePickerProps {
   selectedAssetIds: string[];
@@ -20,48 +26,12 @@ interface CollectionReferencePickerProps {
   preferredAssetIds?: string[];
 }
 
-export function CollectionReferencePicker({
-  selectedAssetIds,
-  onChange,
-  maxSelection = 14,
-  disabled = false,
-  disabledMessage,
-  refreshKey = 0,
-  preferredAssetIds,
-}: CollectionReferencePickerProps) {
-  const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
-  const [selectedCollectionId, setSelectedCollectionId] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type LoadStatus = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
-      .then(({ records: next }) => {
-        if (cancelled) return;
-        setError(null);
-        setRecords(next);
-        const collections = next.filter(isCollectionRecord);
-        const selectedCollection = collections.find((collection) =>
-          collection.assetIds.some((id) => preferredAssetIds?.includes(id)),
-        );
-        const nextCollection = selectedCollection ?? collections[0];
-        if (nextCollection) setSelectedCollectionId(nextCollection.id);
-      })
-      .catch((cause) => {
-        if (!cancelled) {
-          setError(
-            cause instanceof Error ? cause.message : "Collections could not be loaded."
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [preferredAssetIds, refreshKey]);
+export function CollectionReferencePicker(props: CollectionReferencePickerProps) {
+  const { selectedAssetIds, onChange, maxSelection = 14, disabled = false } = props;
+  const { records, status, retry, selectedCollectionId, setSelectedCollectionId } =
+    useCollectionRecords(props.preferredAssetIds, props.refreshKey ?? 0);
 
   const assets = useMemo(() => records.filter(isCollectionAssetRecord), [records]);
   const collections = useMemo(() => records.filter(isCollectionRecord), [records]);
@@ -84,99 +54,159 @@ export function CollectionReferencePicker({
     onChange([...selectedAssetIds, assetId].slice(-maxSelection));
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-24 items-center justify-center rounded-lg border border-border bg-[var(--pf-active)] text-muted-foreground">
-        <Loader2 className="mr-2 size-3.5 animate-spin" />
-        <span className="text-[12px]">Loading collections…</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <p role="alert" className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)] [overflow-wrap:anywhere]">
-        {error}
-      </p>
-    );
-  }
-
-  if (collections.length === 0) {
-    return (
-      <a
-        href="/collections"
-        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-[12px] font-semibold text-muted-foreground"
-      >
-        <FolderOpen className="size-4" /> Create a collection to reuse its images
-      </a>
-    );
-  }
+  const count = `${selectedAssetIds.length} / ${maxSelection}`;
+  const summary = rowSummary({
+    status,
+    disabledMessage: disabled ? props.disabledMessage : undefined,
+    selectedAssetIds,
+    collections,
+    count,
+  });
 
   return (
-    <div className={cn("space-y-3", disabled && "opacity-60")}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <label className="min-w-0 flex-1">
-          <span className="sr-only">Visual collection</span>
-          <select
-            aria-label="Visual collection"
-            value={selectedCollectionId}
-            onChange={(event) => setSelectedCollectionId(event.target.value)}
-            disabled={disabled}
-            className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[12px] font-medium outline-none focus:border-[var(--pf-orange)]"
-          >
-            {collections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name} · {collection.assetIds.length} images
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="shrink-0 text-[11px] text-muted-foreground">
-          {selectedAssetIds.length}/{maxSelection} selected
-        </span>
-      </div>
-
-      {disabledMessage && disabled ? (
-        <p className="rounded-lg bg-[var(--pf-active)] px-3 py-2 text-[12px] leading-4 text-muted-foreground">
-          {disabledMessage}
-        </p>
-      ) : collectionAssets.length === 0 ? (
-        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] text-[12px] text-muted-foreground">
-          <ImageIcon className="size-4" /> This collection has no images yet.
-        </p>
-      ) : (
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
-          {collectionAssets.map((asset) => {
-            const selected = selectedAssetIds.includes(asset.id);
-            return (
-              <button
-                type="button"
-                key={asset.id}
-                disabled={disabled}
-                aria-label={`${selected ? "Remove" : "Use"} ${asset.name}`}
-                aria-pressed={selected}
-                onClick={() => toggle(asset.id)}
-                className={cn(
-                  "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition",
-                  selected ? "border-[var(--pf-orange)]" : "border-transparent hover:border-[var(--pf-border-strong)]"
-                )}
+    <ReferencePickerPopover summary={summary} label="Visual collection" disabled={disabled}>
+      {() =>
+        status.kind === "loading" ? (
+          <TileSkeletons />
+        ) : status.kind === "error" ? (
+          <EmptyState icon="alert" tone="error" title="Collections could not be loaded" detail={status.message} className="min-h-0 py-6">
+            <Button variant="strong" onClick={retry}>Retry</Button>
+          </EmptyState>
+        ) : collections.length === 0 ? (
+          <EmptyState icon="collections" title="Create a collection to reuse its images" className="min-h-0 py-6">
+            <Link href="/collections" className={buttonClass("strong")}>Open collections</Link>
+          </EmptyState>
+        ) : (
+          <>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <select
+                aria-label="Visual collection"
+                value={selectedCollectionId}
+                onChange={(event) => setSelectedCollectionId(event.target.value)}
+                className="wb-input min-w-0 flex-1 bg-raised-strong"
+                data-size="36"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/api/files/${encodeURIComponent(asset.id)}`}
-                  alt={asset.name}
-                  className="size-full object-cover"
-                />
-                {selected && (
-                  <span className="absolute right-1 top-1 grid size-5 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-sm">
-                    <Check className="size-3" />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
+                {collections.map((collection) => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name} · {collection.assetIds.length} images
+                  </option>
+                ))}
+              </select>
+              <span className="wb-mono shrink-0 text-fg" aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
+                {count}
+              </span>
+              {selectedAssetIds.length > 0 ? (
+                <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
+              ) : null}
+            </div>
+            {collectionAssets.length === 0 ? (
+              <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
+            ) : (
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1">
+                {collectionAssets.map((asset) => {
+                  const selected = selectedAssetIds.includes(asset.id);
+                  return (
+                    <ReferenceTile
+                      key={asset.id}
+                      selected={selected}
+                      label={`${selected ? "Remove" : "Use"} ${asset.name}`}
+                      onToggle={() => toggle(asset.id)}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
+                    </ReferenceTile>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )
+      }
+    </ReferencePickerPopover>
+  );
+}
+
+function useCollectionRecords(preferredAssetIds: string[] | undefined, refreshKey: number) {
+  const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
+  const [selectedCollectionId, setSelectedCollectionId] = useState("");
+  const [status, setStatus] = useState<LoadStatus>({ kind: "loading" });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
+      .then(({ records: next }) => {
+        if (cancelled) return;
+        setStatus({ kind: "ready" });
+        setRecords(next);
+        const collections = next.filter(isCollectionRecord);
+        const preferred = collections.find((collection) =>
+          collection.assetIds.some((id) => preferredAssetIds?.includes(id)),
+        );
+        const nextCollection = preferred ?? collections[0];
+        if (nextCollection) setSelectedCollectionId(nextCollection.id);
+      })
+      .catch((cause) => {
+        if (cancelled) return;
+        setStatus({
+          kind: "error",
+          message: cause instanceof Error ? cause.message : "Collections could not be loaded.",
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [preferredAssetIds, refreshKey, attempt]);
+
+  return {
+    records,
+    status,
+    selectedCollectionId,
+    setSelectedCollectionId,
+    retry: () => {
+      setStatus({ kind: "loading" });
+      setAttempt((value) => value + 1);
+    },
+  };
+}
+
+function rowSummary({
+  status,
+  disabledMessage,
+  selectedAssetIds,
+  collections,
+  count,
+}: {
+  status: LoadStatus;
+  disabledMessage: string | undefined;
+  selectedAssetIds: string[];
+  collections: CollectionRecord[];
+  count: string;
+}): ReferenceRowSummary {
+  if (disabledMessage) return { text: disabledMessage, placeholder: true };
+  if (status.kind === "loading") return { text: "Loading collections…", placeholder: true };
+  if (status.kind === "error") return { text: "Collections could not be loaded", tone: "bad" };
+  const first = selectedAssetIds[0];
+  if (!first) return { text: "No collection chosen", placeholder: true };
+  const owner = collections.find((collection) =>
+    selectedAssetIds.every((id) => collection.assetIds.includes(id)),
+  );
+  return {
+    text: owner?.name ?? `${selectedAssetIds.length} images`,
+    meta: count,
+    thumb: (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={`/api/files/${encodeURIComponent(first)}`} alt="" />
+    ),
+  };
+}
+
+function TileSkeletons() {
+  return (
+    <div role="status" aria-label="Loading collections…" className="grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1">
+      {Array.from({ length: 8 }, (_, index) => (
+        <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
+      ))}
     </div>
   );
 }
