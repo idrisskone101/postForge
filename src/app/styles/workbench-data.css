@@ -155,7 +155,8 @@
     flex: 1 1 0%;
     overflow: hidden;
     border-radius: var(--pf-radius-pill);
-    background: var(--pf-raised-strong);
+    background: var(--pf-track);
+    box-shadow: inset 0 0 0 1px var(--pf-track-edge);
   }
 
   .wb-meter-fill {
