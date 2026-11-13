@@ -1,320 +1,222 @@
 "use client";
 
-import {
-  Ban,
-  CheckCircle2,
-  Copy,
-  ExternalLink,
-  Loader2,
-  Play,
-  Sparkles,
-  Undo2,
-} from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils/format-date";
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button, buttonClass } from "@/components/workbench/button";
+import { Icon } from "@/components/workbench/icon";
+import { iconButtonClass } from "@/components/workbench/icon-button";
+import { KeyValueList } from "@/components/workbench/key-value-list";
+import { StatusChip } from "@/components/workbench/status-chip";
 import { cn } from "@/lib/utils";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { formatRelativeDate } from "@/lib/utils/format-date";
+import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
+import type { InspirationVideoCard } from "@/lib/inspiration/types";
 import {
   formatDuration,
   formatMetric,
   formatPublishedDate,
   getInspirationThumbnailSrc,
   inspirationSourceStatusLabel,
-  inspirationStatusPillClass,
+  inspirationStatusTone,
 } from "./inspiration-models";
 import type { InspirationWorkspace } from "./types";
 
-export function InspirationPreviewDialog({
-  workspace,
-}: {
-  workspace: InspirationWorkspace;
-}) {
-  const {
-    setSelectedVideoId,
-    selectedVideo,
-    embedState,
-    setEmbedState,
-    thumbnailErrorIds,
-    updatingRejectionIds,
-    copiedVideoId,
-    handleSetVideoRejection,
-    handleUseInClone,
-    handleCopySourceUrl,
-    markThumbnailError,
-    clearThumbnailError,
-  } = workspace;
-  const statusLabel = selectedVideo
-    ? inspirationSourceStatusLabel(selectedVideo)
-    : null;
-  const isRejected = selectedVideo?.sourceDecision.status === "rejected";
-  const isUpdatingRejection = selectedVideo
-    ? updatingRejectionIds.includes(selectedVideo.id)
-    : false;
+export function InspirationPreviewDialog({ workspace }: { workspace: InspirationWorkspace }) {
+  const { setSelectedVideoId, selectedVideo } = workspace;
 
   return (
     <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideoId(null)}>
       <DialogContent
-        showCloseButton
+        showCloseButton={false}
         data-source-preview-drawer="true"
-        className="!w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] max-w-6xl overflow-y-auto rounded-[8px] p-0 sm:!max-w-6xl lg:overflow-hidden [&_[data-slot=dialog-close]]:right-4 [&_[data-slot=dialog-close]]:top-4 [&_[data-slot=dialog-close]]:z-20"
+        className="w-[calc(100vw-2rem)] max-w-[880px] gap-0 overflow-y-auto p-0 sm:max-w-[880px] lg:h-[min(680px,calc(100dvh-2rem))] lg:overflow-hidden"
       >
-        <DialogTitle className="sr-only">Source preview</DialogTitle>
-        {selectedVideo && (
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="relative flex min-h-[300px] items-center justify-center bg-[#09090B] lg:min-h-[560px]">
-              {embedState !== "failed" && (
-                <iframe
-                  key={selectedVideo.id}
-                  src={
-                    selectedVideo.embedUrl ??
-                    `https://www.tiktok.com/embed/v3/${selectedVideo.externalVideoId}`
-                  }
-                  title={`TikTok preview for ${selectedVideo.creatorHandle}`}
-                  className={cn(
-                    "size-full min-h-[300px] lg:min-h-[560px]",
-                    embedState === "loading" && "opacity-0"
-                  )}
-                  allow="encrypted-media; picture-in-picture"
-                  allowFullScreen
-                  onLoad={() => setEmbedState("ready")}
-                  onError={() => setEmbedState("failed")}
-                />
-              )}
-
-              {embedState === "loading" && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white">
-                  <Loader2 className="size-6 animate-spin" />
-                  <p className="text-[13px] font-medium">Loading TikTok preview...</p>
-                </div>
-              )}
-
-              {embedState === "failed" && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center text-white">
-                  {!thumbnailErrorIds.includes(selectedVideo.id) ? (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getInspirationThumbnailSrc(
-                          selectedVideo.id,
-                          selectedVideo.updatedAt
-                        )}
-                        alt={
-                          selectedVideo.caption ||
-                          `${selectedVideo.creatorHandle} TikTok`
-                        }
-                        className="max-h-[42dvh] max-w-full object-contain lg:max-h-[calc(100dvh-8rem)]"
-                        onError={() => markThumbnailError(selectedVideo.id)}
-                        onLoad={() => clearThumbnailError(selectedVideo.id)}
-                      />
-                    </>
-                  ) : (
-                    <div className="flex size-16 items-center justify-center rounded-[8px] bg-white/10">
-                      <Play className="size-8" />
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-[15px] font-semibold">
-                      TikTok preview unavailable
-                    </p>
-                    <p className="mt-1.5 max-w-md text-[13px] text-white/60">
-                      The embed could not load for this post. You can still
-                      open it on TikTok or send it directly into Clone.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <aside className="flex min-h-0 flex-col gap-4 overflow-y-auto border-t border-[var(--pf-border)] bg-[var(--pf-surface)] p-5 lg:max-h-[calc(100dvh-2rem)] lg:border-l lg:border-t-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium",
-                    inspirationStatusPillClass(selectedVideo)
-                  )}
-                >
-                  {statusLabel}
-                </span>
-                <span className="pf-data text-[12px] text-[var(--pf-muted)]">
-                  {formatDuration(selectedVideo.durationSec)} ·{" "}
-                  {formatRelativeDate(
-                    selectedVideo.publishedAt ?? selectedVideo.createdAt
-                  )}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Avatar size="lg">
-                  <AvatarImage
-                    src={selectedVideo.creatorAvatarUrl ?? undefined}
-                    alt={selectedVideo.creatorHandle}
-                  />
-                  <AvatarFallback>
-                    {selectedVideo.creatorHandle.slice(1, 3).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[var(--pf-ink)]">
-                    {selectedVideo.creatorDisplayName || selectedVideo.creatorHandle}
-                  </p>
-                  <p className="mt-0.5 truncate text-[12px] text-[var(--pf-muted)]">
-                    {selectedVideo.creatorHandle}
-                  </p>
-                </div>
-              </div>
-
-              {selectedVideo.caption && (
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-                    Caption
-                  </p>
-                  <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-[var(--pf-ink)]/80 [overflow-wrap:anywhere] line-clamp-5">
-                    {selectedVideo.caption}
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-2">
-                {(
-                  [
-                    ["Views", selectedVideo.viewCount],
-                    ["Likes", selectedVideo.likeCount],
-                    ["Comments", selectedVideo.commentCount],
-                    ["Shares", selectedVideo.shareCount],
-                  ] as const
-                ).map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="pf-card flex items-baseline justify-between gap-2 px-3 py-2"
-                  >
-                    <p className="truncate text-[11px] text-[var(--pf-muted)]">{label}</p>
-                    <p className="pf-data text-[13px] font-semibold tabular-nums text-[var(--pf-ink)]">
-                      {formatMetric(value)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <dl className="divide-y divide-[var(--pf-border)] border-y border-[var(--pf-border)]">
-                <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-[var(--pf-muted)]">Published</dt>
-                  <dd className="pf-data text-[var(--pf-ink)]">
-                    {formatPublishedDate(selectedVideo.publishedAt)}
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-[var(--pf-muted)]">Source use</dt>
-                  <dd className="text-[var(--pf-ink)]">
-                    {selectedVideo.sourceUsage.status === "used" &&
-                    selectedVideo.sourceUsage.usedAt
-                      ? `Used ${formatRelativeDate(selectedVideo.sourceUsage.usedAt)}`
-                      : "Not used yet"}
-                  </dd>
-                </div>
-                <div className="flex items-center justify-between gap-3 py-2 text-[12px]">
-                  <dt className="text-[var(--pf-muted)]">Decision</dt>
-                  <dd className="text-[var(--pf-ink)]">
-                    {selectedVideo.sourceDecision.status === "rejected" &&
-                    selectedVideo.sourceDecision.rejectedAt
-                      ? `Rejected ${formatRelativeDate(selectedVideo.sourceDecision.rejectedAt)}`
-                      : "Approved"}
-                  </dd>
-                </div>
-              </dl>
-
-              <div className="mt-auto flex flex-col gap-2 border-t border-[var(--pf-border)] pt-4">
-                {isRejected ? (
-                  <button
-                    type="button"
-                    onClick={() => void handleSetVideoRejection(selectedVideo, false)}
-                    disabled={isUpdatingRejection}
-                    className="pf-button-secondary h-10 text-[13px]"
-                  >
-                    {isUpdatingRejection ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        Restoring source...
-                      </>
-                    ) : (
-                      <>
-                        Restore Source
-                        <Undo2 className="size-4" />
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleUseInClone(selectedVideo)}
-                    className="pf-button-primary h-10"
-                  >
-                    Use in Clone
-                    <Sparkles className="size-4" />
-                  </button>
-                )}
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void handleCopySourceUrl(selectedVideo)}
-                    className="pf-button-secondary h-10 text-[13px]"
-                  >
-                    {copiedVideoId === selectedVideo.id ? (
-                      <>
-                        Copied
-                        <CheckCircle2 className="size-4" />
-                      </>
-                    ) : (
-                      <>
-                        Copy URL
-                        <Copy className="size-4" />
-                      </>
-                    )}
-                  </button>
-                  <a
-                    href={selectedVideo.originalUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="pf-button-secondary h-10 text-[13px]"
-                  >
-                    Open
-                    <ExternalLink className="size-4" />
-                  </a>
-                </div>
-
-                {selectedVideo.sourceDecision.status !== "rejected" && (
-                  <button
-                    type="button"
-                    onClick={() => void handleSetVideoRejection(selectedVideo, true)}
-                    disabled={isUpdatingRejection}
-                    className="inline-flex h-9 items-center justify-center gap-2 rounded-[8px] text-[12px] font-medium text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isUpdatingRejection ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        Rejecting source...
-                      </>
-                    ) : (
-                      <>
-                        Reject Source
-                        <Ban className="size-4" />
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </aside>
-          </div>
-        )}
+        {selectedVideo && <PreviewBody video={selectedVideo} workspace={workspace} />}
       </DialogContent>
     </Dialog>
+  );
+}
+
+const STATUS_CHIP_TONE = { used: "ok", rejected: "bad", fresh: "neutral" } as const;
+
+function PreviewBody({
+  video,
+  workspace,
+}: {
+  video: InspirationVideoCard;
+  workspace: InspirationWorkspace;
+}) {
+  const {
+    updatingRejectionIds,
+    copiedVideoId,
+    handleSetVideoRejection,
+    handleCopySourceUrl,
+  } = workspace;
+  const tone = inspirationStatusTone(video);
+  const isUpdating = updatingRejectionIds.includes(video.id);
+
+  return (
+    <div className="grid min-h-0 lg:h-full lg:grid-cols-[minmax(0,1fr)_320px]">
+      <PreviewStage video={video} workspace={workspace} />
+      <aside className="flex min-h-0 min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-5 lg:overflow-y-auto">
+        <div className="wb-panel-head">
+          <DialogTitle className="wb-panel-title">Preview</DialogTitle>
+          <DialogClose className={iconButtonClass("quiet", 30)} aria-label="Close preview">
+            <Icon name="x" size={14} />
+          </DialogClose>
+        </div>
+
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-media text-[12px] font-semibold text-fg-secondary">
+            {video.creatorAvatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={video.creatorAvatarUrl} alt="" className="size-full object-cover" />
+            ) : (
+              video.creatorHandle.slice(1, 3).toUpperCase()
+            )}
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate text-[14px] leading-[18px] font-semibold text-fg">
+              {video.creatorDisplayName || video.creatorHandle}
+            </span>
+            <span className="truncate text-[12px] leading-4 text-fg-muted">{video.creatorHandle}</span>
+          </span>
+          <StatusChip tone={STATUS_CHIP_TONE[tone]}>{inspirationSourceStatusLabel(video)}</StatusChip>
+        </div>
+
+        {video.caption ? (
+          <p className="line-clamp-5 min-w-0 text-[13px] leading-[18px] break-words text-fg-secondary [overflow-wrap:anywhere]">
+            {video.caption}
+          </p>
+        ) : null}
+
+        <KeyValueList
+          rows={[
+            { label: "Views", value: formatMetric(video.viewCount), mono: true },
+            { label: "Likes", value: formatMetric(video.likeCount), mono: true },
+            { label: "Comments", value: formatMetric(video.commentCount), mono: true },
+            { label: "Shares", value: formatMetric(video.shareCount), mono: true },
+            { label: "Duration", value: formatDuration(video.durationSec) ?? "-", mono: true },
+            { label: "Published", value: formatPublishedDate(video.publishedAt), mono: true },
+            { label: "Source use", value: sourceUseLabel(video) },
+          ]}
+        />
+
+        <div className="mt-auto flex flex-col gap-2 border-t border-hairline pt-4">
+          <div className="flex gap-2">
+            <Button size={38} className="flex-1 px-0" onClick={() => void handleCopySourceUrl(video)}>
+              {copiedVideoId === video.id ? "Copied" : "Copy URL"}
+            </Button>
+            <a
+              href={video.originalUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(buttonClass("quiet", 38), "flex-1 px-0")}
+            >
+              Open
+            </a>
+            {tone === "rejected" ? (
+              <Button
+                size={38}
+                className="flex-1 px-0"
+                disabled={isUpdating}
+                onClick={() => void handleSetVideoRejection(video, false)}
+              >
+                {isUpdating ? "Restoring" : "Restore"}
+              </Button>
+            ) : (
+              <Button
+                variant="danger"
+                size={38}
+                className="flex-1 px-0"
+                disabled={isUpdating}
+                onClick={() => void handleSetVideoRejection(video, true)}
+              >
+                {isUpdating ? "Rejecting" : "Reject"}
+              </Button>
+            )}
+          </div>
+          {tone !== "rejected" && (
+            <a
+              href={buildCloneSourceUrlHandoffHref(video.originalUrl)}
+              data-source-action="use-in-clone"
+              className={cn(buttonClass("primary", 40, true), "flex-none")}
+            >
+              {tone === "used" ? "Use again" : "Use in Clone"}
+            </a>
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function sourceUseLabel(video: InspirationVideoCard) {
+  if (video.sourceDecision.status === "rejected" && video.sourceDecision.rejectedAt) {
+    return `Rejected ${formatRelativeDate(video.sourceDecision.rejectedAt)}`;
+  }
+  if (video.sourceUsage.status === "used" && video.sourceUsage.usedAt) {
+    return `Used ${formatRelativeDate(video.sourceUsage.usedAt)}`;
+  }
+  return "Not used yet";
+}
+
+function PreviewStage({
+  video,
+  workspace,
+}: {
+  video: InspirationVideoCard;
+  workspace: InspirationWorkspace;
+}) {
+  const { embedState, setEmbedState, thumbnailErrorIds, markThumbnailError, clearThumbnailError } =
+    workspace;
+  const thumbnailFailed = thumbnailErrorIds.includes(video.id);
+
+  return (
+    <div className="flex min-h-[320px] min-w-0 items-center justify-center bg-well p-4 lg:p-6">
+      <div className="relative aspect-[9/16] h-[min(60dvh,560px)] max-w-full overflow-hidden rounded-lg bg-media lg:h-full">
+        {embedState !== "failed" && (
+          <iframe
+            key={video.id}
+            src={video.embedUrl ?? `https://www.tiktok.com/embed/v3/${video.externalVideoId}`}
+            title={`TikTok preview for ${video.creatorHandle}`}
+            className={cn(
+              "size-full transition-opacity duration-[var(--pf-dur-state)] ease-pf",
+              embedState === "loading" ? "opacity-0" : "opacity-100"
+            )}
+            allow="encrypted-media; picture-in-picture"
+            allowFullScreen
+            onLoad={() => setEmbedState("ready")}
+            onError={() => setEmbedState("failed")}
+          />
+        )}
+
+        {embedState === "loading" && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-fg-secondary">
+            <span className="flex size-11 items-center justify-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)]">
+              <Icon name="clock" size={18} />
+            </span>
+            <p className="text-[13px] font-medium">Loading TikTok preview</p>
+          </div>
+        )}
+
+        {embedState === "failed" && (
+          <div className="absolute inset-0 flex flex-col items-center justify-end">
+            {!thumbnailFailed && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+                onError={() => markThumbnailError(video.id)}
+                onLoad={() => clearThumbnailError(video.id)}
+              />
+            )}
+            <p className="relative m-3 rounded-full bg-[var(--pf-scrim)] px-3 py-1.5 text-[12px] font-semibold text-[var(--pf-on-media)]">
+              TikTok preview unavailable
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

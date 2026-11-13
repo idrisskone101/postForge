@@ -15,52 +15,35 @@ export type VideoPageQuery = {
   sort?: InspirationSourceSort;
 };
 
-export const SOURCE_FEED_FILTERS: Array<{
+export const TRACK_CREATOR_INPUT_ID = "inspiration-track-creator";
+
+export const SOURCE_FEED_FILTERS: ReadonlyArray<{
   value: InspirationSourceFeedFilter;
   label: string;
-  description: string;
 }> = [
-  {
-    value: "all",
-    label: "All",
-    description: "Everything tracked",
-  },
-  {
-    value: "unused",
-    label: "Not used",
-    description: "Fresh source options",
-  },
-  {
-    value: "used",
-    label: "Used",
-    description: "Already sent to Clone",
-  },
-  {
-    value: "rejected",
-    label: "Rejected",
-    description: "Won't use",
-  },
+  { value: "all", label: "All" },
+  { value: "unused", label: "Not used" },
+  { value: "used", label: "Used" },
+  { value: "rejected", label: "Rejected" },
 ];
 
 export function formatMetric(value: number | null): string {
-  if (value === null) return "—";
+  if (value === null) return "-";
   if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return `${value}`;
 }
 
-export function formatDuration(durationSec: number | null): string {
-  if (!durationSec || durationSec <= 0) return "TikTok";
-  const minutes = Math.floor(durationSec / 60);
-  const seconds = Math.round(durationSec % 60);
-  return minutes > 0
-    ? `${minutes}:${seconds.toString().padStart(2, "0")}`
-    : `${seconds}s`;
+export function formatDuration(durationSec: number | null): string | undefined {
+  if (!durationSec || durationSec <= 0) return undefined;
+  const total = Math.round(durationSec);
+  const minutes = Math.floor(total / 60);
+  return `${minutes}:${(total % 60).toString().padStart(2, "0")}`;
 }
 
 export function formatPublishedDate(value: string | null): string {
-  if (!value) return "Unknown publish date";
+  if (!value) return "-";
   return new Date(value).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -79,30 +62,31 @@ export function getInspirationAvatarSrc(accountId: string, updatedAt: string): s
 export function getCreatorSyncMeta(
   account: TrackedInspirationAccount,
   isRefreshing: boolean
-) {
-  if (isRefreshing) {
-    return {
-      label: "Syncing now",
-      className: "text-[var(--pf-lamp-amber)]",
-    };
+): { label: string; tone: "live" | "warn" | "muted" } {
+  if (isRefreshing || account.syncStatus === "syncing") {
+    return { label: "Syncing now", tone: "live" };
   }
 
   if (account.syncStatus === "error") {
-    return {
-      label: "Sync failed",
-      className: "text-[var(--pf-danger)]",
-    };
+    const when = account.lastSyncAttemptAt ?? account.updatedAt;
+    return { label: `Refresh failed ${formatRelativeDate(when)}`, tone: "warn" };
   }
 
+  const posts = `${account.videoCount} ${account.videoCount === 1 ? "post" : "posts"}`;
   return {
     label: account.lastSyncedAt
-      ? `Synced ${formatRelativeDate(account.lastSyncedAt)}`
-      : "Not synced yet",
-    className:
-      account.syncStatus === "ready" && !account.isStale
-        ? "text-[var(--pf-success)]"
-        : "text-[var(--pf-muted)]",
+      ? `${posts} - ${formatRelativeDate(account.lastSyncedAt)}`
+      : `${posts} - not synced yet`,
+    tone: "muted",
   };
+}
+
+export function isTrackableHandle(input: string): boolean {
+  const trimmed = input.trim();
+  const urlMatch = trimmed.match(/tiktok\.com\/@([^/?#]+)/i);
+  const raw = (urlMatch?.[1] ?? trimmed).replace(/^@/, "").trim();
+  const handle = raw.split(/[/?#]/)[0].toLowerCase();
+  return /^[a-z0-9._-]+$/.test(handle);
 }
 
 export function sortAccounts(accounts: TrackedInspirationAccount[]) {
@@ -175,7 +159,7 @@ export function inspirationPageError(error: unknown, fallback: string) {
 export function inspirationSourceStatusLabel(video: InspirationVideoCard) {
   if (video.sourceDecision.status === "rejected") return "Rejected";
   if (video.sourceUsage.status === "used") return "Used in Clone";
-  return "Fresh source";
+  return "Not used";
 }
 
 export function inspirationStatusTone(
@@ -186,70 +170,36 @@ export function inspirationStatusTone(
   return "fresh";
 }
 
-export function inspirationStatusDotClass(video: InspirationVideoCard) {
+export function inspirationStatusBadge(
+  video: InspirationVideoCard
+): { tone: "ok" | "bad"; label: string } | undefined {
   const tone = inspirationStatusTone(video);
-  switch (tone) {
-    case "rejected":
-      return "bg-[var(--pf-danger)]";
-    case "used":
-      return "bg-[var(--pf-success)]";
-    case "fresh":
-      return "bg-[var(--pf-lamp-amber)]";
-    default: {
-      const _never: never = tone;
-      return _never;
-    }
-  }
+  if (tone === "fresh") return undefined;
+  return {
+    tone: tone === "used" ? "ok" : "bad",
+    label: inspirationSourceStatusLabel(video),
+  };
 }
 
-export function inspirationStatusPillClass(video: InspirationVideoCard) {
-  const tone = inspirationStatusTone(video);
-  switch (tone) {
-    case "rejected":
-      return "pf-status-danger";
-    case "used":
-      return "pf-status-success";
-    case "fresh":
-      return "border-[var(--pf-border)] bg-[var(--pf-active)] text-[var(--pf-muted)]";
-    default: {
-      const _never: never = tone;
-      return _never;
-    }
-  }
+export function inspirationVideoTitle(video: InspirationVideoCard) {
+  const caption = video.caption?.trim();
+  return caption ? caption.split("\n")[0] : video.creatorHandle;
 }
 
-export function emptyLibraryCopy(
+export function emptyLibraryTitle(
   search: string,
   filter: InspirationSourceFeedFilter
-): { title: string; description: string } {
-  if (search.trim()) {
-    return {
-      title: "No sources match your search",
-      description:
-        "Try another creator, caption phrase, or clear the search to see every source in this view.",
-    };
-  }
+): string {
+  if (search.trim()) return "No sources match your search";
 
   switch (filter) {
     case "used":
-      return {
-        title: "No used sources in this view",
-        description:
-          "This creator view does not have any videos that have already been sent to Clone.",
-      };
+      return "No used sources in this view";
     case "rejected":
-      return {
-        title: "No rejected sources in this view",
-        description:
-          "Reject a source when you know it will never become clone material.",
-      };
+      return "No rejected sources in this view";
     case "all":
     case "unused":
-      return {
-        title: "Everything here is used or rejected",
-        description:
-          "Switch to Used or Rejected to review prior decisions, or refresh creators to bring in new options.",
-      };
+      return "Everything here is used or rejected";
     default: {
       const _never: never = filter;
       return _never;

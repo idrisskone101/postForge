@@ -1,212 +1,230 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { Compass, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Icon } from "@/components/workbench/icon";
+import { iconButtonClass } from "@/components/workbench/icon-button";
 import { cn } from "@/lib/utils";
 import type { TrackedInspirationAccount } from "@/lib/inspiration/types";
-import {
-  getCreatorSyncMeta,
-  getInspirationAvatarSrc,
-} from "./inspiration-models";
+import { getCreatorSyncMeta, getInspirationAvatarSrc } from "./inspiration-models";
 import type { InspirationWorkspace } from "./types";
 
-export function InspirationCreatorRail({
-  workspace,
-}: {
-  workspace: InspirationWorkspace;
-}) {
+export function InspirationCreatorRail({ workspace }: { workspace: InspirationWorkspace }) {
   const {
     accounts,
     activeFilter,
     setActiveFilter,
     refreshingIds,
-    deletingIds,
     trackedVideoCount,
     accountCursor,
     isLoadingMoreAccounts,
     handleRefreshAccount,
-    handleDeleteAccount,
     handleLoadMoreAccounts,
   } = workspace;
+  const refreshingAll = refreshingIds.length > 0;
 
   return (
     <section
       aria-labelledby="tracked-creators-heading"
-      className="min-w-0 max-w-full overflow-hidden [contain:inline-size_layout_paint]"
+      className="wb-panel min-w-0 gap-2.5 px-3 pt-[18px] pb-3 lg:w-[264px] lg:flex-none"
     >
-      <div className="mb-3">
-        <h2 id="tracked-creators-heading" className="pf-section-title">
+      <div className="flex h-8 items-center justify-between px-2">
+        <h2 id="tracked-creators-heading" className="wb-panel-title">
           Tracked creators
         </h2>
-        <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-          Choose a creator to narrow the source library.
-        </p>
-      </div>
-
-      <div
-        data-creator-list="true"
-        data-creator-scroll-viewport="true"
-        className="flex w-full min-w-0 max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 [contain:inline-size]"
-      >
         <button
           type="button"
-          onClick={() => setActiveFilter("all")}
-          title="All tracked creator videos"
-          className={cn(
-            "flex w-auto shrink-0 snap-start items-center gap-2.5 rounded-[8px] border px-3 py-2.5 text-left transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-            activeFilter === "all"
-              ? "border-primary bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)] ring-1 ring-primary/25"
-              : "pf-card hover:bg-[var(--pf-active)]"
-          )}
+          onClick={() =>
+            accounts.forEach((account) => {
+              if (!refreshingIds.includes(account.id)) void handleRefreshAccount(account.id);
+            })
+          }
+          disabled={accounts.length === 0 || refreshingAll}
+          aria-label={refreshingAll ? "Refreshing creators" : "Refresh all creators"}
+          title="Refresh all creators"
+          className={iconButtonClass("quiet", 30)}
         >
-          <span
-            className={cn(
-              "flex size-8 shrink-0 items-center justify-center rounded-full",
-              activeFilter === "all"
-                ? "bg-[var(--pf-surface)]/40"
-                : "bg-[var(--pf-active)] text-[var(--pf-muted)]"
-            )}
-          >
-            <Compass className="size-4" />
-          </span>
-          <span className="whitespace-nowrap text-[13px] font-semibold">
-            Creator Feed
-          </span>
-          <span
-            className={cn(
-              "pf-data text-[11px] font-semibold",
-              activeFilter === "all"
-                ? "text-[var(--sidebar-accent-foreground)]"
-                : "text-[var(--pf-muted)]"
-            )}
-          >
-            {trackedVideoCount}
-          </span>
+          <Icon name="refresh" size={14} />
         </button>
+      </div>
 
-        {accounts.map((account) => {
-          const isActive = activeFilter === account.id;
-          const isRefreshing = refreshingIds.includes(account.id);
-          const isDeleting = deletingIds.includes(account.id);
-          const syncMeta = getCreatorSyncMeta(account, isRefreshing);
-
-          return (
-            <div
-              key={account.id}
-              className={cn(
-                "group flex w-[13.5rem] max-w-[calc(100vw-3rem)] shrink-0 snap-start items-center rounded-[8px] border pr-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-                isActive
-                  ? "border-primary bg-[var(--sidebar-accent)] ring-1 ring-primary/25"
-                  : "pf-card hover:bg-[var(--pf-active)]"
-              )}
-            >
-              <button
-                type="button"
-                onClick={() => setActiveFilter(account.id)}
-                className="flex min-w-0 flex-1 items-center gap-2.5 px-2.5 py-2 text-left"
-                title={`${account.handleDisplay} · ${syncMeta.label}`}
-              >
-                <CreatorSyncAvatar account={account} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-semibold text-[var(--pf-ink)]">
-                    {account.handleDisplay}
-                  </span>
-                  <span
-                    className={cn("mt-0.5 block truncate text-[11px]", syncMeta.className)}
-                  >
-                    {syncMeta.label}
-                  </span>
-                </span>
-                <span className="pf-data text-[11px] font-semibold text-[var(--pf-muted)]">
-                  {account.videoCount}
-                </span>
-              </button>
-              <span className="flex shrink-0 flex-col gap-0.5">
-                <button
-                  type="button"
-                  onClick={() => void handleRefreshAccount(account.id)}
-                  disabled={isRefreshing || isDeleting}
-                  className="flex size-6 items-center justify-center rounded-[6px] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)] disabled:opacity-50"
-                  aria-label={`Refresh ${account.handleDisplay}`}
-                >
-                  {isRefreshing ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    <RefreshCw className="size-3" />
-                  )}
-                  <span className="sr-only">Refresh</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void handleDeleteAccount(account)}
-                  disabled={isDeleting}
-                  className="flex size-6 items-center justify-center rounded-[6px] text-[var(--pf-muted)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
-                  aria-label={`Remove ${account.handleDisplay}`}
-                >
-                  {isDeleting ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    <Trash2 className="size-3" />
-                  )}
-                  <span className="sr-only">Remove</span>
-                </button>
-              </span>
-              {account.lastSyncError && (
-                <span className="sr-only">{account.lastSyncError}</span>
-              )}
-            </div>
-          );
-        })}
-        {accountCursor ? (
+      <ul
+        aria-label="Creators"
+        className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 max-lg:snap-x max-lg:overscroll-x-contain lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
+      >
+        <li className="max-lg:w-[200px] max-lg:flex-none max-lg:snap-start">
           <button
             type="button"
-            onClick={() => void handleLoadMoreAccounts()}
-            disabled={isLoadingMoreAccounts}
-            data-inspiration-load-more-accounts="true"
-            title="Load more tracked creators"
-            className="pf-card flex w-auto shrink-0 snap-start items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[var(--pf-active)] disabled:opacity-50"
+            onClick={() => setActiveFilter("all")}
+            aria-pressed={activeFilter === "all"}
+            className={ROW_CLASS}
           >
-            {isLoadingMoreAccounts ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <span className="whitespace-nowrap text-[13px] font-semibold text-[var(--pf-ink)]">
-                Load more
-              </span>
-            )}
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-raised-strong text-fg">
+              <Icon name="grid" size={16} />
+            </span>
+            <RowText
+              title="All creators"
+              meta={`${trackedVideoCount} ${trackedVideoCount === 1 ? "post" : "posts"}`}
+              active={activeFilter === "all"}
+            />
           </button>
+        </li>
+        {accounts.map((account) => (
+          <CreatorRow key={account.id} account={account} workspace={workspace} />
+        ))}
+        {accountCursor ? (
+          <li className="flex max-lg:flex-none max-lg:items-center">
+            <button
+              type="button"
+              onClick={() => void handleLoadMoreAccounts()}
+              disabled={isLoadingMoreAccounts}
+              data-inspiration-load-more-accounts="true"
+              className="wb-btn wb-btn-32 w-full max-lg:w-auto max-lg:whitespace-nowrap lg:mt-1"
+            >
+              {isLoadingMoreAccounts ? "Loading creators" : "Load more creators"}
+            </button>
+          </li>
         ) : null}
-      </div>
+      </ul>
     </section>
   );
 }
 
-function CreatorSyncAvatar({
+const ROW_CLASS = [
+  "flex w-full min-w-0 items-center gap-2.5 rounded-lg p-2.5 text-left",
+  "transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf",
+  "hover:bg-raised/60 aria-pressed:bg-raised",
+  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
+].join(" ");
+
+const META_TONE = {
+  live: "text-ember-text",
+  warn: "text-warn",
+  muted: "text-fg-muted",
+} as const;
+
+function CreatorRow({
   account,
+  workspace,
 }: {
   account: TrackedInspirationAccount;
+  workspace: InspirationWorkspace;
 }) {
+  const { activeFilter, setActiveFilter, refreshingIds, deletingIds } = workspace;
+  const isActive = activeFilter === account.id;
+  const isRefreshing = refreshingIds.includes(account.id);
+  const isDeleting = deletingIds.includes(account.id);
+  const sync = getCreatorSyncMeta(account, isRefreshing);
+
+  return (
+    <li
+      className={cn(
+        "flex min-w-0 flex-col rounded-lg max-lg:w-[220px] max-lg:flex-none max-lg:snap-start",
+        isActive && "gap-2.5 bg-raised pb-2.5"
+      )}
+      title={account.lastSyncError ?? undefined}
+    >
+      <button
+        type="button"
+        onClick={() => setActiveFilter(account.id)}
+        aria-pressed={isActive}
+        className={cn(ROW_CLASS, isActive && "pb-0 hover:bg-transparent aria-pressed:bg-transparent")}
+      >
+        <CreatorAvatar account={account} />
+        <RowText
+          title={account.handleDisplay}
+          meta={
+            <>
+              {sync.tone === "live" && <span aria-hidden="true" className="mr-1.5 inline-block size-1.5 rounded-full bg-ember align-middle" />}
+              {sync.label}
+            </>
+          }
+          metaClassName={META_TONE[sync.tone]}
+          active={isActive}
+        />
+      </button>
+      {isActive && (
+        <div className="flex gap-1.5 px-2.5">
+          <button
+            type="button"
+            onClick={() => void workspace.handleRefreshAccount(account.id)}
+            disabled={isRefreshing || isDeleting}
+            aria-label={`Refresh ${account.handleDisplay}`}
+            className="wb-btn wb-btn-strong h-[30px] min-h-0 flex-1 gap-1.5 px-0 text-[12px] leading-4"
+          >
+            <Icon name="refresh" size={14} />
+            {isRefreshing ? "Refreshing" : "Refresh"}
+          </button>
+          <button
+            type="button"
+            onClick={() => void workspace.handleDeleteAccount(account)}
+            disabled={isDeleting}
+            aria-label={`Remove ${account.handleDisplay}`}
+            className="wb-btn wb-btn-strong h-[30px] min-h-0 flex-1 px-0 text-[12px] leading-4 text-fg-secondary"
+          >
+            {isDeleting ? "Removing" : "Remove"}
+          </button>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function RowText({
+  title,
+  meta,
+  metaClassName = "text-fg-muted",
+  active,
+}: {
+  title: string;
+  meta: ReactNode;
+  metaClassName?: string;
+  active: boolean;
+}) {
+  return (
+    <span className="flex min-w-0 flex-1 flex-col">
+      <span
+        className={cn(
+          "truncate text-[14px] leading-[18px] text-fg",
+          active ? "font-semibold" : "font-medium"
+        )}
+      >
+        {title}
+      </span>
+      <span
+        className={cn(
+          "truncate text-[12px] leading-4",
+          active && metaClassName === "text-fg-muted" ? "text-fg-secondary" : metaClassName
+        )}
+        suppressHydrationWarning
+      >
+        {meta}
+      </span>
+    </span>
+  );
+}
+
+function CreatorAvatar({ account }: { account: TrackedInspirationAccount }) {
   const [avatarFailed, setAvatarFailed] = useState(false);
   const avatarSrc =
     account.avatarUrl && !avatarFailed
       ? getInspirationAvatarSrc(account.id, account.updatedAt)
       : null;
-  const fallback = account.handleDisplay.slice(1, 3).toUpperCase();
 
   return (
-    <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] text-[11px] font-medium text-[var(--pf-muted)]">
+    <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-media text-[12px] font-semibold text-fg-secondary">
       {avatarSrc ? (
         <Image
           src={avatarSrc}
           alt=""
-          width={32}
-          height={32}
+          width={36}
+          height={36}
           unoptimized
           className="size-full object-cover"
           onError={() => setAvatarFailed(true)}
         />
       ) : (
-        fallback
+        account.handleDisplay.slice(1, 3).toUpperCase()
       )}
     </span>
   );
