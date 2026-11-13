@@ -63,7 +63,7 @@ function MenuPopover({
     const roomAbove = anchor.top - MENU_CLEARANCE_TOP - MENU_GAP;
     const flips = menu.offsetHeight > roomBelow && roomAbove > roomBelow;
     if (flips) menu.dataset.side = "top";
-    menu.style.maxHeight = `${Math.min(MENU_MAX_HEIGHT, flips ? roomAbove : roomBelow)}px`;
+    menu.style.maxHeight = `${Math.max(MENU_MIN_HEIGHT, Math.min(MENU_MAX_HEIGHT, flips ? roomAbove : roomBelow))}px`;
     menuItems(menu)[0]?.focus({ preventScroll: true });
   }, []);
 
@@ -137,6 +137,8 @@ function rovingTarget(menu: HTMLElement, key: string) {
 const EXIT_MS = 160;
 const MENU_GAP = 6;
 const MENU_MAX_HEIGHT = 440;
+/** Two items and the fade: below this the menu overflows the window, it does not collapse. */
+const MENU_MIN_HEIGHT = 96;
 /** Keeps a flipped menu clear of the mobile bar and the page edge. */
 const MENU_CLEARANCE_TOP = 64;
 const MENU_CLEARANCE_BOTTOM = 8;
