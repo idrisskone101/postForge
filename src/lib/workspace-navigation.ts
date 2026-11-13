@@ -33,7 +33,6 @@ export const workspaceNavigationGroups = {
       label: "Home",
       href: "/",
       match: ["/"],
-      primaryAction: { label: "New clone", href: "/ugc-clone", icon: "plus" },
     },
     { label: "Jobs", href: "/jobs", match: ["/jobs"] },
   ],

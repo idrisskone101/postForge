@@ -1,6 +1,5 @@
 {
   "src/lib/ai/slideshow-renderer.ts": 1,
-  "src/lib/costs/chart-colors.ts": 6,
   "src/lib/slideshow/constants.ts": 1,
   "src/lib/slideshow/overlay-tree.tsx": 2,
   "src/lib/slideshow/persist-render.ts": 1,

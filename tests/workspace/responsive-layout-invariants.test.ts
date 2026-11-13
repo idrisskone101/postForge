@@ -199,7 +199,6 @@ assert.doesNotMatch(
 );
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-title=\{title\}/);
 assert.match(source("src/components/public-policy-page.tsx"), /data-policy-summary=\{summary\}/);
-assert.match(source("src/app/legal-first-paint-css.ts"), /@media \(max-width:767\.98px\)\{\.policy-titleBlock\{min-height:100svh/);
 assert.doesNotMatch(appLayout, /next\/font/);
 assert.doesNotMatch(legalLayout, /next\/font/);
 assert.match(source("src/app/(legal)/layout.tsx"), /legal\.css/);

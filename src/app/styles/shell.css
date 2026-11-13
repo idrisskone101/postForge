@@ -304,7 +304,8 @@
     padding-right: 8px;
   }
 
-  .wb-btn.wb-back-pill {
+  .wb-btn.wb-back-pill,
+  .wb-btn.wb-back-pill:has(> svg:first-child) {
     gap: 4px;
     padding-left: 10px;
     padding-right: 16px;
