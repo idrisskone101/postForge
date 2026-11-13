@@ -17,6 +17,7 @@ import type { CollectionsWorkspace, ConfirmRequest } from "./types";
 export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorkspace }) {
   const {
     collections,
+    usage,
     assets,
     filteredAssets,
     search,
@@ -53,8 +54,7 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
             {collections.map((collection, index) => (
               <CollectionTile
                 key={collection.id}
-                collection={collection}
-                assets={assets}
+                view={{ collection, assets, automationCount: usage[collection.id] }}
                 priority={index === 0}
                 onOpen={setActiveId}
               />

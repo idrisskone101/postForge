@@ -3,19 +3,24 @@ import { Icon } from "@/components/workbench";
 import { MediaImage } from "@/components/workbench/media-image";
 import type { CollectionAssetRecord, CollectionRecord } from "@/lib/collections";
 import { cn } from "@/lib/utils";
+import { collectionUsageLabel } from "./collection-usage";
 import { assetUrl, assetsForCollection, formatShortDate } from "./collections-helpers";
 
 export function CollectionTile({
-  collection,
-  assets,
+  view,
   priority,
   onOpen,
 }: {
-  collection: CollectionRecord;
-  assets: CollectionAssetRecord[];
+  view: {
+    collection: CollectionRecord;
+    assets: CollectionAssetRecord[];
+    /** Automations that draw from this collection, counted on the server. */
+    automationCount?: number;
+  };
   priority: boolean;
   onOpen: (id: string) => void;
 }) {
+  const { collection, assets, automationCount } = view;
   const [lead, ...rest] = assetsForCollection(collection, assets).slice(0, 4);
   const side = rest.length === 3 ? rest : rest.slice(0, 2);
 
@@ -43,11 +48,11 @@ export function CollectionTile({
       </span>
       <span className="flex min-w-0 items-start justify-between gap-2">
         <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+          <span className="line-clamp-2 text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]">
             {collection.name}
           </span>
           <span className="truncate text-[13px] leading-4 text-fg-muted">
-            Updated {formatShortDate(collection.updatedAt)}
+            {collectionUsageLabel(automationCount) ?? `Updated ${formatShortDate(collection.updatedAt)}`}
           </span>
         </span>
         <span className="wb-mono shrink-0 text-fg-secondary">{collection.assetIds.length}</span>
