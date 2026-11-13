@@ -87,7 +87,10 @@ while (( SECONDS < deadline )); do
     fi
     if [[ "$http_code" == "200" ]]; then
       if [[ "${KODE_SMOKE_ROUTES:-}" == "1" ]]; then
-        mapfile -t smoke_routes < <(
+        smoke_routes=()
+        while IFS= read -r smoke_route; do
+          smoke_routes+=("$smoke_route")
+        done < <(
           pnpm exec tsx -e 'import { WORKSPACE_SMOKE_ROUTES } from "./scripts/workspace-smoke-routes.ts"; process.stdout.write(WORKSPACE_SMOKE_ROUTES.join("\n") + "\n");'
         )
         for route in "${smoke_routes[@]}"; do
