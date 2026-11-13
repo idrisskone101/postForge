@@ -34,11 +34,11 @@ export function GalleryListTable({
       <div className="wb-table-head max-md:hidden" aria-hidden="true">
         <span className="w-[22px] shrink-0" />
         <span className="min-w-0 flex-1">Output</span>
-        <span className="w-16 shrink-0">Status</span>
-        {showSize && <span className="w-[110px] shrink-0">Size</span>}
-        <span className="w-[72px] shrink-0">Duration</span>
-        <span className="w-[110px] shrink-0">Created</span>
-        <span className="w-[72px] shrink-0" />
+        <span className="w-12 shrink-0">Status</span>
+        {showSize && <span className="w-[88px] shrink-0">Size</span>}
+        <span className="w-[60px] shrink-0">Duration</span>
+        <span className="w-[100px] shrink-0">Created</span>
+        <span className="w-14 shrink-0" />
       </div>
       <ul className="flex min-w-0 flex-col">
         {items.map((item) => {
@@ -74,14 +74,14 @@ export function GalleryListTable({
                     thumbnail={{ sizes: "40px" }}
                   />
                 </span>
-                <div className="flex min-w-0 flex-col">
+                <div className="flex min-w-0 flex-1 flex-col">
                   <button
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
                       openPreview(item);
                     }}
-                    className="wb-row-title min-w-0 text-left"
+                    className="wb-row-title max-w-full min-w-0 self-start text-left"
                     title={title}
                   >
                     {title}
@@ -91,28 +91,28 @@ export function GalleryListTable({
                   </span>
                 </div>
               </div>
-              <span className="w-16 shrink-0 max-md:w-auto">
+              <span className="w-12 shrink-0 max-md:w-auto">
                 <StatusBadge
                   tone={reviewStatusTone[item.reviewStatus.value]}
                   label={reviewStatusLabel[item.reviewStatus.value]}
                 />
               </span>
               {showSize && (
-                <span className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden">
+                <span className="wb-mono w-[88px] shrink-0 text-fg-secondary max-md:hidden">
                   {galleryItemSize(item) ?? "-"}
                 </span>
               )}
-              <span className="wb-mono w-[72px] shrink-0 text-fg-secondary max-md:hidden">
+              <span className="wb-mono w-[60px] shrink-0 text-fg-secondary max-md:hidden">
                 {formatGalleryDuration(item.durationSec) ?? "-"}
               </span>
               <span
-                className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden"
+                className="wb-mono w-[100px] shrink-0 text-fg-secondary max-md:hidden"
                 suppressHydrationWarning
               >
                 {formatRelativeDate(item.createdAt)}
               </span>
               <span
-                className="flex w-[72px] shrink-0 items-center justify-end gap-1.5 max-md:w-auto"
+                className="flex w-14 shrink-0 items-center justify-end gap-1.5 max-md:w-auto"
                 onClick={(event) => event.stopPropagation()}
               >
                 <IconButton
