@@ -81,7 +81,7 @@
     background: color-mix(in srgb, var(--pf-panel) 60%, var(--pf-raised));
   }
 
-  .pf-empty-stage {
+  .pf-empty-stage:not(.pf-card) {
     border: 1.5px dashed var(--pf-outline);
     border-radius: var(--pf-radius-tile);
   }

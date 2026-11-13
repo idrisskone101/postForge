@@ -21,7 +21,6 @@ export function Sidebar() {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const counts = useWorkspaceNotifications(!publicPolicyPage);
   const activeItem = getActiveWorkspaceItem(pathname);
-  const quickAction = activeItem?.primaryAction;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -87,16 +86,6 @@ export function Sidebar() {
           </div>
         </dialog>
         <PostForgeBrand />
-        {quickAction && (
-          <Link
-            href={quickAction.href}
-            aria-label={quickAction.label}
-            title={quickAction.label}
-            className="wb-icon-btn wb-icon-btn-strong wb-icon-btn-40"
-          >
-            <Icon name={quickAction.icon} strokeWidth={2} />
-          </Link>
-        )}
       </div>
 
       <aside id="workspace-sidebar">
