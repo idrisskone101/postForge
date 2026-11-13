@@ -20,10 +20,10 @@ export function PlaybookPicker({ picker }: { picker: PlaybookPickerView }) {
       <PlaybookToolbar picker={picker} />
       <div
         data-playbook-body="true"
-        className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-5 lg:flex-row lg:overflow-hidden"
+        className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-5 lg:flex-row lg:overflow-hidden"
       >
         <PlaybookPreview template={picker.previewTemplate} />
-        <div className="min-w-0 lg:flex-1 lg:overflow-y-auto">
+        <div className="wb-scroll-fade-y wb-scroll-fade-deep min-w-0 lg:flex-1 lg:overflow-y-auto">
           {templates.length === 0 ? (
             <EmptyState icon="search" title="No matching playbooks" className="min-h-[330px]">
               <Button variant="strong" onClick={clearFiltersHandler(picker)}>
