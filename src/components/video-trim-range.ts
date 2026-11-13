@@ -86,3 +86,5 @@ export function getTrimSummary({
     range.endTime
   )}. Removes ${removals.join(" and ")}.`;
 }
+
+export type TrimRange = ReturnType<typeof normalizeTrimRange>;

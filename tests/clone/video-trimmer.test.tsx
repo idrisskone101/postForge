@@ -92,6 +92,10 @@ assert.match(markup, /Removed from start/);
 assert.match(markup, /Removed from end/);
 assert.match(markup, /data-filmstrip-placeholder="true"/);
 assert.doesNotMatch(markup, /animate-pulse/);
+assert.match(markup, /3\.40s selected/);
+assert.match(markup, />Use full video</);
+assert.match(markup, /Apply trim/);
+assert.doesNotMatch(markup, /Over 30s\./);
 
 const longSourceMarkup = renderToStaticMarkup(
   <VideoTrimmer
@@ -106,4 +110,5 @@ const longSourceMarkup = renderToStaticMarkup(
 
 assert.match(longSourceMarkup, /30.00s selected/);
 assert.match(longSourceMarkup, /Trim required/);
-assert.doesNotMatch(longSourceMarkup, /Use Full Video/);
+assert.doesNotMatch(longSourceMarkup, /Use full video/);
+assert.match(longSourceMarkup, /Over 30s\./);
