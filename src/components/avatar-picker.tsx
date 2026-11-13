@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, User } from "lucide-react";
 import { apiDelete, apiGet } from "@/lib/api/client";
 import { getAvatarOptionLabel } from "@/lib/avatar-workflow";
 import type {
@@ -15,7 +14,9 @@ import {
   AvatarActionErrorNotice,
   AvatarCreationCard,
   AvatarOptionCard,
+  AvatarPickerSkeleton,
 } from "@/components/avatar-picker-cards";
+import { Button, EmptyState } from "@/components/workbench";
 import { AvatarGalleryPanel } from "@/components/avatar-picker-gallery";
 import { AvatarGeneratePanel } from "@/components/avatar-picker-generate";
 import { AvatarImportMode } from "@/components/avatar-picker-import-mode";
@@ -137,13 +138,7 @@ export function AvatarPicker({
   };
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-4 gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
-        ))}
-      </div>
-    );
+    return <AvatarPickerSkeleton />;
   }
 
   switch (mode) {
@@ -169,7 +164,7 @@ export function AvatarPicker({
   );
 
   return (
-    <div className="space-y-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -185,8 +180,13 @@ export function AvatarPicker({
         />
       )}
 
-      <div className="grid max-h-[520px] grid-cols-2 gap-3 overflow-y-auto pr-1 2xl:grid-cols-3">
-        {orderedAvatars.map((avatar, index) => {
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <div className="-m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1">
+          {orderedAvatars.length === 0 ? (
+            <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
+          ) : (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+              {orderedAvatars.map((avatar, index) => {
           const isSelected = selectedId === avatar.id;
           const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
           const avatarLabel = getAvatarOptionLabel(sourceIndex >= 0 ? sourceIndex : index);
@@ -202,14 +202,10 @@ export function AvatarPicker({
               }}
             />
           );
-        })}
-
-        {orderedAvatars.length === 0 && (
-          <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/25 py-6 text-muted-foreground">
-            <User className="mb-2 size-7" />
-            <p className="text-xs font-semibold">No saved identities yet</p>
-          </div>
-        )}
+              })}
+            </div>
+          )}
+        </div>
 
         <AvatarCreationCard
           isUploading={isUploading}
@@ -220,15 +216,14 @@ export function AvatarPicker({
         />
       </div>
       {avatarsNextCursor && (
-        <button
-          type="button"
+        <Button
+          size={32}
           onClick={() => void loadMoreAvatars()}
           disabled={isLoadingMoreAvatars}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+          className="self-start"
         >
-          {isLoadingMoreAvatars && <Loader2 className="size-3.5 animate-spin" />}
-          {isLoadingMoreAvatars ? "Loading..." : "Load more"}
-        </button>
+          {isLoadingMoreAvatars ? "Loading" : "Load more"}
+        </Button>
       )}
     </div>
   );
