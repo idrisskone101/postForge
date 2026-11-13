@@ -1,17 +1,24 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useCallback, useState } from "react";
 import { Panel } from "@/components/workbench/panel";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { axisMoney, modelLabel, niceMoneyCeiling } from "./spend-format";
+import { axisMoney, modelLabel, niceMoneyCeiling, spendChartBars } from "./spend-format";
 import type { SpendAnalysisGridProps } from "./types";
 
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
-  const top = niceMoneyCeiling(
-    Math.max(0, ...dashboard.chartData.map((point) => point.image + point.video)),
-  );
-  const points = dashboard.chartData;
+  const [plotWidth, setPlotWidth] = useState<number | null>(null);
+  const plotRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const observer = new ResizeObserver(([entry]) => setPlotWidth(Math.floor(entry.contentRect.width)));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  const chart = spendChartBars(dashboard.chartData, plotWidth ?? 0);
+  const points = chart.bars;
+  const top = niceMoneyCeiling(Math.max(0, ...points.map((point) => point.image + point.video)));
   const xLabels = [dayFirst(points[0]?.date), dayFirst(points[Math.floor(points.length / 2)]?.date), "Today"];
   const formats = [
     { key: "video", name: "Video", cost: dashboard.breakdown.video.cost, swatch: "bg-chart-1" },
@@ -23,9 +30,9 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
 
   return (
     <div className="grid min-w-0 gap-3 lg:grid-cols-2 xl:flex">
-      <Panel pad="none" className="min-w-0 gap-2.5 p-5 lg:col-span-2 xl:flex-1" aria-label="Spend by day">
+      <Panel pad="none" className="min-w-0 gap-2.5 p-5 lg:col-span-2 xl:flex-1" aria-label={chart.unit === "week" ? "Spend by week" : "Spend by day"}>
         <div className="flex h-7 shrink-0 items-center gap-4">
-          <h2 className="wb-panel-title flex-1">By day</h2>
+          <h2 className="wb-panel-title flex-1">{chart.unit === "week" ? "By week" : "By day"}</h2>
           <Legend swatch="bg-chart-1" label="Video" />
           <Legend swatch="bg-chart-2" label="Image" />
         </div>
@@ -39,8 +46,8 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             <span className="border-t border-dotted border-[var(--pf-chart-grid)]" />
             <span className="border-t border-dotted border-[var(--pf-chart-grid)]" />
             <span className="border-t border-[var(--pf-chart-grid)]" />
-            <div className="wb-fade-in absolute inset-x-0 top-2 h-[150px]">
-              <CostChart data={points} max={top} />
+            <div ref={plotRef} className="wb-fade-in absolute inset-x-0 top-2 h-[150px]">
+              {plotWidth ? <CostChart data={points} max={top} barSize={chart.barSize} /> : null}
             </div>
           </div>
         </div>

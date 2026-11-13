@@ -1,5 +1,5 @@
 import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
-import type { SpendPeriod } from "@/lib/costs/spend-period";
+import { roundSpendCents, type SpendChartPoint, type SpendPeriod } from "@/lib/costs/spend-period";
 import { formatCost } from "@/lib/utils/format-cost";
 
 const PERIOD_DAYS: Record<SpendPeriod, number> = { "7d": 7, "30d": 30, "90d": 90 };
@@ -31,10 +31,11 @@ export function niceMoneyCeiling(value: number) {
   return (step ?? 10) * magnitude;
 }
 
-export function changeLabel(changePercent: number) {
-  if (changePercent === 0 || !Number.isFinite(changePercent)) return null;
-  const rounded = Math.round(changePercent);
-  return `${rounded > 0 ? "+" : ""}${rounded}%`;
+/** Dollar change against the previous window ("+$0.24", "-$1.10"); null when there was no previous window. */
+export function changeLabel(current: number, previous: number | null) {
+  if (previous === null || !Number.isFinite(previous) || !Number.isFinite(current)) return null;
+  const cents = Math.round((current - previous) * 100);
+  return `${cents < 0 ? "-" : "+"}${formatCost(Math.abs(cents) / 100)}`;
 }
 
 export function createdLabel(value: string, now: Date) {
@@ -61,4 +62,39 @@ export function modelLabel(model: string) {
 
 export function shortJobId(jobId: string) {
   return jobId.slice(0, 8);
+}
+
+export type SpendChartBar = { label: string; date: string; image: number; video: number };
+export type SpendChartBars = { unit: "day" | "week"; bars: SpendChartBar[]; barSize: number };
+
+const MIN_SLOT = 4;
+const MAX_BAR = 14;
+
+/**
+ * Days when each day gets a 3px bar and a 1px gap in `width`, otherwise weeks counted back from
+ * today so the last bar is the current week. Totals are the same either way. An unmeasured
+ * width (0, before layout) keeps days.
+ */
+export function spendChartBars(points: SpendChartPoint[], width: number): SpendChartBars {
+  const daily = width <= 0 || points.length === 0 || width / points.length >= MIN_SLOT;
+  const bars = daily ? points.map((point) => ({ ...point, label: point.date })) : weeklyBars(points);
+  const slot = bars.length > 0 ? width / bars.length : width;
+  const barSize = Math.max(3, Math.min(MAX_BAR, Math.floor(slot) - Math.max(1, Math.ceil(slot * 0.25))));
+  return { unit: daily ? "day" : "week", bars, barSize };
+}
+
+function weeklyBars(points: SpendChartPoint[]): SpendChartBar[] {
+  const bars: SpendChartBar[] = [];
+  for (let end = points.length; end > 0; end -= 7) {
+    const week = points.slice(Math.max(0, end - 7), end);
+    const first = week[0].date;
+    const last = week[week.length - 1].date;
+    bars.unshift({
+      label: first === last ? first : `${first} to ${last}`,
+      date: first,
+      image: roundSpendCents(week.reduce((sum, point) => sum + point.image, 0)),
+      video: roundSpendCents(week.reduce((sum, point) => sum + point.video, 0)),
+    });
+  }
+  return bars;
 }
