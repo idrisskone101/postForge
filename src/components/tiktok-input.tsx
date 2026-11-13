@@ -280,10 +280,13 @@ export function TikTokInput({
       )}
 
       {isLoadingSources ? (
-        <div aria-hidden="true" className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
-          {[0, 1, 2, 3].map((index) => (
-            <Skeleton key={index} shape="tile" className="aspect-[9/16]" />
-          ))}
+        <div aria-hidden="true" className="flex min-w-0 flex-col gap-2.5">
+          <Skeleton className="h-5 w-32" />
+          <div className="grid h-[512px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] content-start gap-x-3 gap-y-4 overflow-hidden">
+            {SOURCE_SKELETON_TILES.map((index) => (
+              <Skeleton key={index} shape="tile" className="aspect-[9/16]" />
+            ))}
+          </div>
         </div>
       ) : (
         <TikTokSavedSources
@@ -303,6 +306,9 @@ export function TikTokInput({
   );
 }
 
+// The loaded grid takes 512px of layout (520px less its 4px outset), so the placeholder holds the same block and the
+// step footer below it does not move when the saved sources arrive.
+const SOURCE_SKELETON_TILES = Array.from({ length: 16 }, (_, index) => index);
 
 function toVideoInfo(source: SavedTikTokSource): TikTokVideoInfo {
   return {
