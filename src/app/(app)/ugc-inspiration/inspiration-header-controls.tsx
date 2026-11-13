@@ -27,7 +27,7 @@ export function InspirationHeaderControls({
 
   return (
     <form
-      className="relative flex min-w-0 items-center gap-2"
+      className="relative flex min-w-0 items-center gap-2 max-sm:flex-wrap max-sm:justify-end"
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -66,7 +66,7 @@ export function InspirationHeaderControls({
         <p
           id={errorId}
           role="alert"
-          className="wb-float wb-fade-in absolute top-full left-0 z-30 mt-2 px-3 py-2 text-[13px] leading-4 text-bad"
+          className="wb-float wb-fade-in text-[13px] leading-4 text-bad max-sm:basis-full max-sm:rounded-none max-sm:bg-transparent max-sm:px-1 max-sm:shadow-none sm:absolute sm:top-full sm:left-0 sm:z-30 sm:mt-2 sm:px-3 sm:py-2"
         >
           Enter a TikTok @handle or profile URL
         </p>
