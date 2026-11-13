@@ -70,8 +70,6 @@
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "effectFns": [
-    "src/app/(app)/automations/new/automation-builder-client-lazy.tsx",
-    "src/app/(app)/automations/new/playbook-picker.tsx",
     "src/app/(app)/characters/new/character-builder-client-lazy.tsx",
     "src/app/(app)/costs/costs-page-client.tsx",
     "src/app/(app)/generate/use-generation-form.ts",

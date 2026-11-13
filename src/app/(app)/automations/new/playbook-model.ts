@@ -27,6 +27,23 @@ export type PlaybookPickerState = {
   onClose: () => void;
 };
 
+type PlaybookPickerHandlers = Pick<
+  PlaybookPickerState,
+  | "onCategoryChange"
+  | "onSearchChange"
+  | "onSortChange"
+  | "onViewChange"
+  | "onToggleFavorite"
+  | "onPreview"
+  | "onSelect"
+  | "onBuildFromScratch"
+  | "onClose"
+>;
+
+/** The picker as rendered: the server first paint has the data and no handlers yet. */
+export type PlaybookPickerView = Omit<PlaybookPickerState, keyof PlaybookPickerHandlers> &
+  Partial<PlaybookPickerHandlers>;
+
 export const PHASES: Phase[] = ["Hook", "Content", "CTA"];
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const FAVORITES_STORAGE_KEY = "postforge.automation-playbook-favorites";
@@ -48,6 +65,33 @@ export function templateNumber(template: AutomationTemplate) {
   if (template.id === "custom") return "+";
   const index = AUTOMATION_TEMPLATES.findIndex((candidate) => candidate.id === template.id);
   return `0${index + 1}`;
+}
+
+export function resolvePlaybookTemplate(requested: unknown) {
+  const id = typeof requested === "string" ? requested : "story-lesson";
+  return (
+    AUTOMATION_TEMPLATES.find((template) => template.id === id) ?? AUTOMATION_TEMPLATES[0]
+  );
+}
+
+export function firstPaintPlaybookPicker(selected: AutomationTemplate): PlaybookPickerView {
+  return {
+    templates: filterPlaybooks({
+      search: "",
+      category: "All",
+      sort: "recommended",
+      favoriteTemplateIds: [],
+    }),
+    categories: playbookCategories(),
+    categoryCounts: playbookCategoryCounts([]),
+    category: "All",
+    search: "",
+    sort: "recommended",
+    view: "grid",
+    favorites: [],
+    previewTemplate: selected,
+    selectedTemplateId: selected.id,
+  };
 }
 
 export function playbookCategories() {
