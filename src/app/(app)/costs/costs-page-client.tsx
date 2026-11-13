@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { costsHref } from "@/lib/costs/spend-period";
-import type { CostsPageClientProps, SpendPageHandlers } from "./types";
+import type { CostsPageClientProps, SpendLoadState, SpendPageHandlers } from "./types";
+import { SpendLoadError } from "./spend-load-error";
 import { SpendPageContent } from "./spend-page-content";
+import { SpendRangeControl } from "./spend-range-control";
+import { SpendSkeleton } from "./spend-skeleton";
 
 export function CostsPageClient(initial: CostsPageClientProps) {
   const { period, logPage, search, model } = initial;
@@ -12,6 +15,10 @@ export function CostsPageClient(initial: CostsPageClientProps) {
   const [dashboard, setDashboard] = useState(initial);
   const [prevSearch, setPrevSearch] = useState(search);
   const [queryDraft, setQueryDraft] = useState(search);
+  const [load, setLoad] = useState<{ state: SpendLoadState; attempt: number }>({
+    state: "loading",
+    attempt: 0,
+  });
 
   if (search !== prevSearch) {
     setPrevSearch(search);
@@ -28,7 +35,12 @@ export function CostsPageClient(initial: CostsPageClientProps) {
       fetch(`/api/costs/dashboard?${params.toString()}`)
         .then((response) => (response.ok ? response.json() : null))
         .then((payload: CostsPageClientProps | null) => {
-          if (cancelled || !payload) return;
+          if (cancelled) return;
+          if (!payload) {
+            setLoad((current) => (current.state === "ready" ? current : { ...current, state: "error" }));
+            return;
+          }
+          setLoad((current) => (current.state === "ready" ? current : { ...current, state: "ready" }));
           setDashboard((current) =>
             current.totalCost === payload.totalCost &&
             current.currentPeriodCost === payload.currentPeriodCost &&
@@ -42,7 +54,10 @@ export function CostsPageClient(initial: CostsPageClientProps) {
               : payload
           );
         })
-        .catch(() => undefined);
+        .catch(() => {
+          if (cancelled) return;
+          setLoad((current) => (current.state === "ready" ? current : { ...current, state: "error" }));
+        });
     }
     if (document.readyState === "complete") {
       loadDashboard();
@@ -53,7 +68,7 @@ export function CostsPageClient(initial: CostsPageClientProps) {
       cancelled = true;
       window.removeEventListener("load", loadDashboard);
     };
-  }, [period, logPage, search, model]);
+  }, [period, logPage, search, model, load.attempt]);
 
   useEffect(() => {
     if (queryDraft.trim() === search.trim()) return;
@@ -107,9 +122,17 @@ export function CostsPageClient(initial: CostsPageClientProps) {
   };
 
   return (
-    <SpendPageContent
-      dashboard={{ ...dashboard, search: queryDraft }}
-      handlers={handlers}
-    />
+    <>
+      <SpendRangeControl period={period} onChange={handlers.onPeriodChange} />
+      {load.state === "loading" ? <SpendSkeleton /> : null}
+      {load.state === "error" ? (
+        <SpendLoadError
+          onRetry={() => setLoad((current) => ({ state: "loading", attempt: current.attempt + 1 }))}
+        />
+      ) : null}
+      {load.state === "ready" ? (
+        <SpendPageContent dashboard={{ ...dashboard, search: queryDraft }} handlers={handlers} />
+      ) : null}
+    </>
   );
 }

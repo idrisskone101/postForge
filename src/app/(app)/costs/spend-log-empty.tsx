@@ -1,78 +1,46 @@
-"use client";
-
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { DollarSign } from "lucide-react";
-import { WorkspaceState } from "@/components/workspace-state";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { Button, buttonClass } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Panel } from "@/components/workbench/panel";
+import type { SpendPeriod } from "@/lib/costs/spend-period";
+import { periodDays } from "./spend-format";
 
-export function SpendLogEmpty({
-  emptyPeriod,
-  onClearFilters,
-}: {
-  emptyPeriod: boolean;
-  onClearFilters: () => void;
-}) {
-  const paintReady = useWindowLoadReady();
-  const title = emptyPeriod ? "No cost log entries yet" : "No matching cost log entries";
-  const description = emptyPeriod
-    ? "Create production work to populate Spend with cost entries."
-    : "Try a different model filter or search term.";
-
+/** A filter or search matched nothing inside a period that has spend. */
+export function SpendLogEmpty({ onClearFilters }: { onClearFilters: () => void }) {
   return (
-    <>
-      <div aria-hidden={paintReady || undefined} style={paintReady ? HIDDEN_SHELL : undefined}>
-        <WorkspaceState
-          tone="empty"
-          icon={DollarSign}
-          title={title}
-          description={description}
-          action={
-            emptyPeriod
-              ? { href: "/ugc-clone", label: "Start Clone" }
-              : { label: "Clear filters", onClick: onClearFilters }
-          }
-          secondaryAction={emptyPeriod ? { href: "/generate", label: "Open Generate" } : undefined}
-          className="min-h-56 border-0 bg-transparent"
-        />
-      </div>
-      {paintReady ? (
-        <div className="flex min-h-56 flex-col items-center justify-center gap-3 px-5 py-10 text-center">
-          <div className="grid size-14 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)]">
-            <DollarSign className="size-6" />
-          </div>
-          <h2 className="max-w-sm text-[16px] font-semibold leading-6 text-[var(--pf-ink)] [overflow-wrap:anywhere]">
-            {title}
-          </h2>
-          <p className="max-w-md text-[13px] leading-5 text-[var(--pf-muted)] [overflow-wrap:anywhere]">
-            {description}
-          </p>
-          <div className="mt-1 flex flex-wrap justify-center gap-2">
-            {emptyPeriod ? (
-              <>
-                <Link href="/ugc-clone" className="pf-button-primary">
-                  Start Clone
-                </Link>
-                <Link href="/generate" className="pf-button-secondary">
-                  Open Generate
-                </Link>
-              </>
-            ) : (
-              <button type="button" onClick={onClearFilters} className="pf-button-primary">
-                Clear filters
-              </button>
-            )}
-          </div>
-        </div>
-      ) : null}
-    </>
+    <EmptyState icon="search" title="No matching cost entries" className="min-h-[200px]">
+      <Button variant="strong" onClick={onClearFilters}>
+        Clear filters
+      </Button>
+    </EmptyState>
   );
 }
 
-const HIDDEN_SHELL: CSSProperties = {
-  position: "absolute",
-  width: 0,
-  height: 0,
-  overflow: "hidden",
-  clipPath: "inset(50%)",
-};
+/** The selected period has no cost log at all: one panel instead of empty charts. */
+export function SpendRangeEmpty({
+  period,
+  onWiden,
+}: {
+  period: SpendPeriod;
+  onWiden: () => void;
+}) {
+  return (
+    <Panel pad="none" className="min-w-0 flex-1 p-5 max-md:p-4" aria-label="No spend in this period">
+      <EmptyState
+        icon="spend"
+        title={`No spend in the last ${periodDays(period)} days`}
+        className="min-h-[320px] flex-1"
+      >
+        {period === "90d" ? (
+          <Link href="/generate" className={buttonClass("strong")}>
+            Open Generate
+          </Link>
+        ) : (
+          <Button variant="strong" onClick={onWiden}>
+            Show 90 days
+          </Button>
+        )}
+      </EmptyState>
+    </Panel>
+  );
+}

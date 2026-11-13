@@ -16,6 +16,7 @@ export function routeProvidesHeaderAccessory(pathname: string) {
     pathname === "/ugc-inspiration" ||
     pathname === "/gallery" ||
     pathname === "/generate" ||
-    pathname === "/performance"
+    pathname === "/performance" ||
+    pathname === "/costs"
   );
 }

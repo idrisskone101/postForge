@@ -108,53 +108,38 @@ const matchingEmptyMarkup = renderToStaticMarkup(
   </TooltipProvider>
 );
 
-assert.match(markup, /Spend/);
-assert.match(markup, /Cost tracking, budget signals, and model usage/);
-assert.match(markup, /7D/);
-assert.match(markup, /30D/);
-assert.match(markup, /90D/);
-assert.match(markup, /Export CSV/);
-assert.match(markup, /Period Spend/);
+assert.match(markup, />Spend</);
 assert.match(markup, /Generations/);
-assert.match(markup, /Avg cost/);
-assert.match(markup, /Top Model/);
-assert.match(markup, /Budget remaining/);
+assert.match(markup, /Budget left/);
 assert.match(markup, /Edit budget/);
-assert.match(markup, /Spend by Format/);
-assert.match(markup, /Spend by Model/);
-assert.match(markup, /Spend Over Time/);
-assert.match(markup, /Spend breakdown/);
-assert.match(markup, /Workflow type spend distribution/);
-assert.match(markup, /Generation Log/);
-assert.match(markup, /data-spend-analysis-grid="true"/);
-assert.match(markup, /xl:grid-cols-\[minmax\(0,1fr\)_340px\]/);
-assert.match(markup, /Search generations/);
+assert.match(markup, /\$4\.82/, "period spend is real text");
+assert.match(markup, /\$12\.75 all time/);
+assert.match(markup, /-12%/, "change against the previous period");
+assert.match(markup, /\$4\.82 \/ \$250/, "budget split as x / y");
+assert.match(markup, /By day/);
+assert.match(markup, /By format/);
+assert.match(markup, /By model/);
+assert.match(markup, /Generation log/);
+assert.match(markup, /Export CSV/);
+assert.match(markup, /Search cost log/);
 assert.match(markup, /kling-3\.0-motion/);
 assert.match(markup, /flux-pro/);
-assert.doesNotMatch(markup, /Analytics/);
-assert.doesNotMatch(markup, /Recent Activity/);
-assert.doesNotMatch(markup, /Model Distribution/);
-assert.ok(markup.indexOf("Period Spend") < markup.indexOf("Budget remaining"));
-assert.ok(markup.indexOf("Budget remaining") < markup.indexOf("Spend Over Time"));
-assert.ok(markup.indexOf("Spend Over Time") < markup.indexOf("Spend by Format"));
-assert.ok(markup.indexOf("Spend by Model") < markup.indexOf("Generation Log"));
+assert.match(markup, /job-1/);
+assert.doesNotMatch(markup, /data-spend-|sr-only|—|–/);
+assert.ok(markup.indexOf("Budget left") < markup.indexOf("By day"));
+assert.ok(markup.indexOf("By day") < markup.indexOf("By format"));
+assert.ok(markup.indexOf("By model") < markup.indexOf("Generation log"));
 
-assert.match(emptyMarkup, /data-workspace-state="empty"/);
-assert.match(emptyMarkup, /data-spend-empty="true"/);
-assert.match(emptyMarkup, /data-spend-chart="empty"/);
-assert.match(emptyMarkup, /No spend data yet/);
-assert.match(emptyMarkup, /No cost log entries yet/);
-assert.match(emptyMarkup, /Start Clone/);
-assert.match(emptyMarkup, /Open Generate/);
-assert.doesNotMatch(emptyMarkup, /No matching cost log entries/);
+assert.match(emptyMarkup, /No spend in the last 30 days/);
+assert.match(emptyMarkup, /Show 90 days/);
+assert.doesNotMatch(emptyMarkup, /Generation log/, "an empty period shows one panel, not empty charts");
+assert.doesNotMatch(emptyMarkup, /No matching cost entries/);
+assert.match(emptyMarkup, /\$0\.00/, "zero spend in a period with no cost log is a real zero");
 
-assert.match(matchingEmptyMarkup, /No matching cost log entries/);
+assert.match(matchingEmptyMarkup, /No matching cost entries/);
 assert.match(matchingEmptyMarkup, /Clear filters/);
 assert.match(matchingEmptyMarkup, /missing-job/);
-assert.doesNotMatch(matchingEmptyMarkup, /No cost log entries yet/);
-assert.doesNotMatch(matchingEmptyMarkup, /Start Clone/);
-
-assert.match(markup, /grid grid-cols-2 gap-3 xl:grid-cols-4/);
+assert.doesNotMatch(matchingEmptyMarkup, /No spend in the last/);
 
 const pagedLogs = Array.from({ length: 10 }, (_, index) => ({
   id: `log-${index}`,
@@ -187,9 +172,7 @@ const pagedMarkup = renderToStaticMarkup(
     />
   </TooltipProvider>
 );
-assert.match(pagedMarkup, /25 entries/);
-assert.match(pagedMarkup, /Page/);
-assert.match(pagedMarkup, /of 3/);
+assert.match(pagedMarkup, /1-10 \/ 25/);
 assert.match(pagedMarkup, /aria-label="Next cost log page"/);
 assert.match(pagedMarkup, /aria-label="Previous cost log page"/);
 assert.match(pagedMarkup, /value="flux"/);

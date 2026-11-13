@@ -80,18 +80,6 @@
   content: attr(data-settings-title);
 }
 
-[data-spend-budget-label]::before {
-  content: attr(data-spend-budget-label);
-}
 
-[data-spend-intro-text]::before {
-  content: attr(data-spend-intro-text);
-}
 
-[data-spend-note-text]::before {
-  content: attr(data-spend-note-text);
-}
 
-[data-spend-text]::before {
-  content: attr(data-spend-text);
-}
