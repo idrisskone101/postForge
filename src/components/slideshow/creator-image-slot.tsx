@@ -1,9 +1,7 @@
 "use client";
 
-import { ImagePlus, X } from "lucide-react";
-
+import { Icon } from "@/components/workbench";
 import { platformCollectionAssetUrl } from "@/lib/collections-client";
-import { cn } from "@/lib/utils";
 
 export function CreatorSlideImageSlot({
   assetId,
@@ -17,7 +15,7 @@ export function CreatorSlideImageSlot({
   onClear: () => void;
 }) {
   return (
-    <div className="relative mt-0.5 shrink-0">
+    <div className="relative size-[42px] shrink-0 self-start">
       <button
         type="button"
         onClick={onPick}
@@ -26,12 +24,12 @@ export function CreatorSlideImageSlot({
             ? `Change ${label} image`
             : `Add ${label} image from collections`
         }
-        className={cn(
-          "relative size-10 overflow-hidden rounded-lg border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30",
+        title={assetId ? `Change ${label} image` : `Add ${label} image from collections`}
+        className={
           assetId
-            ? "border-border bg-[#09090B]"
-            : "border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] text-muted-foreground hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]",
-        )}
+            ? "size-full overflow-hidden rounded-lg bg-media transition-shadow duration-[var(--pf-dur-feedback)] ease-pf hover:shadow-[0_0_0_2px_var(--pf-outline)]"
+            : "grid size-full place-items-center rounded-lg bg-raised text-fg-secondary shadow-[inset_0_0_0_1px_var(--pf-outline)] transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong hover:text-fg"
+        }
       >
         {assetId ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -41,17 +39,18 @@ export function CreatorSlideImageSlot({
             className="size-full object-cover"
           />
         ) : (
-          <ImagePlus className="mx-auto size-3.5" />
+          <Icon name="plus" size={16} />
         )}
       </button>
       {assetId ? (
         <button
           type="button"
           aria-label={`Remove ${label} image`}
+          title={`Remove ${label} image`}
           onClick={onClear}
-          className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]/30"
+          className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-strong text-strong-fg shadow-[0_0_0_2px_var(--pf-panel)] transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-bad-tint hover:text-bad"
         >
-          <X className="size-2.5" />
+          <Icon name="x" size={12} strokeWidth={2} />
         </button>
       ) : null}
     </div>

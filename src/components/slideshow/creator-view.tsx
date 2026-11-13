@@ -7,6 +7,7 @@ import type { PinterestImportResult } from "@/lib/collections-client";
 import { requestSlideshowCreatorDerive } from "@/lib/slideshow/client";
 
 import { CreatorCopyForm } from "./creator-copy-form";
+import { CreatorFooter } from "./creator-footer";
 import { CreatorImagePicker } from "./creator-image-picker";
 import { CreatorTemplatePanel } from "./creator-template-panel";
 import { SAMPLE_CREATOR_TEMPLATE } from "./creator-template-sample";
@@ -316,11 +317,10 @@ export function CreatorView() {
 
   return (
     <>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.68fr)]">
+      <div className="flex min-w-0 flex-col gap-[18px]">
         <CreatorCopyForm draft={draft} />
-        <div className="grid gap-4">
-          <CreatorTemplatePanel draft={draft} />
-        </div>
+        <CreatorTemplatePanel draft={draft} />
+        <CreatorFooter draft={draft} />
       </div>
       <PinterestImportDialog
         open={pinterestOpen}
