@@ -66,3 +66,8 @@ assert.match(
   source("src/app/api/files/[id]/thumbnail/route.ts"),
   /"Cache-Control": "public, max-age=31536000, immutable"/,
 );
+
+// The first page crosses to the client as one JSON string. As a nested prop every long
+// prompt streamed as its own separately compressed chunk (80 KB on the wire against 31 KB).
+assert.match(page, /initialPageJson=\{JSON\.stringify\(page\)\}/);
+assert.match(lazy, /JSON\.parse\(initialPageJson\)/);

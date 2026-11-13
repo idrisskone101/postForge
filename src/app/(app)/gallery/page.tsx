@@ -58,7 +58,7 @@ async function GalleryDeferredPage({
 
   return (
     <GalleryPageLazy
-      initialPage={page}
+      initialPageJson={JSON.stringify(page)}
       initialType={type}
       initialSort={sort}
       initialReviewStatus={reviewStatus}
