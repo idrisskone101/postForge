@@ -185,9 +185,11 @@ function useSeedFallback(
 ) {
   const [seed, setSeed] = useState<SeedState>({ kind: "none" });
 
+  const needsLookup =
+    Boolean(selectedFileId) && !outputs.some((file) => file.id === selectedFileId);
+
   useEffect(() => {
-    if (!selectedFileId || outputs.some((file) => file.id === selectedFileId)) {
-      setSeed({ kind: "none" });
+    if (!selectedFileId || !needsLookup) {
       onSeedMissingChange?.(false);
       return;
     }
@@ -207,9 +209,9 @@ function useSeedFallback(
     return () => {
       active = false;
     };
-  }, [selectedFileId, outputs, onSeedMissingChange]);
+  }, [selectedFileId, needsLookup, onSeedMissingChange]);
 
-  return seed;
+  return needsLookup ? seed : NO_SEED;
 }
 
 async function loadRecentOutputs() {
@@ -263,8 +265,7 @@ function rowSummary({
       chosen.kind === "video" ? (
         <video src={`/api/files/${chosen.id}`} preload="metadata" muted playsInline aria-hidden="true" />
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={`/api/files/${chosen.id}`} alt="" />
+        <FileImage src={`/api/files/${chosen.id}`} alt="" sizes="32px" />
       ),
   };
 }
@@ -272,3 +273,5 @@ function rowSummary({
 function asString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
+
+const NO_SEED: SeedState = { kind: "none" };

@@ -1,5 +1,4 @@
 import { calculateEstimatedCost } from "@/lib/ai/models";
-import { RATIO_LABELS } from "./form-constants";
 import type { GenerateFormModel } from "./form-types";
 
 export function getGenerateFormViewModel({
@@ -67,15 +66,6 @@ export function getGenerateFormViewModel({
       (a, b) => a - b
     );
   })();
-  const previewWidthClass =
-    aspectRatio === "9:16"
-      ? "w-[min(72%,310px)]"
-      : aspectRatio === "16:9"
-        ? "w-[min(96%,560px)]"
-        : "w-[min(86%,430px)]";
-  const variationCount = isImage ? numImages : 1;
-  const ratioLabel = RATIO_LABELS[aspectRatio] ?? aspectRatio;
-
   return {
     model,
     isImage,
@@ -88,9 +78,6 @@ export function getGenerateFormViewModel({
     availableRatios,
     outputOptions,
     durationOptions,
-    previewWidthClass,
-    variationCount,
-    ratioLabel,
   };
 }
 
