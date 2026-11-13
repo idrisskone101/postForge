@@ -93,7 +93,7 @@ export default function TermsPage() {
           title: "Termination, updates, and contact",
           content: (
             <>
-              <p>The operator may suspend access, disconnect providers, or remove the deployment. You may stop using PostForge and revoke connected-account access at any time. Sections that by their nature should survive termination—including responsibility for content, provider terms, disclaimers, and liability limits—continue to apply.</p>
+              <p>The operator may suspend access, disconnect providers, or remove the deployment. You may stop using PostForge and revoke connected-account access at any time. Sections that by their nature should survive termination, including responsibility for content, provider terms, disclaimers, and liability limits, continue to apply.</p>
               <p className="mt-3">These terms may be updated as PostForge changes. Questions can be sent to <a href="mailto:idriss.kone@icloud.com">idriss.kone@icloud.com</a>.</p>
             </>
           ),

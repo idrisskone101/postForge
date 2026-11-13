@@ -212,7 +212,7 @@
     min-width: 2px;
     flex: 1 1 0%;
     border-radius: var(--pf-radius-pill);
-    background: var(--pf-raised-strong);
+    background: var(--pf-track);
   }
 
   :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="ok"] {

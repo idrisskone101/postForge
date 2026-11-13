@@ -492,6 +492,23 @@
     }
   }
 
+  /* A column that only scrolls on its own from 1280 (the job inspector) takes the deep cut there. */
+  @supports (animation-timeline: scroll()) {
+    @media (min-width: 1280px) {
+      .wb-scroll-fade-from-xl {
+        animation: wb-scroll-fade-deep linear both;
+        animation-timeline: scroll(self block);
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          #000 var(--wb-fade-start),
+          #000 calc(100% - var(--wb-fade-end)),
+          transparent
+        );
+      }
+    }
+  }
+
   /* A sideways rail that turns into a column from 1280 fades along the block axis there. */
   @supports (animation-timeline: scroll()) {
     @media (min-width: 1280px) {

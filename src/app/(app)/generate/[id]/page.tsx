@@ -131,7 +131,7 @@ export default function JobDetailPage() {
         <aside
           aria-label="Inspector"
           className={cn(
-            "flex min-w-0 flex-col gap-3 rounded-xl max-xl:order-1 xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1",
+            "wb-scroll-fade-from-xl flex min-w-0 flex-col gap-3 rounded-xl max-xl:order-1 xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1",
             showEnhance && INSPECTOR_TWO_COLUMNS,
             SCROLL_FOCUS_RING,
           )}
