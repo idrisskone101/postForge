@@ -96,7 +96,7 @@ const primaryByLabel = Object.fromEntries(
   workspaceNavigationItems.map((item) => [item.label, item.primaryAction?.href ?? null])
 );
 assert.deepEqual(primaryByLabel, {
-  Home: null,
+  Home: "/ugc-clone",
   Jobs: null,
   Inspiration: null,
   Clone: null,

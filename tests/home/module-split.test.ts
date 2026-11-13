@@ -45,7 +45,10 @@ const homePage = readFileSync(new URL("src/app/(app)/page.tsx", repoRoot), "utf8
 assert.match(homePage, /<HomeCockpit/);
 assert.match(homePage, /export default async function HomePage/);
 assert.match(homePage, /<Suspense fallback=\{<HomeLoading \/>\}>/);
-assert.match(homePage, /<PageHeader title="Home" \/>/);
+assert.match(homePage, /<PageHeader title="Home">/);
+// The one bone primary comes from the navigation model, so the header and the model cannot drift
+assert.match(homePage, /HOME_PRIMARY = workspaceNavigationGroups\.overview\[0\]\.primaryAction/);
+assert.match(homePage, /buttonClass\("primary", 40\)/);
 assert.match(homePage, /<HomeLoadFailed \/>/);
 
 console.log(

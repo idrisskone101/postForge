@@ -1,10 +1,14 @@
+import Link from "next/link";
 import { Suspense } from "react";
+import { buttonClass } from "@/components/workbench/button";
+import { Icon } from "@/components/workbench/icon";
 import { PageHeader } from "@/components/workbench/page-header";
 import { prisma } from "@/lib/db";
 import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
+import { workspaceNavigationGroups } from "@/lib/workspace-navigation";
 import { HomeCockpit } from "./home-cockpit";
 import { HomeLoadFailed } from "./home-failed";
 import HomeLoading from "./home-loading";
@@ -12,10 +16,17 @@ import type { HomeDashboard as HomeDashboardData, HomeJob } from "./home-types";
 
 export const dynamic = "force-dynamic";
 
+const HOME_PRIMARY = workspaceNavigationGroups.overview[0].primaryAction;
+
 export default async function HomePage() {
   return (
     <>
-      <PageHeader title="Home" />
+      <PageHeader title="Home">
+        <Link href={HOME_PRIMARY.href} className={buttonClass("primary", 40)}>
+          <Icon name={HOME_PRIMARY.icon} strokeWidth={2} />
+          {HOME_PRIMARY.label}
+        </Link>
+      </PageHeader>
       <Suspense fallback={<HomeLoading />}>
         <HomeDashboard />
       </Suspense>
