@@ -1,6 +1,7 @@
 import { Play } from "lucide-react";
 import { FileImage } from "@/components/file-image";
 import { Icon, KeyValueList, buttonClass } from "@/components/workbench";
+import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { formatDuration } from "@/components/clone-output/parse";
@@ -16,7 +17,7 @@ export function CloneOutputReviewSidebar({ review }: { review: CloneOutputReview
           rows={[
             { label: "Cost", value: formatCost(job.actualCost ?? job.estimatedCost), mono: true },
             { label: "Time", value: formatRunDuration(job.durationMs) },
-            { label: "Model", value: job.model },
+            { label: "Model", value: MODEL_REGISTRY[job.model]?.name ?? job.model },
             {
               label: "Resolution",
               value:
@@ -126,8 +127,8 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className={ROW_TITLE}>{reference.label}</span>
-            <span className="truncate font-mono text-[12px] leading-4 text-fg-muted" title={reference.id}>
-              {reference.id}
+            <span className="font-mono text-[12px] leading-4 text-fg-muted" title={reference.id}>
+              {reference.id.slice(0, 8)}
             </span>
           </span>
           <a
