@@ -153,7 +153,7 @@ export function GalleryGrid({
           className={selection ? GALLERY_INSPECTOR_CLASS : GALLERY_INSPECTOR_EMPTY_CLASS}
         >
           {selection ? (
-            <div key={selection.item.id} className="wb-fade-in flex min-w-0 flex-col">
+            <div key={selection.item.id} className="wb-fade-in flex min-h-0 min-w-0 flex-1 flex-col">
               <GallerySelectionInspector selection={selection} />
             </div>
           ) : (
@@ -165,7 +165,7 @@ export function GalleryGrid({
       <Sheet open={detailsOpen && selection !== null} onOpenChange={setDetailsOpen}>
         <SheetContent
           side="right"
-          className="gap-0 overflow-y-auto p-5 pt-14 data-[side=right]:w-full data-[side=right]:sm:max-w-[360px] xl:hidden"
+          className="gap-0 overflow-y-auto p-5 pt-14 data-[side=right]:w-full data-[side=right]:pb-[max(1.25rem,env(safe-area-inset-bottom))] data-[side=right]:sm:max-w-[360px] xl:hidden"
         >
           <SheetTitle className="sr-only">Selected output</SheetTitle>
           {selection && (

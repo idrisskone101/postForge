@@ -62,8 +62,8 @@ export function GallerySelectionInspector({
   };
 
   return (
-    <div data-gallery-selection-inspector className="flex min-w-0 flex-col gap-3.5">
-      <div className="wb-panel-head">
+    <div data-gallery-selection-inspector className="flex min-h-0 min-w-0 flex-1 flex-col gap-3.5">
+      <div className="wb-panel-head shrink-0">
         <h2 className="wb-panel-title">Selection</h2>
         {position.total > 1 && (
           <div className="flex items-center gap-1.5">
@@ -94,11 +94,11 @@ export function GallerySelectionInspector({
           value={pane}
           onChange={setPane}
           options={paneOptions}
-          className="wb-segmented-block"
+          className="wb-segmented-block shrink-0"
         />
       )}
 
-      <div className="wb-well flex h-[312px] shrink-0 items-center justify-center p-4">
+      <div className={STAGE_CLASS}>
         {showSource ? (
           <div className="flex min-w-0 flex-col items-center gap-3 text-center">
             <span className="wb-empty-icon">
@@ -114,7 +114,7 @@ export function GallerySelectionInspector({
             type="button"
             onClick={onOpenPreview}
             aria-label={`Open preview of ${galleryItemName(item)}`}
-            className="relative block max-h-full max-w-full cursor-zoom-in overflow-hidden rounded-lg"
+            className="relative block h-full max-h-[280px] max-w-full cursor-zoom-in overflow-hidden rounded-lg"
           >
             <MediaPreviewFrame
               type={item.type}
@@ -125,8 +125,8 @@ export function GallerySelectionInspector({
               cover
               variant="card"
               className={cn(
-                "h-[280px] max-w-full rounded-lg bg-media",
-                !(item.width && item.height) && "w-[158px]"
+                "h-full max-w-full rounded-lg bg-media",
+                !(item.width && item.height) && "aspect-[158/280]"
               )}
               mediaClassName="rounded-lg object-cover"
               thumbnail={{ sizes: "360px" }}
@@ -136,7 +136,7 @@ export function GallerySelectionInspector({
         )}
       </div>
 
-      <div className="flex min-w-0 flex-col gap-1.5">
+      <div className="flex min-w-0 shrink-0 flex-col gap-1.5">
         <div className="flex min-w-0 items-center justify-between gap-2">
           <h3 className="min-w-0 truncate text-[15px] font-bold leading-5 text-fg" title={title}>
             {title}
@@ -149,14 +149,19 @@ export function GallerySelectionInspector({
       </div>
 
       {prompt && (
-        <div className="min-w-0 rounded-lg bg-raised px-3 py-2.5">
-          <p className="line-clamp-4 min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
-            {prompt}
-          </p>
+        <div data-gallery-prompt-bed className="flex max-h-[92px] min-h-14 min-w-0 flex-[0_1_auto] flex-col">
+          <div className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-raised">
+            <p className="wb-scroll-fade-y min-h-0 min-w-0 overflow-y-auto break-words px-3 py-2.5 text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+              {prompt}
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="sticky -bottom-5 z-10 -mt-2 -mb-5 flex flex-col gap-2 bg-panel pt-2 pb-5">
+      <div
+        data-gallery-inspector-actions
+        className="sticky -bottom-5 z-10 -mb-5 flex shrink-0 flex-col gap-2 bg-panel pb-5"
+      >
         <div className="flex gap-2">
           {showSource ? (
             <>
@@ -216,6 +221,10 @@ function inspectorRows(item: GalleryItem) {
     { label: "Job", value: <GalleryJobLink item={item} />, mono: true },
   ];
 }
+
+/** The stage gives up height first, so the prompt and the pinned actions keep theirs. The sticky actions only matter on a viewport too short for the minimums, where the column scrolls. */
+const STAGE_CLASS =
+  "wb-well flex min-h-[200px] flex-[0_9999_312px] items-center justify-center p-4 [@media(max-height:700px)]:min-h-[120px]";
 
 const paneOptions = [
   { value: "output", label: "Output" },
