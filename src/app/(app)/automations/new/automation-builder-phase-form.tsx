@@ -43,7 +43,7 @@ export function AutomationBuilderPhaseForm({
     >
       <div className="flex min-w-0 flex-col gap-6">
         <div className="-m-0.5 overflow-x-auto p-0.5">
-          <ol className="wb-step-rail min-w-[420px]">
+          <ol className="wb-step-rail sm:min-w-[420px]">
             {BUILDER_STEPS.map((step, index) => {
               const state =
                 index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming";
@@ -54,13 +54,14 @@ export function AutomationBuilderPhaseForm({
                     type="button"
                     className="wb-step rounded-full"
                     data-state={state}
+                    aria-label={`${index + 1}. ${step.name}${state === "done" ? ", done" : ""}`}
                     aria-current={state === "current" ? "step" : undefined}
                     onClick={() => goTo(index)}
                   >
                     <span className="wb-step-dot">
                       {state === "done" ? <Icon name="check" size={14} strokeWidth={2.5} /> : index + 1}
                     </span>
-                    {step.name}
+                    <span className={state === "current" ? undefined : "max-sm:hidden"}>{step.name}</span>
                   </button>
                 </li>
               );
