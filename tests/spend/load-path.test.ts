@@ -23,6 +23,10 @@ assert.match(loaderSource, /getDailyCostSeries/);
 assert.match(loaderSource, /getCostSummaryForRange/);
 assert.match(loaderSource, /getCostTotalForRange/);
 assert.match(loaderSource, /listCostLogsPage/);
+// The server reads the dashboard for the first paint; the empty dashboard is only
+// the fallback that hands loading back to the client when that read fails.
+assert.match(pageSource, /await loadSpendDashboard\(params\)/);
+assert.match(pageSource, /<CostsPageClient \{\.\.\.payload\} preloaded \/>/);
 assert.match(pageSource, /EMPTY_COSTS_DASHBOARD/);
 assert.match(pageSource, /parseCostLogSearch/);
 assert.match(pageSource, /parseCostLogModel/);

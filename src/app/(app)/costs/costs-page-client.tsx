@@ -9,14 +9,16 @@ import { SpendPageContent } from "./spend-page-content";
 import { SpendRangeControl } from "./spend-range-control";
 import { SpendSkeleton } from "./spend-skeleton";
 
-export function CostsPageClient(initial: CostsPageClientProps) {
+export function CostsPageClient(
+  initial: CostsPageClientProps & { preloaded?: boolean }
+) {
   const { period, logPage, search, model } = initial;
   const router = useRouter();
   const [dashboard, setDashboard] = useState(initial);
   const [prevSearch, setPrevSearch] = useState(search);
   const [queryDraft, setQueryDraft] = useState(search);
   const [load, setLoad] = useState<{ state: SpendLoadState; attempt: number }>({
-    state: "loading",
+    state: initial.preloaded ? "ready" : "loading",
     attempt: 0,
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { BrowserLocalText } from "@/components/browser-local-text";
 import { Button } from "@/components/workbench/button";
 import { Icon } from "@/components/workbench/icon";
 import { IconButton } from "@/components/workbench/icon-button";
@@ -81,7 +82,8 @@ export function SpendGenerationLog({
                     {shortJobId(log.jobId)}
                   </span>
                   <span className="truncate text-[12px] leading-4 text-fg-muted lg:hidden">
-                    {modelLabel(log.model)} - {typeLabel(log.type)} - {createdLabel(log.createdAt, now)}
+                    {modelLabel(log.model)} - {typeLabel(log.type)}
+                    <BrowserLocalText>{` - ${createdLabel(log.createdAt, now)}`}</BrowserLocalText>
                   </span>
                 </span>
                 <span className="w-[170px] shrink-0 truncate text-[13px] leading-[18px] text-fg max-lg:hidden" title={log.model}>
@@ -90,9 +92,9 @@ export function SpendGenerationLog({
                 <span className="w-[90px] shrink-0 text-[13px] leading-[18px] text-fg-secondary max-lg:hidden">
                   {typeLabel(log.type)}
                 </span>
-                <span className="wb-mono w-[120px] shrink-0 whitespace-nowrap text-fg-secondary max-lg:hidden">
+                <BrowserLocalText className="wb-mono w-[120px] shrink-0 whitespace-nowrap text-fg-secondary max-lg:hidden">
                   {createdLabel(log.createdAt, now)}
-                </span>
+                </BrowserLocalText>
                 <span className="wb-mono w-16 shrink-0 text-right text-fg">{formatCost(log.amount)}</span>
               </li>
             ))}
