@@ -3,6 +3,11 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Toast, type ToastMessage } from "@/components/workbench/toast";
+import {
+  DEFAULT_PRODUCTION_BUDGET,
+  parseStoredBudget,
+  PRODUCTION_BUDGET_STORAGE_KEY,
+} from "@/lib/costs/production-budget";
 import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { formatCost } from "@/lib/utils/format-cost";
 import { SpendAnalysisGrid } from "./spend-analysis-grid";
@@ -24,9 +29,8 @@ export function SpendPageContent({
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const stored = readOptionalStorage(BUDGET_STORAGE_KEY);
-      const parsed = stored ? Number(stored) : Number.NaN;
-      if (Number.isFinite(parsed) && parsed > 0) {
+      const parsed = parseStoredBudget(readOptionalStorage(BUDGET_STORAGE_KEY));
+      if (parsed !== null) {
         setBudget(parsed);
         setBudgetInput(String(parsed));
       }
@@ -141,5 +145,5 @@ const SpendBudgetDialog = dynamic(
   { ssr: false }
 );
 
-const DEFAULT_BUDGET = 250;
-const BUDGET_STORAGE_KEY = "postforge-production-budget";
+const DEFAULT_BUDGET = DEFAULT_PRODUCTION_BUDGET;
+const BUDGET_STORAGE_KEY = PRODUCTION_BUDGET_STORAGE_KEY;

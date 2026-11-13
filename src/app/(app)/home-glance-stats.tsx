@@ -4,6 +4,7 @@ import { SplitMeter } from "@/components/workbench/split-meter";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatAge } from "./home-format";
+import { HomeSpendBudget } from "./home-spend-budget";
 import type { HomeDashboard } from "./home-types";
 
 export function HomeGlanceStats({ dashboard }: { dashboard: HomeDashboard }) {
@@ -23,7 +24,7 @@ export function HomeGlanceStats({ dashboard }: { dashboard: HomeDashboard }) {
   return (
     <section aria-label="Today at a glance" className={STRIP_CLASS}>
       <StatLink href="/jobs?status=active" label="Jobs running" value={activeJobCount} index={0}>
-        {activeByType && activeJobCount > 0 ? typeSplit(activeByType) : <Dash />}
+        {activeByType && activeJobCount > 0 ? typeSplit(activeByType) : null}
       </StatLink>
       <StatLink
         href="/gallery?reviewStatus=needs_review"
@@ -31,20 +32,13 @@ export function HomeGlanceStats({ dashboard }: { dashboard: HomeDashboard }) {
         value={pendingReviewCount}
         index={1}
       >
-        {oldestPendingAt ? `Oldest finished ${formatAge(oldestPendingAt, now)}` : <Dash />}
+        {oldestPendingAt ? `Oldest finished ${formatAge(oldestPendingAt, now)}` : null}
       </StatLink>
       <StatLink href="/gallery" label="Completed this week" value={completedThisWeek} index={2}>
-        {weekReview ? <ReviewSplit {...weekReview} /> : <Dash />}
+        {weekReview ? <ReviewSplit {...weekReview} /> : null}
       </StatLink>
       <StatLink href="/costs" label="Spend today" value={formatCost(todaySummary.totalCost)} index={3}>
-        {monthSpend == null ? (
-          <Dash />
-        ) : (
-          <>
-            <span className="wb-mono text-fg-secondary">{formatCost(monthSpend)}</span>
-            past month
-          </>
-        )}
+        {monthSpend == null ? null : <HomeSpendBudget monthSpend={monthSpend} />}
       </StatLink>
     </section>
   );
@@ -82,13 +76,9 @@ function StatLink({
         {label}
       </span>
       <span className="wb-stat-value">{value}</span>
-      <span className="wb-stat-foot">{children}</span>
+      {children ? <span className="wb-stat-foot">{children}</span> : null}
     </Link>
   );
-}
-
-function Dash() {
-  return <span className="wb-mono text-fg-muted">-</span>;
 }
 
 function typeSplit({ video, image }: { video: number; image: number }) {

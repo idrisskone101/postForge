@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import { HomeCockpit } from "../../src/app/(app)/home-cockpit";
+import { HomeGlanceStats } from "../../src/app/(app)/home-glance-stats";
 import { getHomeJobProductionMetadata } from "../../src/lib/jobs/home-production-context";
 
 const now = new Date("2026-06-12T15:00:00Z");
@@ -260,5 +261,23 @@ assert.match(emptyMarkup, /Completed this week/);
 assert.match(markup, /Awaiting review/);
 assert.match(markup, />1286</);
 
-// Unavailable footers render a dash, never a zero
-assert.match(emptyMarkup, /class="wb-mono text-fg-muted">-</);
+// A stat with nothing to add under it has no foot line: no lone dash and never a zero
+assert.doesNotMatch(emptyMarkup, /wb-stat-foot/);
+
+// Spend shows the month against the browser-stored budget; the server renders the default budget
+const spendMarkup = renderToStaticMarkup(
+  <HomeGlanceStats
+    dashboard={{
+      todaySummary: emptyCosts,
+      monthSpend: 38.2,
+      activeJobs: [],
+      recentJobs: [],
+      completedThisWeek: 0,
+      pendingReviewCount: 0,
+      recentMedia: [],
+      now,
+    }}
+  />
+);
+assert.match(spendMarkup, /role="progressbar"[^>]*aria-valuenow="15"/);
+assert.match(spendMarkup, /\$38\.20 \/ \$250/);

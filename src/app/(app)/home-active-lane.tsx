@@ -8,7 +8,13 @@ import type { HomeJob } from "./home-types";
 
 export function HomeActiveLane({ jobs }: { jobs: HomeJob[] }) {
   if (jobs.length === 0) {
-    return <EmptyState icon="jobs" title="Nothing in progress" />;
+    return (
+      <EmptyState
+        icon="jobs"
+        title="Nothing in progress"
+        className="min-h-[132px] rounded-none border-0 p-0"
+      />
+    );
   }
   return (
     <ul className="-mx-2 -my-1 flex flex-col gap-2">
