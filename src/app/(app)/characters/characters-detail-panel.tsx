@@ -73,12 +73,12 @@ export function CharacterDetailPanel({
         <div className="flex gap-2">
           <Link
             href={`/characters/new?id=${encodeURIComponent(record.id)}`}
-            className={cn(buttonClass("strong", 40), "flex-1", sheet && "h-11")}
+            className={cn(buttonClass("strong", 40), "flex-1 px-0", sheet && "h-11")}
           >
             <Icon name="pencil" size={16} className="size-4" />
             Edit character
           </Link>
-          <Button size={40} className={cn("flex-1", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
+          <Button size={40} className={cn("flex-1 px-0", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
             <Icon name="copy" size={16} className="size-4" />
             Copy prompt
           </Button>

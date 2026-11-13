@@ -21,7 +21,7 @@ export function CharactersLibrary({
       className="wb-panel min-w-0 gap-4 px-4 pb-5 pt-4 sm:px-6 sm:pt-[18px] xl:min-h-0 xl:flex-1"
     >
       <div className="flex min-w-0 flex-wrap items-center gap-3">
-        <label className="wb-input-wrap h-9 min-w-0 flex-[1_1_160px] px-3" data-characters-search>
+        <label className="wb-input-wrap h-9 min-w-0 flex-[1_1_160px] px-3 [&>svg]:size-4" data-characters-search>
           <Icon name="search" size={16} className="text-fg-muted" />
           <input
             type="search"
@@ -29,7 +29,7 @@ export function CharactersLibrary({
             onChange={(event) => onFiltersChange({ search: event.target.value })}
             aria-label="Search characters"
             placeholder="Search characters"
-            className="h-full min-w-0 flex-1 bg-transparent text-sm text-fg outline-none placeholder:text-fg-muted"
+            className="h-full min-w-0 flex-1 bg-transparent text-sm leading-[18px] text-fg outline-none placeholder:text-fg-muted"
           />
         </label>
         <Segmented
@@ -37,17 +37,17 @@ export function CharactersLibrary({
           value={filters.gender as (typeof GENDER_FILTER_OPTIONS)[number]}
           onChange={(gender) => onFiltersChange({ gender })}
           options={GENDER_OPTIONS}
-          className="max-sm:order-last max-sm:w-full max-sm:[&>.wb-segment]:flex-1"
+          className="gap-0 max-sm:order-last max-sm:w-full max-sm:[&>.wb-segment]:flex-1"
         />
         <Segmented
           label="Library view"
           value={filters.view}
           onChange={(view) => onFiltersChange({ view })}
           options={VIEW_OPTIONS}
-          className="shrink-0"
+          className="shrink-0 gap-0 [&>.wb-segment]:w-[30px] [&>.wb-segment>svg]:size-4 [&>.wb-segment[aria-pressed=false]>svg]:text-fg-muted"
         />
       </div>
-      <div className="min-h-0 xl:-mx-1 xl:flex-1 xl:overflow-y-auto xl:px-1 xl:pb-1 xl:pt-1">
+      <div className="min-h-0 xl:-mx-1 xl:flex-1 xl:-mt-1 xl:overflow-y-auto xl:px-1 xl:pb-1 xl:pt-1">
         <CharactersResults library={library} onClearFilters={onClearFilters} />
       </div>
     </section>

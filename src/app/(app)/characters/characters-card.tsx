@@ -25,7 +25,7 @@ export function CharacterTile({
       onClick={() => onSelect(record)}
       className="wb-tile-cell group cursor-pointer rounded-lg text-left outline-none focus-visible:[&>.wb-tile]:shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]"
     >
-      <span className="wb-tile aspect-[4/7]" data-selected={selected ? "true" : undefined}>
+      <span className="wb-tile aspect-[343/600]" data-selected={selected ? "true" : undefined}>
         <CharacterPhoto
           avatarId={ready ? record.avatarId : null}
           alt={`${record.name} portrait`}
@@ -33,11 +33,11 @@ export function CharacterTile({
           priority={priority}
         />
         {selected ? (
-          <span className="wb-tile-check" aria-hidden="true">
-            <Icon name="check" size={12} strokeWidth={3} />
+          <span className="wb-tile-check size-6" aria-hidden="true">
+            <Icon name="check" size={14} strokeWidth={2.5} className="size-3.5" />
           </span>
         ) : null}
-        {ready ? null : <StatusBadge tone="warn" label="Draft" className="wb-tile-badge" />}
+        {ready ? null : <StatusBadge tone="warn" label="Draft" className="wb-tile-badge [&>svg]:size-3.5 [&>svg]:stroke-[1.5]" />}
       </span>
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-sm font-semibold leading-[18px] text-fg">{record.name}</span>
