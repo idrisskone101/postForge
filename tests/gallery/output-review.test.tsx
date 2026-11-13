@@ -159,8 +159,8 @@ assert.match(markup, /Load more/);
 assert.doesNotMatch(markup, /\/api\/files\/file-approved"/);
 assert.doesNotMatch(markup, /data-gallery-bulk-bar/);
 assert.doesNotMatch(markup, /data-gallery-selection-inspector/);
-assert.match(markup, /<aside aria-label="Selected output"[^>]*>.*Select media to inspect/s);
-assert.match(markup, /data-gallery-dock-row="true"[^>]*>.*data-gallery-count="true"/s);
+assert.match(markup, /<aside aria-label="Selected output"[^>]*>[\s\S]*Select media to inspect/);
+assert.match(markup, /data-gallery-dock-row="true"[^>]*>[\s\S]*data-gallery-count="true"/);
 assert.doesNotMatch(markup, /pf-card|pf-button|pf-review-stamp/);
 
 assert.match(approvedMarkup, /data-gallery-count="true"[^>]*>1 of 8</);
