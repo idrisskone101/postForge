@@ -5,7 +5,8 @@ import {
   type CharacterAttributeSection,
   type CharacterAttributes,
 } from "@/lib/character-attributes";
-import { Button, Icon, IconButton } from "@/components/workbench";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button, Icon, iconButtonClass } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
 
@@ -29,7 +30,12 @@ export function CharacterAttributeEditor({
         <h2 id="character-section-title" className="text-base font-bold leading-5 tracking-[-0.01em] text-fg">
           {active?.label}
         </h2>
-        <IconButton icon="copy" label="Copy prompt" size={30} onClick={copyPrompt} />
+        <Tooltip>
+          <TooltipTrigger type="button" aria-label="Copy prompt" className={iconButtonClass("quiet", 30)} onClick={copyPrompt}>
+            <Icon name="copy" />
+          </TooltipTrigger>
+          <TooltipContent side="left">Copy prompt</TooltipContent>
+        </Tooltip>
       </div>
       {error ? (
         <div role="alert" className="wb-notice wb-fade-in items-start justify-between" data-tone="bad">

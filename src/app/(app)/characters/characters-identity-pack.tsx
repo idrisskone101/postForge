@@ -9,7 +9,7 @@ export function CharacterIdentityPackRow({ identity }: { identity: IdentityPackV
   return (
     <div className="flex h-[34px] shrink-0 items-center justify-between gap-3 border-t border-hairline">
       <dt className="text-xs font-semibold leading-4 text-fg-muted">Identity pack</dt>
-      <dd className="flex min-w-0 justify-end" aria-live="polite">
+      <dd className="flex h-6 min-w-0 items-center justify-end" aria-live="polite">
         <IdentityPackChip identity={identity} />
       </dd>
     </div>

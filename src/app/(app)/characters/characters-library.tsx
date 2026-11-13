@@ -20,7 +20,7 @@ export function CharactersLibrary({
       data-characters-library
       className="wb-panel min-w-0 gap-4 px-4 pb-5 pt-4 sm:px-6 sm:pt-[18px] xl:min-h-0 xl:flex-1"
     >
-      <div className="flex min-w-0 flex-wrap items-center gap-3">
+      <div className="@container flex min-w-0 flex-wrap items-center gap-3">
         <label className="wb-input-wrap h-9 min-w-0 flex-[1_1_160px] px-3 [&>svg]:size-4" data-characters-search>
           <Icon name="search" size={16} className="text-fg-muted" />
           <input
@@ -116,8 +116,8 @@ function CharactersResults({
 function AllIdentitiesLabel() {
   return (
     <>
-      <span className="sm:hidden">All</span>
-      <span className="max-sm:hidden">All identities</span>
+      <span className="@min-[600px]:hidden">All</span>
+      <span className="hidden @min-[600px]:inline">All identities</span>
     </>
   );
 }
