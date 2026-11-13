@@ -15,6 +15,7 @@ import {
   formatGalleryDuration,
   galleryItemKind,
   galleryItemSize,
+  galleryItemModel,
   galleryItemName,
   galleryItemTitle,
   galleryPromptSummary,
@@ -47,7 +48,7 @@ export function GallerySelectionInspector({
   const source = item.tiktokSourceUrl;
   const showSource = pane === "source" && source;
   const duration = formatGalleryDuration(item.durationSec);
-  const prompt = galleryPromptSummary(item.prompt);
+  const prompt = galleryPromptSummary(item.prompt, 400);
 
   const download = async () => {
     if (isDownloading) return;
@@ -142,23 +143,15 @@ export function GallerySelectionInspector({
             {reviewStatusLabel[item.reviewStatus.value]}
           </StatusChip>
         </div>
-        <KeyValueList
-          rows={[
-            { label: "Type", value: galleryItemKind(item) },
-            { label: "Size", value: galleryItemSize(item), mono: true },
-            ...(item.type === "video"
-              ? [{ label: "Duration", value: duration ?? "-", mono: true }]
-              : []),
-            { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
-            { label: "Job", value: item.jobId.slice(0, 8), mono: true },
-          ]}
-        />
+        <KeyValueList rows={inspectorRows(item)} />
       </div>
 
       {prompt && (
-        <p className="line-clamp-3 min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
-          {prompt}
-        </p>
+        <div className="min-w-0 rounded-lg bg-raised px-3 py-2.5">
+          <p className="line-clamp-4 min-w-0 break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+            {prompt}
+          </p>
+        </div>
       )}
 
       <div className="mt-auto flex flex-col gap-2">
@@ -207,6 +200,19 @@ export function GallerySelectionInspector({
       </div>
     </div>
   );
+}
+
+function inspectorRows(item: GalleryItem) {
+  const size = galleryItemSize(item);
+  const duration = formatGalleryDuration(item.durationSec);
+  return [
+    { label: "Type", value: galleryItemKind(item) },
+    { label: "Model", value: galleryItemModel(item) },
+    ...(size ? [{ label: "Size", value: size, mono: true }] : []),
+    ...(item.type === "video" && duration ? [{ label: "Duration", value: duration, mono: true }] : []),
+    { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
+    { label: "Job", value: item.jobId.slice(0, 8), mono: true },
+  ];
 }
 
 const paneOptions = [

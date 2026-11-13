@@ -27,6 +27,7 @@ export function GalleryListTable({
   session: GalleryMediaSession;
 }) {
   const { selectedIds, toggleSelection, openPreview, downloadItem } = session;
+  const showSize = items.some((item) => galleryItemSize(item) !== null);
 
   return (
     <div data-gallery-view="list" className="wb-fade-in flex min-w-0 flex-col">
@@ -34,7 +35,7 @@ export function GalleryListTable({
         <span className="w-[22px] shrink-0" />
         <span className="min-w-0 flex-1">Output</span>
         <span className="w-16 shrink-0">Status</span>
-        <span className="w-[110px] shrink-0">Size</span>
+        {showSize && <span className="w-[110px] shrink-0">Size</span>}
         <span className="w-[72px] shrink-0">Duration</span>
         <span className="w-[110px] shrink-0">Created</span>
         <span className="w-[72px] shrink-0" />
@@ -95,9 +96,11 @@ export function GalleryListTable({
                   label={reviewStatusLabel[item.reviewStatus.value]}
                 />
               </span>
-              <span className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden">
-                {galleryItemSize(item)}
-              </span>
+              {showSize && (
+                <span className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden">
+                  {galleryItemSize(item) ?? "-"}
+                </span>
+              )}
               <span className="wb-mono w-[72px] shrink-0 text-fg-secondary max-md:hidden">
                 {formatGalleryDuration(item.durationSec) ?? "-"}
               </span>

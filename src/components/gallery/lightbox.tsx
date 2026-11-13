@@ -15,6 +15,7 @@ import {
   formatGalleryDuration,
   galleryItemKind,
   galleryItemSize,
+  galleryItemModel,
   galleryItemName,
   galleryItemTitle,
   galleryPromptSummary,
@@ -57,6 +58,7 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
     session;
   const title = galleryItemTitle(item);
   const duration = formatGalleryDuration(item.durationSec);
+  const size = galleryItemSize(item);
   const prompt = galleryPromptSummary(item.prompt, 600);
   const source = item.tiktokSourceUrl;
 
@@ -70,7 +72,7 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
           height={item.height}
           alt={galleryItemName(item)}
           variant="detail"
-          className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full"
+          className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full [&>div]:h-[42dvh] [&>div]:max-h-none [&>div]:min-h-0 lg:[&>div]:h-full"
           mediaClassName="object-contain"
         />
       </div>
@@ -97,9 +99,10 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
           <KeyValueList
             rows={[
               { label: "Type", value: galleryItemKind(item) },
-              { label: "Size", value: galleryItemSize(item), mono: true },
-              ...(item.type === "video"
-                ? [{ label: "Duration", value: duration ?? "-", mono: true }]
+              { label: "Model", value: galleryItemModel(item) },
+              ...(size ? [{ label: "Size", value: size, mono: true }] : []),
+              ...(item.type === "video" && duration
+                ? [{ label: "Duration", value: duration, mono: true }]
                 : []),
               { label: "Created", value: formatGalleryCreated(item.createdAt), mono: true },
               ...(source

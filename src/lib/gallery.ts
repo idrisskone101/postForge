@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getJobDestination } from "@/lib/jobs/presentation";
 import { storage } from "@/lib/storage";
 import { serializeOutputReviewStatus } from "@/lib/output-review-status";
 import type { OutputReviewStatus } from "@/lib/output-review-status";
@@ -53,6 +54,8 @@ export function buildGalleryWhere({
 export interface GalleryItem {
   id: string;
   jobId: string;
+  /** Where the job that made this output opens: its clone, character or generation page. */
+  jobHref: string;
   type: "image" | "video";
   url: string;
   filename: string;
@@ -177,6 +180,13 @@ async function serializeGalleryItems(
     return {
       id: file.id,
       jobId: file.jobId,
+      jobHref: getJobDestination({
+        id: file.jobId,
+        type: file.type,
+        status: "completed",
+        tags: file.job.tags,
+        input: file.job.input,
+      }),
       type: file.type === "video" ? "video" : "image",
       url: `/api/files/${file.id}`,
       filename: file.filename,

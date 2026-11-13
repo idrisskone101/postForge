@@ -145,11 +145,16 @@ assert.match(markup, /aria-pressed="true"[^>]*>All media</);
 assert.match(markup, /data-gallery-count="true"[^>]*>1 of 17</);
 assert.match(markup, /class="wb-tile /);
 assert.match(markup, /data-media-preview-frame="card"/);
-assert.match(markup, /aria-label="Select wan-2\.2-video"/);
+assert.match(
+  markup,
+  /aria-label="Select Match the source energy with a polished product demo\., Jun 1\d, \d\d:\d\d"/
+);
 assert.match(markup, /aria-label="Needs review"/);
 assert.match(markup, /class="wb-tile-duration">0:15</);
 assert.match(markup, />Preview</);
-assert.match(markup, /aria-label="Download wan-2\.2-video"/);
+assert.match(markup, /<a class="wb-tile-action"[^>]*href="\/generate\/job-clone-1">Open<\/a>/);
+assert.doesNotMatch(markup, /class="wb-tile-action"[^>]*>Download</);
+assert.match(markup, /class="wb-tile-meta">Video - wan-2\.2-video - Jun 1\d</);
 assert.match(markup, /Load more/);
 assert.doesNotMatch(markup, /\/api\/files\/file-approved"/);
 assert.doesNotMatch(markup, /data-gallery-bulk-bar/);

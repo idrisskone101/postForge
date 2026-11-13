@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { MediaTile } from "@/components/workbench/media-tile";
 import { cn } from "@/lib/utils";
 import {
   formatGalleryDuration,
+  galleryItemJobHref,
   galleryItemMeta,
   galleryItemName,
   galleryItemTitle,
@@ -22,7 +24,7 @@ export function GalleryGridCards({
   items: GalleryItem[];
   session: GalleryMediaSession;
 }) {
-  const { selectedIds, toggleSelection, openPreview, downloadItem } = session;
+  const { selectedIds, toggleSelection, openPreview } = session;
   const selecting = selectedIds.size > 0;
 
   return (
@@ -54,14 +56,15 @@ export function GalleryGridCards({
                   >
                     Preview
                   </button>
-                  <button
-                    type="button"
+                  <Link
+                    href={galleryItemJobHref(item)}
+                    // prefetch-off: one link per tile; each would prefetch its job page on load.
+                    prefetch={false}
                     className="wb-tile-action"
-                    aria-label={`Download ${name}`}
-                    onClick={() => void downloadItem(item)}
+                    aria-label={`Open the job for ${name}`}
                   >
-                    Download
-                  </button>
+                    Open
+                  </Link>
                 </>
               }
             >

@@ -3,6 +3,7 @@ import type { SerializedOutputReviewStatus } from "@/lib/output-review-status";
 export interface GalleryItem {
   id: string;
   jobId: string;
+  jobHref?: string;
   type: "image" | "video";
   url: string;
   filename?: string;

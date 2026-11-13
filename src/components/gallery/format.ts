@@ -17,6 +17,10 @@ export function galleryItemModel(item: Pick<GalleryItem, "model">) {
   return modelDisplayName(item.model);
 }
 
+export function galleryItemJobHref(item: Pick<GalleryItem, "jobId" | "jobHref">) {
+  return item.jobHref ?? `/generate/${encodeURIComponent(item.jobId)}`;
+}
+
 export function galleryItemMeta(item: Pick<GalleryItem, "type" | "model" | "createdAt">) {
   return outputMeta(item.type, modelDisplayName(item.model), formatOutputDate(item.createdAt));
 }
