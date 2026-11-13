@@ -160,7 +160,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
       <span className="flex w-[120px] shrink-0 max-md:w-auto">
         <CloneJobStatus status={job.status} />
       </span>
-      <span className={`${MONO} w-[120px] max-md:ml-[50px] max-md:w-auto max-md:basis-full max-md:order-last`}>
+      <span className={`${MONO} w-[120px] max-md:ml-[50px] max-md:w-auto max-md:basis-[calc(100%-50px)] max-md:order-last`}>
         {formatRelativeDate(job.createdAt)}
         <span className="md:hidden"> · {formatCost(job.estimatedCost)}</span>
       </span>

@@ -43,8 +43,8 @@ function VariantRail({ review }: { review: CloneOutputReviewView }) {
   if (job.outputs.length < 2) return null;
   const featuredIndex = job.outputs.findIndex((output) => output.id === featured?.id);
   return (
-    <div className="flex w-full max-w-[315px] items-center gap-2.5 sm:w-[92px] sm:flex-col sm:items-start">
-      <div className="flex gap-2.5 overflow-x-auto p-1 sm:max-h-[560px] sm:flex-col sm:overflow-y-auto">
+    <div className="flex w-full max-w-[315px] items-center gap-2.5 sm:w-[84px] sm:flex-col sm:items-start">
+      <div className="-m-1 flex gap-2.5 overflow-x-auto p-1 sm:max-h-[568px] sm:flex-col sm:overflow-y-auto">
         {job.outputs.map((output, index) => {
           const selected = output.id === featured?.id;
           return (
@@ -75,7 +75,7 @@ function VariantRail({ review }: { review: CloneOutputReviewView }) {
           );
         })}
       </div>
-      <p className="ml-auto shrink-0 text-[12px] leading-4 text-fg-secondary sm:ml-1">
+      <p className="ml-auto shrink-0 text-[12px] leading-4 text-fg-secondary sm:ml-0">
         {featuredIndex + 1} / {job.outputs.length}
       </p>
     </div>
