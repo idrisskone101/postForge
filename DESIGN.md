@@ -202,6 +202,8 @@ All colour, radius, shadow and motion values live in `src/app/styles/tokens.css`
 | Hairline | `--pf-hairline` | `border-hairline` | `#2E3033` | `#DCDCD8` |
 | Outline on raised | `--pf-outline` | `border-edge` | `#45474C` | `#C9C9C4` |
 | Media placeholder | `--pf-media` | `bg-media` | `#2A2B2E` | `#E4E4E1` |
+| Control track | `--pf-track`, `--pf-track-edge` | | `#34363A`, no edge | `#D4D4CF` with a 1px `#C9C9C4` edge |
+| Range fill | `--pf-range-fill` | | ember `#FF5B2E` | ink `#1A1A1A` |
 | Text | `--pf-text` | `text-fg` | `#F2F0EB` | `#1A1A1A` |
 | Text secondary | `--pf-text-secondary` | `text-fg-secondary` | `#B9B7B1` | `#4D4D4D` |
 | Text muted | `--pf-text-muted` | `text-fg-muted` | `#8F8D88` | `#666666` |
@@ -247,6 +249,8 @@ The shadcn tokens (`--background`, `--card`, `--primary`, `--border`, `--ring`, 
 **The Data Voice Rule.** Geist Mono is only for ids, costs, timestamps and durations. Stat numerals and counts in badges stay in the sans face.
 
 **The Sentence Case Rule.** Sentence case everywhere. No uppercase tracked labels, no eyebrow above a title, no em dashes in copy, no emoji.
+
+**The No Orphan Rule.** Copy never ends on one word alone. Body copy uses `text-wrap: pretty` (set on `body`). Empty-state titles and copy (`.wb-empty-title`, `.wb-empty-copy`) and notices (`.wb-notice`) use `text-wrap: balance`. Text that does not fit gets room (a second line, a wider column, a wrapping field); it is not ellipsized, shrunk or shortened to fit.
 
 ## Layout
 
@@ -331,6 +335,11 @@ The primitives live in `src/components/workbench` (one component per file) with 
 ### Segmented control
 A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 secondary text. The active segment is `#3A3C40` with 600 bone text (light: white with a soft shadow). Used for filters, view toggles and period pickers.
 
+### Toggle and range
+`Toggle` (`.wb-toggle`, `ui/switch`): 48 by 28, ember when on. Off sits on the control track token: `#34363A` in dark, and in light the strong fill `#D4D4CF` with a 1px outline edge and the white knob, so an off toggle stays visible on a white panel (1.49:1 against 1.22:1 for the raised-strong fill).
+
+`Range` (`.wb-range`): the native range input. A 6px track on the control track token, the filled part and the 2px thumb ring on the range fill: ember in dark, ink in light. Range inputs do not use `accent-color`, which Chrome draws with a near-black track in light.
+
 ### Chips and option rows
 `Chip`: 36px raised pill. Chosen: ember wash, a 2px inset ember ring, ember text, and a leading check where the design shows one. Option rows are 60px, 12px radius, and gain only the ember ring.
 
@@ -347,7 +356,7 @@ A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 sec
 `Meter`: a 4px bar. Neutral fill for budgets, ember for running work (with the sweep). `SplitMeter`: weighted parts with 2px gaps for a split such as completed against failed, or equal segments for a step count.
 
 ### Step rail
-`StepRail`: a 30px numbered circle and a name per step, joined by 2px connectors. The current step has a 2px ember ring and an ember numeral. Done steps are a filled `#3A3C40` circle with a check.
+`StepRail`: a 30px numbered circle and a name per step, joined by 2px connectors. The current step has a 2px ember ring and an ember numeral. Done steps are a filled `#3A3C40` circle with a check. A rail never scrolls its current step out of view: where the names do not fit (below 640 in the Clone and automation builder rails, below 1280 in the character builder) it shows a dot for every step and the name on the current one only.
 
 ### Media tile
 `MediaTile`: 12px radius on the media placeholder colour. Status badge top right, duration chip bottom right in Geist Mono on a dark scrim, selection check top left. Selected tiles carry the ember selection ring. The hover action row holds a bone "Preview" and a translucent second action; it is drawn only where hover exists (see Touch).
