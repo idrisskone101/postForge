@@ -8,6 +8,7 @@ import type { CharacterRecord } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 import { CharacterIdentityPackRow, CharacterIdentityPackNotice } from "./characters-identity-pack";
 import { formatShortDate, photoReady } from "./characters-helpers";
+import { CharacterPromptBed } from "./characters-prompt-bed";
 import type { CharacterInspectorModel } from "./types";
 import { useIdentityPack } from "./use-identity-pack";
 
@@ -32,7 +33,7 @@ export function CharacterDetailPanel({
             sheet ? "h-28 w-[84px]" : "min-h-[220px] flex-[0_1_370px] rounded-lg bg-floor max-xl:h-[320px]"
           )}
         >
-          <span className={cn("block overflow-hidden rounded-[10px]", sheet ? "h-28 w-[84px]" : "aspect-[236/308] h-[83%] max-h-[308px]")}>
+          <span className={cn("block overflow-hidden", sheet ? "h-28 w-[84px] rounded-[10px]" : "aspect-[236/308] h-[calc(100%-62px)] max-h-[308px] rounded-sm")}>
             <CharacterPhoto
               avatarId={ready ? record.avatarId : null}
               alt={`${record.name} portrait`}
@@ -40,7 +41,7 @@ export function CharacterDetailPanel({
             />
           </span>
         </div>
-        <div className={cn("flex min-w-0 flex-1 items-start justify-between gap-3", sheet && "flex-col gap-1.5 pr-10")}>
+        <div className={cn("flex min-w-0 items-start justify-between gap-3", sheet ? "flex-1 flex-col gap-1.5 pr-10" : "shrink-0")}>
           <div className="flex min-w-0 flex-col gap-1">
             <h2 id={`character-detail-title-${variant}`} className="text-xl font-bold leading-6 tracking-[-0.01em] text-fg [overflow-wrap:anywhere]">
               {record.name}
@@ -65,9 +66,7 @@ export function CharacterDetailPanel({
       <CharacterIdentityPackNotice identity={identity} />
 
       {sheet ? null : (
-        <div className="flex min-h-[64px] flex-[1_1_96px] overflow-hidden rounded-lg bg-raised px-3.5 py-3">
-          <p className="text-[13px] leading-[19px] text-fg-secondary">{buildCharacterPrompt(record.attributes)}</p>
-        </div>
+        <CharacterPromptBed key={record.id} prompt={buildCharacterPrompt(record.attributes)} />
       )}
 
       <div className="flex shrink-0 flex-col gap-2">
@@ -76,11 +75,11 @@ export function CharacterDetailPanel({
             href={`/characters/new?id=${encodeURIComponent(record.id)}`}
             className={cn(buttonClass("strong", 40), "flex-1", sheet && "h-11")}
           >
-            <Icon name="pencil" size={16} />
+            <Icon name="pencil" size={16} className="size-4" />
             Edit character
           </Link>
           <Button size={40} className={cn("flex-1", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
-            <Icon name="copy" size={16} />
+            <Icon name="copy" size={16} className="size-4" />
             Copy prompt
           </Button>
         </div>
