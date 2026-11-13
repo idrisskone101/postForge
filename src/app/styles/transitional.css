@@ -68,14 +68,6 @@
   content: attr(data-home-title);
 }
 
-[data-jobs-label]::before {
-  content: attr(data-jobs-label);
-}
-
-[data-jobs-value]::before {
-  content: attr(data-jobs-value);
-}
-
 [data-lcp]::before {
   content: attr(data-lcp);
 }
