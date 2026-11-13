@@ -23,7 +23,7 @@ export function CharacterBuilderHeader({
 
   return (
     <PageHeader
-      className="gap-y-3 [&_.wb-page-header-lead]:max-sm:flex-wrap [&_.wb-page-title]:overflow-visible [&_.wb-page-title]:p-0.5"
+      className="gap-y-3 pr-1 [&_.wb-page-header-lead]:gap-2 [&_.wb-page-header-lead]:max-sm:flex-wrap [&_.wb-page-title]:overflow-visible [&_.wb-page-title]:p-0.5"
       back={{ href: "/characters", label: "Characters", labelled: true }}
       title={
         <input
@@ -50,6 +50,7 @@ export function CharacterBuilderHeader({
       <Button
         variant="primary"
         size={40}
+        className="px-5"
         onClick={saveCharacter}
         disabled={saving || rendering || missingEditRecord || previewSaveBlocked}
         aria-label="Save character"

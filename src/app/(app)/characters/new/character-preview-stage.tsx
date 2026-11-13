@@ -34,7 +34,7 @@ export function CharacterPreviewStage({
       <div className="relative grid min-h-[380px] flex-1 place-items-center rounded-lg bg-floor">
         <span
           className={cn(
-            "block h-[334px] w-[250px] overflow-hidden rounded-[10px] transition-opacity duration-200 ease-pf sm:h-[352px] sm:w-[264px]",
+            "block h-[334px] w-[250px] overflow-hidden rounded-sm transition-opacity duration-200 ease-pf sm:h-[352px] sm:w-[264px]",
             rendering && "opacity-55"
           )}
         >
@@ -60,12 +60,12 @@ export function CharacterPreviewStage({
       <Button
         size={40}
         block
-        className="flex-none"
+        className="flex-none px-0"
         onClick={rerender}
         disabled={saving || rendering}
         aria-describedby={previewRequiresRender ? "character-preview-generation-cost" : undefined}
       >
-        <Icon name="rerender" size={16} />
+        <Icon name="rerender" size={16} className="size-4" />
         Re-render preview
       </Button>
     </section>
