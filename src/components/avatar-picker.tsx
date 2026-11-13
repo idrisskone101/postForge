@@ -181,7 +181,7 @@ export function AvatarPicker({
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
-        <div className="-m-1 max-h-[560px] min-w-0 flex-1 snap-x snap-proximity overflow-y-auto p-1 [scroll-padding-inline:4px]">
+        <div className="wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]">
           {orderedAvatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
           ) : (
