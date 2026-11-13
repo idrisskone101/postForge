@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { FileImage } from "@/components/file-image";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { Icon } from "@/components/workbench/icon";
 import { IconButton } from "@/components/workbench/icon-button";
@@ -127,14 +127,5 @@ function ReviewThumb({ item }: { item: HomeReviewItem }) {
       <VideoFramePreview src={source} label="Output preview" className="size-full object-cover" />
     );
   }
-  return (
-    <Image
-      src={source}
-      alt=""
-      fill
-      sizes="48px"
-      unoptimized
-      className="object-cover"
-    />
-  );
+  return <FileImage src={source} alt="" sizes="48px" />;
 }

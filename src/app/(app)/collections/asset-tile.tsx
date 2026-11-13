@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { MediaTile } from "@/components/workbench";
+import { MediaImage } from "@/components/workbench/media-image";
 import type { CollectionAssetRecord } from "@/lib/collections";
 import { assetUrl } from "./collections-helpers";
 
@@ -17,7 +18,7 @@ export function AssetTile({
       className="aspect-[142/181]"
       state={{ selected, onSelectedChange: () => onToggle(asset.id), name: asset.name }}
     >
-      <img
+      <MediaImage
         src={assetUrl(asset.id)}
         alt={asset.name}
         title={asset.name}

@@ -339,6 +339,28 @@
     object-fit: cover;
   }
 
+  /* Loading motion for media: the image sits invisible on its media-coloured box and cross-fades in
+     once it has loaded. `data-loaded` is absent until React owns the element, so the delayed
+     animation shows media when scripts are slow or never run; `shown` keeps that animation when
+     React arrives after it. */
+  @media (prefers-reduced-motion: no-preference) {
+    .wb-media-reveal {
+      opacity: 0;
+    }
+
+    .wb-media-reveal:not([data-loaded]),
+    .wb-media-reveal[data-loaded="shown"] {
+      animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) 1s both;
+    }
+
+    /* A keyframe animation that keeps filling, not a transition: Chrome reports a transitioned image
+       as the largest contentful paint when the transition ends, and does not report this one. Its own
+       name makes it start from 0 when it replaces the fallback above. */
+    .wb-media-reveal[data-loaded="true"] {
+      animation: wb-media-reveal var(--pf-dur-state) var(--pf-ease) both;
+    }
+  }
+
   .wb-tile[data-selected="true"] {
     box-shadow:
       0 0 0 2px var(--pf-panel),

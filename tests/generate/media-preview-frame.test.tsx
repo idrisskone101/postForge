@@ -69,7 +69,11 @@ const thumbnailMarkup = renderToStaticMarkup(
 assert.match(thumbnailMarkup, /srcSet="[^"]*\/api\/files\/abc\/thumbnail\?w=240 256w[^"]*\/api\/files\/abc\/thumbnail\?w=480 640w[^"]*\/api\/files\/abc\/thumbnail\?w=720 750w/);
 assert.match(thumbnailMarkup, /sizes="236px"/);
 assert.match(thumbnailMarkup, /loading="lazy"/);
-assert.match(thumbnailMarkup, /opacity-0/, "a lazy thumbnail keeps the fade-in");
+assert.match(
+  thumbnailMarkup,
+  /<img(?![^>]*data-loaded)[^>]*class="wb-media-reveal /,
+  "server markup carries the reveal class and no data-loaded, which arms the CSS fallback"
+);
 
 const priorityThumbnailMarkup = renderToStaticMarkup(
   <MediaPreviewFrame
@@ -84,10 +88,10 @@ const priorityThumbnailMarkup = renderToStaticMarkup(
 
 assert.match(priorityThumbnailMarkup, /loading="eager"/);
 assert.match(priorityThumbnailMarkup, /fetchPriority="high"/i);
-assert.doesNotMatch(
+assert.match(
   priorityThumbnailMarkup,
-  /<img[^>]*opacity-0/,
-  "the priority thumbnail must not first paint at opacity 0"
+  /<img[^>]*class="wb-media-reveal /,
+  "the priority thumbnail loads eagerly and still follows the shared loading motion"
 );
 
 const originalMarkup = renderToStaticMarkup(

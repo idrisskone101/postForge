@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Icon } from "@/components/workbench";
+import { MediaImage } from "@/components/workbench/media-image";
 import type { CollectionAssetRecord, CollectionRecord } from "@/lib/collections";
 import { cn } from "@/lib/utils";
 import { assetUrl, assetsForCollection, formatShortDate } from "./collections-helpers";
@@ -65,7 +66,7 @@ function MosaicImage({
   className?: string;
 }) {
   return (
-    <img
+    <MediaImage
       src={assetUrl(asset.id)}
       alt=""
       loading={priority ? "eager" : "lazy"}

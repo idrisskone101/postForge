@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { buttonClass } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
+import { MEDIA_REVEAL_CLASS, useMediaReveal } from "@/components/workbench/media-image";
 import { MediaTile } from "@/components/workbench/media-tile";
 import { VideoFramePreview } from "@/components/video-frame-preview";
 import { outputTitle } from "@/lib/ai/output-presentation";
@@ -39,6 +42,7 @@ function RecentMediaTile({ media, priority }: { media: HomeMedia; priority: bool
   const title = outputTitle(media);
   const badge = REVIEW_BADGE[media.reviewStatus] ?? REVIEW_BADGE.needs_review;
   const source = `/api/files/${encodeURIComponent(media.id)}`;
+  const reveal = useMediaReveal();
 
   return (
     <Link
@@ -52,6 +56,9 @@ function RecentMediaTile({ media, priority }: { media: HomeMedia; priority: bool
           <VideoFramePreview src={source} label={`${title} preview`} className="size-full object-cover" />
         ) : (
           <Image
+            {...reveal.props}
+            onLoad={reveal.markLoaded}
+            onError={reveal.markLoaded}
             src={source}
             alt=""
             fill
@@ -59,7 +66,7 @@ function RecentMediaTile({ media, priority }: { media: HomeMedia; priority: bool
             unoptimized
             preload={priority}
             fetchPriority={priority ? "high" : undefined}
-            className="object-cover"
+            className={`${MEDIA_REVEAL_CLASS} object-cover`}
           />
         )}
       </MediaTile>

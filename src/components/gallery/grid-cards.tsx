@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { MediaTile } from "@/components/workbench/media-tile";
-import { cn } from "@/lib/utils";
 import {
   formatGalleryDuration,
   galleryItemJobHref,
@@ -37,9 +36,7 @@ export function GalleryGridCards({
         const title = galleryItemTitle(item);
         const name = galleryItemName(item);
         return (
-          // Every tile fades in except the first: an image first painted at opacity 0 is
-          // never counted as the largest contentful paint, and the first tile is that image.
-          <div key={item.id} className={cn("wb-tile-cell", index > 0 && "wb-fade-in")}>
+          <div key={item.id} className="wb-tile-cell wb-fade-in">
             <MediaTile
               className={GALLERY_TILE_HEIGHT_CLASS}
               state={{

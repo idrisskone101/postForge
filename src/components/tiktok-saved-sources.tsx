@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import { Button, CountBadge, Icon } from "@/components/workbench";
+import { MediaImage } from "@/components/workbench/media-image";
 import { cn } from "@/lib/utils";
 
 export interface SavedTikTokSource {
@@ -93,8 +94,7 @@ export function TikTokSavedSources({
                     )}
                   >
                     {source.thumbnailPath ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <MediaImage
                         src={`/api/ugc-clone/sources/${source.id}/thumbnail`}
                         alt=""
                         // The first thumbnail is the largest image in the first viewport.

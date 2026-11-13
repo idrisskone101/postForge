@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useCallback, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MEDIA_REVEAL_CLASS, useMediaReveal } from "@/components/workbench/media-image";
 import {
   fileThumbnailLoader,
   hasFileThumbnail,
@@ -116,28 +117,14 @@ export function MediaPreviewFrame({
   mediaClassName,
   thumbnail,
 }: MediaPreviewFrameProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const reveal = useMediaReveal();
+  const { markLoaded } = reveal;
   const [hasError, setHasError] = useState(false);
+  const isLoading = !reveal.loaded && !hasError;
   const [failedThumbnailSrc, setFailedThumbnailSrc] = useState<string | null>(null);
   const resized =
     thumbnail && type === "image" && failedThumbnailSrc !== src && hasFileThumbnail(src);
   const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const markLoaded = useCallback(() => setIsLoading(false), []);
-  const setImageRef = useCallback((node: HTMLImageElement | null) => {
-    imgRef.current = node;
-    if (node?.complete && node.naturalWidth > 0) {
-      markLoaded();
-    }
-  }, [markLoaded]);
-  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
-    videoRef.current = node;
-    if (node && node.readyState >= 2) {
-      markLoaded();
-    }
-  }, [markLoaded]);
 
   const aspectRatio = getAspectRatio(width, height);
   const metadata = getMetadata(width, height);
@@ -146,8 +133,8 @@ export function MediaPreviewFrame({
   const mediaHeight = height ?? natural?.height;
   const fillFrame = cover || !mediaWidth || !mediaHeight;
   const mediaClass = cn(
-    "rounded-lg transition-opacity",
-    isLoading ? "opacity-0" : "opacity-100",
+    MEDIA_REVEAL_CLASS,
+    "rounded-lg",
     cover ? "size-full object-cover" : "max-h-full max-w-full object-contain",
     !fillFrame && "h-auto w-auto",
     mediaClassName
@@ -156,7 +143,7 @@ export function MediaPreviewFrame({
   const image =
     resized && thumbnail ? (
       <Image
-        ref={setImageRef}
+        {...reveal.props}
         src={src}
         loader={fileThumbnailLoader}
         sizes={thumbnail.sizes}
@@ -168,15 +155,11 @@ export function MediaPreviewFrame({
         fetchPriority={thumbnail.priority ? "high" : "auto"}
         onLoad={markLoaded}
         onError={() => setFailedThumbnailSrc(src)}
-        className={cn(
-          mediaClass,
-          // Chrome never counts an image first painted at opacity 0, so the priority image skips the fade.
-          thumbnail.priority && "opacity-100 transition-none",
-        )}
+        className={mediaClass}
       />
     ) : (
       <Image
-        ref={setImageRef}
+        {...reveal.props}
         src={src}
         alt={alt}
         fill={fillFrame}
@@ -189,10 +172,7 @@ export function MediaPreviewFrame({
           if (!cover && naturalWidth > 0) setNatural({ width: naturalWidth, height: naturalHeight });
           markLoaded();
         }}
-        onError={() => {
-          setIsLoading(false);
-          setHasError(true);
-        }}
+        onError={() => setHasError(true)}
         className={mediaClass}
       />
     );
@@ -220,7 +200,7 @@ export function MediaPreviewFrame({
           image
         ) : (
           <video
-            ref={setVideoRef}
+            {...reveal.props}
             src={src}
             width={width}
             height={height}
@@ -230,10 +210,7 @@ export function MediaPreviewFrame({
             playsInline
             onLoadedMetadata={variant === "card" ? markLoaded : undefined}
             onLoadedData={markLoaded}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
+            onError={() => setHasError(true)}
             className={mediaClass}
           />
         )}

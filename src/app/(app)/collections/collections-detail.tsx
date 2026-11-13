@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button, CountBadge, EmptyState, Icon, IconButton, MediaTile } from "@/components/workbench";
+import { MediaImage } from "@/components/workbench/media-image";
 import { assetUrl, assetsForCollection } from "./collections-helpers";
 import { ConfirmDialog } from "./collections-dialogs";
 import type { CollectionsDetailModel, ConfirmRequest } from "./types";
@@ -59,7 +60,7 @@ function DetailBody({ detail }: { detail: CollectionsDetailModel }) {
                     </button>
                   }
                 >
-                  <img src={assetUrl(asset.id)} alt={asset.name} loading="lazy" decoding="async" />
+                  <MediaImage src={assetUrl(asset.id)} alt={asset.name} loading="lazy" decoding="async" />
                 </MediaTile>
               ))}
             </div>
@@ -80,13 +81,15 @@ function DetailBody({ detail }: { detail: CollectionsDetailModel }) {
                   onClick={() => onToggleAsset(asset.id)}
                   className="group relative aspect-square overflow-hidden rounded-lg bg-media outline-none focus-visible:ring-2 focus-visible:ring-ember"
                 >
-                  <img
-                    src={assetUrl(asset.id)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover opacity-70 transition-opacity duration-[var(--pf-dur-feedback)] ease-pf group-hover:opacity-100"
-                  />
+                  <span className="block size-full opacity-70 transition-opacity duration-[var(--pf-dur-feedback)] ease-pf group-hover:opacity-100">
+                    <MediaImage
+                      src={assetUrl(asset.id)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover"
+                    />
+                  </span>
                   <span className="absolute right-1.5 top-1.5 grid size-[22px] place-items-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)] opacity-0 transition-opacity duration-[var(--pf-dur-feedback)] ease-pf group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                     <Icon name="plus" size={12} strokeWidth={2.5} />
                   </span>

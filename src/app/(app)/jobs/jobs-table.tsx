@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/workbench/icon";
+import { MediaImage } from "@/components/workbench/media-image";
 import { cn } from "@/lib/utils";
 import { toJobRow, type JobRowView } from "./jobs-activity-helpers";
 import { JobsStatusCell } from "./jobs-status-cell";
@@ -110,8 +111,7 @@ function JobThumb({ preview }: { preview: JobRowView["preview"] }) {
   return (
     <span className="wb-thumb">
       {preview ? (
-        // eslint-disable-next-line @next/next/no-img-element -- 40px thumbnail of a stored output, served by /api/files
-        <img
+        <MediaImage
           src={preview.src}
           alt=""
           loading="lazy"

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { MediaImage } from "@/components/workbench/media-image";
 import { MediaTile } from "@/components/workbench/media-tile";
 import { cn } from "@/lib/utils";
 import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
@@ -97,8 +98,7 @@ export function InspirationVideoCard({
             </span>
           ) : (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <MediaImage
                 src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
                 alt=""
                 loading="lazy"

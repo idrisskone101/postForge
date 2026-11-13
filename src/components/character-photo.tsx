@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { characterPortraitSrcSet } from "@/app/(app)/characters/portrait/portrait-url";
+import { MEDIA_REVEAL_CLASS, useMediaReveal } from "@/components/workbench/media-image";
 import { cn } from "@/lib/utils";
 
 export function CharacterPhoto({
@@ -23,6 +24,7 @@ export function CharacterPhoto({
 }) {
   const requestedSource = characterPhotoSource({ avatarId, generatedFileId });
   const [failure, setFailure] = useState<PhotoFailure | null>(null);
+  const reveal = useMediaReveal();
   const failedHere = failure?.source === requestedSource ? failure.stage : null;
   const source = failedHere === "original" ? DEFAULT_CHARACTER_PHOTO : requestedSource;
   const srcSet =
@@ -40,6 +42,9 @@ export function CharacterPhoto({
       style={PHOTO_FRAME_STYLE}
     >
       <img
+        {...reveal.props}
+        className={MEDIA_REVEAL_CLASS}
+        onLoad={reveal.markLoaded}
         src={source}
         srcSet={srcSet}
         sizes={srcSet ? sizes : undefined}

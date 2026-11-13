@@ -54,13 +54,18 @@ assert.match(
 assert.doesNotMatch(cards, /hover:none/);
 
 // Tiles show resized variants, never the full-size originals. Only the first tile is
-// fetched eagerly, and it is the one tile that does not fade in: an image first painted
-// at opacity 0 is not counted as the largest contentful paint.
+// fetched eagerly. Every tile, the first included, follows the shared loading motion.
 assert.match(
   cards,
   /thumbnail=\{\{ sizes: GALLERY_TILE_THUMBNAIL_SIZES, priority: index === 0 \}\}/,
 );
-assert.match(cards, /index > 0 && "wb-fade-in"/);
+assert.match(cards, /className="wb-tile-cell wb-fade-in"/);
+assert.match(source("src/components/media-preview.tsx"), /MEDIA_REVEAL_CLASS/);
+assert.match(
+  source("src/app/styles/workbench-data.css"),
+  /\.wb-media-reveal\[data-loaded="true"\] \{\s+animation: wb-media-reveal var\(--pf-dur-state\) var\(--pf-ease\) both;/,
+  "the reveal is a filling keyframe animation: a transition makes the image the largest contentful paint",
+);
 assert.match(source("src/components/gallery/list-table.tsx"), /thumbnail=\{\{ sizes: "40px" \}\}/);
 assert.match(
   source("src/app/api/files/[id]/thumbnail/route.ts"),

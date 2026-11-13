@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/workbench/icon";
+import { MediaImage } from "@/components/workbench/media-image";
 import { Meter } from "@/components/workbench/meter";
 import { StatusChip } from "@/components/workbench/status-chip";
 import { formatRelativeDate } from "@/lib/utils/format-date";
@@ -46,16 +47,12 @@ export function DraftCell({
             key={index}
             className={cn(
               "grid shrink-0 place-items-center overflow-hidden rounded-lg bg-media text-fg-muted",
+              url && "transition-opacity duration-[160ms] ease-pf group-hover:opacity-85",
               size === "recent" ? "h-[110px] w-[88px]" : "h-[76px] w-[60px]",
             )}
           >
             {url ? (
-              <img
-                src={url}
-                alt=""
-                loading="lazy"
-                className="size-full object-cover transition-opacity duration-[160ms] ease-pf group-hover:opacity-85"
-              />
+              <MediaImage src={url} alt="" loading="lazy" className="size-full object-cover" />
             ) : (
               <Icon name="gallery" size={20} />
             )}
