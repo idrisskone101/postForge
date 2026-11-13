@@ -37,7 +37,9 @@ export function useCharacterBuilder(editId: string | null = null) {
   const [attributes, setAttributes] = useState<CharacterAttributes>({
     ...DEFAULT_CHARACTER_ATTRIBUTES,
   });
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState(
+    CHARACTER_ATTRIBUTE_SECTIONS[0]?.id ?? "identity"
+  );
   const [previewSeed, setPreviewSeed] = useState(0);
   const [avatarId, setAvatarId] = useState<string | null>(null);
   const [previewFileId, setPreviewFileId] = useState<string | null>(null);
@@ -264,6 +266,7 @@ export function useCharacterBuilder(editId: string | null = null) {
   const headerView: CharacterBuilderHeaderViewModel = {
     editId,
     name,
+    nameInvalid: Boolean(error) && !name.trim(),
     saving,
     rendering,
     missingEditRecord,
@@ -271,8 +274,6 @@ export function useCharacterBuilder(editId: string | null = null) {
     readyPreviewFingerprint,
     onNameChange: setName,
     randomizeAndRender,
-    onImport: () => setImportOpen(true),
-    copyAttributes,
     saveCharacter,
     saveAction: characterSaveAction({
       saving,
@@ -284,7 +285,6 @@ export function useCharacterBuilder(editId: string | null = null) {
   };
   const previewView: CharacterPreviewStageViewModel = {
     name,
-    attributes,
     avatarId,
     previewFileId,
     previewIsPhotographic,
@@ -293,7 +293,6 @@ export function useCharacterBuilder(editId: string | null = null) {
     previewRequiresRender,
     previewSaveBlocked,
     rerender,
-    randomizeAndRender,
     onLoadError: () => {
       if (!previewFileId) return;
       setPreviewFileId(null);
@@ -313,6 +312,8 @@ export function useCharacterBuilder(editId: string | null = null) {
     onDismissError: () => setError(null),
     onSelectSection: setActiveSection,
     copyPrompt,
+    onImport: () => setImportOpen(true),
+    copyAttributes,
     selectAttribute,
   };
 
@@ -329,6 +330,7 @@ export function useCharacterBuilder(editId: string | null = null) {
     importValue,
     setImportValue,
     applyImport,
+    importError: importOpen ? error : null,
     toast,
   };
 }

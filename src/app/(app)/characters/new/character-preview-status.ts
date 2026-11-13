@@ -1,32 +1,15 @@
-export function previewStatusLabel(
+export type PreviewStatus = {
+  tone: "live" | "warn" | "ok" | "neutral";
+  label: string;
+};
+
+export function previewStatus(
   rendering: boolean,
   previewSaveBlocked: boolean,
   previewRequiresRender: boolean
-): string {
-  if (rendering) return "Rendering";
-  if (previewSaveBlocked) return "Changes pending";
-  if (previewRequiresRender) return "Preview ready";
-  return "Draft — preview optional";
-}
-
-export function previewStatusClass(
-  rendering: boolean,
-  previewSaveBlocked: boolean,
-  previewRequiresRender: boolean
-): string {
-  if (rendering) return "pf-status-warning";
-  if (previewSaveBlocked) return "pf-status-warning";
-  if (previewRequiresRender) return "pf-status-success";
-  return "bg-white/10 text-white/80";
-}
-
-export type PreviewStatusIcon = "loading" | "refresh" | "check";
-
-export function previewStatusIcon(
-  rendering: boolean,
-  previewSaveBlocked: boolean
-): PreviewStatusIcon {
-  if (rendering) return "loading";
-  if (previewSaveBlocked) return "refresh";
-  return "check";
+): PreviewStatus {
+  if (rendering) return { tone: "live", label: "Rendering" };
+  if (previewSaveBlocked) return { tone: "warn", label: "Changes not rendered" };
+  if (previewRequiresRender) return { tone: "ok", label: "Preview ready" };
+  return { tone: "neutral", label: "Draft, preview optional" };
 }

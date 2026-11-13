@@ -6,6 +6,7 @@ import type {
 export type CharacterBuilderHeaderViewModel = {
   editId: string | null;
   name: string;
+  nameInvalid: boolean;
   saving: boolean;
   rendering: boolean;
   missingEditRecord: boolean;
@@ -13,15 +14,12 @@ export type CharacterBuilderHeaderViewModel = {
   readyPreviewFingerprint: string | null;
   onNameChange: (name: string) => void;
   randomizeAndRender: () => void;
-  onImport: () => void;
-  copyAttributes: () => void;
   saveCharacter: () => void;
   saveAction: { label: string; title: string | undefined };
 };
 
 export type CharacterPreviewStageViewModel = {
   name: string;
-  attributes: CharacterAttributes;
   avatarId: string | null;
   previewFileId: string | null;
   previewIsPhotographic: boolean;
@@ -30,7 +28,6 @@ export type CharacterPreviewStageViewModel = {
   previewRequiresRender: boolean;
   previewSaveBlocked: boolean;
   rerender: () => void;
-  randomizeAndRender: () => void;
   onLoadError: () => void;
 };
 
@@ -42,5 +39,7 @@ export type CharacterAttributeEditorViewModel = {
   onDismissError: () => void;
   onSelectSection: (sectionId: string) => void;
   copyPrompt: () => void;
+  onImport: () => void;
+  copyAttributes: () => void;
   selectAttribute: (key: string, value: string) => void;
 };
