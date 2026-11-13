@@ -1,4 +1,5 @@
 import { CountBadge } from "@/components/workbench";
+import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
 import type { SettingsTab } from "./types";
 
@@ -15,50 +16,54 @@ export function SettingsNavigation({
   onSelect: (tab: SettingsTab) => void;
   attention?: number;
 }) {
+  const hydrated = useHydrated();
   return (
-    <nav
-      aria-label="Settings sections"
-      data-settings-nav="true"
-      className="relative flex w-full min-w-0 shrink-0 gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-raised p-1 [scrollbar-width:none] min-[1280px]:w-[236px] min-[1280px]:flex-col min-[1280px]:gap-3 min-[1280px]:overflow-visible min-[1280px]:rounded-xl min-[1280px]:bg-panel min-[1280px]:p-3 min-[1280px]:shadow-panel"
-    >
-      {GROUPS.map((group) => (
-        <div
-          key={group}
-          className={cn(
-            "contents min-[1280px]:flex min-[1280px]:flex-col min-[1280px]:gap-0.5",
-            group === "developer" && "min-[1280px]:border-t min-[1280px]:border-hairline min-[1280px]:pt-3"
-          )}
-        >
-          {SETTINGS_NAVIGATION.filter((item) => item.group === group).map(({ id, label }) => {
-            const active = tab === id;
-            return (
-              <button
-                type="button"
-                key={id}
-                ref={active ? revealInRow : undefined}
-                onClick={() => onSelect(id)}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "wb-hit flex h-8 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium leading-4 text-fg-secondary outline-none transition-colors duration-[var(--pf-dur-state)] ease-pf hover:text-fg focus-visible:ring-2 focus-visible:ring-ember",
-                  "min-[1280px]:h-9 min-[1280px]:justify-between min-[1280px]:px-2.5 min-[1280px]:text-sm min-[1280px]:leading-[18px] min-[1280px]:hover:bg-raised/60",
-                  active &&
-                    "bg-[var(--pf-segment)] font-semibold text-fg shadow-[var(--pf-segment-shadow)] min-[1280px]:bg-raised min-[1280px]:pr-2 min-[1280px]:shadow-none min-[1280px]:hover:bg-raised"
-                )}
-              >
-                {label}
-                {id === "integrations" && (
-                  <CountBadge
-                    count={attention}
-                    tone="warn"
-                    label={`${attention} ${attention === 1 ? "integration needs" : "integrations need"} attention`}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      ))}
-    </nav>
+    <>
+      <nav
+        aria-label="Settings sections"
+        data-settings-nav="true"
+        className="relative flex w-full min-w-0 shrink-0 gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-raised p-1 [scrollbar-width:none] min-[1280px]:w-[236px] min-[1280px]:flex-col min-[1280px]:gap-3 min-[1280px]:overflow-visible min-[1280px]:rounded-xl min-[1280px]:bg-panel min-[1280px]:p-3 min-[1280px]:shadow-panel"
+      >
+        {GROUPS.map((group) => (
+          <div
+            key={group}
+            className={cn(
+              "contents min-[1280px]:flex min-[1280px]:flex-col min-[1280px]:gap-0.5",
+              group === "developer" && "min-[1280px]:border-t min-[1280px]:border-hairline min-[1280px]:pt-3"
+            )}
+          >
+            {SETTINGS_NAVIGATION.filter((item) => item.group === group).map(({ id, label }) => {
+              const active = tab === id;
+              return (
+                <button
+                  type="button"
+                  key={id}
+                  ref={active ? revealInRow : undefined}
+                  onClick={() => onSelect(id)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "wb-hit flex h-8 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium leading-4 text-fg-secondary outline-none transition-colors duration-[var(--pf-dur-state)] ease-pf hover:text-fg focus-visible:ring-2 focus-visible:ring-ember",
+                    "min-[1280px]:h-9 min-[1280px]:justify-between min-[1280px]:px-2.5 min-[1280px]:text-sm min-[1280px]:leading-[18px] min-[1280px]:hover:bg-raised/60",
+                    active &&
+                      "bg-[var(--pf-segment)] font-semibold text-fg shadow-[var(--pf-segment-shadow)] min-[1280px]:bg-raised min-[1280px]:pr-2 min-[1280px]:shadow-none min-[1280px]:hover:bg-raised"
+                  )}
+                >
+                  {label}
+                  {id === "integrations" && (
+                    <CountBadge
+                      count={attention}
+                      tone="warn"
+                      label={`${attention} ${attention === 1 ? "integration needs" : "integrations need"} attention`}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+      {hydrated ? null : <script dangerouslySetInnerHTML={{ __html: REVEAL_BEFORE_PAINT }} />}
+    </>
   );
 }
 
@@ -79,6 +84,14 @@ export function isSettingsTab(value: string): value is SettingsTab {
 }
 
 const GROUPS = ["workspace", "developer"] as const;
+
+/*
+ * The server's markup cannot carry a scroll position, and the ref callback only runs at hydration,
+ * so a deep-linked tab first painted with the strip at "Profile". This runs as the parser reaches it,
+ * before the first paint, and does the same as revealInRow. It only measures where the strip scrolls.
+ */
+const REVEAL_BEFORE_PAINT =
+  '(function(){if(!matchMedia("(max-width:1279.98px)").matches)return;var n=document.currentScript.previousElementSibling,a=n&&n.querySelector(\'[aria-current="page"]\');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=Math.max(0,a.offsetLeft-16)})()';
 
 function revealInRow(node: HTMLButtonElement | null) {
   const row = node?.closest("nav");
