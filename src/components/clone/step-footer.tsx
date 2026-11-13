@@ -30,7 +30,12 @@ export function CloneStepFooter({
         <span />
       )}
       {next ? (
-        <Button variant="primary" size={40} onClick={() => onSelectStep(next.id)}>
+        <Button
+          variant="primary"
+          size={40}
+          className="gap-2 pl-[18px] [&>svg]:size-4"
+          onClick={() => onSelectStep(next.id)}
+        >
           <span>Continue</span>
           <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
         </Button>

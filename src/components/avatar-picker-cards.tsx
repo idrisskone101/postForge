@@ -94,13 +94,13 @@ export function AvatarCreationCard({
         <span className="grid size-9 place-items-center rounded-full bg-strong text-strong-fg">
           <Icon name="plus" size={16} />
         </span>
-        <span className="text-[13px] font-semibold leading-4">New avatar</span>
+        <span className="text-[13px] font-semibold leading-4">New character</span>
       </button>
 
       <div id={menuId} hidden={!open} className="wb-fade-in flex flex-col gap-1.5 p-2.5">
         <div className="flex items-center justify-between pl-1">
-          <span className="text-[13px] font-semibold leading-4 text-fg">New avatar</span>
-          <IconButton icon="x" label="Close new avatar options" variant="ghost" size={28} onClick={closeChooser} />
+          <span className="text-[13px] font-semibold leading-4 text-fg">New character</span>
+          <IconButton icon="x" label="Close new character options" variant="ghost" size={28} onClick={closeChooser} />
         </div>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-1 [[data-avatar-stacked]_&]:grid-cols-2">
           {actions.map((action, index) => (

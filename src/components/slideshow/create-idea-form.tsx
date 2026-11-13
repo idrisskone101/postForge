@@ -167,7 +167,7 @@ export function CreateIdeaForm() {
               setForm((current) => ({ ...current, includeCta }))
             }
             label="Include a CTA slide"
-            className="h-[26px] w-[44px] after:size-5 aria-checked:after:[transform:translateX(18px)]"
+            size={26}
           />
           CTA slide
         </label>

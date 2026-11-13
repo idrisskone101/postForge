@@ -63,6 +63,7 @@ export function CloneActionBar({
         <div className="flex shrink-0 flex-col gap-2.5 pl-3 max-md:pl-0 max-md:pt-1">
           <div className="flex items-center gap-2.5">
             <Toggle
+              size={26}
               checked={keepOriginalSound}
               onCheckedChange={onToggleSound}
               label="Keep original sound"
@@ -73,6 +74,7 @@ export function CloneActionBar({
           </div>
           <div className="flex items-center gap-2.5">
             <Toggle
+              size={26}
               checked={removeTextOverlays}
               onCheckedChange={onToggleTextOverlays}
               label="Remove on-screen text"

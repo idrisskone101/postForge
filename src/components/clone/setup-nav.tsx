@@ -11,7 +11,7 @@ export function CloneSetupNav({
   const { activeSetupStep, completedSetupSteps, onSelectStep } = draft;
   return (
     <nav aria-label="Clone setup progress">
-      <ol className="wb-step-rail">
+      <ol className="wb-step-rail" data-size="28">
         {CLONE_SETUP_STEPS.map((step, index) => {
           const state =
             activeSetupStep === step.id
