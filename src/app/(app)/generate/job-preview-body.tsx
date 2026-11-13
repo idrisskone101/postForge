@@ -54,7 +54,7 @@ function JobStageBody({ view }: { view: JobDetailViewModel }) {
   if (isCompleted && featured) {
     return (
       <div
-        className="absolute inset-0 flex items-center justify-center transition-transform duration-[var(--pf-dur-state)] ease-pf"
+        className="absolute inset-0 flex items-center justify-center py-3 transition-transform duration-[var(--pf-dur-state)] ease-pf"
         style={{ transform: `scale(${previewZoom / 100})` }}
       >
         <MediaPreviewFrame
@@ -129,7 +129,7 @@ function JobPreviewToolbar({ view }: { view: JobPreviewToolbarView }) {
   const tool =
     "inline-flex h-8 flex-none items-center justify-center rounded-full text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent aria-pressed:bg-panel aria-pressed:shadow-[0_1px_2px_rgb(0_0_0/0.08)] dark:aria-pressed:bg-strong dark:aria-pressed:shadow-none";
   return (
-    <div role="toolbar" aria-label="Preview controls" className="flex h-10 items-center gap-0.5 rounded-full bg-raised px-1.5">
+    <div role="toolbar" aria-label="Preview controls" className="flex h-10 items-center gap-0.5 rounded-[var(--pf-radius-pill)] bg-raised px-1.5">
       <button type="button" aria-label="Zoom out" onClick={onZoomOut} disabled={previewZoom <= 50} className={cn(tool, "w-[34px]")}>
         <JobIcon name="zoom-out" />
       </button>

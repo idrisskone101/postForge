@@ -35,7 +35,7 @@ export function GenerateFormFormatSection({
       onOpenChange={actions.onAdvancedOpenChange}
       render={<section className="wb-panel gap-3 p-5" />}
     >
-      <div className="flex min-h-7 items-center gap-2.5">
+      <div className="flex h-7 items-center gap-2.5">
         <h2 className="wb-panel-title flex-1">Format and output</h2>
         {hasAdvanced ? (
           <CollapsibleTrigger
@@ -87,7 +87,7 @@ export function GenerateFormFormatSection({
             <div className="flex h-[52px] items-center">
               <Segmented
                 label="Outputs"
-                className="h-10"
+                className="h-10 gap-0 [&>button]:h-[34px]"
                 value={String(numImages)}
                 onChange={(value) => onNumImagesChange(Number(value))}
                 options={outputOptions.map((count) => ({
@@ -106,7 +106,7 @@ export function GenerateFormFormatSection({
             <div className="flex h-[52px] items-center">
               <Segmented
                 label="Duration"
-                className="h-10"
+                className="h-10 gap-0 [&>button]:h-[34px]"
                 value={String(duration)}
                 onChange={(value) => onDurationChange(Number(value))}
                 options={durationOptions.map((seconds) => ({

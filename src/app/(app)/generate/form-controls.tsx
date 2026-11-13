@@ -37,7 +37,7 @@ export function GenerateFormControls({
       {view.isSwap ? swapSection : null}
 
       {hasReferences && !view.isSwap ? (
-        <Panel title="References" className="gap-3 p-5">
+        <Panel title="References" className="gap-3 p-5 [&>.wb-panel-head]:min-h-5 [&>.wb-panel-head]:items-baseline">
           <div className="grid gap-3 md:grid-cols-2">
             {avatarSection}
             {referenceSection}

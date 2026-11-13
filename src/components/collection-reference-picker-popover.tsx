@@ -49,7 +49,7 @@ export function ReferencePickerPopover({
         )}
       >
         {summary.thumb ? (
-          <span className="relative size-8 shrink-0 overflow-hidden rounded-full bg-media [&>:is(img,video)]:size-full [&>:is(img,video)]:object-cover">
+          <span className="relative size-8 shrink-0 overflow-hidden rounded-[999px] bg-media [&>:is(img,video)]:size-full [&>:is(img,video)]:object-cover">
             {summary.thumb}
           </span>
         ) : null}

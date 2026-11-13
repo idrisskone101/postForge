@@ -8,6 +8,7 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { JobPromptText } from "./job-prompt-text";
 import { JobIcon } from "./job-icons";
+import { SCROLL_FOCUS_RING } from "./job-preview-body";
 import {
   ENHANCEMENT_TOOLS,
   asString,
@@ -24,7 +25,7 @@ export function JobQuickEdits({
 }) {
   return (
     <section aria-label="Quick edits" className="wb-panel flex-none gap-2.5 py-[18px]">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-2.5">
         {ENHANCEMENT_TOOLS.map((tool) => (
           <button
             key={tool.id}
@@ -182,7 +183,7 @@ export function JobPromptPanel({
   const negativePrompt = asString(job.input?.negativePrompt);
   const canContinueVideo = job.type === "video" && !job.tags.includes("video-swap");
   return (
-    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[190px] gap-3 py-[18px] xl:flex-1">
+    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[190px] gap-3 py-[18px] xl:min-h-[160px] xl:flex-1">
       <div className="flex h-7 flex-none items-center gap-2.5">
         <h2 id="job-prompt-title" className="wb-panel-title flex-1">
           Prompt
@@ -190,13 +191,18 @@ export function JobPromptPanel({
         <button
           type="button"
           onClick={actions.onCopyPrompt}
-          className="wb-btn h-7 gap-1.5 pl-2.5 pr-3 text-[12px] leading-4"
+          className="wb-btn h-7 gap-1.5 pl-2.5 pr-3 text-[12px] leading-4 [&>svg]:size-3.5"
         >
           <JobIcon name="copy" size={14} />
           Copy
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-3">
+      <div
+        role="region"
+        aria-label="Prompt text"
+        tabIndex={0}
+        className={`flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-lg max-xl:max-h-80 ${SCROLL_FOCUS_RING}`}
+      >
         <JobPromptText prompt={job.prompt} />
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>
@@ -209,7 +215,7 @@ export function JobPromptPanel({
             Continue video
           </Button>
         )}
-        <Button size={40} block onClick={actions.onGenerateSimilar}>
+        <Button size={40} block onClick={actions.onGenerateSimilar} className="[&>svg]:size-4">
           Remix in Generate
           <Icon name="chevron-right" size={16} />
         </Button>
