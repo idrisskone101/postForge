@@ -10,6 +10,7 @@ import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
 import { workspaceNavigationGroups } from "@/lib/workspace-navigation";
 import { HomeCockpit } from "./home-cockpit";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { HomeLoadFailed } from "./home-failed";
 import HomeLoading from "./home-loading";
 import type { HomeDashboard as HomeDashboardData, HomeJob } from "./home-types";
@@ -205,7 +206,9 @@ async function loadProductionContext(jobs: Array<{ id: string; input: unknown }>
     }),
   ]);
   const avatarNames = new Map(avatars.map((avatar) => [avatar.id, avatar.name]));
-  const sourceNames = new Map(sources.map((source) => [source.id, source.label]));
+  const sourceNames = new Map(
+    sources.map((source) => [source.id, cloneSourceTitle(source.label)?.title ?? source.label])
+  );
 
   return (jobId: string) => {
     const entry = sourceMetadata.get(jobId);
