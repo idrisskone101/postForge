@@ -335,11 +335,16 @@
     background: var(--pf-raised);
   }
 
+  /*
+   * A wrapper, not the button: on coarse pointers every control is position: relative for its hit
+   * area, which would take an absolutely placed button out of the Settings row.
+   */
   .sidebar-foot-toggle {
     position: absolute;
     top: 3px;
     right: 10px;
     z-index: 2;
+    display: flex;
   }
 
   @keyframes wb-sidebar-swap {

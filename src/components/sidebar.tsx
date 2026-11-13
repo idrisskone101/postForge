@@ -126,7 +126,9 @@ function SidebarFoot({ active, onNavigate }: { active: boolean; onNavigate?: () 
   return (
     <div className="sidebar-foot">
       <SidebarNavItem item={SETTINGS_ITEM} active={active} onNavigate={onNavigate} />
-      <ThemeToggle className="sidebar-foot-toggle" />
+      <span className="sidebar-foot-toggle">
+        <ThemeToggle />
+      </span>
     </div>
   );
 }

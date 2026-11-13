@@ -155,7 +155,7 @@ assert.doesNotMatch(shellStyles, /body\[data-sidebar-collapsed="true"\]/);
 assert.doesNotMatch(sidebarSource + sidebarNavSource, /Local workspace|Self-hosted|Manage|uppercase/);
 assert.match(sidebarNavSource, /aria-current=\{active \? "page" : undefined\}/);
 assert.match(sidebarNavSource, /aria-label="Workspace navigation"/);
-assert.match(sidebarSource, /<ThemeToggle className="sidebar-foot-toggle" \/>/);
+assert.match(sidebarSource, /<span className="sidebar-foot-toggle">\s*<ThemeToggle \/>\s*<\/span>/);
 
 // Count badges come from the notifications poll: failures on Jobs, reviews on Gallery.
 assert.match(sidebarNavSource, /item\.label === "Jobs"[\s\S]*?counts\.generationFailures[\s\S]*?tone="bad"/);
