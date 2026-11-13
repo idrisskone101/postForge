@@ -30,6 +30,7 @@
   --pf-strong: #d4d4cf;
   --pf-strong-hover: #c9c9c4;
   --pf-strong-pressed: #bdbdb8;
+  --pf-strong-on-raised-hover: #c4c4bf;
   --pf-strong-fg: #1a1a1a;
   --pf-raised-pressed: #dcdcd8;
   --pf-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234D4D4D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");
@@ -172,6 +173,7 @@
   --pf-strong: #3a3c40;
   --pf-strong-hover: #45474c;
   --pf-strong-pressed: #34363a;
+  --pf-strong-on-raised-hover: #4a4c51;
   --pf-strong-fg: #f2f0eb;
   --pf-raised-pressed: #3a3c40;
   --pf-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B9B7B1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");

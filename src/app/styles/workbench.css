@@ -778,8 +778,8 @@
     line-height: 18px;
   }
 
-  .wb-dock .wb-btn-strong {
-    background: color-mix(in srgb, var(--pf-strong) 86%, var(--pf-text));
+  .wb-dock .wb-btn-strong:hover {
+    background: var(--pf-strong-on-raised-hover);
   }
 
   /* Toast: bottom centre of the content area */
