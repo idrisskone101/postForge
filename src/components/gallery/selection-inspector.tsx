@@ -150,8 +150,8 @@ export function GallerySelectionInspector({
 
       {prompt && (
         <div data-gallery-prompt-bed className="flex max-h-[92px] min-h-14 min-w-0 flex-[0_1_auto] flex-col">
-          <div className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-raised">
-            <p className="wb-scroll-fade-y min-h-0 min-w-0 overflow-y-auto break-words px-3 py-2.5 text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+          <div className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-raised py-2.5">
+            <p className="wb-scroll-fade-y min-h-0 min-w-0 overflow-y-auto break-words px-3 text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
               {prompt}
             </p>
           </div>

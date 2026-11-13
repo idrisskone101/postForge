@@ -31,7 +31,7 @@ export function CharacterPreviewStage({
       data-character-preview-stage
       className="wb-panel min-w-0 gap-3.5 p-4 sm:p-5 lg:w-[344px] lg:shrink-0"
     >
-      <div className="relative grid min-h-[380px] flex-1 place-items-center rounded-lg bg-floor">
+      <div className="relative grid min-h-[380px] flex-1 place-items-center rounded-lg bg-floor max-md:pb-3 max-md:pt-11">
         <span
           className={cn(
             "block h-[334px] w-[250px] overflow-hidden rounded-sm transition-opacity duration-200 ease-pf sm:h-[352px] sm:w-[264px]",
