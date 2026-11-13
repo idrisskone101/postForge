@@ -110,6 +110,7 @@ export function MediaPreviewFrame({
 }: MediaPreviewFrameProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -130,11 +131,14 @@ export function MediaPreviewFrame({
   const aspectRatio = getAspectRatio(width, height);
   const metadata = getMetadata(width, height);
   const shouldUseAspectRatio = variant !== "detail" && (frameAspectRatio || aspectRatio);
-  const fillFrame = cover || !width || !height;
+  const mediaWidth = width ?? natural?.width;
+  const mediaHeight = height ?? natural?.height;
+  const fillFrame = cover || !mediaWidth || !mediaHeight;
   const mediaClass = cn(
     "rounded-lg transition-opacity",
     isLoading ? "opacity-0" : "opacity-100",
     cover ? "size-full object-cover" : "max-h-full max-w-full object-contain",
+    !fillFrame && "h-auto w-auto",
     mediaClassName
   );
 
@@ -163,11 +167,15 @@ export function MediaPreviewFrame({
             src={src}
             alt={alt}
             fill={fillFrame}
-            width={fillFrame ? undefined : width}
-            height={fillFrame ? undefined : height}
+            width={fillFrame ? undefined : mediaWidth}
+            height={fillFrame ? undefined : mediaHeight}
             sizes={fillFrame ? "100vw" : undefined}
             unoptimized
-            onLoad={markLoaded}
+            onLoad={(event) => {
+              const { naturalWidth, naturalHeight } = event.currentTarget;
+              if (!cover && naturalWidth > 0) setNatural({ width: naturalWidth, height: naturalHeight });
+              markLoaded();
+            }}
             onError={() => {
               setIsLoading(false);
               setHasError(true);
