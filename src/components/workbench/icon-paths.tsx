@@ -70,6 +70,9 @@ export const ICON_PATHS = {
       <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6L18 18M18 6l-1.4 1.4M7.4 16.6L6 18" />
     </>
   ),
+  copy: <path d="M9 9h10v10H9zM5 15V5h10" />,
+  shuffle: <path d="M4 8h3l10 8h3M4 16h3l3-2.4M14 10.4L17 8h3M18 6l2 2-2 2M18 14l2 2-2 2" />,
+  rerender: <path d="M19 12a7 7 0 1 1-2.05-4.95M19 5v4h-4" />,
   /* drawn */
   moon: <path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" />,
   /* drawn */
