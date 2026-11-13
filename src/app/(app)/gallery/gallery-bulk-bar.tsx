@@ -96,6 +96,7 @@ export function GalleryBulkBar({
         </GalleryDeleteDialog>
         <Button
           variant="strong"
+          className={APPROVE_CLASS}
           disabled={isBulkUpdating}
           onClick={() => void updateSelectedReviewStatus("approved_output")}
         >
@@ -124,3 +125,7 @@ const DOCK_CLASS = [
 /** Lifts the toast above the dock at the widths where the dock floats. */
 export const TOAST_ABOVE_DOCK_CLASS =
   "max-md:bottom-[calc(max(12px,env(safe-area-inset-bottom))+140px)] md:max-lg:bottom-[114px] xl:max-[1439.98px]:bottom-[114px]";
+
+/** Paper draws the dock's confirm one step above the strong fill, since the dock itself is raised. */
+const APPROVE_CLASS =
+  "px-[18px] enabled:bg-[var(--pf-strong-on-raised-hover)] enabled:hover:bg-[color-mix(in_srgb,var(--pf-strong-on-raised-hover)_88%,var(--pf-text))]";

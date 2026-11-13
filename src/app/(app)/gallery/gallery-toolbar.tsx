@@ -158,7 +158,7 @@ function SortMenu({
         aria-label={`Sort: ${sortLabels[value]}`}
       >
         {sortLabels[value]}
-        <Icon name="chevron-down" size={14} className="text-fg-secondary" />
+        <Icon name="chevron-down" size={14} className="size-3.5 text-fg-secondary" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="wb-float w-36 p-1">
         <DropdownMenuRadioGroup

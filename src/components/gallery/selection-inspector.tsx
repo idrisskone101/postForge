@@ -160,26 +160,26 @@ export function GallerySelectionInspector({
         <div className="flex gap-2">
           {showSource ? (
             <>
-              <Button size={38} className="flex-1" onClick={() => onCopySource(source)}>
+              <Button size={38} className="min-w-0 flex-1 px-0" onClick={() => onCopySource(source)}>
                 Copy
               </Button>
               <a
                 href={source}
                 target="_blank"
                 rel="noreferrer"
-                className={cn(buttonClass("quiet", 38), "flex-1")}
+                className={cn(buttonClass("quiet", 38), "min-w-0 flex-1 px-0")}
               >
                 Open
               </a>
             </>
           ) : (
             <>
-              <Button size={38} className="flex-1" onClick={onOpenPreview}>
+              <Button size={38} className="min-w-0 flex-1 px-0" onClick={onOpenPreview}>
                 Preview
               </Button>
               <Button
                 size={38}
-                className="flex-1"
+                className="min-w-0 flex-1 px-0"
                 disabled={isDownloading}
                 onClick={() => void download()}
               >
@@ -187,7 +187,7 @@ export function GallerySelectionInspector({
               </Button>
             </>
           )}
-          <Button size={38} className="flex-1" onClick={() => void onHandoff?.(item)}>
+          <Button size={38} className="min-w-0 flex-1 px-0" onClick={() => void onHandoff?.(item)}>
             Handoff
           </Button>
         </div>
