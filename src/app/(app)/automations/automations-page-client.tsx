@@ -27,7 +27,11 @@ export function AutomationsPageClient({
     records,
     error,
     integrationsLoading,
+    integrationsError,
+    slideshowAutomations,
+    slideshowError,
     toast,
+    dismissToast,
     publishDialog,
     setPublishDialog,
     manualResolutionDialog,
@@ -38,6 +42,8 @@ export function AutomationsPageClient({
     busy,
   } = hub;
   const firstLoad = integrationsLoading && records.length === 0 && !error;
+  const nothingSaved =
+    records.length === 0 && slideshowAutomations.length === 0 && !slideshowError;
 
   return (
     <div data-automations-hub="true" className="flex min-h-0 flex-1 flex-col gap-3">
@@ -52,9 +58,20 @@ export function AutomationsPageClient({
         </div>
       )}
 
+      {integrationsError && !integrationsLoading && (
+        <div role="status" className="wb-notice shrink-0" data-tone="warn">
+          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
+            <strong>Connection status unavailable.</strong> {integrationsError}
+          </span>
+          <Button size={32} onClick={load}>
+            Check again
+          </Button>
+        </div>
+      )}
+
       {firstLoad ? (
         <HubSkeleton />
-      ) : records.length === 0 ? (
+      ) : nothingSaved ? (
         <section className="flex min-h-[420px] flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
           <EmptyState
             icon="automations"
@@ -80,7 +97,7 @@ export function AutomationsPageClient({
 
       {toast && (
         <div className="wb-toast-region">
-          <Toast toast={{ id: toast, tone: "ok", message: toast }} onDismiss={keepToast} />
+          <Toast key={toast.id} toast={toast} onDismiss={dismissToast} />
         </div>
       )}
 
@@ -124,5 +141,3 @@ function HubSkeleton() {
   );
 }
 
-// The hub clears its own toast after 1.7s; the primitive's dismiss has nothing left to remove.
-function keepToast() {}

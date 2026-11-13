@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   CircleAlert,
@@ -38,10 +39,34 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
     onSetManualResolutionDialog,
     onDuplicate,
     onRemove,
+    onClose,
   } = menu;
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const listeners = new AbortController();
+    const anchor = menuRef.current?.parentElement;
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key !== "Escape") return;
+        onClose();
+        anchor?.querySelector<HTMLElement>('[aria-haspopup="menu"]')?.focus();
+      },
+      { signal: listeners.signal }
+    );
+    document.addEventListener(
+      "pointerdown",
+      (event) => {
+        if (!anchor?.contains(event.target as Node)) onClose();
+      },
+      { signal: listeners.signal }
+    );
+    return () => listeners.abort();
+  }, [onClose]);
 
   return (
-    <div role="menu" className="wb-float wb-fade-in absolute right-0 top-9 z-30 max-h-[min(70dvh,440px)] w-64 min-w-0 overscroll-contain overflow-y-auto p-1.5">
+    <div ref={menuRef} role="menu" className="wb-float wb-fade-in absolute right-0 top-9 z-30 max-h-[min(70dvh,440px)] w-64 min-w-0 overscroll-contain overflow-y-auto p-1.5">
       {canControlLocalSchedule ? (
         <button
           onClick={onChangeLocalSchedule}
