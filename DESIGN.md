@@ -254,9 +254,13 @@ The shell matches `00 Shell` at 1440: floor background, 16px page padding, a 248
 
 - **1280 and up:** the 248px sidebar. The header button collapses it to the 72px rail; the choice persists in `localStorage["postforge-sidebar-collapsed"]` and is applied through `html[data-sidebar-collapsed]` before first paint.
 - **768 to 1279:** the 72px icon rail.
-- **Below 768:** a 56px top bar and a slide-in drawer.
+- **Below 768:** a 56px top bar and a slide-in drawer. The page behind the open drawer does not scroll.
+
+The sidebar comes before `<main>` in the DOM, so tab order follows what is drawn. The first focusable element is a "Skip to content" link: a bone pill at the top left that shows only on keyboard focus.
 
 The page header is a 56px row: the 28px title, and an actions slot holding at most the one bone primary plus one quiet secondary. Detail pages add a 40px round back button before the title.
+
+On small screens a header never reaches a second row by wrapping. A header whose actions cannot sit beside the title sets `stackBelow` (360, 480 or 640) on `PageHeader`; below that width it is a two-row grid with fixed tracks, the 32px title row and a 40px actions row across the full width, so its height is final on the first frame, before a client accessory mounts. A header whose actions fit at 320 stays one row. Anything that mounts late into a header or above content reserves its space first: nothing below it may move.
 
 From 1280 down, panels reflow and never clip. Check 1440, 1280, 1024, 768 and 390.
 
@@ -273,7 +277,7 @@ Depth comes from the charcoal steps, not from shadows. A panel carries only its 
 
 - **Selection ring on media:** `box-shadow: 0 0 0 2px <panel>, 0 0 0 4px <ember>`.
 - **Focus on inputs:** a 2px ember ring that grows from 0. Error swaps it to red in place.
-- **Focus on buttons and links:** a 2px ember outline with a 2px offset.
+- **Focus on buttons and links:** a 2px ember outline with a 2px offset. Focus is drawn with `outline`, never with `box-shadow`, on any control that also uses a shadow for its edge, so the ring always shows.
 
 ## Shapes
 
@@ -286,13 +290,24 @@ From `19 Interaction notes`. Tokens: `--pf-dur-feedback` 160ms, `--pf-dur-state`
 - **Feedback, 160ms:** hover, press, focus ring, selection ring.
 - **State change, 200ms:** nav pill, segmented control, toggle, content swap.
 - **Enter, 220ms:** toast, bulk dock, inspector panel. Exits use 160ms.
+- **Overlays:** one motion for every overlay, set by the `.wb-overlay-*` classes in `workbench.css` and used by `ui/dialog`, `alert-dialog`, `sheet`, `dropdown-menu`, `select`, `tooltip` and popovers. Dialogs fade and scale from 0.98, 220ms in and 160ms out. Sheets and the mobile drawer translate from their edge. Menus, selects, popovers and tooltips fade and move 4px, 160ms both ways. An overlay stays mounted while it leaves, so it animates out and focus returns to the control that opened it.
+- **Content swaps:** a tab or view that replaces another mounts with the 200ms `wb-fade-in`. Sidebar collapse and expand change the width in one step and cross-fade the sidebar contents over 200ms.
+- **Default timing:** a Tailwind transition utility with no duration or ease of its own resolves to 160ms on `--pf-ease` (set in `globals.css`). `transition-all` and a bare `transition` are not used; list the properties.
 - **Buttons:** the fill shifts in 160ms; press scales to 0.98 and steps the fill down one shade. Disabled does not animate.
 - **Navigation:** hover fades in a 60% raised bed; the active raised pill slides to the new item in 200ms and its icon turns ember.
 - **Media tile:** hover fades the action row in and lifts it 4px. The image never zooms. Select draws the ember ring and scales the check from 0.8 to 1.
 - **Loading:** skeletons are static. Content cross-fades in over 200ms. The only loop is an ember highlight sweeping a running bar every 1.6s.
 - **Toast:** rises 12px and fades in at the bottom centre of the content area, leaves after 5s. Failures stay until dismissed.
 
-Only `transform` and `opacity` animate, plus `box-shadow` for rings and `background-color` for fills. `prefers-reduced-motion` is honoured globally.
+Only `transform` and `opacity` animate, plus `box-shadow` for rings and `background-color` for fills. A meter fill scales from its left edge; it does not animate `width`. `prefers-reduced-motion` is honoured globally.
+
+Selecting, hovering or loading never moves layout under the pointer. The Gallery keeps a 48px row above the grid for the item count, and the bulk dock lies over it; from 1280 the inspector column is always present, with an empty state when nothing is selected. Where the dock cannot fit one row (below 1024, and from 1280 to 1439 beside the inspector) it floats at the bottom of the content area.
+
+## Touch
+
+On coarse pointers every control has a hit area of at least 44px, and what is drawn does not change. The rule set is in `workbench.css` under `@media (pointer: coarse)`: a centred pseudo-element on `.wb-btn`, `.wb-icon-btn`, `.wb-segment`, `.wb-chip`, `.wb-toggle`, `.wb-step`, `.wb-tile-check` and labelled `.wb-input-wrap`. `--wb-hit-w` and `--wb-hit-h` cap the area where neighbours sit closer than 44px, so two areas split the gap and never overlap. A control built outside the primitives opts in with `.wb-hit`.
+
+On `hover: none` a media tile draws no action row. A tap on the media opens the preview, which holds the secondary actions; the selection check stays visible. A row that is the only way to its action keeps it with `MediaTile` `state.touchActions`.
 
 ## Components
 
@@ -335,7 +350,7 @@ A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 sec
 `StepRail`: a 30px numbered circle and a name per step, joined by 2px connectors. The current step has a 2px ember ring and an ember numeral. Done steps are a filled `#3A3C40` circle with a check.
 
 ### Media tile
-`MediaTile`: 12px radius on the media placeholder colour. Status badge top right, duration chip bottom right in Geist Mono on a dark scrim, selection check top left. Selected tiles carry the ember selection ring. The hover action row holds a bone "Preview" and a translucent second action.
+`MediaTile`: 12px radius on the media placeholder colour. Status badge top right, duration chip bottom right in Geist Mono on a dark scrim, selection check top left. Selected tiles carry the ember selection ring. The hover action row holds a bone "Preview" and a translucent second action; it is drawn only where hover exists (see Touch).
 
 ### Rows
 - **Key-value rows (`KeyValueList`):** 30px inspector rows split by hairlines, muted label left, value right.
