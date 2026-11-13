@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- the shared element for stored media served by the app's own routes */
 import { useCallback, useState, type ComponentProps } from "react";
+import { useMountedInBrowser } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
 
 /**
@@ -31,14 +32,19 @@ export function MediaImage({ className, onLoad, onError, ...rest }: Omit<Compone
 /** Styled in `workbench-data.css`. Pair it with the props from `useMediaReveal`. */
 export const MEDIA_REVEAL_CLASS = "wb-media-reveal";
 
-/** `shown`: the CSS fallback already revealed the element before React attached, so it must not fade again. */
-type RevealPhase = "server" | "pending" | "loaded" | "shown";
+/**
+ * `shown`: the CSS fallback already revealed the element before React attached, so it must not fade again.
+ * `cached`: the browser mounted the element with its image already decoded (a filter, tab or view
+ * change put a known file back on screen), so it appears at once instead of fading a second time.
+ */
+type RevealPhase = "server" | "pending" | "loaded" | "shown" | "cached";
 
 const LOADED_ATTRIBUTE: Record<RevealPhase, string | undefined> = {
   server: undefined,
   pending: "false",
   loaded: "true",
   shown: "shown",
+  cached: "cached",
 };
 
 /**
@@ -49,23 +55,28 @@ const LOADED_ATTRIBUTE: Record<RevealPhase, string | undefined> = {
  */
 export function useMediaReveal() {
   const [phase, setPhase] = useState<RevealPhase>("server");
-  const ref = useCallback((node: HTMLImageElement | HTMLVideoElement | null) => {
-    if (!node) return;
-    const ready = hasFrame(node);
-    const revealed = ready && window.getComputedStyle(node).opacity !== "0";
-    // `next/image` hands the node over again on later renders; only the first hand-over decides.
-    setPhase((current) => {
-      if (current !== "server") return current;
-      if (!ready) return "pending";
-      return revealed ? "shown" : "loaded";
-    });
-  }, []);
+  const mountedInBrowser = useMountedInBrowser();
+  const ref = useCallback(
+    (node: HTMLImageElement | HTMLVideoElement | null) => {
+      if (!node) return;
+      const ready = hasFrame(node);
+      const revealed = ready && window.getComputedStyle(node).opacity !== "0";
+      // `next/image` hands the node over again on later renders; only the first hand-over decides.
+      setPhase((current) => {
+        if (current !== "server") return current;
+        if (!ready) return "pending";
+        if (revealed) return "shown";
+        return mountedInBrowser ? "cached" : "loaded";
+      });
+    },
+    [mountedInBrowser],
+  );
   const markLoaded = useCallback(
-    () => setPhase((current) => (current === "shown" ? current : "loaded")),
+    () => setPhase((current) => (current === "shown" || current === "cached" ? current : "loaded")),
     [],
   );
   return {
-    loaded: phase === "loaded" || phase === "shown",
+    loaded: phase !== "server" && phase !== "pending",
     markLoaded,
     props: { ref, "data-loaded": LOADED_ATTRIBUTE[phase] },
   };

@@ -359,6 +359,11 @@
     .wb-media-reveal[data-loaded="true"] {
       animation: wb-media-reveal var(--pf-dur-state) var(--pf-ease) both;
     }
+
+    /* Mounted by the browser with the file already decoded: nothing to wait for, so nothing fades. */
+    .wb-media-reveal[data-loaded="cached"] {
+      opacity: 1;
+    }
   }
 
   .wb-tile[data-selected="true"] {
