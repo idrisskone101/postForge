@@ -4,18 +4,6 @@
  * and deletes its lines here; the file goes away with the last one.
  */
 
-[data-empty-copy]::before {
-  content: attr(data-empty-copy);
-}
-
-[data-empty-cta]::before {
-  content: attr(data-empty-cta);
-}
-
-[data-empty-title]::before {
-  content: attr(data-empty-title);
-}
-
 [data-generate-history]::before {
   content: attr(data-generate-history);
 }
@@ -23,15 +11,3 @@
 [data-generate-notice]::before {
   content: attr(data-generate-notice);
 }
-
-[data-home-title]::before {
-  content: attr(data-home-title);
-}
-
-[data-lcp]::before {
-  content: attr(data-lcp);
-}
-
-
-
-
