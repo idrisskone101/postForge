@@ -436,7 +436,7 @@
     transform: translateY(0);
   }
 
-  /* Touch has no hover: the check is always there and the action row stays visible. */
+  /* Touch has no hover: the check and the action row stay visible, and the duration sits above the row. */
   @media (hover: none) {
     .wb-tile > .wb-tile-check,
     .wb-tile > .wb-tile-actions {
@@ -446,13 +446,15 @@
     }
 
     .wb-tile > .wb-tile-actions ~ .wb-tile-duration {
-      opacity: 0;
+      bottom: 46px;
     }
   }
 
-  .wb-tile:hover > .wb-tile-actions ~ .wb-tile-duration,
-  .wb-tile:has(:focus-visible) > .wb-tile-actions ~ .wb-tile-duration {
-    opacity: 0;
+  @media (hover: hover) {
+    .wb-tile:hover > .wb-tile-actions ~ .wb-tile-duration,
+    .wb-tile:has(:focus-visible) > .wb-tile-actions ~ .wb-tile-duration {
+      opacity: 0;
+    }
   }
 
   .wb-tile-action {
