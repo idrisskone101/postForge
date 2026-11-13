@@ -47,7 +47,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
           meter={
             <SplitMeter
               equal
-              className="w-[120px] max-w-full gap-[3px]"
+              className="w-full max-w-[120px] gap-[3px]"
               label={`${readyPlanCount} of ${planCount} plans ready`}
               parts={planParts.slice(0, 12)}
             />
@@ -60,7 +60,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
           meter={
             <SplitMeter
               equal
-              className="w-[168px] max-w-full gap-[3px]"
+              className="w-full max-w-[168px] gap-[3px]"
               label={`${scheduledDays} of 7 days planned, ${blockedDays.size} need attention`}
               parts={dayParts}
             />
@@ -97,12 +97,12 @@ function RatioStat({
   return (
     <div className="wb-stat">
       <span className="wb-label">{label}</span>
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
+      <div className="flex min-w-0 items-baseline gap-x-2 max-sm:flex-wrap">
         <span className="wb-stat-value">{value ?? "-"}</span>
         {value === null ? null : (
           <>
             <span className="text-[16px] font-semibold leading-[18px] text-fg-muted">/ {total}</span>
-            <span className="flex min-w-0 max-w-full self-center sm:ml-2">{meter}</span>
+            <span className="flex min-w-0 self-center max-sm:basis-full sm:ml-2 sm:min-w-14 sm:flex-1">{meter}</span>
           </>
         )}
       </div>

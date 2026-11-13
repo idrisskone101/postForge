@@ -72,7 +72,7 @@ export function SlideshowAutomationList({
                   className="h-[50px] w-10 shrink-0 rounded-lg"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="wb-row-title truncate" title={automation.name}>
+                  <p className="wb-row-title line-clamp-2 whitespace-normal [overflow-wrap:anywhere]" title={automation.name}>
                     {automation.name}
                   </p>
                   <p className="wb-row-sub truncate" title={policy.full}>
