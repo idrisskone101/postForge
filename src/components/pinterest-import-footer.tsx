@@ -36,6 +36,7 @@ export function PinterestImportFooter({
           disabled={importing}
         />
       </Field>
+      {candidates.length > 0 ? (
       <div className="flex items-center gap-1 sm:h-[42px]">
         <Button
           variant="link"
@@ -47,7 +48,7 @@ export function PinterestImportFooter({
                 .map((candidate) => candidate.id),
             )
           }
-          disabled={!candidates.length || importing}
+          disabled={importing}
         >
           {candidates.length > MAX_PINTEREST_IMPORT_IMAGES
             ? `Select first ${MAX_PINTEREST_IMPORT_IMAGES}`
@@ -57,6 +58,7 @@ export function PinterestImportFooter({
           Clear
         </Button>
       </div>
+      ) : null}
       {workflow === "slideshow" ? (
         <div className="grid gap-2 sm:flex sm:h-[42px] sm:items-center">
           <Button
