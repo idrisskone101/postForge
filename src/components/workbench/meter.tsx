@@ -13,7 +13,7 @@ type MeterProps = {
   className?: string;
 };
 
-/** Thin 4px bar with one fill. Width eases in 220ms. */
+/** Thin 4px bar with one fill. The fill scales from the left in 220ms, so only transform animates. */
 export function Meter({ value, tone = "neutral", running = false, label, className }: MeterProps) {
   const clamped = Math.max(0, Math.min(100, value));
   return (
@@ -27,7 +27,7 @@ export function Meter({ value, tone = "neutral", running = false, label, classNa
       data-tone={tone === "neutral" ? undefined : tone}
       data-running={running ? "true" : undefined}
     >
-      <span className="wb-meter-fill" style={{ width: `${clamped}%` }} />
+      <span className="wb-meter-fill" style={{ transform: `scaleX(${clamped / 100})` }} />
     </span>
   );
 }

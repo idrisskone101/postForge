@@ -164,7 +164,9 @@
     overflow: hidden;
     border-radius: var(--pf-radius-pill);
     background: var(--pf-chart-1);
-    transition: width var(--pf-dur-enter) var(--pf-ease);
+    width: 100%;
+    transform-origin: left center;
+    transition: transform var(--pf-dur-enter) var(--pf-ease);
   }
 
   .wb-meter[data-tone="ember"] > .wb-meter-fill,
