@@ -94,6 +94,7 @@ export function AutomationBuilderPhaseForm({
           <Button
             variant="primary"
             size={40}
+            className={PRIMARY_ROW}
             disabled={saving || socialApprovalMissing}
             onClick={() => {
               setValidationOpen(false);
@@ -105,7 +106,7 @@ export function AutomationBuilderPhaseForm({
               : "Save reviewed plan"}
           </Button>
         ) : (
-          <Button variant="primary" size={40} onClick={() => goTo(currentIndex + 1)}>
+          <Button variant="primary" size={40} className={PRIMARY_ROW} onClick={() => goTo(currentIndex + 1)}>
             <span>{phaseIndex === PHASES.length - 1 ? "Review" : "Next"}</span>
             <Icon name="chevron-right" strokeWidth={2} />
           </Button>
@@ -114,6 +115,9 @@ export function AutomationBuilderPhaseForm({
     </section>
   );
 }
+
+/** Below 480 the footer is two rows on every step: the quiet actions, then the primary across the panel. */
+const PRIMARY_ROW = "max-[479.98px]:basis-full";
 
 function ReviewStep({ workspace }: { workspace: AutomationBuilderWorkspace }) {
   const { record, socialApprovalMissing, integrationsLoading, destinationReadiness } = workspace;
