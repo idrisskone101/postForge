@@ -1,6 +1,5 @@
 {
   "src/app/(app)/characters/new/character-builder-static.tsx": 1,
-  "src/app/error.tsx": 4,
   "src/components/character-photo.tsx": 1,
   "src/lib/ai/slideshow-renderer.ts": 1,
   "src/lib/costs/chart-colors.ts": 6,
