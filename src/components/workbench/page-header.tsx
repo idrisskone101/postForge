@@ -14,17 +14,26 @@ type PageHeaderProps = {
   back?: { href: string; label: string; labelled?: boolean };
   /** Actions slot: at most the one bone primary plus one quiet secondary. */
   children?: ReactNode;
+  /**
+   * Width in px below which the actions take their own row under the title. Set it on a header whose
+   * actions cannot sit beside the title on a small screen, so the second row is declared and reserved
+   * on the first frame instead of appearing when the actions wrap or mount.
+   */
+  stackBelow?: PageHeaderStack;
   className?: string;
   id?: string;
 };
 
+export type PageHeaderStack = 360 | 480 | 640;
+
 /** Page header: the title only, no description line. */
-export function PageHeader({ title, back, children, className, id }: PageHeaderProps) {
+export function PageHeader({ title, back, children, stackBelow, className, id }: PageHeaderProps) {
   return (
     <header
       id={id}
       className={cn("wb-page-header", className)}
       data-back={back ? "true" : undefined}
+      data-stack={stackBelow}
     >
       <div className="wb-page-header-lead">
         {back && (

@@ -345,6 +345,65 @@
   }
 }
 
+/*
+ * Small screens: a header whose actions cannot sit beside the title declares two rows (title, then the
+ * actions across the full width). The rows are fixed tracks, so the height is final on the first frame,
+ * before a client accessory mounts into the actions slot.
+ */
+@media (max-width: 359.98px) {
+  .wb-page-header[data-stack="360"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="360"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .wb-page-header[data-stack="480"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="480"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .wb-page-header[data-stack="640"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="640"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .wb-page-header[data-stack] #workspace-header-accessory {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
 /* 768 to 1279: the 72px icon rail */
 @media (min-width: 768px) {
   #workspace-mobile-bar {

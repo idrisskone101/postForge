@@ -15,7 +15,7 @@ export function SlideshowStudioLazy(props: SlideshowStudioProps) {
 function StudioFirstPaint() {
   return (
     <>
-      <PageHeader title="Slideshow" />
+      <PageHeader title="Slideshow" stackBelow={480} />
       <WorkspaceRouteSkeleton />
     </>
   );

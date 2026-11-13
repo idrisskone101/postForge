@@ -8,11 +8,12 @@ import { useSlideshowHome } from "./slideshow-home-provider";
 import type { SlideshowSection } from "./types";
 
 export function StudioHome() {
-  const { section, onSectionChange, draftsCount } = useSlideshowHome();
+  const { section, onSectionChange, draftsCount, draftPages } = useSlideshowHome();
+  const reserveCount = draftPages.total === null || draftsCount > 0;
   return (
     <>
-      <PageHeader title="Slideshow">
-        <div role="tablist" aria-label="Slideshow studio" className="wb-segmented h-10 gap-0.5 p-1">
+      <PageHeader title="Slideshow" stackBelow={480}>
+        <div role="tablist" aria-label="Slideshow studio" className="wb-segmented h-10 gap-0.5 p-1 max-[479.98px]:flex max-[479.98px]:w-full">
           {SECTIONS.map(({ id, label }) => (
             <button
               key={id}
@@ -20,11 +21,13 @@ export function StudioHome() {
               role="tab"
               aria-selected={section === id}
               onClick={() => onSectionChange(id)}
-              className="wb-segment h-8 gap-2 px-[18px] text-[14px] leading-[18px] has-[.wb-count]:pr-3.5"
+              className="wb-segment h-8 gap-2 px-[18px] text-[14px] leading-[18px] has-[[data-count-slot]]:pr-3.5 max-[479.98px]:flex-1"
             >
               {label}
-              {id === "drafts" && draftsCount ? (
-                <CountBadge count={draftsCount} label={`${draftsCount} drafts`} />
+              {id === "drafts" && reserveCount ? (
+                <span data-count-slot className="inline-flex min-w-[27px] justify-center">
+                  <CountBadge count={draftsCount} label={`${draftsCount} drafts`} />
+                </span>
               ) : null}
             </button>
           ))}

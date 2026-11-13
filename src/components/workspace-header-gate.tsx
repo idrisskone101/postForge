@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { buttonClass } from "@/components/workbench/button";
 import { Icon } from "@/components/workbench/icon";
-import { PageHeader } from "@/components/workbench/page-header";
+import { PageHeader, type PageHeaderStack } from "@/components/workbench/page-header";
 import {
+  routeHeaderStackBelow,
   routeOwnsHeader,
   routeProvidesHeaderAccessory,
 } from "@/lib/workspace-header-route";
@@ -28,6 +29,7 @@ export function WorkspaceHeaderGate({
     <WorkspaceRouteHeader
       activeItem={activeItem}
       hasAccessory={routeProvidesHeaderAccessory(pathname)}
+      stackBelow={routeHeaderStackBelow(pathname)}
     />
   );
 }
@@ -40,13 +42,15 @@ export function WorkspaceHeaderGate({
 export function WorkspaceRouteHeader({
   activeItem,
   hasAccessory = false,
+  stackBelow,
 }: {
   activeItem: WorkspaceNavigationItem;
   hasAccessory?: boolean;
+  stackBelow?: PageHeaderStack;
 }) {
   const primaryAction = hasAccessory ? undefined : activeItem.primaryAction;
   return (
-    <PageHeader id="workspace-header" title={activeItem.label}>
+    <PageHeader id="workspace-header" title={activeItem.label} stackBelow={stackBelow}>
       <div id="workspace-header-accessory" />
       {primaryAction && (
         <Link

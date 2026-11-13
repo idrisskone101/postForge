@@ -44,8 +44,14 @@ export function CollectionsPageClient(props: CollectionsPageClientProps) {
       }}
     >
       <WorkspaceHeaderAccessory>
-        <Button size={40} onClick={() => setPinterestOpen(true)} className="max-sm:flex-1">
-          Import from Pinterest
+        <Button
+          size={40}
+          onClick={() => setPinterestOpen(true)}
+          aria-label="Import from Pinterest"
+          className="max-sm:flex-1 max-[359.98px]:flex-none"
+        >
+          <span className="max-[359.98px]:hidden">Import from Pinterest</span>
+          <span className="min-[360px]:hidden">Pinterest</span>
         </Button>
         <Button
           variant="primary"
