@@ -19,6 +19,8 @@
     font-size: 14px;
     line-height: 21px;
     text-rendering: optimizeLegibility;
+    /* Body copy never leaves one word alone on its last line. */
+    text-wrap: pretty;
   }
 
   ::selection {

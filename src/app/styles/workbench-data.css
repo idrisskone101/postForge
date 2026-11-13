@@ -696,6 +696,11 @@
     color: var(--pf-bad);
   }
 
+  .wb-empty-title,
+  .wb-empty-copy {
+    text-wrap: balance;
+  }
+
   .wb-empty-title {
     max-width: 44ch;
     color: var(--pf-text);
