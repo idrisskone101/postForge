@@ -158,10 +158,7 @@ export function AutomationBuilderPlanSettings({
       </div>
       <div className="flex items-center gap-3 border-t border-hairline pt-3">
         <div className="flex min-w-0 flex-1 flex-col">
-          <span
-            id="builder-approval-label"
-            className="text-[14px] font-semibold leading-5 text-fg"
-          >
+          <span aria-hidden="true" className="text-[14px] font-semibold leading-5 text-fg">
             Require approval
           </span>
           {social ? (
@@ -176,7 +173,7 @@ export function AutomationBuilderPlanSettings({
         <Toggle
           checked={record.approvalRequired}
           disabled={social}
-          aria-labelledby="builder-approval-label"
+          label="Require approval"
           aria-describedby={social ? "automation-approval-rule" : undefined}
           onCheckedChange={(checked) =>
             setRecord((current) => ({ ...current, approvalRequired: checked }))
