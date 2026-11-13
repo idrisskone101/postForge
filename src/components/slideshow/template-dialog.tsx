@@ -75,10 +75,10 @@ export function TemplateDialog({
                     ))}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                    <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+                    <span className="line-clamp-2 break-words text-[14px] font-semibold leading-[18px] text-fg">
                       {template.name}
                     </span>
-                    <span className="truncate text-[13px] leading-4 text-fg-secondary">
+                    <span className="break-words text-[13px] leading-4 text-fg-secondary">
                       {template.category} - {template.slides.length} slides
                     </span>
                     <span className="truncate text-[12px] leading-4 text-fg-muted">

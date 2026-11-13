@@ -81,7 +81,7 @@ export function CreateView() {
                   className="shrink-0 text-fg-muted transition-colors duration-[160ms] ease-pf group-hover:text-fg"
                 />
               </button>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-4">
                 {templates.slice(0, 4).map((template) => (
                   <button
                     key={template.id}

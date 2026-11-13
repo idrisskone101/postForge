@@ -111,21 +111,21 @@ export function CreateIdeaForm() {
             </button>
           </div>
         </div>
-        <Field label="Language" htmlFor="slideshow-language" className="min-w-[140px] flex-1">
+        <Field label="Language" htmlFor="slideshow-language" className={SELECT_FIELD}>
           <select
             id="slideshow-language"
             value={form.language}
             onChange={(event) =>
               setForm((current) => ({ ...current, language: event.target.value }))
             }
-            className="wb-input font-medium"
+            className="wb-input w-auto min-w-full max-w-full font-medium"
           >
             {LANGUAGES.map((option) => (
               <option key={option}>{option}</option>
             ))}
           </select>
         </Field>
-        <Field label="Story model" htmlFor="slideshow-story-model" className="min-w-[140px] flex-1">
+        <Field label="Story model" htmlFor="slideshow-story-model" className={SELECT_FIELD}>
           <select
             id="slideshow-story-model"
             value={form.model}
@@ -137,7 +137,7 @@ export function CreateIdeaForm() {
                 ? STORY_MODELS.find((m) => m.id === form.model)?.description
                 : "Uses the intelligence model chosen in Settings"
             }
-            className="wb-input font-medium"
+            className="wb-input w-auto min-w-full max-w-full font-medium"
           >
             <option value="">
               {workspaceModelName
@@ -186,6 +186,10 @@ export function CreateIdeaForm() {
     </>
   );
 }
+
+// A select is as wide as its longest option, so each field takes that width and the row wraps when the
+// three no longer fit. A fixed share clipped "Workspace default" at 1280 and 390.
+const SELECT_FIELD = "max-w-full min-w-[140px] flex-[1_0_auto]";
 
 const LANGUAGES = ["English", "Spanish", "French", "German", "Portuguese", "Italian"];
 
