@@ -28,7 +28,7 @@ export function InspirationPreviewDialog({ workspace }: { workspace: Inspiration
       <DialogContent
         showCloseButton={false}
         data-source-preview-drawer="true"
-        className="w-[calc(100vw-2rem)] max-w-[880px] gap-0 overflow-y-auto p-0 sm:max-w-[880px] lg:h-[min(680px,calc(100dvh-2rem))] lg:overflow-hidden"
+        className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[880px] flex-col gap-0 overflow-hidden p-0 sm:max-w-[880px] lg:h-[min(680px,calc(100dvh-2rem))]"
       >
         {selectedVideo && <PreviewBody video={selectedVideo} workspace={workspace} />}
       </DialogContent>
@@ -55,9 +55,9 @@ function PreviewBody({
   const isUpdating = updatingRejectionIds.includes(video.id);
 
   return (
-    <div className="grid min-h-0 lg:h-full lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="wb-scroll-fade-y wb-scroll-fade-deep grid min-h-0 overflow-y-auto lg:h-full lg:grid-cols-[minmax(0,1fr)_320px] lg:overflow-hidden">
       <PreviewStage video={video} workspace={workspace} />
-      <aside className="flex min-h-0 min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-5 lg:overflow-y-auto">
+      <aside className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 min-w-0 flex-col gap-3.5 px-5 pt-[18px] pb-5 lg:overflow-y-auto">
         <div className="wb-panel-head">
           <DialogTitle className="wb-panel-title">Preview</DialogTitle>
           <DialogClose className={iconButtonClass("quiet", 30)} aria-label="Close preview">
@@ -174,8 +174,8 @@ function PreviewStage({
   const thumbnailFailed = thumbnailErrorIds.includes(video.id);
 
   return (
-    <div className="flex min-h-[320px] min-w-0 items-center justify-center bg-well p-4 lg:p-6">
-      <div className="relative aspect-[9/16] h-[min(60dvh,560px)] max-w-full overflow-hidden rounded-lg bg-media lg:h-full">
+    <div className="flex min-h-[272px] min-w-0 items-center justify-center bg-well p-4 lg:p-6">
+      <div className="relative aspect-[9/16] h-[clamp(240px,37dvh,560px)] max-w-full overflow-hidden rounded-lg bg-media lg:h-full">
         {embedState !== "failed" && (
           <iframe
             key={video.id}

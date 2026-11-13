@@ -22,7 +22,7 @@ export function EditorInspector() {
       aria-label="Slide inspector"
       className="wb-panel gap-0 p-0 xl:w-[320px] xl:shrink-0"
     >
-      <div className="min-h-0 xl:flex-1 xl:overflow-y-auto" data-inspector-scroll>
+      <div className="wb-scroll-fade-from-xl min-h-0 xl:flex-1 xl:overflow-y-auto" data-inspector-scroll>
         <div className="flex flex-col gap-3.5 px-5 pb-6 pt-[18px]">
           <label className="wb-field group">
             <span className="wb-label transition-colors duration-160 ease-pf group-focus-within:text-ember-text">
@@ -60,10 +60,6 @@ export function EditorInspector() {
             />
           </label>
         </div>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none sticky bottom-0 -mt-6 h-6 bg-gradient-to-t from-panel to-transparent max-xl:hidden"
-        />
       </div>
       <div className="flex shrink-0 gap-2 px-5 pb-5 pt-3">
         <Button

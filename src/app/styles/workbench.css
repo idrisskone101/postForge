@@ -451,6 +451,7 @@
     /* A body that scrolls over controls takes the deeper 24px cut so a control is never sliced
        by a hard edge. */
     .wb-scroll-fade-deep {
+      scroll-padding-block: 28px;
       animation-name: wb-scroll-fade-deep;
     }
   }
@@ -496,6 +497,7 @@
   @supports (animation-timeline: scroll()) {
     @media (min-width: 1280px) {
       .wb-scroll-fade-from-xl {
+        scroll-padding-block: 28px;
         animation: wb-scroll-fade-deep linear both;
         animation-timeline: scroll(self block);
         mask-image: linear-gradient(

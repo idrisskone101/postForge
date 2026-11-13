@@ -83,13 +83,15 @@ export function ReferencePickerPopover({
             initialFocus={popupRef}
             aria-label={label}
             className={cn(
-              "wb-float wb-overlay-menu flex max-h-[min(520px,var(--available-height))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto p-3 outline-none",
+              "wb-float wb-overlay-menu flex max-h-[min(640px,var(--available-height))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col overflow-hidden outline-none",
               wide
                 ? "w-[max(var(--anchor-width),min(560px,calc(100vw-32px)))]"
                 : "w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))]"
             )}
           >
-            {children(() => setOpen(false))}
+            <div className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 flex-col gap-3 overflow-y-auto p-3">
+              {children(() => setOpen(false))}
+            </div>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

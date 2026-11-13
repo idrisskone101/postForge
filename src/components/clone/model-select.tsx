@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { CloneModelSelectModel } from "@/components/clone/view-models";
 import {
@@ -19,6 +20,22 @@ export function CloneModelSelect({
   const { label, models, selectedValue, onValueChange, getCost } = model;
   const selectedModel = models.find((entry) => entry.id === selectedValue) ?? models[0];
   const selectedModelLabel = selectedModel?.name.replace(" Motion Control", "");
+
+  if (models.length === 0) {
+    return (
+      <Link
+        href="/settings?tab=models"
+        aria-label={`${label}: no model enabled. Open model settings`}
+        className={cn(
+          "flex h-[42px] w-full min-w-0 items-center justify-between gap-3 rounded-lg bg-raised px-3 text-[14px] font-medium leading-[18px] text-fg-muted transition-[background-color] duration-[160ms] ease-pf hover:bg-raised-strong",
+          className,
+        )}
+      >
+        <span className="min-w-0 truncate">No model enabled</span>
+        <span className="shrink-0 text-fg-secondary">Settings</span>
+      </Link>
+    );
+  }
 
   return (
     <Select

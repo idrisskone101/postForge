@@ -56,7 +56,7 @@ export function SlideshowBoardView() {
           updateProject((current) => ({ ...current, aspectRatio }))
         }
       />
-      <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1 pb-1 pt-1">
+      <div className="wb-scroll-fade-y wb-scroll-fade-deep -mx-1 min-h-0 flex-1 overflow-y-auto px-1 pb-1 pt-1">
         <ol className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-3 gap-y-5 sm:grid-cols-[repeat(auto-fill,minmax(184px,1fr))]">
           {project.slides.map((slide, index) => {
             const selected = slide.id === selectedSlideId;
