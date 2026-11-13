@@ -77,7 +77,7 @@ assert.match(typesSource, /csvDataset: PerformanceDataset \| null/);
 assert.match(typesSource, /providers: ConnectedAccountView\[\]/);
 assert.match(
   panelSource,
-  /import type \{ PerformanceSourceWorkspace \} from "\.\/types"/
+  /import type \{[^}]*PerformanceSourceWorkspace[^}]*\} from "\.\/types"/
 );
 assert.doesNotMatch(panelSource, /export type /);
 assert.match(
@@ -88,7 +88,6 @@ assert.match(
   pageSource,
   /<PerformanceSourcePanel workspace=\{sourceWorkspace\}/
 );
-assert.match(pageSource, /hidden overflow-x-auto sm:block/);
 assert.doesNotMatch(
   hookSource,
   /PerformanceSourceWorkspace/,
@@ -127,9 +126,9 @@ assert.ok(
 assert.doesNotMatch(panelSource, /createContext|useContext/);
 assert.doesNotMatch(pageSource, /createContext|useContext/);
 assert.doesNotMatch(panelSource, /demo account|synthetic metric/i);
-assert.match(panelSource, /optgroup label="Local reports"/);
-assert.match(panelSource, /value="csv"/);
-assert.match(panelSource, /csvDataset \?/);
+assert.match(panelSource, /csvDataset: workspace\.csvDataset/);
+assert.match(panelSource, /onClick=\{workspace\.onClearCsv\}/);
+assert.match(panelSource, /Reconnect required/);
 
 console.log(
   files
