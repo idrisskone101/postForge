@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { AlertCircle, Copy, Redo2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import { Button, EmptyState, Skeleton, Toast } from "@/components/workbench";
 import {
   buildCloneHandoffHref,
   buildContinueVideoHref,
@@ -13,80 +9,37 @@ import {
 } from "@/lib/generation-editor";
 import {
   ENHANCEMENT_TOOLS,
-  asString,
   jobDetailFlags,
-  type InspectorTab,
   type JobDetailActions,
   type JobDetailViewModel,
 } from "../job-enhancements";
 import { JobDetailHeader } from "../job-header";
-import {
-  JobDetailsPanel,
-  JobEnhancePanel,
-  JobInspectorTabs,
-} from "../job-inspector";
-import { JobInspectorFooter } from "../job-inspector-footer";
-import {
-  JobPreviewBody,
-  JobPreviewToolbar,
-  JobVariationStrip,
-} from "../job-preview-body";
+import { JobDetailsPanel, JobPromptPanel, JobQuickEdits, JobRefinePanel } from "../job-inspector";
+import { JobActionDock } from "../job-inspector-footer";
+import { JobStage, JobVariationStrip } from "../job-preview-body";
 import { useJobDetail } from "../use-job-detail";
 
 export default function JobDetailPage() {
   const detail = useJobDetail();
-  const [activeTab, setActiveTab] = useState<InspectorTab>("enhance");
-  const {
-    router,
-    previewStageRef,
-    job,
-    isLoading,
-    error,
-    featuredIdx,
-    setFeaturedIdx,
-    previewZoom,
-    setPreviewZoom,
-    cropMode,
-    setCropMode,
-    isFullscreen,
-    selectedEnhancement,
-    setSelectedEnhancement,
-    enhancementInstruction,
-    setEnhancementInstruction,
-    editStrength,
-    setEditStrength,
-    preserveSubject,
-    setPreserveSubject,
-    feedback,
-    showSuccess,
-  } = detail;
+  const { router, job, isLoading, error, featuredIdx, cropMode, feedback } = detail;
 
-  if (isLoading && !job) return <EditorLoadingState />;
+  if (isLoading && !job) return <JobDetailLoading />;
 
   if (error && !job) {
     return (
-      <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="pf-card w-full min-w-0 max-w-md p-6 text-center">
-          <span className="mx-auto grid size-10 shrink-0 place-items-center rounded-full bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]">
-            <AlertCircle className="size-5 shrink-0" />
-          </span>
-          <h1 className="mt-4 pf-section-title">Generation could not load</h1>
-          <p className="mt-2 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
-            {error.message}
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => router.push("/generate")}
-              className="pf-button-secondary shrink-0"
-            >
-              Back to Generate
-            </Button>
-            <Button className="pf-button-primary shrink-0" onClick={() => window.location.reload()}>
-              Try again
-            </Button>
-          </div>
-        </div>
+      <div className="pf-content-viewport flex min-w-0 items-center justify-center">
+        <EmptyState
+          icon="alert"
+          tone="error"
+          title="Generation could not load"
+          detail={error.message}
+          className="w-full max-w-md flex-none [overflow-wrap:anywhere]"
+        >
+          <Button variant="strong" onClick={() => router.push("/generate")}>
+            Back to Generate
+          </Button>
+          <Button onClick={() => window.location.reload()}>Try again</Button>
+        </EmptyState>
       </div>
     );
   }
@@ -95,8 +48,7 @@ export default function JobDetailPage() {
 
   const { isActive, isCompleted, canDiscard, isFailed } = jobDetailFlags(job);
   const featured = job.outputs[featuredIdx] ?? job.outputs[0];
-  const input = job.input ?? {};
-  const negativePrompt = asString(input.negativePrompt);
+  const showEnhance = isCompleted && Boolean(featured) && job.type === "image";
 
   const view: JobDetailViewModel = {
     job,
@@ -110,11 +62,11 @@ export default function JobDetailPage() {
     isDiscarding: detail.isDiscarding,
     isApplying: detail.isApplying,
     cropMode,
-    previewZoom,
-    selectedEnhancement,
-    enhancementInstruction,
-    editStrength,
-    preserveSubject,
+    previewZoom: detail.previewZoom,
+    selectedEnhancement: detail.selectedEnhancement,
+    enhancementInstruction: detail.enhancementInstruction,
+    editStrength: detail.editStrength,
+    preserveSubject: detail.preserveSubject,
     feedback,
     error,
   };
@@ -122,173 +74,106 @@ export default function JobDetailPage() {
   const actions: JobDetailActions = {
     onBack: () => router.back(),
     onShare: () => void detail.handleShare(featured),
-    onGallery: () => router.push(`/gallery?type=${job.type}`),
     onDownload: () => featured && void detail.handleDownload(featured),
     onRetry: () => void detail.handleRetry(),
     onGenerateSimilar: () => router.push(buildGenerateSimilarHref(job)),
+    onContinueVideo: () => router.push(buildContinueVideoHref(job, featured?.id)),
+    onCopyPrompt: () => void detail.handleCopyPrompt(),
     onSelectTool: (id) => {
-      setSelectedEnhancement(id);
+      detail.setSelectedEnhancement(id);
       const tool = ENHANCEMENT_TOOLS.find((item) => item.id === id);
-      if (tool) setEnhancementInstruction(tool.instruction);
+      if (tool) detail.setEnhancementInstruction(tool.instruction);
     },
-    onInstructionChange: setEnhancementInstruction,
-    onEditStrengthChange: setEditStrength,
-    onPreserveSubjectChange: setPreserveSubject,
+    onInstructionChange: detail.setEnhancementInstruction,
+    onEditStrengthChange: detail.setEditStrength,
+    onPreserveSubjectChange: detail.setPreserveSubject,
     onApply: () => featured && void detail.handleApplyEnhancement(featured),
     onSaveToGallery: () => router.push(`/gallery?type=${job.type}`),
-    onUseInClone: () =>
-      featured && router.push(buildCloneHandoffHref(featured.id)),
+    onUseInClone: () => featured && router.push(buildCloneHandoffHref(featured.id)),
     onAddToAutomation: () =>
       featured &&
-      router.push(
-        `/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`
-      ),
+      router.push(`/automations/new?sourceFileId=${encodeURIComponent(featured.id)}`),
     onDiscard: () => void detail.handleDiscard(),
     onLeave: () => router.push("/generate"),
   };
 
-  const setTab = (tab: InspectorTab) => {
-    switch (tab) {
-      case "enhance":
-      case "details":
-      case "prompts":
-        setActiveTab(tab);
-        return;
-      default: {
-        const exhaustive: never = tab;
-        return exhaustive;
-      }
-    }
-  };
-
   return (
-    <div className="pf-content-viewport min-w-0">
+    <div className="pf-content-viewport flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-2*var(--pf-page-pad))] xl:min-h-[760px]">
       <JobDetailHeader view={view} actions={actions} />
 
-      <section className="grid items-start gap-4 p-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-5 lg:p-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)]">
-          <JobPreviewToolbar
-            view={{
-              previewZoom,
+      <div className="flex min-h-0 flex-1 flex-col gap-3 xl:flex-row">
+        <div className="flex min-w-0 flex-col gap-3 max-xl:contents xl:flex-1">
+          <JobStage
+            view={view}
+            stageRef={detail.previewStageRef}
+            toolbar={{
+              previewZoom: detail.previewZoom,
               cropMode,
-              isFullscreen,
+              isFullscreen: detail.isFullscreen,
               isCompleted,
               featured,
-              onZoomOut: () => setPreviewZoom((zoom) => clampPreviewZoom(zoom - 10)),
-              onZoomIn: () => setPreviewZoom((zoom) => clampPreviewZoom(zoom + 10)),
+              onZoomOut: () => detail.setPreviewZoom((zoom) => clampPreviewZoom(zoom - 10)),
+              onZoomIn: () => detail.setPreviewZoom((zoom) => clampPreviewZoom(zoom + 10)),
               onToggleCrop: () => {
-                setCropMode((current) => !current);
-                showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
+                detail.setCropMode((current) => !current);
+                detail.showSuccess(cropMode ? "Fit preview restored." : "Crop preview enabled.");
               },
               onFullscreen: () => void detail.handleFullscreen(),
             }}
           />
-
-          <div
-            ref={previewStageRef}
-            className={cn(
-              "relative grid min-h-[460px] place-items-center overflow-auto p-4 sm:min-h-[620px] sm:p-8 fullscreen:min-h-dvh",
-              isCompleted && featured ? "bg-[#09090B]" : "bg-[var(--pf-active)]"
-            )}
-          >
-            <JobPreviewBody view={view} actions={actions} />
-          </div>
-
-          {isCompleted && (
-            <JobVariationStrip
-              job={job}
-              featured={featured}
-              onSelect={setFeaturedIdx}
-              onNewVariation={() => router.push(buildGenerateSimilarHref(job))}
-            />
+          {isCompleted && job.outputs.length > 1 && (
+            <JobVariationStrip job={job} featured={featured} onSelect={detail.setFeaturedIdx} />
           )}
+          <JobActionDock view={view} actions={actions} />
         </div>
 
-        <aside className="min-w-0 overflow-hidden rounded-[8px] border border-border bg-[var(--pf-surface)] xl:sticky xl:top-4">
-          <JobInspectorTabs activeTab={activeTab} onTabChange={setTab} />
-
-          {activeTab === "enhance" && (
-            <JobEnhancePanel view={view} actions={actions} />
-          )}
-
-          {activeTab === "details" && (
-            <JobDetailsPanel job={job} featured={featured} />
-          )}
-
-          {activeTab === "prompts" && (
-            <div className="space-y-4 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    Prompt record
-                  </p>
-                  <h2 className="mt-1 pf-section-title">
-                    Recreate or remix
-                  </h2>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => void detail.handleCopyPrompt()}
-                  className="pf-button-secondary h-7 px-2 text-[12px]"
-                >
-                  <Copy className="size-3" /> Copy
-                </Button>
-              </div>
-              <div>
-                <p className="mb-1.5 text-[12px] font-semibold text-muted-foreground">Main prompt</p>
-                <div className="min-w-0 break-words rounded-lg border border-border bg-[var(--pf-active)] p-3 text-[12px] leading-5 text-foreground [overflow-wrap:anywhere]">
-                  {job.prompt}
-                </div>
-              </div>
-              <div>
-                <p className="mb-1.5 text-[12px] font-semibold text-muted-foreground">
-                  Negative prompt
-                </p>
-                <div className="min-w-0 break-words rounded-lg border border-border bg-[var(--pf-canvas)] p-3 text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
-                  {negativePrompt ?? "No negative prompt was used."}
-                </div>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  router.push(
-                    job.type === "video" &&
-                      !job.tags.includes("video-swap")
-                      ? buildContinueVideoHref(job, featured?.id)
-                      : buildGenerateSimilarHref(job)
-                  )
-                }
-                className="pf-button-secondary h-10 w-full text-[12px]"
-              >
-                <Redo2 className="size-3.5" />{" "}
-                {job.type === "video"
-                  ? job.tags.includes("video-swap")
-                    ? "Remix in Generate Studio"
-                    : "Continue this video"
-                  : "Remix in Generate Studio"}
-              </Button>
-            </div>
-          )}
-
-          <JobInspectorFooter view={view} actions={actions} />
+        <aside
+          aria-label="Inspector"
+          className="flex min-w-0 flex-col gap-3 max-xl:order-1 md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:items-start xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1"
+        >
+          {showEnhance && <JobQuickEdits view={view} actions={actions} />}
+          {showEnhance && <JobRefinePanel view={view} actions={actions} />}
+          <JobDetailsPanel job={job} featured={featured} />
+          <JobPromptPanel view={view} actions={actions} />
         </aside>
-      </section>
+      </div>
+
+      <div className="wb-toast-region">
+        {feedback && (
+          <Toast
+            key={`${feedback.tone}:${feedback.message}`}
+            toast={{
+              id: feedback.message,
+              tone: feedback.tone === "error" ? "bad" : "ok",
+              message: feedback.message,
+            }}
+            onDismiss={detail.dismissFeedback}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
-
-function EditorLoadingState() {
+function JobDetailLoading() {
   return (
-    <div className="pf-content-viewport px-5 py-8">
-      <div className="mx-auto w-full max-w-md max-w-full text-center">
-        <h1 className="text-[15px] font-semibold">Loading generation</h1>
-        <p className="mt-2 text-[12px] leading-5 text-muted-foreground">
-          Fetching the job, outputs, and inspector.
-        </p>
-        <Skeleton className="mx-auto mt-5 h-10 w-40 rounded-lg" />
+    <div
+      aria-busy="true"
+      aria-label="Loading generation"
+      className="pf-content-viewport flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-2*var(--pf-page-pad))] xl:min-h-[760px]"
+    >
+      <div className="flex h-14 flex-none items-center gap-5 px-1">
+        <Skeleton className="h-10 w-[92px] flex-none" />
+        <Skeleton className="h-7 w-full max-w-md" />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 xl:flex-row">
+        <Skeleton shape="panel" className="min-h-[420px] flex-1 bg-floor shadow-[inset_0_0_0_1px_var(--pf-hairline)]" />
+        <div className="flex flex-col gap-3 xl:w-[372px] xl:flex-none">
+          <Skeleton shape="panel" className="h-[122px]" />
+          <Skeleton shape="panel" className="h-[202px]" />
+          <Skeleton shape="panel" className="h-[132px]" />
+          <Skeleton shape="panel" className="min-h-[160px] flex-1" />
+        </div>
       </div>
     </div>
   );

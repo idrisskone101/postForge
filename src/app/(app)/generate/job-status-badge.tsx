@@ -1,47 +1,30 @@
 "use client";
 
-import { Check, CircleX } from "lucide-react";
+import { StatusChip, type IconName } from "@/components/workbench";
 import { getGenerationStatusCopy, type JobDetail } from "@/lib/generation-editor";
 
-export function JobStatusBadge({
+export function JobStatusChip({
   status,
   queueStage,
 }: {
   status: JobDetail["status"];
   queueStage: JobDetail["queueStage"];
 }) {
-  const copy = getGenerationStatusCopy(status, queueStage);
-
-  if (status === "completed") {
-    return (
-      <span className="pf-status-success inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
-        <Check className="size-3" />
-        <span className="truncate">{copy.label}</span>
-      </span>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <span className="pf-status-danger inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
-        <CircleX className="size-3" />
-        <span className="truncate">{copy.label}</span>
-      </span>
-    );
-  }
-
-  if (status === "processing") {
-    return (
-      <span className="pf-status-warning inline-flex max-w-full items-center gap-1.5 px-2.5 py-0.5 text-[11px] capitalize">
-        <span className="pf-lamp" />
-        <span className="truncate">{copy.label}</span>
-      </span>
-    );
-  }
-
+  const { tone, icon } = TONES[status];
   return (
-    <span className="inline-flex max-w-full items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-active)] px-2.5 py-0.5 text-[11px] font-medium capitalize text-[var(--pf-muted)]">
-      <span className="truncate">{copy.label}</span>
-    </span>
+    <StatusChip tone={tone} icon={icon}>
+      {status === "processing" && <span className="wb-live-dot size-1.5 shadow-none" />}
+      {getGenerationStatusCopy(status, queueStage).label}
+    </StatusChip>
   );
 }
+
+const TONES = {
+  queued: { tone: "neutral", icon: "clock" },
+  processing: { tone: "live", icon: undefined },
+  completed: { tone: "ok", icon: "check" },
+  failed: { tone: "bad", icon: "x" },
+} as const satisfies Record<
+  JobDetail["status"],
+  { tone: "neutral" | "live" | "ok" | "bad"; icon: IconName | undefined }
+>;

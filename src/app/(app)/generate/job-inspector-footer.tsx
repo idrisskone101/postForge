@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  Check,
-  Loader2,
-  Trash2,
-  Users,
-  Workflow,
-} from "lucide-react";
 import { GenerateOutputActions } from "@/components/generate-output-actions";
 import {
   AlertDialog,
@@ -21,105 +12,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type {
-  JobDetailActions,
-  JobDetailViewModel,
-} from "./job-enhancements";
+import { Button } from "@/components/workbench";
+import { JobIcon } from "./job-icons";
+import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
 
-export function JobInspectorFooter({
+export function JobActionDock({
   view,
   actions,
 }: {
   view: JobDetailViewModel;
   actions: JobDetailActions;
 }) {
-  const {
-    job,
-    featured,
-    isCompleted,
-    canDiscard,
-    isRetrying,
-    isDownloading,
-    isDiscarding,
-    feedback,
-  } = view;
-  const {
-    onDownload,
-    onRetry,
-    onSaveToGallery,
-    onUseInClone,
-    onGenerateSimilar,
-    onAddToAutomation,
-    onDiscard,
-    onLeave,
-  } = actions;
+  const { job, featured, isCompleted, isFailed, canDiscard, isRetrying, isDownloading, isDiscarding } = view;
+
   return (
-    <div className="min-w-0 border-t border-border p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
-      {isCompleted && featured ? (
-        <GenerateOutputActions
-          view={{
-            canDownload: true,
-            isRetrying,
-            isDownloading,
-            showRetry: false,
-            actionError: feedback?.tone === "error" ? feedback.message : null,
-            actionNotice: feedback?.tone === "success" ? feedback.message : null,
-            onDownload,
-            onRetry,
-            onSaveToGallery,
-            onUseInClone: job.type === "image" ? onUseInClone : undefined,
-            onGenerateSimilar,
-            onAddToAutomation,
-          }}
-        />
-      ) : (
-        feedback && (
-          <div
-            role={feedback.tone === "error" ? "alert" : "status"}
-            className={cn(
-              "flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[12px] leading-4",
-              feedback.tone === "error"
-                ? "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-                : "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-            )}
-          >
-            {feedback.tone === "error" ? (
-              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-            ) : (
-              <Check className="mt-0.5 size-3.5 shrink-0" />
-            )}
-            <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-              {feedback.message}
-            </span>
-          </div>
-        )
-      )}
-
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {featured && job.type === "image" && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onUseInClone}
-            className="pf-button-secondary h-9 text-[12px] xl:hidden"
-          >
-            <Users className="size-3.5 shrink-0" /> Use in Clone
-          </Button>
-        )}
-        {featured && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onAddToAutomation}
-            className="pf-button-secondary h-9 text-[12px] xl:hidden"
-          >
-            <Workflow className="size-3.5 shrink-0" /> Automate
-          </Button>
-        )}
-      </div>
-
+    <div
+      role="toolbar"
+      aria-label="Generation actions"
+      className="sticky bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex flex-none flex-wrap items-center justify-between gap-2 rounded-[28px] bg-raised p-2 shadow-float sm:h-14 sm:flex-nowrap sm:rounded-full sm:py-0 max-xl:order-2 xl:static"
+    >
       {canDiscard ? (
         <AlertDialog>
           <AlertDialogTrigger
@@ -127,16 +38,11 @@ export function JobInspectorFooter({
             render={
               <button
                 type="button"
-                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-danger)]/40 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
+                className="wb-btn wb-btn-40 bg-transparent px-4 text-bad hover:bg-bad-tint disabled:text-fg-disabled"
               />
             }
           >
-            {isDiscarding ? (
-              <Loader2 className="size-3.5 shrink-0 animate-spin" />
-            ) : (
-              <Trash2 className="size-3.5 shrink-0" />
-            )}
-            Discard generation
+            {isDiscarding ? "Discarding…" : "Discard"}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -147,23 +53,43 @@ export function JobInspectorFooter({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Keep generation</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                onClick={onDiscard}
-              >
+              <AlertDialogAction variant="destructive" onClick={actions.onDiscard}>
                 Discard
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <button
-          type="button"
-          onClick={onLeave}
-          className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-border text-[12px] font-semibold text-muted-foreground transition-colors hover:bg-[var(--pf-active)]"
-        >
-          <ArrowLeft className="size-3.5" /> Leave editor
-        </button>
+        <span aria-hidden="true" />
+      )}
+
+      {isCompleted && featured && (
+        <GenerateOutputActions
+          view={{
+            canDownload: true,
+            isRetrying,
+            isDownloading,
+            showRetry: false,
+            onDownload: actions.onDownload,
+            onRetry: actions.onRetry,
+            onSaveToGallery: actions.onSaveToGallery,
+            onUseInClone: job.type === "image" ? actions.onUseInClone : undefined,
+            onAddToAutomation: actions.onAddToAutomation,
+          }}
+        />
+      )}
+
+      {isFailed && (
+        <Button variant="primary" size={40} onClick={actions.onRetry} disabled={isRetrying}>
+          <JobIcon name="retry" strokeWidth={2} />
+          {isRetrying ? "Retrying…" : "Retry"}
+        </Button>
+      )}
+
+      {!canDiscard && (
+        <Button variant="outline" size={40} onClick={actions.onLeave}>
+          Leave editor
+        </Button>
       )}
     </div>
   );
