@@ -91,10 +91,14 @@ const GROUPS = ["workspace", "developer"] as const;
  * before the first paint, and does the same as revealInRow. It only measures where the strip scrolls.
  */
 const REVEAL_BEFORE_PAINT =
-  '(function(){if(!matchMedia("(max-width:1279.98px)").matches)return;var n=document.currentScript.previousElementSibling,a=n&&n.querySelector(\'[aria-current="page"]\');if(a&&n.scrollWidth>n.clientWidth)n.scrollLeft=Math.max(0,a.offsetLeft-16)})()';
+  '(function(){if(!matchMedia("(max-width:1279.98px)").matches)return;var n=document.currentScript.previousElementSibling,a=n&&n.querySelector(\'[aria-current="page"]\');if(!a||n.scrollWidth<=n.clientWidth)return;var l=a.offsetLeft,r=l+a.offsetWidth;if(l<n.scrollLeft+16)n.scrollLeft=Math.max(0,l-16);else if(r>n.scrollLeft+n.clientWidth-16)n.scrollLeft=r-n.clientWidth+16})()';
 
+/** Scrolls the strip only as far as it takes to show the active tab clear of the 16px edge fade. */
 function revealInRow(node: HTMLButtonElement | null) {
   const row = node?.closest("nav");
   if (!node || !row || row.scrollWidth <= row.clientWidth) return;
-  row.scrollLeft = Math.max(0, node.offsetLeft - 16);
+  const left = node.offsetLeft;
+  const right = left + node.offsetWidth;
+  if (left < row.scrollLeft + 16) row.scrollLeft = Math.max(0, left - 16);
+  else if (right > row.scrollLeft + row.clientWidth - 16) row.scrollLeft = right - row.clientWidth + 16;
 }
