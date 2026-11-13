@@ -39,6 +39,27 @@ export function AutomationBuilderPreviewPane({
           <h2 id="builder-preview-title" className="wb-panel-title min-w-0 flex-1">
             Preview
           </h2>
+          <div
+            className="flex shrink-0 items-center rounded-full bg-raised p-px"
+            role="group"
+            aria-label="Preview zoom controls"
+          >
+            <ZoomButton
+              label="Zoom preview out"
+              sign="-"
+              disabled={previewZoom === PREVIEW_ZOOM_MIN}
+              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))}
+            />
+            <output aria-live="polite" className="wb-mono w-9 text-center text-fg-secondary">
+              {previewZoom}%
+            </output>
+            <ZoomButton
+              label="Zoom preview in"
+              sign="+"
+              disabled={previewZoom === PREVIEW_ZOOM_MAX}
+              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))}
+            />
+          </div>
           <span className="wb-mono text-fg-secondary" aria-live="polite">
             {previewSlide + 1} / {slideCount}
           </span>
@@ -84,31 +105,12 @@ export function AutomationBuilderPreviewPane({
               </b>
             </div>
           </div>
-          <div
-            className="absolute bottom-2 right-2 flex items-center gap-0.5 rounded-full bg-raised p-0.5"
-            role="group"
-            aria-label="Preview zoom controls"
-          >
-            <ZoomButton
-              label="Zoom preview out"
-              sign="-"
-              disabled={previewZoom === PREVIEW_ZOOM_MIN}
-              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))}
-            />
-            <output aria-live="polite" className="wb-mono w-9 text-center text-fg-secondary">
-              {previewZoom}%
-            </output>
-            <ZoomButton
-              label="Zoom preview in"
-              sign="+"
-              disabled={previewZoom === PREVIEW_ZOOM_MAX}
-              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))}
-            />
-          </div>
         </div>
-        <p className="wb-meta min-w-0 break-words [overflow-wrap:anywhere]">
-          {previewAsset ? `${previewAsset.origin}: ${previewAsset.name}` : previewEmptyCopy}
-        </p>
+        {!previewAsset && previewEmptyCopy ? (
+          <p role="status" className="wb-meta min-w-0 break-words [overflow-wrap:anywhere]">
+            {previewEmptyCopy}
+          </p>
+        ) : null}
       </section>
       <AutomationBuilderPlanSettings workspace={workspace} />
     </div>
