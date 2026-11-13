@@ -46,7 +46,7 @@ const creationMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(creationMarkup, /New Avatar/);
+assert.match(creationMarkup, /New avatar/);
 assert.doesNotMatch(creationMarkup, /New Identity/);
 assert.match(creationMarkup, /data-avatar-action="upload"/);
 assert.match(creationMarkup, /data-avatar-action="generate"/);
@@ -82,8 +82,8 @@ assert.deepEqual(getAvatarImportReadiness("{bad json", 1), {
   seedError: null,
 });
 
-assert.equal(getAvatarImportReadiness("[]", 0).seedError, "Add at least 1 Seed Reference Image.");
-assert.equal(getAvatarImportReadiness("[]", 6).seedError, "Use no more than 5 Seed Reference Images.");
+assert.equal(getAvatarImportReadiness("[]", 0).seedError, "Add at least 1 seed reference image.");
+assert.equal(getAvatarImportReadiness("[]", 6).seedError, "Use no more than 5 seed reference images.");
 
 function optionView(
   overrides: Partial<AvatarOptionView> & Pick<AvatarOptionView, "avatar" | "label">
@@ -118,9 +118,9 @@ const importMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(importMarkup, /Import Avatar/);
-assert.match(importMarkup, /Avatar Profile JSON/);
-assert.match(importMarkup, /Seed Reference Images/);
+assert.match(importMarkup, /Import avatar/);
+assert.match(importMarkup, /Avatar profile JSON/);
+assert.match(importMarkup, /Seed reference images/);
 assert.match(importMarkup, /accept="application\/json,.json"/);
 assert.match(importMarkup, /accept="image\/\*"/);
 assert.match(importMarkup, /multiple=""/);
@@ -141,7 +141,7 @@ const readyImportMarkup = renderToStaticMarkup(
 );
 
 assert.doesNotMatch(readyImportMarkup, /Avatar Profile must be valid JSON\./);
-assert.doesNotMatch(readyImportMarkup, /Add at least 1 Seed Reference Image\./);
+assert.doesNotMatch(readyImportMarkup, /Add at least 1 seed reference image\./);
 assert.match(readyImportMarkup, /<button[^>]*>[\s\S]*Generate candidates/);
 assert.doesNotMatch(
   readyImportMarkup.match(/<button[^>]*>[\s\S]*Generate candidates/)?.[0] ?? "",

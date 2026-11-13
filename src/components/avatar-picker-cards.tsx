@@ -94,13 +94,13 @@ export function AvatarCreationCard({
         <span className="grid size-9 place-items-center rounded-full bg-strong text-strong-fg">
           <Icon name="plus" size={16} />
         </span>
-        <span className="text-[13px] font-semibold leading-4">New Avatar</span>
+        <span className="text-[13px] font-semibold leading-4">New avatar</span>
       </button>
 
       <div id={menuId} hidden={!open} className="wb-fade-in flex flex-col gap-1.5 p-2.5">
         <div className="flex items-center justify-between pl-1">
-          <span className="text-[13px] font-semibold leading-4 text-fg">New Avatar</span>
-          <IconButton icon="x" label="Close new Avatar options" variant="ghost" size={28} onClick={closeChooser} />
+          <span className="text-[13px] font-semibold leading-4 text-fg">New avatar</span>
+          <IconButton icon="x" label="Close new avatar options" variant="ghost" size={28} onClick={closeChooser} />
         </div>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-1">
           {actions.map((action, index) => (
@@ -143,13 +143,14 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
     <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 flex-col gap-2">
       <button
         type="button"
+        aria-label={label}
         aria-pressed={isSelected}
         onClick={onSelect}
         data-selected={isSelected ? "true" : undefined}
         className="wb-tile h-[216px] w-full cursor-pointer border-0 p-0"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/api/avatars/${avatar.id}`} alt={label} loading="lazy" decoding="async" />
+        <img src={`/api/avatars/${avatar.id}`} alt="" loading="lazy" decoding="async" />
         <span className="wb-tile-check" aria-hidden="true">
           <Icon name="check" size={12} strokeWidth={3} />
         </span>
@@ -190,7 +191,7 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
 
 export function AvatarPickerSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading Avatars" className="flex flex-col gap-3 sm:flex-row">
+    <div aria-busy="true" aria-label="Loading avatars" className="flex flex-col gap-3 sm:flex-row">
       <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
         {Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className="flex flex-col gap-2">

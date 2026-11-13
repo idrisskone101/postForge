@@ -102,7 +102,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <AvatarPickerModeHead title="Generate an Avatar" onBack={onBack} />
+      <AvatarPickerModeHead title="Generate an avatar" onBack={onBack} />
       {actionError && (
         <AvatarActionErrorNotice
           message={actionError}
@@ -145,7 +145,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
           <div className="flex justify-end">
             <Button variant="strong" onClick={handleGenerate} disabled={!genPrompt.trim()}>
               <Icon name="generate" size={16} />
-              Generate Avatar
+              Generate avatar
             </Button>
           </div>
         </>
@@ -183,7 +183,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
               onClick={() => handleSaveGenerated(genJob.outputs[0].id)}
               disabled={isSavingGenerated}
             >
-              {isSavingGenerated ? "Saving" : "Use as Avatar"}
+              {isSavingGenerated ? "Saving" : "Use as avatar"}
             </Button>
           </div>
         </div>

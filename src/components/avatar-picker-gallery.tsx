@@ -87,7 +87,7 @@ export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff 
                 type="button"
                 onClick={() => handlePickFromGallery(file.id)}
                 disabled={isSaving}
-                aria-label={`Use ${file.filename} as Avatar`}
+                aria-label={`Use ${file.filename} as avatar`}
                 className="wb-tile aspect-[3/4] w-full cursor-pointer border-0 p-0 disabled:cursor-progress [&:focus-visible>.wb-tile-actions]:translate-y-0 [&:focus-visible>.wb-tile-actions]:opacity-100"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -99,7 +99,7 @@ export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff 
                   </span>
                 ) : (
                   <span className="wb-tile-actions" aria-hidden="true">
-                    <span className="wb-tile-action">Use as Avatar</span>
+                    <span className="wb-tile-action">Use as avatar</span>
                   </span>
                 )}
               </button>
