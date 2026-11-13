@@ -132,7 +132,7 @@ export function DraftsView() {
   );
 }
 
-const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 md:grid-cols-2 2xl:grid-cols-3";
+const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 lg:grid-cols-2 2xl:grid-cols-3";
 
 const STATUS_FILTERS: Array<{ id: string; label: string }> = [
   { id: "all", label: "All" },
