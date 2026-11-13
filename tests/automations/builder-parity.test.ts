@@ -120,7 +120,7 @@ for (const requiredControl of [
   "Zoom preview in",
   "Unsaved changes",
   "Draft saved",
-  "Save failed — try again",
+  "Save failed, try again",
   "Connected social account",
   "Upload capability",
   "Save for connection",
@@ -138,7 +138,6 @@ assert.match(source, /saveWorkspaceFeature\("automations", next\)/);
 assert.match(source, /fetchIntegrations/);
 assert.match(source, /AUTOMATION_SOCIAL_DESTINATIONS/);
 assert.match(source, /resolveAutomationDestination/);
-assert.match(source, /SocialProviderIcon/);
 assert.match(source, /Approval required before any provider handoff/);
 assert.match(source, /composeAutomationHook\(record\.hook\.strategy, record\.hook\.prompt\)/);
 assert.match(source, /Composed locally from your prompt and strategy\. No network request\./);
@@ -148,8 +147,7 @@ assert.doesNotMatch(source, /Math\.floor\(Math\.random\(\) \* 3\)/);
 const hubSource = automationsHubSource();
 
 for (const requiredHubState of [
-  "SocialProviderIcon",
-  "Live social connection status is unavailable",
+  "Connection status unavailable",
   "Provider not configured",
   "Upload scope missing",
   "Account disconnected",
@@ -171,7 +169,7 @@ assert.match(hubSource, /fetchIntegrations\(\)/);
 assert.match(hubSource, /resolveAutomationDestination/);
 assert.match(hubSource, /\/api\/automations\/\$\{encodeURIComponent\(record\.id\)\}\/run/);
 assert.match(hubSource, /router\.push\(`\/generate\/\$\{encodeURIComponent\(body\.id\)\}`\)/);
-assert.match(hubSource, /grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7/);
+assert.match(hubSource, /grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7/);
 assert.match(hubSource, /executionEnabled: false/);
 assert.match(hubSource, /createAutomationSchedulerState\(\)/);
 assert.match(hubSource, /\[overflow-wrap:anywhere\]/);

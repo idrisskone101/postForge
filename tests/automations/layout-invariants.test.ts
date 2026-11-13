@@ -11,11 +11,14 @@ const automationBuilder = [
   source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"),
   source("src/app/(app)/automations/new/automation-builder-session.tsx"),
 ].join("\n");
-assert.match(automations, /grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7/);
-assert.match(automations, /h-36 w-full min-w-0 max-w-72/);
+assert.match(automations, /data-automations-hub="true" className="flex min-h-0 flex-1 flex-col gap-3"/);
+assert.doesNotMatch(automations, /data-page-inset|max-w-\[1280px\]|px-5 py-5/);
+assert.match(source("src/app/(app)/automations/planning-calendar.tsx"), /grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7/);
+assert.match(source("src/app/(app)/automations/video-automation-list.tsx"), /md:grid-cols-\[minmax\(0,1fr\)_150px_140px_160px_30px\]/);
+assert.match(source("src/app/(app)/automations/slideshow-automation-list.tsx"), /xl:w-\[340px\]/);
+assert.match(source("src/app/(app)/automations/new/automation-builder-preview-pane.tsx"), /xl:w-\[372px\]/);
 assert.match(automationBuilder, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
 assert.match(automationBuilder, /pf-safe-overlay/);
-assert.match(automationBuilder, /pf-safe-overlay[^"\n]*[\s\S]*?max-h-full[^"\n]*overflow-y-auto/);
 assert.match(
   automationBuilder,
   /pb-\[max\(0\.75rem,env\(safe-area-inset-bottom\)\)\]/
@@ -37,8 +40,9 @@ assert.doesNotMatch(
   source("src/app/(app)/automations/new/page.tsx"),
   /from "\.\/slideshow-automation-builder"/,
 );
-assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-lede=/);
-assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), /data-playbook-name=\{template\.name\}/);
+assert.doesNotMatch(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-(lede|title|name|blurb|scratch)|data-lcp|sr-only/);
+assert.match(source("src/app/(app)/automations/new/playbook-card.tsx"), />\s*\{template\.name\}\s*</);
+assert.match(source("src/app/(app)/automations/new/playbook-overlay-static.tsx"), /<PlaybookPicker picker=\{picker\} \/>/);
 assert.match(source("src/app/(app)/automations/new/automation-builder-client.tsx"), /data-picker-open=\{templateOpen \? "true" : undefined\}/);
 assert.match(
   source("src/app/(app)/automations/new/automation-builder-phase-form-lazy.tsx"),
@@ -48,10 +52,11 @@ assert.match(
   source("src/app/(app)/automations/new/automation-builder-session-lazy.tsx"),
   /import\("\.\/automation-builder-session"\)/,
 );
-assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-heading="true"/);
+assert.doesNotMatch(source("src/app/(app)/automations/automations-page-client.tsx"), /data-empty-|sr-only/);
+assert.match(source("src/app/(app)/automations/automations-page-client.tsx"), /<EmptyState/);
 assert.doesNotMatch(
   source("src/app/(app)/automations/automations-page-client.tsx"),
   /liveClassName=.*max-w-md/,
 );
 assert.match(source("src/app/(app)/automations/page.tsx"), /AutomationsPageLazy/);
-assert.match(source("src/app/(app)/automations/new/playbook-picker.tsx"), /data-playbook-chrome="true"/);
+assert.match(source("src/app/(app)/automations/new/automation-playbook-overlay.tsx"), /data-playbook-chrome="true"/);

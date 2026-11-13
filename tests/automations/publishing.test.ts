@@ -945,8 +945,8 @@ async function run() {
   const automationUi = automationsHubSource();
   assert.match(automationUi, /pf-safe-overlay/);
   assert.match(automationUi, /max-h-full/);
-  assert.match(automationUi, /dark:bg-\[var\(--pf-active\)\] dark:text-\[var\(--pf-muted\)\]/);
-  assert.match(automationUi, /dark:text-\[var\(--pf-orange\)\]/);
+  assert.match(automationUi, /rounded-lg bg-raised px-3\.5 py-3/);
+  assert.match(automationUi, /text-fg underline decoration-1 underline-offset-4/);
   assert.match(
     automationUi,
     /By posting, you agree to TikTok's Music Usage Confirmation/
