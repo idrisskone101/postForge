@@ -14,24 +14,29 @@ export function JobDetailHeader({
   const { job, error } = view;
   return (
     <>
-      <header className="wb-page-header flex-nowrap" data-back="true">
-        <div className="wb-page-header-lead">
+      <header
+        className="wb-page-header flex-nowrap max-lg:grid max-lg:grid-cols-[minmax(0,1fr)_auto] max-lg:gap-y-2"
+        data-back="true"
+      >
+        <div className="wb-page-header-lead max-lg:contents">
           <button
             type="button"
             onClick={actions.onBack}
-            className="wb-btn wb-btn-40 wb-back-pill flex-none pl-2.5"
+            className="wb-btn wb-btn-40 wb-back-pill flex-none justify-self-start pl-2.5"
           >
             <Icon name="chevron-left" />
             Back
           </button>
-          <h1 className="wb-page-title min-w-0 truncate pl-2" title={getEditorTitle(job.prompt)}>
+          <h1
+            className="wb-page-title min-w-0 pl-2 max-lg:col-span-2 max-lg:row-start-2 max-lg:line-clamp-2 max-lg:min-h-16 max-lg:whitespace-normal max-lg:pl-1"
+            title={getEditorTitle(job.prompt)}>
             {getEditorTitle(job.prompt)}
           </h1>
         </div>
         <div className="wb-page-actions flex-none">
-          <Button size={40} aria-label="Share" onClick={actions.onShare} className="max-sm:w-10 max-sm:px-0">
+          <Button size={40} onClick={actions.onShare}>
             <JobIcon name="share" />
-            <span className="max-sm:hidden">Share</span>
+            Share
           </Button>
         </div>
       </header>

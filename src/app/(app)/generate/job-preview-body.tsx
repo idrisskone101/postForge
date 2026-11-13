@@ -40,7 +40,7 @@ export function JobStage({
           {hasMedia && formatDimensions(featured)}
         </span>
       </div>
-      <div className="relative min-h-0 w-full flex-1 overflow-auto">
+      <div className={`relative min-h-0 w-full flex-1 overflow-auto rounded-lg ${SCROLL_FOCUS_RING}`}>
         <JobStageBody view={view} />
       </div>
     </section>
@@ -87,7 +87,9 @@ function JobStageBody({ view }: { view: JobDetailViewModel }) {
   }
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-auto px-6 text-center">
+    <div
+      className={`absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-auto rounded-lg px-6 text-center ${SCROLL_FOCUS_RING}`}
+    >
       {isFailed && (
         <span className="grid size-11 flex-none place-items-center rounded-full bg-bad-tint text-bad">
           <Icon name="x" size={20} />
@@ -114,8 +116,12 @@ function JobStageBody({ view }: { view: JobDetailViewModel }) {
   );
 }
 
+/** A scroll region can take keyboard focus, so it draws the same ember ring as a control, inside its edge. */
+export const SCROLL_FOCUS_RING =
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ember";
+
 function formatDimensions(output: JobOutput | undefined) {
-  return output?.width && output.height ? `${output.width} x ${output.height}` : "-";
+  return output?.width && output.height ? `${output.width} x ${output.height}` : null;
 }
 
 function JobPreviewToolbar({ view }: { view: JobPreviewToolbarView }) {

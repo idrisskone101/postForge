@@ -16,7 +16,7 @@ import {
 import { JobDetailHeader } from "../job-header";
 import { JobDetailsPanel, JobPromptPanel, JobQuickEdits, JobRefinePanel } from "../job-inspector";
 import { JobActionDock } from "../job-inspector-footer";
-import { JobStage, JobVariationStrip } from "../job-preview-body";
+import { JobStage, JobVariationStrip, SCROLL_FOCUS_RING } from "../job-preview-body";
 import { useJobDetail } from "../use-job-detail";
 
 export default function JobDetailPage() {
@@ -129,7 +129,7 @@ export default function JobDetailPage() {
 
         <aside
           aria-label="Inspector"
-          className="flex min-w-0 flex-col gap-3 max-xl:order-1 md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:items-start xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1"
+          className={`flex min-w-0 flex-col gap-3 rounded-xl max-xl:order-1 md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:items-start xl:-m-1 xl:min-h-0 xl:w-[380px] xl:flex-none xl:overflow-y-auto xl:p-1 ${SCROLL_FOCUS_RING}`}
         >
           {showEnhance && <JobQuickEdits view={view} actions={actions} />}
           {showEnhance && <JobRefinePanel view={view} actions={actions} />}
@@ -162,7 +162,7 @@ function JobDetailLoading() {
       aria-label="Loading generation"
       className="pf-content-viewport flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-2*var(--pf-page-pad))] xl:min-h-[760px]"
     >
-      <div className="flex h-14 flex-none items-center gap-5 px-1">
+      <div className="flex h-14 flex-none items-center gap-5 px-1 max-lg:h-28 max-lg:items-start">
         <Skeleton className="h-10 w-[92px] flex-none" />
         <Skeleton className="h-7 w-full max-w-md" />
       </div>

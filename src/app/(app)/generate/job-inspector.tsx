@@ -159,7 +159,7 @@ function DetailColumn({
             className={
               row.mono
                 ? "m-0 truncate font-mono text-[12px] leading-[18px] text-fg"
-                : "m-0 truncate text-[13px] font-semibold leading-[18px] text-fg"
+                : "m-0 min-w-0 text-right text-[13px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]"
             }
             title={row.value}
           >
@@ -196,7 +196,7 @@ export function JobPromptPanel({
           Copy
         </button>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto max-xl:max-h-[320px]">
+      <div className="flex flex-1 flex-col gap-3">
         <JobPromptText prompt={job.prompt} />
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>
