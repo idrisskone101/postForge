@@ -43,7 +43,10 @@ export function JobStage({
     <section
       ref={stageRef}
       aria-label="Preview"
-      className="flex min-h-[420px] min-w-0 flex-1 flex-col gap-3.5 rounded-xl bg-floor p-3.5 shadow-[inset_0_0_0_1px_var(--pf-hairline)] sm:min-h-[520px] xl:min-h-0"
+      className={cn(
+        "flex min-h-[420px] min-w-0 flex-1 flex-col gap-3.5 rounded-xl bg-floor p-3.5 shadow-[inset_0_0_0_1px_var(--pf-hairline)] sm:min-h-[520px] xl:min-h-0",
+        isCompleted && job.outputs.length > 1 && STAGE_ABOVE_STRIP,
+      )}
     >
       <div className="flex min-h-10 flex-none flex-wrap items-center justify-between gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <div className="flex min-w-0">
@@ -250,3 +253,14 @@ export function JobVariationStrip({
     </section>
   );
 }
+
+/*
+ * Below 1280 the action dock is pinned to the viewport bottom. With variations the stage gives up
+ * height so the strip lands above the dock on the first screen instead of under it. The offset is
+ * everything else on that screen: page top and header, the 149px strip, the dock and three 12px gaps.
+ */
+const STAGE_ABOVE_STRIP = [
+  "max-xl:[--first-screen-rest:473px] md:max-xl:[--first-screen-rest:381px] lg:max-xl:[--first-screen-rest:333px]",
+  "max-sm:min-h-[max(280px,min(420px,calc(100dvh-var(--first-screen-rest))))]",
+  "sm:max-xl:min-h-[max(280px,min(520px,calc(100dvh-var(--first-screen-rest))))]",
+].join(" ");
