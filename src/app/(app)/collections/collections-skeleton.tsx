@@ -15,7 +15,7 @@ export function CollectionsSkeleton() {
         <Skeleton className="h-9 w-40" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 min-[87.5rem]:grid-cols-6">
           {Array.from({ length: 6 }, (_, index) => (
-            <Skeleton key={index} shape="tile" className="aspect-[142/181]" />
+            <Skeleton key={index} shape="tile" className="aspect-[428/543]" />
           ))}
         </div>
       </section>

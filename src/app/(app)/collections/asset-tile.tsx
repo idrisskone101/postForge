@@ -14,7 +14,7 @@ export function AssetTile({
 }) {
   return (
     <MediaTile
-      className="aspect-[142/181]"
+      className="aspect-[428/543]"
       state={{ selected, onSelectedChange: () => onToggle(asset.id), name: asset.name }}
     >
       <img
