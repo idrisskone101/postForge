@@ -156,14 +156,14 @@ const candidateReviewMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(candidateReviewMarkup, /Avatar Candidates/);
+assert.match(candidateReviewMarkup, /Avatar candidates/);
 assert.match(candidateReviewMarkup, /Avatar name/);
 assert.match(candidateReviewMarkup, /value="Edited Creator"/);
 assert.match(candidateReviewMarkup, /Candidate 1/);
 assert.match(candidateReviewMarkup, /Candidate 2/);
 assert.match(candidateReviewMarkup, /Candidate 3/);
-assert.match(candidateReviewMarkup, /Regenerate Candidates/);
-assert.match(candidateReviewMarkup, /Use Candidate/);
+assert.match(candidateReviewMarkup, /Regenerate candidates/);
+assert.match(candidateReviewMarkup, /Use candidate/);
 assert.doesNotMatch(candidateReviewMarkup, /data-avatar-option=/);
 
 const activeRegenerationMarkup = renderToStaticMarkup(
@@ -185,4 +185,4 @@ assert.match(activeRegenerationMarkup, /Generating another candidate set/);
 assert.match(activeRegenerationMarkup, /Candidate 1/);
 assert.match(activeRegenerationMarkup, /Candidate 2/);
 assert.match(activeRegenerationMarkup, /Candidate 3/);
-assert.match(activeRegenerationMarkup, /Use Candidate/);
+assert.match(activeRegenerationMarkup, /Use candidate/);
