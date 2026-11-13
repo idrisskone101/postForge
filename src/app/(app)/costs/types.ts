@@ -67,6 +67,7 @@ export type SpendDashboardView = {
 export type SpendStatCardsProps = {
   dashboard: CostsPageClientProps;
   view: SpendDashboardView;
+  onEditBudget: () => void;
 };
 
 export type SpendAnalysisGridProps = {
@@ -78,7 +79,10 @@ export type SpendGenerationLogProps = {
   dashboard: CostsPageClientProps;
   view: SpendDashboardView;
   handlers: SpendPageHandlers;
+  exporter: { busy: boolean; run: () => void };
 };
+
+export type SpendLoadState = "loading" | "ready" | "error";
 
 export type SpendBudgetDialogProps = {
   budgetInput: string;

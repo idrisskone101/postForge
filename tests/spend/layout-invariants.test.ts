@@ -5,22 +5,25 @@ function source(relativePath: string) {
   return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
-const spendLoading = source("src/app/(app)/costs/spend-page-content.tsx");
-assert.match(spendLoading, /lg:w-72/);
-assert.match(spendLoading, /flex flex-wrap items-center gap-2/);
-assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-chart-slot="true"/);
-assert.match(source("src/app/(app)/costs/spend-page-content.tsx"), /data-spend-actions="true"/);
-assert.match(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-spend-empty="true"/);
-assert.doesNotMatch(source("src/app/(app)/costs/spend-analysis-grid.tsx"), /data-workspace-state="empty"/);
-assert.doesNotMatch(
-  source("src/app/(app)/costs/spend-stat-cards.tsx"),
-  /SpendPaintText/,
-);
-assert.match(
-  source("src/app/(app)/costs/spend-stat-cards.tsx"),
-  /data-spend-stats="true"/,
-);
-assert.match(spendLoading, /data-spend-intro="true"/);
-assert.match(spendLoading, /spend-budget-dialog/);
-assert.doesNotMatch(spendLoading, /TooltipProvider/);
-assert.match(source("src/app/(app)/costs/page.tsx"), /CostsPageClient/);
+const dir = "src/app/(app)/costs";
+const content = source(`${dir}/spend-page-content.tsx`);
+const client = source(`${dir}/costs-page-client.tsx`);
+const grid = source(`${dir}/spend-analysis-grid.tsx`);
+const chart = source("src/components/cost-chart.tsx");
+const transitional = source("src/app/styles/transitional.css");
+
+assert.match(source(`${dir}/page.tsx`), /CostsPageClient/);
+assert.doesNotMatch(content, /max-w-\[1280px\]|data-spend-|sr-only/, "the shell owns padding and copy is real text");
+assert.doesNotMatch(transitional, /data-spend-/, "spend rules leave transitional.css");
+assert.match(content, /spend-budget-dialog/);
+assert.doesNotMatch(content, /TooltipProvider/);
+assert.match(source(`${dir}/spend-range-control.tsx`), /<WorkspaceHeaderAccessory>/);
+assert.match(source("src/lib/workspace-header-route.ts"), /pathname === "\/costs"/);
+assert.match(client, /<SpendSkeleton \/>/);
+assert.match(client, /<SpendLoadError/);
+assert.match(grid, /import\("@\/components\/cost-chart"\)/);
+assert.match(chart, /var\(--pf-chart-1\)/);
+assert.match(chart, /var\(--pf-chart-2\)/);
+assert.match(chart, /var\(--pf-ember\)/);
+assert.match(chart, /isAnimationActive=\{false\}/);
+assert.doesNotMatch(chart, /Gradient|PieChart/);

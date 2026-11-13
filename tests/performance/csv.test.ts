@@ -186,15 +186,11 @@ const performanceSource = [
 ]
   .map((file) => readFileSync(new URL(file, repoRoot), "utf8"))
   .join("\n");
-assert.match(performanceSource, /min-\[1180px\]:grid-cols-2/);
-assert.match(performanceSource, /sm:hidden/);
-assert.match(performanceSource, /hidden overflow-x-auto sm:block/);
-assert.match(performanceSource, /Active performance source/);
-assert.match(performanceSource, /All connected non-YouTube accounts/);
-assert.match(performanceSource, /Clear CSV/);
 assert.match(performanceSource, /IntegrationPerformanceResponse/);
 assert.match(performanceSource, /post\.provider !== "youtube"/);
-assert.match(performanceSource, /7\/30\/90 days selects videos published/);
-assert.match(performanceSource, /youtubeRawOnly \? null : postEngagementRate/);
-assert.match(performanceSource, /current lifetime counters, not activity during the selected period/);
-assert.match(performanceSource, /Lifetime views by video publish date/);
+assert.match(performanceSource, /YouTube kept separate/);
+assert.match(performanceSource, /"Lifetime views"/);
+assert.match(performanceSource, /variant === "youtube"/);
+assert.match(performanceSource, /aria-label="Date range"/);
+assert.match(performanceSource, />\s*Remove\s*</);
+assert.doesNotMatch(performanceSource, /demo account|synthetic metric|sample data/i);

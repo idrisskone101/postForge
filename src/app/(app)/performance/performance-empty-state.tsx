@@ -1,84 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, Download, Loader2, Upload } from "lucide-react";
+import { Button, buttonClass } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { Panel } from "@/components/workbench/panel";
 
+/** No connected account and no CSV: say so plainly and offer both real ways in. */
 export function PerformanceEmptyState({
   importing,
   onImport,
   onDownloadTemplate,
-  providerUnavailable,
 }: {
   importing: boolean;
   onImport: () => void;
   onDownloadTemplate: () => void;
-  providerUnavailable: boolean;
 }) {
   return (
-    <section className="pf-card pf-empty-stage flex min-h-[650px] flex-col items-center justify-start p-6 text-center">
-      <div
-        data-empty-icon="true"
-        className="grid size-14 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)]"
+    <Panel pad="none" className="min-w-0 flex-1 gap-3 p-5 max-md:p-4" aria-label="Get started">
+      <EmptyState
+        icon="performance"
+        title="No performance data yet"
+        detail="Connect TikTok, Instagram or YouTube in Settings, or import a local CSV report."
+        className="min-h-[300px] flex-1"
       >
-        <BarChart3 className="size-6" />
-      </div>
-      <h2
-        data-empty-heading="true"
-        data-empty-title="Connect an account or import a local report"
-      >
-        <span className="sr-only">Connect an account or import a local report</span>
-      </h2>
-      <p className="sr-only">
-        PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset.
-      </p>
-      <p
-        aria-hidden="true"
-        data-empty-copy="PostForge never invents performance data. Connected accounts use provider-owned posts; CSV remains a separate local dataset."
-      />
-      {providerUnavailable ? (
-        <p className="sr-only">
-          Connected account status is currently unavailable. CSV import still works locally.
-        </p>
-      ) : null}
-      <div data-empty-actions="true" className="mt-5 flex flex-wrap justify-center gap-2">
-        <Link href="/settings?tab=integrations" className="pf-button-primary">
+        <Link href="/settings?tab=integrations" className={buttonClass("strong")}>
           Open integrations
         </Link>
-        <button
-          type="button"
-          onClick={onImport}
-          disabled={importing}
-          className="pf-button-secondary"
-        >
-          {importing ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Upload className="size-3.5" />
-          )}
-          Import CSV
-        </button>
+        <Button onClick={onImport} disabled={importing}>
+          <Icon name="upload" size={16} />
+          {importing ? "Importing" : "Import CSV"}
+        </Button>
+      </EmptyState>
+      <div className="flex items-center gap-3 rounded-lg bg-well px-3.5 py-3 max-md:flex-col max-md:items-start max-md:gap-1.5">
+        <span className="wb-label shrink-0">CSV columns</span>
+        <code className="wb-mono min-w-0 flex-1 text-fg-secondary [overflow-wrap:anywhere]">
+          {CSV_COLUMNS}
+        </code>
+        <Button variant="link" className="h-auto shrink-0 px-0 text-[13px]" onClick={onDownloadTemplate}>
+          Download template
+        </Button>
       </div>
-      <button
-        type="button"
-        data-empty-note="true"
-        onClick={onDownloadTemplate}
-        className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--pf-link)]"
-      >
-        <Download className="size-3" /> Download CSV template
-      </button>
-      <p className="mt-7 max-w-full rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-3 text-left text-[11px] text-[var(--pf-muted)]">
-        <b className="text-[var(--pf-ink)]">Expected columns</b>
-        <span className="sr-only">
-          title, views, likes, comments, shares, saves, publishedAt
-        </span>
-        <span
-          aria-hidden="true"
-          title="title, views, likes, comments, shares, saves, publishedAt"
-          className="mt-1 block max-w-[12rem] truncate font-mono text-[10px] leading-none"
-        >
-          title, views, likes, comments, shares, saves, publishedAt
-        </span>
-      </p>
-    </section>
+    </Panel>
   );
 }
+
+const CSV_COLUMNS = "title, views, likes, comments, shares, saves, publishedAt";

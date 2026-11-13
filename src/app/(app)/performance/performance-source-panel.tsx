@@ -1,298 +1,190 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ExternalLink,
-  FileSpreadsheet,
-  Loader2,
-  RefreshCw,
-  Trash2,
-  Upload,
-} from "lucide-react";
-import { SocialProviderIcon } from "@/components/social-provider-icon";
-import { formatMetric, formatSyncDate } from "@/lib/performance/format";
-import {
-  accountHandle,
-  canAggregateConnectedProviders,
-  connectedAccountName,
-  type ConnectedAccountView,
-} from "@/lib/performance/metrics";
+import { Button, buttonClass } from "@/components/workbench/button";
+import { IconButton } from "@/components/workbench/icon-button";
+import { Panel } from "@/components/workbench/panel";
+import { StatusBadge } from "@/components/workbench/status-badge";
+import { canAggregateConnectedProviders } from "@/lib/performance/metrics";
 import { cn } from "@/lib/utils";
-import type { PerformanceSourceWorkspace } from "./types";
+import { buildSourceRows } from "./performance-helpers";
+import type { PerformanceSourceRow, PerformanceSourceWorkspace } from "./types";
 
 export function PerformanceSourcePanel({
   workspace,
 }: {
   workspace: PerformanceSourceWorkspace;
 }) {
-  const {
-    providers,
-    csvDataset,
-    selectedSource,
-    busyProvider,
-    lastUpdatedAt,
-    onSelect,
-    onSync,
-    onImport,
-    onClearCsv,
-  } = workspace;
-  const allowAllConnected = canAggregateConnectedProviders(providers);
+  const rows = buildSourceRows({
+    statuses: workspace.statuses,
+    accounts: workspace.providers,
+    csvDataset: workspace.csvDataset,
+    allowAllConnected: canAggregateConnectedProviders(workspace.providers),
+  });
   return (
-    <section className="pf-card p-4" aria-labelledby="performance-sources-title">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-        <div>
-          <h2 id="performance-sources-title" className="pf-section-title">
-            Connected accounts and local reports
-          </h2>
-          <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-            Provider data last refreshed {formatSyncDate(lastUpdatedAt)}
-          </p>
-        </div>
-        <label className="block w-full sm:w-72">
-          <span className="mb-1 block text-[12px] font-semibold text-[var(--pf-muted)]">
-            Active performance source
-          </span>
-          <select
-            aria-label="Active performance source"
-            value={selectedSource}
-            onChange={(event) => onSelect(event.target.value)}
-            className="h-9 w-full rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)] outline-none focus:border-primary"
+    <Panel
+      pad="none"
+      className="w-[372px] shrink-0 gap-0 p-5 max-lg:w-full"
+      aria-labelledby="performance-sources-title"
+    >
+      <div className="flex min-h-7 items-center gap-3 pb-2">
+        <h2 id="performance-sources-title" className="wb-panel-title flex-1">
+          Sources
+        </h2>
+        {workspace.syncAll ? (
+          <Button
+            size={32}
+            onClick={workspace.syncAll}
+            disabled={workspace.busyProvider !== null}
           >
-            {providers.length > 0 ? (
-              <optgroup label="Connected accounts">
-                {allowAllConnected ? (
-                  <option value="all-connected">
-                    All connected non-YouTube accounts
-                  </option>
-                ) : null}
-                {providers.map((entry) => (
-                  <option key={entry.sourceKey} value={entry.sourceKey}>
-                    {entry.status.displayName} ·{" "}
-                    {accountHandle(entry.account.account.username)}
-                  </option>
-                ))}
-              </optgroup>
-            ) : null}
-            {csvDataset ? (
-              <optgroup label="Local reports">
-                <option value="csv">CSV · {csvDataset.accountLabel}</option>
-              </optgroup>
-            ) : null}
-          </select>
-        </label>
+            Sync all
+          </Button>
+        ) : null}
       </div>
-
-      <div className="mt-4 grid gap-2 min-[1180px]:grid-cols-2 min-[1500px]:grid-cols-3">
-        {providers.map((entry) => (
-          <SourceAccountCard
-            key={entry.sourceKey}
-            entry={entry}
-            selected={isSourceSelected(selectedSource, entry, allowAllConnected)}
-            busy={busyProvider !== null}
-            spinning={busyProvider === entry.provider}
-            onSync={() => onSync(entry)}
-          />
+      <ul className="flex flex-col">
+        {rows.map((row) => (
+          <SourceRow key={row.key} row={row} workspace={workspace} />
         ))}
-        {csvDataset && (
-          <article
-            data-performance-account="csv"
-            className={cn(
-              "grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-[8px] border p-2.5",
-              selectedSource === "csv"
-                ? "border-primary bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)] ring-1 ring-primary/25"
-                : "border-[var(--pf-border)] bg-[var(--pf-surface)]"
-            )}
-          >
-            <span className="grid size-8 place-items-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)]">
-              <FileSpreadsheet className="size-3.5" />
-            </span>
-            <div className="min-w-0">
-              <b className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-                {csvDataset.accountLabel}
-              </b>
-              <p className="mt-0.5 truncate text-[11px] text-[var(--pf-muted)]">
-                Local CSV · {csvDataset.posts.length} posts
-              </p>
-            </div>
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={onImport}
-                aria-label="Replace local CSV"
-                className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)]"
-              >
-                <Upload className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={onClearCsv}
-                aria-label="Clear local CSV"
-                className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-danger)]/40 bg-[var(--pf-surface)] text-[var(--pf-danger)]"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </div>
-          </article>
-        )}
-      </div>
-    </section>
+      </ul>
+    </Panel>
   );
 }
 
-function SourceAccountCard({
-  entry,
-  selected,
-  busy,
-  spinning,
-  onSync,
+function SourceRow({
+  row,
+  workspace,
 }: {
-  entry: ConnectedAccountView;
-  selected: boolean;
-  busy: boolean;
-  spinning: boolean;
-  onSync: () => void;
+  row: PerformanceSourceRow;
+  workspace: PerformanceSourceWorkspace;
 }) {
-  const key = entry.sourceKey;
-  const unhealthy = entry.account.authorization.status !== "healthy";
+  const selectable =
+    workspace.selectable &&
+    (row.kind === "account" || row.kind === "all-connected" || row.kind === "csv");
+  const selected = selectable && workspace.selectedSource === row.key;
+  const sub = "sub" in row ? row.sub : null;
+  const text = (
+    <>
+      <span className="flex items-center gap-2 text-[14px] font-semibold leading-[19px] text-fg">
+        {selected ? <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ember" /> : null}
+        <span className="truncate">{row.name}</span>
+      </span>
+      {sub ? (
+        <span title={sub} className="max-w-full truncate text-[12px] leading-4 text-fg-muted">
+          {sub}
+        </span>
+      ) : null}
+    </>
+  );
   return (
-    <article
-      data-performance-account={key}
+    <li
       className={cn(
-        "grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 rounded-[8px] border p-2.5",
-        selected
-          ? "border-primary bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)] ring-1 ring-primary/25"
-          : "border-[var(--pf-border)] bg-[var(--pf-surface)]"
+        "flex min-h-[50px] items-center gap-2 border-b border-hairline py-1.5 transition-[background-color] duration-[var(--pf-dur-state)] ease-pf last:border-b-0",
+        workspace.selectable && "-mx-2.5 px-2.5",
+        selected && "rounded-lg border-transparent bg-raised",
       )}
     >
-      <SocialProviderIcon
-        provider={entry.provider}
-        label={`${entry.status.displayName} logo`}
-        className="size-8"
-      />
-      <div className="min-w-0">
-        <b className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-          {connectedAccountName(entry.account)}
-        </b>
-        <p className="mt-0.5 truncate text-[11px] text-[var(--pf-muted)]">
-          {accountHandle(entry.account.account.username)} · {syncCaption(entry)}
-        </p>
-      </div>
-      {unhealthy ? (
-        <Link
-          href="/settings?tab=integrations"
-          aria-label={`Reconnect ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`}
-          className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-danger)]/40 bg-[var(--pf-surface)] text-[var(--pf-danger)]"
-        >
-          <ExternalLink className="size-3.5" />
-        </Link>
-      ) : (
+      {selectable ? (
         <button
           type="button"
-          onClick={onSync}
-          disabled={busy}
-          aria-label={`Sync ${entry.status.displayName} account ${accountHandle(entry.account.account.username)}`}
-          className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-ink)] disabled:opacity-50"
+          aria-pressed={selected}
+          onClick={() => workspace.onSelect(row.key)}
+          className="flex min-w-0 flex-1 flex-col items-start rounded-md text-left"
         >
-          {spinning ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <RefreshCw className="size-3.5" />
-          )}
+          {text}
         </button>
+      ) : (
+        <span className="flex min-w-0 flex-1 flex-col">{text}</span>
       )}
-    </article>
+      <RowTrailing row={row} workspace={workspace} />
+    </li>
   );
 }
 
-function isSourceSelected(
-  selectedSource: string,
-  entry: ConnectedAccountView,
-  allowAllConnected: boolean
-) {
-  if (selectedSource === entry.sourceKey) return true;
-  return (
-    allowAllConnected &&
-    entry.provider !== "youtube" &&
-    selectedSource === "all-connected"
-  );
-}
-
-function syncCaption(entry: ConnectedAccountView) {
-  if (entry.account.authorization.status !== "healthy") {
-    return "Reconnect required";
-  }
-  if (entry.account.sync.status === "error") return "Sync error";
-  if (entry.account.sync.status === "partial") return "Partial metrics";
-  return formatSyncDate(entry.account.sync.lastSuccessfulAt);
-}
-
-type AccountAggregateEntry = ConnectedAccountView & {
-  aggregate: {
-    views: { value: number | null; total: number };
-    likes: { value: number | null };
-    comments: { value: number | null };
-    shares: { value: number | null };
-    saves: { value: number | null };
-  };
-};
-
-export function PerformanceAccountCards({
-  entries,
+function RowTrailing({
+  row,
+  workspace,
 }: {
-  entries: AccountAggregateEntry[];
+  row: PerformanceSourceRow;
+  workspace: PerformanceSourceWorkspace;
 }) {
-  if (entries.length === 0) return null;
+  switch (row.kind) {
+    case "unconfigured":
+      return <span className={cn(CHIP, "bg-raised text-fg-secondary")}>Not configured</span>;
+    case "disconnected":
+      return (
+        <Link href={INTEGRATIONS_HREF} className={cn(buttonClass("quiet", 32), SMALL_PILL)}>
+          Connect
+        </Link>
+      );
+    case "unavailable":
+      return <span className={cn(CHIP, "bg-bad-tint text-bad")}>Status unavailable</span>;
+    case "all-connected":
+      return null;
+    case "account":
+      return <AccountTrailing row={row} workspace={workspace} />;
+    case "csv":
+      return (
+        <span className="flex shrink-0 gap-1.5">
+          <Button size={32} className={SMALL_PILL} onClick={workspace.onImport} disabled={workspace.importing}>
+            {workspace.importing ? "Importing" : "Replace"}
+          </Button>
+          <Button size={32} variant="danger" className={SMALL_PILL} onClick={workspace.onClearCsv}>
+            Remove
+          </Button>
+        </span>
+      );
+    case "csv-missing":
+      return (
+        <Button size={32} className={SMALL_PILL} onClick={workspace.onImport} disabled={workspace.importing}>
+          {workspace.importing ? "Importing" : "Import"}
+        </Button>
+      );
+  }
+}
 
+function AccountTrailing({
+  row,
+  workspace,
+}: {
+  row: Extract<PerformanceSourceRow, { kind: "account" }>;
+  workspace: PerformanceSourceWorkspace;
+}) {
+  if (row.health === "reconnect") {
+    return (
+      <Link
+        href={INTEGRATIONS_HREF}
+        aria-label={`Reconnect ${row.name} in Settings`}
+        className={cn(CHIP, "bg-warn-tint text-warn transition-opacity duration-[var(--pf-dur-feedback)] hover:opacity-85")}
+      >
+        Reconnect required
+      </Link>
+    );
+  }
+  const chip = workspace.busyProvider === row.entry.provider ? HEALTH_CHIPS.syncing : HEALTH_CHIPS[row.health];
   return (
-    <section className="mt-4" aria-label="Per account performance">
-      <h2 className="text-[13px] font-semibold text-[var(--pf-ink)]">
-        Performance by account
-      </h2>
-      <div className="mt-3 grid gap-3 min-[1100px]:grid-cols-2 min-[1400px]:grid-cols-3">
-        {entries.map((entry) => (
-          <article key={entry.sourceKey} className="pf-card flex flex-col gap-3 px-4 py-4">
-            <div className="flex items-center gap-2">
-              <SocialProviderIcon provider={entry.provider} className="size-6 shrink-0" />
-              <div className="min-w-0">
-                <b className="block truncate text-[12px] text-[var(--pf-ink)]">
-                  {connectedAccountName(entry.account)}
-                </b>
-                <span className="block truncate text-[11px] text-[var(--pf-muted)]">
-                  {entry.account.account.username
-                    ? accountHandle(entry.account.account.username)
-                    : entry.status.displayName}
-                </span>
-              </div>
-              {entry.account.authorization.status !== "healthy" ? (
-                <Link href="/settings?tab=integrations" className="pf-status-danger ml-auto shrink-0 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em]">
-                  Reconnect
-                </Link>
-              ) : null}
-            </div>
-            <div className="grid grid-cols-3 gap-x-3 gap-y-3 border-t border-[var(--pf-border)] pt-3">
-              {(
-                [
-                  ["Views", entry.aggregate.views.value],
-                  ["Likes", entry.aggregate.likes.value],
-                  ["Comments", entry.aggregate.comments.value],
-                  ["Shares", entry.aggregate.shares.value],
-                  ["Saves", entry.aggregate.saves.value],
-                  ["Posts", entry.aggregate.views.total],
-                ] as const
-              ).map(([label, value]) => (
-                <div key={label}>
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-                    {label}
-                  </span>
-                  <b className="mt-1 block text-[13px] font-semibold tabular-nums text-[var(--pf-ink)]">
-                    {formatMetric(value)}
-                  </b>
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+    <>
+      {chip ? <span className={cn(CHIP, chip.className)}>{chip.label}</span> : <StatusBadge tone="ok" label="Synced" />}
+      <IconButton
+        icon="refresh"
+        label={`Sync ${row.name} ${row.sub.split(" - ")[0]}`}
+        variant="ghost"
+        size={28}
+        disabled={workspace.busyProvider !== null}
+        onClick={() => workspace.onSync(row.entry)}
+      />
+    </>
   );
 }
+
+const INTEGRATIONS_HREF = "/settings?tab=integrations";
+const SMALL_PILL = "h-7 px-3 text-[12px] leading-4";
+const CHIP =
+  "inline-flex h-6 shrink-0 items-center whitespace-pre rounded-full px-2.5 text-[12px] font-semibold leading-4";
+
+const HEALTH_CHIPS: Record<"syncing" | "failed" | "partial" | "never" | "synced", { label: string; className: string } | null> = {
+  syncing: { label: "Syncing", className: "bg-raised text-fg-secondary" },
+  failed: { label: "Sync failed", className: "bg-bad-tint text-bad" },
+  partial: { label: "Partial metrics", className: "bg-warn-tint text-warn" },
+  never: { label: "Not synced", className: "bg-raised text-fg-secondary" },
+  synced: null,
+};

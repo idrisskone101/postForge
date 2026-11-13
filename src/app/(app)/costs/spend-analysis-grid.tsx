@@ -1,186 +1,119 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { PIE_COLORS } from "@/lib/costs/chart-colors";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
+import { Panel } from "@/components/workbench/panel";
+import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { axisMoney, niceMoneyCeiling } from "./spend-format";
 import type { SpendAnalysisGridProps } from "./types";
 
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
-  const paintReady = useWindowLoadReady();
-  const chartHasSpend = dashboard.chartData.some(
-    (point) => point.image > 0 || point.video > 0
+  const top = niceMoneyCeiling(
+    Math.max(0, ...dashboard.chartData.map((point) => point.image + point.video)),
   );
+  const points = dashboard.chartData;
+  const xLabels = [dayFirst(points[0]?.date), dayFirst(points[Math.floor(points.length / 2)]?.date), "Today"];
+  const formats = [
+    { key: "video", name: "Video", cost: dashboard.breakdown.video.cost, swatch: "bg-chart-1" },
+    { key: "image", name: "Image", cost: dashboard.breakdown.image.cost, swatch: "bg-chart-2" },
+  ].filter((entry) => entry.cost > 0);
+  const models = view.modelEntries.slice(0, 6);
+  const topModelCost = models[0]?.[1].cost ?? 0;
 
   return (
-    <section
-      data-spend-analysis-grid="true"
-      className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]"
-    >
-      <article className="pf-card min-w-0 p-4 sm:p-5">
-        <header
-          data-spend-chart-head={paintReady ? undefined : "true"}
-          className="mb-4 flex flex-wrap items-start justify-between gap-3"
-        >
-          <div>
-            <h2 className="pf-section-title">Spend Over Time</h2>
-            <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-              Daily image and video cost · {dashboard.period.toUpperCase()}
-            </p>
+    <div className="grid min-w-0 gap-3 lg:grid-cols-2 xl:flex">
+      <Panel pad="none" className="min-w-0 gap-2.5 p-5 lg:col-span-2 xl:flex-1" aria-label="Spend by day">
+        <div className="flex h-7 shrink-0 items-center gap-4">
+          <h2 className="wb-panel-title flex-1">By day</h2>
+          <Legend swatch="bg-chart-1" label="Video" />
+          <Legend swatch="bg-chart-2" label="Image" />
+        </div>
+        <div className="flex gap-2">
+          <div className="flex h-[166px] w-10 shrink-0 flex-col justify-between text-right font-mono text-[12px] leading-4 text-fg-muted">
+            <span>{axisMoney(top)}</span>
+            <span>{axisMoney(top / 2)}</span>
+            <span>$0</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-[var(--pf-muted)]">
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2 rounded-sm bg-[var(--pf-muted)]" />
-              Image
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2 rounded-sm bg-[var(--pf-ink)]" />
-              Video
-            </span>
-          </div>
-        </header>
-        {chartHasSpend ? (
-          <div data-spend-chart-slot="true" className="h-[276px]" style={{ height: 276 }}>
-            <CostChart data={dashboard.chartData} />
-          </div>
-        ) : (
-          <div
-            data-spend-chart-slot="true"
-            data-spend-chart="empty"
-            role="img"
-            aria-label="No image or video spend in this period"
-            className="h-[276px] rounded-[8px] bg-[var(--pf-active)]"
-            style={{ height: 276 }}
-          />
-        )}
-      </article>
-
-      <aside
-        data-spend-breakdown="true"
-        className="pf-card min-w-0 p-4 sm:p-5"
-      >
-        <header
-          data-spend-breakdown-head={paintReady ? undefined : "true"}
-          className="border-b border-[var(--pf-border)] pb-3"
-        >
-          <h2 className="pf-section-title">Spend breakdown</h2>
-          <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-            Workflow type and model mix · {dashboard.period.toUpperCase()}
-          </p>
-        </header>
-
-        {view.workflowPieData.length > 0 ? (
-          <>
-            <div className="pt-4">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-                Spend by Format
-              </h3>
-              <div className="mt-2 grid grid-cols-[112px_minmax(0,1fr)] items-center gap-3">
-                <div
-                  className="size-28 shrink-0"
-                  style={{ width: 112, height: 112 }}
-                  aria-label="Workflow type spend distribution"
-                >
-                  <ModelPieChart data={view.workflowPieData} />
-                </div>
-                <div className="min-w-0 space-y-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center justify-between gap-2 text-[11px]">
-                      <span className="flex min-w-0 items-center gap-2 text-[var(--pf-muted)]">
-                        <span className="size-2 shrink-0 rounded-sm bg-[var(--pf-muted)]" />
-                        <span className="truncate">Image</span>
-                      </span>
-                      <strong className="shrink-0 text-[var(--pf-ink)]">{view.imagePct.toFixed(0)}%</strong>
-                    </div>
-                    <p className="mt-1 truncate text-[11px] text-[var(--pf-muted)]">
-                      {formatCost(dashboard.breakdown.image.cost)} · {dashboard.breakdown.image.count} {dashboard.breakdown.image.count === 1 ? "job" : "jobs"}
-                    </p>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center justify-between gap-2 text-[11px]">
-                      <span className="flex min-w-0 items-center gap-2 text-[var(--pf-muted)]">
-                        <span className="size-2 shrink-0 rounded-sm bg-[var(--pf-ink)]" />
-                        <span className="truncate">Video</span>
-                      </span>
-                      <strong className="shrink-0 text-[var(--pf-ink)]">{view.videoPct.toFixed(0)}%</strong>
-                    </div>
-                    <p className="mt-1 truncate text-[11px] text-[var(--pf-muted)]">
-                      {formatCost(dashboard.breakdown.video.cost)} · {dashboard.breakdown.video.count} {dashboard.breakdown.video.count === 1 ? "job" : "jobs"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 border-t border-[var(--pf-border)] pt-4">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)]">
-                  Spend by Model
-                </h3>
-                <span className="text-[11px] text-[var(--pf-muted)]">Highest first</span>
-              </div>
-              <div className="mt-2 space-y-1.5">
-                {view.modelEntries.slice(0, 5).map(([name, data], index) => (
-                  <div
-                    key={name}
-                    className="flex min-w-0 items-center justify-between gap-3 rounded-[8px] bg-[var(--pf-active)] px-2.5 py-2"
-                  >
-                    <span className="flex min-w-0 items-center gap-2 text-[11px] font-medium text-[var(--pf-ink)]">
-                      <span
-                        className="inline-block size-2 shrink-0 rounded-sm"
-                        style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                      />
-                      <span className="truncate">{name}</span>
-                    </span>
-                    <span className="shrink-0 text-right text-[11px] text-[var(--pf-muted)]">
-                      <strong className="pf-data block text-[11px] text-[var(--pf-ink)]">
-                        {formatCost(data.cost)}
-                      </strong>
-                      {modelShareLabel(data.cost, view.totalModelCost)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div data-spend-empty="true" className="space-y-3 py-4">
-            <p className="text-[12px] leading-4 text-[var(--pf-muted)]">
-              No spend data yet. Breakdowns appear after the first tracked cost.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Link href="/ugc-clone" className="pf-button-secondary text-[12px]">
-                Start Clone
-              </Link>
-              <Link href="/generate" className="pf-button-secondary text-[12px]">
-                Open Generate
-              </Link>
+          <div className="relative flex h-[166px] min-w-0 flex-1 flex-col justify-between py-2">
+            <span className="border-t border-dotted border-[var(--pf-chart-grid)]" />
+            <span className="border-t border-dotted border-[var(--pf-chart-grid)]" />
+            <span className="border-t border-[var(--pf-chart-grid)]" />
+            <div className="wb-fade-in absolute inset-x-0 top-2 h-[150px]">
+              <CostChart data={points} max={top} />
             </div>
           </div>
-        )}
-      </aside>
-    </section>
+        </div>
+        <div className="flex justify-between pl-12 font-mono text-[12px] leading-4 text-fg-muted">
+          {xLabels.map((label, index) => (
+            <span key={index}>{label}</span>
+          ))}
+        </div>
+      </Panel>
+
+      <Panel pad="none" className="min-w-0 gap-3.5 p-5 xl:w-[252px] xl:shrink-0" aria-label="Spend by format">
+        <h2 className="wb-panel-title flex h-7 items-center">By format</h2>
+        <div className="flex h-3.5 shrink-0 gap-[3px]" role="img" aria-label="Video and image share of spend">
+          {formats.map((entry) => (
+            <span
+              key={entry.key}
+              className={cn("min-w-1 basis-0 rounded-[4px]", entry.swatch)}
+              style={{ flexGrow: entry.cost }}
+            />
+          ))}
+        </div>
+        <ul className="flex flex-col gap-3 pt-0.5">
+          {formats.map((entry) => (
+            <li key={entry.key} className="flex items-center gap-2.5">
+              <span className={cn("size-2 shrink-0 rounded-[3px]", entry.swatch)} />
+              <span className="flex-1 text-[14px] leading-5 text-fg">{entry.name}</span>
+              <span className="wb-mono text-fg">{formatCost(entry.cost)}</span>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+
+      <Panel pad="none" className="min-w-0 gap-[7px] p-5 xl:w-[320px] xl:shrink-0" aria-label="Spend by model">
+        <h2 className="wb-panel-title flex h-7 items-center">By model</h2>
+        <ul className="flex flex-col gap-[7px]">
+          {models.map(([name, data], index) => (
+            <li key={name} className="flex flex-col gap-[5px]">
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="truncate text-[13px] font-semibold leading-4 text-fg" title={name}>
+                  {name}
+                </span>
+                <span className="wb-mono shrink-0 text-fg">{formatCost(data.cost)}</span>
+              </span>
+              <span className="flex h-1.5 shrink-0 rounded-full bg-raised">
+                <span
+                  className={cn("rounded-full", index < 3 ? "bg-chart-1" : "bg-chart-2")}
+                  style={{ width: `${topModelCost > 0 ? Math.max(2, (data.cost / topModelCost) * 100) : 0}%` }}
+                />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+    </div>
   );
 }
 
-function modelShareLabel(cost: number, totalModelCost: number) {
-  if (totalModelCost <= 0) return "0%";
-  return `${((cost / totalModelCost) * 100).toFixed(1)}%`;
+/** "Oct 15" from the series becomes "15 Oct", the order the rest of the app uses. */
+function dayFirst(label: string | undefined) {
+  if (!label) return "";
+  const [month, day] = label.split(" ");
+  return day ? `${day} ${month}` : label;
+}
+
+function Legend({ swatch, label }: { swatch: string; label: string }) {
+  return (
+    <span className="flex h-[26px] items-center gap-1.5 text-[12px] font-medium leading-4 text-fg-secondary">
+      <span className={cn("size-2 shrink-0 rounded-[3px]", swatch)} />
+      {label}
+    </span>
+  );
 }
 
 const CostChart = dynamic(
   () => import("@/components/cost-chart").then((module) => module.CostChart),
-  {
-    ssr: false,
-    loading: () => <div className="h-full rounded-[8px] bg-[var(--pf-active)]" aria-hidden />,
-  }
-);
-
-const ModelPieChart = dynamic(
-  () => import("@/components/cost-chart").then((module) => module.ModelPieChart),
-  {
-    ssr: false,
-    loading: () => <div className="size-full rounded-full bg-[var(--pf-active)]" aria-hidden />,
-  }
+  { ssr: false, loading: () => null },
 );

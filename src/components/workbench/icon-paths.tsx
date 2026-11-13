@@ -118,6 +118,12 @@ export const ICON_PATHS = {
   download: <path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14" />,
   /* drawn */
   upload: <path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19.5h14" />,
+  calendar: (
+    <>
+      <rect x="4" y="5.5" width="16" height="14" rx="3" />
+      <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+    </>
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof ICON_PATHS;

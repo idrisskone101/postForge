@@ -26,6 +26,8 @@ import {
   removeWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
+import type { ToastMessage } from "@/components/workbench/toast";
+import type { PerformanceRange } from "./types";
 
 const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
   providers: [],
@@ -45,10 +47,10 @@ export function usePerformanceWorkspace() {
   const [providerError, setProviderError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [busyProvider, setBusyProvider] = useState<SocialProvider | null>(null);
-  const [range, setRange] = useState<7 | 30 | 90>(30);
+  const [range, setRange] = useState<PerformanceRange>(30);
   const [view, setView] = useState<"table" | "grid">("table");
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const loadProviderData = useCallback(async () => {
     setProviderError(null);
@@ -190,9 +192,10 @@ export function usePerformanceWorkspace() {
   );
 
   function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1900);
+    setToast({ id: `${Date.now()}`, tone: "ok", message });
   }
+
+  const dismissToast = useCallback(() => setToast(null), []);
 
   async function importFile(file: File) {
     setImporting(true);
@@ -311,6 +314,7 @@ export function usePerformanceWorkspace() {
     view,
     search,
     toast,
+    dismissToast,
     connectedAccounts,
     sourceOptions,
     activeSource,
