@@ -194,10 +194,6 @@
     animation: wb-sweep 1.6s linear infinite;
   }
 
-  .wb-meter[data-size="6"] {
-    height: 6px;
-  }
-
   .wb-meter-split,
   .wb-meter-segments {
     display: flex;
@@ -374,7 +370,7 @@
   }
 
   .wb-tile:hover > .wb-tile-check,
-  .wb-tile:focus-within > .wb-tile-check,
+  .wb-tile:has(:focus-visible) > .wb-tile-check,
   .wb-tile[data-selecting="true"] > .wb-tile-check {
     opacity: 1;
     pointer-events: auto;
@@ -434,7 +430,7 @@
   }
 
   .wb-tile:hover > .wb-tile-actions,
-  .wb-tile:focus-within > .wb-tile-actions {
+  .wb-tile:has(:focus-visible) > .wb-tile-actions {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
@@ -455,7 +451,7 @@
   }
 
   .wb-tile:hover > .wb-tile-actions ~ .wb-tile-duration,
-  .wb-tile:focus-within > .wb-tile-actions ~ .wb-tile-duration {
+  .wb-tile:has(:focus-visible) > .wb-tile-actions ~ .wb-tile-duration {
     opacity: 0;
   }
 

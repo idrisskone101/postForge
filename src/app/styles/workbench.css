@@ -845,12 +845,14 @@
 
 @media (min-width: 768px) {
   .wb-toast-region {
-    left: calc(var(--pf-rail-w) + 16px);
+    left: calc(var(--pf-rail-w) + env(safe-area-inset-left) + 16px);
   }
 }
 
 @media (min-width: 1280px) {
   html:not([data-sidebar-collapsed="true"]) .wb-toast-region {
-    left: calc(var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + 16px);
+    left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left) + 16px
+    );
   }
 }

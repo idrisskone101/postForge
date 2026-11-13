@@ -68,9 +68,10 @@ async function fetchSidebarStatus(): Promise<WorkspaceSidebarStatus | null> {
       fetchWorkspaceFeature<WorkspaceSidebarSettings>("connections"),
       fetch("/api/workspace-notifications", { cache: "no-store" }),
     ]);
+    if (!response.ok) return null;
     return resolveSidebarStatus(
       records.find((record) => record.id === "workspace-settings"),
-      response.ok ? await response.json() : {}
+      await response.json()
     );
   } catch {
     return null;

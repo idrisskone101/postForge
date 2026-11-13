@@ -414,7 +414,9 @@
   }
 
   .workspace-sidebar-offset-left {
-    left: calc(var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap));
+    left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left)
+    );
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar {
@@ -428,7 +430,7 @@
   }
 
   html[data-sidebar-collapsed="true"] .workspace-sidebar-offset-left {
-    left: var(--pf-rail-w);
+    left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
   }
 
   html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-header {
