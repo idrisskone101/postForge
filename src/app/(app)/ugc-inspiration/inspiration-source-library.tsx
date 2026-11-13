@@ -103,7 +103,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
           ),
         }))}
       />
-      <label className="wb-input-wrap min-w-[180px] flex-1" data-size="36">
+      <label className="wb-input-wrap min-w-[208px] flex-1" data-size="36">
         <Icon name="search" size={15} />
         <input
           value={sourceSearch}
