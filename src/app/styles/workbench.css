@@ -1010,3 +1010,20 @@
     --wb-hit-h: 40px;
   }
 }
+
+@layer components {
+  /* Toggle at the 44 by 26 size drawn on 04 Clone and 06 Slideshow */
+  .wb-toggle[data-size="26"] {
+    width: 44px;
+    height: 26px;
+  }
+
+  .wb-toggle[data-size="26"]::after {
+    width: 20px;
+    height: 20px;
+  }
+
+  .wb-toggle[data-size="26"]:is([aria-checked="true"], [data-checked="true"])::after {
+    transform: translateX(18px);
+  }
+}
