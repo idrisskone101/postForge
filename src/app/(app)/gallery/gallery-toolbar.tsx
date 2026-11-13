@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,14 @@ import {
 } from "./gallery-models";
 import type { GalleryWorkspace } from "./use-gallery-workspace";
 
-export function GalleryToolbar({ workspace }: { workspace: GalleryWorkspace }) {
+export function GalleryToolbar({
+  workspace,
+  dock,
+}: {
+  workspace: GalleryWorkspace;
+  /** The bulk dock. It lies over the reserved count row, so the grid below never moves on select. */
+  dock: ReactNode;
+}) {
   const {
     reviewFilter,
     typeFilter,
@@ -37,7 +45,9 @@ export function GalleryToolbar({ workspace }: { workspace: GalleryWorkspace }) {
     setQuery,
     setSelectedIds,
     replaceRouteFilters,
+    selectionCount,
   } = workspace;
+  const selecting = selectionCount > 0;
 
   const chooseReview = (value: ReviewFilter) => {
     setReviewFilter(value);
@@ -91,26 +101,37 @@ export function GalleryToolbar({ workspace }: { workspace: GalleryWorkspace }) {
           />
         </div>
       </div>
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <Segmented
-          label="Review status"
-          value={reviewFilter}
-          onChange={chooseReview}
-          options={reviewFilters.map((filter) => ({
-            value: filter.value,
-            label: filter.label,
-            count:
-              filter.value === "needs_review" ? reviewCounts.needs_review : undefined,
-          }))}
-          className="min-w-0 [scrollbar-width:none]"
-        />
-        <span data-gallery-count="true" className="wb-meta shrink-0">
+      <Segmented
+        label="Review status"
+        value={reviewFilter}
+        onChange={chooseReview}
+        options={reviewFilters.map((filter) => ({
+          value: filter.value,
+          label: filter.label,
+          count: filter.value === "needs_review" ? reviewCounts.needs_review : undefined,
+        }))}
+        className="min-w-0 self-start [scrollbar-width:none]"
+      />
+      <div
+        data-gallery-dock-row="true"
+        data-selecting={selecting ? "true" : undefined}
+        className={DOCK_ROW_CLASS}
+      >
+        <span data-gallery-count="true" className="wb-meta">
           {countLabel}
         </span>
+        {dock}
       </div>
     </div>
   );
 }
+
+// Where the dock fits one row it sits in this row, which follows the scroll while a selection is active.
+const DOCK_ROW_CLASS = [
+  "relative flex min-h-12 items-center pl-1",
+  "lg:max-xl:data-[selecting=true]:sticky lg:max-xl:data-[selecting=true]:top-3 lg:max-xl:data-[selecting=true]:z-20",
+  "min-[1440px]:data-[selecting=true]:sticky min-[1440px]:data-[selecting=true]:top-3 min-[1440px]:data-[selecting=true]:z-20",
+].join(" ");
 
 const viewOptions = [
   { value: "grid", label: <Icon name="grid" size={14} />, ariaLabel: "Grid view" },

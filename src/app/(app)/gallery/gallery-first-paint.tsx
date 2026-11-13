@@ -7,6 +7,10 @@ import {
   GalleryTileSkeletons,
   GalleryToolbarSkeleton,
 } from "@/components/gallery/skeletons";
+import {
+  GALLERY_INSPECTOR_CLASS,
+  GalleryInspectorEmpty,
+} from "@/components/gallery/inspector-empty";
 import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 
 export function GalleryFirstPaint() {
@@ -28,12 +32,15 @@ export function GalleryFirstPaint() {
       <div
         data-gallery-first-body="true"
         aria-busy="true"
-        className="flex min-h-0 min-w-0 flex-1 gap-3"
+        className="flex min-h-0 min-w-0 flex-1 items-start gap-3"
       >
-        <Panel className="min-w-0 flex-1 gap-3">
+        <Panel className="min-w-0 flex-1 gap-3 self-stretch">
           <GalleryToolbarSkeleton />
           <GalleryTileSkeletons />
         </Panel>
+        <aside aria-hidden="true" className={GALLERY_INSPECTOR_CLASS}>
+          <GalleryInspectorEmpty />
+        </aside>
       </div>
     </>
   );

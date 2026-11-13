@@ -770,6 +770,11 @@
     animation: wb-rise-in var(--pf-dur-enter) var(--pf-ease) both;
   }
 
+  .wb-dock[data-leaving="true"] {
+    animation: wb-drop-out var(--pf-dur-exit) var(--pf-ease) both;
+    pointer-events: none;
+  }
+
   .wb-dock-count {
     padding-left: 4px;
     color: var(--pf-text);

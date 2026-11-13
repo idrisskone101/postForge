@@ -7,7 +7,8 @@ import { GalleryTileSkeletons } from "@/components/gallery/skeletons";
 import { Button, buttonClass } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { Toast } from "@/components/workbench/toast";
-import { GalleryBulkBar } from "./gallery-bulk-bar";
+import { cn } from "@/lib/utils";
+import { GalleryBulkBar, TOAST_ABOVE_DOCK_CLASS } from "./gallery-bulk-bar";
 import { GalleryLoadErrorState } from "./gallery-load-error-state";
 import type { GalleryPageClientProps } from "./gallery-models";
 import { GalleryToolbar } from "./gallery-toolbar";
@@ -76,15 +77,18 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
       <GalleryGrid
         session={gridSession}
         renderHeader={({ openDetails }) => (
-          <>
-            <GalleryToolbar workspace={workspace} />
-            <GalleryBulkBar workspace={workspace} onOpenDetails={openDetails} />
-          </>
+          <GalleryToolbar
+            workspace={workspace}
+            dock={<GalleryBulkBar workspace={workspace} onOpenDetails={openDetails} />}
+          />
         )}
         fallback={fallback}
         footer={footer}
       />
-      <div className="wb-toast-region" aria-live="polite">
+      <div
+        className={cn("wb-toast-region", selectedIds.size > 0 && TOAST_ABOVE_DOCK_CLASS)}
+        aria-live="polite"
+      >
         {toast && (
           <Toast
             key={toast.id}

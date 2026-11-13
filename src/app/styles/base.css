@@ -62,6 +62,17 @@
   }
 }
 
+@keyframes wb-drop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 @keyframes wb-check-in {
   from {
     opacity: 0;

@@ -26,6 +26,9 @@ export function GalleryToolbarSkeleton() {
         <Skeleton className="h-9 w-[80px]" />
       </div>
       <Skeleton className="h-9 w-full max-w-[432px]" />
+      <div className="flex min-h-12 items-center pl-1">
+        <Skeleton className="w-20" />
+      </div>
     </div>
   );
 }

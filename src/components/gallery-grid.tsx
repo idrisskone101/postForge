@@ -5,6 +5,10 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Panel } from "@/components/workbench/panel";
 import { downloadFile } from "@/lib/utils/download";
 import { GalleryGridCards } from "@/components/gallery/grid-cards";
+import {
+  GALLERY_INSPECTOR_CLASS,
+  GalleryInspectorEmpty,
+} from "@/components/gallery/inspector-empty";
 import { GalleryLightbox } from "@/components/gallery/lightbox";
 import { GalleryListTable } from "@/components/gallery/list-table";
 import type { GalleryMediaSession } from "@/components/gallery/media-session";
@@ -143,14 +147,15 @@ export function GalleryGrid({
           {footer}
         </Panel>
 
-        {selection && (
-          <aside
-            aria-label="Selected output"
-            className="wb-panel sticky top-4 hidden w-[320px] shrink-0 animate-[wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] xl:flex"
-          >
-            <GallerySelectionInspector key={selection.item.id} selection={selection} />
-          </aside>
-        )}
+        <aside aria-label="Selected output" className={GALLERY_INSPECTOR_CLASS}>
+          {selection ? (
+            <div key={selection.item.id} className="wb-fade-in flex min-w-0 flex-col">
+              <GallerySelectionInspector selection={selection} />
+            </div>
+          ) : (
+            <GalleryInspectorEmpty />
+          )}
+        </aside>
       </div>
 
       <Sheet open={detailsOpen && selection !== null} onOpenChange={setDetailsOpen}>
