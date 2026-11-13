@@ -10,7 +10,7 @@ import { MAX_SLIDESHOW_SLIDES } from "./model";
 import { VisualTile } from "./slide-preview";
 import { slideCoverImage } from "./slideshow-view";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
-import type { SlideshowSlide } from "./types";
+import type { SlideshowAspectRatio, SlideshowSlide } from "./types";
 
 export function EditorSlideRail() {
   const { draft, activeIndex, activeThumbRef, selectSlide, addSlide } =
@@ -42,7 +42,8 @@ export function EditorSlideRail() {
               aria-label={`Select slide ${index + 1}`}
               onClick={() => selectSlide(slide)}
               className={cn(
-                "relative block h-[95px] w-[76px] shrink-0 overflow-hidden rounded-lg bg-media transition-shadow duration-160 ease-pf max-xl:h-[70px] max-xl:w-14",
+                "relative block shrink-0 overflow-hidden rounded-lg bg-media transition-shadow duration-160 ease-pf",
+                THUMB_SHAPE[draft.aspectRatio],
                 index === activeIndex &&
                   "shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]",
               )}
@@ -61,6 +62,13 @@ export function EditorSlideRail() {
     </aside>
   );
 }
+
+const THUMB_SHAPE: Record<SlideshowAspectRatio, string> = {
+  "9:16": "aspect-[9/16] w-[76px] max-xl:w-14",
+  "4:5": "aspect-[4/5] w-[76px] max-xl:w-14",
+  "1:1": "aspect-square w-[76px] max-xl:w-14",
+  "16:9": "aspect-video w-[76px] max-xl:w-[100px]",
+};
 
 function RailThumb({ slide }: { slide: SlideshowSlide }) {
   const cover = slideCoverImage(slide);
