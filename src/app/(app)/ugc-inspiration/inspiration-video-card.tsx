@@ -87,7 +87,7 @@ export function InspirationVideoCard({
           {thumbnailFailed ? (
             <span
               data-inspiration-thumbnail="missing"
-              className="flex size-full flex-col items-center justify-center gap-2 bg-media px-3"
+              className="flex size-full flex-col items-center justify-center gap-2 bg-media px-1"
             >
               <span aria-hidden="true" className="text-fg-muted">
                 <PlayGlyph size={28} />

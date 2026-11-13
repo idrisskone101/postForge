@@ -1,5 +1,4 @@
 import {
-  formatOutputDate,
   modelDisplayName,
   outputAccessibleName,
   outputMeta,
@@ -21,8 +20,9 @@ export function galleryItemJobHref(item: Pick<GalleryItem, "jobId" | "jobHref">)
   return item.jobHref ?? `/generate/${encodeURIComponent(item.jobId)}`;
 }
 
-export function galleryItemMeta(item: Pick<GalleryItem, "type" | "model" | "createdAt">) {
-  return outputMeta(item.type, modelDisplayName(item.model), formatOutputDate(item.createdAt));
+/** The tile caption names the kind and the model. The date stays in the inspector and the list. */
+export function galleryItemMeta(item: Pick<GalleryItem, "type" | "model">) {
+  return outputMeta(item.type, modelDisplayName(item.model), "");
 }
 
 export function galleryItemKind(item: Pick<GalleryItem, "type" | "width" | "height">) {

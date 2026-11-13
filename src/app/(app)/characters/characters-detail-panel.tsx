@@ -8,6 +8,7 @@ import type { CharacterRecord } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 import { CharacterIdentityPackRow, CharacterIdentityPackNotice } from "./characters-identity-pack";
 import { formatShortDate, photoReady } from "./characters-helpers";
+import { CharacterMoreMenu } from "./characters-more-menu";
 import { CharacterPromptBed } from "./characters-prompt-bed";
 import type { CharacterInspectorModel } from "./types";
 import { useIdentityPack } from "./use-identity-pack";
@@ -19,21 +20,29 @@ export function CharacterDetailPanel({
   inspector: CharacterInspectorModel;
   variant?: "panel" | "sheet";
 }) {
-  const { record, busy, onCopyPrompt, onDuplicate, onRequestDelete } = inspector;
+  const { record, busy, onCopyPrompt } = inspector;
   const ready = photoReady(record);
   const identity = useIdentityPack(ready ? record.avatarId ?? null : null);
   const sheet = variant === "sheet";
 
   return (
-    <div className={cn("flex min-w-0 flex-col gap-4", sheet ? "min-h-0" : "flex-[1_0_auto]")} aria-busy={busy}>
-      <div className={cn("flex min-w-0 gap-3.5", sheet ? "items-center" : "shrink-0 flex-col gap-4")}>
+    <div className={cn("flex min-h-0 min-w-0 flex-col gap-4", !sheet && "flex-1")} aria-busy={busy}>
+      <div className={sheet ? "flex min-w-0 items-center gap-3.5" : "contents"}>
         <div
+          data-character-stage
           className={cn(
             "grid shrink-0 place-items-center",
-            sheet ? "h-28 w-[84px]" : "h-[370px] rounded-lg bg-floor max-xl:h-[320px]"
+            sheet ? "h-28 w-[84px]" : STAGE_CLASS
           )}
         >
-          <span className={cn("block overflow-hidden", sheet ? "h-28 w-[84px] rounded-[10px]" : "h-[308px] w-[236px] rounded-sm [&_img]:rounded-sm")}>
+          <span
+            className={cn(
+              "block overflow-hidden",
+              sheet
+                ? "h-28 w-[84px] rounded-[10px]"
+                : "aspect-[236/308] h-[calc(100%-62px)] max-h-[308px] rounded-sm [&_img]:rounded-sm [@media(max-height:780px)]:h-[calc(100%-32px)]"
+            )}
+          >
             <CharacterPhoto
               avatarId={ready ? record.avatarId : null}
               alt={`${record.name} portrait`}
@@ -52,7 +61,7 @@ export function CharacterDetailPanel({
         </div>
       </div>
 
-      <dl className="flex flex-col">
+      <dl className="flex shrink-0 flex-col">
         {detailRows(record).map(([label, value]) => (
           <div key={label} className="flex h-[34px] shrink-0 items-center justify-between gap-3 border-t border-hairline">
             <dt className="text-xs font-semibold leading-4 text-fg-muted">{label}</dt>
@@ -69,32 +78,30 @@ export function CharacterDetailPanel({
         <CharacterPromptBed key={record.id} prompt={buildCharacterPrompt(record.attributes)} />
       )}
 
-      <div className={cn("flex shrink-0 flex-col gap-2", !sheet && "sticky -bottom-5 z-10 -mt-2 -mb-5 bg-panel pt-2 pb-5")}>
-        <div className="flex gap-2">
-          <Link
-            href={`/characters/new?id=${encodeURIComponent(record.id)}`}
-            className={cn(buttonClass("strong", 40), "flex-1 px-0", sheet && "h-11")}
-          >
-            <Icon name="pencil" size={16} className="size-4" />
-            Edit character
-          </Link>
-          <Button size={40} className={cn("flex-1 px-0", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
-            <Icon name="copy" size={16} className="size-4" />
-            Copy prompt
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          <Button size={32} className={cn("flex-1", sheet && "h-11")} disabled={busy} onClick={() => onDuplicate(record)}>
-            Duplicate
-          </Button>
-          <Button variant="danger" size={32} className={cn("flex-1", sheet && "h-11")} disabled={busy} onClick={() => onRequestDelete(record)}>
-            Delete
-          </Button>
-        </div>
+      <div className="flex shrink-0 gap-2">
+        <Link
+          href={`/characters/new?id=${encodeURIComponent(record.id)}`}
+          className={cn(buttonClass("strong", 40), "min-w-0 flex-1 px-0", sheet && "h-11")}
+        >
+          <Icon name="pencil" size={16} className="size-4" />
+          Edit character
+        </Link>
+        <Button size={40} className={cn("min-w-0 flex-1 px-0", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
+          <Icon name="copy" size={16} className="size-4" />
+          Copy prompt
+        </Button>
+        <CharacterMoreMenu inspector={inspector} large={sheet} />
       </div>
     </div>
   );
 }
+
+/*
+ * The stage gives way before the prompt does: its shrink weight dwarfs the prompt's, so it closes to
+ * its floor first and only then does the prompt start to scroll.
+ */
+const STAGE_CLASS =
+  "min-h-[260px] flex-[0_9999_370px] rounded-lg bg-floor [@media(max-height:780px)]:min-h-[200px]";
 
 function detailRows(record: CharacterRecord) {
   return [

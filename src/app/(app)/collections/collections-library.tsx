@@ -17,6 +17,7 @@ import type { CollectionsWorkspace, ConfirmRequest } from "./types";
 export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorkspace }) {
   const {
     collections,
+    usage,
     assets,
     filteredAssets,
     search,
@@ -53,8 +54,7 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
             {collections.map((collection, index) => (
               <CollectionTile
                 key={collection.id}
-                collection={collection}
-                assets={assets}
+                view={{ collection, assets, automationCount: usage[collection.id] }}
                 priority={index === 0}
                 onOpen={setActiveId}
               />
@@ -147,7 +147,7 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
               type="button"
               onClick={openFilePicker}
               disabled={uploadProgress !== null}
-              className="group hidden max-h-[374px] w-[168px] shrink-0 flex-col items-center justify-center gap-3 self-stretch rounded-lg border-[1.5px] border-dashed border-edge p-5 text-center transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember disabled:opacity-60 lg:flex"
+              className="group hidden max-h-[374px] w-[168px] shrink-0 flex-col items-center justify-center gap-3 self-stretch rounded-lg border-[1.5px] border-dashed border-edge px-3 py-5 text-center transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember disabled:opacity-60 lg:flex"
             >
               <span className="grid size-11 place-items-center rounded-full bg-raised text-fg">
                 <Icon name="upload" size={20} />

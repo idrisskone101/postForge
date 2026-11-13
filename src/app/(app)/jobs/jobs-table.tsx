@@ -69,7 +69,7 @@ function JobRow({ row }: { row: JobRowView }) {
       <MonoCell value={row.created} className="w-[120px] max-lg:hidden" />
       <MonoCell value={row.duration} className="w-20 max-lg:hidden" />
       <span className="flex shrink-0 flex-col items-end gap-1.5 pt-0.5 lg:contents">
-        <MonoCell value={row.cost} className="text-right text-fg lg:w-16" />
+        <MonoCell value={row.cost} className={cn("text-right lg:w-16", !row.costEstimated && "text-fg")} />
         <span className="flex justify-end text-fg-muted lg:w-16 lg:shrink-0">
           <Icon name="chevron-right" size={16} />
         </span>

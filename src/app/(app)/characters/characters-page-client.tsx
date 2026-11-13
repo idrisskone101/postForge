@@ -67,7 +67,7 @@ export function CharactersPageClient({ initial }: { initial: CharactersInitialDa
           side="bottom"
           aria-labelledby="character-detail-title-sheet"
           showCloseButton={false}
-          className="max-h-[88dvh] gap-0 overflow-y-auto rounded-t-xl px-4 pb-[max(24px,env(safe-area-inset-bottom))] pt-3 xl:hidden"
+          className="max-h-[88dvh] gap-0 overflow-y-auto rounded-t-xl px-4 pt-3 data-[side=bottom]:pb-[max(24px,env(safe-area-inset-bottom))] xl:hidden"
         >
           <span className="mx-auto mb-3.5 block h-1 w-9 rounded-full bg-raised-strong" aria-hidden="true" />
           <IconButton icon="x" label="Close details" size={34} className="absolute right-4 top-4" onClick={library.closeSheet} />

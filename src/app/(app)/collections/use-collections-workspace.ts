@@ -24,6 +24,7 @@ import type {
 
 export function useCollectionsWorkspace({
   initialRecords,
+  usage = NO_USAGE,
   openUploader = false,
 }: CollectionsPageClientProps): CollectionsWorkspace {
   const router = useRouter();
@@ -224,6 +225,7 @@ export function useCollectionsWorkspace({
     toast,
     assets,
     collections,
+    usage,
     filteredAssets,
     isEmpty,
     dismissError,
@@ -244,3 +246,5 @@ export function useCollectionsWorkspace({
     toggleSelectedAsset,
   };
 }
+
+const NO_USAGE: Record<string, number> = {};

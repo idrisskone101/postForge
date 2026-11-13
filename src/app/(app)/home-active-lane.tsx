@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/workbench/empty-state";
-import { SplitMeter } from "@/components/workbench/split-meter";
+import { Meter } from "@/components/workbench/meter";
 import { getJobDestination, getJobStatusLabel } from "@/lib/jobs/presentation";
 import { cn } from "@/lib/utils";
 import { homeJobTitle, STAGE_COUNT, stageStep } from "./home-format";
@@ -53,13 +53,11 @@ export function ActiveJobRow({ job }: { job: HomeJob }) {
         </span>
       </span>
       {running ? (
-        <SplitMeter
-          equal
+        <Meter
+          running
+          tone="ember"
+          value={(step / STAGE_COUNT) * 100}
           label={`${statusLabel}, stage ${step} of ${STAGE_COUNT}`}
-          parts={Array.from({ length: STAGE_COUNT }, (_, index) => ({
-            value: 1,
-            tone: index < step ? ("ember" as const) : ("empty" as const),
-          }))}
           className="flex-none"
         />
       ) : null}

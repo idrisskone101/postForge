@@ -18,6 +18,16 @@ assert.match(client, /<SheetContent[\s\S]*side="bottom"[\s\S]*xl:hidden/, "the i
 assert.match(client, /CharacterDeleteDialog/);
 assert.match(client, /wb-toast-region/);
 
+const detail = source("src/app/(app)/characters/characters-detail-panel.tsx");
+assert.doesNotMatch(detail, /sticky|-mb-5/, "the action row sits in flow and never covers the prompt");
+assert.match(detail, /<CharacterMoreMenu inspector=\{inspector\}/);
+assert.match(
+  source("src/app/(app)/characters/characters-more-menu.tsx"),
+  /Duplicate[\s\S]*variant="destructive"[\s\S]*Delete character/,
+  "duplicate and the labelled delete live in the overflow menu"
+);
+assert.doesNotMatch(source("src/app/(app)/characters/characters-prompt-bed.tsx"), /Show all|useState/);
+
 const library = source("src/app/(app)/characters/characters-library.tsx");
 assert.match(library, /label="Filter by identity"/);
 assert.match(library, /label="Library view"/);

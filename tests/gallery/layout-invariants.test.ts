@@ -35,9 +35,13 @@ for (const [name, text] of [
 
 const inspectorEmpty = source("src/components/gallery/inspector-empty.tsx");
 assert.match(inspectorEmpty, /GALLERY_INSPECTOR_CLASS = \[\s*"[^"]*w-\[320px\][^"]*xl:flex/);
-assert.match(grid, /<aside aria-label="Selected output" className=\{GALLERY_INSPECTOR_CLASS\}>/);
+assert.match(inspectorEmpty, /GALLERY_INSPECTOR_EMPTY_CLASS = \[\s*"[^"]*w-\[320px\][^"]*xl:flex/);
+assert.match(
+  grid,
+  /<aside\s+aria-label="Selected output"\s+className=\{selection \? GALLERY_INSPECTOR_CLASS : GALLERY_INSPECTOR_EMPTY_CLASS\}/,
+);
 assert.doesNotMatch(grid, /\{selection && \(\s*<aside/, "the inspector column is always present from 1280");
-assert.match(firstPaint, /GALLERY_INSPECTOR_CLASS/, "first paint holds the inspector column too");
+assert.match(firstPaint, /GALLERY_INSPECTOR_EMPTY_CLASS/, "first paint holds the inspector column too");
 assert.match(grid, /<Sheet/);
 assert.match(cards, /<MediaTile/);
 const tileCss = source("src/app/styles/workbench-data.css");
@@ -66,7 +70,17 @@ assert.match(
   /\.wb-media-reveal\[data-loaded="true"\] \{\s+animation: wb-media-reveal var\(--pf-dur-state\) var\(--pf-ease\) both;/,
   "the reveal is a filling keyframe animation: a transition makes the image the largest contentful paint",
 );
+assert.match(
+  source("src/app/styles/workbench-data.css"),
+  /\.wb-media-reveal\[data-loaded="cached"\] \{\s+opacity: 1;/,
+  "a file the browser already holds is shown at once when a filter or view change remounts it",
+);
 assert.match(source("src/components/gallery/list-table.tsx"), /thumbnail=\{\{ sizes: "40px" \}\}/);
+assert.match(
+  source("src/components/gallery/list-table.tsx"),
+  /WIDE_COLUMN_CLASS = "hidden lg:max-xl:block min-\[1440px\]:block"/,
+  "Size and Duration give their room to the title beside the inspector and below 1024",
+);
 assert.match(
   source("src/app/api/files/[id]/thumbnail/route.ts"),
   /"Cache-Control": "public, max-age=31536000, immutable"/,

@@ -7,6 +7,7 @@ import { downloadFile } from "@/lib/utils/download";
 import { GalleryGridCards } from "@/components/gallery/grid-cards";
 import {
   GALLERY_INSPECTOR_CLASS,
+  GALLERY_INSPECTOR_EMPTY_CLASS,
   GalleryInspectorEmpty,
 } from "@/components/gallery/inspector-empty";
 import { GalleryLightbox } from "@/components/gallery/lightbox";
@@ -147,7 +148,10 @@ export function GalleryGrid({
           {footer}
         </Panel>
 
-        <aside aria-label="Selected output" className={GALLERY_INSPECTOR_CLASS}>
+        <aside
+          aria-label="Selected output"
+          className={selection ? GALLERY_INSPECTOR_CLASS : GALLERY_INSPECTOR_EMPTY_CLASS}
+        >
           {selection ? (
             <div key={selection.item.id} className="wb-fade-in flex min-w-0 flex-col">
               <GallerySelectionInspector selection={selection} />

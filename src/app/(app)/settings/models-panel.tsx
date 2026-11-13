@@ -183,7 +183,7 @@ export function ModelsPanel({ onSaved }: { onSaved: (message: string) => void })
                 </span>
               </span>
               {value === model.id && (
-                <span className="wb-status-chip shrink-0" data-tone="live">Default</span>
+                <span className="wb-status-chip shrink-0 bg-raised-strong text-fg">Default</span>
               )}
               <Toggle label={`Enable ${model.name}`} checked={enabled} onCheckedChange={() => toggleModel(model.id)} />
             </div>

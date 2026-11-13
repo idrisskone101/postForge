@@ -5,9 +5,12 @@ import type {
   CollectionFeatureRecord,
   CollectionRecord,
 } from "@/lib/collections";
+import type { CollectionUsage } from "./collection-usage";
 
 export type CollectionsPageClientProps = {
   initialRecords: CollectionFeatureRecord[];
+  /** Counted on the server with the records. Absent for a collection made in this session. */
+  usage?: CollectionUsage;
   openUploader?: boolean;
 };
 
@@ -24,6 +27,7 @@ export type CollectionsWorkspace = {
   toast: ToastMessage | null;
   assets: CollectionAssetRecord[];
   collections: CollectionRecord[];
+  usage: CollectionUsage;
   filteredAssets: CollectionAssetRecord[];
   isEmpty: boolean;
   dismissError: () => void;

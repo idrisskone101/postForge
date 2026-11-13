@@ -97,9 +97,7 @@ export function GalleryGridCards({
               <span className="wb-tile-title" title={title}>
                 {title}
               </span>
-              <span className="wb-tile-meta" suppressHydrationWarning>
-                {galleryItemMeta(item)}
-              </span>
+              <span className="wb-tile-meta">{galleryItemMeta(item)}</span>
             </div>
           </div>
         );
