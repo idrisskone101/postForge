@@ -440,6 +440,12 @@
         transparent
       );
     }
+
+    /* A body that scrolls over controls takes the deeper 24px cut so a control is never sliced
+       by a hard edge. */
+    .wb-scroll-fade-deep {
+      animation-name: wb-scroll-fade-deep;
+    }
   }
 
   @supports (animation-timeline: scroll()) {

@@ -58,6 +58,22 @@
   initial-value: 0px;
 }
 
+@keyframes wb-scroll-fade-deep {
+  0% {
+    --wb-fade-start: 0px;
+    --wb-fade-end: 24px;
+  }
+  4%,
+  96% {
+    --wb-fade-start: 24px;
+    --wb-fade-end: 24px;
+  }
+  100% {
+    --wb-fade-start: 24px;
+    --wb-fade-end: 0px;
+  }
+}
+
 @keyframes wb-scroll-fade {
   0% {
     --wb-fade-start: 0px;
