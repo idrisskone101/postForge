@@ -55,7 +55,7 @@ export function OutputReviewStatusControl({
   return (
     <div
       className={cn(
-        "flex items-center rounded-xl border border-border/60 bg-muted/30 p-1",
+        "flex items-center rounded-full bg-raised p-1",
         compact ? "w-fit gap-1" : "min-w-0 justify-between gap-2"
       )}
       aria-label={`Output review status: ${current.label}`}
@@ -65,12 +65,12 @@ export function OutputReviewStatusControl({
           <CurrentIcon
             className={cn(
               "size-3.5 shrink-0",
-              current.value === "approved_output" && "text-accent-green",
-              current.value === "rejected_output" && "text-red-400",
-              current.value === "needs_review" && "text-muted-foreground"
+              current.value === "approved_output" && "text-ok",
+              current.value === "rejected_output" && "text-bad",
+              current.value === "needs_review" && "text-warn"
             )}
           />
-          <span className="truncate text-[11px] font-semibold text-foreground">
+          <span className="truncate text-[12px] font-semibold text-fg">
             {current.label}
           </span>
         </div>
@@ -99,7 +99,7 @@ export function OutputReviewStatusControl({
                 void updateStatus(status.value);
               }}
               className={cn(
-                "inline-flex size-7 cursor-pointer items-center justify-center rounded-lg border text-muted-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                "inline-flex size-7 cursor-pointer items-center justify-center rounded-full text-fg-secondary transition-[background-color,color] duration-[var(--pf-dur-feedback)] ease-pf disabled:cursor-not-allowed disabled:opacity-60",
                 statusClasses[status.value],
                 isActive && activeStatusClasses[status.value],
                 compact && "size-8 rounded-lg"
@@ -126,14 +126,13 @@ const statusIcons = {
 } satisfies Record<OutputReviewStatus, typeof CircleDashed>;
 
 const statusClasses = {
-  needs_review: "border-border text-muted-foreground hover:text-foreground",
-  approved_output:
-    "border-accent-green/40 text-accent-green hover:bg-accent-green/10",
-  rejected_output: "border-red-400/40 text-red-400 hover:bg-red-500/10",
+  needs_review: "hover:text-fg",
+  approved_output: "hover:bg-ok-tint hover:text-ok",
+  rejected_output: "hover:bg-bad-tint hover:text-bad",
 } satisfies Record<OutputReviewStatus, string>;
 
 const activeStatusClasses = {
-  needs_review: "bg-muted text-foreground",
-  approved_output: "bg-accent-green/15 text-accent-green",
-  rejected_output: "bg-red-500/15 text-red-400",
+  needs_review: "bg-warn-tint text-warn",
+  approved_output: "bg-ok-tint text-ok",
+  rejected_output: "bg-bad-tint text-bad",
 } satisfies Record<OutputReviewStatus, string>;

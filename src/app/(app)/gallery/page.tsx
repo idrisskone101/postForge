@@ -46,9 +46,9 @@ async function GalleryDeferredPage({
     ? requested.reviewStatus[0]
     : requested.reviewStatus;
   const type =
-    requestedType === "image" || requestedType === "all"
+    requestedType === "image" || requestedType === "video"
       ? requestedType
-      : "video";
+      : "all";
   const sort = requestedSort === "oldest" ? "oldest" : "newest";
   const reviewStatus = normalizeGalleryReviewStatusFilter(
     requestedReviewStatus,

@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { MediaPreviewFrame } from "@/components/media-preview";
+import { Icon } from "@/components/workbench/icon";
+import { IconButton } from "@/components/workbench/icon-button";
+import { StatusBadge } from "@/components/workbench/status-badge";
 import { formatRelativeDate } from "@/lib/utils/format-date";
-import { downloadFile } from "@/lib/utils/download";
 import { cn } from "@/lib/utils";
-import type { OutputReviewStatus } from "@/lib/output-review-status";
-import { Check, Download, Loader2, Send, Trash2, X } from "lucide-react";
-import { GalleryDeleteDialog } from "./delete-dialog";
+import {
+  formatGalleryDuration,
+  galleryItemKind,
+  galleryItemSize,
+  galleryItemTitle,
+  reviewStatusLabel,
+  reviewStatusTone,
+} from "./format";
 import type { GalleryMediaSession } from "./media-session";
-import { patchGalleryReviewStatus } from "./review-api";
-import { ReviewStatePill } from "./review-state-pill";
 import type { GalleryItem } from "./types";
 
 export function GalleryListTable({
@@ -20,209 +24,134 @@ export function GalleryListTable({
   items: GalleryItem[];
   session: GalleryMediaSession;
 }) {
-  const {
-    selectedIds,
-    toggleSelection,
-    openPreview,
-    deleteItem,
-    onReviewStatusChange,
-    onHandoff,
-    onFeedback,
-  } = session;
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const downloadRow = async (item: GalleryItem) => {
-    try {
-      await downloadFile(`/api/files/${item.id}/download`, item.filename);
-      onFeedback?.({ tone: "success", message: "Asset downloaded." });
-    } catch {
-      onFeedback?.({
-        tone: "error",
-        message: "This asset could not be downloaded. Try again.",
-      });
-    }
-  };
-
-  const reviewRow = async (item: GalleryItem, nextStatus: OutputReviewStatus) => {
-    if (nextStatus === item.reviewStatus.value) return;
-    try {
-      const reviewStatus = await patchGalleryReviewStatus(item.id, nextStatus);
-      onReviewStatusChange?.(item.id, reviewStatus);
-      onFeedback?.({
-        tone: "success",
-        message: `Asset marked ${reviewStatus.label.toLowerCase()}.`,
-      });
-    } catch {
-      onFeedback?.({
-        tone: "error",
-        message: "The review status could not be updated. Try again.",
-      });
-    }
-  };
+  const { selectedIds, toggleSelection, openPreview, downloadItem } = session;
 
   return (
-    <div data-gallery-view="list" className="pf-card min-w-0 overflow-hidden">
-      <div className="hidden grid-cols-[2rem_3rem_minmax(0,1.6fr)_minmax(7.5rem,0.6fr)_minmax(6.5rem,0.5fr)_5.5rem_10rem] items-center gap-3 border-b border-[var(--pf-border)] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)] md:grid">
-        <span />
-        <span />
-        <span>Output</span>
-        <span>Status</span>
-        <span>Details</span>
-        <span>Created</span>
-        <span />
+    <div data-gallery-view="list" className="wb-fade-in flex min-w-0 flex-col">
+      <div className="wb-table-head max-md:hidden" aria-hidden="true">
+        <span className="w-[22px] shrink-0" />
+        <span className="min-w-0 flex-1">Output</span>
+        <span className="w-16 shrink-0">Status</span>
+        <span className="w-[110px] shrink-0">Size</span>
+        <span className="w-[72px] shrink-0">Duration</span>
+        <span className="w-[110px] shrink-0">Created</span>
+        <span className="w-[72px] shrink-0" />
       </div>
-      {items.map((item) => {
-        const isSelected = selectedIds.has(item.id);
-        const isDeleting = deletingId === item.id;
-        return (
-          <div
-            key={item.id}
-            onClick={() => openPreview(item)}
-            className={cn(
-              "group grid min-w-0 cursor-pointer grid-cols-[2rem_3rem_minmax(0,1fr)_auto] items-center gap-3 border-t border-[var(--pf-border)] px-3 py-2.5 transition-colors first:border-t-0 hover:bg-[var(--pf-active)] md:grid-cols-[2rem_3rem_minmax(0,1.6fr)_minmax(7.5rem,0.6fr)_minmax(6.5rem,0.5fr)_5.5rem_10rem]",
-              isSelected && "bg-[var(--sidebar-accent)] hover:bg-[var(--sidebar-accent)]"
-            )}
-          >
-            <span className="flex items-center" onClick={(event) => event.stopPropagation()}>
-              <label
-                className={cn(
-                  "flex size-5 cursor-pointer items-center justify-center rounded-[5px] border transition-colors",
-                  isSelected
-                    ? "border-primary bg-primary"
-                    : "border-[var(--pf-border-strong)] bg-[var(--pf-surface)]"
-                )}
-              >
-                <span className="sr-only">Select Output {item.id}</span>
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelection(item.id)}
-                  className="sr-only"
-                />
-                {isSelected && <Check className="size-3 text-white" />}
-              </label>
-            </span>
-            <span className="relative block size-10 overflow-hidden rounded-[6px] border border-[var(--pf-border)] bg-[var(--pf-active)]">
-              <MediaPreviewFrame
-                type={item.type}
-                src={item.url}
-                width={item.width}
-                height={item.height}
-                alt="Generated Output"
-                cover
-                variant="card"
-                className="rounded-none border-0 bg-[var(--pf-active)]"
-                mediaClassName="object-cover"
+      <ul className="flex min-w-0 flex-col">
+        {items.map((item) => {
+          const selected = selectedIds.has(item.id);
+          const title = galleryItemTitle(item);
+          return (
+            <li
+              key={item.id}
+              onClick={() => openPreview(item)}
+              className={cn(
+                "wb-row cursor-pointer gap-3 transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 md:gap-4",
+                selected && "rounded-lg border-transparent bg-raised hover:bg-raised"
+              )}
+            >
+              <RowCheck
+                selected={selected}
+                name={title}
+                onToggle={() => toggleSelection(item.id)}
               />
-            </span>
-            <span className="min-w-0">
-              <button
-                type="button"
-                aria-label={`Preview output ${item.id}`}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  openPreview(item);
-                }}
-                className="block max-w-full truncate text-left text-[13px] font-semibold text-[var(--pf-ink)] transition-colors hover:text-primary"
-              >
-                {item.model}
-              </button>
-              <span className="mt-0.5 block truncate text-[12px] text-[var(--pf-muted)]">
-                {item.prompt ?? `Job ${item.jobId.slice(0, 8)}`}
-              </span>
-            </span>
-            <span className="hidden md:block">
-              <ReviewStatePill status={item.reviewStatus} />
-            </span>
-            <span className="pf-data hidden truncate text-[12px] text-[var(--pf-muted)] md:block">
-              {item.width && item.height ? `${item.width} × ${item.height}` : item.type}
-              {item.durationSec != null ? ` · ${item.durationSec}s` : ""}
-            </span>
-            <span
-              className="pf-data hidden truncate text-[12px] text-[var(--pf-muted)] md:block"
-              suppressHydrationWarning
-            >
-              {formatRelativeDate(item.createdAt)}
-            </span>
-            <span
-              className="flex items-center justify-end gap-0.5"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <button
-                type="button"
-                aria-label={`Mark as Approved Output`}
-                title="Approve"
-                onClick={() => void reviewRow(item, "approved_output")}
-                className={cn(
-                  "inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-success)]/10 hover:text-[var(--pf-success)]",
-                  item.reviewStatus.value === "approved_output" &&
-                    "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-                )}
-              >
-                <Check className="size-4" />
-              </button>
-              <button
-                type="button"
-                aria-label={`Mark as Rejected Output`}
-                title="Reject"
-                onClick={() => void reviewRow(item, "rejected_output")}
-                className={cn(
-                  "inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)]",
-                  item.reviewStatus.value === "rejected_output" &&
-                    "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-                )}
-              >
-                <X className="size-4" />
-              </button>
-              <button
-                type="button"
-                aria-label={`Download Output ${item.id}`}
-                title="Download"
-                onClick={() => void downloadRow(item)}
-                className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
-              >
-                <Download className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                aria-label={`Handoff Output ${item.id}`}
-                title="Handoff"
-                onClick={() => void onHandoff?.(item)}
-                className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]"
-              >
-                <Send className="size-3.5" />
-              </button>
-              <GalleryDeleteDialog
-                disabled={isDeleting}
-                trigger={
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <span className="wb-thumb relative">
+                  <MediaPreviewFrame
+                    type={item.type}
+                    src={item.url}
+                    width={item.width}
+                    height={item.height}
+                    alt=""
+                    cover
+                    variant="card"
+                    className="size-full rounded-none bg-media"
+                    mediaClassName="rounded-none object-cover"
+                  />
+                </span>
+                <div className="flex min-w-0 flex-col">
                   <button
                     type="button"
-                    aria-label={`Delete Output ${item.id}`}
-                    title="Delete"
-                    className="inline-flex size-8 items-center justify-center rounded-[8px] text-[var(--pf-muted)] transition-colors hover:bg-[var(--pf-danger)]/10 hover:text-[var(--pf-danger)] disabled:opacity-50"
-                  />
-                }
-                title="Delete this asset?"
-                description="This permanently removes the generated file and cannot be undone."
-                actionLabel="Delete asset"
-                onConfirm={() => {
-                  void (async () => {
-                    setDeletingId(item.id);
-                    await deleteItem(item);
-                    setDeletingId(null);
-                  })();
-                }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openPreview(item);
+                    }}
+                    className="wb-row-title min-w-0 text-left"
+                  >
+                    {title}
+                  </button>
+                  <span className="wb-row-sub">{galleryItemKind(item)}</span>
+                </div>
+              </div>
+              <span className="w-16 shrink-0 max-md:w-auto">
+                <StatusBadge
+                  tone={reviewStatusTone[item.reviewStatus.value]}
+                  label={reviewStatusLabel[item.reviewStatus.value]}
+                />
+              </span>
+              <span className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden">
+                {galleryItemSize(item)}
+              </span>
+              <span className="wb-mono w-[72px] shrink-0 text-fg-secondary max-md:hidden">
+                {formatGalleryDuration(item.durationSec) ?? "-"}
+              </span>
+              <span
+                className="wb-mono w-[110px] shrink-0 text-fg-secondary max-md:hidden"
+                suppressHydrationWarning
               >
-                {isDeleting ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="size-3.5" />
-                )}
-              </GalleryDeleteDialog>
-            </span>
-          </div>
-        );
-      })}
+                {formatRelativeDate(item.createdAt)}
+              </span>
+              <span
+                className="flex w-[72px] shrink-0 items-center justify-end gap-1.5 max-md:w-auto"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <IconButton
+                  icon="download"
+                  label={`Download ${title}`}
+                  size={30}
+                  onClick={() => void downloadItem(item)}
+                />
+                <Icon name="chevron-right" size={16} className="text-fg-muted max-md:hidden" />
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
+  );
+}
+
+function RowCheck({
+  selected,
+  name,
+  onToggle,
+}: {
+  selected: boolean;
+  name: string;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={selected}
+      aria-label={`Select ${name}`}
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggle();
+      }}
+      className="-m-[11px] flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full"
+    >
+      <span
+        className={cn(
+          "flex size-[22px] items-center justify-center rounded-full transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf",
+          selected
+            ? "bg-ember text-[var(--pf-on-ember)]"
+            : "shadow-[inset_0_0_0_1.5px_var(--pf-outline)]"
+        )}
+      >
+        {selected && <Icon name="check" size={12} strokeWidth={3} className="animate-[wb-check-in_var(--pf-dur-feedback)_var(--pf-ease)_both]" />}
+      </span>
+    </button>
   );
 }

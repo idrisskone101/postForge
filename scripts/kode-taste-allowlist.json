@@ -6,7 +6,6 @@
     "src/components/avatar-picker-cards.tsx",
     "src/components/collection-reference-picker.tsx",
     "src/components/gallery/delete-dialog.tsx",
-    "src/components/gallery/review-status-control.tsx",
     "src/components/media-preview.tsx",
     "src/components/pinterest-import-dialog.tsx",
     "src/components/public-policy-page.tsx",

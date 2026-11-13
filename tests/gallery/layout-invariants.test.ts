@@ -5,38 +5,37 @@ function source(relativePath: string) {
   return readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8");
 }
 
-const gallery = source("src/app/(app)/gallery/gallery-page-client.tsx");
-const galleryLoading = source("src/app/(app)/gallery/gallery-page-client.tsx");
-const galleryGrid = source("src/components/gallery-grid.tsx");
-assert.match(gallery, /flex-col[^"\n]*sm:flex-row/);
-assert.match(galleryLoading, /data-gallery-tool-row="true"/);
-assert.match(galleryLoading, /flex-nowrap/);
-assert.match(galleryGrid, /item\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?item\.prompt/);
-assert.match(galleryGrid, /lightbox\.prompt[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?lightbox\.prompt/);
-assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-page="true"/);
-assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-count="true"/);
-assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-search="true"/);
-assert.match(source("src/app/(app)/gallery/gallery-page-client.tsx"), /data-gallery-tool-row="true"/);
-assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryPageLazy/);
-assert.match(source("src/app/(app)/gallery/page.tsx"), /GalleryFirstPaint/);
-assert.match(
-  source("src/app/(app)/gallery/page.tsx"),
-  /<Suspense fallback=\{null\}>/,
-);
-assert.match(source("src/app/(app)/gallery/gallery-page-lazy.tsx"), /ssr:\s*false/);
-assert.match(
-  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
-  /data-gallery-first-body/,
-);
-assert.match(
-  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
-  /workspace-header-accessory/,
-);
-assert.match(
-  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
-  /replaceChildren/,
-);
-assert.match(
-  source("src/app/(app)/gallery/gallery-page-lazy.tsx"),
-  /useWindowLoadReady/,
-);
+const page = source("src/app/(app)/gallery/page.tsx");
+const lazy = source("src/app/(app)/gallery/gallery-page-lazy.tsx");
+const firstPaint = source("src/app/(app)/gallery/gallery-first-paint.tsx");
+const client = source("src/app/(app)/gallery/gallery-page-client.tsx");
+const grid = source("src/components/gallery-grid.tsx");
+const cards = source("src/components/gallery/grid-cards.tsx");
+
+assert.match(page, /GalleryFirstPaint/);
+assert.match(page, /GalleryPageLazy/);
+assert.match(page, /<Suspense fallback=\{null\}>/);
+assert.match(lazy, /useWindowLoadReady/);
+assert.match(lazy, /ssr:\s*false/);
+assert.doesNotMatch(lazy, /workspace-header-accessory/);
+assert.match(client, /data-gallery-first-body/);
+assert.match(client, /useLayoutEffect/);
+
+assert.match(firstPaint, /<PageHeader/);
+assert.doesNotMatch(firstPaint, /"use client"/);
+assert.doesNotMatch(firstPaint, /workspace-header-grid|pf-button|pf-card|data-lcp/);
+
+for (const [name, text] of [
+  ["gallery-page-client.tsx", client],
+  ["gallery-grid.tsx", grid],
+  ["gallery-first-paint.tsx", firstPaint],
+] as const) {
+  assert.doesNotMatch(text, /max-w-\[1280px\]|mx-auto|sm:p-6|lg:p-8/, `${name} adds its own page padding`);
+}
+
+assert.match(grid, /w-\[320px\]/);
+assert.match(grid, /xl:flex/);
+assert.match(grid, /<Sheet/);
+assert.match(cards, /<MediaTile/);
+assert.match(cards, /\[@media\(hover:none\)\]:\[&>\.wb-tile-check\]:after:-inset-2/);
+assert.match(cards, /\[@media\(hover:none\)\]:\[&_\.wb-tile-action\]:h-10/);
