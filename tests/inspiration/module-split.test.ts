@@ -3,11 +3,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const CAP = 400;
 const repoRoot = new URL("../../", import.meta.url);
-const MEDIA_STAGE = "#09090B";
-const MEDIA_STAGE_FILES = new Set([
-  "src/app/(app)/ugc-inspiration/inspiration-preview-dialog.tsx",
-  "src/app/(app)/ugc-inspiration/inspiration-video-card.tsx",
-]);
 
 function lineCount(relativePath: string) {
   const text = readFileSync(new URL(relativePath, repoRoot), "utf8");
@@ -51,22 +46,14 @@ for (const file of inspirationTsxFiles) {
   assert.doesNotMatch(source, /pf-masthead/, `${file} must not use pf-masthead`);
   assert.doesNotMatch(source, /pf-tear/, `${file} must not use pf-tear`);
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
-  if (MEDIA_STAGE_FILES.has(file)) {
-    assert.ok(
-      hexMatches.every((value) => value === MEDIA_STAGE),
-      `${file} may only use ${MEDIA_STAGE} for the media stage`
-    );
-  } else {
-    assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
-  }
+  assert.equal(hexMatches.length, 0, `${file} must not use literal hex`);
 }
 
 const client = readFileSync(
   new URL("src/app/(app)/ugc-inspiration/inspiration-page-client.tsx", repoRoot),
   "utf8"
 );
-assert.match(client, /pf-card/);
-assert.match(client, /pf-button-secondary/);
+assert.doesNotMatch(client, /pf-card|pf-button-/);
 assert.doesNotMatch(client, /hover:text-\[var\(--pf-orange\)\]/);
 assert.doesNotMatch(client, /data-bulk/i);
 assert.doesNotMatch(client, /type="checkbox"/i);
