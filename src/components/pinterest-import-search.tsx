@@ -1,8 +1,7 @@
 "use client";
 
-import { Link2, LoaderCircle, Search } from "lucide-react";
-
 import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
+import { Button, Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 
 export function PinterestImportSearch({
@@ -23,86 +22,72 @@ export function PinterestImportSearch({
     runSearch,
   } = workspace;
   const hasCandidates = candidates.length > 0;
+  const invalid = !sourceIsValid && query.length > 0;
 
   return (
-    <div className="shrink-0 border-b border-border p-4 sm:p-5">
-      <div className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
-        <div className="inline-flex h-10 rounded-lg bg-[var(--pf-active)] p-1">
-          <button
-            type="button"
-            onClick={() => changeSource("search")}
-            disabled={importing}
-            className={cn(
-              "rounded-lg px-3 text-[11px] font-semibold transition",
-              source === "search"
-                ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Search
-          </button>
-          <button
-            type="button"
-            onClick={() => changeSource("board")}
-            disabled={importing}
-            className={cn(
-              "rounded-lg px-3 text-[11px] font-semibold transition",
-              source === "board"
-                ? "bg-card text-foreground shadow-[var(--pf-shadow-2xs)]"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Board URL
-          </button>
+    <div className="flex shrink-0 flex-col gap-3 border-b border-hairline px-6 pb-4 pt-3.5 max-sm:px-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="wb-segmented h-[42px] shrink-0 self-start" role="group" aria-label="Pinterest source">
+          {sources.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              className="wb-segment h-[34px] px-3.5"
+              aria-pressed={source === item.value}
+              onClick={() => changeSource(item.value)}
+              disabled={importing}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        <label className="relative block">
-          {source === "search" ? (
-            <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          ) : (
-            <Link2 className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          )}
-          <input
-            value={query}
-            onChange={(event) => updateQuery(event.target.value)}
-            disabled={importing}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") runSearch();
-            }}
-            placeholder={
-              source === "search"
-                ? "Search Pinterest..."
-                : "https://pinterest.com/creator/board"
-            }
-            aria-label={source === "search" ? "Pinterest search" : "Pinterest board URL"}
-            className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-[12px] outline-none transition focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/10"
-          />
-        </label>
-        <button
-          type="button"
-          onClick={runSearch}
-          disabled={!sourceIsValid || searching || loadingMore || importing}
-          className={cn(hasCandidates ? "pf-button-secondary" : "pf-button-primary", "h-10")}
-        >
-          {searching ? <LoaderCircle className="size-3.5 animate-spin" /> : <Search className="size-3.5" />}
-          {source === "search" ? "Search" : "Load board"}
-        </button>
+        <div className="flex min-w-0 flex-1 gap-2">
+          <label className="wb-input-wrap min-w-0 flex-1">
+            <Icon name={source === "search" ? "search" : "link"} size={16} />
+            <input
+              value={query}
+              onChange={(event) => updateQuery(event.target.value)}
+              disabled={importing}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") runSearch();
+              }}
+              placeholder={
+                source === "search"
+                  ? "Search Pinterest"
+                  : "https://pinterest.com/creator/board"
+              }
+              aria-label={source === "search" ? "Pinterest search" : "Pinterest board URL"}
+              aria-invalid={invalid}
+            />
+          </label>
+          <Button
+            variant="strong"
+            size={40}
+            onClick={runSearch}
+            disabled={!sourceIsValid || searching || loadingMore || importing}
+            className="shrink-0"
+          >
+            {searching ? "Searching" : source === "search" ? "Search" : "Load board"}
+          </Button>
+        </div>
       </div>
-      {!sourceIsValid && query ? (
-        <p className="mt-2 text-[11px] text-destructive">
+      {invalid ? (
+        <p className="wb-field-error" role="alert">
           {source === "board"
             ? "Enter an HTTPS pinterest.com or pin.it public board URL."
             : "Enter between 2 and 120 characters."}
         </p>
       ) : null}
       {source === "search" ? (
-        <div className={cn("mt-3 flex flex-wrap gap-2", hasCandidates && "hidden sm:flex")}>
+        <div className={cn("flex flex-wrap gap-1.5", hasCandidates && "max-sm:hidden")}>
           {suggestions.map((suggestion) => (
             <button
               key={suggestion}
               type="button"
               onClick={() => updateQuery(suggestion)}
               disabled={importing}
-              className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition hover:bg-[var(--pf-active)] hover:text-foreground"
+              aria-pressed={query === suggestion}
+              className="wb-chip h-[30px] px-3 text-[13px]"
             >
               {suggestion}
             </button>
@@ -113,6 +98,10 @@ export function PinterestImportSearch({
   );
 }
 
+const sources = [
+  { value: "search", label: "Search" },
+  { value: "board", label: "Board URL" },
+] as const;
 
 const suggestions = [
   "clean desk",
