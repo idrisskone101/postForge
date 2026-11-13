@@ -27,7 +27,9 @@ export function HookStep({ workspace }: StepProps) {
               {template.name}
             </Chip>
           ))}
-          <Button onClick={openTemplatePicker}>Browse playbooks</Button>
+          <Button data-playbook-opener="true" onClick={openTemplatePicker}>
+            Browse playbooks
+          </Button>
         </div>
       </div>
       <div className="flex flex-col gap-2">
