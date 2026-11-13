@@ -394,8 +394,7 @@
   }
 
   .wb-tile:hover > .wb-tile-check,
-  .wb-tile:has(:focus-visible) > .wb-tile-check,
-  .wb-tile[data-selecting="true"] > .wb-tile-check {
+  .wb-tile:has(:focus-visible) > .wb-tile-check {
     opacity: 1;
     pointer-events: auto;
   }
