@@ -34,7 +34,7 @@ for (const [name, text] of [
 }
 
 const inspectorEmpty = source("src/components/gallery/inspector-empty.tsx");
-assert.match(inspectorEmpty, /GALLERY_INSPECTOR_CLASS = "[^"]*w-\[320px\][^"]*xl:flex/);
+assert.match(inspectorEmpty, /GALLERY_INSPECTOR_CLASS = \[\s*"[^"]*w-\[320px\][^"]*xl:flex/);
 assert.match(grid, /<aside aria-label="Selected output" className=\{GALLERY_INSPECTOR_CLASS\}>/);
 assert.doesNotMatch(grid, /\{selection && \(\s*<aside/, "the inspector column is always present from 1280");
 assert.match(firstPaint, /GALLERY_INSPECTOR_CLASS/, "first paint holds the inspector column too");
