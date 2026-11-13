@@ -1,6 +1,8 @@
 import { Suspense } from "react";
-import { CollectionsPageLazy } from "./collections-page-lazy";
-import { WorkspaceRouteSkeleton } from "@/components/workspace-route-skeleton";
+import type { CollectionFeatureRecord } from "@/lib/collections";
+import { readWorkspaceFeatureRecords } from "@/lib/workspace-feature-store";
+import { CollectionsPageClient } from "./collections-page-client";
+import { CollectionsSkeleton } from "./collections-skeleton";
 
 export default function CollectionsPage({
   searchParams,
@@ -8,17 +10,27 @@ export default function CollectionsPage({
   searchParams: Promise<{ upload?: string }>;
 }) {
   return (
-    <Suspense fallback={<WorkspaceRouteSkeleton />}>
-      <CollectionsPageWithParams searchParams={searchParams} />
+    <Suspense fallback={<CollectionsSkeleton />}>
+      <CollectionsPageWithData searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function CollectionsPageWithParams({
+async function CollectionsPageWithData({
   searchParams,
 }: {
   searchParams: Promise<{ upload?: string }>;
 }) {
-  const params = await searchParams;
-  return <CollectionsPageLazy initialRecords={[]} openUploader={params.upload === "1"} />;
+  const [params, initialRecords] = await Promise.all([searchParams, readInitialRecords()]);
+  return (
+    <CollectionsPageClient initialRecords={initialRecords} openUploader={params.upload === "1"} />
+  );
+}
+
+async function readInitialRecords() {
+  try {
+    return await readWorkspaceFeatureRecords<CollectionFeatureRecord>("collections");
+  } catch {
+    return [];
+  }
 }

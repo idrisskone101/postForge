@@ -1,276 +1,169 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import {
-  Check,
-  Download,
-  FolderOpen,
-  Link2,
-  Loader2,
-  Plus,
-  Search,
-  Trash2,
-  Upload,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  assetUrl,
-  formatAssetSizeMb,
-  formatImageCount,
-  formatShortDate,
-  previewAssetsForCollection,
-} from "./collections-helpers";
-import type { CollectionAssetRecord, CollectionRecord } from "@/lib/collections";
-import type { CollectionsLibraryModel } from "./types";
+  Button,
+  CountBadge,
+  EmptyState,
+  Icon,
+  buttonClass,
+} from "@/components/workbench";
+import { AssetTile } from "./asset-tile";
+import { CollectionTile } from "./collection-tile";
+import { assetUrl } from "./collections-helpers";
+import { ConfirmDialog, NewCollectionDialog } from "./collections-dialogs";
+import type { CollectionsWorkspace, ConfirmRequest } from "./types";
 
-export function CollectionsLibrary({ library }: { library: CollectionsLibraryModel }) {
+export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorkspace }) {
   const {
     collections,
     assets,
     filteredAssets,
     search,
-    selectedId,
     selectedAsset,
-    uploading,
-    onSearchChange,
-    onSelect,
-    onOpenCollection,
-    onCreateCollection,
-    onDeleteAsset,
-    onChooseFiles,
-    onPinterest,
-  } = library;
+    uploadProgress,
+    setSearch,
+    setSelected,
+    setActiveId,
+    createCollection,
+    deleteAsset,
+    openFilePicker,
+    toggleSelectedAsset,
+  } = workspace;
+  const [creating, setCreating] = useState(false);
+  const [confirm, setConfirm] = useState<ConfirmRequest | null>(null);
 
   return (
     <>
-      <section className="grid min-h-[72px] min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-surface)] px-4 py-3 sm:grid-cols-[36px_minmax(0,1fr)_auto_auto]">
-        <span className="grid size-9 place-items-center rounded-lg bg-[var(--pf-active)] text-[var(--pf-muted)]">
-          <Upload className="size-4" />
-        </span>
-        <div className="min-w-0">
-          <b className="block text-[13px] font-medium text-[var(--pf-ink)]">
-            Drop images anywhere to upload
-          </b>
-          <span className="mt-1 block break-words text-[12px] text-[var(--pf-muted)]">
-            JPG, PNG, WEBP · up to 25 MB each · {assets.length} stored
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={onPinterest}
-          className="pf-button-secondary col-span-2 w-full sm:col-span-1 sm:w-auto"
-        >
-          <Link2 className="size-3.5" /> Import from Pinterest
-        </button>
-        <button
-          type="button"
-          onClick={onChooseFiles}
-          disabled={uploading}
-          className="pf-button-secondary col-span-2 w-full sm:col-span-1 sm:w-auto"
-        >
-          {uploading ? <Loader2 className="size-3.5 animate-spin" /> : null}
-          Choose files
-        </button>
-      </section>
-
-      <section className="mt-5">
-        <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
-          <h2 className="pf-section-title">Your visual systems</h2>
-          <button type="button" onClick={onCreateCollection} className="pf-button-secondary">
-            <Plus className="size-3.5" /> New collection
-          </button>
+      <section className="wb-panel max-sm:px-4" data-pad="wide" aria-labelledby="visual-systems-title">
+        <div className="wb-panel-head">
+          <h2 id="visual-systems-title" className="wb-panel-title flex items-center gap-2.5">
+            Visual systems
+            <CountBadge count={collections.length} label={`${collections.length} collections`} />
+          </h2>
+          <Button size={32} onClick={() => setCreating(true)}>
+            <Icon name="plus" size={16} />
+            New collection
+          </Button>
         </div>
         {collections.length === 0 ? (
-          <button
-            type="button"
-            onClick={onCreateCollection}
-            className="mt-3 flex min-h-32 w-full flex-col items-center justify-center rounded-lg border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-surface)] text-[var(--pf-muted)]"
-          >
-            <FolderOpen className="size-6" />
-            <span className="mt-2 text-[12px] font-semibold">
-              Group selected images into a collection
-            </span>
-          </button>
+          <EmptyState icon="collections" title="No collections yet" className="min-h-[196px]" />
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-4">
-            {collections.map((collection) => (
-              <CollectionCard
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 max-sm:-mx-4 max-sm:flex max-sm:snap-x max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1">
+            {collections.map((collection, index) => (
+              <CollectionTile
                 key={collection.id}
                 collection={collection}
                 assets={assets}
-                onOpen={onOpenCollection}
+                priority={index === 0}
+                onOpen={setActiveId}
               />
             ))}
           </div>
         )}
       </section>
 
-      <section className="mt-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="pf-section-title">Loose assets</h2>
-          <label className="flex h-9 min-w-[220px] items-center gap-2 rounded-lg border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3">
-            <Search className="size-3.5 shrink-0 text-[var(--pf-muted)]" />
-            <span className="sr-only">Search assets</span>
+      <section
+        className="wb-panel min-h-0 flex-1 max-sm:px-4"
+        data-pad="wide"
+        aria-labelledby="loose-assets-title"
+      >
+        <div className="wb-panel-head min-h-9 flex-wrap gap-y-3">
+          <h2 id="loose-assets-title" className="wb-panel-title flex items-center gap-2.5">
+            Loose assets
+            <CountBadge count={assets.length} label={`${assets.length} images`} />
+          </h2>
+          <label className="wb-input-wrap w-[260px] max-sm:w-full" data-size="36">
+            <Icon name="search" size={16} />
             <input
               type="search"
               value={search}
-              onChange={(event) => onSearchChange(event.target.value)}
-              className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--pf-ink)] outline-none placeholder:text-[var(--pf-muted)]"
+              aria-label="Search assets"
               placeholder="Search assets"
+              onChange={(event) => setSearch(event.target.value)}
             />
           </label>
         </div>
 
         {selectedAsset ? (
-          <section className="pf-card mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2">
-            <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-[8px] bg-primary text-[11px] font-bold text-primary-foreground">
-              1
-            </span>
-            <strong className="shrink-0 text-[13px] font-medium text-[var(--pf-ink)]">
-              1 selected
-            </strong>
+          <div className="wb-dock" role="toolbar" aria-label="Selected image">
+            <span className="wb-dock-count">1 selected</span>
+            <Button variant="link" onClick={() => setSelected(null)}>
+              Clear
+            </Button>
+            <span className="flex-1" />
             <a
               href={assetUrl(selectedAsset.id)}
               download={selectedAsset.name}
-              className="inline-flex items-center gap-1 text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
+              className={buttonClass("outline")}
             >
-              <Download className="size-3.5" />
+              <Icon name="download" size={16} />
               Download
             </a>
-            <button
-              type="button"
-              onClick={onCreateCollection}
-              className="text-[12px] font-medium text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)]"
-            >
+            <Button variant="outline" onClick={() => setCreating(true)}>
               New collection
-            </button>
-            <span
-              aria-hidden="true"
-              className="hidden h-4 w-px bg-[var(--pf-border)] sm:block"
-            />
-            <button
-              type="button"
-              onClick={() => onDeleteAsset(selectedAsset)}
-              className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-[8px] px-2.5 text-[12px] font-medium text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10"
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() =>
+                setConfirm({
+                  title: `Delete ${selectedAsset.name}?`,
+                  description: "This cannot be undone.",
+                  actionLabel: "Delete image",
+                  onConfirm: () => void deleteAsset(selectedAsset),
+                })
+              }
             >
-              <Trash2 className="size-3.5" /> Delete
-            </button>
-          </section>
+              Delete
+            </Button>
+          </div>
         ) : null}
 
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-8">
-          {filteredAssets.map((asset) => (
-            <AssetTile
-              key={asset.id}
-              asset={asset}
-              selected={selectedId === asset.id}
-              onToggle={onSelect}
-            />
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function CollectionCard({
-  collection,
-  assets,
-  onOpen,
-}: {
-  collection: CollectionRecord;
-  assets: CollectionAssetRecord[];
-  onOpen: (collection: CollectionRecord) => void;
-}) {
-  const thumbs = previewAssetsForCollection(collection, assets);
-
-  return (
-    <article className="pf-card pf-card-hover min-w-0 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => onOpen(collection)}
-        className="block min-w-0 w-full text-left"
-      >
-        <div className="relative grid h-28 grid-cols-2 grid-rows-2 gap-0.5 bg-[var(--pf-active)] p-0.5">
-          {Array.from({ length: 4 }, (_, index) => {
-            const asset = thumbs[index];
-            if (!asset) {
-              return <span key={index} className="bg-[var(--pf-active)]" />;
-            }
-            return (
-              <span key={asset.id} className="relative overflow-hidden">
-                <Image
-                  src={assetUrl(asset.id)}
-                  alt=""
-                  fill
-                  sizes="160px"
-                  className="object-cover"
-                  unoptimized
+        {assets.length === 0 ? (
+          <EmptyState icon="upload" title="No loose images yet">
+            <Button variant="strong" onClick={openFilePicker} disabled={uploadProgress !== null}>
+              Upload images
+            </Button>
+          </EmptyState>
+        ) : (
+          <div className="flex min-h-0 gap-4">
+            <div className="grid min-w-0 flex-1 grid-cols-2 content-start gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 min-[87.5rem]:grid-cols-6">
+              {filteredAssets.map((asset) => (
+                <AssetTile
+                  key={asset.id}
+                  asset={asset}
+                  selected={selectedAsset?.id === asset.id}
+                  onToggle={toggleSelectedAsset}
                 />
+              ))}
+              {filteredAssets.length === 0 ? (
+                <p className="wb-meta col-span-full py-6">No images match “{search.trim()}”.</p>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={openFilePicker}
+              disabled={uploadProgress !== null}
+              className="group hidden max-h-[374px] w-[168px] shrink-0 flex-col items-center justify-center gap-3 self-stretch rounded-lg border-[1.5px] border-dashed border-edge p-5 text-center transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember disabled:opacity-60 lg:flex"
+            >
+              <span className="grid size-11 place-items-center rounded-full bg-raised text-fg">
+                <Icon name="upload" size={20} />
               </span>
-            );
-          })}
-          <span className="pf-data absolute bottom-2 right-2 rounded-full bg-black/55 px-2 py-1 text-[11px] font-medium text-white">
-            {collection.assetIds.length}
-          </span>
-        </div>
-        <div className="min-w-0 p-3">
-          <h3 className="truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-            {collection.name}
-          </h3>
-          <p className="mt-1 truncate text-[12px] text-[var(--pf-muted)]">
-            {formatImageCount(collection.assetIds.length)} · updated {formatShortDate(collection.updatedAt)}
-          </p>
-        </div>
-      </button>
-    </article>
-  );
-}
-
-function AssetTile({
-  asset,
-  selected,
-  onToggle,
-}: {
-  asset: CollectionAssetRecord;
-  selected: boolean;
-  onToggle: (assetId: string) => void;
-}) {
-  return (
-    <article className="group min-w-0">
-      <button
-        type="button"
-        onClick={() => onToggle(asset.id)}
-        className={cn(
-          "relative aspect-square w-full overflow-hidden rounded-lg border bg-[var(--pf-active)] transition-[border-color,box-shadow] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-          selected
-            ? "border-primary ring-1 ring-primary/25"
-            : "border-[var(--pf-border)] hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-md)]"
+              <span className="text-[13px] font-medium leading-[18px] text-fg-secondary">
+                Drop images to upload
+              </span>
+            </button>
+          </div>
         )}
-      >
-        <Image
-          src={assetUrl(asset.id)}
-          alt={asset.name}
-          fill
-          sizes="(max-width: 640px) 50vw, 180px"
-          className="object-cover"
-          unoptimized
-        />
-        <span
-          className={cn(
-            "absolute left-1.5 top-1.5 grid size-4 place-items-center rounded-full border border-white/80 bg-black/25 text-white",
-            selected && "border-primary bg-primary"
-          )}
-        >
-          {selected ? <Check className="size-2.5" /> : null}
-        </span>
-      </button>
-      <div className="px-0.5 py-2">
-        <b className="block truncate text-[13px] font-medium text-[var(--pf-ink)]">{asset.name}</b>
-        <span className="pf-data mt-1 block text-[11px] text-[var(--pf-muted)]">
-          {formatAssetSizeMb(asset.fileSizeBytes)} MB · {formatShortDate(asset.createdAt)}
-        </span>
-      </div>
-    </article>
+      </section>
+
+      <NewCollectionDialog
+        open={creating}
+        withSelection={selectedAsset !== null}
+        onOpenChange={setCreating}
+        onCreate={(name) => void createCollection(name)}
+      />
+      <ConfirmDialog request={confirm} onClose={() => setConfirm(null)} />
+    </>
   );
 }
