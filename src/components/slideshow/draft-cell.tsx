@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/workbench/icon";
 import { Meter } from "@/components/workbench/meter";
 import { StatusChip } from "@/components/workbench/status-chip";
 import { formatRelativeDate } from "@/lib/utils/format-date";
@@ -21,8 +22,8 @@ export function DraftCell({
   className?: string;
 }) {
   const status = STATUS[project.status];
-  const urls = project.previewImageUrls.slice(0, Math.max(1, thumbs));
-  const frames = urls.length ? urls : [null];
+  const frames: (string | null)[] = project.previewImageUrls.filter(Boolean).slice(0, Math.max(1, thumbs));
+  if (frames.length === 0) frames.push(null);
   return (
     <button
       type="button"
@@ -44,7 +45,7 @@ export function DraftCell({
           <span
             key={index}
             className={cn(
-              "block shrink-0 overflow-hidden rounded-lg bg-media",
+              "grid shrink-0 place-items-center overflow-hidden rounded-lg bg-media text-fg-muted",
               size === "recent" ? "h-[110px] w-[88px]" : "h-[76px] w-[60px]",
             )}
           >
@@ -55,7 +56,9 @@ export function DraftCell({
                 loading="lazy"
                 className="size-full object-cover transition-opacity duration-[160ms] ease-pf group-hover:opacity-85"
               />
-            ) : null}
+            ) : (
+              <Icon name="gallery" size={20} />
+            )}
           </span>
         ))}
       </span>
