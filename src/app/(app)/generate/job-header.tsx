@@ -24,7 +24,7 @@ export function JobDetailHeader({
             <Icon name="chevron-left" />
             Back
           </button>
-          <h1 className="wb-page-title pl-2" title={job.prompt}>
+          <h1 className="wb-page-title min-w-0 truncate pl-2" title={getEditorTitle(job.prompt)}>
             {getEditorTitle(job.prompt)}
           </h1>
         </div>

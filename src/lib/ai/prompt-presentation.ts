@@ -79,6 +79,32 @@ export function summarizeGenerationPrompt(prompt: string, maxLength = SUMMARY_LI
   return truncateAtWord(cleaned, maxLength);
 }
 
+const TITLE_LEAD_KEYS = ["on_slide_text", "intent", "task", "objective", "description"];
+const LEADING_FILE_NAME = /^\S+\.(?:heic|heif|jpe?g|png|webp|gif|avif|mov|mp4|m4v|webm)[.:,]?\s+/i;
+const LOOSE_TASK = /"task"\s*:\s*"((?:[^"\\]|\\.)*)"/;
+
+/** The sentence a structured prompt leads with, or null for free text and for JSON without one. */
+export function structuredPromptLead(prompt: string) {
+  if (!prompt.trimStart().startsWith("{")) return null;
+  const structured = parseStructuredPrompt(prompt);
+  if (!structured) return prompt.match(LOOSE_TASK)?.[1]?.replace(/\\(.)/g, "$1") ?? "";
+  const lead = TITLE_LEAD_KEYS.map((key) => structured[key]).find(
+    (value): value is string => typeof value === "string" && value.trim().length > 0,
+  );
+  return lead ?? "";
+}
+
+/**
+ * The one-line title of a prompt. Structured prompts give their lead sentence and
+ * never raw JSON; a leading upload file name ("IMG_7123.HEIC.") is dropped.
+ * Empty when the prompt has nothing to show, so callers fall back to the model name.
+ */
+export function promptTitle(prompt: string | null | undefined, maxLength = SUMMARY_LIMIT) {
+  if (!prompt?.trim()) return "";
+  const text = normalizeWhitespace(structuredPromptLead(prompt) ?? prompt);
+  return truncateAtWord(text.replace(LEADING_FILE_NAME, "").trim(), maxLength);
+}
+
 export function formatGenerationPromptForEditing(prompt: string) {
   const structured = parseStructuredPrompt(prompt);
   if (!structured) {

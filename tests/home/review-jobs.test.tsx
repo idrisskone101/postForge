@@ -62,12 +62,12 @@ assert.deepEqual(
 // Row meta is identity and the output's age
 assert.deepEqual(
   toReviewItems([cloneJob], now).map((item) => [item.outputId, item.meta, item.mediaType]),
-  [["output-video", "Avery Chen - 40 min ago", "video"]]
+  [["output-video", "Video - Avery Chen - 40 min ago", "video"]]
 );
 // Without an identity the model's display name stands in
 assert.equal(
   toReviewItems([{ ...cloneJob, productionContext: undefined }], now)[0]?.meta,
-  "Kling 3.0 Motion Control - 40 min ago"
+  "Video - Kling 3.0 Motion Control - 40 min ago"
 );
 // Jobs without an output are not reviewable rows
 assert.deepEqual(toReviewItems([{ ...cloneJob, output: null }], now), []);

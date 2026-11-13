@@ -15,6 +15,7 @@ import {
   formatGalleryDuration,
   galleryItemKind,
   galleryItemSize,
+  galleryItemName,
   galleryItemTitle,
   galleryPromptSummary,
   reviewStatusLabel,
@@ -110,7 +111,7 @@ export function GallerySelectionInspector({
           <button
             type="button"
             onClick={onOpenPreview}
-            aria-label={`Open preview of ${title}`}
+            aria-label={`Open preview of ${galleryItemName(item)}`}
             className="relative block max-h-full max-w-full cursor-zoom-in overflow-hidden rounded-lg"
           >
             <MediaPreviewFrame

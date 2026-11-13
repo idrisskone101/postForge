@@ -2,10 +2,11 @@
 
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { MediaTile } from "@/components/workbench/media-tile";
-import { formatRelativeDate } from "@/lib/utils/format-date";
 import { cn } from "@/lib/utils";
 import {
   formatGalleryDuration,
+  galleryItemMeta,
+  galleryItemName,
   galleryItemTitle,
   reviewStatusLabel,
   reviewStatusTone,
@@ -28,6 +29,7 @@ export function GalleryGridCards({
     <div data-gallery-view="grid" className={cn(GALLERY_GRID_CLASS, "wb-fade-in")}>
       {items.map((item) => {
         const title = galleryItemTitle(item);
+        const name = galleryItemName(item);
         return (
           <div key={item.id} className="wb-tile-cell">
             <MediaTile
@@ -40,7 +42,7 @@ export function GalleryGridCards({
                   label: reviewStatusLabel[item.reviewStatus.value],
                 },
                 duration: formatGalleryDuration(item.durationSec),
-                name: title,
+                name,
                 selecting,
               }}
               actions={
@@ -55,7 +57,7 @@ export function GalleryGridCards({
                   <button
                     type="button"
                     className="wb-tile-action"
-                    aria-label={`Download ${title}`}
+                    aria-label={`Download ${name}`}
                     onClick={() => void downloadItem(item)}
                   >
                     Download
@@ -66,7 +68,7 @@ export function GalleryGridCards({
               <button
                 type="button"
                 onClick={() => openPreview(item)}
-                aria-label={`Preview ${title}`}
+                aria-label={`Preview ${name}`}
                 className="block size-full cursor-zoom-in"
                 tabIndex={-1}
               >
@@ -84,10 +86,11 @@ export function GalleryGridCards({
               </button>
             </MediaTile>
             <div className="flex min-w-0 flex-col">
-              <span className="wb-tile-title">{title}</span>
-              <span className="wb-tile-meta">
-                {item.type === "video" ? "Video" : "Image"} -{" "}
-                <span suppressHydrationWarning>{formatRelativeDate(item.createdAt)}</span>
+              <span className="wb-tile-title" title={title}>
+                {title}
+              </span>
+              <span className="wb-tile-meta" suppressHydrationWarning>
+                {galleryItemMeta(item)}
               </span>
             </div>
           </div>

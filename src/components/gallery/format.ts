@@ -1,11 +1,24 @@
-import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
-import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
+import {
+  formatOutputDate,
+  modelDisplayName,
+  outputAccessibleName,
+  outputMeta,
+  outputTitle,
+} from "@/lib/ai/output-presentation";
+import { promptTitle } from "@/lib/ai/prompt-presentation";
 import type { OutputReviewStatus } from "@/lib/output-review-status";
 import type { StatusTone } from "@/components/workbench/status-badge";
 import type { GalleryItem } from "./types";
 
-export function galleryItemTitle(item: Pick<GalleryItem, "model">) {
-  return MODEL_REGISTRY[item.model]?.name ?? item.model;
+export const galleryItemTitle = outputTitle;
+export const galleryItemName = outputAccessibleName;
+
+export function galleryItemModel(item: Pick<GalleryItem, "model">) {
+  return modelDisplayName(item.model);
+}
+
+export function galleryItemMeta(item: Pick<GalleryItem, "type" | "model" | "createdAt">) {
+  return outputMeta(item.type, modelDisplayName(item.model), formatOutputDate(item.createdAt));
 }
 
 export function galleryItemKind(item: Pick<GalleryItem, "type" | "width" | "height">) {
@@ -14,8 +27,9 @@ export function galleryItemKind(item: Pick<GalleryItem, "type" | "width" | "heig
   return ratio ? `${noun}, ${ratio}` : noun;
 }
 
+/** Null when the size is not known: the row or column is omitted, never a dash. */
 export function galleryItemSize(item: Pick<GalleryItem, "width" | "height">) {
-  return item.width && item.height ? `${item.width} x ${item.height}` : "-";
+  return item.width && item.height ? `${item.width} x ${item.height}` : null;
 }
 
 export function formatGalleryDuration(seconds: number | undefined) {
@@ -57,21 +71,8 @@ export function sourceHost(url: string) {
 }
 
 export function galleryPromptSummary(prompt: string | undefined, maxLength = 180) {
-  if (!prompt?.trim()) return "";
-  if (!prompt.trimStart().startsWith("{")) return summarizeGenerationPrompt(prompt, maxLength);
-  try {
-    const parsed: unknown = JSON.parse(prompt);
-    const record = typeof parsed === "object" && parsed !== null ? (parsed as Record<string, unknown>) : {};
-    const lead = PROMPT_LEAD_KEYS.map((key) => record[key]).find(
-      (value): value is string => typeof value === "string" && value.trim().length > 0
-    );
-    return lead ? summarizeGenerationPrompt(lead, maxLength) : "";
-  } catch {
-    return summarizeGenerationPrompt(prompt, maxLength);
-  }
+  return promptTitle(prompt, maxLength);
 }
-
-const PROMPT_LEAD_KEYS = ["on_slide_text", "intent", "task", "objective", "description"];
 
 function aspectRatio(width?: number, height?: number) {
   if (!width || !height) return undefined;

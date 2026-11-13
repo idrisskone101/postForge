@@ -1,3 +1,4 @@
+import { promptTitle } from "@/lib/ai/prompt-presentation";
 import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 
 export type JobIconName =
@@ -55,9 +56,7 @@ export function asString(value: unknown) {
 }
 
 export function getEditorTitle(prompt: string) {
-  const clean = prompt.replace(/\s+/g, " ").trim();
-  if (!clean) return "Untitled generation";
-  return clean.length > 52 ? `${clean.slice(0, 52).trim()}…` : clean;
+  return promptTitle(prompt, 72) || "Untitled generation";
 }
 
 export function jobDetailFlags(job: JobDetail) {

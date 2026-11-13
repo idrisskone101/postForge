@@ -6,6 +6,7 @@ import { getModel } from "@/lib/ai/models";
 import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { JobPromptText } from "./job-prompt-text";
 import { JobIcon } from "./job-icons";
 import {
   ENHANCEMENT_TOOLS,
@@ -196,7 +197,7 @@ export function JobPromptPanel({
         </button>
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto max-xl:max-h-[320px]">
-        <p className="m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">{job.prompt}</p>
+        <JobPromptText prompt={job.prompt} />
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>
           <p className="m-0 text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">{negativePrompt ?? "-"}</p>

@@ -1,4 +1,4 @@
-import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
+import { promptTitle } from "@/lib/ai/prompt-presentation";
 import { getModel } from "@/lib/ai/models";
 import {
   getJobActivityLabel,
@@ -65,7 +65,7 @@ export function toJobRow(job: JobActivityItem, now: Date): JobRowView {
   const cost = job.actualCost ?? job.estimatedCost;
   const output = job.outputs?.[0];
   const kind = getJobActivityLabel(job);
-  const title = summarizeGenerationPrompt(job.prompt) || kind;
+  const title = promptTitle(job.prompt) || kind;
   const error = job.status === "failed" ? job.error : null;
   const model = getModel(job.model)?.name ?? job.model;
   return {

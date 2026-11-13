@@ -15,6 +15,7 @@ import {
   formatGalleryDuration,
   galleryItemKind,
   galleryItemSize,
+  galleryItemName,
   galleryItemTitle,
   galleryPromptSummary,
   reviewStatusLabel,
@@ -67,7 +68,7 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
           src={item.url}
           width={item.width}
           height={item.height}
-          alt={title}
+          alt={galleryItemName(item)}
           variant="detail"
           className="max-h-[42dvh] w-full bg-transparent lg:h-full lg:max-h-full"
           mediaClassName="object-contain"
@@ -86,7 +87,9 @@ function LightboxBody({ item, session }: { item: GalleryItem; session: GalleryMe
 
         <div className="flex min-w-0 flex-col gap-1.5">
           <div className="flex min-w-0 items-center justify-between gap-2">
-            <h3 className="min-w-0 truncate text-[15px] font-bold leading-5 text-fg">{title}</h3>
+            <h3 className="min-w-0 truncate text-[15px] font-bold leading-5 text-fg" title={title}>
+              {title}
+            </h3>
             <StatusChip tone={reviewStatusTone[item.reviewStatus.value]}>
               {reviewStatusLabel[item.reviewStatus.value]}
             </StatusChip>

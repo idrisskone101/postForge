@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import {
   formatGalleryDuration,
   galleryItemKind,
+  galleryItemModel,
+  galleryItemName,
   galleryItemSize,
   galleryItemTitle,
   reviewStatusLabel,
@@ -41,6 +43,7 @@ export function GalleryListTable({
         {items.map((item) => {
           const selected = selectedIds.has(item.id);
           const title = galleryItemTitle(item);
+          const name = galleryItemName(item);
           return (
             <li
               key={item.id}
@@ -52,7 +55,7 @@ export function GalleryListTable({
             >
               <RowCheck
                 selected={selected}
-                name={title}
+                name={name}
                 onToggle={() => toggleSelection(item.id)}
               />
               <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -77,10 +80,13 @@ export function GalleryListTable({
                       openPreview(item);
                     }}
                     className="wb-row-title min-w-0 text-left"
+                    title={title}
                   >
                     {title}
                   </button>
-                  <span className="wb-row-sub">{galleryItemKind(item)}</span>
+                  <span className="wb-row-sub">
+                    {galleryItemKind(item)} - {galleryItemModel(item)}
+                  </span>
                 </div>
               </div>
               <span className="w-16 shrink-0 max-md:w-auto">
@@ -107,7 +113,7 @@ export function GalleryListTable({
               >
                 <IconButton
                   icon="download"
-                  label={`Download ${title}`}
+                  label={`Download ${name}`}
                   size={30}
                   onClick={() => void downloadItem(item)}
                 />

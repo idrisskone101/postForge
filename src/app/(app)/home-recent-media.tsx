@@ -4,7 +4,8 @@ import { buttonClass } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { MediaTile } from "@/components/workbench/media-tile";
 import { VideoFramePreview } from "@/components/video-frame-preview";
-import { mediaHref, modelName, promptTitle, REVIEW_BADGE } from "./home-format";
+import { outputTitle } from "@/lib/ai/output-presentation";
+import { mediaHref, REVIEW_BADGE } from "./home-format";
 import type { HomeMedia } from "./home-types";
 
 export function HomeRecentMedia({ media }: { media: HomeMedia[] }) {
@@ -35,7 +36,7 @@ const LIST_CLASS =
 const ITEM_CLASS = "w-[150px] shrink-0 snap-start min-[768px]:w-[180px] min-[1024px]:w-auto min-[1024px]:min-w-0";
 
 function RecentMediaTile({ media, priority }: { media: HomeMedia; priority: boolean }) {
-  const title = promptTitle(media.prompt) || modelName(media.model);
+  const title = outputTitle(media);
   const badge = REVIEW_BADGE[media.reviewStatus] ?? REVIEW_BADGE.needs_review;
   const source = `/api/files/${encodeURIComponent(media.id)}`;
 

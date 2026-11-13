@@ -1,30 +1,10 @@
-import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
-import { summarizeGenerationPrompt } from "@/lib/ai/prompt-presentation";
+import { modelDisplayName, outputMeta } from "@/lib/ai/output-presentation";
+import { promptTitle } from "@/lib/ai/prompt-presentation";
 import { getJobActivityLabel } from "@/lib/jobs/presentation";
 import type { HomeJob, HomeMedia, HomeReviewItem } from "./home-types";
 
 export function homeJobTitle(job: Pick<HomeJob, "id" | "type" | "status" | "tags" | "prompt">) {
   return promptTitle(job.prompt) || getJobActivityLabel(job);
-}
-
-/** A short title from a prompt. Structured identity prompts carry their sentence in `task`. */
-export function promptTitle(prompt: string) {
-  return summarizeGenerationPrompt(structuredTask(prompt) ?? prompt);
-}
-
-function structuredTask(prompt: string) {
-  if (!prompt.trimStart().startsWith("{")) return null;
-  try {
-    const parsed: unknown = JSON.parse(prompt);
-    const task = (parsed as { task?: unknown } | null)?.task;
-    return typeof task === "string" && task.trim() ? task : null;
-  } catch {
-    return null;
-  }
-}
-
-export function modelName(model: string) {
-  return MODEL_REGISTRY[model]?.name ?? model;
 }
 
 /** Age relative to the request time, so server and client render the same text. */
@@ -41,14 +21,15 @@ export function formatAge(date: Date, now: Date) {
 export function toReviewItems(jobs: HomeJob[], now: Date): HomeReviewItem[] {
   return jobs.flatMap((job) => {
     if (!job.output) return [];
-    const who = job.productionContext?.identityDetail ?? modelName(job.model);
+    const mediaType = job.type === "video" ? "video" : "image";
+    const who = job.productionContext?.identityDetail ?? modelDisplayName(job.model);
     return [
       {
         outputId: job.output.id,
         href: reviewHref(job),
         title: homeJobTitle(job),
-        meta: `${who} - ${formatAge(job.output.createdAt ?? job.createdAt, now)}`,
-        mediaType: job.type === "video" ? "video" : "image",
+        meta: outputMeta(mediaType, who, formatAge(job.output.createdAt ?? job.createdAt, now)),
+        mediaType,
       },
     ];
   });
