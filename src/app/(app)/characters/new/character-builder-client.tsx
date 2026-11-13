@@ -1,6 +1,8 @@
 "use client";
 
 import { Skeleton, Toast } from "@/components/workbench";
+import { cn } from "@/lib/utils";
+import { useMountedInBrowser } from "@/lib/use-hydrated";
 import { CharacterAttributeEditor } from "./character-attribute-editor";
 import { CharacterBuilderHeader } from "./character-builder-header";
 import { CharacterCategoryRail } from "./character-category-rail";
@@ -25,6 +27,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
     importError,
     toast,
   } = useCharacterBuilder(editId);
+  const mountedInBrowser = useMountedInBrowser();
 
   return (
     <>
@@ -34,7 +37,11 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
       ) : (
         <div
           data-character-workbench
-          className="wb-fade-in flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-100px)] xl:min-h-[640px] xl:flex-row"
+          className={cn(
+            // Server markup paints at once; the fade is for the skeleton swap and client navigation.
+            (mountedInBrowser || editId) && "wb-fade-in",
+            "flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-100px)] xl:min-h-[640px] xl:flex-row",
+          )}
         >
           <CharacterCategoryRail
             attributes={attributes}
