@@ -56,7 +56,7 @@ export function EditorInspector() {
               value={activeSlide.prompt}
               rows={3}
               onChange={(event) => updateActiveSlide({ prompt: event.target.value })}
-              className="wb-input h-[76px] min-h-[76px] resize-none overflow-y-auto py-2.5 leading-5"
+              className="wb-input h-auto max-h-[140px] min-h-[80px] resize-none overflow-y-auto py-2.5 leading-5 [field-sizing:content]"
             />
           </label>
         </div>
