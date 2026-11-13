@@ -201,7 +201,7 @@ export function GenerateFormView({
       <GenerateFormSubmitBars
         form={form}
         view={view}
-        className="sticky bottom-0 z-20 max-xl:pb-[max(12px,env(safe-area-inset-bottom))] xl:bottom-auto xl:top-4 xl:z-auto"
+        className="wb-stuck-fade sticky bottom-0 z-20 max-xl:pb-[max(12px,env(safe-area-inset-bottom))] xl:bottom-auto xl:top-4 xl:z-auto"
       />
     </form>
   );

@@ -26,10 +26,11 @@ export function JobActionDock({
   const { job, featured, isCompleted, isFailed, canDiscard, isRetrying, isDownloading, isDiscarding } = view;
 
   return (
+    <div className={DOCK_BAR}>
     <div
       role="toolbar"
       aria-label="Generation actions"
-      className="sticky bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex flex-none flex-wrap items-center justify-between gap-2 rounded-[28px] bg-raised p-2 shadow-float sm:h-14 sm:flex-nowrap sm:rounded-[var(--pf-radius-pill)] sm:py-0 max-xl:order-2 xl:static"
+      className="flex flex-wrap items-center justify-between gap-2 rounded-[28px] bg-raised p-2 shadow-float sm:h-14 sm:flex-nowrap sm:rounded-[var(--pf-radius-pill)] sm:py-0"
     >
       {canDiscard ? (
         <AlertDialog>
@@ -92,5 +93,16 @@ export function JobActionDock({
         </Button>
       )}
     </div>
+    </div>
   );
 }
+
+/*
+ * Below 1280 the dock is pinned to the viewport bottom on the page floor, and the page fades out above
+ * it. A window under 680px tall has no room to pin it, so there it stays in flow under the preview.
+ */
+const DOCK_BAR = [
+  "wb-stuck-fade sticky bottom-0 z-20 flex-none bg-floor pb-[max(12px,env(safe-area-inset-bottom))] [--wb-stuck-fade-color:var(--pf-floor)]",
+  "max-xl:order-2 xl:static xl:bg-transparent xl:pb-0",
+  "[@media(max-height:679.98px)]:static [@media(max-height:679.98px)]:pb-0 [@media(max-height:679.98px)]:before:hidden [@media(max-height:679.98px)]:max-xl:order-none",
+].join(" ");
