@@ -15,6 +15,7 @@ export { MediaTile, type MediaTileState } from "./media-tile";
 export { Meter, type MeterTone } from "./meter";
 export { PageHeader } from "./page-header";
 export { Panel } from "./panel";
+export { Range } from "./range";
 export { Segmented, type SegmentedOption } from "./segmented";
 export { Skeleton } from "./skeleton";
 export { SplitMeter, type MeterPart } from "./split-meter";

@@ -40,6 +40,9 @@
   --pf-segment-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
   --pf-media: #e4e4e1;
   --pf-thumb: #ffffff;
+  --pf-track: var(--pf-strong);
+  --pf-track-edge: var(--pf-outline);
+  --pf-range-fill: var(--pf-text);
   --pf-well: #ededeb;
 
   --pf-text: #1a1a1a;
@@ -183,6 +186,9 @@
   --pf-segment-shadow: 0 0 #0000;
   --pf-media: #2a2b2e;
   --pf-thumb: #f2f0eb;
+  --pf-track: var(--pf-raised-strong);
+  --pf-track-edge: transparent;
+  --pf-range-fill: var(--pf-ember);
   --pf-well: #141516;
 
   --pf-text: #f2f0eb;

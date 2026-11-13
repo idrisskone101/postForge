@@ -1,7 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { Button, Icon, Toggle } from "@/components/workbench";
+import { Button, Icon, Range, Toggle } from "@/components/workbench";
 import { getModel } from "@/lib/ai/models";
 import type { JobDetail, JobOutput } from "@/lib/generation-editor";
 import { formatCost } from "@/lib/utils/format-cost";
@@ -72,16 +71,13 @@ export function JobRefinePanel({
           </label>
           <span className="wb-mono text-fg">{editStrength}%</span>
         </div>
-        <input
+        <Range
           id="edit-strength"
-          type="range"
           min={0}
           max={100}
           step={1}
           value={editStrength}
           onChange={(event) => actions.onEditStrengthChange(Number(event.target.value))}
-          style={{ "--fill": `${editStrength}%` } as CSSProperties}
-          className={RANGE_CLASS}
         />
       </div>
       <div className="flex items-center gap-3">
@@ -223,16 +219,3 @@ function formatBytes(bytes: number | null) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
-
-const RANGE_CLASS = [
-  "h-[18px] w-full cursor-pointer appearance-none rounded-full bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember",
-  "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full",
-  "[&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
-  "[&::-webkit-slider-thumb]:-mt-1.5 [&::-webkit-slider-thumb]:size-[18px] [&::-webkit-slider-thumb]:appearance-none",
-  "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--pf-thumb)]",
-  "[&::-webkit-slider-thumb]:shadow-[0_0_0_2px_var(--pf-ember)]",
-  "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full",
-  "[&::-moz-range-track]:bg-[linear-gradient(to_right,var(--pf-ember)_var(--fill),var(--pf-raised-strong)_var(--fill))]",
-  "[&::-moz-range-thumb]:size-[18px] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0",
-  "[&::-moz-range-thumb]:bg-[var(--pf-thumb)] [&::-moz-range-thumb]:shadow-[0_0_0_2px_var(--pf-ember)]",
-].join(" ");

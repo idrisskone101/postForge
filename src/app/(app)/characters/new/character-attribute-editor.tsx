@@ -6,7 +6,7 @@ import {
   type CharacterAttributes,
 } from "@/lib/character-attributes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Button, Icon, iconButtonClass } from "@/components/workbench";
+import { Button, Icon, Range, iconButtonClass } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
 
@@ -91,15 +91,14 @@ function AttributeGroups({
             {group.key === "lipFullness" ? <span className="wb-mono text-fg-secondary">{attributes[group.key]}%</span> : null}
           </legend>
           {group.key === "lipFullness" ? (
-            <input
-              type="range"
+            <Range
               min="0"
               max="100"
               step="1"
               value={attributes[group.key] ?? "72"}
               onChange={(event) => selectAttribute(group.key, event.target.value)}
               aria-label="Lip fullness"
-              className="h-1.5 w-full max-w-md cursor-pointer accent-[var(--pf-ember)]"
+              className="max-w-md"
             />
           ) : (
             <div className="flex flex-wrap gap-2">

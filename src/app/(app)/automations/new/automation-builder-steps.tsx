@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageIcon } from "lucide-react";
-import { Button, Chip, Field, Icon, IconButton } from "@/components/workbench";
+import { Button, Chip, Field, Icon, IconButton, Range } from "@/components/workbench";
 import { composeAutomationHook } from "@/lib/automations";
 import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
 import { cn } from "@/lib/utils";
@@ -133,14 +133,13 @@ export function ContentStep({ workspace }: StepProps) {
       </div>
       <Field label="Slides per post" htmlFor="builder-slide-count">
         <div className="flex h-[42px] items-center gap-3.5 rounded-lg bg-raised px-3.5">
-          <input
+          <Range
             id="builder-slide-count"
-            type="range"
             min="3"
             max="9"
             value={record.content.slideCount}
             onChange={(event) => updateContent({ slideCount: Number(event.target.value) })}
-            className="min-w-0 flex-1 accent-[var(--pf-ember)]"
+            className="min-w-0 flex-1"
           />
           <output htmlFor="builder-slide-count" className="w-5 text-right text-[14px] font-semibold leading-[18px] text-fg tabular-nums">
             {record.content.slideCount}
