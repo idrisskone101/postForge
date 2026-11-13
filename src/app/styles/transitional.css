@@ -128,10 +128,6 @@
   content: attr(data-settings-title);
 }
 
-[data-slideshow-copy]::before {
-  content: attr(data-slideshow-copy);
-}
-
 [data-spend-budget-label]::before {
   content: attr(data-spend-budget-label);
 }

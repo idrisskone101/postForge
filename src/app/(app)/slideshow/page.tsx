@@ -10,7 +10,6 @@ export default function SlideshowPage() {
   return (
     <SlideshowNewProvider>
       <SlideshowStudioLazy
-        initialProjects={[]}
         initialProject={null}
         initialViewMode="edit"
         supportsMp4Export={ffmpegBinaryExists()}
