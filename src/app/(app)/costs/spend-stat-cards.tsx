@@ -15,18 +15,20 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
       stats={[
         {
           label: "Spend",
-          value: formatCost(dashboard.currentPeriodCost),
-          aside: (
-            <>
+          value: (
+            <span className="flex min-w-0 flex-wrap items-center gap-x-2.5 max-md:justify-end">
+              {formatCost(dashboard.currentPeriodCost)}
               {change ? (
                 <span className={CHIP} title="Against the previous period of the same length">
                   {change}
                 </span>
               ) : null}
-              <span className={SIDE_FIGURE}>
-                <span className="font-mono">{formatCost(dashboard.totalCost)}</span> all time
-              </span>
-            </>
+            </span>
+          ),
+          aside: (
+            <span className={SIDE_FIGURE}>
+              <span className="font-mono">{formatCost(dashboard.totalCost)}</span> all time
+            </span>
           ),
         },
         {
@@ -67,10 +69,11 @@ const CHIP =
   "inline-flex h-[22px] shrink-0 items-center whitespace-pre rounded-full bg-raised px-[9px] font-mono text-[12px] font-normal leading-4 tracking-normal text-fg-secondary";
 
 const SIDE_FIGURE =
-  "ml-auto shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:basis-full max-md:text-right";
+  "shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:basis-full max-md:text-right";
 
 const STRIP_CLASS = cn(
   "shrink-0 [&>.wb-stat:nth-child(2)]:flex-[0.8] [&>.wb-stat:nth-child(3)]:flex-[1.6]",
+  "md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:flex-wrap md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:justify-between md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:gap-y-0",
   "lg:max-xl:[&>.wb-stat:nth-child(3)]:flex-[2.2]",
   "max-md:flex-col max-md:px-5 max-md:py-1",
   "max-md:[&>.wb-stat]:min-h-[60px] max-md:[&>.wb-stat]:flex-none max-md:[&>.wb-stat]:flex-row max-md:[&>.wb-stat]:flex-wrap max-md:[&>.wb-stat]:items-center max-md:[&>.wb-stat]:justify-between max-md:[&>.wb-stat]:py-3",
