@@ -7,43 +7,40 @@ function source(relativePath: string) {
 
 const generationStudio = source("src/components/generation-form.tsx");
 const generationEditor = source("src/app/(app)/generate/[id]/page.tsx");
-const generationLoading = [
-  "src/app/(app)/generate/form-controls.tsx",
-  "src/app/(app)/generate/form-prompt-section.tsx",
-]
-  .map((file) => source(file))
-  .join("\n");
+const generationInspector = source("src/app/(app)/generate/job-inspector.tsx");
+const formConstants = source("src/app/(app)/generate/form-constants.ts");
+const previewPanel = source("src/app/(app)/generate/form-submit-bars.tsx");
+const generatePage = source("src/app/(app)/generate/page.tsx");
 
-// Primary workbenches collapse before their fixed minimum tracks can overflow.
-assert.match(generationStudio, /xl:grid-cols-\[minmax\(360px,0\.72fr\)_minmax\(500px,1\.28fr\)\]/);
+// The form and its skeleton share one layout, so the columns cannot shift when the form mounts.
+assert.match(generationStudio, /GENERATE_LAYOUT\.root/);
+assert.match(source("src/app/(app)/generate/generate-form-skeleton.tsx"), /GENERATE_LAYOUT\.root/);
+assert.match(formConstants, /xl:w-\[380px\]/);
+assert.match(formConstants, /min-w-0 flex-1/);
 
-// Loading and failure states must not widen their containing cards.
+// The shell owns page padding and the header band.
+assert.doesNotMatch(generatePage, /px-\d|max-w-\[/);
+
+// Loading and failure states must not widen their containing panels.
 assert.match(generationEditor, /max-w-md/);
-assert.match(generationEditor, /max-w-full/);
-assert.match(
-  generationLoading,
-  /mt-3 flex h-\[6\.75rem\] flex-wrap gap-1\.5 overflow-hidden/,
-);
-assert.match(generationStudio, /prompt\.trim\(\)\.slice\(0, 112\)[\s\S]*?\[overflow-wrap:anywhere\]|\[overflow-wrap:anywhere\][\s\S]*?prompt\.trim\(\)\.slice\(0, 112\)/);
-assert.match(generationStudio, /bg-\[#09090B\]/);
-assert.match(generationEditor, /bg-\[#09090B\]/);
-assert.match(generationEditor, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
-assert.match(generationEditor, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /GenerationFormLazy/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /Suspense/);
-assert.match(source("src/app/(app)/generate/generate-form-skeleton.tsx"), /data-generate-form="true"/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /GenerateFormSkeleton/);
-assert.match(source("src/app/(app)/generate/page.tsx"), /getAvailableModelsNow/);
-assert.doesNotMatch(source("src/app/(app)/generate/page.tsx"), /getAvailableModels\(/);
-assert.match(
-  source("src/app/(app)/generate/form-prompt-section.tsx"),
-  /data-generate-notice="Prompt improvement needs a Gemini API key."/,
-);
-assert.match(
-  source("src/app/(app)/generate/generate-header-accessory.tsx"),
-  /data-generate-history=\{paintReady \? undefined : "History"\}/
-);
-assert.match(
-  source("src/components/generation-form-lazy.tsx"),
-  /useWindowLoadReady/,
-);
+assert.match(previewPanel, /submitError[\s\S]*?\[overflow-wrap:anywhere\]/);
+assert.match(generationInspector, /job\.prompt[\s\S]*?\[overflow-wrap:anywhere\]/);
+assert.match(generationInspector, /negativePrompt[\s\S]*?\[overflow-wrap:anywhere\]/);
+
+assert.match(generatePage, /GenerationFormLazy/);
+assert.match(generatePage, /Suspense/);
+assert.match(generatePage, /GenerateFormSkeleton/);
+assert.match(generatePage, /getAvailableModelsNow/);
+assert.doesNotMatch(generatePage, /getAvailableModels\(/);
+assert.match(source("src/components/generation-form-lazy.tsx"), /useWindowLoadReady/);
+
+// Copy is real text: no attribute-painted labels or sr-only twins.
+for (const file of [
+  "src/app/(app)/generate/form-prompt-section.tsx",
+  "src/app/(app)/generate/generate-header-accessory.tsx",
+  "src/components/generation-form.tsx",
+  "src/components/model-picker.tsx",
+]) {
+  assert.doesNotMatch(source(file), /data-generate-|sr-only/, `${file} must render real text`);
+}
+assert.doesNotMatch(source("src/app/styles/transitional.css"), /data-generate-/);

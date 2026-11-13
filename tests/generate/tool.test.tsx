@@ -54,14 +54,15 @@ const markup = renderToStaticMarkup(
   />
 );
 
-assert.match(markup, /Creative Prompt/);
-assert.match(markup, /Model Selection/);
-assert.match(markup, /Aspect Ratio/);
-assert.match(markup, /Cost Estimate/);
-assert.match(markup, /Generate Now/);
-assert.match(markup, /Current Config/);
+assert.match(markup, /Creative prompt/);
+assert.match(markup, /Choose a model/);
+assert.match(markup, /Text to image/);
+assert.match(markup, /Aspect ratio/);
+assert.match(markup, /Estimated cost/);
+assert.match(markup, /Generate now/);
 assert.match(markup, /9:16/);
-assert.match(markup, /2 img/);
+assert.match(markup, /aria-label="2 outputs" data-icon="true"|aria-pressed="true" aria-label="2 outputs"/);
+assert.doesNotMatch(markup, /aria-label="Duration"/);
 assert.match(markup, /Phone screenshot/);
 assert.match(markup, /Composite screenshot onto phone/);
 assert.match(markup, /GPT Image 2\.5/);
@@ -96,7 +97,8 @@ const videoMarkup = renderToStaticMarkup(
 );
 
 assert.match(videoMarkup, /Character continuity/);
-assert.match(videoMarkup, /5s video/);
+assert.match(videoMarkup, /aria-label="Duration"/);
+assert.match(videoMarkup, />5s</);
 assert.match(videoMarkup, /Loading recent outputs…/);
 
 const formSource = [

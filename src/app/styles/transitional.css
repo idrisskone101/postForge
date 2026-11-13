@@ -60,14 +60,6 @@
   content: attr(data-empty-title);
 }
 
-[data-generate-history]::before {
-  content: attr(data-generate-history);
-}
-
-[data-generate-notice]::before {
-  content: attr(data-generate-notice);
-}
-
 [data-home-action]::before {
   content: attr(data-home-action);
 }

@@ -4,7 +4,6 @@
     "src/app/(app)/automations/publish-review-dialog.tsx",
     "src/components/character-photo.tsx",
     "src/components/avatar-picker-cards.tsx",
-    "src/components/collection-reference-picker.tsx",
     "src/components/gallery/delete-dialog.tsx",
     "src/components/gallery/review-status-control.tsx",
     "src/components/media-preview.tsx",
@@ -13,10 +12,8 @@
     "src/components/slideshow/editor-controls.tsx",
     "src/components/slideshow/slide-preview.tsx",
     "src/components/slideshow/template-dialog.tsx",
-    "src/components/swap-input-section.tsx",
     "src/components/tiktok-input.tsx",
     "src/components/tiktok-saved-sources.tsx",
-    "src/components/video-reference-picker.tsx",
     "src/components/video-trim-range-fields.tsx",
     "src/components/video-trim-timeline.tsx",
     "src/components/video-trimmer.tsx",
@@ -50,7 +47,6 @@
     "src/components/slideshow/slideshow-editor.tsx",
     "src/components/slideshow/slideshow-studio.tsx",
     "src/components/tiktok-input.tsx",
-    "src/components/video-reference-picker.tsx",
     "src/components/video-trimmer.tsx"
   ],
   "useEffect": [
@@ -83,7 +79,6 @@
     "src/components/slideshow/slideshow-editor.tsx",
     "src/components/slideshow/slideshow-view-modes.tsx",
     "src/components/slideshow/use-slideshow-studio-bootstrap.ts",
-    "src/components/video-reference-picker.tsx",
     "src/components/video-trimmer.tsx",
     "src/lib/hooks/use-polling.ts",
     "src/lib/use-window-load-ready.ts"

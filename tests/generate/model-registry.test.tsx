@@ -1,3 +1,5 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { ModelPicker } from "../../src/components/model-picker";
 import assert from "node:assert/strict";
 import {
   GPT_IMAGE_2_PORTRAIT_9_16,
@@ -91,27 +93,18 @@ assert.equal(
 assert.equal(calculateEstimatedCost("pixverse-swap", { durationSec: 5 }), 0.2);
 assert.equal(calculateEstimatedCost("pixverse-swap", { durationSec: 8 }), 0.4);
 
-// Model picker icon coverage: every registry id must have an icon mapping in
-// the picker, otherwise the Generate tab renders a generic card.
-import { readFileSync } from "node:fs";
-const pickerSource = readFileSync(
-  new URL("../../src/components/model-picker.tsx", import.meta.url),
-  "utf8"
-);
-// Model picker icon coverage: every generation model must have an icon mapping
-// in the picker. Motion-control models (used by Clone, which has its own select)
-// intentionally fall back to the generic card.
-const MOTION_ONLY_MODELS = new Set([
-  "kling-2.6-motion",
-  "kling-3.0-motion",
-  "kling-3.0-pro-motion",
-]);
+
+// Every model the registry offers must be reachable in the picker: selecting it
+// shows its card as the chosen one under one of the generation types.
 for (const model of models) {
-  if (MOTION_ONLY_MODELS.has(model.id)) continue;
+  const markup = renderToStaticMarkup(
+    <ModelPicker selectedModel={model.id} onModelSelect={() => {}} models={models} />
+  );
+  const escaped = model.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   assert.match(
-    pickerSource,
-    new RegExp(`["']?${model.id}["']?\\s*:`),
-    `${model.id} needs a MODEL_ICON_MAP entry in model-picker.tsx`
+    markup,
+    new RegExp(`aria-pressed="true"[^>]*><span[^>]*>${escaped}</span>`),
+    `${model.id} must be selectable in model-picker.tsx`
   );
 }
 
