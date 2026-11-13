@@ -4,6 +4,7 @@ import { ImageIcon } from "lucide-react";
 import { Button, Chip, Field, Icon, IconButton } from "@/components/workbench";
 import { composeAutomationHook } from "@/lib/automations";
 import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
+import { cn } from "@/lib/utils";
 import { CTA_STYLES, HOOK_STRATEGIES, STORY_STRUCTURES } from "./automation-builder-fields";
 import type { AutomationBuilderWorkspace } from "./use-automation-builder";
 
@@ -68,40 +69,43 @@ export function HookStep({ workspace }: StepProps) {
           })}
         </div>
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
-        <Field label="Hook prompt" htmlFor="builder-hook-prompt">
-          <textarea
-            id="builder-hook-prompt"
-            value={record.hook.prompt}
-            onChange={(event) => updateHook({ prompt: event.target.value })}
-            className="wb-input h-16 min-h-16 resize-none py-2.5"
-          />
-        </Field>
-        <Field label="Selected hook" htmlFor="builder-hook-selected">
-          <div className="wb-input-wrap pr-[5px]">
-            <input
-              id="builder-hook-selected"
-              value={record.hook.selected}
-              onChange={(event) => updateHook({ selected: event.target.value })}
-              className="text-[14px] leading-[18px]"
+      <div className="@container">
+        <div className="grid items-start gap-3 @[600px]:grid-cols-2">
+          <Field label="Hook prompt" htmlFor="builder-hook-prompt">
+            <textarea
+              id="builder-hook-prompt"
+              value={record.hook.prompt}
+              onChange={(event) => updateHook({ prompt: event.target.value })}
+              className={cn("wb-input", GROWING_TEXTAREA)}
             />
-            <Button
-              variant="strong"
-              size={32}
-              className="shrink-0"
-              aria-label="Compose from prompt"
-              title="Composed locally from your prompt and strategy. No network request."
-              disabled={!record.hook.prompt.trim()}
-              onClick={() =>
-                updateHook({
-                  selected: composeAutomationHook(record.hook.strategy, record.hook.prompt),
-                })
-              }
-            >
-              Compose
-            </Button>
-          </div>
-        </Field>
+          </Field>
+          <Field label="Selected hook" htmlFor="builder-hook-selected">
+            <div className="wb-input-wrap h-auto min-h-[42px] items-start py-[5px] pr-[5px]">
+              <textarea
+                id="builder-hook-selected"
+                rows={1}
+                value={record.hook.selected}
+                onChange={(event) => updateHook({ selected: event.target.value.replace(/\n/g, " ") })}
+                className="max-h-[104px] min-w-0 flex-1 resize-none bg-transparent py-[7px] text-[14px] leading-[18px] text-fg outline-none [field-sizing:content]"
+              />
+              <Button
+                variant="strong"
+                size={32}
+                className="shrink-0"
+                aria-label="Compose from prompt"
+                title="Composed locally from your prompt and strategy. No network request."
+                disabled={!record.hook.prompt.trim()}
+                onClick={() =>
+                  updateHook({
+                    selected: composeAutomationHook(record.hook.strategy, record.hook.prompt),
+                  })
+                }
+              >
+                Compose
+              </Button>
+            </div>
+          </Field>
+        </div>
       </div>
     </>
   );
@@ -174,7 +178,7 @@ export function ContentStep({ workspace }: StepProps) {
           id="builder-guidance"
           value={record.content.guidance}
           onChange={(event) => updateContent({ guidance: event.target.value })}
-          className="wb-input h-[132px] resize-none py-2.5"
+          className="wb-input h-[146px] resize-none py-2.5"
         />
       </Field>
     </>
@@ -206,9 +210,13 @@ export function CloseStep({ workspace }: StepProps) {
           id="builder-cta-prompt"
           value={record.cta.prompt}
           onChange={(event) => updateCta({ prompt: event.target.value })}
-          className="wb-input h-[132px] resize-none py-2.5"
+          className="wb-input h-[146px] resize-none py-2.5"
         />
       </Field>
     </>
   );
 }
+
+/** Whole 21px lines plus the 20px padding: two lines at rest, growing with the text up to six. */
+const GROWING_TEXTAREA =
+  "h-auto max-h-[146px] min-h-[62px] resize-none py-2.5 [field-sizing:content]";
