@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Panel } from "@/components/workbench/panel";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
-import { axisMoney, niceMoneyCeiling } from "./spend-format";
+import { axisMoney, modelLabel, niceMoneyCeiling } from "./spend-format";
 import type { SpendAnalysisGridProps } from "./types";
 
 export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
@@ -79,7 +79,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
             <li key={name} className="flex flex-col gap-[5px]">
               <span className="flex items-baseline justify-between gap-3">
                 <span className="truncate text-[13px] font-semibold leading-4 text-fg" title={name}>
-                  {name}
+                  {modelLabel(name)}
                 </span>
                 <span className="wb-mono shrink-0 text-fg">{formatCost(data.cost)}</span>
               </span>

@@ -23,7 +23,18 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
           ) : null,
           foot: <span className="wb-mono">{formatCost(dashboard.totalCost)} all time</span>,
         },
-        { label: "Generations", value: dashboard.totalJobs },
+        {
+          label: "Generations",
+          value: dashboard.totalJobs,
+          foot: (
+            <span>
+              Avg cost{" "}
+              <span className="wb-mono">
+                {dashboard.totalJobs > 0 ? formatCost(dashboard.avgCycleCost) : "-"}
+              </span>
+            </span>
+          ),
+        },
         {
           label: "Budget left",
           value: <span className={cn(over && "text-bad")}>{formatCost(view.budgetRemaining)}</span>,
