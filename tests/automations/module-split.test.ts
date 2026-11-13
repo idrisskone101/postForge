@@ -107,7 +107,7 @@ assert.match(
   readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
   /AutomationBuilderClientLazy/
 );
-assert.match(overlaySource, /<PlaybookPicker picker=\{picker\} \/>/);
+assert.match(overlaySource, /<PlaybookPicker picker=\{exiting\} \/>/);
 assert.match(sessionSource, /<AutomationPlaybookOverlay/);
 assert.doesNotMatch(
   clientSource,
