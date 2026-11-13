@@ -46,13 +46,17 @@ export function HomeGlanceStats({ dashboard }: { dashboard: HomeDashboard }) {
 
 export const STRIP_CLASS = cn(
   "wb-stat-strip pt-[18px]",
-  "max-[1023px]:grid max-[1023px]:grid-cols-2 max-[1023px]:gap-y-4 max-[1023px]:px-5"
+  "max-[1023px]:grid max-[1023px]:grid-cols-2 max-[1023px]:px-5"
 );
 
-/** Below 1024 the four stats sit two by two: hairline between columns and between rows. */
+/**
+ * Below 1024 the four stats sit two by two and the hairlines form one cross: the rows touch, so the
+ * second column's left edge and the second row's top edge each run unbroken. The cells
+ * have square corners at every width, since a radius curls the ends of a one-sided border.
+ */
 export const GRID_CELL = [
-  "max-[1023px]:pr-4",
-  "max-[1023px]:pl-4 max-[1023px]:pr-0",
+  "max-[1023px]:pr-4 max-[1023px]:pb-4",
+  "max-[1023px]:pl-4 max-[1023px]:pr-0 max-[1023px]:pb-4",
   "max-[1023px]:border-l-0 max-[1023px]:pl-0 max-[1023px]:pr-4 max-[1023px]:border-t max-[1023px]:border-hairline max-[1023px]:pt-4",
   "max-[1023px]:pl-4 max-[1023px]:border-t max-[1023px]:border-hairline max-[1023px]:pt-4",
 ];
@@ -71,7 +75,7 @@ function StatLink({
   children: ReactNode;
 }) {
   return (
-    <Link href={href} className={cn("wb-stat group rounded-sm", GRID_CELL[index])}>
+    <Link href={href} className={cn("wb-stat group", GRID_CELL[index])}>
       <span className="wb-label transition-colors duration-[var(--pf-dur-feedback)] ease-pf group-hover:text-fg-secondary">
         {label}
       </span>
