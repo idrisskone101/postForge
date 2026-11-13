@@ -22,7 +22,7 @@ export function SettingsNavigation({
       <nav
         aria-label="Settings sections"
         data-settings-nav="true"
-        className="wb-scroll-fade relative flex w-full min-w-0 shrink-0 gap-0.5 overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-full bg-raised p-1 [scrollbar-width:none] min-[1280px]:w-[236px] min-[1280px]:flex-col min-[1280px]:gap-3 min-[1280px]:overflow-visible min-[1280px]:rounded-xl min-[1280px]:bg-panel min-[1280px]:p-3 min-[1280px]:shadow-panel min-[1280px]:[mask-image:none]"
+        className="wb-scroll-fade relative flex w-full min-w-0 shrink-0 gap-0.5 overflow-x-auto overscroll-x-contain overflow-y-hidden rounded-full bg-raised p-1 [scrollbar-width:none] min-[1280px]:w-[236px] min-[1280px]:flex-col min-[1280px]:gap-3 min-[1280px]:overflow-visible min-[1280px]:rounded-xl min-[1280px]:bg-panel min-[1280px]:p-3 min-[1280px]:shadow-panel min-[1280px]:[mask-image:none]"
       >
         {GROUPS.map((group) => (
           <div
