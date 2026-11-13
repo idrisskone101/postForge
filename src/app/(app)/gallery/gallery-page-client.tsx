@@ -54,7 +54,7 @@ export function GalleryPageClient(props: GalleryPageClientProps) {
     <>
       {loadError && (
         <div className="wb-notice" data-tone="bad" role="alert">
-          <strong>Could not load more.</strong>
+          <strong>Gallery failed to load.</strong>
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{loadError}</span>
           <Button size={32} onClick={() => void handleRetryLoad()}>
             Retry
