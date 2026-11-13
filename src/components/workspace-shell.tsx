@@ -8,10 +8,7 @@ export function WorkspaceShell({
   pathname: string;
 }) {
   return (
-    <main
-      id="workspace-shell"
-      className="min-h-dvh min-w-0 overflow-x-clip bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:ml-[72px] md:pt-0 xl:ml-64"
-    >
+    <main id="workspace-shell">
       <WorkspaceHeaderGate serverPathname={pathname} />
       {children}
     </main>

@@ -80,7 +80,6 @@
     "src/app/(app)/settings/models-panel.tsx",
     "src/components/avatar-picker-generate.tsx",
     "src/components/avatar-picker-import-mode.tsx",
-    "src/components/sidebar.tsx",
     "src/components/slideshow/slideshow-editor.tsx",
     "src/components/slideshow/slideshow-view-modes.tsx",
     "src/components/slideshow/use-slideshow-studio-bootstrap.ts",

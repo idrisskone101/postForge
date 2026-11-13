@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentType } from "react";
-import { ArrowRight } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { buttonClass } from "@/components/workbench/button";
+import { Skeleton } from "@/components/workbench/skeleton";
 import { cn } from "@/lib/utils";
 
 type WorkspaceStateTone = "empty" | "error" | "neutral";
@@ -42,44 +42,17 @@ export function WorkspaceState({
   return (
     <div
       data-workspace-state={tone}
-      className={cn(
-        "flex min-h-[240px] min-w-0 flex-col items-center justify-start rounded-lg border bg-card/60 px-5 py-10 text-center",
-        tone === "empty" && "border-dashed border-border bg-white/[0.01]",
-        tone === "error" && "border-destructive/30 bg-destructive/10",
-        tone === "neutral" && "border-border",
-        className
-      )}
+      data-tone={tone === "error" ? "error" : undefined}
+      role={tone === "error" ? "alert" : undefined}
+      className={cn("wb-empty", className)}
     >
-      <div
-        className={cn(
-          "mb-5 flex size-14 items-center justify-center rounded-2xl shadow-[var(--pf-shadow-xs)] ring-1",
-          tone === "error"
-            ? "bg-destructive/12 text-destructive ring-destructive/15"
-            : "bg-accent-blue/12 text-accent-blue ring-accent-blue/15"
-        )}
-      >
-        <Icon className="size-6" />
-      </div>
-      <h2
-        data-workspace-title={title}
-        className={cn(
-          "max-w-[5rem] line-clamp-1 break-words text-[10px] font-semibold tracking-tight [overflow-wrap:anywhere]",
-          tone === "error" && "text-destructive"
-        )}
-      >
-        <span className="sr-only">{title}</span>
-      </h2>
-      <p
-        data-workspace-copy={description}
-        className="mt-2 h-[10px] min-w-0 max-w-[8rem] overflow-hidden whitespace-nowrap text-[10px] leading-none text-muted-foreground"
-      >
-        <span className="sr-only">{description}</span>
-      </p>
+      <span className="wb-empty-icon">
+        <Icon className="size-5" />
+      </span>
+      <h2 className="wb-empty-title">{title}</h2>
+      <p className="wb-empty-copy">{description}</p>
       {(action || secondaryAction) && (
-        <div
-          data-workspace-state-actions="true"
-          className="mt-5 flex h-10 flex-nowrap items-center justify-center gap-2 overflow-hidden"
-        >
+        <div data-workspace-state-actions="true" className="wb-empty-actions">
           {action && <StateActionControl action={action} primary />}
           {secondaryAction && <StateActionControl action={secondaryAction} />}
         </div>
@@ -95,34 +68,25 @@ function StateActionControl({
   action: StateAction;
   primary?: boolean;
 }) {
-  const className = cn(
-    "inline-flex h-10 max-w-[13.5rem] items-center justify-center gap-2 overflow-hidden rounded-lg px-3 text-sm font-semibold transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
-    primary
-      ? "bg-accent-coral text-white shadow-[var(--pf-shadow-orange)] transition-[filter] hover:brightness-[0.93]"
-      : "border border-border bg-background text-muted-foreground shadow-[var(--pf-shadow-2xs)] hover:border-accent-coral/40 hover:text-foreground"
-  );
-
-  const content = (
-    <>
-      {action.label}
-      {primary && <ArrowRight className="size-4" />}
-    </>
-  );
+  const className = buttonClass(primary ? "strong" : "quiet", 36);
 
   if (action.href) {
     return (
-          <Link prefetch={false} href={action.href} className={className}>
-        {content}
+      <Link prefetch={false} href={action.href} className={className}>
+        {/* prefetch-off: state actions sit in empty and error surfaces, not primary nav */}
+        {action.label}
       </Link>
     );
   }
 
   return (
     <button type="button" onClick={action.onClick} className={className}>
-      {content}
+      {action.label}
     </button>
   );
 }
+
+const SKELETON_LINE_WIDTHS = ["w-full max-w-xl", "w-5/6 max-w-lg", "w-2/3 max-w-md"];
 
 export function WorkspaceStateSkeleton({
   title,
@@ -134,37 +98,22 @@ export function WorkspaceStateSkeleton({
   return (
     <div
       data-workspace-state="loading"
-      className={cn(
-        "rounded-lg border border-border bg-card/60 p-5",
-        preserveHeightClassName,
-        className
-      )}
+      role="status"
+      aria-label={title}
+      className={cn("wb-panel", preserveHeightClassName, className)}
     >
-      <p className="text-[11px] font-semibold uppercase text-muted-foreground">
-        {title}
-      </p>
-      <div className="mt-5 space-y-3">
+      <div className="flex flex-col gap-3">
         {Array.from({ length: lines }).map((_, index) => (
           <Skeleton
             key={index}
-            data-state-skeleton-line="true"
-            className={cn(
-              "h-4 rounded-md",
-              index === 0 && "w-full max-w-xl",
-              index === 1 && "w-5/6 max-w-lg",
-              index >= 2 && "w-2/3 max-w-md"
-            )}
+            className={SKELETON_LINE_WIDTHS[Math.min(index, SKELETON_LINE_WIDTHS.length - 1)]}
           />
         ))}
       </div>
       {actions > 0 && (
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {Array.from({ length: actions }).map((_, index) => (
-            <Skeleton
-              key={index}
-              data-state-skeleton-action="true"
-              className="h-10 w-32 rounded-lg"
-            />
+            <Skeleton key={index} shape="tile" className="h-9 w-32 rounded-full" />
           ))}
         </div>
       )}

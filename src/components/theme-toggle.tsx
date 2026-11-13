@@ -1,8 +1,9 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Icon } from "@/components/workbench/icon";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const toggle = () => {
     const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
@@ -18,10 +19,11 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle theme"
-      className="grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+      title="Toggle theme"
+      className={cn("wb-icon-btn wb-icon-btn-ghost wb-icon-btn-30", className)}
     >
-      <Moon className="size-4 dark:hidden" />
-      <Sun className="hidden size-4 dark:block" />
+      <Icon name="sun" className="hidden dark:block" />
+      <Icon name="moon" className="dark:hidden" />
     </button>
   );
 }

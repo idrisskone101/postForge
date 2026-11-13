@@ -3,233 +3,57 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { LucideIcon } from "lucide-react";
-import {
-  BarChart3,
-  Bell,
-  Compass,
-  Copy,
-  DollarSign,
-  FolderOpen,
-  GalleryHorizontal,
-  House,
-  Images,
-  ListChecks,
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Plus,
-  Settings,
-  Sparkles,
-  UserRoundPen,
-  Workflow,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
-import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
+import { SidebarNav, SidebarNavItem } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Icon } from "@/components/workbench/icon";
+import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
+import { isPublicPolicyPath } from "@/lib/public-policy-routes";
+import { useWorkspaceNotifications } from "@/lib/use-workspace-notifications";
 import {
   getActiveWorkspaceItem,
   workspaceNavigationGroups,
-  type WorkspaceNavigationItem,
-  type WorkspaceNavigationLabel,
 } from "@/lib/workspace-navigation";
-import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 export function Sidebar() {
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const mobileNavRef = useRef<HTMLDialogElement>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
-  const [workspaceName, setWorkspaceName] = useState("PostForge");
-  const [notificationPreferences, setNotificationPreferences] = useState({
-    failures: false,
-    approvals: false,
-  });
-  const [notificationCounts, setNotificationCounts] = useState<WorkspaceNotificationCounts>({
-    generationFailures: 0,
-    approvalsWaiting: 0,
-  });
+  const counts = useWorkspaceNotifications(!publicPolicyPage);
   const activeItem = getActiveWorkspaceItem(pathname);
-  const quickAction =
-    activeItem?.primaryAction ?? workspaceNavigationGroups.primary[0].primaryAction;
+  const quickAction = activeItem?.primaryAction;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const collapsed =
-        readOptionalStorage("postforge-sidebar-collapsed") === "true";
+      const collapsed = readOptionalStorage(COLLAPSED_STORAGE_KEY) === "true";
       setDesktopCollapsed(collapsed);
       applySidebarCollapsedDataset(collapsed);
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  useEffect(() => {
-    if (publicPolicyPage) return;
-    let cancelled = false;
-
-    async function refreshWorkspaceStatus() {
-      try {
-        const [{ records }, notificationResponse] = await Promise.all([
-          fetchWorkspaceFeature<WorkspaceSidebarSettings>("connections"),
-          fetch("/api/workspace-notifications", { cache: "no-store" }),
-        ]);
-        if (cancelled) return;
-        const settings = records.find((record) => record.id === "workspace-settings");
-        if (settings?.workspaceName?.trim()) setWorkspaceName(settings.workspaceName.trim());
-        setNotificationPreferences({
-          failures: settings?.emailFailures === true,
-          approvals: settings?.emailApprovals === true,
-        });
-        if (notificationResponse.ok) {
-          const counts = (await notificationResponse.json()) as WorkspaceNotificationCounts;
-          if (
-            Number.isInteger(counts.generationFailures) &&
-            counts.generationFailures >= 0 &&
-            Number.isInteger(counts.approvalsWaiting) &&
-            counts.approvalsWaiting >= 0
-          ) {
-            setNotificationCounts(counts);
-          }
-        }
-      } catch {
-        return;
-      }
-    }
-
-    void refreshWorkspaceStatus();
-    const interval = window.setInterval(refreshWorkspaceStatus, 60_000);
-    window.addEventListener("focus", refreshWorkspaceStatus);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-      window.removeEventListener("focus", refreshWorkspaceStatus);
-    };
-  }, [publicPolicyPage]);
-
   if (publicPolicyPage) return null;
 
-  const renderItem = (item: WorkspaceNavigationItem, mobile = false) => {
-    const Icon = NAV_ICONS[item.label];
-    const active = activeItem?.href === item.href;
-
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        aria-label={item.label}
-        title={item.label}
-        aria-current={active ? "page" : undefined}
-        onClick={() => mobile && mobileNavRef.current?.close()}
-        className={cn(
-          "sidebar-nav-item group relative flex h-[38px] items-center gap-2.5 rounded-[8px] text-[13px] font-medium transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-          mobile ? "justify-start px-2.5" : "justify-center px-0 xl:justify-start xl:px-2.5",
-          active
-            ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
-            : "text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
-        )}
-      >
-        <Icon
-          className={cn(
-            "size-[17px] shrink-0 transition-colors duration-[180ms]",
-            active ? "text-[var(--pf-orange)]" : "text-[var(--pf-rail-muted)] group-hover:text-[var(--pf-rail-ink)]"
-          )}
-          strokeWidth={1.8}
-        />
-        <span className="sidebar-expanded-only min-w-0 flex-1 truncate">{item.label}</span>
-      </Link>
-    );
+  const closeMobileNav = () => mobileNavRef.current?.close();
+  const toggleCollapsed = () => {
+    const nextCollapsed = !desktopCollapsed;
+    setDesktopCollapsed(nextCollapsed);
+    writeOptionalStorage(COLLAPSED_STORAGE_KEY, String(nextCollapsed));
+    applySidebarCollapsedDataset(nextCollapsed);
   };
 
-  const groupLabel = (label: string, mobile = false) => (
-    <span
-      className={cn(
-        "mb-1 mt-4 block px-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-rail-muted)] first:mt-1",
-        !mobile && "sidebar-expanded-only"
-      )}
-    >
-      {label}
-    </span>
-  );
-
-  const navigation = (mobile = false) => (
-    <nav className="flex flex-col" aria-label="Workspace navigation">
-      {groupLabel("Primary", mobile)}
-      <div className="flex flex-col gap-0.5">
-        {workspaceNavigationGroups.primary.map((item) => renderItem(item, mobile))}
-      </div>
-      {groupLabel("Tools", mobile)}
-      <div className="flex flex-col gap-0.5">
-        {workspaceNavigationGroups.tools.map((item) => renderItem(item, mobile))}
-      </div>
-    </nav>
-  );
-
-  const footer = (mobile = false) => (
-    <div className="mt-auto">
-      {(notificationPreferences.failures || notificationPreferences.approvals) && (
-        <div className={cn("mb-2 gap-1 rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] p-1", mobile ? "grid" : "sidebar-expanded-only hidden xl:grid")} aria-label="Workspace notifications">
-          {notificationPreferences.failures && notificationCounts.generationFailures > 0 && (
-            <Link prefetch={false} href={notificationCounts.latestFailedJobId ? `/generate/${encodeURIComponent(notificationCounts.latestFailedJobId)}` : "/generate"} onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
-              {/* prefetch-off: alert chip, not primary nav */}
-              <Bell className="size-3 shrink-0 text-[var(--pf-danger)]" /><span className="min-w-0 flex-1 truncate">Failed generations</span><b className="pf-data">{notificationCounts.generationFailures}</b>
-            </Link>
-          )}
-          {notificationPreferences.approvals && notificationCounts.approvalsWaiting > 0 && (
-            <Link prefetch={false} href="/gallery?reviewStatus=needs_review" onClick={() => mobile && mobileNavRef.current?.close()} className="flex min-w-0 items-center gap-2 rounded-[6px] px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-surface)] hover:text-[var(--pf-rail-ink)]">
-              {/* prefetch-off: alert chip, not primary nav */}
-              <Bell className="size-3 shrink-0 text-[var(--pf-orange)]" /><span className="min-w-0 flex-1 truncate">Outputs to review</span><b className="pf-data">{notificationCounts.approvalsWaiting}</b>
-            </Link>
-          )}
-          {(!notificationPreferences.failures || notificationCounts.generationFailures === 0) &&
-            (!notificationPreferences.approvals || notificationCounts.approvalsWaiting === 0) && (
-              <span className="flex items-center gap-2 px-2 py-1.5 text-[11px] text-[var(--pf-rail-muted)]"><Bell className="size-3" /> No workflow alerts</span>
-            )}
-        </div>
-      )}
-      <div className={cn(
-        "mb-2 items-center justify-between px-2 text-[11px] text-[var(--pf-rail-muted)]",
-        mobile ? "flex" : "sidebar-expanded-only hidden xl:flex"
-      )}>
-        <span className="flex items-center gap-1.5">
-          <i className="pf-lamp text-[var(--pf-lamp-green)]" />
-          Local workspace
-        </span>
-        <Link prefetch={false} href="/settings?tab=billing" className="font-medium text-[var(--pf-link)] hover:underline">
-          {/* prefetch-off: billing is a footer utility */}
-          Manage
-        </Link>
-      </div>
-      {workspaceNavigationGroups.utility.map((item) => renderItem(item, mobile))}
-      <div className={cn(
-        "mt-2 grid-cols-[32px_minmax(0,1fr)_32px] items-center gap-2 border-t border-[var(--pf-rail-border)] px-2 pt-3",
-        mobile ? "grid" : "sidebar-expanded-only hidden xl:grid"
-      )}>
-        <span className="grid size-8 place-items-center rounded-[8px] border border-[var(--pf-rail-border)] bg-[var(--pf-active)] text-[11px] font-bold text-[var(--pf-rail-ink)]">
-          PF
-        </span>
-        <span className="min-w-0">
-          <strong className="block truncate text-[11px] font-semibold text-[var(--pf-rail-ink)]">{workspaceName}</strong>
-          <small className="mt-0.5 block truncate text-[11px] text-[var(--pf-rail-muted)]">Self-hosted</small>
-        </span>
-        <ThemeToggle />
-      </div>
-      {!mobile && <div className="sidebar-compact-only mt-2 flex justify-center border-t border-[var(--pf-rail-border)] pt-3 xl:hidden">
-          <ThemeToggle />
-        </div>}
-    </div>
-  );
+  const settingsActive = activeItem?.href === SETTINGS_ITEM.href;
 
   return (
     <>
-      <div id="workspace-mobile-bar" className="fixed inset-x-0 top-0 z-50 flex h-[calc(58px+env(safe-area-inset-top))] items-center border-b border-[var(--pf-rail-border)] bg-[var(--pf-rail)] px-3 pt-[env(safe-area-inset-top)] md:hidden">
+      <div id="workspace-mobile-bar">
         <button
           type="button"
           aria-label="Open workspace navigation"
-          className="mr-2 grid size-9 place-items-center rounded-[8px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)]"
+          className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-40"
           onClick={() => mobileNavRef.current?.showModal()}
         >
-          <Menu className="size-5" />
+          <Icon name="menu" />
         </button>
         <dialog
           ref={mobileNavRef}
@@ -240,79 +64,77 @@ export function Sidebar() {
             if (event.target === event.currentTarget) event.currentTarget.close();
           }}
         >
-          <div className="flex h-full flex-col px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))]">
-            <PostForgeBrand name={workspaceName} />
-            <div className="mt-5 min-h-0 flex-1 overflow-y-auto">{navigation(true)}</div>
-            {footer(true)}
+          <div className="sidebar-mobile-frame">
+            <div className="sidebar-top">
+              <div className="sidebar-header">
+                <PostForgeBrand onNavigate={closeMobileNav} />
+                <button
+                  type="button"
+                  aria-label="Close workspace navigation"
+                  className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-28"
+                  onClick={closeMobileNav}
+                >
+                  <Icon name="x" />
+                </button>
+              </div>
+              <SidebarNav
+                activeHref={activeItem?.href}
+                counts={counts}
+                onNavigate={closeMobileNav}
+              />
+            </div>
+            <SidebarFoot active={settingsActive} onNavigate={closeMobileNav} />
           </div>
         </dialog>
-        <PostForgeBrand name={workspaceName} />
-        <Link
-          href={quickAction.href}
-          aria-label={quickAction.label}
-          className="ml-auto grid size-9 place-items-center rounded-[8px] bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-orange)] transition-[filter,transform] duration-[180ms] hover:brightness-[0.93] active:scale-[0.98]"
-        >
-          <Plus className="size-4" />
-        </Link>
+        <PostForgeBrand />
+        {quickAction && (
+          <Link
+            href={quickAction.href}
+            aria-label={quickAction.label}
+            title={quickAction.label}
+            className="wb-icon-btn wb-icon-btn-strong wb-icon-btn-40"
+          >
+            <Icon name={quickAction.icon} strokeWidth={2} />
+          </Link>
+        )}
       </div>
 
-      <aside id="workspace-sidebar" className="fixed inset-y-0 left-0 z-40 hidden w-[72px] border-r border-[var(--pf-rail-border)] bg-[var(--pf-rail)] md:flex xl:w-64">
-        <div className="sidebar-frame flex w-full flex-col px-2 py-5 xl:px-4">
-          <div className="sidebar-header flex min-w-0 items-center justify-between gap-1">
-            <PostForgeBrand name={workspaceName} />
+      <aside id="workspace-sidebar">
+        <div className="sidebar-top">
+          <div className="sidebar-header">
+            <PostForgeBrand />
             <button
               type="button"
-              onClick={() => {
-                const nextCollapsed = !desktopCollapsed;
-                setDesktopCollapsed(nextCollapsed);
-                writeOptionalStorage("postforge-sidebar-collapsed", String(nextCollapsed));
-                applySidebarCollapsedDataset(nextCollapsed);
-              }}
-              aria-label={desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"}
+              onClick={toggleCollapsed}
+              aria-label={
+                desktopCollapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"
+              }
               aria-expanded={!desktopCollapsed}
               title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="hidden size-7 shrink-0 place-items-center rounded-[6px] text-[var(--pf-rail-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-rail-ink)] xl:grid"
+              className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-28 max-xl:hidden"
             >
-              {desktopCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+              <Icon name="sidebar" />
             </button>
           </div>
-          <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-0.5">{navigation()}</div>
-          {footer()}
+          <SidebarNav activeHref={activeItem?.href} counts={counts} />
         </div>
+        <SidebarFoot active={settingsActive} />
       </aside>
     </>
   );
 }
 
+const SETTINGS_ITEM = workspaceNavigationGroups.utility[0];
+const COLLAPSED_STORAGE_KEY = "postforge-sidebar-collapsed";
 
-const NAV_ICONS: Record<WorkspaceNavigationLabel, LucideIcon> = {
-  Home: House,
-  Jobs: ListChecks,
-  Inspiration: Compass,
-  Clone: Copy,
-  Slideshow: GalleryHorizontal,
-  Gallery: Images,
-  Automations: Workflow,
-  Performance: BarChart3,
-  Spend: DollarSign,
-  Generate: Sparkles,
-  Collections: FolderOpen,
-  Characters: UserRoundPen,
-  Settings,
-};
-
-type WorkspaceSidebarSettings = {
-  id: string;
-  workspaceName?: string;
-  emailFailures?: boolean;
-  emailApprovals?: boolean;
-};
-
-type WorkspaceNotificationCounts = {
-  generationFailures: number;
-  approvalsWaiting: number;
-  latestFailedJobId?: string | null;
-};
+function SidebarFoot({ active, onNavigate }: { active: boolean; onNavigate?: () => void }) {
+  return (
+    <div className="sidebar-foot">
+      <SidebarNavItem item={SETTINGS_ITEM} active={active} onNavigate={onNavigate} />
+      <ThemeToggle className="sidebar-foot-toggle" />
+    </div>
+  );
+}
 
 function applySidebarCollapsedDataset(collapsed: boolean) {
   if (collapsed) {
@@ -322,13 +144,13 @@ function applySidebarCollapsedDataset(collapsed: boolean) {
   }
 }
 
-function PostForgeBrand({ name }: { name: string }) {
+function PostForgeBrand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Link href="/" className="sidebar-brand flex min-w-0 items-center gap-2.5 px-2" aria-label={name}>
-      <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-[7px] bg-[var(--pf-orange)] text-xs font-bold text-white shadow-[var(--pf-shadow-orange)]">
-        P
+    <Link href="/" className="sidebar-brand" aria-label="PostForge" onClick={onNavigate}>
+      <span aria-hidden="true" className="sidebar-brand-tile">
+        <Icon name="logo" strokeWidth={2} />
       </span>
-      <span className="sidebar-expanded-only min-w-0 truncate text-[15px] font-bold tracking-[-0.02em] text-[var(--pf-rail-ink)]">{name}</span>
+      <span className="sidebar-expanded-only sidebar-brand-name">PostForge</span>
     </Link>
   );
 }

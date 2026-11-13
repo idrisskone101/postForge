@@ -4,7 +4,6 @@ import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 export function GalleryFirstPaint() {
   const gallery = getActiveWorkspaceItem("/gallery");
   const title = gallery?.label ?? "Gallery";
-  const copy = gallery?.description ?? "";
 
   return (
     <div data-gallery-first-paint="true">
@@ -31,9 +30,6 @@ export function GalleryFirstPaint() {
               />
               <span className="sr-only">{title}</span>
             </div>
-            <p data-header-copy={copy}>
-              <span className="sr-only">{copy}</span>
-            </p>
           </div>
           <div className="min-h-9 min-w-0 lg:justify-self-end">
             <div
