@@ -283,7 +283,8 @@ for (const file of chromeFiles) {
   const source = readFileSync(file, "utf8");
   assert.doesNotMatch(
     source,
-    /(?<![\w-])(?<![\w]+:)hidden\b/,
+    // A variant prefix makes it conditional: `md:hidden`, or an arbitrary one such as `min-[1440px]:hidden`.
+    /(?<![\w-])(?<![\w\]]+:)hidden\b/,
     `${rel} must not use bare hidden class`,
   );
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];

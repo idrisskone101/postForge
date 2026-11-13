@@ -116,7 +116,7 @@ assert.match(builderSource, /Re-render preview so the saved photo matches/);
 assert.match(builderSource, /avatarProfile/);
 assert.match(builderSource, /missingEditRecord/);
 assert.match(builderSource, /group\.key === "lipFullness"/);
-assert.match(builderSource, /type="range"/);
+assert.match(builderSource, /<Range\b/);
 assert.match(builderSource, /aria-label="Photographic recipe preview"/);
 assert.doesNotMatch(builderSource, /CharacterPortrait|procedural/i);
 assert.match(librarySource, /photoReady/);
