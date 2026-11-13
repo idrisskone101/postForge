@@ -32,14 +32,22 @@ const sidebar = readFileSync(
   "utf8"
 );
 
-assert.equal(countUseEffect(sidebar), 2, "sidebar keeps hydrate + poll effects");
+const notifications = readFileSync(
+  new URL("../../src/lib/use-workspace-notifications.ts", import.meta.url),
+  "utf8"
+);
+
+assert.equal(countUseEffect(sidebar), 1, "sidebar keeps only the hydrate effect");
+assert.equal(countUseEffect(notifications), 1, "the notifications hook owns the poll effect");
+assert.match(sidebar, /useWorkspaceNotifications\(!publicPolicyPage\)/);
 
 assert.match(
   sidebar,
-  /requestAnimationFrame\(\(\) => \{[\s\S]*?readOptionalStorage\("postforge-sidebar-collapsed"\)/
+  /requestAnimationFrame\(\(\) => \{[\s\S]*?readOptionalStorage\(COLLAPSED_STORAGE_KEY\)/
 );
 
-const persistNeedle = 'writeOptionalStorage("postforge-sidebar-collapsed"';
+assert.match(sidebar, /const COLLAPSED_STORAGE_KEY = "postforge-sidebar-collapsed";/);
+const persistNeedle = "writeOptionalStorage(COLLAPSED_STORAGE_KEY";
 const persistIndex = sidebar.indexOf(persistNeedle);
 assert.ok(persistIndex >= 0, "sidebar still writes the collapsed preference");
 assert.equal(
@@ -50,7 +58,10 @@ assert.equal(
   "collapsed persist write must live on the toggle path, not in an effect"
 );
 
-assert.match(sidebar, /setInterval\(refreshWorkspaceStatus,\s*60_000\)/);
-assert.match(sidebar, /addEventListener\("focus",\s*refreshWorkspaceStatus\)/);
+assert.match(notifications, /const POLL_INTERVAL_MS = 60_000;/);
+assert.match(notifications, /setInterval\(refresh,\s*POLL_INTERVAL_MS\)/);
+assert.match(notifications, /addEventListener\("focus",\s*refresh\)/);
+assert.match(notifications, /removeEventListener\("focus",\s*refresh\)/);
+assert.match(notifications, /fetch\("\/api\/workspace-notifications", \{ cache: "no-store" \}\)/);
 
 console.log("sidebar effect hygiene pins passed");

@@ -3,31 +3,41 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { WorkspaceRouteHeader } from "../../src/components/workspace-shell";
 import { workspaceNavigationItems } from "../../src/lib/workspace-navigation";
 
-const home = workspaceNavigationItems.find((item) => item.label === "Home");
-assert.ok(home);
+function item(label: string) {
+  const found = workspaceNavigationItems.find((entry) => entry.label === label);
+  assert.ok(found, `${label} is a workspace route`);
+  return found;
+}
 
-const markup = renderToStaticMarkup(<WorkspaceRouteHeader activeItem={home} />);
-const accessoryMarkup = renderToStaticMarkup(
-  <WorkspaceRouteHeader activeItem={home} hasAccessory />
+const markup = renderToStaticMarkup(
+  <WorkspaceRouteHeader activeItem={item("Automations")} />
 );
 
-assert.match(markup, /id="workspace-header"/);
-assert.match(markup, /id="workspace-header-grid"/);
-assert.match(markup, /min-h-\[120px\]/);
-assert.match(markup, /data-workspace-title="Home"/);
-assert.match(markup, />Home</);
-assert.doesNotMatch(markup, /text-\[28px\]/);
-assert.doesNotMatch(markup, /sm:text-\[30px\]/);
-assert.match(markup, /data-header-copy="/);
-assert.match(markup, /Today’s jobs, reviews, and the next useful action/);
-assert.match(markup, /href="\/ugc-clone"/);
-assert.match(markup, /data-header-action="New Clone"/);
-assert.match(markup, /New Clone/);
-assert.match(markup, /border-\[var\(--pf-border\)\]/);
-assert.doesNotMatch(markup, /pf-masthead/);
-assert.doesNotMatch(markup, /pf-masthead-plate/);
-assert.doesNotMatch(markup, /min-h-\[104px\]/);
-assert.doesNotMatch(markup, /pf-page-title/);
-assert.match(accessoryMarkup, /min-h-9/);
-assert.match(accessoryMarkup, /lg:grid-cols-\[minmax\(0,1fr\)_auto\]/);
+// The header is the title only: real text in an h1, no description line.
+assert.match(markup, /<header id="workspace-header"/);
+assert.match(markup, /<h1 class="wb-page-title">Automations<\/h1>/);
+assert.doesNotMatch(markup, /sr-only/);
+assert.doesNotMatch(markup, /<p\b/);
+assert.doesNotMatch(markup, /data-header-copy|data-workspace-title|pf-masthead/);
+
+// A route with a primary in the design gets the one bone action.
+assert.match(markup, /id="workspace-header-default-action"/);
+assert.match(markup, /href="\/automations\/new"/);
+assert.match(markup, /wb-btn wb-btn-primary wb-btn-40/);
+assert.match(markup, />New automation</);
+assert.equal(markup.match(/wb-btn-primary/g)?.length, 1);
+
+// Jobs, Performance, Spend and Settings have no primary in the design.
+for (const label of ["Jobs", "Performance", "Spend", "Settings"]) {
+  const quiet = renderToStaticMarkup(<WorkspaceRouteHeader activeItem={item(label)} />);
+  assert.match(quiet, new RegExp(`>${label}</h1>`));
+  assert.doesNotMatch(quiet, /workspace-header-default-action|wb-btn-primary/);
+  assert.match(quiet, /id="workspace-header-accessory"/);
+}
+
+// Routes that portal their own controls keep the slot and drop the default action.
+const accessoryMarkup = renderToStaticMarkup(
+  <WorkspaceRouteHeader activeItem={item("Characters")} hasAccessory />
+);
+assert.match(accessoryMarkup, /id="workspace-header-accessory"/);
 assert.doesNotMatch(accessoryMarkup, /id="workspace-header-default-action"/);
