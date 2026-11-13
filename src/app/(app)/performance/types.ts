@@ -1,10 +1,20 @@
 import type { SocialProvider } from "@/lib/integrations-client";
-import type { PublicIntegrationStatus } from "@/lib/integrations/types";
+import type {
+  IntegrationPerformanceResponse,
+  PublicIntegrationStatus,
+} from "@/lib/integrations/types";
 import type { PerformanceDataset } from "@/lib/performance/csv";
 import type {
   ConnectedAccountView,
   PerformancePostView,
 } from "@/lib/performance/metrics";
+
+/** Server-read state for the first paint; `renderedAt` is the clock that markup was built with. */
+export type PerformanceInitial = {
+  providerData: IntegrationPerformanceResponse;
+  csvDataset: PerformanceDataset | null;
+  renderedAt: number;
+};
 
 export type PerformanceMetricVariant = "youtube" | "default";
 

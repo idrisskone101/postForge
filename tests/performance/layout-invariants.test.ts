@@ -13,8 +13,11 @@ const chart = source(`${dir}/performance-chart.tsx`);
 const pill = source(`${dir}/performance-range-pill.tsx`);
 const headerRoute = source("src/lib/workspace-header-route.ts");
 
-assert.match(source(`${dir}/page.tsx`), /PerformancePageLazy/);
-assert.match(source(`${dir}/performance-page-lazy.tsx`), /loading: PerformanceSkeleton/);
+// The server reads the sources so the first paint is the real page; the skeleton
+// only covers the client fallback when that read fails.
+assert.match(source(`${dir}/page.tsx`), /initial=\{await loadPerformanceInitial\(\)\}/);
+assert.match(page, /if \(loading\) return <PerformanceSkeleton \/>/);
+assert.match(source(`${dir}/use-performance-workspace.ts`), /useState\(initial === null\)/);
 
 assert.doesNotMatch(page, /max-w-\[1280px\]|data-page-inset|px-5 py-5/, "the shell owns page padding");
 for (const file of [page, empty, posts, chart, pill]) {

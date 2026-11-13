@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { BrowserLocalText } from "@/components/browser-local-text";
 import { Button } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { Icon } from "@/components/workbench/icon";
@@ -100,13 +101,13 @@ function PostRow({ post }: { post: PerformancePostView }) {
           <PostTitle post={post} />
           <span className="truncate text-[12px] leading-4 text-fg-muted">
             {postSubline(post)}
-            <span className="md:hidden"> - {shortDate(post.publishedAt)}</span>
+            <BrowserLocalText className="md:hidden">{` - ${shortDate(post.publishedAt)}`}</BrowserLocalText>
           </span>
         </span>
       </span>
-      <span className="wb-mono w-[76px] shrink-0 whitespace-nowrap text-fg-secondary max-md:hidden">
+      <BrowserLocalText className="wb-mono w-[76px] shrink-0 whitespace-nowrap text-fg-secondary max-md:hidden">
         {shortDate(post.publishedAt)}
-      </span>
+      </BrowserLocalText>
       {METRIC_COLUMNS.map((column) => {
         const value = post.metrics[column.key];
         return (

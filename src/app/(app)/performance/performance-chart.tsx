@@ -1,3 +1,4 @@
+import { BrowserLocalText } from "@/components/browser-local-text";
 import { Panel } from "@/components/workbench/panel";
 import type { PerformanceChartSeries } from "./types";
 
@@ -72,7 +73,7 @@ export function PerformanceChart({
       </div>
       <div className="flex justify-between pl-10 font-mono text-[12px] leading-4 text-fg-muted">
         {series.xLabels.map((label, index) => (
-          <span key={index}>{label}</span>
+          <BrowserLocalText key={index}>{label}</BrowserLocalText>
         ))}
       </div>
     </Panel>

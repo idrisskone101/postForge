@@ -15,12 +15,17 @@ import { PerformanceRangePill } from "./performance-range-pill";
 import { PerformanceSkeleton } from "./performance-skeleton";
 import { PerformanceSourcePanel } from "./performance-source-panel";
 import { PerformanceStats } from "./performance-stats";
-import type { PerformancePostsModel, PerformanceSourceWorkspace } from "./types";
+import type {
+  PerformanceInitial,
+  PerformancePostsModel,
+  PerformanceSourceWorkspace,
+} from "./types";
 import { usePerformanceWorkspace } from "./use-performance-workspace";
 
-export function PerformancePageClient() {
-  const workspace = usePerformanceWorkspace();
+export function PerformancePageClient({ initial }: { initial: PerformanceInitial | null }) {
+  const workspace = usePerformanceWorkspace(initial);
   const {
+    hydrationTime,
     inputRef,
     csvDataset,
     providerData,
@@ -57,7 +62,7 @@ export function PerformancePageClient() {
 
   if (loading) return <PerformanceSkeleton />;
 
-  const now = new Date();
+  const now = hydrationTime === null ? new Date() : new Date(hydrationTime);
   const variant = performanceVariant(activeIsYouTube);
   const openImport = () => inputRef.current?.click();
   const sourceWorkspace: PerformanceSourceWorkspace = {

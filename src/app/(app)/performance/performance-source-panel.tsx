@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BrowserLocalText } from "@/components/browser-local-text";
 import { Button, buttonClass } from "@/components/workbench/button";
 import { IconButton } from "@/components/workbench/icon-button";
 import { Panel } from "@/components/workbench/panel";
@@ -47,7 +48,7 @@ export function PerformanceSourcePanel({
         ))}
       </ul>
       <p className="pt-3 text-[12px] leading-4 text-fg-muted">
-        {providerRefreshLabel(workspace.lastUpdatedAt)}
+        <BrowserLocalText>{providerRefreshLabel(workspace.lastUpdatedAt)}</BrowserLocalText>
       </p>
     </Panel>
   );
@@ -73,9 +74,9 @@ function SourceRow({
         <span className="truncate">{row.name}</span>
       </span>
       {sub ? (
-        <span className="max-w-full text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
+        <BrowserLocalText className="max-w-full text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
           {sub}
-        </span>
+        </BrowserLocalText>
       ) : null}
       {warning ? (
         <span className="max-w-full text-[12px] leading-4 text-warn [overflow-wrap:anywhere]">

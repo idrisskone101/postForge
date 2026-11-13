@@ -27,7 +27,8 @@ import {
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
 import type { ToastMessage } from "@/components/workbench/toast";
-import type { PerformanceRange } from "./types";
+import { useHydrated } from "@/lib/use-hydrated";
+import type { PerformanceInitial, PerformanceRange } from "./types";
 
 const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
   providers: [],
@@ -35,14 +36,19 @@ const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
   lastUpdatedAt: null,
 };
 
-export function usePerformanceWorkspace() {
+export function usePerformanceWorkspace(initial: PerformanceInitial | null) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [csvDataset, setCsvDataset] = useState<PerformanceDataset | null>(null);
+  // Until hydration ends, dates are measured from the server's clock so both renders agree.
+  const hydrated = useHydrated();
+  const hydrationTime = initial && !hydrated ? initial.renderedAt : null;
+  const [csvDataset, setCsvDataset] = useState<PerformanceDataset | null>(
+    initial?.csvDataset ?? null
+  );
   const [providerData, setProviderData] = useState<IntegrationPerformanceResponse>(
-    EMPTY_PROVIDER_PERFORMANCE
+    initial?.providerData ?? EMPTY_PROVIDER_PERFORMANCE
   );
   const [selectedSource, setSelectedSource] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initial === null);
   const [importing, setImporting] = useState(false);
   const [providerError, setProviderError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -90,8 +96,9 @@ export function usePerformanceWorkspace() {
   }, [loadProviderData]);
 
   useEffect(() => {
+    if (initial) return;
     void loadAll();
-  }, [loadAll]);
+  }, [initial, loadAll]);
 
   const connectedAccounts = useMemo<ConnectedAccountView[]>(
     () =>
@@ -144,7 +151,7 @@ export function usePerformanceWorkspace() {
   }, [activeSource, connectedAccounts, csvDataset, providerData.posts]);
 
   const posts = useMemo(() => {
-    const threshold = Date.now() - range * 86_400_000;
+    const threshold = (hydrationTime ?? Date.now()) - range * 86_400_000;
     const query = search.trim().toLowerCase();
     return sourcePosts
       .filter((post) => {
@@ -165,7 +172,7 @@ export function usePerformanceWorkspace() {
         if (b.metrics.views === null) return -1;
         return b.metrics.views - a.metrics.views;
       });
-  }, [activeIsYouTube, range, search, sourcePosts]);
+  }, [activeIsYouTube, hydrationTime, range, search, sourcePosts]);
 
   const excludedUnknownDates = sourcePosts.filter((post) => !post.publishedAt).length;
   const aggregates = useMemo(
@@ -302,6 +309,7 @@ export function usePerformanceWorkspace() {
   }, [activeAccount, activeSource, connectedAccounts]);
 
   return {
+    hydrationTime,
     inputRef,
     csvDataset,
     providerData,
