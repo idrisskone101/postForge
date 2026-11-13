@@ -62,7 +62,7 @@ export function SettingsNavigation({
           </div>
         ))}
       </nav>
-      {hydrated ? null : <script dangerouslySetInnerHTML={{ __html: REVEAL_BEFORE_PAINT }} />}
+      {hydrated ? null : <script>{REVEAL_BEFORE_PAINT}</script>}
     </>
   );
 }
