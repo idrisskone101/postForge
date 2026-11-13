@@ -948,3 +948,60 @@
     );
   }
 }
+
+/*
+ * Coarse pointers: every control gets a hit area of at least 44px without changing what is drawn. The
+ * area is a centred pseudo-element, so layout does not move. --wb-hit-w and --wb-hit-h cap it where
+ * neighbours sit closer than 44px apart, so two areas split the gap instead of overlapping.
+ * Ad-hoc controls opt in with .wb-hit. The toggle uses ::before because ::after is its thumb.
+ */
+@media (pointer: coarse) {
+  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, .wb-step, .wb-hit, label.wb-input-wrap) {
+    position: relative;
+  }
+
+  :is(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-step, .wb-tile-check, .wb-hit, label.wb-input-wrap)::after,
+  .wb-toggle::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--wb-hit-w, 44px));
+    height: max(100%, var(--wb-hit-h, 44px));
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  /*
+   * The segmented bed scrolls sideways, so it clips anything taller than itself. On touch the box grows
+   * to 44px while the drawn bed stays 36px: the fill is clipped to the content box, the radius pair
+   * keeps that fill a pill, and the negative margin returns the 8px to the layout. A bed that sets its
+   * own height with a utility (h-10, h-[42px]) is left alone: those are already 40px or taller.
+   */
+  .wb-segmented:not([class*="h-"]) {
+    height: 44px;
+    align-items: center;
+    margin-block: -4px;
+    border-radius: 18px / 22px;
+    background-clip: content-box;
+    padding: 4px 0;
+  }
+
+  .wb-segmented:not([class*="h-"]) > :first-child {
+    margin-left: 3px;
+  }
+
+  .wb-segmented:not([class*="h-"]) > :last-child {
+    margin-right: 3px;
+  }
+
+  /* Segments touch their neighbours: the area grows only into the 2px gap. */
+  .wb-segment::after {
+    width: calc(100% + 2px);
+  }
+
+  /* Chips and 32px pills stack with 8px gaps: 40px splits that gap exactly. */
+  .wb-chip,
+  .wb-btn-32 {
+    --wb-hit-h: 40px;
+  }
+}

@@ -55,7 +55,7 @@ export function TikTokSavedSources({
         onClick={onToggle}
         aria-expanded={showSavedSources}
         aria-controls="saved-source-grid"
-        className="flex w-fit items-center gap-2 rounded-sm"
+        className="wb-hit flex w-fit items-center gap-2 rounded-sm"
       >
         <span className="wb-label">Saved sources</span>
         <CountBadge count={savedSources.length} />
@@ -130,7 +130,7 @@ export function TikTokSavedSources({
                     onClick={(e) => onDelete(source.id, e)}
                     disabled={deletingId === source.id}
                     aria-label={`Delete ${source.label}`}
-                    className="absolute right-2 top-2 inline-flex h-7 items-center rounded-full bg-[var(--pf-scrim)] px-2.5 text-[12px] font-semibold leading-4 text-[var(--pf-on-media)] opacity-0 transition-opacity duration-[160ms] ease-pf focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-100 pointer-coarse:opacity-100"
+                    className="wb-hit absolute right-2 top-2 inline-flex h-7 items-center rounded-full bg-[var(--pf-scrim)] px-2.5 text-[12px] font-semibold leading-4 text-[var(--pf-on-media)] opacity-0 transition-opacity duration-[160ms] ease-pf focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-100 pointer-coarse:opacity-100"
                   >
                     {deletingId === source.id ? "Deleting" : "Delete"}
                   </button>

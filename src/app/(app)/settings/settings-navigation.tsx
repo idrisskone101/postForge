@@ -39,7 +39,7 @@ export function SettingsNavigation({
                 onClick={() => onSelect(id)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-8 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium leading-4 text-fg-secondary outline-none transition-colors duration-[var(--pf-dur-state)] ease-pf hover:text-fg focus-visible:ring-2 focus-visible:ring-ember",
+                  "wb-hit flex h-8 shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-medium leading-4 text-fg-secondary outline-none transition-colors duration-[var(--pf-dur-state)] ease-pf hover:text-fg focus-visible:ring-2 focus-visible:ring-ember",
                   "min-[1280px]:h-9 min-[1280px]:justify-between min-[1280px]:px-2.5 min-[1280px]:text-sm min-[1280px]:leading-[18px] min-[1280px]:hover:bg-raised/60",
                   active &&
                     "bg-[var(--pf-segment)] font-semibold text-fg shadow-[var(--pf-segment-shadow)] min-[1280px]:bg-raised min-[1280px]:pr-2 min-[1280px]:shadow-none min-[1280px]:hover:bg-raised"

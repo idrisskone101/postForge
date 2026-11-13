@@ -91,37 +91,37 @@ export function SlideshowAutomationList({
                       : "Reuses saved visuals, no image cost"}
                   </span>
                   {slideshowDeleteId === automation.id ? (
-                    <span className="flex items-center gap-2.5" role="group" aria-label={`Delete ${automation.name}?`}>
+                    <span className="flex items-center gap-2.5 pointer-coarse:gap-5" role="group" aria-label={`Delete ${automation.name}?`}>
                       <span className="font-semibold text-bad">Delete?</span>
                       <button
                         type="button"
                         onClick={() => void removeSlideshow(automation)}
                         disabled={busy === automation.id}
-                        className="font-semibold text-bad underline underline-offset-2 disabled:opacity-50"
+                        className="wb-hit [--wb-hit-w:calc(100%+20px)] font-semibold text-bad underline underline-offset-2 disabled:opacity-50"
                       >
                         Yes, delete
                       </button>
                       <button
                         type="button"
                         onClick={() => setSlideshowDeleteId(null)}
-                        className="font-semibold text-fg underline underline-offset-2"
+                        className="wb-hit [--wb-hit-w:calc(100%+20px)] font-semibold text-fg underline underline-offset-2"
                       >
                         Keep
                       </button>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2.5 font-semibold">
+                    <span className="flex items-center gap-2.5 font-semibold pointer-coarse:gap-5">
                       <Link
                         href="/slideshow"
                         aria-label={`Open drafts for ${automation.name}`}
-                        className="text-fg underline underline-offset-2"
+                        className="wb-hit [--wb-hit-w:calc(100%+20px)] text-fg underline underline-offset-2"
                       >
                         Drafts
                       </Link>
                       <Link
                         href={`/automations/new?workflow=slideshow&id=${encodeURIComponent(automation.id)}`}
                         aria-label={`Edit ${automation.name}`}
-                        className="text-fg underline underline-offset-2"
+                        className="wb-hit [--wb-hit-w:calc(100%+20px)] text-fg underline underline-offset-2"
                       >
                         Edit
                       </Link>
@@ -129,7 +129,7 @@ export function SlideshowAutomationList({
                         type="button"
                         onClick={() => setSlideshowDeleteId(automation.id)}
                         aria-label={`Delete ${automation.name}`}
-                        className="text-bad underline underline-offset-2"
+                        className="wb-hit [--wb-hit-w:calc(100%+20px)] text-bad underline underline-offset-2"
                       >
                         Delete
                       </button>

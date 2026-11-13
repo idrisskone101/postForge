@@ -190,4 +190,4 @@ export function CreateIdeaForm() {
 const LANGUAGES = ["English", "Spanish", "French", "German", "Portuguese", "Italian"];
 
 const STEP_BTN =
-  "grid size-8 shrink-0 place-items-center rounded-full bg-strong text-strong-fg outline-none transition-[background-color,transform] duration-[160ms] ease-pf hover:bg-[var(--pf-strong-hover)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] active:scale-[0.96] disabled:opacity-50";
+  "wb-hit grid size-8 shrink-0 place-items-center rounded-full bg-strong text-strong-fg outline-none transition-[background-color,transform] duration-[160ms] ease-pf hover:bg-[var(--pf-strong-hover)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] active:scale-[0.96] disabled:opacity-50";

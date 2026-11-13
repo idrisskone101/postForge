@@ -145,7 +145,7 @@ function applySidebarCollapsedDataset(collapsed: boolean) {
 
 function PostForgeBrand({ name, onNavigate }: { name: string; onNavigate?: () => void }) {
   return (
-    <Link href="/" className="sidebar-brand" aria-label={name} onClick={onNavigate}>
+    <Link href="/" className="wb-hit sidebar-brand" aria-label={name} onClick={onNavigate}>
       <span aria-hidden="true" className="sidebar-brand-tile">
         <Icon name="logo" strokeWidth={2} />
       </span>
