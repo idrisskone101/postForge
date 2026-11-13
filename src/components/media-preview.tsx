@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { useState, useRef, useCallback, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fileThumbnailSources, type MediaThumbnail } from "@/lib/file-thumbnail";
+import {
+  fileThumbnailLoader,
+  hasFileThumbnail,
+  type MediaThumbnail,
+} from "@/lib/file-thumbnail";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
 
@@ -116,7 +120,7 @@ export function MediaPreviewFrame({
   const [hasError, setHasError] = useState(false);
   const [failedThumbnailSrc, setFailedThumbnailSrc] = useState<string | null>(null);
   const resized =
-    thumbnail && type === "image" && failedThumbnailSrc !== src ? fileThumbnailSources(src) : null;
+    thumbnail && type === "image" && failedThumbnailSrc !== src && hasFileThumbnail(src);
   const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -151,22 +155,20 @@ export function MediaPreviewFrame({
 
   const image =
     resized && thumbnail ? (
-      // eslint-disable-next-line @next/next/no-img-element -- fixed-width variants need their own srcset
-      <img
+      <Image
         ref={setImageRef}
-        src={resized.src}
-        srcSet={resized.srcSet}
+        src={src}
+        loader={fileThumbnailLoader}
         sizes={thumbnail.sizes}
         alt={alt}
+        fill={fillFrame}
         width={fillFrame ? undefined : mediaWidth}
         height={fillFrame ? undefined : mediaHeight}
         loading={thumbnail.priority ? "eager" : "lazy"}
-        decoding="async"
         fetchPriority={thumbnail.priority ? "high" : "auto"}
         onLoad={markLoaded}
         onError={() => setFailedThumbnailSrc(src)}
         className={cn(
-          fillFrame && "absolute inset-0",
           mediaClass,
           // Chrome never counts an image first painted at opacity 0, so the priority image skips the fade.
           thumbnail.priority && "opacity-100 transition-none",

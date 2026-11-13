@@ -20,14 +20,19 @@ export function fileThumbnailWidth(requested: number): number {
   );
 }
 
-/** Null when `src` is not a stored file URL (`/api/files/<id>`); callers then keep the original. */
-export function fileThumbnailSources(src: string): { src: string; srcSet: string } | null {
-  if (!STORED_FILE_URL.test(src)) return null;
-  const variant = (width: number) => `${src}/thumbnail?w=${width}`;
-  return {
-    src: variant(FILE_THUMBNAIL_WIDTHS[1]),
-    srcSet: FILE_THUMBNAIL_WIDTHS.map((width) => `${variant(width)} ${width}w`).join(", "),
-  };
+/** Only stored files (`/api/files/<id>`) have resized variants; callers keep the original otherwise. */
+export function hasFileThumbnail(src: string): boolean {
+  return STORED_FILE_URL.test(src);
+}
+
+/**
+ * `next/image` loader. It asks for widths from its own ladder (..., 256, 384, 640, 750, ...),
+ * so each rung maps to the variant that still covers the slot it was chosen for.
+ */
+export function fileThumbnailLoader({ src, width }: { src: string; width: number }): string {
+  const [small, medium, large] = FILE_THUMBNAIL_WIDTHS;
+  const variant = width <= 256 ? small : width <= 640 ? medium : large;
+  return `${src}/thumbnail?w=${variant}`;
 }
 
 const STORED_FILE_URL = /^\/api\/files\/[^/?#]+$/;

@@ -66,8 +66,7 @@ const thumbnailMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(thumbnailMarkup, /src="\/api\/files\/abc\/thumbnail\?w=480"/);
-assert.match(thumbnailMarkup, /srcSet="[^"]*\/api\/files\/abc\/thumbnail\?w=240 240w[^"]*720w"/);
+assert.match(thumbnailMarkup, /srcSet="[^"]*\/api\/files\/abc\/thumbnail\?w=240 256w[^"]*\/api\/files\/abc\/thumbnail\?w=480 640w[^"]*\/api\/files\/abc\/thumbnail\?w=720 750w/);
 assert.match(thumbnailMarkup, /sizes="236px"/);
 assert.match(thumbnailMarkup, /loading="lazy"/);
 assert.match(thumbnailMarkup, /opacity-0/, "a lazy thumbnail keeps the fade-in");
