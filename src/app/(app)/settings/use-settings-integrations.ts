@@ -15,15 +15,18 @@ import {
   readIntegrationCallbackFeedback,
   removeIntegrationCallbackParams,
 } from "./integration-callback";
+import type { ConfirmAction } from "./confirm-dialog";
 
 export function useSettingsIntegrations({
   onOAuthCallback,
   setError,
   setToast,
+  confirm,
 }: {
   onOAuthCallback: () => void;
   setError: (message: string) => void;
-  setToast: (message: string | null) => void;
+  setToast: (message: string) => void;
+  confirm: ConfirmAction;
 }) {
   const router = useRouter();
   const [providers, setProviders] = useState<PublicIntegrationStatus[]>([]);
@@ -40,7 +43,6 @@ export function useSettingsIntegrations({
       setProviders(response.providers);
       if (announce) {
         setToast("Connection status refreshed");
-        window.setTimeout(() => setToast(null), 1700);
       }
       return response.providers;
     } catch (cause) {
@@ -92,7 +94,6 @@ export function useSettingsIntegrations({
       const accountLabel =
         account?.displayName || account?.username || confirmed.displayName;
       setToast(`${confirmed.displayName} connected as ${accountLabel}.`);
-      window.setTimeout(() => setToast(null), 2600);
     });
   }, [onOAuthCallback, refreshIntegrations, router, setError, setToast]);
 
@@ -136,7 +137,6 @@ export function useSettingsIntegrations({
       setToast(
         `${status.displayName} synced ${result.posts.length} owned post${result.posts.length === 1 ? "" : "s"}`
       );
-      window.setTimeout(() => setToast(null), 1700);
     } catch (cause) {
       setIntegrationsError(
         cause instanceof Error ? cause.message : `Unable to sync ${status.displayName}`
@@ -157,11 +157,12 @@ export function useSettingsIntegrations({
       bound?.account.displayName ||
       bound?.account.username ||
       status.displayName;
-    if (
-      !window.confirm(
-        `Disconnect ${accountName} from ${status.displayName}? Provider-owned metrics will stop refreshing. Imported CSV data will not be removed. Disconnect is blocked while a publication is pending or processing.`
-      )
-    ) {
+    const confirmed = await confirm({
+      title: `Disconnect ${accountName} from ${status.displayName}?`,
+      body: "Provider-owned metrics will stop refreshing. Imported CSV data will not be removed. Disconnect is blocked while a publication is pending or processing.",
+      confirmLabel: "Disconnect",
+    });
+    if (confirmed !== true) {
       return;
     }
 
@@ -171,16 +172,19 @@ export function useSettingsIntegrations({
       await disconnectIntegration(status.provider, accountId);
       await refreshIntegrations();
       setToast(`${accountName} disconnected from ${status.displayName}`);
-      window.setTimeout(() => setToast(null), 1700);
     } catch (cause) {
       const message =
         cause instanceof Error
           ? cause.message
           : `Unable to disconnect ${accountName}`;
       if (/provider revocation failed/i.test(message)) {
-        const confirmation = window.prompt(
-          `${status.displayName} did not confirm remote revocation. To permanently delete the local connection, encrypted tokens, and cached metrics anyway, type ${LOCAL_INTEGRATION_DELETE_CONFIRMATION}. You must separately revoke PostForge in ${status.displayName}'s account permissions.`
-        );
+        const answer = await confirm({
+          title: `${status.displayName} did not confirm revocation`,
+          body: `To permanently delete the local connection, encrypted tokens, and cached metrics anyway, type ${LOCAL_INTEGRATION_DELETE_CONFIRMATION}. You must separately revoke PostForge in ${status.displayName}'s account permissions.`,
+          confirmLabel: "Delete local data",
+          phrase: LOCAL_INTEGRATION_DELETE_CONFIRMATION,
+        });
+        const confirmation = typeof answer === "string" ? answer : null;
         if (confirmation === LOCAL_INTEGRATION_DELETE_CONFIRMATION) {
           try {
             await disconnectIntegration(status.provider, accountId, {
@@ -191,7 +195,6 @@ export function useSettingsIntegrations({
             setToast(
               `${status.displayName} local data deleted; remote revocation was not confirmed`
             );
-            window.setTimeout(() => setToast(null), 1700);
             return;
           } catch (forceDeleteCause) {
             setIntegrationsError(

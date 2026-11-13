@@ -53,8 +53,6 @@ assert.doesNotMatch(
   /^export \{/m,
   "settings-page-client must not re-export extracted modules"
 );
-assert.match(pageSource, /lg:grid-cols-\[210px_minmax\(0,1fr\)\]/);
-assert.match(pageSource, /overflow-x-auto overscroll-x-contain/);
 
 console.log(
   files

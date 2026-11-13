@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readIntegrationCallbackFeedback } from "../../src/app/(app)/settings/integration-callback";
 import { IntegrationsPanel } from "../../src/app/(app)/settings/integrations-panel";
-import { SettingsNavigation } from "../../src/app/(app)/settings/settings-page-client";
+import { SettingsNavigation } from "../../src/app/(app)/settings/settings-navigation";
 import { SocialIntegrationCard } from "../../src/app/(app)/settings/social-integration-card";
 import type { IntegrationsWorkspace } from "../../src/app/(app)/settings/types";
 import type { PublicIntegrationStatus } from "../../src/lib/integrations/types";
@@ -149,17 +149,21 @@ assert.match(instagramMarkup, /POSTFORGE_PUBLIC_URL/);
 assert.match(instagramMarkup, /Meta.*crawler/);
 assert.match(instagramMarkup, /instagram_business_content_publish/);
 assert.match(instagramMarkup, /Setup required/);
-assert.match(instagramMarkup, /disabled=""/);
+assert.match(instagramMarkup, /aria-expanded="false"[^>]*>Set up/);
+assert.match(instagramMarkup, /hidden=""/);
+assert.doesNotMatch(instagramMarkup, />Connect</);
 
 const connectedMarkup = renderCard("tiktok", connectedTikTok);
 assert.match(connectedMarkup, /data-social-provider="tiktok"/);
 assert.match(connectedMarkup, /Real Creator/);
 assert.match(connectedMarkup, /@real_creator/);
-assert.match(connectedMarkup, /Sync error/);
-assert.match(connectedMarkup, /Metrics verified/);
+assert.match(connectedMarkup, /Sync failed/);
+assert.match(connectedMarkup, /Sync error\./);
+assert.match(connectedMarkup, /previously stored metrics were kept/);
 assert.match(connectedMarkup, /Upload scope not granted/);
-assert.match(connectedMarkup, /> Sync</);
-assert.match(connectedMarkup, /> Disconnect</);
+assert.match(connectedMarkup, />Connected</);
+assert.match(connectedMarkup, />Sync</);
+assert.match(connectedMarkup, />Disconnect</);
 assert.doesNotMatch(connectedMarkup, /Connect TikTok/);
 
 const instagramRuntimeUnavailableMarkup = renderCard(
@@ -179,20 +183,20 @@ const instagramRuntimeUnavailableMarkup = renderCard(
     }
   )
 );
-assert.match(instagramRuntimeUnavailableMarkup, /Upload runtime/);
-assert.match(instagramRuntimeUnavailableMarkup, /unavailable/);
+assert.match(instagramRuntimeUnavailableMarkup, /Upload runtime unavailable/);
+assert.match(instagramRuntimeUnavailableMarkup, /Publishing unavailable\./);
 assert.match(instagramRuntimeUnavailableMarkup, /FFPROBE_PATH/);
 
 const youtubeMarkup = renderCard("youtube", readyYouTube);
 assert.match(youtubeMarkup, />YouTube</);
-assert.match(youtubeMarkup, /Connect YouTube/);
+assert.match(youtubeMarkup, /aria-label="Connect YouTube"/);
 assert.match(youtubeMarkup, /PostForge policies for YouTube API Services/);
 assert.match(youtubeMarkup, /https:\/\/postforge\.example\/privacy/);
 assert.match(youtubeMarkup, /https:\/\/postforge\.example\/terms/);
 assert.match(youtubeMarkup, /https:\/\/postforge\.example\/data-deletion/);
 assert.match(youtubeMarkup, /Accept policies before connecting YouTube/);
 assert.match(youtubeMarkup, /using YouTube API Services means/);
-assert.match(youtubeMarkup, /<button[^>]*disabled=""[^>]*>Connect YouTube<\/button>/);
+assert.match(youtubeMarkup, /<button[^>]*aria-label="Connect YouTube"[^>]*disabled=""[^>]*>Connect<\/button>/);
 assert.doesNotMatch(youtubeMarkup, /type="checkbox"[^>]*checked/);
 
 const youtubeSetupMarkup = renderCard("youtube", notConfiguredYouTube);
@@ -277,16 +281,17 @@ assert.equal((panelMarkup.match(/data-social-provider=/g) ?? []).length, 3);
 assert.match(panelMarkup, /Social accounts/);
 assert.match(panelMarkup, /Connect another/);
 assert.match(panelMarkup, /Not configured/);
-assert.match(panelMarkup, /Ready to connect/);
+assert.match(panelMarkup, /Not connected/);
+assert.match(panelMarkup, /Automation handoffs/);
 
 const navigationMarkup = renderToStaticMarkup(
   <SettingsNavigation
     tab="integrations"
-    connectedIntegrations={2}
+    attention={2}
     onSelect={noOp}
   />
 );
-assert.match(navigationMarkup, /2 connected integrations/);
+assert.match(navigationMarkup, /2 integrations need attention/);
 
 assert.deepEqual(
   readIntegrationCallbackFeedback(

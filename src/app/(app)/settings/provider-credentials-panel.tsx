@@ -1,13 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  AlertCircle,
-  Check,
-  KeyRound,
-  Loader2,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Button, Panel, Skeleton, StatusChip } from "@/components/workbench";
 
 type ProviderCredentialStatus = {
   provider: "fal" | "gemini" | "virlo" | "ollama";
@@ -16,12 +10,11 @@ type ProviderCredentialStatus = {
   envKey: string;
 };
 
-export function ProviderCredentialsPanel() {
+export function ProviderCredentialsPanel({ onSaved }: { onSaved: (message: string) => void }) {
   const [statuses, setStatuses] = useState<ProviderCredentialStatus[] | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -48,7 +41,6 @@ export function ProviderCredentialsPanel() {
     }
     setBusy(provider);
     setError(null);
-    setNotice(null);
     try {
       const response = await fetch("/api/settings/provider-credentials", {
         method: "PUT",
@@ -63,7 +55,7 @@ export function ProviderCredentialsPanel() {
       }
       setValues((current) => ({ ...current, [provider]: "" }));
       await refresh();
-      setNotice(`${PROVIDER_LABELS[provider] ?? provider} key saved server-side.`);
+      onSaved(`${PROVIDER_LABELS[provider] ?? provider} key saved server-side.`);
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : "The provider key could not be saved."
@@ -76,7 +68,6 @@ export function ProviderCredentialsPanel() {
   const handleClear = async (provider: string) => {
     setBusy(provider);
     setError(null);
-    setNotice(null);
     try {
       const response = await fetch(
         `/api/settings/provider-credentials?provider=${encodeURIComponent(provider)}`,
@@ -89,7 +80,7 @@ export function ProviderCredentialsPanel() {
         throw new Error(body?.error ?? "The provider key could not be cleared.");
       }
       await refresh();
-      setNotice(`${PROVIDER_LABELS[provider] ?? provider} key cleared.`);
+      onSaved(`${PROVIDER_LABELS[provider] ?? provider} key cleared.`);
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : "The provider key could not be cleared."
@@ -100,99 +91,72 @@ export function ProviderCredentialsPanel() {
   };
 
   return (
-    <div data-provider-credentials-panel>
-      <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-        <KeyRound className="size-4" />
-      </span>
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="pf-section-title mt-1">API keys</h2>
-          <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
-            Manage the provider credentials this workspace uses for generation. Keys are encrypted at rest on the server and are never sent back to this browser.
-          </p>
-        </div>
-      </div>
-
+    <Panel pad="wide" title="API keys" data-provider-credentials-panel className="gap-2" aria-busy={!statuses}>
       {error && (
-        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]">
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
-        </div>
+        <p role="alert" className="wb-notice my-1 break-words [overflow-wrap:anywhere]" data-tone="bad">
+          {error}
+        </p>
       )}
-      {notice && (
-        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-link)]">
-          <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
-        </div>
-      )}
-
-      <div className="mt-6 max-w-[760px] space-y-3">
-        {!statuses && (
-          <div className="pf-card grid min-h-[200px] place-items-center p-5">
-            <Loader2 className="size-5 animate-spin text-muted-foreground" />
-          </div>
-        )}
+      <div className="flex flex-col">
+        {!statuses &&
+          !error &&
+          [0, 1, 2, 3].map((index) => (
+            <div key={index} className="flex items-center gap-4 border-t border-hairline py-[18px]">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="ml-auto h-[42px] w-[280px] max-sm:hidden" />
+            </div>
+          ))}
         {(statuses ?? []).map((status) => {
-          const tone = credentialToneClass(status.source);
+          const label = PROVIDER_LABELS[status.provider] ?? status.provider;
+          const value = values[status.provider] ?? "";
+          const source = SOURCE[status.source];
+          const inputId = `credential-${status.provider}`;
           return (
-            <article
+            <div
               key={status.provider}
               data-provider-credential={status.provider}
-              className="pf-card grid min-w-0 gap-3 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+              className="flex flex-col gap-3 border-t border-hairline py-[18px] md:flex-row md:items-center md:gap-4"
             >
-              <div className="min-w-0">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-[13px] font-semibold">
-                    {PROVIDER_LABELS[status.provider] ?? status.provider}
-                  </h3>
-                  <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-bold uppercase tracking-[.06em]", tone)}>
-                    {credentialSourceLabel(status.source)}
-                  </span>
+                  <label htmlFor={inputId} className="text-sm font-semibold leading-[18px] text-fg">
+                    {label}
+                  </label>
+                  <StatusChip tone={source.tone}>{source.label}</StatusChip>
                 </div>
-                <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
-                  Environment fallback: {status.envKey}
-                </p>
+                <span className="wb-mono text-fg-muted">Environment fallback {status.envKey}</span>
               </div>
-              <div className="flex min-w-0 flex-col gap-2 sm:max-w-[340px]">
-                <div className="flex min-w-0 gap-2">
-                  <input
-                    type="password"
-                    aria-label={`${PROVIDER_LABELS[status.provider] ?? status.provider} API key`}
-                    value={values[status.provider] ?? ""}
-                    onChange={(event) =>
-                      setValues((current) => ({
-                        ...current,
-                        [status.provider]: event.target.value,
-                      }))
-                    }
-                    placeholder={
-                      status.configured ? "Rotate with a new key…" : `Paste ${PROVIDER_LABELS[status.provider]} key…`
-                    }
-                    className="h-9 min-w-0 flex-1 rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void handleSave(status.provider)}
-                    disabled={busy !== null || !(values[status.provider] ?? "").trim()}
-                    className="pf-button-primary h-9 shrink-0 px-3 text-[12px] disabled:cursor-not-allowed disabled:bg-[var(--pf-active)] disabled:text-muted-foreground"
-                  >
-                    {busy === status.provider ? <Loader2 className="size-3.5 animate-spin" /> : "Save"}
-                  </button>
-                </div>
+              <div className="flex min-w-0 flex-wrap items-center gap-2 md:flex-nowrap">
+                <input
+                  id={inputId}
+                  type="password"
+                  autoComplete="off"
+                  aria-label={`${label} API key`}
+                  value={value}
+                  onChange={(event) =>
+                    setValues((current) => ({ ...current, [status.provider]: event.target.value }))
+                  }
+                  placeholder={status.configured ? "Rotate with a new key" : `Paste ${label} key`}
+                  className="wb-input min-w-0 flex-1 basis-full md:w-[280px] md:flex-none md:basis-auto"
+                />
+                <Button
+                  variant="strong"
+                  onClick={() => void handleSave(status.provider)}
+                  disabled={busy !== null || !value.trim()}
+                >
+                  {busy === status.provider ? "Saving" : "Save"}
+                </Button>
                 {status.source === "stored" && (
-                  <button
-                    type="button"
-                    onClick={() => void handleClear(status.provider)}
-                    disabled={busy !== null}
-                    className="self-end text-[11px] font-semibold text-[var(--pf-danger)] hover:underline disabled:opacity-50"
-                  >
-                    {busy === status.provider ? "Clearing…" : "Clear stored key"}
-                  </button>
+                  <Button variant="danger" onClick={() => void handleClear(status.provider)} disabled={busy !== null}>
+                    {busy === status.provider ? "Clearing" : "Clear stored key"}
+                  </Button>
                 )}
               </div>
-            </article>
+            </div>
           );
         })}
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -203,18 +167,11 @@ const PROVIDER_LABELS: Record<string, string> = {
   ollama: "Ollama",
 };
 
-function credentialToneClass(source: ProviderCredentialStatus["source"]): string {
-  if (source === "stored") {
-    return "border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 text-[var(--pf-success)]";
-  }
-  if (source === "env") {
-    return "border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 text-[var(--pf-link)]";
-  }
-  return "border-border bg-[var(--pf-active)] text-muted-foreground";
-}
-
-function credentialSourceLabel(source: ProviderCredentialStatus["source"]): string {
-  if (source === "stored") return "Configured";
-  if (source === "env") return "Env configured";
-  return "Not configured";
-}
+const SOURCE: Record<
+  ProviderCredentialStatus["source"],
+  { tone: "ok" | "neutral"; label: string }
+> = {
+  stored: { tone: "ok", label: "Configured" },
+  env: { tone: "ok", label: "Env configured" },
+  none: { tone: "neutral", label: "Not configured" },
+};

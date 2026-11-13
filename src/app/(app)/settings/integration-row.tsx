@@ -22,14 +22,17 @@ export type IntegrationRowView = {
  */
 export function IntegrationRow({ view, children }: { view: IntegrationRowView; children?: ReactNode }) {
   return (
-    <div className="flex flex-col gap-4 border-t border-hairline py-[22px] first:border-t-0 @min-[720px]:first:border-t">
-      <div className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3.5 gap-y-3 @min-[720px]:flex @min-[720px]:gap-3.5">
+    <div className="flex flex-col gap-4 border-t border-hairline py-[22px]">
+      <div className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 @min-[720px]:flex @min-[720px]:gap-3.5">
         <RowTile tile={view.tile} />
         <div className="flex min-w-0 flex-col gap-0.5 @min-[720px]:flex-1">
           <span className="text-sm font-semibold leading-[18px] text-fg">{view.name}</span>
           {view.sub && <span className="break-words text-[13px] leading-4 text-fg-muted">{view.sub}</span>}
+          {!view.sub && view.chip === null && (
+            <span aria-hidden="true" className="wb-skeleton my-0.5 h-3 w-28 rounded-full" />
+          )}
         </div>
-        <div className="col-start-2 flex @min-[720px]:w-[168px] @min-[720px]:shrink-0">
+        <div className="col-start-3 row-start-1 flex @min-[720px]:w-[168px] @min-[720px]:shrink-0">
           {view.chip ? (
             <StatusChip tone={view.chip.tone} icon={view.chip.icon}>
               {view.chip.label}
@@ -38,11 +41,11 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
             <span aria-hidden="true" className="wb-skeleton h-6 w-24 rounded-full" />
           )}
         </div>
-        <div className="col-start-2 grid grid-cols-2 gap-3 @min-[720px]:contents">
+        <div className="col-span-2 col-start-2 grid grid-cols-2 gap-3 @min-[720px]:contents">
           <RowCell label="Metrics" cell={view.metrics} className="@min-[720px]:w-[150px]" />
           <RowCell label="Publishing" cell={view.publishing} className="@min-[720px]:w-[170px]" />
         </div>
-        <div className="col-span-2 flex justify-end empty:hidden @min-[720px]:w-28 @min-[720px]:shrink-0 [&>*]:@max-[720px]:h-11 [&>*]:@max-[720px]:w-full">
+        <div className="col-span-3 flex justify-end empty:hidden @min-[720px]:w-28 @min-[720px]:shrink-0 [&>*]:@max-[720px]:h-11 [&>*]:@max-[720px]:w-full">
           {view.action}
         </div>
       </div>

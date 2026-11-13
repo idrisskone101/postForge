@@ -1,29 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  AlertCircle,
-  Check,
-  Loader2,
-  Save,
-  Settings2,
-} from "lucide-react";
+import { Button, Panel, Skeleton, Toggle } from "@/components/workbench";
 import {
   getDefaultVisionStoryModel,
   getStoryModel,
   STORY_MODELS,
 } from "@/lib/ai/story-models";
 import { cn } from "@/lib/utils";
+import { PanelFoot, SettingsRow } from "./settings-row";
+
+type CatalogModel = {
+  id: string;
+  name: string;
+  type: "image" | "video";
+  pricing: { unit: string; amount: number };
+  capabilities: Record<string, unknown>;
+  defaults: Record<string, unknown>;
+};
 
 type ModelsCatalogResponse = {
-  models: Array<{
-    id: string;
-    name: string;
-    type: "image" | "video";
-    pricing: { unit: string; amount: number };
-    capabilities: Record<string, unknown>;
-    defaults: Record<string, unknown>;
-  }>;
+  models: CatalogModel[];
   defaults: { image: string; video: string };
   availability: {
     enabledModelIds: string[];
@@ -33,7 +30,7 @@ type ModelsCatalogResponse = {
   } | null;
 };
 
-export function ModelsPanel() {
+export function ModelsPanel({ onSaved }: { onSaved: (message: string) => void }) {
   const [catalog, setCatalog] = useState<ModelsCatalogResponse | null>(null);
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
   const [defaultImageModelId, setDefaultImageModelId] = useState("");
@@ -42,7 +39,6 @@ export function ModelsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -104,7 +100,6 @@ export function ModelsPanel() {
     if (!catalog) return;
     setSaving(true);
     setError(null);
-    setNotice(null);
     try {
       const nextImageDefault =
         defaultImageModelId && enabledModelIds.includes(defaultImageModelId)
@@ -132,7 +127,7 @@ export function ModelsPanel() {
         } | null;
         throw new Error(body?.error ?? "Model availability could not be saved.");
       }
-      setNotice("Model availability saved. Picker defaults now follow these settings.");
+      onSaved("Model availability saved. Picker defaults now follow these settings.");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Model availability could not be saved.");
     } finally {
@@ -140,166 +135,126 @@ export function ModelsPanel() {
     }
   };
 
-  const modelRows = (models: ModelsCatalogResponse["models"]) =>
-    models.map((model) => {
-      const enabled = enabledModelIds.includes(model.id);
-      const isDefault =
-        model.type === "image"
-          ? defaultImageModelId === model.id
-          : defaultVideoModelId === model.id;
-      return (
-        <label
-          key={model.id}
-          data-model-availability-row={model.id}
-          className={cn(
-            "flex min-w-0 items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors",
-            enabled ? "border-border bg-[var(--pf-surface)]" : "border-border bg-[var(--pf-surface)] opacity-60"
-          )}
-        >
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={() => toggleModel(model.id)}
-            aria-label={`Enable ${model.name}`}
-            className="size-4 shrink-0 accent-[var(--pf-orange)]"
-          />
-          <span className="min-w-0 flex-1">
-            <b className="block truncate text-[11px] text-foreground">{model.name}</b>
-            <small className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-              {formatModelPricing(model.pricing)}
-            </small>
+  const group = (
+    title: string,
+    models: CatalogModel[],
+    value: string,
+    onChange: (id: string) => void
+  ) => (
+    <div className="flex flex-col gap-3 border-t border-hairline py-[18px]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+        <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
+          <span className="text-sm font-semibold leading-[18px] text-fg">{title}</span>
+          <span className="wb-mono text-fg-muted">
+            {models.filter((m) => enabledModelIds.includes(m.id)).length} / {models.length} enabled
           </span>
-          {isDefault && (
-            <span className="rounded-full bg-[var(--pf-link)]/10 px-2 py-1 text-[11px] font-bold text-[var(--pf-link)]">
-              DEFAULT
-            </span>
-          )}
-        </label>
-      );
-    });
-
-  if (loading) {
-    return (
-      <div className="grid min-h-[420px] place-items-center">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+        <select
+          aria-label={`Default ${title.toLowerCase().replace(" models", "")} model`}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="wb-input sm:w-[260px] sm:shrink-0"
+        >
+          <option value="">No default</option>
+          {models
+            .filter((model) => enabledModelIds.includes(model.id))
+            .map((model) => (
+              <option key={model.id} value={model.id}>
+                {model.name}
+              </option>
+            ))}
+        </select>
       </div>
-    );
-  }
+      <div className="grid gap-2 sm:grid-cols-2">
+        {models.map((model) => {
+          const enabled = enabledModelIds.includes(model.id);
+          return (
+            <div
+              key={model.id}
+              data-model-availability-row={model.id}
+              className="flex min-h-14 min-w-0 items-center gap-3 rounded-lg bg-raised px-3.5 py-2"
+            >
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className={cn("truncate text-sm font-semibold leading-[18px]", enabled ? "text-fg" : "text-fg-muted")}>
+                  {model.name}
+                </span>
+                <span className={cn("wb-mono", enabled ? "text-fg-secondary" : "text-fg-muted")}>
+                  {formatModelPricing(model.pricing)}
+                </span>
+              </span>
+              {value === model.id && (
+                <span className="wb-status-chip shrink-0" data-tone="live">Default</span>
+              )}
+              <Toggle label={`Enable ${model.name}`} checked={enabled} onCheckedChange={() => toggleModel(model.id)} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
-    <div data-settings-models-panel>
-      <span className="grid size-10 place-items-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-        <Settings2 className="size-4" />
-      </span>
-      <h2 className="pf-section-title mt-4">Available models</h2>
-      <p className="mt-1 max-w-[620px] text-[11px] leading-4 text-muted-foreground">
-        One central catalog powers the Generate, Clone, Slideshow, and automation surfaces. Disabled models disappear from every picker; the default model is used when a surface does not expose a picker.
-      </p>
-
+    <Panel pad="wide" title="Available models" data-settings-models-panel className="gap-2" aria-busy={loading}>
       {error && (
-        <div role="alert" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-danger)]">
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" /> {error}
-        </div>
+        <p role="alert" className="wb-notice my-1 break-words [overflow-wrap:anywhere]" data-tone="bad">
+          {error}
+        </p>
       )}
-      {notice && (
-        <div role="status" className="mt-4 flex min-w-0 items-start gap-2 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 px-3 py-2.5 text-[12px] leading-4 text-[var(--pf-link)]">
-          <Check className="mt-0.5 size-3.5 shrink-0" /> {notice}
-        </div>
-      )}
-
-      <div className="pf-card mt-6 max-w-[760px] space-y-5 p-5">
-        <div>
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-[13px] font-semibold">Intelligence model</h3>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                One Ollama Cloud model runs every reasoning feature: slideshow stories, prompt improvement, and reference analysis.
-              </p>
+      {loading ? (
+        <div aria-hidden="true" className="flex flex-col">
+          <div className="flex items-center gap-6 border-t border-hairline py-[18px]">
+            <Skeleton className="h-4 flex-1" />
+            <Skeleton shape="tile" className="h-[42px] w-[260px] max-sm:hidden" />
+          </div>
+          {[0, 1].map((index) => (
+            <div key={index} className="flex flex-col gap-3 border-t border-hairline py-[18px]">
+              <div className="flex items-center gap-6">
+                <Skeleton className="h-4 flex-1" />
+                <Skeleton shape="tile" className="h-[42px] w-[260px] max-sm:hidden" />
+              </div>
+              <Skeleton shape="tile" className="h-14 w-full sm:w-1/2" />
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          <SettingsRow
+            label="Intelligence model"
+            htmlFor="settings-intelligence-model"
+            detail={
+              selectedIntelligenceModel
+                ? `${selectedIntelligenceModel.description}${
+                    selectedIntelligenceModel.vision !== true && visionFallbackModel
+                      ? ` Reference image analysis will use ${visionFallbackModel.name} because ${selectedIntelligenceModel.name} cannot read images.`
+                      : ""
+                  }`
+                : undefined
+            }
+          >
             <select
+              id="settings-intelligence-model"
               aria-label="Default intelligence model"
               value={defaultIntelligenceModelId}
               onChange={(event) => setDefaultIntelligenceModelId(event.target.value)}
-              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
+              className="wb-input sm:w-[260px] sm:shrink-0"
             >
               {STORY_MODELS.map((model) => (
                 <option key={model.id} value={model.id}>
-                  {model.vision ? `${model.name} · Vision` : model.name}
+                  {model.vision ? `${model.name}, vision` : model.name}
                 </option>
               ))}
             </select>
-          </div>
-          {selectedIntelligenceModel && (
-            <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
-              {selectedIntelligenceModel.description}
-              {selectedIntelligenceModel.vision !== true && visionFallbackModel
-                ? ` Reference image analysis will use ${visionFallbackModel.name} because ${selectedIntelligenceModel.name} cannot read images.`
-                : ""}
-            </p>
-          )}
+          </SettingsRow>
+          {group("Image models", imageModels, defaultImageModelId, setDefaultImageModelId)}
+          {group("Video models", videoModels, defaultVideoModelId, setDefaultVideoModelId)}
         </div>
-
-        <div className="border-t border-border pt-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-[13px] font-semibold">Image models</h3>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {imageModels.length} in catalog · {imageModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
-              </p>
-            </div>
-            <select
-              aria-label="Default image model"
-              value={defaultImageModelId}
-              onChange={(event) => setDefaultImageModelId(event.target.value)}
-              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
-            >
-              <option value="">No default</option>
-              {imageModels
-                .filter((model) => enabledModelIds.includes(model.id))
-                .map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(imageModels)}</div>
-        </div>
-
-        <div className="border-t border-border pt-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-[13px] font-semibold">Video models</h3>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {videoModels.length} in catalog · {videoModels.filter((m) => enabledModelIds.includes(m.id)).length} enabled
-              </p>
-            </div>
-            <select
-              aria-label="Default video model"
-              value={defaultVideoModelId}
-              onChange={(event) => setDefaultVideoModelId(event.target.value)}
-              className="h-9 max-w-[220px] rounded-lg border border-border bg-[var(--pf-surface)] px-3 text-[11px] text-[var(--pf-ink)]"
-            >
-              <option value="">No default</option>
-              {videoModels
-                .filter((model) => enabledModelIds.includes(model.id))
-                .map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">{modelRows(videoModels)}</div>
-        </div>
-
-        <div className="flex justify-end border-t border-border pt-4">
-          <button onClick={() => void handleSave()} disabled={saving} className="pf-button-primary">
-            {saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />} Save model settings
-          </button>
-        </div>
-      </div>
-    </div>
+      )}
+      <PanelFoot>
+        <Button variant="primary" size={40} onClick={() => void handleSave()} disabled={saving || !catalog}>
+          {saving ? "Saving" : "Save model settings"}
+        </Button>
+      </PanelFoot>
+    </Panel>
   );
 }
 

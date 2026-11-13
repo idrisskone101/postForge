@@ -13,5 +13,5 @@ assert.match(settingsPageClient, /readSettingsTab/);
 assert.match(settingsPageClient, /params\.set\("tab", next\)/);
 assert.match(
   settingsPageClient,
-  /onOAuthCallback[\s\S]*params\.set\("tab", "integrations"\)/
+  /const onOAuthCallback = useCallback\(\(\) => selectTab\("integrations"\), \[selectTab\]\)/
 );

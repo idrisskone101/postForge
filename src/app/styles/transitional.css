@@ -72,14 +72,6 @@
   content: attr(data-lcp);
 }
 
-[data-settings-text]::before {
-  content: attr(data-settings-text);
-}
-
-[data-settings-title]::before {
-  content: attr(data-settings-title);
-}
-
 [data-spend-budget-label]::before {
   content: attr(data-spend-budget-label);
 }
