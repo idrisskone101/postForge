@@ -7,6 +7,7 @@ import {
 } from "@/lib/character-attributes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button, Icon, Range, iconButtonClass } from "@/components/workbench";
+import { useStepEntry } from "@/lib/use-step-entry";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
 
@@ -19,6 +20,12 @@ export function CharacterAttributeEditor({
   const index = CHARACTER_ATTRIBUTE_SECTIONS.findIndex((section) => section.id === active?.id);
   const previous = index > 0 ? CHARACTER_ATTRIBUTE_SECTIONS[index - 1] : undefined;
   const next = CHARACTER_ATTRIBUTE_SECTIONS[index + 1];
+  const { markStepChange, stepRef } = useStepEntry();
+
+  function goTo(sectionId: string) {
+    markStepChange();
+    onSelectSection(sectionId);
+  }
 
   return (
     <section
@@ -27,7 +34,13 @@ export function CharacterAttributeEditor({
       className="wb-panel min-w-0 gap-5 px-4 pb-5 pt-[18px] sm:gap-6 sm:px-6 lg:min-h-0 lg:flex-1"
     >
       <div className="flex h-8 shrink-0 items-center justify-between gap-3">
-        <h2 id="character-section-title" className="text-base font-bold leading-5 tracking-[-0.01em] text-fg">
+        <h2
+          key={active?.id}
+          ref={stepRef}
+          tabIndex={-1}
+          id="character-section-title"
+          className="rounded-sm text-base font-bold leading-5 tracking-[-0.01em] text-fg focus-visible:[outline:2px_solid_var(--pf-ember)] focus-visible:outline-offset-4"
+        >
           {active?.label}
         </h2>
         <Tooltip>
@@ -48,13 +61,13 @@ export function CharacterAttributeEditor({
           </button>
         </div>
       ) : null}
-      {active ? <AttributeGroups view={view} active={active} /> : null}
+      {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
       <div className="flex shrink-0 items-center justify-between gap-3">
-        <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && onSelectSection(previous.id)}>
+        <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && goTo(previous.id)}>
           Back
         </Button>
         {next ? (
-          <Button variant="strong" size={40} className="gap-1.5 pr-3.5 pl-[18px]" onClick={() => onSelectSection(next.id)}>
+          <Button variant="strong" size={40} className="gap-1.5 pr-3.5 pl-[18px]" onClick={() => goTo(next.id)}>
             Next: {next.label}
             <Icon name="chevron-right" />
           </Button>

@@ -2,6 +2,7 @@
 
 import { Button, Icon } from "@/components/workbench";
 import { automationDestinationLabel } from "@/lib/automations";
+import { useStepEntry } from "@/lib/use-step-entry";
 import { BUILDER_STEPS, ValidationRow } from "./automation-builder-fields";
 import { CloseStep, ContentStep, HookStep } from "./automation-builder-steps";
 import type { AutomationBuilderWorkspace } from "./use-automation-builder";
@@ -25,8 +26,10 @@ export function AutomationBuilderPhaseForm({
     PHASES,
   } = workspace;
   const currentIndex = validationOpen ? PHASES.length : phaseIndex;
+  const { markStepChange, stepRef } = useStepEntry();
 
   function goTo(index: number) {
+    markStepChange();
     if (index >= PHASES.length) {
       setValidationOpen(true);
       return;
@@ -68,7 +71,15 @@ export function AutomationBuilderPhaseForm({
             })}
           </ol>
         </div>
-        <div key={validationOpen ? "Review" : phase} data-automation-fields="true" className="wb-fade-in flex min-w-0 flex-col gap-6">
+        <div
+          key={validationOpen ? "Review" : phase}
+          ref={stepRef}
+          tabIndex={-1}
+          role="group"
+          aria-label={`Step ${currentIndex + 1} of ${BUILDER_STEPS.length}: ${BUILDER_STEPS[currentIndex].name}`}
+          data-automation-fields="true"
+          className="wb-fade-in flex min-w-0 flex-col gap-6 rounded-lg focus-visible:[outline:2px_solid_var(--pf-ember)] focus-visible:outline-offset-4"
+        >
           {validationOpen ? (
             <ReviewStep workspace={workspace} />
           ) : phase === "Hook" ? (
