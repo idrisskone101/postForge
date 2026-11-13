@@ -49,8 +49,10 @@ Confirmed constraints and invariants:
 
 - Name: PostForge.
 - Voice/identity: the platform should feel polished and great to use even though it is single-user; craft is an explicit commitment, not optional.
-- **Standing visual preference: the category standard played straight.** PostForge's visual world is the calm professional SaaS dashboard — the canon, chosen deliberately over metaphor worlds (rack, nixie, man-machine, quote grammar). Restraint and clarity are the identity; the content (generated media, pipeline state, spend) carries the color. The craft bar is **Linear and Resend**: this surface should read as belonging next to them. Execute the canon at full fidelity — no irony, no smuggled quirk.
-- Single brand accent: coral `#FF4A20` (hover `#E9421C`), reserved for primary actions and active states; Geist typography (Geist Mono as the data voice); token-driven light + dark themes. Design language is documented in `DESIGN.md`.
+- **Standing visual preference: Workbench, charcoal and ember.** A forge burns charcoal. The workspace is stepped charcoal with bone text, and the only colour on the page is the ember. Subtraction is part of the design: the page header is the title only, the sidebar has no group labels, panels carry no captions, and status in dense places is an icon badge instead of a word.
+- **Ember means live, bone is the one primary.** Ember (`#FF5B2E` dark, `#FF4A20` light) marks what is live, current or selected and never means "click me". The bone pill (`#F2F0EB` with ink text) is the one primary action on a screen. Green, amber and red are status only.
+- Typography: Hanken Grotesk for all UI type; Geist Mono only for ids, costs, timestamps and durations. Both are self-hosted.
+- Default theme: dark. Light stays available through the theme toggle with the same roles. Design language is documented in `DESIGN.md`; the designs live in Paper (file `01M74DGFD1W8647F6RFTFTT93Q`, page "3 Workbench").
 
 ## Evidence on Hand
 
