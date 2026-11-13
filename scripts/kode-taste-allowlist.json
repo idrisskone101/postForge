@@ -54,7 +54,8 @@
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "innerHtml": [
-    "src/app/(app)/layout.tsx"
+    "src/app/(app)/layout.tsx",
+    "src/app/(legal)/layout.tsx"
   ],
   "hookSize": [
     "src/app/(app)/automations/new/use-automation-builder.ts",
