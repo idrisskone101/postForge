@@ -37,6 +37,7 @@ export function EditorHeader() {
               }))
             }
             placeholder="Untitled slideshow"
+            size={1}
             className="wb-page-title h-10 w-full min-w-0 flex-1 rounded-lg bg-transparent px-1 outline-none transition-shadow duration-160 ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]"
           />
         </div>

@@ -19,7 +19,7 @@ export function EditorInspector() {
   return (
     <aside
       aria-label="Slide inspector"
-      className="wb-panel gap-4 p-0 xl:w-[320px] xl:shrink-0"
+      className="wb-panel justify-between gap-4 p-0 xl:w-[320px] xl:shrink-0"
     >
       <div className="flex min-h-0 flex-col gap-3.5 px-5 pt-[18px] xl:flex-1 xl:overflow-y-auto">
         <label className="wb-field group">
@@ -55,7 +55,7 @@ export function EditorInspector() {
             value={activeSlide.prompt}
             rows={3}
             onChange={(event) => updateActiveSlide({ prompt: event.target.value })}
-            className="wb-input h-[76px] min-h-0 resize-none py-2.5 leading-5"
+            className="wb-input min-h-0 resize-none py-2 leading-5"
           />
         </label>
         <div className="flex gap-2">

@@ -104,7 +104,8 @@ export function SlideshowBoardView() {
               onClick={onAdd}
               disabled={atMax}
               aria-label="Add slide"
-              className="flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-edge text-[13px] font-semibold text-fg-secondary transition-colors duration-160 ease-pf hover:bg-raised hover:text-fg disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent"
+              style={{ aspectRatio: project.aspectRatio.replace(":", " / ") }}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-edge text-[13px] font-semibold text-fg-secondary transition-colors duration-160 ease-pf hover:bg-raised hover:text-fg disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent"
             >
               <Icon name="plus" size={18} />
               Add slide

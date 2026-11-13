@@ -18,7 +18,7 @@ export function EditorCollectionPicker() {
     <Dialog open={open} onOpenChange={setPickerOpen}>
       <DialogContent className="flex max-h-[min(90dvh,820px)] flex-col gap-4 p-0 sm:max-w-[760px]">
         <div className="flex min-h-14 shrink-0 items-center pl-6 pr-14 pt-2">
-          <DialogTitle className="wb-panel-title text-[18px] leading-6">
+          <DialogTitle className="wb-panel-title text-[18px] leading-6 font-bold tracking-[-0.01em]">
             Select slide images
           </DialogTitle>
         </div>
@@ -29,10 +29,7 @@ export function EditorCollectionPicker() {
             maxSelection={MAX_PICKED}
           />
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2.5 border-t border-hairline px-6 py-4">
-          <span className="wb-meta mr-auto tabular-nums">
-            {pickerAssetIds.length} / {MAX_PICKED} selected
-          </span>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2.5 border-t border-hairline px-6 py-4">
           <Button
             onClick={() => {
               setPickerOpen(false);

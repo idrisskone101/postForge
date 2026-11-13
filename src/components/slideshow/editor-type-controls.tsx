@@ -95,13 +95,15 @@ export function EditorTypeControls() {
         open={moreOpen}
         onToggle={() => setMoreOpen((current) => !current)}
       >
-        <div className="grid grid-cols-[1fr_auto] items-end gap-2.5">
-          <EditorSelect<SlideshowTextSettings["color"]>
-            label="Color"
-            value={text.color}
-            options={COLOR_OPTIONS}
-            onChange={(color) => updateTextSettings({ color })}
-          />
+        <div className="flex items-end gap-2.5">
+          <div className="min-w-0 flex-1">
+            <EditorSelect<SlideshowTextSettings["color"]>
+              label="Color"
+              value={text.color}
+              options={COLOR_OPTIONS}
+              onChange={(color) => updateTextSettings({ color })}
+            />
+          </div>
           {text.color === "custom" ? (
             <input
               type="color"
