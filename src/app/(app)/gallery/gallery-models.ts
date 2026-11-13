@@ -1,7 +1,4 @@
-import {
-  OUTPUT_REVIEW_STATUSES,
-  serializeOutputReviewStatus,
-} from "@/lib/output-review-status";
+import { serializeOutputReviewStatus } from "@/lib/output-review-status";
 import type { OutputReviewStatus } from "@/lib/output-review-status";
 import type { GalleryItem } from "@/components/gallery/types";
 
@@ -39,9 +36,11 @@ export const filterOptions = [
 ] as const;
 
 export const reviewFilters = [
-  ...OUTPUT_REVIEW_STATUSES,
-  { value: "all", label: "All", tone: "neutral" },
-] as const;
+  { value: "all", label: "All" },
+  { value: "needs_review", label: "Needs review" },
+  { value: "approved_output", label: "Approved output" },
+  { value: "rejected_output", label: "Rejected output" },
+] as const satisfies ReadonlyArray<{ value: ReviewFilter; label: string }>;
 
 export function normalizeGalleryItem(item: GalleryItemInput): GalleryItem {
   return {
@@ -108,25 +107,18 @@ export function filterGalleryItems(
   );
 }
 
-export function galleryReviewSummary({
+export function galleryItemCountLabel({
   reviewFilter,
   reviewCounts,
-  totalCount,
+  loadedCount,
 }: {
   reviewFilter: ReviewFilter;
   reviewCounts: Record<ReviewFilter, number>;
-  totalCount: number;
+  loadedCount: number;
 }) {
-  const activeReviewLabel =
-    reviewFilters.find((filter) => filter.value === reviewFilter)?.label ?? "All";
-  const activeTotal = reviewCounts[reviewFilter] ?? totalCount;
-  const countCopy =
-    totalCount < activeTotal
-      ? `Showing ${totalCount} of ${activeTotal}`
-      : `${activeTotal}`;
-  return reviewFilter === "needs_review"
-    ? `${countCopy} output${activeTotal === 1 ? "" : "s"} needing review`
-    : `${countCopy} output${activeTotal === 1 ? "" : "s"} in ${activeReviewLabel.toLowerCase()}`;
+  const total = reviewCounts[reviewFilter] ?? loadedCount;
+  if (loadedCount < total) return `${loadedCount} of ${total}`;
+  return `${total} item${total === 1 ? "" : "s"}`;
 }
 
 export function appendGalleryItems(

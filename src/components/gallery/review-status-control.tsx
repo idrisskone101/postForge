@@ -1,45 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { Segmented } from "@/components/workbench/segmented";
 import {
   OUTPUT_REVIEW_STATUSES,
   type OutputReviewStatus,
   type SerializedOutputReviewStatus,
 } from "@/lib/output-review-status";
-import { cn } from "@/lib/utils";
-import { CheckCircle2, CircleDashed, Loader2, XCircle } from "lucide-react";
+import { reviewStatusLabel } from "./format";
 import { patchGalleryReviewStatus } from "./review-api";
 import type { GalleryFeedback } from "./types";
 
 export function GalleryReviewStatusControl({
   outputId,
   reviewStatus,
-  compact = false,
   onStatusChange,
   onFeedback,
 }: {
   outputId: string;
   reviewStatus: SerializedOutputReviewStatus;
-  compact?: boolean;
   onStatusChange?: (status: SerializedOutputReviewStatus) => void;
   onFeedback?: (feedback: GalleryFeedback) => void;
 }) {
-  const [pendingStatus, setPendingStatus] = useState<OutputReviewStatus | null>(
-    null
-  );
+  const [pendingStatus, setPendingStatus] = useState<OutputReviewStatus | null>(null);
 
   const updateStatus = async (nextStatus: OutputReviewStatus) => {
     if (pendingStatus || nextStatus === reviewStatus.value) return;
     setPendingStatus(nextStatus);
     try {
-      const nextReviewStatus = await patchGalleryReviewStatus(
-        outputId,
-        nextStatus
-      );
+      const nextReviewStatus = await patchGalleryReviewStatus(outputId, nextStatus);
       onStatusChange?.(nextReviewStatus);
       onFeedback?.({
         tone: "success",
-        message: `Asset marked ${nextReviewStatus.label.toLowerCase()}.`,
+        message:
+          nextStatus === "needs_review"
+            ? "Review cleared back to needs review."
+            : `Asset marked ${reviewStatusLabel[nextStatus].toLowerCase()}.`,
       });
     } catch {
       onFeedback?.({
@@ -52,63 +48,17 @@ export function GalleryReviewStatusControl({
   };
 
   return (
-    <div
-      className={cn(
-        "flex items-center rounded-[8px] bg-[var(--pf-active)] p-1",
-        compact ? "w-fit gap-1" : "justify-between gap-2"
-      )}
-      aria-label={`Output review status: ${reviewStatus.label}`}
-    >
-      {!compact && (
-        <span className="min-w-0 truncate px-2 text-[13px] font-semibold text-[var(--pf-ink)]">
-          {reviewStatus.label}
-        </span>
-      )}
-      <div className="flex items-center gap-1">
-        {OUTPUT_REVIEW_STATUSES.map((status) => {
-          const Icon = reviewStatusIcons[status.value];
-          const isActive = reviewStatus.value === status.value;
-          const isPending = pendingStatus === status.value;
-          return (
-            <button
-              key={status.value}
-              type="button"
-              aria-label={`Mark as ${status.label}`}
-              aria-pressed={isActive}
-              title={status.label}
-              disabled={pendingStatus !== null}
-              onClick={(event) => {
-                event.stopPropagation();
-                void updateStatus(status.value);
-              }}
-              className={cn(
-                "inline-flex size-8 items-center justify-center rounded-[6px] text-[var(--pf-muted)] transition-colors hover:text-[var(--pf-ink)] disabled:cursor-not-allowed disabled:opacity-50",
-                isActive &&
-                  status.value === "needs_review" &&
-                  "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]",
-                isActive &&
-                  status.value === "approved_output" &&
-                  "bg-[var(--pf-surface)] text-[var(--pf-success)] shadow-[var(--pf-shadow-2xs)]",
-                isActive &&
-                  status.value === "rejected_output" &&
-                  "bg-[var(--pf-surface)] text-[var(--pf-danger)] shadow-[var(--pf-shadow-2xs)]"
-              )}
-            >
-              {isPending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Icon className="size-3.5" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <Segmented
+      label={`Output review status: ${reviewStatusLabel[reviewStatus.value]}`}
+      value={pendingStatus ?? reviewStatus.value}
+      onChange={(value) => void updateStatus(value)}
+      options={reviewOptions}
+      className="wb-segmented-block w-full"
+    />
   );
 }
 
-const reviewStatusIcons = {
-  needs_review: CircleDashed,
-  approved_output: CheckCircle2,
-  rejected_output: XCircle,
-} satisfies Record<OutputReviewStatus, typeof CircleDashed>;
+const reviewOptions = OUTPUT_REVIEW_STATUSES.map((status) => ({
+  value: status.value,
+  label: reviewStatusLabel[status.value],
+}));

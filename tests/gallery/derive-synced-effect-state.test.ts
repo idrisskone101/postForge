@@ -17,7 +17,7 @@ assert.doesNotMatch(reviewStatusControl, /setCurrent/);
 assert.match(reviewStatusControl, /reviewStatus\.value/);
 
 assert.doesNotMatch(lightbox, /useEffect\(\(\)\s*=>\s*setCurrent/);
-assert.match(lightbox, /reviewStatus\.value === "approved_output"/);
+assert.match(lightbox, /reviewStatus=\{item\.reviewStatus\}/);
 
 assert.doesNotMatch(galleryGrid, /useEffect/);
 assert.match(galleryGrid, /preferredInspectedId/);
@@ -31,7 +31,5 @@ const galleryFilterReload = source("src/app/(app)/gallery/gallery-filter-reload.
 assert.match(galleryFilterReload, /reloadGallery/);
 assert.match(galleryFilterReload, /setTypeFilterAndReload/);
 assert.match(galleryFilterReload, /setSortOrderAndReload/);
-assert.match(
-  galleryWorkspace,
-  /window\.setTimeout\(\(\) => setFeedback\(null\), 4200\)/
-);
+assert.doesNotMatch(galleryWorkspace, /useEffect/);
+assert.match(galleryWorkspace, /dismissToast/);

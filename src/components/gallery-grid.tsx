@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Images } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, type ReactNode } from "react";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Panel } from "@/components/workbench/panel";
 import { downloadFile } from "@/lib/utils/download";
 import { GalleryGridCards } from "@/components/gallery/grid-cards";
 import { GalleryLightbox } from "@/components/gallery/lightbox";
@@ -32,59 +32,35 @@ export type GalleryGridSession = {
   onFeedback?: (feedback: GalleryFeedback) => void;
 };
 
-export function GalleryGrid({ session }: { session: GalleryGridSession }) {
-  const {
-    items,
-    view,
-    selectedIds,
-    onToggleSelect,
-    onDelete,
-    onReviewStatusChange,
-    onHandoff,
-    onFeedback,
-  } = session;
+export function GalleryGrid({
+  session,
+  renderHeader,
+  fallback,
+  footer,
+}: {
+  session: GalleryGridSession;
+  renderHeader: (controls: { openDetails: () => void }) => ReactNode;
+  fallback?: ReactNode;
+  footer?: ReactNode;
+}) {
+  const { items, view, selectedIds, onToggleSelect, onDelete, onReviewStatusChange, onHandoff, onFeedback } =
+    session;
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [preferredInspectedId, setPreferredInspectedId] = useState<string | null>(
-    null
-  );
-  const [stampedIds, setStampedIds] = useState<ReadonlySet<string>>(new Set());
+  const [preferredInspectedId, setPreferredInspectedId] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
+  const selectedItems = items.filter((item) => selectedIds.has(item.id));
   const inspectedId =
-    selectedIds.size === 0
-      ? null
-      : preferredInspectedId && selectedIds.has(preferredInspectedId)
-        ? preferredInspectedId
-        : items.find((item) => selectedIds.has(item.id))?.id ?? null;
-
-  const markStamped = (id: string) => {
-    setStampedIds((prev) => new Set(prev).add(id));
-    window.setTimeout(() => {
-      setStampedIds((prev) => {
-        if (!prev.has(id)) return prev;
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }, 600);
-  };
-
-  const selectedItem =
-    items.find((item) => item.id === inspectedId && selectedIds.has(item.id)) ??
-    items.find((item) => selectedIds.has(item.id)) ??
-    null;
+    preferredInspectedId && selectedIds.has(preferredInspectedId)
+      ? preferredInspectedId
+      : selectedItems[0]?.id ?? null;
+  const inspectedIndex = selectedItems.findIndex((item) => item.id === inspectedId);
+  const selectedItem = inspectedIndex >= 0 ? selectedItems[inspectedIndex] : null;
 
   const toggleSelection = (id: string) => {
-    if (selectedIds.has(id)) {
-      if (preferredInspectedId === id) {
-        setPreferredInspectedId(
-          items.find((item) => item.id !== id && selectedIds.has(item.id))?.id ??
-            null
-        );
-      }
-    } else {
-      setPreferredInspectedId(id);
-    }
+    if (!selectedIds.has(id)) setPreferredInspectedId(id);
+    else if (preferredInspectedId === id) setPreferredInspectedId(null);
     onToggleSelect(id);
   };
 
@@ -123,13 +99,11 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
   const mediaSession: GalleryMediaSession = {
     selectedIds,
     deletingId,
-    stampedIds,
     toggleSelection,
     openPreview: setLightbox,
     copySourceUrl,
     downloadItem,
     deleteItem,
-    markStamped,
     onReviewStatusChange,
     onHandoff,
     onFeedback,
@@ -138,78 +112,64 @@ export function GalleryGrid({ session }: { session: GalleryGridSession }) {
   const selection: GallerySelection | null = selectedItem
     ? {
         item: selectedItem,
-        onDeselect: () => toggleSelection(selectedItem.id),
+        position: { index: inspectedIndex, total: selectedItems.length },
+        onStep: (direction) => {
+          const total = selectedItems.length;
+          const next = selectedItems[(inspectedIndex + direction + total) % total];
+          if (next) setPreferredInspectedId(next.id);
+        },
         onOpenPreview: () => setLightbox(selectedItem),
-        onDelete,
-        onReviewStatusChange,
+        onDownload: downloadItem,
+        onCopySource: copySourceUrl,
         onHandoff,
-        onFeedback,
       }
     : null;
-
-  if (items.length === 0) {
-    return (
-      <div className="pf-card flex min-h-64 flex-col items-center justify-center text-[var(--pf-muted)]">
-        <Images className="mb-3 size-10 opacity-40" />
-        <p className="text-sm font-medium">No media yet</p>
-        <p className="mt-1 text-xs">Generated images and videos will appear here</p>
-      </div>
-    );
-  }
 
   return (
     <>
       <div
-        data-gallery-selection-layout={selectedItem ? "inspecting" : "idle"}
-        className={cn(
-          "grid min-w-0 items-start gap-3",
-          selectedItem &&
-            "min-[1360px]:grid-cols-[minmax(0,1fr)_minmax(280px,304px)]"
-        )}
+        data-gallery-page="true"
+        data-gallery-selection-layout={selection ? "inspecting" : "idle"}
+        className="flex min-h-0 min-w-0 flex-1 items-start gap-3"
       >
-        {view === "list" ? (
-          <GalleryListTable items={items} session={mediaSession} />
-        ) : (
-          <GalleryGridCards items={items} view={view} session={mediaSession} />
-        )}
+        <Panel className="min-w-0 flex-1 gap-3 self-stretch">
+          {renderHeader({ openDetails: () => setDetailsOpen(true) })}
+          {fallback ??
+            (view === "list" ? (
+              <GalleryListTable items={items} session={mediaSession} />
+            ) : (
+              <GalleryGridCards items={items} session={mediaSession} />
+            ))}
+          {footer}
+        </Panel>
 
         {selection && (
-          <GallerySelectionInspector selection={selection}>
-            <ItemPrompt item={selection.item} />
-          </GallerySelectionInspector>
+          <aside
+            aria-label="Selected output"
+            className="wb-panel sticky top-4 hidden w-[320px] shrink-0 animate-[wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] xl:flex"
+          >
+            <GallerySelectionInspector key={selection.item.id} selection={selection} />
+          </aside>
         )}
       </div>
+
+      <Sheet open={detailsOpen && selection !== null} onOpenChange={setDetailsOpen}>
+        <SheetContent
+          side="right"
+          className="gap-0 overflow-y-auto p-5 pt-14 data-[side=right]:w-full data-[side=right]:sm:max-w-[360px] xl:hidden"
+        >
+          <SheetTitle className="sr-only">Selected output</SheetTitle>
+          {selection && (
+            <GallerySelectionInspector key={selection.item.id} selection={selection} />
+          )}
+        </SheetContent>
+      </Sheet>
 
       <GalleryLightbox
         item={lightbox}
         session={mediaSession}
-        prompt={lightbox ? <LightboxPrompt lightbox={lightbox} /> : null}
         onClose={() => setLightbox(null)}
       />
     </>
-  );
-}
-
-
-function ItemPrompt({ item }: { item: GalleryItem }) {
-  if (!item.prompt) return null;
-  return (
-    <p className="min-w-0 break-words text-[12px] leading-[1.15rem] text-muted-foreground [overflow-wrap:anywhere] line-clamp-3">
-      {item.prompt}
-    </p>
-  );
-}
-
-function LightboxPrompt({ lightbox }: { lightbox: GalleryItem }) {
-  if (!lightbox.prompt) return null;
-  return (
-    <div className="min-w-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-        Prompt
-      </p>
-      <p className="mt-1.5 min-w-0 break-words text-[13px] leading-5 text-foreground/80 [overflow-wrap:anywhere] line-clamp-5">
-        {lightbox.prompt}
-      </p>
-    </div>
   );
 }
