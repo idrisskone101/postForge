@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { readWorkspaceName } from "@/lib/workspace-name";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 import "../globals.css";
 
@@ -10,7 +11,8 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = (await headers()).get("x-pathname") || "/";
+  const [requestHeaders, workspaceName] = await Promise.all([headers(), readWorkspaceName()]);
+  const pathname = requestHeaders.get("x-pathname") || "/";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -31,8 +33,11 @@ export default async function AppLayout({
       </head>
       <body className="antialiased">
         <div id="workspace-root">
+          <a href="#workspace-shell" className="wb-skip-link">
+            Skip to content
+          </a>
+          <Sidebar initialWorkspaceName={workspaceName} />
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
-          <Sidebar />
         </div>
       </body>
     </html>

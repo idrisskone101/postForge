@@ -107,7 +107,7 @@ assert.match(alertDialog, /pf-safe-dialog-viewport/);
 assert.match(alertDialog, /w-\[calc\(100%-2rem\)\]/);
 assert.match(alertDialog, /overflow-y-auto/);
 assert.match(dialog, /pf-safe-dialog-viewport/);
-assert.match(dialog, /max-w-\[calc\(100%-2rem\)\]/);
+assert.match(dialog, /w-\[calc\(100%-2rem\)\]/);
 assert.match(dialog, /overflow-y-auto/);
 assert.match(routeSurfaces, /\[overflow-wrap:anywhere\]/);
 
@@ -141,7 +141,7 @@ assert.match(tokens, /font-family: "Geist Mono";[\s\S]*?font-display: swap;/);
 assert.match(source("src/app/globals.css"), /--font-sans: "Hanken Grotesk"/);
 
 // Shell landmarks and the responsive contract live in one stylesheet.
-assert.match(shell, /<main id="workspace-shell">/);
+assert.match(shell, /<main id="workspace-shell" tabIndex=\{-1\}/);
 assert.match(sidebar, /<aside id="workspace-sidebar">/);
 assert.match(sidebar, /id="workspace-mobile-bar"/);
 assert.match(sidebar, /id="workspace-mobile-drawer"/);
@@ -171,16 +171,18 @@ assert.match(shellStyles, /#workspace-shell \{[\s\S]*?env\(safe-area-inset-top\)
 assert.match(source("src/app/styles/legacy.css"), /\.pf-safe-overlay \{[\s\S]*?safe-area-inset-top/);
 assert.match(source("src/app/styles/legacy.css"), /\.pf-safe-dialog-viewport \{/);
 
-// The sidebar is server-rendered with the shell, after the page content.
+// Tab order follows the page: the skip link, then the sidebar, then the content.
 assert.match(appLayout, /from "@\/components\/sidebar";/);
 assert.ok(
-  appLayout.indexOf("<WorkspaceShell") < appLayout.indexOf("<Sidebar"),
-  "workspace heading HTML must precede sidebar SVG so LCP can paint before the nav tree",
+  appLayout.indexOf('className="wb-skip-link"') < appLayout.indexOf("<Sidebar") &&
+    appLayout.indexOf("<Sidebar") < appLayout.indexOf("<WorkspaceShell"),
+  "the skip link and the sidebar navigation precede <main> in DOM order",
 );
+assert.match(appLayout, /<a href="#workspace-shell" className="wb-skip-link">/);
 
 // Page header text is real text rendered by React, never CSS-generated content.
 const headerGate = source("src/components/workspace-header-gate.tsx");
-assert.match(headerGate, /<PageHeader id="workspace-header" title=\{activeItem\.label\}>/);
+assert.match(headerGate, /<PageHeader id="workspace-header" title=\{activeItem\.label\} stackBelow=\{stackBelow\}>/);
 assert.doesNotMatch(headerGate, /sr-only|data-header-copy|data-workspace-title|description/);
 assert.doesNotMatch(shellStyles, /content:\s*attr\(/);
 assert.doesNotMatch(source("src/components/workspace-state.tsx"), /sr-only|data-workspace-title/);

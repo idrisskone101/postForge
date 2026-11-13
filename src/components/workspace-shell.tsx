@@ -8,7 +8,7 @@ export function WorkspaceShell({
   pathname: string;
 }) {
   return (
-    <main id="workspace-shell">
+    <main id="workspace-shell" tabIndex={-1} className="outline-none">
       <WorkspaceHeaderGate serverPathname={pathname} />
       {children}
     </main>

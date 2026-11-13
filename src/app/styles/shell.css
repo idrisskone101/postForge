@@ -56,12 +56,87 @@
     box-shadow: var(--pf-float-shadow);
   }
 
+  /*
+   * The drawer is a native dialog. allow-discrete keeps it rendered while it slides and fades out over
+   * 160ms; @starting-style gives the 220ms enter. Where neither is supported it opens and closes at once.
+   */
+  .sidebar-mobile-drawer,
+  .sidebar-mobile-drawer::backdrop {
+    opacity: 0;
+    transition:
+      opacity var(--pf-dur-exit) var(--pf-ease),
+      transform var(--pf-dur-exit) var(--pf-ease),
+      display var(--pf-dur-exit) allow-discrete,
+      overlay var(--pf-dur-exit) allow-discrete;
+  }
+
+  .sidebar-mobile-drawer {
+    transform: translateX(-16px);
+  }
+
+  .sidebar-mobile-drawer[open],
+  .sidebar-mobile-drawer[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--pf-dur-enter);
+  }
+
   .sidebar-mobile-drawer[open] {
-    animation: wb-drawer-in var(--pf-dur-enter) var(--pf-ease) both;
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .sidebar-mobile-drawer[open],
+    .sidebar-mobile-drawer[open]::backdrop {
+      opacity: 0;
+    }
+
+    .sidebar-mobile-drawer[open] {
+      transform: translateX(-16px);
+    }
   }
 
   .sidebar-mobile-drawer::backdrop {
     background: var(--pf-backdrop);
+  }
+
+  /* The page behind the open drawer does not scroll. */
+  html:has(.sidebar-mobile-drawer[open]) {
+    overflow: hidden;
+  }
+
+  /* Collapse and expand: the width changes in one step, the contents cross-fade and settle 8px. */
+  html[data-sidebar-animating="true"] #workspace-sidebar > * {
+    animation: wb-sidebar-swap var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  /* First focusable element: a bone pill that shows only on keyboard focus. */
+  .wb-skip-link {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    z-index: 100;
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-action);
+    padding-inline: 18px;
+    color: var(--pf-action-fg);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-skip-link:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
   }
 
   .sidebar-mobile-frame {
@@ -267,10 +342,10 @@
     z-index: 2;
   }
 
-  @keyframes wb-drawer-in {
+  @keyframes wb-sidebar-swap {
     from {
       opacity: 0;
-      transform: translateX(-16px);
+      transform: translateX(-8px);
     }
     to {
       opacity: 1;

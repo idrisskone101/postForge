@@ -41,7 +41,7 @@ const notifications = readFileSync(
 assert.equal(countUseEffect(sidebar), 2, "sidebar keeps the hydrate effect and the drawer breakpoint listener");
 assert.match(sidebar, /useEffect\(\(\) => closeDrawerAtDesktopWidth\(mobileNavRef\), \[\]\)/);
 assert.equal(countUseEffect(notifications), 1, "the notifications hook owns the poll effect");
-assert.match(sidebar, /= useWorkspaceNotifications\(!publicPolicyPage\)/);
+assert.match(sidebar, /= useWorkspaceNotifications\(\s*!publicPolicyPage,\s*initialWorkspaceName\s*\)/);
 
 assert.match(
   sidebar,

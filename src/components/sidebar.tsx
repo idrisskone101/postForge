@@ -14,12 +14,15 @@ import {
   workspaceNavigationGroups,
 } from "@/lib/workspace-navigation";
 
-export function Sidebar() {
+export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: string }) {
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const mobileNavRef = useRef<HTMLDialogElement>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
-  const { counts, workspaceName } = useWorkspaceNotifications(!publicPolicyPage);
+  const { counts, workspaceName } = useWorkspaceNotifications(
+    !publicPolicyPage,
+    initialWorkspaceName
+  );
   const activeItem = getActiveWorkspaceItem(pathname);
 
   useEffect(() => {
@@ -41,6 +44,7 @@ export function Sidebar() {
     setDesktopCollapsed(nextCollapsed);
     writeOptionalStorage(COLLAPSED_STORAGE_KEY, String(nextCollapsed));
     applySidebarCollapsedDataset(nextCollapsed);
+    playSidebarSwap();
   };
 
   const settingsActive = activeItem?.href === SETTINGS_ITEM.href;
@@ -142,6 +146,15 @@ function applySidebarCollapsedDataset(collapsed: boolean) {
     delete document.documentElement.dataset.sidebarCollapsed;
   }
 }
+
+/** The width changes in one step; the sidebar contents cross-fade for 200ms (see shell.css). */
+function playSidebarSwap() {
+  const root = document.documentElement;
+  root.dataset.sidebarAnimating = "true";
+  window.setTimeout(() => delete root.dataset.sidebarAnimating, SIDEBAR_SWAP_MS);
+}
+
+const SIDEBAR_SWAP_MS = 220;
 
 function PostForgeBrand({ name, onNavigate }: { name: string; onNavigate?: () => void }) {
   return (

@@ -19,8 +19,14 @@ export type WorkspaceSidebarStatus = {
  * counts. A count shows only while its Settings > Notifications toggle is on.
  * Polls every minute and on focus.
  */
-export function useWorkspaceNotifications(enabled: boolean): WorkspaceSidebarStatus {
-  const [status, setStatus] = useState(EMPTY_STATUS);
+export function useWorkspaceNotifications(
+  enabled: boolean,
+  initialWorkspaceName: string = DEFAULT_WORKSPACE_NAME
+): WorkspaceSidebarStatus {
+  const [status, setStatus] = useState<WorkspaceSidebarStatus>(() => ({
+    ...EMPTY_STATUS,
+    workspaceName: initialWorkspaceName,
+  }));
 
   useEffect(() => (enabled ? startPolling(setStatus) : undefined), [enabled]);
 
