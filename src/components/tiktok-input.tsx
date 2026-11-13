@@ -230,7 +230,7 @@ export function TikTokInput({
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
-      <div className="flex min-w-0 items-center gap-2 max-sm:flex-col max-sm:items-stretch">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 max-sm:grid-cols-1">
         <input
           type="url"
           aria-label="TikTok video URL"
@@ -240,7 +240,7 @@ export function TikTokInput({
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           disabled={isDownloading}
-          className="wb-input min-w-0 flex-1"
+          className="wb-input"
         />
         <Button
           variant="strong"
