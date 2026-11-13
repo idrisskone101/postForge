@@ -148,7 +148,7 @@ assert.match(instagramMarkup, /Not configured/);
 assert.match(instagramMarkup, /POSTFORGE_PUBLIC_URL/);
 assert.match(instagramMarkup, /Meta.*crawler/);
 assert.match(instagramMarkup, /instagram_business_content_publish/);
-assert.match(instagramMarkup, /Setup required/);
+assert.doesNotMatch(instagramMarkup, /Setup required/, "the chip and the Set up action already say it");
 assert.match(instagramMarkup, /aria-expanded="false"[^>]*>Set up/);
 assert.match(instagramMarkup, /hidden=""/);
 assert.doesNotMatch(instagramMarkup, />Connect</);

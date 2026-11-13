@@ -127,7 +127,7 @@ function providerSub(state: ProviderState, hasConnectUrl: boolean): string | und
     case "unavailable":
       return "The integration service did not return this provider";
     case "not_configured":
-      return "Setup required";
+      return undefined;
     case "ready":
       return hasConnectUrl ? undefined : "Connect endpoint unavailable";
     case "connected":
