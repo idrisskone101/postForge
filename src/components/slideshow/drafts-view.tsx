@@ -17,6 +17,7 @@ export function DraftsView() {
     projectsError: error,
     onOpenDraft: onOpen,
     onCreate,
+    draftPages,
   } = useSlideshowHome();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
@@ -115,6 +116,18 @@ export function DraftsView() {
           </Button>
         </EmptyState>
       )}
+      {draftPages.hasMore ? (
+        <div className="flex items-center justify-center gap-3">
+          <Button disabled={draftPages.loadingMore} onClick={() => void draftPages.onLoadMore()}>
+            {draftPages.loadingMore ? "Loading" : "Load more"}
+          </Button>
+          <span className="wb-mono text-fg-muted" aria-label="Drafts loaded">
+            {draftPages.total === null
+              ? draftPages.loaded
+              : `${draftPages.loaded} / ${draftPages.total}`}
+          </span>
+        </div>
+      ) : null}
     </section>
   );
 }

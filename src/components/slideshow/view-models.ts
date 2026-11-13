@@ -2,6 +2,7 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 
 import type { EditorSaveState } from "./editor-controls";
 import type { SlideshowViewMode } from "./slideshow-view";
+import type { SlideshowDraftPages } from "./use-slideshow-draft-pages";
 import type {
   CreatorImagePickerTarget,
   SlideshowCollection,
@@ -110,6 +111,7 @@ export type StudioHomeView = {
   section: SlideshowSection;
   onSectionChange: (section: SlideshowSection) => void;
   draftsCount: number;
+  draftPages: SlideshowDraftPages;
   templates: SlideshowTemplate[];
   generatingStory: boolean;
   onGenerateStory: (input: SlideshowStoryGenerateInput) => Promise<void>;

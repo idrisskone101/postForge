@@ -26,6 +26,7 @@ import {
   regenerateStudioSlideImage,
   saveStudioProject,
 } from "./slideshow-studio-runtime";
+import { useSlideshowDraftPages } from "./use-slideshow-draft-pages";
 import { useSlideshowStudioBootstrap } from "./use-slideshow-studio-bootstrap";
 import { SlideshowHomeProvider } from "./slideshow-home-provider";
 import { StudioHome } from "./studio-home";
@@ -85,6 +86,13 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   >([]);
   const [selectedImageModel, setSelectedImageModel] = useState<string | null>(null);
 
+  const draftPages = useSlideshowDraftPages({
+    apiBaseUrl,
+    projects,
+    setProjects,
+    setProjectsError,
+  });
+
   useSlideshowStudioBootstrap({
     apiBaseUrl,
     initialProjects,
@@ -94,6 +102,7 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
     setSelectedImageModel,
     setCollections,
     setProjects,
+    setProjectsTotal: draftPages.setReportedTotal,
     setProjectsError,
     setLoadingProjects,
   });
@@ -286,7 +295,8 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
             home={{
               section,
               onSectionChange: setSection,
-              draftsCount: projects.length,
+              draftsCount: draftPages.pages.total ?? projects.length,
+              draftPages: draftPages.pages,
               templates,
               generatingStory,
               onGenerateStory: handleGenerateStory,
