@@ -8,7 +8,6 @@ import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
 import { JobPromptText } from "./job-prompt-text";
 import { JobIcon } from "./job-icons";
-import { SCROLL_FOCUS_RING } from "./job-preview-body";
 import {
   ENHANCEMENT_TOOLS,
   asString,
@@ -183,7 +182,7 @@ export function JobPromptPanel({
   const negativePrompt = asString(job.input?.negativePrompt);
   const canContinueVideo = job.type === "video" && !job.tags.includes("video-swap");
   return (
-    <section aria-labelledby="job-prompt-title" className="wb-panel min-h-[190px] gap-3 py-[18px] xl:min-h-[160px] xl:flex-1">
+    <section aria-labelledby="job-prompt-title" className="wb-panel flex-none gap-3 py-[18px] xl:flex-1">
       <div className="flex h-7 flex-none items-center gap-2.5">
         <h2 id="job-prompt-title" className="wb-panel-title flex-1">
           Prompt
@@ -197,12 +196,7 @@ export function JobPromptPanel({
           Copy
         </button>
       </div>
-      <div
-        role="region"
-        aria-label="Prompt text"
-        tabIndex={0}
-        className={`flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-lg max-xl:max-h-80 ${SCROLL_FOCUS_RING}`}
-      >
+      <div className="flex flex-1 flex-col gap-3">
         <JobPromptText prompt={job.prompt} />
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>

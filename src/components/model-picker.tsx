@@ -141,8 +141,8 @@ function ModelCard({
       <span
         className={
           recommended
-            ? "text-[12px] font-semibold leading-4 text-fg-secondary"
-            : "line-clamp-2 text-[12px] leading-4 text-fg-muted"
+            ? "line-clamp-2 min-h-8 text-[12px] font-semibold leading-4 text-fg-secondary"
+            : "line-clamp-2 min-h-8 text-[12px] leading-4 text-fg-muted"
         }
       >
         {line}

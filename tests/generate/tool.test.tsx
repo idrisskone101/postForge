@@ -64,7 +64,12 @@ assert.match(markup, /9:16/);
 assert.match(markup, /aria-label="2 outputs" data-icon="true"|aria-pressed="true" aria-label="2 outputs"/);
 assert.doesNotMatch(markup, /aria-label="Duration"/);
 assert.match(markup, /Phone screenshot/);
-assert.match(markup, /Composite screenshot onto phone/);
+assert.match(
+  markup,
+  /aria-expanded="false"[^>]*>(?:(?!<\/button>).)*Phone screenshot/,
+  "the phone screenshot panel starts as a collapsed disclosure row",
+);
+assert.match(markup, /Composite screenshot onto phone/, "collapsed content stays mounted with its state");
 assert.match(markup, /GPT Image 2\.5/);
 assert.match(markup, /Phone screenshot scene/);
 assert.match(markup, /Bathroom counter/);

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ref } from "react";
+import { useCallback, useState, type Ref } from "react";
 import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
 import { EmptyState, Icon, Meter } from "@/components/workbench";
 import { humanizeGenerationFailure } from "@/lib/ai/prompt-presentation";
@@ -21,6 +21,24 @@ export function JobStage({
 }) {
   const { job, featured, isCompleted } = view;
   const hasMedia = isCompleted && Boolean(featured);
+  const [reported, setReported] = useState<{ src: string; label: string } | null>(null);
+  const bodyRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const read = (event?: Event) => {
+      const size = reportedSize(event?.target ?? node.querySelector("img, video"));
+      if (size) setReported(size);
+    };
+    node.addEventListener("load", read, true);
+    node.addEventListener("loadedmetadata", read, true);
+    read();
+    return () => {
+      node.removeEventListener("load", read, true);
+      node.removeEventListener("loadedmetadata", read, true);
+    };
+  }, []);
+  const dimensions =
+    formatDimensions(featured) ??
+    (featured && reported?.src === `/api/files/${featured.id}` ? reported.label : null);
   return (
     <section
       ref={stageRef}
@@ -37,10 +55,10 @@ export function JobStage({
           </div>
         )}
         <span className="wb-mono text-right text-fg-secondary sm:col-start-3 sm:justify-self-end">
-          {hasMedia && formatDimensions(featured)}
+          {hasMedia && dimensions}
         </span>
       </div>
-      <div className={`relative min-h-0 w-full flex-1 overflow-auto rounded-lg ${SCROLL_FOCUS_RING}`}>
+      <div ref={bodyRef} className={`relative min-h-0 w-full flex-1 overflow-auto rounded-lg ${SCROLL_FOCUS_RING}`}>
         <JobStageBody view={view} />
       </div>
     </section>
@@ -119,6 +137,18 @@ function JobStageBody({ view }: { view: JobDetailViewModel }) {
 /** A scroll region can take keyboard focus, so it draws the same ember ring as a control, inside its edge. */
 export const SCROLL_FOCUS_RING =
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ember";
+
+/** The size the loaded image or video itself reports, keyed by its path so a stale variation never shows. */
+function reportedSize(media: EventTarget | null) {
+  if (!(media instanceof HTMLImageElement) && !(media instanceof HTMLVideoElement)) return null;
+  const [width, height] =
+    media instanceof HTMLImageElement
+      ? [media.naturalWidth, media.naturalHeight]
+      : [media.videoWidth, media.videoHeight];
+  if (!(width > 0 && height > 0)) return null;
+  const src = new URL(media.currentSrc || media.src, window.location.href).pathname;
+  return { src, label: `${width} x ${height}` };
+}
 
 function formatDimensions(output: JobOutput | undefined) {
   return output?.width && output.height ? `${output.width} x ${output.height}` : null;
