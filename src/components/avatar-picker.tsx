@@ -230,16 +230,19 @@ export function AvatarPicker({
 }
 
 const AVATAR_ROW =
-  "grid grid-flow-col gap-3 auto-cols-[max(120px,calc((100%-var(--avatar-gaps))/var(--avatar-cols)))] [[data-avatar-stacked]_&]:grid-flow-row [[data-avatar-stacked]_&]:auto-cols-auto [[data-avatar-stacked]_&]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]";
+  "grid grid-flow-col grid-cols-[var(--avatar-template)] gap-3 auto-cols-[max(120px,calc((100%-var(--avatar-gaps))/var(--avatar-cols)))] [[data-avatar-stacked]_&]:grid-flow-row [[data-avatar-stacked]_&]:auto-cols-auto [[data-avatar-stacked]_&]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]";
 
 /**
- * One row. Up to four identities share the width; from five on, four and a
- * part of the fifth show, so the row reads as scrollable.
+ * One row. Up to four identities share the width in equal fractions, which land on whole pixels
+ * where a percentage would not; from five on, four and a part of the fifth show, so the row reads
+ * as scrollable.
  */
 function avatarRowStyle(count: number): CSSProperties {
-  const visible = count > 4 ? 4.4 : Math.max(count, 3);
+  const scrolls = count > 4;
+  const visible = scrolls ? 4.4 : Math.max(count, 3);
   return {
     "--avatar-cols": visible,
     "--avatar-gaps": `${(Math.ceil(visible) - 1) * 12}px`,
+    "--avatar-template": scrolls ? "none" : `repeat(${visible}, minmax(120px, 1fr))`,
   } as CSSProperties;
 }
