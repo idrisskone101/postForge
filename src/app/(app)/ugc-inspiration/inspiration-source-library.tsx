@@ -40,7 +40,7 @@ export function InspirationSourceLibrary({
   return (
     <section
       aria-labelledby="source-library-heading"
-      className="wb-panel @container min-w-0 flex-1 gap-3.5 p-4 sm:p-5"
+      className="wb-panel @container min-w-0 flex-1 gap-3.5 p-4 max-sm:gap-3 sm:p-5"
     >
       <h2 id="source-library-heading" className="sr-only">
         Source library
@@ -83,7 +83,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
   } = workspace;
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-2">
+    <div className="flex min-w-0 flex-wrap items-center gap-2 @max-[440px]:gap-y-3">
       <Segmented<InspirationSourceFeedFilter>
         label="Source usage filter"
         value={sourceFeedFilter}
@@ -103,7 +103,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
           ),
         }))}
       />
-      <label className="wb-input-wrap min-w-[208px] flex-1" data-size="36">
+      <label className="wb-input-wrap min-w-[208px] flex-1 @max-[440px]:min-w-[120px]" data-size="36">
         <Icon name="search" size={15} />
         <input
           value={sourceSearch}
@@ -111,14 +111,18 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
           placeholder="Search captions or creators"
           aria-label="Search source library"
           type="search"
+          className="text-ellipsis"
         />
       </label>
-      <div className="relative shrink-0">
+      <div className={SORT_WRAP_CLASS}>
+        <span aria-hidden="true" className="hidden @max-[440px]:inline">
+          {SORT_SHORT_LABEL[sourceSort]}
+        </span>
         <select
           value={sourceSort}
           onChange={(event) => setSourceSort(parseInspirationSourceSort(event.target.value))}
           aria-label="Sort source library"
-          className="h-9 cursor-pointer appearance-none rounded-full [field-sizing:content] bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg outline-none transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+          className={SORT_SELECT_CLASS}
         >
           <option value="recent">Newest first</option>
           <option value="views">Most viewed</option>
@@ -127,14 +131,15 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
         <Icon
           name="chevron-down"
           size={14}
-          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-fg"
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-fg @max-[440px]:hidden"
         />
       </div>
       <Segmented<"dense" | "large">
         label="Tile size"
         value={largeTiles ? "large" : "dense"}
         onChange={(value) => setLargeTiles(value === "large")}
-        className="shrink-0 [&_.wb-segment]:w-8"
+        // Below 440px both sizes draw the same two columns, so the toggle has nothing to change.
+        className="shrink-0 @max-[440px]:hidden [&_.wb-segment]:w-8"
         options={[
           { value: "dense", label: <ColumnsGlyph count={3} />, ariaLabel: "Small tiles" },
           { value: "large", label: <ColumnsGlyph count={2} />, ariaLabel: "Large tiles" },
@@ -143,6 +148,29 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
     </div>
   );
 }
+
+/*
+ * Below 440px the sort is Paper's short pill ("Newest", no chevron) so the search keeps its row. The
+ * native select lies over the pill, invisible, and still owns the tap, the keyboard and the focus ring.
+ */
+const SORT_WRAP_CLASS = [
+  "relative shrink-0",
+  "@max-[440px]:flex @max-[440px]:h-9 @max-[440px]:items-center @max-[440px]:rounded-full @max-[440px]:bg-raised",
+  "@max-[440px]:pr-3 @max-[440px]:pl-3.5 @max-[440px]:text-[13px] @max-[440px]:leading-4 @max-[440px]:font-semibold @max-[440px]:text-fg",
+  "@max-[440px]:has-[:focus-visible]:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
+].join(" ");
+
+const SORT_SELECT_CLASS = [
+  "h-9 cursor-pointer appearance-none rounded-full [field-sizing:content] bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg outline-none",
+  "transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
+  "@max-[440px]:absolute @max-[440px]:inset-0 @max-[440px]:size-full @max-[440px]:opacity-0",
+].join(" ");
+
+const SORT_SHORT_LABEL = {
+  recent: "Newest",
+  views: "Most viewed",
+  engagement: "Most engagement",
+} as const;
 
 const GRID_DENSE =
   "grid-cols-2 @[440px]:grid-cols-3 @[580px]:grid-cols-4 @[680px]:grid-cols-5 @[800px]:grid-cols-6";
