@@ -25,16 +25,19 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
               ) : null}
             </span>
           ),
-          aside: (
+          aside: view.emptyPeriod ? null : (
             <span className={SIDE_FIGURE}>
               <span className="font-mono">{formatCost(dashboard.totalCost)}</span> all time
             </span>
           ),
+          foot: view.emptyPeriod ? (
+            <span className="wb-mono">{formatCost(dashboard.totalCost)} all time</span>
+          ) : null,
         },
         {
           label: "Generations",
           value: dashboard.totalJobs,
-          aside: (
+          aside: view.emptyPeriod ? null : (
             <span className={SIDE_FIGURE}>
               Avg cost{" "}
               <span className="font-mono">
@@ -85,5 +88,6 @@ const STRIP_CLASS = cn(
   "max-md:[&>.wb-stat]:border-l-0 max-md:[&>.wb-stat]:px-0 max-md:[&_.wb-stat-value]:text-[28px] max-md:[&_.wb-stat-value]:leading-8",
   "max-md:[&_.wb-stat-value]:flex-wrap max-md:[&_.wb-stat-value]:justify-end max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:gap-y-3",
   "max-md:[&>.wb-stat+.wb-stat]:border-t max-md:[&>.wb-stat+.wb-stat]:border-hairline",
+  "max-md:[&_.wb-stat-foot]:basis-full max-md:[&_.wb-stat-foot]:justify-end",
   "md:max-lg:flex-wrap md:max-lg:gap-y-4 md:max-lg:[&>.wb-stat:nth-child(3)]:basis-full md:max-lg:[&>.wb-stat:nth-child(3)]:border-l-0 md:max-lg:[&>.wb-stat:nth-child(3)]:border-t md:max-lg:[&>.wb-stat:nth-child(3)]:border-hairline md:max-lg:[&>.wb-stat:nth-child(3)]:pl-0 md:max-lg:[&>.wb-stat:nth-child(3)]:pt-4",
 );

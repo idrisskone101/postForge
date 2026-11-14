@@ -74,6 +74,7 @@ assert.equal(changeLabel(4.82, 5.48), "-$0.66");
 assert.equal(changeLabel(38.1, 31.7), "+$6.40");
 assert.equal(changeLabel(1, 0), "+$1.00", "a quiet previous window is a real zero");
 assert.equal(changeLabel(1, null), null, "no previous window hides the chip");
+assert.equal(changeLabel(0, 0), null, "no change is no chip");
 
 const days = Array.from({ length: 90 }, (_, index) => ({ date: `Aug ${index + 1}`, image: 0.1, video: 0.25 }));
 const wide = spendChartBars(days, 464);

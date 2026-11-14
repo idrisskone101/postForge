@@ -35,6 +35,7 @@ export function niceMoneyCeiling(value: number) {
 export function changeLabel(current: number, previous: number | null) {
   if (previous === null || !Number.isFinite(previous) || !Number.isFinite(current)) return null;
   const cents = Math.round((current - previous) * 100);
+  if (cents === 0) return null;
   return `${cents < 0 ? "-" : "+"}${formatCost(Math.abs(cents) / 100)}`;
 }
 
