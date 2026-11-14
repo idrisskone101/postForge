@@ -23,7 +23,7 @@ export function CharacterBuilderHeader({
 
   return (
     <PageHeader
-      className="gap-y-3 pr-1 [&_.wb-page-header-lead]:gap-2 [&_.wb-page-header-lead]:max-sm:flex-wrap [&_.wb-page-title]:overflow-visible [&_.wb-page-title]:p-0.5"
+      className={HEADER_CLASS}
       back={{ href: "/characters", label: "Characters", labelled: true }}
       title={
         <input
@@ -41,16 +41,18 @@ export function CharacterBuilderHeader({
         size={40}
         onClick={randomizeAndRender}
         disabled={saving || rendering}
+        aria-label={rendering ? "Rendering…" : "Randomize & render"}
         aria-describedby="character-preview-generation-cost"
         title="Uses one paid image generation"
+        className="max-sm:w-10 max-sm:px-0"
       >
         <Icon name="shuffle" />
-        {rendering ? "Rendering…" : "Randomize & render"}
+        <span className="max-sm:hidden">{rendering ? "Rendering…" : "Randomize & render"}</span>
       </Button>
       <Button
         variant="primary"
         size={40}
-        className="px-5"
+        className="px-5 max-sm:px-[18px]"
         onClick={saveCharacter}
         disabled={saving || rendering || missingEditRecord || previewSaveBlocked}
         aria-label="Save character"
@@ -61,3 +63,15 @@ export function CharacterBuilderHeader({
     </PageHeader>
   );
 }
+
+/*
+ * Below 640px the header is Paper's two rows ("17 Character builder / 390"): the back pill with the
+ * randomize icon button and the save action, then the name field across the full width.
+ */
+const HEADER_CLASS = [
+  "gap-y-3 pr-1 [&_.wb-page-header-lead]:gap-2 [&_.wb-page-title]:overflow-visible [&_.wb-page-title]:p-0.5",
+  "max-sm:grid max-sm:grid-cols-[auto_minmax(0,1fr)] max-sm:items-center max-sm:gap-x-2 max-sm:gap-y-2.5",
+  "[&_.wb-page-header-lead]:max-sm:contents [&_.wb-back-pill]:max-sm:justify-self-start",
+  "[&_.wb-page-title]:max-sm:col-span-2 [&_.wb-page-title]:max-sm:row-start-2 [&_.wb-page-title]:max-sm:p-0",
+  "[&_.wb-page-actions]:max-sm:col-start-2 [&_.wb-page-actions]:max-sm:row-start-1 [&_.wb-page-actions]:max-sm:justify-end",
+].join(" ");
