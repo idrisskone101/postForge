@@ -56,10 +56,27 @@
     display: flex;
     height: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top));
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
+    border-bottom: 1px solid var(--pf-hairline);
     background: var(--pf-floor);
-    padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0
-      max(12px, env(safe-area-inset-left));
+    padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0
+      max(16px, env(safe-area-inset-left));
+  }
+
+  #workspace-mobile-bar .sidebar-brand {
+    flex: 0 1 auto;
+  }
+
+  /* The 20px glyph ends on the 16px gutter; the 40px target overhangs it. */
+  #workspace-mobile-bar > .wb-icon-btn {
+    margin-right: -10px;
+    color: var(--pf-text-secondary);
+  }
+
+  #workspace-mobile-bar > .wb-icon-btn > svg {
+    width: 20px;
+    height: 20px;
   }
 
   .sidebar-mobile-drawer {

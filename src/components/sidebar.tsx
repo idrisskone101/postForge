@@ -52,6 +52,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
   return (
     <>
       <div id="workspace-mobile-bar">
+        <PostForgeBrand name={workspaceName} />
         <button
           type="button"
           aria-label="Open workspace navigation"
@@ -91,7 +92,6 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
             <SidebarFoot active={settingsActive} onNavigate={closeMobileNav} />
           </div>
         </dialog>
-        <PostForgeBrand name={workspaceName} />
       </div>
 
       <aside id="workspace-sidebar">
