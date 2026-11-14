@@ -132,25 +132,27 @@ export function CloneReferenceLibrary() {
           onToggle={onToggleAvatarReferences}
           disabled={avatarReferencePreviews.length === 0}
         >
-          <div
-            id="identity-reference-grid"
-            data-avatar-reference-inspector="true"
-            className="wb-scroll-fade-y wb-scroll-fade-deep grid max-h-80 grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2.5 overflow-y-auto p-1 pb-4"
-          >
-            {avatarReferencePreviews.map((reference) => (
-              <figure key={reference.id} className="flex min-w-0 flex-col gap-1.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={reference.previewUrl}
-                  alt={reference.label}
-                  title={`${reference.label} · ${reference.detail}`}
-                  className="aspect-[9/16] w-full rounded-lg bg-media object-cover"
-                />
-                <figcaption className="truncate text-[12px] leading-4 text-fg-secondary">
-                  {reference.label}
-                </figcaption>
-              </figure>
-            ))}
+          <div className="wb-ring-host rounded-lg has-[>:focus-visible]:-outline-offset-2">
+            <div
+              id="identity-reference-grid"
+              data-avatar-reference-inspector="true"
+              className="wb-scroll-fade-y wb-scroll-fade-deep grid max-h-80 grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-2.5 overflow-y-auto p-1 pb-4"
+            >
+              {avatarReferencePreviews.map((reference) => (
+                <figure key={reference.id} className="flex min-w-0 flex-col gap-1.5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={reference.previewUrl}
+                    alt={reference.label}
+                    title={`${reference.label} · ${reference.detail}`}
+                    className="aspect-[9/16] w-full rounded-lg bg-media object-cover"
+                  />
+                  <figcaption className="truncate text-[12px] leading-4 text-fg-secondary">
+                    {reference.label}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </Disclosure>
       </div>

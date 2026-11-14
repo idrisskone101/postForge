@@ -149,7 +149,7 @@ function SpendLogRowLink({ log, now }: { log: SpendLogRow; now: Date }) {
   );
   if (!log.job) return <div className={ROW}>{cells}</div>;
   return (
-    <Link href={log.job.href} className={cn(ROW, "hover:bg-raised/60 focus-visible:-outline-offset-2")}>
+    <Link href={log.job.href} className={cn(ROW, "wb-ring-over hover:bg-raised/60")}>
       {cells}
     </Link>
   );

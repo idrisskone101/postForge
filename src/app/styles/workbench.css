@@ -470,6 +470,25 @@
     outline: none;
   }
 
+  /* A control whose own children would cover an inset ring (a video, a thumbnail on its own layer)
+     draws the ring on an overlay above them. */
+  .wb-ring-over {
+    position: relative;
+  }
+
+  .wb-ring-over:focus-visible {
+    outline: none;
+  }
+
+  .wb-ring-over:focus-visible::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px var(--pf-ember);
+    content: "";
+    pointer-events: none;
+  }
+
   :is(.wb-segmented, .wb-scroll-fade) > * {
     scroll-snap-align: start;
   }
