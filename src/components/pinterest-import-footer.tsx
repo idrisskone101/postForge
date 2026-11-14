@@ -25,40 +25,42 @@ export function PinterestImportFooter({
 
   return (
     <div className="flex shrink-0 flex-col gap-3 border-t border-hairline px-6 pb-[max(20px,env(safe-area-inset-bottom))] pt-4 sm:flex-row sm:items-end max-sm:px-4">
-      <Field label="Collection name" htmlFor="pinterest-collection-name" className="min-w-0 flex-1">
-        <input
-          id="pinterest-collection-name"
-          className="wb-input"
-          value={collectionName}
-          onChange={(event) => updateCollectionName(event.target.value)}
-          placeholder="Collection name"
-          maxLength={160}
-          disabled={importing}
-        />
-      </Field>
-      {candidates.length > 0 ? (
-      <div className="flex items-center gap-1 sm:h-[42px]">
-        <Button
-          variant="link"
-          onClick={() =>
-            setSelected(
-              candidates
-                .filter((candidate) => !failedImages.includes(candidate.id))
-                .slice(0, MAX_PINTEREST_IMPORT_IMAGES)
-                .map((candidate) => candidate.id),
-            )
-          }
-          disabled={importing}
-        >
-          {candidates.length > MAX_PINTEREST_IMPORT_IMAGES
-            ? `Select first ${MAX_PINTEREST_IMPORT_IMAGES}`
-            : "Select all"}
-        </Button>
-        <Button variant="link" onClick={() => setSelected([])} disabled={!count || importing}>
-          Clear
-        </Button>
+      <div className={NAME_AND_SELECTION}>
+        <Field label="Collection name" htmlFor="pinterest-collection-name" className="min-w-0 flex-1">
+          <input
+            id="pinterest-collection-name"
+            className="wb-input"
+            value={collectionName}
+            onChange={(event) => updateCollectionName(event.target.value)}
+            placeholder="Collection name"
+            maxLength={160}
+            disabled={importing}
+          />
+        </Field>
+        {candidates.length > 0 ? (
+        <div className="flex shrink-0 items-center gap-1 sm:h-[42px] max-sm:[@media(max-height:700px)]:h-[42px]">
+          <Button
+            variant="link"
+            onClick={() =>
+              setSelected(
+                candidates
+                  .filter((candidate) => !failedImages.includes(candidate.id))
+                  .slice(0, MAX_PINTEREST_IMPORT_IMAGES)
+                  .map((candidate) => candidate.id),
+              )
+            }
+            disabled={importing}
+          >
+            {candidates.length > MAX_PINTEREST_IMPORT_IMAGES
+              ? `Select first ${MAX_PINTEREST_IMPORT_IMAGES}`
+              : "Select all"}
+          </Button>
+          <Button variant="link" onClick={() => setSelected([])} disabled={!count || importing}>
+            Clear
+          </Button>
+        </div>
+        ) : null}
       </div>
-      ) : null}
       {workflow === "slideshow" ? (
         <div className="grid gap-2 sm:flex sm:h-[42px] sm:items-center">
           <Button
@@ -96,3 +98,10 @@ export function PinterestImportFooter({
     </div>
   );
 }
+
+/*
+ * From 640 the wrapper dissolves and its children sit in the footer row. On a short phone the name and
+ * the selection links share one row, so the results above keep enough height for a whole tile.
+ */
+const NAME_AND_SELECTION =
+  "flex min-w-0 flex-col gap-3 sm:contents max-sm:[@media(max-height:700px)]:flex-row max-sm:[@media(max-height:700px)]:items-end";
