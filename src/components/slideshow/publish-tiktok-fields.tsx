@@ -43,7 +43,7 @@ export function PublishTikTokFields({
   ] as const;
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="flex flex-col gap-3.5 sm:flex-row sm:gap-2.5">
+      <div className="flex flex-col gap-3.5">
         <div className="wb-field flex-1">
           <label className="wb-label" htmlFor="slideshow-publish-visibility">
             Visibility

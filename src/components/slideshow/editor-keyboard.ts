@@ -13,6 +13,7 @@ export function handleEditorKeyDown(
 ) {
   if (isEditableKeyboardTarget(event.target)) return;
   const { viewMode, onExitPlay, onStep } = input;
+  if (document.querySelector("dialog[open], [role='dialog']")) return;
   if (event.key === "Escape" && viewMode === "play") {
     event.preventDefault();
     onExitPlay();

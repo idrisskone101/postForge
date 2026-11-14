@@ -38,7 +38,7 @@ export function PublishReviewDialog({
       aria-labelledby="publish-review-title"
       onKeyDown={keepTabInDialog}
     >
-      <div className="flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-y-auto rounded-xl bg-panel shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both]">
+      <div className="flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-hidden rounded-xl bg-panel shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both]">
         <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 px-4 pb-4 pt-5 sm:px-6">
           <div className="flex min-w-0 flex-col gap-1">
             <h2
@@ -64,7 +64,7 @@ export function PublishReviewDialog({
           />
         </header>
 
-        <div className="grid min-h-0 min-w-0 flex-1 gap-6 overflow-y-auto px-4 pb-5 pt-1 sm:px-6 md:grid-cols-[248px_minmax(0,1fr)]">
+        <div className="wb-scroll-fade-y wb-scroll-fade-deep grid min-h-0 min-w-0 flex-1 gap-6 overflow-y-auto px-4 pb-5 pt-1 sm:px-6 md:grid-cols-[248px_minmax(0,1fr)]">
           <PublishMedia state={state} />
 
           <section className="flex min-w-0 flex-col gap-4">
