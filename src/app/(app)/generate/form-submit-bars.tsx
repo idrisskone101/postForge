@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/workbench";
+import { publishPinnedBar } from "@/lib/pinned-bar";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
 import { GENERATE_LAYOUT } from "./form-constants";
@@ -28,6 +29,7 @@ export function GenerateFormSubmitBars({
 
   return (
     <aside
+      ref={publishPinnedBar}
       aria-label="Preview"
       className={cn("wb-panel gap-3 p-5 max-xl:px-3 max-xl:pt-3 max-xl:shadow-float", GENERATE_LAYOUT.aside, className)}
     >

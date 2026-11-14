@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GalleryDeleteDialog } from "@/components/gallery/delete-dialog";
 import { Button, buttonClass } from "@/components/workbench/button";
 import { Icon } from "@/components/workbench/icon";
+import { publishPinnedBar } from "@/lib/pinned-bar";
 import { EXIT_MS, useExitPresence } from "@/lib/use-exit-presence";
 import type { GalleryWorkspace } from "./use-gallery-workspace";
 
@@ -123,15 +124,20 @@ const DOCK_CLASS = [
   "xl:max-[1439.98px]:fixed xl:max-[1439.98px]:top-auto xl:max-[1439.98px]:right-[calc(var(--pf-page-pad)+320px+var(--pf-gap))] xl:max-[1439.98px]:bottom-4 xl:max-[1439.98px]:z-[45]",
 ].join(" ");
 
-/** Publishes the dock's rendered height so the page can reserve room under the grid for it. */
+/**
+ * Publishes the dock's rendered height so the page can reserve room under the grid for it, and, where it
+ * floats at the bottom, so keyboard focus stops above it.
+ */
 function publishDockHeight(dock: HTMLDivElement) {
   const root = document.documentElement;
   const observer = new ResizeObserver(() => {
     root.style.setProperty("--gallery-dock-h", `${dock.offsetHeight}px`);
   });
   observer.observe(dock);
+  const unpublishPinned = publishPinnedBar(dock);
   return () => {
     observer.disconnect();
+    unpublishPinned?.();
     root.style.removeProperty("--gallery-dock-h");
   };
 }

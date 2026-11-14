@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/workbench";
+import { publishPinnedBar } from "@/lib/pinned-bar";
 import { JobIcon } from "./job-icons";
 import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
 
@@ -26,7 +27,7 @@ export function JobActionDock({
   const { job, featured, isCompleted, isFailed, canDiscard, isRetrying, isDownloading, isDiscarding } = view;
 
   return (
-    <div className={DOCK_BAR}>
+    <div ref={publishPinnedBar} className={DOCK_BAR}>
       <div
         role="toolbar"
         aria-label="Generation actions"
