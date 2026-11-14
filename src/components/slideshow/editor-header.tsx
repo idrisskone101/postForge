@@ -71,15 +71,24 @@ export function EditorHeader() {
         <div role="alert" className="wb-notice wb-fade-in" data-tone="bad">
           <Icon name="alert" size={16} className="shrink-0 text-bad" />
           <span>
-            {saveError.includes("imagePrompt")
-              ? "AI direction is too long to save. Shorten it to 2,000 characters or fewer."
-              : saveError}{" "}
-            Changes remain only in this browser until autosave succeeds; leaving now can lose them.
+            {saveErrorSentence(saveError)} Changes remain only in this browser until autosave succeeds; leaving now can lose them.
           </span>
         </div>
       ) : null}
     </>
   );
+}
+
+/** The failure as a full sentence, so the line that follows it does not run on. */
+function saveErrorSentence(message: string) {
+  if (message.includes("imagePrompt")) {
+    return "AI direction is too long to save. Shorten it to 2,000 characters or fewer.";
+  }
+  if (/failed to fetch|networkerror|load failed/i.test(message)) {
+    return "The server could not be reached.";
+  }
+  const text = message.trim();
+  return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
 const WRAPPING_TITLE =
