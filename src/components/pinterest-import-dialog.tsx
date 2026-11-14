@@ -288,7 +288,7 @@ export function PinterestImportDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col gap-0 overflow-hidden rounded-none p-0 sm:h-auto sm:max-h-[92vh] sm:w-[calc(100vw-2rem)] sm:max-w-[880px]! sm:rounded-xl"
+        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col gap-0 overflow-hidden rounded-none p-0 sm:h-[min(92vh,800px)] sm:max-h-[92vh] sm:w-[calc(100vw-2rem)] sm:max-w-[880px]! sm:rounded-xl"
       >
         <DialogHeader className="shrink-0 flex-row items-center justify-between gap-3 px-6 pb-0 pt-[max(20px,env(safe-area-inset-top))] max-sm:px-4">
           <div className="flex min-w-0 flex-col gap-1">

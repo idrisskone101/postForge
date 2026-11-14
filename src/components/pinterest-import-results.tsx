@@ -51,7 +51,7 @@ export function PinterestImportResults({
           tone="error"
           title={source === "search" ? "Pinterest search unavailable" : "Board unavailable"}
           detail={error}
-          className="min-h-64"
+          className="min-h-64 sm:h-full"
         />
       ) : candidates.length ? (
         <div className="flex flex-col gap-3">
@@ -138,7 +138,7 @@ export function PinterestImportResults({
       ) : (
         <EmptyState
           icon={hasSearched ? "search" : "inspiration"}
-          className="min-h-64"
+          className="min-h-64 sm:h-full"
           title={
             hasSearched
               ? source === "search"
