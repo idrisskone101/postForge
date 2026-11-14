@@ -77,6 +77,7 @@ export const ICON_PATHS = {
   moon: <path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" />,
   /* drawn */
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  sort: <path d="M7 4v16M4 17l3 3 3-3M17 20V4M14 7l3-3 3 3" />,
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
   "check-chosen": <path d="M6 12.5l4 4 8-9" />,
   x: <path d="M6 6l12 12M18 6L6 18" />,

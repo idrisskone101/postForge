@@ -137,7 +137,7 @@ export function GalleryGrid({
         data-gallery-selection-layout={selection ? "inspecting" : "idle"}
         className="flex min-h-0 min-w-0 flex-1 items-start gap-3"
       >
-        <Panel className="min-w-0 flex-1 gap-3 self-stretch">
+        <Panel className="min-w-0 flex-1 gap-3 self-stretch max-md:p-4">
           {renderHeader({ openDetails: () => setDetailsOpen(true) })}
           {fallback ??
             (view === "list" ? (

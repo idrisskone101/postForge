@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { buttonClass } from "@/components/workbench/button";
@@ -65,10 +66,10 @@ export function GalleryToolbar({
 
   return (
     <div data-gallery-toolbar="true" className="contents">
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 max-sm:gap-y-3">
         <label
           data-gallery-search="true"
-          className="wb-input-wrap min-w-0 flex-[1_1_140px]"
+          className="wb-input-wrap min-w-0 flex-[1_1_140px] max-sm:basis-full"
           data-size="36"
         >
           <Icon name="search" size={15} className="shrink-0 text-fg-muted" />
@@ -89,15 +90,16 @@ export function GalleryToolbar({
           value={typeFilter}
           onChange={chooseType}
           options={filterOptions}
-          className="max-sm:w-full max-sm:[&>.wb-segment]:flex-1"
+          className="max-sm:min-w-0 max-sm:flex-1 max-sm:[&>.wb-segment]:flex-1"
         />
         <div className="ml-auto flex items-center gap-2">
-          <SortMenu value={sortOrder} onChange={chooseSort} />
+          <SortMenu value={sortOrder} onChange={chooseSort} layout={{ view, setView }} />
           <Segmented<GalleryView>
             label="Layout"
             value={view}
             onChange={setView}
             options={viewOptions}
+            className="max-sm:hidden"
           />
         </div>
       </div>
@@ -117,7 +119,7 @@ export function GalleryToolbar({
         data-selecting={selecting ? "true" : undefined}
         className={DOCK_ROW_CLASS}
       >
-        <span data-gallery-count="true" className="wb-meta">
+        <span data-gallery-count="true" className="wb-meta max-sm:sr-only">
           {countLabel}
         </span>
         {dock}
@@ -129,7 +131,7 @@ export function GalleryToolbar({
 // Where the dock fits one row it sits in this row, which follows the scroll while a selection is active.
 // The toolbar root is display: contents so the media panel, not the toolbar, bounds the sticky row.
 const DOCK_ROW_CLASS = [
-  "relative flex min-h-12 min-w-0 items-center pl-1",
+  "relative flex min-h-12 min-w-0 items-center pl-1 max-sm:-mt-3 max-sm:min-h-0",
   "lg:max-xl:data-[selecting=true]:sticky lg:max-xl:data-[selecting=true]:top-3 lg:max-xl:data-[selecting=true]:z-20",
   "min-[1440px]:data-[selecting=true]:sticky min-[1440px]:data-[selecting=true]:top-3 min-[1440px]:data-[selecting=true]:z-20",
 ].join(" ");
@@ -139,26 +141,32 @@ const viewOptions = [
   { value: "list", label: <Icon name="list" size={14} />, ariaLabel: "List view" },
 ] as const;
 
+const layoutLabels: Record<GalleryView, string> = { grid: "Grid view", list: "List view" };
+
 const sortLabels: Record<GallerySortOrder, string> = {
   newest: "Newest",
   oldest: "Oldest",
 };
 
+/** On phones the pill is Paper's 36px sort button, and its menu also carries the layout choice. */
 function SortMenu({
   value,
   onChange,
+  layout,
 }: {
   value: GallerySortOrder;
   onChange: (value: GallerySortOrder) => void;
+  layout: { view: GalleryView; setView: (view: GalleryView) => void };
 }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn(buttonClass("quiet", 36), "pr-3 pl-3.5")}
+        className={cn(buttonClass("quiet", 36), "pr-3 pl-3.5 max-sm:w-9 max-sm:px-0")}
         aria-label={`Sort: ${sortLabels[value]}`}
       >
-        {sortLabels[value]}
-        <Icon name="chevron-down" size={14} className="size-3.5 text-fg-secondary" />
+        <span className="max-sm:hidden">{sortLabels[value]}</span>
+        <Icon name="chevron-down" size={14} className="size-3.5 text-fg-secondary max-sm:hidden" />
+        <Icon name="sort" size={14} className="size-3.5 sm:hidden" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="wb-float w-36 p-1">
         <DropdownMenuRadioGroup
@@ -176,6 +184,25 @@ function SortMenu({
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
+        <div className="sm:hidden">
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup
+            aria-label="Layout"
+            value={layout.view}
+            onValueChange={(next) => layout.setView(next as GalleryView)}
+          >
+            {(["grid", "list"] as const).map((option) => (
+              <DropdownMenuRadioItem
+                key={option}
+                value={option}
+                closeOnClick
+                className="h-9 rounded-full px-3 text-[13px] font-medium"
+              >
+                {layoutLabels[option]}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

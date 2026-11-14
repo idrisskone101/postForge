@@ -19,14 +19,14 @@ export function GalleryTileSkeletons({ count = 10 }: { count?: number }) {
 export function GalleryToolbarSkeleton() {
   return (
     <div className="flex flex-col gap-3" aria-hidden="true">
-      <div className="flex flex-wrap items-center gap-2">
-        <Skeleton shape="tile" className="h-9 min-w-[200px] flex-1" />
-        <Skeleton className="h-9 w-[230px]" />
-        <Skeleton className="h-9 w-[90px]" />
-        <Skeleton className="h-9 w-[80px]" />
+      <div className="flex flex-wrap items-center gap-2 max-sm:gap-y-3">
+        <Skeleton shape="tile" className="h-9 min-w-[200px] flex-1 max-sm:basis-full" />
+        <Skeleton className="h-9 w-[230px] max-sm:w-auto max-sm:flex-1" />
+        <Skeleton className="h-9 w-[90px] max-sm:w-9" />
+        <Skeleton className="h-9 w-[80px] max-sm:hidden" />
       </div>
       <Skeleton className="h-9 w-full max-w-[432px]" />
-      <div className="flex min-h-12 items-center pl-1">
+      <div className="flex min-h-12 items-center pl-1 max-sm:hidden">
         <Skeleton className="w-20" />
       </div>
     </div>
