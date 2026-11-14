@@ -8,7 +8,6 @@ import type { CharacterRecord } from "@/lib/characters";
 import { cn } from "@/lib/utils";
 import { CharacterIdentityPackRow, CharacterIdentityPackNotice } from "./characters-identity-pack";
 import { formatShortDate, photoReady } from "./characters-helpers";
-import { CharacterMoreMenu } from "./characters-more-menu";
 import { CharacterPromptBed } from "./characters-prompt-bed";
 import type { CharacterInspectorModel } from "./types";
 import { useIdentityPack } from "./use-identity-pack";
@@ -20,7 +19,7 @@ export function CharacterDetailPanel({
   inspector: CharacterInspectorModel;
   variant?: "panel" | "sheet";
 }) {
-  const { record, busy, onCopyPrompt } = inspector;
+  const { record, busy, onCopyPrompt, onDuplicate, onRequestDelete } = inspector;
   const ready = photoReady(record);
   const identity = useIdentityPack(ready ? record.avatarId ?? null : null);
   const sheet = variant === "sheet";
@@ -40,7 +39,7 @@ export function CharacterDetailPanel({
               "block overflow-hidden",
               sheet
                 ? "h-28 w-[84px] rounded-[10px]"
-                : "aspect-[236/308] h-[calc(100%-62px)] max-h-[308px] rounded-sm [&_img]:rounded-sm [@media(max-height:780px)]:h-[calc(100%-32px)]"
+                : "aspect-[236/308] h-[calc(100%-62px)] max-h-[308px] rounded-sm [&_img]:rounded-sm [@media(max-height:779.98px)]:h-[calc(100%-32px)]"
             )}
           >
             <CharacterPhoto
@@ -78,30 +77,45 @@ export function CharacterDetailPanel({
         <CharacterPromptBed key={record.id} prompt={buildCharacterPrompt(record.attributes)} />
       )}
 
-      <div className="flex shrink-0 gap-2">
-        <Link
-          href={`/characters/new?id=${encodeURIComponent(record.id)}`}
-          className={cn(buttonClass("strong", 40), "min-w-0 flex-1 px-0", sheet && "h-11")}
-        >
-          <Icon name="pencil" size={16} className="size-4" />
-          Edit character
-        </Link>
-        <Button size={40} className={cn("min-w-0 flex-1 px-0", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
-          <Icon name="copy" size={16} className="size-4" />
-          Copy prompt
-        </Button>
-        <CharacterMoreMenu inspector={inspector} large={sheet} />
+      <div className="flex shrink-0 flex-col gap-2">
+        <div className="flex gap-2">
+          <Link
+            href={`/characters/new?id=${encodeURIComponent(record.id)}`}
+            className={cn(buttonClass("strong", 40), "min-w-0 flex-1 px-0", sheet && "h-11")}
+          >
+            <Icon name="pencil" size={16} className="size-4" />
+            Edit character
+          </Link>
+          <Button size={40} className={cn("min-w-0 flex-1 px-0", sheet && "h-11")} onClick={() => onCopyPrompt(record)}>
+            <Icon name="copy" size={16} className="size-4" />
+            Copy prompt
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Button size={32} className={cn("min-w-0 flex-1", sheet && "h-11")} disabled={busy} onClick={() => onDuplicate(record)}>
+            Duplicate
+          </Button>
+          <Button
+            variant="danger"
+            size={32}
+            className={cn("min-w-0 flex-1", sheet && "h-11")}
+            disabled={busy}
+            onClick={() => onRequestDelete(record)}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
 
 /*
- * The stage gives way before the prompt does: its shrink weight dwarfs the prompt's, so it closes to
- * its floor first and only then does the prompt start to scroll.
+ * The stage is the design's 370px wherever the prompt bed keeps a line beside it (from 900px tall).
+ * On a shorter screen it steps down, so the bed and both action rows stay in view without a scroll.
  */
 const STAGE_CLASS =
-  "min-h-[260px] flex-[0_9999_370px] rounded-lg bg-floor [@media(max-height:780px)]:min-h-[200px]";
+  "h-[370px] rounded-lg bg-floor [@media(min-height:780px)_and_(max-height:899.98px)]:h-[260px] [@media(max-height:779.98px)]:h-[200px]";
 
 function detailRows(record: CharacterRecord) {
   return [

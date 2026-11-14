@@ -20,11 +20,16 @@ assert.match(client, /wb-toast-region/);
 
 const detail = source("src/app/(app)/characters/characters-detail-panel.tsx");
 assert.doesNotMatch(detail, /sticky|-mb-5/, "the action row sits in flow and never covers the prompt");
-assert.match(detail, /<CharacterMoreMenu inspector=\{inspector\}/);
 assert.match(
-  source("src/app/(app)/characters/characters-more-menu.tsx"),
-  /Duplicate[\s\S]*variant="destructive"[\s\S]*Delete character/,
-  "duplicate and the labelled delete live in the overflow menu"
+  detail,
+  /Edit character[\s\S]*Copy prompt[\s\S]*onDuplicate\(record\)[\s\S]*variant="danger"[\s\S]*onRequestDelete\(record\)[\s\S]*Delete/,
+  "Edit and Copy share the first row, Duplicate and the labelled red Delete the second"
+);
+assert.match(detail, /STAGE_CLASS =\s*"h-\[370px\]/, "the stage is the design's 370px where the height allows");
+assert.match(
+  source("src/app/(app)/characters/characters-prompt-bed.tsx"),
+  /min-h-\[31px\][\s\S]*wb-scroll-fade-y[\s\S]*overflow-y-auto/,
+  "the prompt bed takes the height that is left and scrolls inside with the fade"
 );
 assert.doesNotMatch(source("src/app/(app)/characters/characters-prompt-bed.tsx"), /Show all|useState/);
 
