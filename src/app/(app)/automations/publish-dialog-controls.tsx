@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 
@@ -91,25 +91,31 @@ const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
 
 /**
- * Props for a hand-rolled modal root. The root takes focus when a click lands on its scrim or text, so
- * Escape and the Tab trap keep working. Escape closes unless busy. Focus goes back to the opener on close.
+ * Props for a hand-rolled modal root. The root and its scroller take focus when a click lands on scrim or
+ * text, so Escape, the Tab trap and keyboard scrolling stay in the dialog. The page behind does not scroll.
+ * Escape closes unless busy. Focus goes back to the row's Actions button on close.
  */
-export function useDialogKeys(input: { recordName: string; busy: boolean; onClose: () => void }) {
-  const { recordName, busy, onClose } = input;
-  const [opener] = useState(() => (typeof document === "undefined" ? null : document.activeElement));
-  useEffect(
-    () => () => {
-      const target =
-        opener instanceof HTMLElement && opener.isConnected && opener !== document.body
-          ? opener
-          : document.querySelector<HTMLElement>(
-              `[aria-label=${JSON.stringify(`Actions for ${recordName}`)}]`
-            );
-      target?.focus();
-    },
-    [opener, recordName]
-  );
+export function useDialogKeys(input: { recordId: string; busy: boolean; onClose: () => void }) {
+  const { recordId, busy, onClose } = input;
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const page = document.documentElement;
+    const overflow = page.style.overflow;
+    page.style.overflow = "hidden";
+    return () => {
+      page.style.overflow = overflow;
+      document
+        .querySelector<HTMLElement>(
+          `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`
+        )
+        ?.focus({ preventScroll: true });
+    };
+  }, [recordId]);
+  useEffect(() => {
+    if (!busy && document.activeElement === document.body) ref.current?.focus();
+  }, [busy]);
   return {
+    ref,
     tabIndex: -1,
     onKeyDownCapture: (event: KeyboardEvent<HTMLElement>) => {
       if (event.key === "Escape" && !busy) {

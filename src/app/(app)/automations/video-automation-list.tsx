@@ -87,6 +87,7 @@ export function VideoAutomationList({
             return (
               <article
                 key={record.id}
+                data-automation-row={record.id}
                 aria-busy={isBusy || undefined}
                 className="relative grid min-h-[58px] min-w-0 grid-cols-[minmax(0,1fr)_30px] items-center gap-x-4 gap-y-2 border-b border-hairline px-3 py-2 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_150px_140px_124px_30px]"
               >

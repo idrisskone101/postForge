@@ -19,7 +19,7 @@ export function ManualResolutionDialog({
   onConfirm: () => void;
 }) {
   const published = state.resolution === "published";
-  const dialogKeys = useDialogKeys({ recordName: state.record.name, busy, onClose });
+  const dialogKeys = useDialogKeys({ recordId: state.record.id, busy, onClose });
   const provider = automationDestinationLabel(state.record.destination);
   return createPortal(
     <div
@@ -29,7 +29,7 @@ export function ManualResolutionDialog({
       aria-labelledby="manual-resolution-title"
       {...dialogKeys}
     >
-      <div className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
+      <div tabIndex={-1} className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto overscroll-contain rounded-xl outline-none bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
         <span
           className={cn(
             "grid size-9 shrink-0 place-items-center rounded-full",

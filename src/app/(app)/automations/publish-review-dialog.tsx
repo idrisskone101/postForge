@@ -23,7 +23,7 @@ export function PublishReviewDialog({
   onPublish: () => void;
 }) {
   const { preflight } = state;
-  const dialogKeys = useDialogKeys({ recordName: state.recordName, busy, onClose });
+  const dialogKeys = useDialogKeys({ recordId: state.recordId, busy, onClose });
   const providerName = PROVIDER_NAMES[preflight.provider];
   const accountName =
     preflight.account.displayName || preflight.account.username || preflight.account.id;
@@ -65,7 +65,7 @@ export function PublishReviewDialog({
           />
         </header>
 
-        <div className="wb-scroll-fade-y wb-scroll-fade-deep grid min-h-0 min-w-0 flex-1 gap-6 overflow-y-auto px-4 pb-5 pt-1 sm:px-6 md:grid-cols-[248px_minmax(0,1fr)]">
+        <div tabIndex={-1} className="wb-scroll-fade-y wb-scroll-fade-deep grid min-h-0 min-w-0 flex-1 gap-6 overflow-y-auto overscroll-contain px-4 outline-none pb-5 pt-1 sm:px-6 md:grid-cols-[248px_minmax(0,1fr)]">
           <PublishMedia state={state} />
 
           <section className="flex min-w-0 flex-col gap-4">
