@@ -53,7 +53,7 @@ export function ModelPicker({
           />
         </div>
       </div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
+      <div className="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
         {visibleModels.map((model) => (
           <ModelCard
             key={model.id}
@@ -141,8 +141,8 @@ function ModelCard({
       <span
         className={
           recommended
-            ? "line-clamp-2 min-h-8 text-[12px] font-semibold leading-4 text-fg-secondary"
-            : "line-clamp-2 min-h-8 text-[12px] leading-4 text-fg-muted"
+            ? "line-clamp-2 min-h-4 text-[12px] font-semibold leading-4 text-fg-secondary"
+            : "line-clamp-2 min-h-4 text-[12px] leading-4 text-fg-muted"
         }
       >
         {line}
