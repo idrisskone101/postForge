@@ -26,6 +26,7 @@ export function VideoReferencePicker(props: VideoReferencePickerProps) {
   const seed = useSeedFallback(selectedFileId, outputs, onSeedMissingChange);
 
   const selected = outputs.find((file) => file.id === selectedFileId) ?? null;
+  const names = useMemo(() => outputNames(outputs), [outputs]);
   const summary = rowSummary({
     status,
     disabledMessage: disabled ? props.disabledMessage : undefined,
@@ -60,13 +61,13 @@ export function VideoReferencePicker(props: VideoReferencePickerProps) {
                 ) : null}
               </div>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] gap-2 p-1">
-                {outputs.map((file) => {
+                {outputs.map((file, index) => {
                   const isSelected = selectedFileId === file.id;
                   return (
                     <ReferenceTile
                       key={file.id}
                       selected={isSelected}
-                      label={`${isSelected ? "Remove" : "Use"} ${file.filename}`}
+                      label={`${isSelected ? "Remove" : "Use"} ${names[index]}`}
                       onToggle={() => {
                         onChange(isSelected ? null : file.id);
                         if (!isSelected) close();
@@ -111,6 +112,31 @@ type SeedState =
   | { kind: "none" }
   | { kind: "missing" }
   | { kind: "linked"; id: string; filename: string; fileKind: "video" | "image" };
+
+/**
+ * Output filenames are storage ids, so a tile is named by what it is and when it was made. Outputs of
+ * one batch share a minute and are told apart by their place in it.
+ */
+function outputNames(outputs: OutputFile[]) {
+  const base = outputs.map((file) => {
+    const date = new Date(file.createdAt);
+    if (Number.isNaN(date.getTime())) return file.kind;
+    const when = date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    });
+    return `${file.kind} from ${when}`;
+  });
+  return base.map((name, index) => {
+    const total = base.filter((other) => other === name).length;
+    if (total === 1) return name;
+    const place = base.slice(0, index).filter((other) => other === name).length + 1;
+    return `${name}, ${place} of ${total}`;
+  });
+}
 
 function OutputMedia({ file }: { file: OutputFile }) {
   if (file.kind === "image") {
