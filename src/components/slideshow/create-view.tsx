@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import dynamic from "next/dynamic";
+import { Suspense, lazy, useEffect, useState, useTransition } from "react";
 
 import { Icon } from "@/components/workbench/icon";
 import { cn } from "@/lib/utils";
@@ -16,6 +15,11 @@ type CreateMode = "one-idea" | "own-copy";
 export function CreateView() {
   const { templates, onCustom, onBrowseTemplates, onUseTemplate } = useSlideshowHome();
   const [mode, setMode] = useState<CreateMode>("one-idea");
+  const [, startTransition] = useTransition();
+  useEffect(() => {
+    const timer = window.setTimeout(loadCreatorView, 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
   const chosen = MODES[mode];
   const other = mode === "one-idea" ? "own-copy" : "one-idea";
 
@@ -41,13 +45,9 @@ export function CreateView() {
                 <Icon name="check" size={13} strokeWidth={3} />
               </span>
             </div>
-            {mode === "one-idea" ? (
-              <CreateIdeaForm />
-            ) : (
-              <Suspense fallback={null}>
-                <CreatorView />
-              </Suspense>
-            )}
+            <Suspense fallback={null}>
+              {mode === "one-idea" ? <CreateIdeaForm /> : <CreatorView />}
+            </Suspense>
           </div>
 
           <div
@@ -56,7 +56,13 @@ export function CreateView() {
               mode === "own-copy" && "xl:self-start",
             )}
           >
-            <button type="button" onClick={() => setMode(other)} className={START_TILE}>
+            <button
+              type="button"
+              onPointerEnter={loadCreatorView}
+              onFocus={loadCreatorView}
+              onClick={() => startTransition(() => setMode(other))}
+              className={START_TILE}
+            >
               <span className={TILE_ICON}>
                 <StartIcon name={other} />
               </span>
@@ -162,6 +168,8 @@ const TILE_ICON =
   "grid size-10 shrink-0 place-items-center rounded-lg bg-strong text-strong-fg";
 const TILE_TITLE = "min-w-0 flex-1 text-[15px] font-bold leading-5 text-fg";
 
-const CreatorView = dynamic(() =>
-  import("./creator-view").then((mod) => ({ default: mod.CreatorView })),
-);
+function loadCreatorView() {
+  return import("./creator-view").then((mod) => ({ default: mod.CreatorView }));
+}
+
+const CreatorView = lazy(loadCreatorView);
