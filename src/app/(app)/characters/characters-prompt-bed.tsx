@@ -9,7 +9,7 @@ export function CharacterPromptBed({ prompt }: { prompt: string }) {
       data-character-prompt-bed
       className="flex min-h-[81px] min-w-0 flex-[1_1_138px] flex-col [container-type:size]"
     >
-      <div className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-raised py-3">
+      <div className="wb-ring-host flex min-h-0 flex-col overflow-hidden rounded-lg bg-raised py-3">
         <p className="wb-scroll-fade-y max-h-[round(down,100cqh-24px,19px)] min-h-0 overflow-y-auto px-3.5 text-[13px] leading-[19px] text-fg-secondary [overflow-wrap:anywhere]">
           {prompt}
         </p>

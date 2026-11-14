@@ -150,7 +150,7 @@ function CompositionVideo({
         if (video.paused) void video.play();
         else video.pause();
       }}
-      className="group relative block size-full overflow-hidden rounded-lg outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+      className="group relative block size-full overflow-hidden rounded-lg outline-none after:pointer-events-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
     >
       <video
         ref={videoRef}

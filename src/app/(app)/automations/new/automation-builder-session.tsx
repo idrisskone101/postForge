@@ -59,7 +59,7 @@ export function AutomationBuilderSession({
               value={record.name}
               onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))}
               size={Math.max(8, record.name.length)}
-              className="min-w-[4ch] max-w-full rounded-lg [field-sizing:content] bg-transparent font-[inherit] tracking-[inherit] text-fg outline-none transition-shadow duration-[var(--pf-dur-feedback)] ease-pf placeholder:text-fg-muted focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]"
+              className="-mx-2 min-w-[4ch] max-w-full rounded-lg [field-sizing:content] bg-transparent px-2 font-[inherit] tracking-[inherit] text-fg outline-none transition-shadow duration-[var(--pf-dur-feedback)] ease-pf placeholder:text-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
               placeholder="Name this automation"
               aria-label="Automation name"
             />

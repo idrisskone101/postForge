@@ -50,7 +50,7 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
         {collections.length === 0 ? (
           <EmptyState icon="collections" title="No collections yet" className="min-h-[196px]" />
         ) : (
-          <div className="wb-scroll-fade grid grid-cols-2 gap-4 sm:[animation:none] sm:[mask-image:none] lg:grid-cols-3 xl:grid-cols-4 max-sm:-mx-4 max-sm:flex max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1 max-sm:[scrollbar-width:none]">
+          <div className="wb-scroll-fade grid grid-cols-2 gap-4 sm:[animation:none] sm:[mask-image:none] lg:grid-cols-3 xl:grid-cols-4 max-sm:-mx-4 max-sm:-mt-1.5 max-sm:-mb-0.5 max-sm:flex max-sm:overflow-x-auto max-sm:px-4 max-sm:py-1.5 max-sm:[scrollbar-width:none]">
             {collections.map((collection, index) => (
               <CollectionTile
                 key={collection.id}

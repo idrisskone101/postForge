@@ -89,7 +89,7 @@ function AttributeGroups({
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div
         data-character-options
-        className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 flex-col gap-6 lg:-mx-1 lg:-my-0.5 lg:overflow-y-auto lg:px-1 lg:py-0.5"
+        className="wb-scroll-fade-y wb-scroll-fade-deep wb-ring-room flex min-h-0 flex-col gap-6 lg:overflow-y-auto"
       >
       {active.groups.map((group) => (
         <fieldset key={group.key} className="flex shrink-0 flex-col gap-2">
@@ -146,7 +146,7 @@ function AttributeGroups({
             Copy JSON
           </Button>
         </div>
-        <div className="flex min-h-[160px] flex-1 basis-0 flex-col overflow-hidden rounded-lg bg-raised">
+        <div className="wb-ring-host flex min-h-[160px] flex-1 basis-0 flex-col overflow-hidden rounded-lg bg-raised">
           <pre className="wb-scroll-fade-y wb-scroll-fade-deep wb-mono min-h-0 flex-1 overflow-auto whitespace-pre px-4 py-3.5 text-xs leading-5 text-fg-secondary">
             {sectionRecipe(active, attributes)}
           </pre>

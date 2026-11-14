@@ -63,7 +63,7 @@ export function CharacterRow({
       aria-pressed={selected}
       onClick={() => onSelect(record)}
       className={cn(
-        "wb-row w-full cursor-pointer rounded-lg text-left outline-none transition-[background-color,box-shadow] duration-[160ms] ease-pf hover:bg-raised focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
+        "wb-row w-full cursor-pointer rounded-lg text-left transition-[background-color,box-shadow] duration-[160ms] ease-pf hover:bg-raised",
         selected && "bg-raised shadow-[inset_0_0_0_2px_var(--pf-ember)]"
       )}
     >

@@ -35,7 +35,7 @@ export function HomeRecentMedia({ media }: { media: HomeMedia[] }) {
 
 /** Five across from 1024; below that a sideways row that bleeds to the panel edge. */
 const LIST_CLASS =
-  "wb-scroll-fade flex min-w-0 snap-x snap-mandatory gap-3 overflow-x-auto pb-1 max-[1023px]:-mr-5 max-[1023px]:pr-5 max-[767px]:-mr-4 max-[767px]:pr-4 min-[1024px]:grid min-[1024px]:grid-cols-5 min-[1024px]:overflow-visible min-[1024px]:pb-0 min-[1024px]:[mask-image:none]";
+  "wb-scroll-fade -ml-1 -mt-1 flex min-w-0 snap-x snap-mandatory gap-3 overflow-x-auto pb-1 pl-1 pt-1 max-[1023px]:-mr-5 max-[1023px]:pr-5 max-[767px]:-mr-4 max-[767px]:pr-4 min-[1024px]:grid min-[1024px]:grid-cols-5 min-[1024px]:overflow-visible min-[1024px]:pb-0 min-[1024px]:[mask-image:none]";
 const ITEM_CLASS = "w-[150px] shrink-0 snap-start min-[768px]:w-[180px] min-[1024px]:w-auto min-[1024px]:min-w-0";
 
 function RecentMediaTile({ media, priority }: { media: HomeMedia; priority: boolean }) {
