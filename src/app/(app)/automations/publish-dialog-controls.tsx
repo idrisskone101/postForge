@@ -100,10 +100,12 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const page = document.documentElement;
-    const overflow = page.style.overflow;
+    const { overflow, scrollbarGutter } = page.style;
     page.style.overflow = "hidden";
+    page.style.scrollbarGutter = "stable";
     return () => {
       page.style.overflow = overflow;
+      page.style.scrollbarGutter = scrollbarGutter;
       document
         .querySelector<HTMLElement>(
           `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`
@@ -135,7 +137,7 @@ function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
   const last = items[items.length - 1];
   if (!first || !last) return;
   const active = document.activeElement;
-  if (active === event.currentTarget || !event.currentTarget.contains(active)) {
+  if (!(active instanceof HTMLElement) || !items.includes(active)) {
     event.preventDefault();
     (event.shiftKey ? last : first).focus();
     return;
