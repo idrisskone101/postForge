@@ -39,7 +39,7 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
 
   return (
     <div className="flex shrink-0 flex-col gap-3 lg:flex-row">
-      <section className="wb-stat-strip min-w-0 flex-1 flex-wrap gap-y-4 [&>.wb-stat:last-child]:pr-6">
+      <section className={STAT_STRIP_CLASS}>
         <RatioStat
           label="Ready plans"
           value={unavailable ? null : readyPlanCount}
@@ -83,6 +83,13 @@ export function HubOverview({ hub }: { hub: AutomationsWorkspace }) {
   );
 }
 
+/** Below 640px the two stats stack with a hairline between them and draw no meter (Paper "09 Automations / 390"). */
+const STAT_STRIP_CLASS = [
+  "wb-stat-strip min-w-0 flex-1 flex-wrap gap-y-4 sm:[&>.wb-stat:last-child]:pr-6",
+  "max-sm:flex-col max-sm:flex-nowrap max-sm:[&>.wb-stat]:flex-none max-sm:[&>.wb-stat]:px-0",
+  "max-sm:[&>.wb-stat+.wb-stat]:border-t max-sm:[&>.wb-stat+.wb-stat]:border-l-0 max-sm:[&>.wb-stat+.wb-stat]:pt-4",
+].join(" ");
+
 function RatioStat({
   label,
   value,
@@ -97,12 +104,12 @@ function RatioStat({
   return (
     <div className="wb-stat">
       <span className="wb-label">{label}</span>
-      <div className="flex min-w-0 items-baseline gap-x-2 max-sm:flex-wrap">
+      <div className="flex min-w-0 items-baseline gap-x-2">
         <span className="wb-stat-value">{value ?? "-"}</span>
         {value === null ? null : (
           <>
             <span className="text-[16px] font-semibold leading-[18px] text-fg-muted">/ {total}</span>
-            <span className="flex min-w-0 self-center max-sm:basis-full sm:ml-2 sm:min-w-14 sm:flex-1">{meter}</span>
+            <span className="ml-2 flex min-w-14 flex-1 self-center max-sm:hidden">{meter}</span>
           </>
         )}
       </div>

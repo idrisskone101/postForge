@@ -10,6 +10,7 @@ import {
   routeOwnsHeader,
   routeProvidesHeaderAccessory,
 } from "@/lib/workspace-header-route";
+import { cn } from "@/lib/utils";
 import {
   getActiveWorkspaceItem,
   workspaceNavigationGroups,
@@ -56,10 +57,18 @@ export function WorkspaceRouteHeader({
         <Link
           id="workspace-header-default-action"
           href={primaryAction.href}
-          className={buttonClass("primary", 40)}
+          aria-label={primaryAction.iconOnlyOnPhone ? primaryAction.label : undefined}
+          className={cn(
+            buttonClass("primary", 40),
+            primaryAction.iconOnlyOnPhone && "max-sm:w-10 max-sm:px-0"
+          )}
         >
           <Icon name={primaryAction.icon} strokeWidth={2} />
-          {primaryAction.label}
+          {primaryAction.iconOnlyOnPhone ? (
+            <span className="max-sm:hidden">{primaryAction.label}</span>
+          ) : (
+            primaryAction.label
+          )}
         </Link>
       )}
     </PageHeader>

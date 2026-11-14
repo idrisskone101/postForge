@@ -17,6 +17,8 @@ export type WorkspacePrimaryAction = {
   label: string;
   href: string;
   icon: "plus" | "upload";
+  /** Below 640px the action is a round 40px icon button. Only where Paper draws the phone header so. */
+  iconOnlyOnPhone?: boolean;
 };
 
 export type WorkspaceNavigationItem = {
@@ -72,7 +74,12 @@ export const workspaceNavigationGroups = {
       label: "Automations",
       href: "/automations",
       match: ["/automations"],
-      primaryAction: { label: "New automation", href: "/automations/new", icon: "plus" },
+      primaryAction: {
+        label: "New automation",
+        href: "/automations/new",
+        icon: "plus",
+        iconOnlyOnPhone: true,
+      },
     },
     { label: "Performance", href: "/performance", match: ["/performance"] },
     { label: "Spend", href: "/costs", match: ["/costs"] },
