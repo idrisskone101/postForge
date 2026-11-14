@@ -54,7 +54,7 @@ export function JobActionDock({
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Keep generation</AlertDialogCancel>
+                <AlertDialogCancel variant="secondary">Keep generation</AlertDialogCancel>
                 <AlertDialogAction variant="destructive" onClick={actions.onDiscard}>
                   Discard
                 </AlertDialogAction>
