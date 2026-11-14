@@ -273,6 +273,11 @@ From 1280 down, panels reflow and never clip. Check 1440, 1280, 1024, 768 and 39
 
 **The Step Entry Rule.** A step change in a multi-step form scrolls the page to the top at once (no smooth scroll) and moves focus to the step: its heading, or the labelled step group where the step has no single heading (`useStepEntry`). The focus ring shows only for keyboard use.
 
+**The Focus Ring Rule.** Every focusable control shows a whole 2px ember ring on keyboard focus, at every size, in both themes. Three mechanisms make that structural.
+1. Room. An element that clips (any overflow other than visible, or a mask, which every `.wb-scroll-fade*` class is) and holds controls leaves at least 4px on the clipped sides and takes it back with a matching negative margin, so layout does not move: `.wb-ring-room`, or the scroller's own padding. A step rail that scrolls uses `.wb-step-scroll` (6px, 7px on touch). A value in a `KeyValueList` carries the room itself. Where there is no room to give, the control draws its ring inset (`outline-offset: -2px`, or an inset ring shadow).
+2. On top. The base layer gives anything that takes keyboard focus the ember outline, so a control never needs its own rule and `outline-none` is only for a control that draws a replacement. A ring is never an inset shadow under a child that covers it: a media button draws it on an `::after` overlay. A control that is drawn by its wrapper (a hidden `select`, the slider thumb, a text bed that scrolls) rings the wrapper: `has-[:focus-visible]`, or `.wb-ring-host` on the unmasked parent. A segment is raised above its neighbour while focused. A range input rings its thumb, not its track.
+3. In view. Browsers leave a half-visible control where it is, so `FocusReveal` scrolls a keyboard-focused control to the nearest edge of every scroller around it. Each scroller says how far that is with `scroll-padding`: 6px by default, 20px along a 16px fade, 28px along a 24px fade, and on the root the mobile bar's height plus 12px at the top and `--wb-pinned-bottom` plus 28px at the bottom. A bar pinned to the viewport bottom publishes its height with `publishPinnedBar`. Mouse and touch never trigger the scroll.
+
 ### Subtraction rules
 - The page header is the title only. No description line.
 - No sidebar group labels. Groups are separated by a 20px gap. The sidebar footer is one row: Settings with the theme toggle at its end.
@@ -286,7 +291,7 @@ Depth comes from the charcoal steps, not from shadows. A panel carries only its 
 
 - **Selection ring on media:** `box-shadow: 0 0 0 2px <panel>, 0 0 0 4px <ember>`.
 - **Focus on inputs:** a 2px ember ring that grows from 0. Error swaps it to red in place.
-- **Focus on buttons and links:** a 2px ember outline with a 2px offset. Focus is drawn with `outline`, never with `box-shadow`, on any control that also uses a shadow for its edge, so the ring always shows.
+- **Focus on buttons and links:** a 2px ember outline with a 2px offset. Focus is drawn with `outline`, never with `box-shadow`, on any control that also uses a shadow for its edge, so the ring always shows. The Focus Ring Rule (Layout) keeps it whole and in view.
 
 ## Shapes
 
@@ -314,7 +319,7 @@ Selecting, hovering or loading never moves layout under the pointer. The Gallery
 
 ## Touch
 
-On coarse pointers every control has a hit area of at least 44px, and what is drawn does not change. The rule set is in `workbench.css` under `@media (pointer: coarse)`: a centred pseudo-element on `.wb-btn`, `.wb-icon-btn`, `.wb-segment`, `.wb-chip`, `.wb-toggle`, `.wb-step`, `.wb-tile-check` and labelled `.wb-input-wrap`. `--wb-hit-w` and `--wb-hit-h` cap the area where neighbours sit closer than 44px, so two areas split the gap and never overlap. A control built outside the primitives opts in with `.wb-hit`.
+On coarse pointers every control has a hit area of at least 44px, and what is drawn does not change. The rule set is in `workbench.css` under `@media (pointer: coarse)`: a centred pseudo-element on `.wb-btn`, `.wb-icon-btn`, `.wb-segment`, `.wb-chip`, `.wb-toggle`, `.wb-step`, `.wb-tile-check` and labelled `.wb-input-wrap`. `--wb-hit-w` and `--wb-hit-h` cap the area where neighbours sit closer than 44px, so two areas split the gap and never overlap. A control built outside the primitives opts in with `.wb-hit`. A hit area never adds scroll range: a row that scrolls sideways has no vertical range on touch, so a page scroll that starts on it moves the page and nothing inside the row.
 
 On `hover: none` a media tile draws no action row. A tap on the media opens the preview, which holds the secondary actions; the selection check stays visible. A row that is the only way to its action keeps it with `MediaTile` `state.touchActions`.
 
@@ -343,7 +348,7 @@ A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 sec
 ### Toggle and range
 `Toggle` (`.wb-toggle`, `ui/switch`): 48 by 28, ember when on. Off sits on the control track token: `#34363A` in dark, and in light the strong fill `#D4D4CF` with a 1px outline edge and the white knob, so an off toggle stays visible on a white panel (1.49:1 against 1.22:1 for the raised-strong fill).
 
-`Range` (`.wb-range`): the native range input. A 6px track on the control track token, the filled part and the 2px thumb ring on the range fill: ember in dark, ink in light. Range inputs do not use `accent-color`, which Chrome draws with a near-black track in light.
+`Range` (`.wb-range`): the native range input. A 6px track on the control track token, the filled part and the 2px thumb ring on the range fill: ember in dark, ink in light. Keyboard focus adds a 2px ember ring around the thumb, outside that edge. Range inputs do not use `accent-color`, which Chrome draws with a near-black track in light.
 
 ### Chips and option rows
 `Chip`: 36px raised pill. Chosen: ember wash, a 2px inset ember ring, ember text, and a leading check where the design shows one. Option rows are 60px, 12px radius, and gain only the ember ring.

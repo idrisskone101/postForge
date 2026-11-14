@@ -32,9 +32,20 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  :where(a, button, [role="button"], [role="tab"], [role="switch"], summary):focus-visible {
+  /* Focus Ring Rule: whatever takes keyboard focus draws a whole 2px ember ring. */
+  :where(:focus-visible) {
     outline: 2px solid var(--pf-ember);
     outline-offset: 2px;
+  }
+
+  /* Media and text beds that are tab stops themselves keep the ring inside their own box. */
+  :where(video, audio, p, pre):focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* Every scroller leaves the ring its room when it brings a focused control into view. */
+  :where(*) {
+    scroll-padding: 6px;
   }
 
   input,

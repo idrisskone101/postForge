@@ -3,6 +3,27 @@
  * Values come from Paper "00 Shell" (3-0) and "19 Interaction notes" (4I2-0).
  */
 @layer components {
+  /*
+   * Focus Ring Rule: a control brought into view by keyboard focus stops clear of the fixed mobile bar
+   * and of any bar pinned to the viewport bottom. A pinned bar publishes its height as
+   * --wb-pinned-bottom (publishPinnedBar); 28px more clears its 24px fade and the ring.
+   */
+  html {
+    scroll-padding-top: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top) + 12px);
+    scroll-padding-bottom: calc(var(--wb-pinned-bottom, 0px) + 28px);
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-top: 12px;
+    }
+  }
+
+  /* Focus inside a floating layer (FocusReveal marks it) is above both bars: the page keeps its place. */
+  html[data-focus-overlay] {
+    scroll-padding-block: 6px;
+  }
+
   #workspace-root {
     min-height: 100dvh;
     background: var(--pf-floor);

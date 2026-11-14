@@ -243,6 +243,23 @@
     gap: 12px;
   }
 
+  /* A step rail that may scroll sideways: 6px of room all round keeps each step's focus ring whole. */
+  .wb-step-scroll {
+    margin: -6px;
+    overflow-x: auto;
+    padding: 6px;
+    scrollbar-width: none;
+  }
+
+  /* On touch the room is 7px, the reach of a 44px hit area past a 30px step, so the areas add no
+     scroll range in either axis. */
+  @media (pointer: coarse) {
+    .wb-step-scroll {
+      margin: -7px;
+      padding: 7px;
+    }
+  }
+
   .wb-step {
     display: flex;
     flex-shrink: 0;
@@ -582,10 +599,12 @@
     line-height: 16px;
   }
 
+  /* The value clips long text, so it carries 4px of ring room for a link or button inside it. */
   .wb-kv-row > dd {
     min-width: 0;
-    margin: 0;
+    margin: -4px;
     overflow: hidden;
+    padding: 4px;
     color: var(--pf-text);
     font-size: 13px;
     font-weight: 500;

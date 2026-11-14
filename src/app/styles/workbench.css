@@ -423,11 +423,51 @@
   }
 
   /* A pill row that scrolls sideways reads as scrollable: the overflowing edge fades over 16px and
-     items settle on a snap point clear of the fade. */
+     items settle on a snap point clear of the fade, with 4px more for a focus ring. */
   .wb-segmented,
   .wb-scroll-fade {
     scroll-snap-type: x proximity;
-    scroll-padding-inline: 19px;
+    scroll-padding-inline: 20px;
+  }
+
+  /* Snapping would pull a row back after keyboard focus brought a control into view, so it rests
+     while focus is inside. */
+  :is(.wb-segmented, .wb-scroll-fade):has(:focus-visible) {
+    scroll-snap-type: none;
+  }
+
+  /* A focused control scrolls clear of the block fades too: 16px, or 24px on the deep cut, plus the ring. */
+  .wb-scroll-fade-y {
+    scroll-padding-block: 20px;
+  }
+
+  .wb-scroll-fade-y.wb-scroll-fade-deep {
+    scroll-padding-block: 28px;
+  }
+
+  /*
+   * Focus Ring Rule. A scroller or a masked box clips at its own edge, so one that holds controls and
+   * has no padding of its own takes 4px of ring room and gives it back to the layout.
+   */
+  .wb-ring-room {
+    margin: -4px;
+    padding: 4px;
+  }
+
+  /* A masked scroller that is a tab stop itself (nothing focusable inside): the mask would cut a ring
+     drawn outside its box, so the ring sits inside. */
+  :is(.wb-scroll-fade, .wb-scroll-fade-y, .wb-scroll-fade-from-xl):focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* A text bed or media element that is a tab stop itself: its wrapper, which no mask touches, draws the ring. */
+  .wb-ring-host:has(> :focus-visible) {
+    outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
+  }
+
+  .wb-ring-host > :focus-visible {
+    outline: none;
   }
 
   :is(.wb-segmented, .wb-scroll-fade) > * {
@@ -515,6 +555,7 @@
   @supports (animation-timeline: scroll()) {
     @media (min-width: 1280px) {
       .wb-scroll-fade-xl-y {
+        scroll-padding-block: 20px;
         scroll-snap-type: none;
         animation-timeline: scroll(self block);
         mask-image: linear-gradient(
@@ -570,8 +611,10 @@
     color: var(--pf-text);
   }
 
-  /* The bed clips at its 3px padding, so the ring sits 1px out and stays whole. */
+  /* The bed clips at its 3px padding, so the ring sits 1px out and stays whole. It is drawn above the
+     raised neighbour, whose fill would cover the adjoining side. */
   .wb-segment:focus-visible {
+    z-index: 1;
     outline-offset: 1px;
   }
 
@@ -881,11 +924,21 @@
     appearance: none;
     border-radius: var(--pf-radius-pill);
     background: transparent;
+  }
+
+  /* Keyboard focus rings the thumb, around its own 2px edge, not the whole track. */
+  .wb-range:focus-visible {
+    outline: none;
+  }
+
+  .wb-range:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--pf-ember);
     outline-offset: 2px;
   }
 
-  .wb-range:focus-visible {
+  .wb-range:focus-visible::-moz-range-thumb {
     outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
   }
 
   .wb-range::-webkit-slider-runnable-track {
@@ -1145,7 +1198,7 @@
 @media (pointer: coarse) {
   /* A control that is already positioned (a corner badge, a sheet close button) keeps its own position:
      it is a containing block for the hit area as it stands. */
-  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, .wb-step, .wb-hit, label.wb-input-wrap):not(
+  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, button.wb-step, .wb-hit, label.wb-input-wrap):not(
       [class*="absolute"],
       [class*="fixed"],
       [class*="sticky"]
@@ -1153,7 +1206,7 @@
     position: relative;
   }
 
-  :is(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-step, .wb-tile-check, .wb-hit, label.wb-input-wrap)::after,
+  :is(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, button.wb-step, .wb-tile-check, .wb-hit, label.wb-input-wrap)::after,
   .wb-toggle::before {
     position: absolute;
     top: 50%;
@@ -1168,34 +1221,57 @@
    * The segmented bed scrolls sideways, so it clips anything taller than itself. On touch the box grows
    * to 44px while the drawn bed stays 36px: the fill is clipped to the content box, the radius pair
    * keeps that fill a pill, and the negative margin returns the 8px to the layout. A bed that sets its
-   * own height with a utility (h-10, h-[42px]) is left alone: those are already 40px or taller.
+   * own height with a utility (h-10, h-[42px]) is left alone: those are already 40px or taller. A bed
+   * that sets it only below 640 (max-sm:h-auto) is left alone there and grows from 640.
    */
-  .wb-segmented:not([class*="h-"]) {
+  .wb-segmented:not([class^="h-"], [class*=" h-"], [class*="max-sm:h-"]) {
+    --wb-seg-pad: 4px;
     height: 44px;
     align-items: center;
     margin-block: -4px;
     border-radius: 18px / 22px;
     background-clip: content-box;
     padding: 4px 0;
+
+    > :first-child {
+      margin-left: 3px;
+    }
+
+    > :last-child {
+      margin-right: 3px;
+    }
   }
 
-  .wb-segmented:not([class*="h-"]) > :first-child {
-    margin-left: 3px;
-  }
+  @media (min-width: 640px) {
+    .wb-segmented[class*="max-sm:h-"]:not([class^="h-"], [class*=" h-"]) {
+      --wb-seg-pad: 4px;
+      height: 44px;
+      align-items: center;
+      margin-block: -4px;
+      border-radius: 18px / 22px;
+      background-clip: content-box;
+      padding: 4px 0;
 
-  .wb-segmented:not([class*="h-"]) > :last-child {
-    margin-right: 3px;
+      > :first-child {
+        margin-left: 3px;
+      }
+
+      > :last-child {
+        margin-right: 3px;
+      }
+    }
   }
 
   /* Segments touch their neighbours and sit in a bed that scrolls: the area stays inside the segment's
-     own width and grows only into the bed's 4px block padding, so it never adds scroll range. */
+     own width and grows only into the bed's block padding (3px, or 4px on a grown bed), so it never
+     adds scroll range. */
   .wb-segmented {
     overflow-y: hidden;
   }
 
   .wb-segmented .wb-segment::after {
     width: 100%;
-    height: min(44px, calc(100% + 8px));
+    height: min(44px, calc(100% + 2 * var(--wb-seg-pad, 3px)));
   }
 
   /* Chips and 32px pills stack with 8px gaps: 40px splits that gap exactly. */

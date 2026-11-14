@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { FocusReveal } from "@/components/focus-reveal";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { readWorkspaceName } from "@/lib/workspace-name";
@@ -39,6 +40,7 @@ export default async function AppLayout({
           <Sidebar initialWorkspaceName={workspaceName} />
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
         </div>
+        <FocusReveal />
       </body>
     </html>
   );
