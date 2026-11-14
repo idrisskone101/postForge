@@ -76,7 +76,7 @@ export function SpendGenerationLog({
           </div>
           <ul className="flex min-w-0 flex-col">
             {dashboard.logs.map((log) => (
-              <li key={log.id} className="min-w-0 border-b border-hairline last:border-b-0">
+              <li key={log.id} className="min-w-0">
                 <SpendLogRowLink log={log} now={now} />
               </li>
             ))}
@@ -156,4 +156,4 @@ function SpendLogRowLink({ log, now }: { log: SpendLogRow; now: Date }) {
 }
 
 const ROW =
-  "wb-row min-h-[54px] transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf max-lg:gap-3 max-lg:px-0 max-lg:py-2.5 lg:h-[54px]";
+  "wb-row min-h-[54px] border-b border-hairline [li:last-child>&]:border-b-0 transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf max-lg:gap-3 max-lg:px-0 max-lg:py-2.5 lg:h-[54px]";
