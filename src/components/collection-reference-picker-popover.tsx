@@ -36,9 +36,11 @@ export function ReferencePickerPopover({
 }) {
   const [open, setOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger
+        ref={triggerRef}
         disabled={disabled}
         aria-haspopup="dialog"
         aria-label={`${label}: ${summary.text}`}
@@ -82,6 +84,13 @@ export function ReferencePickerPopover({
             ref={popupRef}
             initialFocus={popupRef}
             aria-label={label}
+            onBlur={(event) => {
+              // Focus that moves on to the page closes the picker with nothing chosen. Tab is not trapped.
+              const next = event.relatedTarget;
+              if (!(next instanceof Node)) return;
+              if (event.currentTarget.contains(next) || next === triggerRef.current) return;
+              setOpen(false);
+            }}
             className={cn(
               "wb-float wb-overlay-menu flex max-h-[min(640px,var(--available-height))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col overflow-hidden outline-none",
               wide
