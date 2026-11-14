@@ -156,11 +156,11 @@ function RowCheck({
         event.stopPropagation();
         onToggle();
       }}
-      className="-m-[11px] flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full"
+      className="group -m-[11px] flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none"
     >
       <span
         className={cn(
-          "flex size-[22px] items-center justify-center rounded-full transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf",
+          "flex size-[22px] items-center justify-center rounded-full transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-ember",
           selected
             ? "bg-ember text-[var(--pf-on-ember)]"
             : "shadow-[inset_0_0_0_1.5px_var(--pf-outline)]"
