@@ -192,6 +192,7 @@ export function SlideshowPlayView() {
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) {
           return;
         }
+        if (target.closest("button, a, summary, [role='tab'], [role='dialog']")) return;
       }
       event.preventDefault();
       setPlaying((current) => !current);

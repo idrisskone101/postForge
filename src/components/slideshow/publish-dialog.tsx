@@ -141,9 +141,9 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-h-[92vh] gap-[18px] px-4 py-5 sm:max-w-[min(880px,calc(100%-2rem))] sm:px-6"
+        className="flex max-h-[92dvh] flex-col gap-[18px] overflow-hidden px-4 py-5 sm:max-w-[min(880px,calc(100%-2rem))] sm:px-6"
       >
-        <div className="flex h-8 items-center justify-between gap-3">
+        <div className="flex h-8 shrink-0 items-center justify-between gap-3">
           <DialogTitle className="text-[18px] leading-[22px] font-bold tracking-[-0.01em] text-fg">
             Publish or export
           </DialogTitle>
@@ -155,85 +155,87 @@ export function PublishDialog({ dialog }: { dialog: SlideshowPublishDialog }) {
           />
         </div>
 
-        <div className="flex flex-col gap-5 md:flex-row md:items-start">
-          <div className="flex min-w-0 flex-1 flex-col gap-[18px]">
-            <div role="group" aria-label="Format" className="flex flex-col gap-2">
-              <span className="wb-label">Format</span>
-              <button
-                type="button"
-                className="wb-option font-semibold aria-pressed:font-bold"
-                aria-pressed={format === "photo-carousel"}
-                onClick={() => setFormat("photo-carousel")}
-              >
-                <span className="wb-radio">
-                  <Icon name="check-chosen" size={14} strokeWidth={2.5} />
-                </span>
-                <span className="min-w-0 flex-1">Photo carousel</span>
-              </button>
-              <button
-                type="button"
-                className="wb-option flex-wrap font-semibold aria-pressed:font-bold"
-                aria-pressed={format === "mp4"}
-                onClick={() => setFormat("mp4")}
-              >
-                <span className="wb-radio">
-                  <Icon name="check-chosen" size={14} strokeWidth={2.5} />
-                </span>
-                <span className="min-w-0 flex-1">MP4 video</span>
-                {!supportsMp4Export ? (
-                  <span className="wb-status-chip" data-tone="warn">
-                    <Icon name="alert" size={14} strokeWidth={2} />
-                    Renderer not connected
+        <div className="wb-scroll-fade-y wb-scroll-fade-deep wb-ring-room min-h-0 overflow-y-auto">
+          <div className="flex flex-col gap-5 md:flex-row md:items-start">
+            <div className="flex min-w-0 flex-1 flex-col gap-[18px]">
+              <div role="group" aria-label="Format" className="flex flex-col gap-2">
+                <span className="wb-label">Format</span>
+                <button
+                  type="button"
+                  className="wb-option font-semibold aria-pressed:font-bold"
+                  aria-pressed={format === "photo-carousel"}
+                  onClick={() => setFormat("photo-carousel")}
+                >
+                  <span className="wb-radio">
+                    <Icon name="check-chosen" size={14} strokeWidth={2.5} />
                   </span>
-                ) : null}
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <span className="wb-label">Destination</span>
-              <Segmented
-                label="Destination"
-                className="wb-segmented-block"
-                options={DESTINATIONS}
-                value={destination}
-                onChange={setDestination}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <label htmlFor="slideshow-export-caption" className="wb-label">
-                  Caption
-                </label>
-                <Button size={32} onClick={() => void copyCaption()} disabled={!caption}>
-                  {captionCopied ? <Icon name="check" strokeWidth={2} /> : null}
-                  {captionCopied ? "Copied" : "Copy caption"}
-                </Button>
+                  <span className="min-w-0 flex-1">Photo carousel</span>
+                </button>
+                <button
+                  type="button"
+                  className="wb-option flex-wrap font-semibold aria-pressed:font-bold"
+                  aria-pressed={format === "mp4"}
+                  onClick={() => setFormat("mp4")}
+                >
+                  <span className="wb-radio">
+                    <Icon name="check-chosen" size={14} strokeWidth={2.5} />
+                  </span>
+                  <span className="min-w-0 flex-1">MP4 video</span>
+                  {!supportsMp4Export ? (
+                    <span className="wb-status-chip" data-tone="warn">
+                      <Icon name="alert" size={14} strokeWidth={2} />
+                      Renderer not connected
+                    </span>
+                  ) : null}
+                </button>
               </div>
-              <textarea
-                id="slideshow-export-caption"
-                value={caption}
-                onChange={(event) => setCaption(event.target.value)}
-                maxLength={2200}
-                className="wb-input min-h-28 resize-none"
-                placeholder="Write a caption"
-              />
-              <div className="flex items-center justify-between gap-3">
-                <span className="wb-meta">
-                  {format === "photo-carousel"
-                    ? "Included as caption.txt in the download"
-                    : "Downloaded beside the MP4"}
-                </span>
-                <span className="wb-mono shrink-0 text-fg-muted">
-                  {caption.length} / 2200
-                </span>
+
+              <div className="flex flex-col gap-2">
+                <span className="wb-label">Destination</span>
+                <Segmented
+                  label="Destination"
+                  className="wb-segmented-block"
+                  options={DESTINATIONS}
+                  value={destination}
+                  onChange={setDestination}
+                />
               </div>
+
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="slideshow-export-caption" className="wb-label">
+                    Caption
+                  </label>
+                  <Button size={32} onClick={() => void copyCaption()} disabled={!caption}>
+                    {captionCopied ? <Icon name="check" strokeWidth={2} /> : null}
+                    {captionCopied ? "Copied" : "Copy caption"}
+                  </Button>
+                </div>
+                <textarea
+                  id="slideshow-export-caption"
+                  value={caption}
+                  onChange={(event) => setCaption(event.target.value)}
+                  maxLength={2200}
+                  className="wb-input min-h-28 resize-none"
+                  placeholder="Write a caption"
+                />
+                <div className="flex items-center justify-between gap-3">
+                  <span className="wb-meta">
+                    {format === "photo-carousel"
+                      ? "Included as caption.txt in the download"
+                      : "Downloaded beside the MP4"}
+                  </span>
+                  <span className="wb-mono shrink-0 text-fg-muted">
+                    {caption.length} / 2200
+                  </span>
+                </div>
+              </div>
+
+              <PublishTikTokFields publish={publish} />
             </div>
 
-            <PublishTikTokFields publish={publish} />
+            <PublishSidebar publish={publish} />
           </div>
-
-          <PublishSidebar publish={publish} />
         </div>
 
         <PublishFooter publish={publish} onCancel={() => onOpenChange(false)} />
