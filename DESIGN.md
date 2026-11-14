@@ -321,7 +321,7 @@ Selecting, hovering or loading never moves layout under the pointer. The Gallery
 
 On coarse pointers every control has a hit area of at least 44px, and what is drawn does not change. The rule set is in `workbench.css` under `@media (pointer: coarse)`: a centred pseudo-element on `.wb-btn`, `.wb-icon-btn`, `.wb-segment`, `.wb-chip`, `.wb-toggle`, `.wb-step`, `.wb-tile-check` and labelled `.wb-input-wrap`. `--wb-hit-w` and `--wb-hit-h` cap the area where neighbours sit closer than 44px, so two areas split the gap and never overlap. A control built outside the primitives opts in with `.wb-hit`. A hit area never adds scroll range: a row that scrolls sideways has no vertical range on touch, so a page scroll that starts on it moves the page and nothing inside the row.
 
-On `hover: none` a media tile draws no action row. A tap on the media opens the preview, which holds the secondary actions; the selection check stays visible. A row that is the only way to its action keeps it with `MediaTile` `state.touchActions`.
+On `hover: none` a media tile draws no action row. A tap on the media opens the preview, which holds the secondary actions; the selection check stays visible. A row that is the only way to its action keeps it with `MediaTile` `state.touchActions`. The Gallery grid passes `touchActions: "primary"`, which keeps one 40px Preview pill and drops the secondary actions.
 
 ## Components
 

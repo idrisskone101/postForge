@@ -101,8 +101,9 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
   useEffect(() => {
     const page = document.documentElement;
     const { overflow, scrollbarGutter } = page.style;
+    const hasScrollbar = window.innerWidth > page.clientWidth;
     page.style.overflow = "hidden";
-    if (window.innerWidth > page.clientWidth) page.style.scrollbarGutter = "stable";
+    if (hasScrollbar) page.style.scrollbarGutter = "stable";
     return () => {
       page.style.overflow = overflow;
       page.style.scrollbarGutter = scrollbarGutter;

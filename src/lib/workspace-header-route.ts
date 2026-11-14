@@ -28,6 +28,6 @@ export function routeProvidesHeaderAccessory(pathname: string) {
  */
 export function routeHeaderStackBelow(pathname: string): 360 | 480 | 640 | undefined {
   if (pathname === "/ugc-inspiration" || pathname === "/collections") return 640;
-  if (pathname === "/automations" || pathname === "/characters") return 360;
+  if (pathname === "/characters") return 360;
   return undefined;
 }
