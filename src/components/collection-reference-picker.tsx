@@ -9,7 +9,7 @@ import {
   type CollectionRecord,
 } from "@/lib/collections";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
-import { Button, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
+import { Button, Chip, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
 import {
   ReferencePickerPopover,
   ReferenceTile,
@@ -24,6 +24,8 @@ interface CollectionReferencePickerProps {
   disabledMessage?: string;
   refreshKey?: number;
   preferredAssetIds?: string[];
+  /** "inline" lays the collections out as chips over the image grid, for a surface that is already a dialog. */
+  layout?: "popover" | "inline";
 }
 
 type LoadStatus = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
@@ -63,68 +65,94 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
     count,
   });
 
+  const inline = props.layout === "inline";
+  const body =
+    status.kind === "loading" ? (
+      <TileSkeletons inline={inline} />
+    ) : status.kind === "error" ? (
+      <EmptyState icon="alert" tone="error" title="Collections could not be loaded" detail={status.message} className="min-h-0 py-6">
+        <Button variant="strong" onClick={retry}>Retry</Button>
+      </EmptyState>
+    ) : collections.length === 0 ? (
+      <EmptyState icon="collections" title="Create a collection to reuse its images" className="min-h-0 py-6">
+        <Link href="/collections" className={buttonClass("strong")}>Open collections</Link>
+      </EmptyState>
+    ) : (
+      <>
+        {inline ? (
+          <div role="group" aria-label="Visual collection" className="flex min-w-0 flex-wrap items-center gap-1.5">
+            {collections.map((collection) => (
+              <Chip
+                key={collection.id}
+                check={false}
+                chosen={collection.id === selectedCollectionId}
+                onClick={() => setSelectedCollectionId(collection.id)}
+                className="h-[34px] max-w-full px-3"
+              >
+                <span className="truncate">{collection.name}</span>
+              </Chip>
+            ))}
+            <span className="ml-auto text-[13px] leading-4 text-fg-muted" aria-live="polite">
+              {count} selected
+            </span>
+          </div>
+        ) : (
+          <div className="flex min-w-0 items-center gap-2.5">
+            <select
+              aria-label="Visual collection"
+              value={selectedCollectionId}
+              onChange={(event) => setSelectedCollectionId(event.target.value)}
+              className="wb-input min-w-0 flex-1 bg-raised-strong"
+              data-size="36"
+            >
+              {collections.map((collection) => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name} · {collection.assetIds.length} images
+                </option>
+              ))}
+            </select>
+            <span className="wb-mono shrink-0 text-fg" aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
+              {count}
+            </span>
+            {selectedAssetIds.length > 0 ? (
+              <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
+            ) : null}
+          </div>
+        )}
+        {collectionAssets.length === 0 ? (
+          <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
+        ) : (
+          <div className={inline ? INLINE_GRID : POPOVER_GRID}>
+            {collectionAssets.map((asset) => {
+              const selected = selectedAssetIds.includes(asset.id);
+              return (
+                <ReferenceTile
+                  key={asset.id}
+                  selected={selected}
+                  label={`${selected ? "Remove" : "Use"} ${asset.name}`}
+                  onToggle={() => toggle(asset.id)}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
+                </ReferenceTile>
+              );
+            })}
+          </div>
+        )}
+      </>
+    );
+
+  if (inline) return <div className="flex min-w-0 flex-col gap-3.5">{body}</div>;
   return (
     <ReferencePickerPopover summary={summary} label="Visual collection" disabled={disabled}>
-      {() =>
-        status.kind === "loading" ? (
-          <TileSkeletons />
-        ) : status.kind === "error" ? (
-          <EmptyState icon="alert" tone="error" title="Collections could not be loaded" detail={status.message} className="min-h-0 py-6">
-            <Button variant="strong" onClick={retry}>Retry</Button>
-          </EmptyState>
-        ) : collections.length === 0 ? (
-          <EmptyState icon="collections" title="Create a collection to reuse its images" className="min-h-0 py-6">
-            <Link href="/collections" className={buttonClass("strong")}>Open collections</Link>
-          </EmptyState>
-        ) : (
-          <>
-            <div className="flex min-w-0 items-center gap-2.5">
-              <select
-                aria-label="Visual collection"
-                value={selectedCollectionId}
-                onChange={(event) => setSelectedCollectionId(event.target.value)}
-                className="wb-input min-w-0 flex-1 bg-raised-strong"
-                data-size="36"
-              >
-                {collections.map((collection) => (
-                  <option key={collection.id} value={collection.id}>
-                    {collection.name} · {collection.assetIds.length} images
-                  </option>
-                ))}
-              </select>
-              <span className="wb-mono shrink-0 text-fg" aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
-                {count}
-              </span>
-              {selectedAssetIds.length > 0 ? (
-                <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
-              ) : null}
-            </div>
-            {collectionAssets.length === 0 ? (
-              <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
-            ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1">
-                {collectionAssets.map((asset) => {
-                  const selected = selectedAssetIds.includes(asset.id);
-                  return (
-                    <ReferenceTile
-                      key={asset.id}
-                      selected={selected}
-                      label={`${selected ? "Remove" : "Use"} ${asset.name}`}
-                      onToggle={() => toggle(asset.id)}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
-                    </ReferenceTile>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )
-      }
+      {() => body}
     </ReferencePickerPopover>
   );
 }
+
+const POPOVER_GRID = "grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1";
+const INLINE_GRID =
+  "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]";
 
 function useCollectionRecords(preferredAssetIds: string[] | undefined, refreshKey: number) {
   const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
@@ -201,9 +229,9 @@ function rowSummary({
   };
 }
 
-function TileSkeletons() {
+function TileSkeletons({ inline }: { inline: boolean }) {
   return (
-    <div role="status" aria-label="Loading collections…" className="grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1">
+    <div role="status" aria-label="Loading collections…" className={inline ? INLINE_GRID : POPOVER_GRID}>
       {Array.from({ length: 8 }, (_, index) => (
         <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
       ))}

@@ -22,8 +22,9 @@ export function EditorCollectionPicker() {
             Select slide images
           </DialogTitle>
         </div>
-        <div className="-my-1 min-h-0 flex-1 overflow-y-auto px-6 py-1">
+        <div className="wb-scroll-fade-y wb-scroll-fade-deep -my-1 min-h-0 flex-1 overflow-y-auto px-6 py-1">
           <CollectionReferencePicker
+            layout="inline"
             selectedAssetIds={pickerAssetIds}
             onChange={(ids) => setPickerAssetIds(ids)}
             maxSelection={MAX_PICKED}
