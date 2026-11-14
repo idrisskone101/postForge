@@ -86,19 +86,25 @@ export function isSettingsTab(value: string): value is SettingsTab {
 const GROUPS = ["workspace", "developer"] as const;
 
 /*
+ * The active tab rests clear of the 16px edge fade with 40px of the next tab showing, so the strip
+ * reads as scrollable.
+ */
+const REVEAL_ROOM = 56;
+
+/*
  * The server's markup cannot carry a scroll position, and the ref callback only runs at hydration,
  * so a deep-linked tab first painted with the strip at "Profile". This runs as the parser reaches it,
- * before the first paint, and does the same as revealInRow. It only measures where the strip scrolls.
+ * before the first paint. It places the strip from its start, and again once the web font has changed
+ * the tab widths, so every load rests at the same place. It only measures where the strip scrolls.
  */
-const REVEAL_BEFORE_PAINT =
-  '(function(){if(!matchMedia("(max-width:1279.98px)").matches)return;var n=document.currentScript.previousElementSibling,a=n&&n.querySelector(\'[aria-current="page"]\');if(!a||n.scrollWidth<=n.clientWidth)return;var l=a.offsetLeft,r=l+a.offsetWidth;if(l<n.scrollLeft+16)n.scrollLeft=Math.max(0,l-16);else if(r>n.scrollLeft+n.clientWidth-16)n.scrollLeft=r-n.clientWidth+16})()';
+const REVEAL_BEFORE_PAINT = `(function(){if(!matchMedia("(max-width:1279.98px)").matches)return;var n=document.currentScript.previousElementSibling,w=0;function v(){var a=n&&n.querySelector('[aria-current="page"]');if(!a||n.scrollWidth<=n.clientWidth)return;w=n.scrollWidth;var r=a.offsetLeft+a.offsetWidth;n.scrollLeft=r>n.clientWidth-${REVEAL_ROOM}?r-n.clientWidth+${REVEAL_ROOM}:0}v();if(document.fonts)document.fonts.ready.then(function(){if(n&&n.scrollWidth!==w)v()})})()`;
 
-/** Scrolls the strip only as far as it takes to show the active tab clear of the 16px edge fade. */
+/** Scrolls the strip only as far as it takes to show the active tab with that room on both sides. */
 function revealInRow(node: HTMLButtonElement | null) {
   const row = node?.closest("nav");
   if (!node || !row || row.scrollWidth <= row.clientWidth) return;
   const left = node.offsetLeft;
   const right = left + node.offsetWidth;
-  if (left < row.scrollLeft + 16) row.scrollLeft = Math.max(0, left - 16);
-  else if (right > row.scrollLeft + row.clientWidth - 16) row.scrollLeft = right - row.clientWidth + 16;
+  if (left < row.scrollLeft + REVEAL_ROOM) row.scrollLeft = Math.max(0, left - REVEAL_ROOM);
+  else if (right > row.scrollLeft + row.clientWidth - REVEAL_ROOM) row.scrollLeft = right - row.clientWidth + REVEAL_ROOM;
 }
