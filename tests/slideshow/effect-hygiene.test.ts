@@ -80,7 +80,7 @@ assert.match(studioBootstrap, /fetchModelsCatalog\(/);
 assert.match(studioBootstrap, /fetchPlatformCollections\(/);
 assert.match(studioBootstrap, /connectStudioDrafts\(/);
 assert.match(studioBootstrap, /connectStudioDraftsRefresh\(/);
-assert.match(studio, /key=\{publishProject\?\.id\}/);
+assert.match(publish, /<PublishDialogBody key=\{project\.id\}/);
 assert.match(studio, /<Toast key=\{toast\.id\} toast=\{toast\} onDismiss=\{dismissToast\} \/>/);
 assert.doesNotMatch(studio, /window\.setTimeout/);
 
