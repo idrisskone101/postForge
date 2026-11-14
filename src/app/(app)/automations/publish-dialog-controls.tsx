@@ -102,7 +102,7 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
     const page = document.documentElement;
     const { overflow, scrollbarGutter } = page.style;
     page.style.overflow = "hidden";
-    page.style.scrollbarGutter = "stable";
+    if (window.innerWidth > page.clientWidth) page.style.scrollbarGutter = "stable";
     return () => {
       page.style.overflow = overflow;
       page.style.scrollbarGutter = scrollbarGutter;
@@ -139,7 +139,11 @@ function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
   const active = document.activeElement;
   if (!(active instanceof HTMLElement) || !items.includes(active)) {
     event.preventDefault();
-    (event.shiftKey ? last : first).focus();
+    const inside = active instanceof HTMLElement && active !== event.currentTarget && event.currentTarget.contains(active);
+    const after = (item: HTMLElement) => active!.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING;
+    const next = inside ? items.find(after) : undefined;
+    const previous = inside ? items.findLast((item) => !after(item) && !active!.contains(item)) : undefined;
+    ((event.shiftKey ? previous : next) ?? (event.shiftKey ? last : first)).focus();
     return;
   }
   if (event.shiftKey && document.activeElement === first) {
