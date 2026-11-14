@@ -7,7 +7,7 @@ import {
   type OutputReviewStatus,
   type SerializedOutputReviewStatus,
 } from "@/lib/output-review-status";
-import { reviewStatusLabel } from "./format";
+import { reviewActionLabel, reviewStatusLabel } from "./format";
 import { patchGalleryReviewStatus } from "./review-api";
 import type { GalleryFeedback } from "./types";
 
@@ -47,18 +47,17 @@ export function GalleryReviewStatusControl({
     }
   };
 
+  const current = pendingStatus ?? reviewStatus.value;
   return (
     <Segmented
       label={`Output review status: ${reviewStatusLabel[reviewStatus.value]}`}
-      value={pendingStatus ?? reviewStatus.value}
+      value={current}
       onChange={(value) => void updateStatus(value)}
-      options={reviewOptions}
+      options={OUTPUT_REVIEW_STATUSES.map((status) => ({
+        value: status.value,
+        label: (status.value === current ? reviewStatusLabel : reviewActionLabel)[status.value],
+      }))}
       className="wb-segmented-block w-full"
     />
   );
 }
-
-const reviewOptions = OUTPUT_REVIEW_STATUSES.map((status) => ({
-  value: status.value,
-  label: reviewStatusLabel[status.value],
-}));

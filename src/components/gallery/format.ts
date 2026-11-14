@@ -66,6 +66,13 @@ export const reviewStatusLabel: Record<OutputReviewStatus, string> = {
   rejected_output: "Rejected",
 };
 
+/** What choosing a status does, for a control whose idle options are actions: only the current one reads as a state. */
+export const reviewActionLabel: Record<OutputReviewStatus, string> = {
+  needs_review: "Needs review",
+  approved_output: "Approve",
+  rejected_output: "Reject",
+};
+
 export function sourceHost(url: string) {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
