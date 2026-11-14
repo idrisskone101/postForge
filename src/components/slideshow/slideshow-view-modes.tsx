@@ -228,7 +228,7 @@ export function SlideshowPlayView() {
     <section
       aria-label="Slideshow playback"
       data-slideshow-view="play"
-      className={cn(VIEW_PANEL, "xl:min-h-[778px]")}
+      className={cn(VIEW_PANEL, "lg:h-[calc(100dvh-100px)] lg:min-h-[540px] xl:min-h-[540px]")}
       onTouchStart={(event) => {
         touchStartX.current = event.touches[0]?.clientX ?? null;
       }}
@@ -242,7 +242,7 @@ export function SlideshowPlayView() {
       }}
     >
       <EditorStageHead viewMode={viewMode} onViewChange={changeViewMode} />
-      <div className="relative flex min-h-[460px] flex-1 items-center justify-center gap-2 rounded-lg bg-[#09090B] px-3 pb-6 pt-10 sm:gap-5 xl:min-h-[640px]">
+      <div className="relative flex h-[460px] flex-none items-center justify-center gap-2 rounded-lg bg-[#09090B] px-3 pb-6 pt-10 [container-type:size] sm:h-[664px] sm:gap-5 lg:h-auto lg:min-h-0 lg:flex-1">
         <div aria-hidden="true" className="absolute inset-x-4 top-4 flex gap-1">
           {project.slides.map((slide, index) => (
             <span
@@ -304,9 +304,14 @@ function barFill(index: number, activeIndex: number, progress: number) {
   return index === activeIndex ? progress : 0;
 }
 
+/*
+ * The stage is a size container, so the slide takes the stage's height (up to 600px) at its own
+ * ratio and the transport row under it stays in the viewport. The flex row shrinks it where the
+ * width is the limit.
+ */
 function playSlideWidth(aspectRatio: string) {
   const [w, h] = aspectRatio.split(":").map(Number);
-  return `min(100%, ${Math.round((600 * w) / h)}px)`;
+  return `min(100cqh * ${w} / ${h}, ${Math.round((600 * w) / h)}px)`;
 }
 
 export { SlideshowViewSwitcher } from "./editor-stage-head";
