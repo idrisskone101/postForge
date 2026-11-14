@@ -15,7 +15,7 @@ type CreateMode = "one-idea" | "own-copy";
 export function CreateView() {
   const { templates, onCustom, onBrowseTemplates, onUseTemplate } = useSlideshowHome();
   const [mode, setMode] = useState<CreateMode>("one-idea");
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   useEffect(() => {
     const timer = window.setTimeout(loadCreatorView, 1200);
     return () => window.clearTimeout(timer);
@@ -61,7 +61,8 @@ export function CreateView() {
               onPointerEnter={loadCreatorView}
               onFocus={loadCreatorView}
               onClick={() => startTransition(() => setMode(other))}
-              className={START_TILE}
+              aria-busy={isPending || undefined}
+              className={cn(START_TILE, isPending && "cursor-progress bg-raised-strong")}
             >
               <span className={TILE_ICON}>
                 <StartIcon name={other} />
