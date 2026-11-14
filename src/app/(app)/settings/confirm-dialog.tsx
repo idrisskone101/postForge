@@ -5,9 +5,11 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/workbench";
+import { Button } from "@/components/ui/button";
 
 export type ConfirmRequest = {
   title: string;
@@ -61,14 +63,11 @@ export function useConfirmDialog() {
   const request = shown?.request;
   const dialog = (
     <AlertDialog open={open} onOpenChange={(next) => !next && settle(null)}>
-      <AlertDialogContent
-        finalFocus={openerRef}
-        className="flex max-w-[420px] flex-col gap-4 sm:max-w-[420px]"
-      >
-        <AlertDialogTitle className="wb-panel-title text-left">{request?.title}</AlertDialogTitle>
-        <AlertDialogDescription className="text-left text-[13px] leading-5 text-fg-secondary">
-          {request?.body}
-        </AlertDialogDescription>
+      <AlertDialogContent finalFocus={openerRef}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{request?.title}</AlertDialogTitle>
+          <AlertDialogDescription>{request?.body}</AlertDialogDescription>
+        </AlertDialogHeader>
         {request?.phrase && (
           <input
             className="wb-input"
@@ -81,14 +80,14 @@ export function useConfirmDialog() {
             onChange={(event) => setTyped(event.target.value)}
           />
         )}
-        <div className="flex flex-col-reverse gap-2 border-t border-hairline pt-4 min-[420px]:flex-row min-[420px]:justify-end">
-          <Button key={shown?.id} autoFocus onClick={() => settle(null)}>
+        <AlertDialogFooter>
+          <Button key={shown?.id} autoFocus variant="secondary" size="lg" onClick={() => settle(null)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={() => settle(request?.phrase ? typed : true)}>
+          <Button variant="destructive" size="lg" onClick={() => settle(request?.phrase ? typed : true)}>
             {request?.confirmLabel}
           </Button>
-        </div>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
