@@ -29,7 +29,7 @@ export function SpendBudgetDialog({
         >
           <div className="flex flex-col gap-4 p-5">
             <div className="flex flex-col gap-1">
-              <DialogTitle className="wb-panel-title leading-5">Production budget</DialogTitle>
+              <DialogTitle className="wb-panel-title">Production budget</DialogTitle>
               <DialogDescription className="text-[13px] leading-[18px] text-fg-muted">
                 Saved in this browser. Provider limits stay unchanged.
               </DialogDescription>
