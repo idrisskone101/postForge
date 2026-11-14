@@ -37,7 +37,7 @@ export function DraftsView() {
   return (
     <section
       aria-label="Slideshow drafts"
-      className="wb-panel gap-5 px-4 pb-6 pt-[18px] sm:px-6"
+      className="wb-panel @container gap-5 px-4 pb-6 pt-[18px] sm:px-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="wb-input-wrap w-full sm:w-[300px]" data-size="36">
@@ -132,7 +132,7 @@ export function DraftsView() {
   );
 }
 
-const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 lg:grid-cols-2 2xl:grid-cols-3";
+const GRID = "grid grid-cols-1 gap-x-4 gap-y-5 lg:grid-cols-2 @[1034px]:grid-cols-3";
 
 const STATUS_FILTERS: Array<{ id: string; label: string }> = [
   { id: "all", label: "All" },
