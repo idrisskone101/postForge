@@ -51,7 +51,7 @@ export function PinterestImportResults({
           tone="error"
           title={source === "search" ? "Pinterest search unavailable" : "Board unavailable"}
           detail={error}
-          className="min-h-64 sm:h-full"
+          className="min-h-full max-sm:gap-2 max-sm:p-3 sm:h-full"
         />
       ) : candidates.length ? (
         <div className="flex flex-col gap-3">
