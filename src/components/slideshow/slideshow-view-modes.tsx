@@ -227,7 +227,7 @@ export function SlideshowPlayView() {
     <section
       aria-label="Slideshow playback"
       data-slideshow-view="play"
-      className={cn(VIEW_PANEL, "xl:min-h-[760px]")}
+      className={cn(VIEW_PANEL, "xl:min-h-[778px]")}
       onTouchStart={(event) => {
         touchStartX.current = event.touches[0]?.clientX ?? null;
       }}
