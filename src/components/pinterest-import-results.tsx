@@ -29,7 +29,7 @@ export function PinterestImportResults({
   } = workspace;
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4 sm:min-h-72 max-sm:px-4">
+    <div className="wb-scroll-fade-y wb-scroll-fade-deep min-h-0 flex-1 overflow-y-auto px-6 py-4 sm:min-h-72 max-sm:px-4">
       {searching ? (
         <div className="flex flex-col gap-3" aria-busy="true">
           <p className="wb-label" role="status">

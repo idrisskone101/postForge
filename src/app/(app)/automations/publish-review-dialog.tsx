@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Button, Icon, IconButton, KeyValueList, type KeyValueRow } from "@/components/workbench";
 import type { PublishDialogState } from "./hub-types";
 import { canSubmitPublishReview } from "./publish-dialog-model";
-import { CheckControl, FieldLabel, keepTabInDialog } from "./publish-dialog-controls";
+import { CheckControl, FieldLabel, useDialogKeys } from "./publish-dialog-controls";
 import { PublishDialogTiktokFields } from "./publish-dialog-tiktok";
 import { PublishDialogYoutubeFields } from "./publish-dialog-youtube";
 
@@ -23,6 +23,7 @@ export function PublishReviewDialog({
   onPublish: () => void;
 }) {
   const { preflight } = state;
+  const onKeyDown = useDialogKeys({ recordName: state.recordName, busy, onClose });
   const providerName = PROVIDER_NAMES[preflight.provider];
   const accountName =
     preflight.account.displayName || preflight.account.username || preflight.account.id;
@@ -36,7 +37,7 @@ export function PublishReviewDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby="publish-review-title"
-      onKeyDown={keepTabInDialog}
+      onKeyDown={onKeyDown}
     >
       <div className="flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-hidden rounded-xl bg-panel shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both]">
         <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 px-4 pb-4 pt-5 sm:px-6">

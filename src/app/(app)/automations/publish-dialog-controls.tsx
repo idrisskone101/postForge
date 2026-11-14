@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 
@@ -90,7 +90,28 @@ export const publishLinkClass =
 const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
 
-export function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
+/** Escape closes the dialog unless it is busy, Tab stays inside, and focus goes back to the row's Actions button on close. */
+export function useDialogKeys(input: { recordName: string; busy: boolean; onClose: () => void }) {
+  const { recordName, busy, onClose } = input;
+  useEffect(
+    () => () => {
+      document
+        .querySelector<HTMLElement>(`[aria-label=${JSON.stringify(`Actions for ${recordName}`)}]`)
+        ?.focus();
+    },
+    [recordName]
+  );
+  return (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Escape" && !busy) {
+      event.stopPropagation();
+      onClose();
+      return;
+    }
+    keepTabInDialog(event);
+  };
+}
+
+function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
   if (event.key !== "Tab") return;
   const items = [...event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE)];
   const first = items[0];

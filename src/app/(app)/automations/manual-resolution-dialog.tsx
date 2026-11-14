@@ -5,7 +5,7 @@ import { Button, Icon } from "@/components/workbench";
 import { automationDestinationLabel } from "@/lib/automations";
 import { cn } from "@/lib/utils";
 import type { ManualResolutionDialogState } from "./hub-types";
-import { keepTabInDialog } from "./publish-dialog-controls";
+import { useDialogKeys } from "./publish-dialog-controls";
 
 export function ManualResolutionDialog({
   state,
@@ -19,6 +19,7 @@ export function ManualResolutionDialog({
   onConfirm: () => void;
 }) {
   const published = state.resolution === "published";
+  const onKeyDown = useDialogKeys({ recordName: state.record.name, busy, onClose });
   const provider = automationDestinationLabel(state.record.destination);
   return createPortal(
     <div
@@ -26,7 +27,7 @@ export function ManualResolutionDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby="manual-resolution-title"
-      onKeyDown={keepTabInDialog}
+      onKeyDown={onKeyDown}
     >
       <div className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
         <span
