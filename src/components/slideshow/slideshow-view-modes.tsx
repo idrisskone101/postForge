@@ -242,7 +242,7 @@ export function SlideshowPlayView() {
       }}
     >
       <EditorStageHead viewMode={viewMode} onViewChange={changeViewMode} />
-      <div className="relative flex h-[460px] flex-none items-center justify-center gap-2 rounded-lg bg-[#09090B] px-3 pb-6 pt-10 [container-type:size] sm:h-[664px] sm:gap-5 lg:h-auto lg:min-h-0 lg:flex-1">
+      <div className="relative flex h-[clamp(280px,calc(100dvh-322px),460px)] flex-none items-center justify-center gap-2 rounded-lg bg-[#09090B] px-3 pb-6 pt-10 [container-type:size] sm:h-[664px] sm:gap-5 lg:h-auto lg:min-h-0 lg:flex-1">
         <div aria-hidden="true" className="absolute inset-x-4 top-4 flex gap-1">
           {project.slides.map((slide, index) => (
             <span
