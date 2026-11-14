@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { Icon } from "@/components/workbench/icon";
@@ -41,7 +41,13 @@ export function CreateView() {
                 <Icon name="check" size={13} strokeWidth={3} />
               </span>
             </div>
-            {mode === "one-idea" ? <CreateIdeaForm /> : <CreatorView />}
+            {mode === "one-idea" ? (
+              <CreateIdeaForm />
+            ) : (
+              <Suspense fallback={null}>
+                <CreatorView />
+              </Suspense>
+            )}
           </div>
 
           <div
