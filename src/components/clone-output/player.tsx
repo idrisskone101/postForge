@@ -156,7 +156,7 @@ function ControlButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="grid size-6 shrink-0 place-items-center rounded-full transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-[color-mix(in_srgb,var(--pf-on-media)_16%,transparent)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] focus-visible:outline-none"
+      className="wb-hit grid size-6 shrink-0 place-items-center rounded-full [--wb-hit-w:34px] transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-[color-mix(in_srgb,var(--pf-on-media)_16%,transparent)] focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] focus-visible:outline-none"
     >
       {children}
     </button>

@@ -140,7 +140,7 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
   if (identityFailed) metaTone = "text-bad";
 
   return (
-    <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 snap-start flex-col gap-2">
+    <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 snap-start flex-col gap-2 last:-mr-1 last:pr-1">
       <button
         type="button"
         aria-label={label}
@@ -161,7 +161,7 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
         onClick={onDelete}
         aria-label={`Delete ${label}`}
         title={`Delete ${label}`}
-        className="absolute right-2 top-2 z-[3] grid size-7 cursor-pointer place-items-center rounded-full border-0 bg-[var(--pf-scrim)] text-[var(--pf-on-media)] opacity-0 transition-[opacity,background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-bad focus-visible:opacity-100 group-hover/avatar:opacity-100 [@media(hover:none)]:opacity-100"
+        className="wb-hit absolute right-2 top-2 z-[3] grid size-7 cursor-pointer place-items-center rounded-full border-0 bg-[var(--pf-scrim)] text-[var(--pf-on-media)] opacity-0 transition-[opacity,background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-bad focus-visible:opacity-100 group-hover/avatar:opacity-100 [@media(hover:none)]:opacity-100"
       >
         <Trash2 className="size-3.5" strokeWidth={1.5} />
       </button>

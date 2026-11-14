@@ -25,7 +25,7 @@ export function RowActionsMenu({
       <button
         type="button"
         onClick={() => onOpenChange(!open)}
-        className={iconButtonClass("ghost", 30)}
+        className={`${iconButtonClass("ghost", 30)} [--wb-hit-w:38px]`}
         aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}

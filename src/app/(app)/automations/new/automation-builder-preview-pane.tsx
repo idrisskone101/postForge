@@ -135,7 +135,7 @@ function ZoomButton({
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid size-7 place-items-center rounded-full text-[15px] font-semibold leading-none text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:text-fg-disabled"
+      className="wb-hit grid size-7 place-items-center rounded-full text-[15px] font-semibold leading-none text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:text-fg-disabled"
     >
       {sign === "+" ? "+" : "−"}
     </button>
