@@ -95,6 +95,9 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
             <span className="ml-auto text-[13px] leading-4 text-fg-muted" aria-live="polite">
               {count} selected
             </span>
+            {selectedAssetIds.length > 0 ? (
+              <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
+            ) : null}
           </div>
         ) : (
           <div className="flex min-w-0 items-center gap-2.5">
@@ -231,10 +234,18 @@ function rowSummary({
 
 function TileSkeletons({ inline }: { inline: boolean }) {
   return (
-    <div role="status" aria-label="Loading collections…" className={inline ? INLINE_GRID : POPOVER_GRID}>
-      {Array.from({ length: 8 }, (_, index) => (
-        <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
-      ))}
+    <div role="status" aria-label="Loading collections…" className="flex flex-col gap-3.5">
+      {inline ? (
+        <div className="flex gap-1.5">
+          <Skeleton className="h-[34px] w-28 rounded-full" />
+          <Skeleton className="h-[34px] w-20 rounded-full" />
+        </div>
+      ) : null}
+      <div className={inline ? INLINE_GRID : POPOVER_GRID}>
+        {Array.from({ length: inline ? 4 : 8 }, (_, index) => (
+          <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
+        ))}
+      </div>
     </div>
   );
 }
