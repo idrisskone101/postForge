@@ -49,6 +49,7 @@ export function GalleryGridCards({
                 duration: formatGalleryDuration(item.durationSec),
                 name,
                 selecting,
+                touchActions: "primary",
               }}
               actions={
                 <>

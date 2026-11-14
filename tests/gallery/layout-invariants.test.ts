@@ -50,6 +50,17 @@ assert.match(
   /@media \(hover: none\) \{[\s\S]*?\.wb-tile > \.wb-tile-actions \{\s*display: none;/,
   "touch tiles draw no action row"
 );
+assert.match(cards, /touchActions: "primary"/, "gallery tiles keep the Preview pill on touch");
+assert.match(
+  tileCss,
+  /\[data-touch="primary"\] > \.wb-tile-action \{\s*height: 40px;/,
+  "the touch Preview pill is 40px tall"
+);
+assert.match(
+  tileCss,
+  /\[data-touch="primary"\] > \.wb-tile-action:not\(:first-child\) \{\s*display: none;/,
+  "only the first action is drawn on touch"
+);
 assert.match(
   source("src/app/styles/workbench.css"),
   /@media \(pointer: coarse\) \{[\s\S]*?\.wb-tile-check[^{]*::after/,

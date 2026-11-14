@@ -482,19 +482,27 @@
     transform: translateY(0);
   }
 
-  /* Touch has no hover: the check stays visible, the action row is not drawn (a tap on the media opens the
-     preview, which carries the secondary actions). A row that is the only way to its action opts back in. */
+  /* Touch has no hover: the check stays visible at 28px, the action row is not drawn (a tap on the media
+     opens the preview, which carries the secondary actions). A row that is the only way to its action opts
+     back in with "keep"; "primary" keeps the first action alone as one 40px pill (Paper "08 Gallery / 390"). */
   @media (hover: none) {
     .wb-tile > .wb-tile-check {
+      width: 28px;
+      height: 28px;
       opacity: 1;
       pointer-events: auto;
+    }
+
+    .wb-tile > .wb-tile-check > svg {
+      width: 14px;
+      height: 14px;
     }
 
     .wb-tile > .wb-tile-actions {
       display: none;
     }
 
-    .wb-tile > .wb-tile-actions[data-touch="keep"] {
+    .wb-tile > .wb-tile-actions[data-touch] {
       display: flex;
       opacity: 1;
       pointer-events: auto;
@@ -503,6 +511,23 @@
 
     .wb-tile > .wb-tile-actions[data-touch="keep"] ~ .wb-tile-duration {
       bottom: 46px;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] {
+      background: none;
+      padding-top: 0;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] > .wb-tile-action {
+      height: 40px;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] > .wb-tile-action:not(:first-child) {
+      display: none;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] ~ .wb-tile-duration {
+      bottom: 56px;
     }
   }
 

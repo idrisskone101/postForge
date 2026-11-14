@@ -36,7 +36,8 @@ export function GalleryToolbarSkeleton() {
 export const GALLERY_GRID_CLASS =
   "grid min-w-0 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3";
 
-export const GALLERY_TILE_HEIGHT_CLASS = "h-[236px]";
+/** 220px on phones (Paper "08 Gallery / 390"), 236px from 768. */
+export const GALLERY_TILE_HEIGHT_CLASS = "h-[220px] md:h-[236px]";
 
 /** The tile's longer edge: a cover-fitted thumbnail must reach it on its short side. */
 export const GALLERY_TILE_THUMBNAIL_SIZES = "236px";

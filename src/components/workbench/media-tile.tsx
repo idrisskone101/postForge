@@ -16,8 +16,11 @@ export type MediaTileState = {
   name?: string;
   /** Keep every check visible, e.g. while a multi-select is in progress. */
   selecting?: boolean;
-  /** Keep the action row on touch screens. Only for a row that is the sole way to its action. */
-  touchActions?: boolean;
+  /**
+   * Keep the action row on touch screens. `true` for a row that is the sole way to its action;
+   * "primary" draws only the first action, as one 40px pill.
+   */
+  touchActions?: boolean | "primary";
 };
 
 type MediaTileProps = {
@@ -56,7 +59,7 @@ export function MediaTile({ children, state = {}, actions, className }: MediaTil
         <StatusBadge tone={status.tone} label={status.label} className="wb-tile-badge" />
       )}
       {actions && (
-        <div className="wb-tile-actions" data-touch={touchActions ? "keep" : undefined}>
+        <div className="wb-tile-actions" data-touch={touchActions === "primary" ? "primary" : touchActions ? "keep" : undefined}>
           {actions}
         </div>
       )}
