@@ -33,7 +33,7 @@ export function IntegrationsPanel({
         {error && (
           <p role="alert" className="wb-notice my-1 break-words py-1.5 pr-1.5 [overflow-wrap:anywhere]" data-tone="bad">
             <span className="min-w-0 flex-1 py-1">
-              <strong>Status unavailable.</strong> {error}
+              <strong>{error.lead}</strong> {error.detail}
             </span>
             <Button size={32} onClick={onRefresh}>
               Try again

@@ -16,6 +16,7 @@ import {
   removeIntegrationCallbackParams,
 } from "./integration-callback";
 import type { ConfirmAction } from "./confirm-dialog";
+import type { IntegrationsNotice } from "./types";
 
 export function useSettingsIntegrations({
   onOAuthCallback,
@@ -31,7 +32,9 @@ export function useSettingsIntegrations({
   const router = useRouter();
   const [providers, setProviders] = useState<PublicIntegrationStatus[]>([]);
   const [integrationsLoading, setIntegrationsLoading] = useState(true);
-  const [integrationsError, setIntegrationsError] = useState<string | null>(null);
+  const [integrationsError, setIntegrationsError] = useState<IntegrationsNotice | null>(null);
+  const reportStatusError = (detail: string) =>
+    setIntegrationsError({ lead: "Status unavailable.", detail });
   const [busyProvider, setBusyProvider] = useState<SocialProvider | null>(null);
   const handledCallbackRef = useRef<string | null>(null);
 
@@ -46,9 +49,10 @@ export function useSettingsIntegrations({
       }
       return response.providers;
     } catch (cause) {
-      setIntegrationsError(
-        cause instanceof Error ? cause.message : "Unable to load integration status"
-      );
+      setIntegrationsError({
+        lead: "Status unavailable.",
+        detail: cause instanceof Error ? cause.message : "Unable to load integration status",
+      });
       return null;
     } finally {
       setIntegrationsLoading(false);
@@ -116,7 +120,7 @@ export function useSettingsIntegrations({
       });
       window.location.assign(result.authorizationUrl);
     } catch (cause) {
-      setIntegrationsError(
+      reportStatusError(
         cause instanceof Error
           ? cause.message
           : "Unable to start YouTube authorization"
@@ -138,7 +142,7 @@ export function useSettingsIntegrations({
         `${status.displayName} synced ${result.posts.length} owned post${result.posts.length === 1 ? "" : "s"}`
       );
     } catch (cause) {
-      setIntegrationsError(
+      reportStatusError(
         cause instanceof Error ? cause.message : `Unable to sync ${status.displayName}`
       );
     } finally {
@@ -166,6 +170,8 @@ export function useSettingsIntegrations({
       return;
     }
 
+    const reportNotDisconnected = (detail: string) =>
+      setIntegrationsError({ lead: `${accountName} was not disconnected.`, detail });
     setBusyProvider(status.provider);
     setIntegrationsError(null);
     try {
@@ -197,7 +203,7 @@ export function useSettingsIntegrations({
             );
             return;
           } catch (forceDeleteCause) {
-            setIntegrationsError(
+            reportNotDisconnected(
               forceDeleteCause instanceof Error
                 ? forceDeleteCause.message
                 : `Unable to delete local ${status.displayName} data`
@@ -205,14 +211,14 @@ export function useSettingsIntegrations({
             return;
           }
         }
-        setIntegrationsError(
+        reportNotDisconnected(
           confirmation === null
-            ? message
+            ? `${status.displayName} did not confirm revocation, so the connection was kept. Disconnect again to retry.`
             : `Local ${status.displayName} data was not deleted because the confirmation phrase did not match. Remote access remains unconfirmed; use the provider permission link below.`
         );
         return;
       }
-      setIntegrationsError(message);
+      reportNotDisconnected(message);
     } finally {
       setBusyProvider(null);
     }

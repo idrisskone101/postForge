@@ -99,8 +99,10 @@ export function AccountRow({ row }: { row: AccountRowModel }) {
             )}
             <Button
               variant="danger"
-              disabled={busy}
-              onClick={() => row.onDisconnect(providerStatus, account.account.id)}
+              aria-disabled={busy || undefined}
+              onClick={() => {
+                if (!busy) row.onDisconnect(providerStatus, account.account.id);
+              }}
             >
               Disconnect
             </Button>

@@ -19,10 +19,13 @@ export type SettingsTab =
 type ConnectHandler = (status: PublicIntegrationStatus, acceptPolicies?: boolean) => void;
 type AccountHandler = (status: PublicIntegrationStatus, accountId: string) => void;
 
+/** A failure shown above the integration rows: what failed, then why. */
+export type IntegrationsNotice = { lead: string; detail: string };
+
 export type IntegrationsWorkspace = {
   providers: PublicIntegrationStatus[];
   loading: boolean;
-  error: string | null;
+  error: IntegrationsNotice | null;
   busyProvider: SocialProvider | null;
   onRefresh: () => void;
   onConnect: ConnectHandler;
