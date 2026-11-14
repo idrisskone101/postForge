@@ -178,7 +178,7 @@ export function JobPromptPanel({
   const negativePrompt = asString(job.input?.negativePrompt);
   const canContinueVideo = job.type === "video" && !job.tags.includes("video-swap");
   return (
-    <section aria-labelledby="job-prompt-title" className="wb-panel flex-none gap-3 py-[18px] xl:flex-1">
+    <section aria-labelledby="job-prompt-title" className={PROMPT_PANEL}>
       <div className="flex h-7 flex-none items-center gap-2.5">
         <h2 id="job-prompt-title" className="wb-panel-title flex-1">
           Prompt
@@ -192,7 +192,7 @@ export function JobPromptPanel({
           Copy
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-3">
+      <div className={PROMPT_RECORD}>
         <JobPromptText prompt={job.prompt} />
         <div className="flex flex-col gap-[3px]">
           <span className="wb-label">Negative</span>
@@ -213,6 +213,16 @@ export function JobPromptPanel({
     </section>
   );
 }
+
+/**
+ * From 1280 the panel takes the height the inspector has left, so the action row sits at the panel
+ * foot, and the record scrolls inside with the fade. Opening the full prompt releases the panel:
+ * a long record then flows in the inspector's own scroll and never inside a three-line window.
+ */
+const PROMPT_PANEL =
+  "wb-panel flex-none gap-3 py-[18px] xl:min-h-[188px] xl:flex-1 xl:has-[[aria-expanded=true]]:flex-none";
+const PROMPT_RECORD =
+  "wb-scroll-fade-y -mx-2 flex min-h-0 flex-1 flex-col gap-3 px-2 xl:overflow-y-auto";
 
 function formatBytes(bytes: number | null) {
   if (bytes === null) return "-";
