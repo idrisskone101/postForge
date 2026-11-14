@@ -124,11 +124,11 @@ export function PinterestImportResults({
           {source === "search" ? (
             <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 text-center">
               {hasMore ? (
-                <Button onClick={loadMore} disabled={loadingMore || importing}>
+                <Button onClick={loadMore} aria-disabled={loadingMore || undefined} disabled={importing}>
                   {loadingMore ? "Loading more" : "Load more"}
                 </Button>
               ) : (
-                <p aria-live="polite" className="wb-meta">
+                <p ref={takeLostFocus} tabIndex={-1} aria-live="polite" className="wb-meta">
                   All available public results are loaded.
                 </p>
               )}
@@ -162,6 +162,14 @@ export function PinterestImportResults({
       ) : null}
     </div>
   );
+}
+
+/*
+ * The last page replaces "Load more" with this line. Focus that was on the button would fall to the
+ * page behind the dialog, so the line takes it.
+ */
+function takeLostFocus(node: HTMLParagraphElement | null) {
+  if (node && document.activeElement === document.body) node.focus({ preventScroll: true });
 }
 
 function aspectFor(index: number) {
