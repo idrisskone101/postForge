@@ -215,14 +215,14 @@ export function JobPromptPanel({
 }
 
 /**
- * From 1280 the panel takes the height the inspector has left, so the action row sits at the panel
- * foot, and the record scrolls inside with the fade. Opening the full prompt releases the panel:
- * a long record then flows in the inspector's own scroll and never inside a three-line window.
+ * On a wide and tall window the panel takes the height the inspector has left, so the action row sits
+ * at the panel foot, and the record scrolls inside with the fade. On a short window the inspector
+ * already scrolls, so the record flows in that one scroll. Opening the full prompt releases the panel.
  */
 const PROMPT_PANEL =
-  "wb-panel flex-none gap-3 py-[18px] xl:min-h-[188px] xl:flex-1 xl:has-[[aria-expanded=true]]:flex-none";
+  "wb-panel flex-none gap-3 py-[18px] tall-xl:min-h-[188px] tall-xl:flex-1 tall-xl:has-[[aria-expanded=true]]:flex-none";
 const PROMPT_RECORD =
-  "wb-scroll-fade-y -mx-2 flex min-h-0 flex-1 flex-col gap-3 px-2 xl:overflow-y-auto";
+  "wb-scroll-fade-y -mx-2 flex min-h-0 flex-1 flex-col gap-3 px-2 tall-xl:overflow-y-auto";
 
 function formatBytes(bytes: number | null) {
   if (bytes === null) return "-";

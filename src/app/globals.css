@@ -10,6 +10,7 @@
 @import "./styles/transitional.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant tall-xl (@media (min-width: 80rem) and (min-height: 880px));
 
 /* A transition utility with no duration or ease of its own gets the Workbench feedback timing, not
    Tailwind's 150ms default curve. */
