@@ -37,15 +37,17 @@
     flex-direction: column;
     gap: var(--pf-gap);
     overflow-x: clip;
-    padding-top: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top) + 4px);
-    padding-right: max(12px, env(safe-area-inset-right));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-    padding-left: max(12px, env(safe-area-inset-left));
+    padding-top: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top) + var(--pf-gap));
+    padding-right: max(var(--pf-page-pad), env(safe-area-inset-right));
+    padding-bottom: max(var(--pf-page-pad), env(safe-area-inset-bottom));
+    padding-left: max(var(--pf-page-pad), env(safe-area-inset-left));
   }
 
   .pf-content-viewport {
     min-width: 0;
-    min-height: calc(100dvh - var(--pf-mobile-bar-h) - env(safe-area-inset-top) - 16px);
+    min-height: calc(
+      100dvh - var(--pf-mobile-bar-h) - env(safe-area-inset-top) - var(--pf-gap) - var(--pf-page-pad)
+    );
   }
 
   /* Mobile bar */

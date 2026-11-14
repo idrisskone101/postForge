@@ -117,8 +117,8 @@ export function GalleryBulkBar({
  */
 const DOCK_CLASS = [
   "wb-dock absolute top-0 z-20 max-xl:inset-x-0 min-[1440px]:inset-x-0",
-  "max-lg:fixed max-lg:top-auto max-lg:bottom-[max(12px,env(safe-area-inset-bottom))] max-lg:z-[45]",
-  "max-lg:right-[max(12px,env(safe-area-inset-right))] max-lg:left-[max(12px,env(safe-area-inset-left))]",
+  "max-lg:fixed max-lg:top-auto max-lg:bottom-[max(16px,env(safe-area-inset-bottom))] max-lg:z-[45]",
+  "max-lg:right-[max(16px,env(safe-area-inset-right))] max-lg:left-[max(16px,env(safe-area-inset-left))]",
   "md:max-lg:left-[calc(var(--pf-rail-w)+env(safe-area-inset-left))] md:max-lg:right-4 md:max-lg:bottom-4",
   "xl:max-[1439.98px]:left-[calc(var(--pf-page-pad)+var(--pf-sidebar-w)+var(--pf-gap)+env(safe-area-inset-left))] xl:max-[1439.98px]:in-data-[sidebar-collapsed=true]:left-[calc(var(--pf-rail-w)+env(safe-area-inset-left))]",
   "xl:max-[1439.98px]:fixed xl:max-[1439.98px]:top-auto xl:max-[1439.98px]:right-[calc(var(--pf-page-pad)+320px+var(--pf-gap))] xl:max-[1439.98px]:bottom-4 xl:max-[1439.98px]:z-[45]",
@@ -148,7 +148,7 @@ export const DOCK_RESERVE_CLASS =
 
 /** Lifts the toast above the dock at the widths where the dock floats. */
 export const TOAST_ABOVE_DOCK_CLASS =
-  "max-md:bottom-[calc(max(12px,env(safe-area-inset-bottom))+140px)] md:max-lg:bottom-[114px] xl:max-[1439.98px]:bottom-[114px]";
+  "max-md:bottom-[calc(max(16px,env(safe-area-inset-bottom))+140px)] md:max-lg:bottom-[114px] xl:max-[1439.98px]:bottom-[114px]";
 
 /** Paper draws the dock's confirm one step above the strong fill, since the dock itself is raised. */
 const APPROVE_CLASS =
