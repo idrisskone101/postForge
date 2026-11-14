@@ -189,6 +189,7 @@ function integrationStatus(
           ? "Instagram"
           : "YouTube",
     configuration: "ready",
+    credentialsMissing: false,
     connected: true,
     accountCount: 1,
     accounts: [

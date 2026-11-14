@@ -90,7 +90,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
   const view: IntegrationRowView = {
     tile: { provider, label: `${displayName} logo`, dashed: state.kind !== "loading" },
     name: displayName,
-    sub: providerSub(state, Boolean(status?.connectUrl)),
+    sub: providerSub(state, status),
     chip: state.kind === "loading" ? null : providerChip(state),
     metrics: state.kind === "loading" ? null : UNAVAILABLE_CELL,
     publishing: state.kind === "loading" ? null : UNAVAILABLE_CELL,
@@ -120,16 +120,19 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
 
 const PROVIDER_NAMES = { tiktok: "TikTok", instagram: "Instagram", youtube: "YouTube" } as const;
 
-function providerSub(state: ProviderState, hasConnectUrl: boolean): string | undefined {
+function providerSub(
+  state: ProviderState,
+  status: SocialIntegrationCardModel["status"]
+): string | undefined {
   switch (state.kind) {
     case "loading":
       return undefined;
     case "unavailable":
       return "The integration service did not return this provider";
     case "not_configured":
-      return undefined;
+      return status?.credentialsMissing ? "Server credentials missing" : undefined;
     case "ready":
-      return hasConnectUrl ? undefined : "Connect endpoint unavailable";
+      return status?.connectUrl ? undefined : "Connect endpoint unavailable";
     case "connected":
       return undefined;
   }

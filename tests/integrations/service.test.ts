@@ -534,6 +534,18 @@ async function run() {
   });
   assert.equal(invalidKeyStatus.configuration, "not_configured");
   assert.equal(invalidKeyStatus.connected, false);
+  assert.equal(
+    invalidKeyStatus.credentialsMissing,
+    false,
+    "a bad encryption key is not a missing credential"
+  );
+
+  const noSecretStatus = await getPublicIntegrationStatus("tiktok", {
+    env: { ...env, TIKTOK_CLIENT_SECRET: "" },
+    storage,
+  });
+  assert.equal(noSecretStatus.configuration, "not_configured");
+  assert.equal(noSecretStatus.credentialsMissing, true);
 
   const rotatedKeyStatus = await getPublicIntegrationStatus("tiktok", {
     env: {

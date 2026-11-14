@@ -38,6 +38,7 @@ function status(
     provider,
     displayName,
     configuration: "ready",
+    credentialsMissing: false,
     connected: false,
     accountCount: 0,
     accounts: [],
@@ -152,6 +153,20 @@ assert.doesNotMatch(instagramMarkup, /Setup required/, "the chip and the Set up 
 assert.match(instagramMarkup, /aria-expanded="false"[^>]*>Set up/);
 assert.match(instagramMarkup, /hidden=""/);
 assert.doesNotMatch(instagramMarkup, />Connect</);
+assert.doesNotMatch(
+  instagramMarkup,
+  /Server credentials missing/,
+  "not configured for another reason never claims missing credentials"
+);
+assert.match(
+  renderCard("instagram", { ...notConfiguredInstagram, credentialsMissing: true }),
+  />Server credentials missing</
+);
+assert.doesNotMatch(
+  renderCard("youtube", { ...readyYouTube, credentialsMissing: true }),
+  /Server credentials missing/,
+  "only the not configured row carries the line"
+);
 
 const connectedMarkup = renderCard("tiktok", connectedTikTok);
 assert.match(connectedMarkup, /data-social-provider="tiktok"/);

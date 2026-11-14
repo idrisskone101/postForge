@@ -3,6 +3,7 @@ import {
   emptyCapabilities,
   getYouTubeComplianceUrls,
   INTEGRATION_PROVIDER_NAMES,
+  hasProviderCredentials,
   isProviderConfigured,
   type IntegrationEnvironment,
 } from "./config";
@@ -54,12 +55,14 @@ export async function applyPublishingRuntimeReadiness(
 export function unconnectedStatus(
   provider: IntegrationProvider,
   configured: boolean,
-  complianceUrls: ReturnType<typeof getYouTubeComplianceUrls> = null
+  complianceUrls: ReturnType<typeof getYouTubeComplianceUrls> = null,
+  credentialsMissing = false
 ): PublicIntegrationStatus {
   return {
     provider,
     displayName: INTEGRATION_PROVIDER_NAMES[provider],
     configuration: configured ? "ready" : "not_configured",
+    credentialsMissing,
     connected: false,
     accountCount: 0,
     accounts: [],
@@ -202,7 +205,12 @@ export async function getPublicIntegrationStatus(
   const complianceUrls =
     provider === "youtube" ? getYouTubeComplianceUrls(deps.env) : null;
   if (!isProviderConfigured(provider, deps.env)) {
-    return unconnectedStatus(provider, false, complianceUrls);
+    return unconnectedStatus(
+      provider,
+      false,
+      complianceUrls,
+      !hasProviderCredentials(provider, deps.env)
+    );
   }
   let encryptionKey: Buffer;
   try {
