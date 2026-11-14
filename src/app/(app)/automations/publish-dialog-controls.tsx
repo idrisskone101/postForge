@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
 
@@ -90,24 +90,35 @@ export const publishLinkClass =
 const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
 
-/** Escape closes the dialog unless it is busy, Tab stays inside, and focus goes back to the row's Actions button on close. */
+/**
+ * Props for a hand-rolled modal root. The root takes focus when a click lands on its scrim or text, so
+ * Escape and the Tab trap keep working. Escape closes unless busy. Focus goes back to the opener on close.
+ */
 export function useDialogKeys(input: { recordName: string; busy: boolean; onClose: () => void }) {
   const { recordName, busy, onClose } = input;
+  const [opener] = useState(() => (typeof document === "undefined" ? null : document.activeElement));
   useEffect(
     () => () => {
-      document
-        .querySelector<HTMLElement>(`[aria-label=${JSON.stringify(`Actions for ${recordName}`)}]`)
-        ?.focus();
+      const target =
+        opener instanceof HTMLElement && opener.isConnected && opener !== document.body
+          ? opener
+          : document.querySelector<HTMLElement>(
+              `[aria-label=${JSON.stringify(`Actions for ${recordName}`)}]`
+            );
+      target?.focus();
     },
-    [recordName]
+    [opener, recordName]
   );
-  return (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Escape" && !busy) {
-      event.stopPropagation();
-      onClose();
-      return;
-    }
-    keepTabInDialog(event);
+  return {
+    tabIndex: -1,
+    onKeyDownCapture: (event: KeyboardEvent<HTMLElement>) => {
+      if (event.key === "Escape" && !busy) {
+        event.stopPropagation();
+        onClose();
+        return;
+      }
+      keepTabInDialog(event);
+    },
   };
 }
 
@@ -117,6 +128,12 @@ function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
   const first = items[0];
   const last = items[items.length - 1];
   if (!first || !last) return;
+  const active = document.activeElement;
+  if (active === event.currentTarget || !event.currentTarget.contains(active)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+    return;
+  }
   if (event.shiftKey && document.activeElement === first) {
     event.preventDefault();
     last.focus();

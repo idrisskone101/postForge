@@ -23,7 +23,7 @@ export function PublishReviewDialog({
   onPublish: () => void;
 }) {
   const { preflight } = state;
-  const onKeyDown = useDialogKeys({ recordName: state.recordName, busy, onClose });
+  const dialogKeys = useDialogKeys({ recordName: state.recordName, busy, onClose });
   const providerName = PROVIDER_NAMES[preflight.provider];
   const accountName =
     preflight.account.displayName || preflight.account.username || preflight.account.id;
@@ -33,11 +33,11 @@ export function PublishReviewDialog({
 
   return createPortal(
     <div
-      className="pf-safe-overlay fixed inset-0 z-[90] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
+      className="pf-safe-overlay fixed inset-0 z-[90] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="publish-review-title"
-      onKeyDown={onKeyDown}
+      {...dialogKeys}
     >
       <div className="flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-hidden rounded-xl bg-panel shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both]">
         <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 px-4 pb-4 pt-5 sm:px-6">

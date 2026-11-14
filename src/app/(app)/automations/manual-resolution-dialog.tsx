@@ -19,15 +19,15 @@ export function ManualResolutionDialog({
   onConfirm: () => void;
 }) {
   const published = state.resolution === "published";
-  const onKeyDown = useDialogKeys({ recordName: state.record.name, busy, onClose });
+  const dialogKeys = useDialogKeys({ recordName: state.record.name, busy, onClose });
   const provider = automationDestinationLabel(state.record.destination);
   return createPortal(
     <div
-      className="pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
+      className="pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
       role="dialog"
       aria-modal="true"
       aria-labelledby="manual-resolution-title"
-      onKeyDown={onKeyDown}
+      {...dialogKeys}
     >
       <div className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
         <span
