@@ -141,7 +141,9 @@ function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {
     event.preventDefault();
     const inside = active instanceof HTMLElement && active !== event.currentTarget && event.currentTarget.contains(active);
     const after = (item: HTMLElement) => active!.compareDocumentPosition(item) & Node.DOCUMENT_POSITION_FOLLOWING;
-    const next = inside ? items.find(after) : undefined;
+    const top = inside ? active.getBoundingClientRect().top : 0;
+    const inView = (item: HTMLElement) => !active!.contains(item) || item.getBoundingClientRect().bottom > top;
+    const next = inside ? items.find((item) => after(item) && inView(item)) : undefined;
     const previous = inside ? items.findLast((item) => !after(item) && !active!.contains(item)) : undefined;
     ((event.shiftKey ? previous : next) ?? (event.shiftKey ? last : first)).focus();
     return;
