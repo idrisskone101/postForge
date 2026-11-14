@@ -138,7 +138,7 @@ export function PinterestImportResults({
       ) : (
         <EmptyState
           icon={hasSearched ? "search" : "inspiration"}
-          className="min-h-64 sm:h-full"
+          className="min-h-full max-sm:gap-2 max-sm:p-3 sm:h-full"
           title={
             hasSearched
               ? source === "search"
