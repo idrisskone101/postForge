@@ -327,7 +327,6 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         onUseTemplate={startTemplate}
       />
       <PublishDialog
-        key={publishProject?.id}
         dialog={{
           open: publishOpen,
           project: publishProject,
