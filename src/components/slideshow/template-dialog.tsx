@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/workbench/button";
 import { EmptyState } from "@/components/workbench/empty-state";
 import { Icon } from "@/components/workbench/icon";
+import { IconButton } from "@/components/workbench/icon-button";
 
 import { VisualTile } from "./slide-preview";
 import type { SlideshowTemplate } from "./types";
@@ -38,10 +39,16 @@ export function TemplateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[min(92dvh,720px)] flex-col gap-4 overflow-hidden sm:max-w-[min(760px,calc(100vw-2rem))]">
-        <DialogTitle className="pr-10 text-[18px] font-bold leading-[22px] tracking-[-0.01em] text-fg">
-          Template library
-        </DialogTitle>
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[min(92dvh,720px)] flex-col gap-4 overflow-hidden sm:max-w-[min(760px,calc(100vw-2rem))]"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <DialogTitle className="text-[18px] font-bold leading-[22px] tracking-[-0.01em] text-fg">
+            Template library
+          </DialogTitle>
+          <IconButton icon="x" label="Close" size={30} onClick={() => onOpenChange(false)} />
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="wb-input-wrap min-w-[180px] flex-1" data-size="36">
             <Icon name="search" size={15} />
@@ -80,9 +87,6 @@ export function TemplateDialog({
                     </span>
                     <span className="break-words text-[13px] leading-4 text-fg-secondary">
                       {template.category} - {template.slides.length} slides
-                    </span>
-                    <span className="line-clamp-2 text-[12px] leading-4 text-fg-muted">
-                      {template.hook}
                     </span>
                   </span>
                   <Button

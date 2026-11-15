@@ -23,8 +23,10 @@ export function DraftCell({
   className?: string;
 }) {
   const status = STATUS[project.status];
-  const frames: (string | null)[] = project.previewImageUrls.filter(Boolean).slice(0, Math.max(1, thumbs));
+  // A slide with no image yet keeps its frame, so the text column starts at the same x in every row.
+  const frames: (string | null)[] = project.previewImageUrls.slice(0, Math.max(1, thumbs));
   if (frames.length === 0) frames.push(null);
+  const noImages = frames.every((url) => !url);
   return (
     <button
       type="button"
@@ -53,13 +55,13 @@ export function DraftCell({
           >
             {url ? (
               <MediaImage src={url} alt="" loading="lazy" className="size-full object-cover" />
-            ) : (
+            ) : noImages && index === 0 ? (
               <Icon name="gallery" size={20} />
-            )}
+            ) : null}
           </span>
         ))}
       </span>
-      <span className="flex min-w-[132px] flex-1 flex-col gap-1">
+      <span className="flex min-w-[132px] flex-1 flex-col gap-1.5">
         <span title={project.title} className="line-clamp-2 text-[14px] font-semibold leading-[18px] text-fg">
           {project.title}
         </span>
@@ -68,8 +70,15 @@ export function DraftCell({
           {formatRelativeDate(project.updatedAt)}
         </span>
         {status || project.successfulExportCount ? (
-          <span className="mt-0.5 flex min-w-0 items-center gap-2">
-            {status ? <StatusChip tone={status.tone}>{status.label}</StatusChip> : null}
+          <span className="flex min-w-0 items-center gap-2">
+            {status ? (
+              <StatusChip tone={status.tone}>
+                {status.tone === "live" ? (
+                  <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ember" />
+                ) : null}
+                {status.label}
+              </StatusChip>
+            ) : null}
             {project.status === "generating" ? (
               <Meter label="Rendering slide visuals" value={40} running className="max-w-24" />
             ) : null}

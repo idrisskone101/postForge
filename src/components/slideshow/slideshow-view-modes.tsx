@@ -84,7 +84,7 @@ export function SlideshowBoardView() {
                   <span className="flex items-center justify-between gap-2 px-0.5">
                     <span
                       className={cn(
-                        "truncate text-[13px] font-semibold",
+                        "truncate text-[13px] leading-4 font-semibold",
                         selected ? "text-ember-text" : "text-fg",
                       )}
                     >
