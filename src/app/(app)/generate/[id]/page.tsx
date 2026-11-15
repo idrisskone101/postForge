@@ -19,6 +19,7 @@ import { JobActionDock } from "../job-inspector-footer";
 import { cn } from "@/lib/utils";
 import { JobStage, JobVariationStrip, SCROLL_FOCUS_RING } from "../job-preview-body";
 import { useJobDetail } from "../use-job-detail";
+import { backOr } from "@/lib/back-or";
 
 export default function JobDetailPage() {
   const detail = useJobDetail();
@@ -74,7 +75,7 @@ export default function JobDetailPage() {
   };
 
   const actions: JobDetailActions = {
-    onBack: () => router.back(),
+    onBack: () => backOr(router, "/generate"),
     onShare: () => void detail.handleShare(featured),
     onDownload: () => featured && void detail.handleDownload(featured),
     onRetry: () => void detail.handleRetry(),
