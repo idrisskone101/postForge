@@ -30,10 +30,10 @@ export function JobQuickEdits({
             type="button"
             aria-pressed={view.selectedEnhancement === tool.id}
             onClick={() => actions.onSelectTool(tool.id)}
-            className="flex h-[38px] min-w-0 items-center gap-2 rounded-lg bg-raised px-3 text-left text-[13px] font-semibold leading-4 text-fg transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong aria-pressed:bg-ember-wash aria-pressed:text-ember-text aria-pressed:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+            className="flex min-h-[38px] min-w-0 items-center gap-2 rounded-lg bg-raised px-3 py-[3px] text-left text-[13px] font-semibold leading-4 text-fg transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong aria-pressed:bg-ember-wash aria-pressed:text-ember-text aria-pressed:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
           >
             <JobIcon name={tool.icon} size={16} className="flex-none" />
-            <span className="truncate">{tool.title}</span>
+            <span className="min-w-0 text-balance">{tool.title}</span>
           </button>
         ))}
       </div>
@@ -121,13 +121,14 @@ export function JobDetailsPanel({ job, featured }: { job: JobDetail; featured: J
     },
   ];
   return (
-    <section aria-labelledby="job-details-title" className="wb-panel flex-none gap-2.5 py-[18px]">
+    <section aria-labelledby="job-details-title" className="@container wb-panel flex-none gap-2.5 py-[18px]">
       <h2 id="job-details-title" className="wb-panel-title">
         Details
       </h2>
-      <dl className="m-0 flex gap-5">
+      {/* Two columns need 320px: below it the 128px column leaves the first too little for a model name or a date. */}
+      <dl className="m-0 flex gap-5 @max-[320px]:flex-col @max-[320px]:gap-1.5">
         <DetailColumn rows={left} className="min-w-0 flex-1" />
-        <DetailColumn rows={right} className="w-[128px] flex-none" />
+        <DetailColumn rows={right} className="w-[128px] flex-none @max-[320px]:w-auto" />
       </dl>
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-[13px] leading-[18px] text-fg-muted">Job</span>
@@ -154,7 +155,7 @@ function DetailColumn({
           <dd
             className={
               row.mono
-                ? "m-0 truncate font-mono text-[12px] leading-[18px] text-fg"
+                ? "m-0 whitespace-nowrap text-right font-mono text-[12px] leading-[18px] text-fg"
                 : "m-0 min-w-0 text-right text-[13px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]"
             }
             title={row.value}

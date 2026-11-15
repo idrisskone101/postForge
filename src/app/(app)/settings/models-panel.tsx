@@ -175,7 +175,7 @@ export function ModelsPanel({ onSaved }: { onSaved: (message: string) => void })
               className="flex min-h-14 min-w-0 items-center gap-3 rounded-lg bg-raised px-3.5 py-2"
             >
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className={cn("truncate text-sm font-semibold leading-[18px]", enabled ? "text-fg" : "text-fg-muted")}>
+                <span className={cn("text-balance text-sm font-semibold leading-[18px] [overflow-wrap:anywhere]", enabled ? "text-fg" : "text-fg-muted")}>
                   {model.name}
                 </span>
                 <span className={cn("wb-mono", enabled ? "text-fg-secondary" : "text-fg-muted")}>

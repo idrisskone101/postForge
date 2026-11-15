@@ -62,7 +62,7 @@ export function DraftCell({
         ))}
       </span>
       <span className="flex min-w-[132px] flex-1 flex-col gap-1.5">
-        <span title={project.title} className="line-clamp-2 text-[14px] font-semibold leading-[18px] text-fg">
+        <span className="text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]">
           {project.title}
         </span>
         <span className="truncate text-[13px] leading-4 text-fg-secondary">

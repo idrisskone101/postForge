@@ -103,7 +103,7 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
           ),
         }))}
       />
-      <label className="wb-input-wrap min-w-[208px] flex-1 @max-[440px]:min-w-[104px]" data-size="36">
+      <label className="wb-input-wrap min-w-[208px] flex-1" data-size="36">
         <Icon name="search" size={15} />
         <input
           value={sourceSearch}
@@ -158,6 +158,8 @@ function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
  * The sort is a drawn pill with the native select lying over it, invisible. The select owns the tap,
  * the keyboard and the focus ring, and on touch it reaches 4px past the pill on both sides, a 44px
  * target. Below 440px the pill is Paper's short one ("Newest", no chevron) so the search keeps its row.
+ * The search never goes below 208px, the width its placeholder needs; on a 320px phone the pill
+ * takes the next row instead.
  */
 const SORT_WRAP_CLASS = [
   "relative flex h-9 shrink-0 items-center rounded-full bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg",

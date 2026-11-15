@@ -93,7 +93,8 @@ function AtIcon() {
       strokeWidth="1.5"
       strokeLinecap="round"
       aria-hidden="true"
-      className="shrink-0"
+      // Below 360px the placeholder needs the icon's 24px to read whole, and it already starts with "@".
+      className="shrink-0 max-[359px]:hidden"
     >
       <circle cx="12" cy="12" r="8" />
       <path d="M16 12a4 4 0 1 1-4-4c2.2 0 4 1.5 4 4v1.5a2 2 0 0 0 4 0" />

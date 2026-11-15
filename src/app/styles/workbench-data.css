@@ -594,13 +594,13 @@
     white-space: nowrap;
   }
 
+  /* Product copy (kind, model, date): it takes a second line where the tile is narrow, never an ellipsis */
   .wb-tile-meta {
-    overflow: hidden;
     color: var(--pf-text-muted);
     font-size: 12px;
     line-height: 16px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
 
   .wb-thumb {
