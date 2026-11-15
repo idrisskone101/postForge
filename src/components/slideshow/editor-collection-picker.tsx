@@ -16,7 +16,9 @@ export function EditorCollectionPicker() {
   } = useSlideshowEditor();
   return (
     <Dialog open={open} onOpenChange={setPickerOpen}>
-      <DialogContent className="flex max-h-[min(90dvh,820px)] flex-col gap-4 p-0 sm:max-w-[760px]">
+      {/* On phones the dialog is always its full height, so it has one shape while the collections load,
+          once they are in, and when a collection with fewer images is chosen. */}
+      <DialogContent className="flex max-h-[min(90dvh,820px)] flex-col gap-4 p-0 max-sm:h-[min(90dvh,820px)] sm:max-w-[760px]">
         <div className="flex min-h-14 shrink-0 items-center pl-6 pr-14 pt-2">
           <DialogTitle className="wb-panel-title text-[18px] leading-6 font-bold tracking-[-0.01em]">
             Select slide images
