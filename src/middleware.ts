@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isMissingPagePath } from "@/lib/app-routes";
+import {
+  MISSING_PAGE_PATH,
+  isMissingPagePath,
+  isStaticFilePath,
+  missingPageNeedsRewrite,
+} from "@/lib/app-routes";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 const AUTH_CHALLENGE = 'Basic realm="postForge"';
@@ -64,18 +69,30 @@ function authenticationNotConfigured() {
 }
 
 function nextWithPathname(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  return NextResponse.next({
-    request: { headers: requestHeaders },
-    // A URL under no route still renders: the catch-all draws the not-found page inside the shell.
-    // The status has to be set here, because a page that throws notFound() is answered with an
-    // empty document that only JavaScript fills in.
-    ...(isMissingPagePath(request.nextUrl.pathname) ? { status: 404 } : {}),
-  });
+  requestHeaders.set("x-pathname", pathname);
+  const forwarded = { request: { headers: requestHeaders } };
+  if (!isMissingPagePath(pathname)) return NextResponse.next(forwarded);
+  // A URL under no route still renders: the catch-all draws the not-found page inside the shell.
+  // The status has to be set here, because a page that throws notFound() is answered with an
+  // empty document that only JavaScript fills in.
+  if (missingPageNeedsRewrite(pathname)) {
+    return NextResponse.rewrite(new URL(MISSING_PAGE_PATH, request.url), {
+      ...forwarded,
+      status: 404,
+    });
+  }
+  return NextResponse.next({ ...forwarded, status: 404 });
 }
 
 export function middleware(request: NextRequest) {
+  // The matcher lets file names through so a missing one gets the not-found page. A real static
+  // file keeps the open, untouched response it had before the middleware saw it.
+  if (isStaticFilePath(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   // Provider review and account-deletion crawlers cannot supply the private
   // workspace key. Keep only the published legal disclosures public.
   if (isPublicPolicyPath(request.nextUrl.pathname)) {
@@ -133,6 +150,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/api/:path*",
-    "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
