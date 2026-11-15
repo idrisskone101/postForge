@@ -75,7 +75,7 @@ export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff 
           ))}
         </div>
       ) : galleryFiles.length === 0 ? (
-        <EmptyState icon="gallery" title="No generated images yet" />
+        <EmptyState icon="gallery" title="No generated images yet" className={EMPTY_TILE} />
       ) : (
         <div className="-m-1 max-h-[600px] overflow-y-auto p-1">
         <div className={GALLERY_GRID}>
@@ -111,5 +111,8 @@ export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff 
     </div>
   );
 }
+
+/** Paper "04 Clone / avatar picker gallery": the empty tile is 160px tall with no padding of its own. */
+const EMPTY_TILE = "h-40 min-h-0 flex-none p-0";
 
 const GALLERY_GRID = "grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3";
