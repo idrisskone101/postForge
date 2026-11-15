@@ -64,14 +64,19 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
   );
 }
 
+/**
+ * A notice under a row. Alone it is the 38px notice (10px 14px). With a trailing 32px action it is
+ * 44px (6px 6px 6px 14px), and its text keeps 4px more so a wrapped notice still has 10px around it.
+ */
 export function RowNotice({ notice, children }: { notice: Notice; children?: ReactNode }) {
+  const hasAction = Boolean(children);
   return (
     <p
-      className="wb-notice min-w-0 break-words py-[3px] pr-1.5 [overflow-wrap:anywhere]"
+      className={cn("wb-notice min-w-0 break-words [overflow-wrap:anywhere]", hasAction && "py-1.5 pr-1.5")}
       data-tone={notice.tone}
       role={notice.tone === "bad" ? "alert" : undefined}
     >
-      <span className="min-w-0 flex-1 py-1">
+      <span className={cn("min-w-0 flex-1", hasAction && "py-1")}>
         <strong className={cn("font-semibold", notice.tone === "bad" ? "text-bad" : "text-warn")}>{notice.lead}</strong>{" "}
         {notice.text}
       </span>
