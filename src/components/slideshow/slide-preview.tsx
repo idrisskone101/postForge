@@ -150,7 +150,7 @@ export function SlidePreview({
         {frameBoxes
           ? SLIDESHOW_OVERLAY_LAYERS.map((layer) => {
               const box = frameBoxes[layer];
-              if (!box || !mostlyOnCanvas(box, width, height)) return null;
+              if (!box || !onCanvas(box, width, height)) return null;
               return (
                 <span
                   key={layer}
@@ -228,16 +228,18 @@ function frameInsets(
   };
 }
 
-// Copy that runs past the canvas is cut off by it. A frame around a block that is mostly gone would
-// clamp to a sliver on the canvas edge and point at nothing.
-function mostlyOnCanvas(box: SlideshowOverlayBox, width: number, height: number) {
-  const shown = (start: number, size: number, limit: number) =>
-    Math.min(start + size, limit) - Math.max(start, 0);
+// Copy that runs past the canvas is cut off by it. The renderer reports one box per block, sized by
+// its widest line, so a block with lines off the canvas would get a frame wider than what is shown.
+// Only a block wholly on the canvas is framed.
+function onCanvas(box: SlideshowOverlayBox, width: number, height: number) {
+  const EDGE = 1;
   return (
     box.width > 0 &&
     box.height > 0 &&
-    shown(box.x, box.width, width) >= box.width / 2 &&
-    shown(box.y, box.height, height) >= box.height / 2
+    box.x >= -EDGE &&
+    box.y >= -EDGE &&
+    box.x + box.width <= width + EDGE &&
+    box.y + box.height <= height + EDGE
   );
 }
 
