@@ -7,10 +7,10 @@ const REST_ZONE = 64;
 
 /**
  * Ref callback for a bar that sits on the viewport bottom at some sizes: pinned there, or laid out
- * there by a page that fills the viewport. While it does, the distance from the viewport bottom to
- * the bar's top is published on the root as --wb-pinned-bottom. The root's scroll-padding-bottom
- * reads it, so keyboard focus never lands under the bar, and the toast region reads it, so a toast
- * never covers the bar.
+ * there by the page. A pinned bar's reach is published on the root as --wb-pinned-bottom, which the
+ * root's scroll-padding-bottom reads so keyboard focus never lands under it. The distance from the
+ * viewport bottom to any such bar's top is published as --wb-toast-bottom, which the toast region
+ * reads so a toast never covers the bar.
  */
 const BAR_MAX_HEIGHT = 240;
 
@@ -24,9 +24,10 @@ export function publishPinnedBar(bar: HTMLElement | null) {
     const pinnedReach = pinned ? bar.offsetHeight + (parseFloat(style.bottom) || 0) : 0;
     // A tall panel that happens to end at the viewport bottom is content, not a bar.
     const resting = rect.height > 0 && rect.height <= BAR_MAX_HEIGHT && rect.top < window.innerHeight && rect.bottom > window.innerHeight - REST_ZONE;
-    const reach = Math.max(pinnedReach, resting ? window.innerHeight - rect.top : 0);
-    if (reach > 0) root.style.setProperty("--wb-pinned-bottom", `${Math.round(reach)}px`);
-    else root.style.removeProperty("--wb-pinned-bottom");
+    // Only a pinned bar can hide content scrolled under it, so only it pads the scroll. A bar in the
+    // flow is scrolled to like any control, but a toast still has to clear it while it rests there.
+    setPx(root, "--wb-pinned-bottom", pinnedReach);
+    setPx(root, "--wb-toast-bottom", Math.max(pinnedReach, resting ? window.innerHeight - rect.top : 0));
   };
   let frame = 0;
   const schedule = () => {
@@ -43,5 +44,11 @@ export function publishPinnedBar(bar: HTMLElement | null) {
     window.removeEventListener("resize", publish);
     window.removeEventListener("scroll", schedule);
     root.style.removeProperty("--wb-pinned-bottom");
+    root.style.removeProperty("--wb-toast-bottom");
   };
+}
+
+function setPx(root: HTMLElement, name: string, value: number) {
+  if (value > 0) root.style.setProperty(name, `${Math.round(value)}px`);
+  else root.style.removeProperty(name);
 }
