@@ -7,6 +7,7 @@ import { PerformanceEmptyState } from "./performance-empty-state";
 import {
   buildChartSeries,
   buildStatStripCells,
+  buildSyncWarnings,
   performanceVariant,
   sourceLegend,
 } from "./performance-helpers";
@@ -71,7 +72,6 @@ export function PerformancePageClient({ initial }: { initial: PerformanceInitial
     csvDataset,
     selectedSource: activeSource,
     selectable: sourceOptions.length > 1,
-    lastUpdatedAt: providerData.lastUpdatedAt,
     busyProvider,
     importing,
     syncAll:
@@ -123,6 +123,13 @@ export function PerformancePageClient({ initial }: { initial: PerformanceInitial
           />
         </div>
       ) : null}
+
+      {buildSyncWarnings(connectedAccounts).map((warning) => (
+        <p key={warning.key} className="wb-notice shrink-0" data-tone={warning.tone}>
+          <strong>{warning.lead}</strong>
+          <span className="min-w-0 [overflow-wrap:anywhere]">{warning.text}</span>
+        </p>
+      ))}
 
       {hasData ? (
         <>

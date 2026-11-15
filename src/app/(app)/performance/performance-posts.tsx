@@ -15,7 +15,7 @@ import type { PerformancePostsModel, PerformancePostsView } from "./types";
 export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
   const { posts, view, search, onSearch, onView } = model;
   return (
-    <Panel pad="none" className="min-w-0 gap-0 p-5 max-md:p-4" aria-labelledby="performance-posts-title">
+    <Panel pad="none" className="min-w-0 gap-0 p-5" aria-labelledby="performance-posts-title">
       <div className="flex flex-wrap items-center gap-3 pb-3">
         <h2 id="performance-posts-title" className="wb-panel-title min-w-0 flex-1">
           Top posts

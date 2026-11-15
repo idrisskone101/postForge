@@ -13,6 +13,7 @@ import type {
   PerformanceRange,
   PerformanceSourceRow,
   PerformanceStatCell,
+  PerformanceSyncWarning,
 } from "./types";
 
 type SourceAggregates = {
@@ -34,12 +35,7 @@ const compact = new Intl.NumberFormat("en", {
 });
 const grouped = new Intl.NumberFormat("en");
 const dayMonth = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
-const dayMonthTime = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+const hourMinute = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" });
 
 const PLOT_TOP = 8;
 const PLOT_BASE = 142;
@@ -210,11 +206,29 @@ export function buildSourceRows(input: {
   return rows;
 }
 
-function accountRow(entry: ConnectedAccountView): PerformanceSourceRow {
-  const { authorization, sync } = entry.account;
-  const handle = entry.account.account.username
+function sourceHandle(entry: ConnectedAccountView) {
+  return entry.account.account.username
     ? accountHandle(entry.account.account.username)
     : connectedAccountName(entry.account);
+}
+
+/** The provider's own stored sync warnings, one per account, for the notices above the stats. */
+export function buildSyncWarnings(accounts: ConnectedAccountView[]): PerformanceSyncWarning[] {
+  return accounts.flatMap((entry) => {
+    const text = entry.account.sync.warnings.join(" ").trim();
+    if (!text) return [];
+    return {
+      key: entry.sourceKey,
+      tone: entry.account.sync.status === "error" ? "bad" : "warn",
+      lead: `${entry.status.displayName} ${sourceHandle(entry)}`,
+      text,
+    };
+  });
+}
+
+function accountRow(entry: ConnectedAccountView): PerformanceSourceRow {
+  const { authorization, sync } = entry.account;
+  const handle = sourceHandle(entry);
   const synced = sync.lastSuccessfulAt ? syncedLabel(sync.lastSuccessfulAt) : "never synced";
   const health =
     authorization.status !== "healthy"
@@ -231,24 +245,18 @@ function accountRow(entry: ConnectedAccountView): PerformanceSourceRow {
     key: entry.sourceKey,
     name: entry.status.displayName,
     sub: `${handle} - ${synced}`,
-    warning: sync.warnings.join(" ").trim() || null,
     health,
     entry,
   };
 }
 
-/** The foot line of the Sources panel. Null means the provider data has no refresh time. */
-export function providerRefreshLabel(value: string | null) {
-  if (!value) return "Provider data not refreshed yet";
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.valueOf())
-    ? "Provider data refresh time unavailable"
-    : `Provider data last refreshed ${dayMonthTime.format(parsed)}`;
-}
-
+/** "synced 10:40" for a sync today in the reader's time zone, "last synced 9 Nov" before that. */
 function syncedLabel(value: string) {
   const parsed = new Date(value);
-  return Number.isNaN(parsed.valueOf()) ? "sync time unavailable" : `synced ${dayMonthTime.format(parsed)}`;
+  if (Number.isNaN(parsed.valueOf())) return "sync time unavailable";
+  return parsed.toDateString() === new Date().toDateString()
+    ? `synced ${hourMinute.format(parsed)}`
+    : `last synced ${dayMonth.format(parsed)}`;
 }
 
 function csvRow(dataset: PerformanceDataset | null): PerformanceSourceRow {

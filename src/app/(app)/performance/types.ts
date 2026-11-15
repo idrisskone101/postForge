@@ -29,7 +29,6 @@ export type PerformanceSourceWorkspace = {
   selectedSource: string;
   selectable: boolean;
   busyProvider: SocialProvider | null;
-  lastUpdatedAt: string | null;
   importing: boolean;
   syncAll: (() => void) | null;
   onSelect: (source: string) => void;
@@ -49,13 +48,19 @@ export type PerformanceSourceRow =
       key: string;
       name: string;
       sub: string;
-      /** The provider's own sync warning, shown under the sub line. */
-      warning: string | null;
       health: "synced" | "never" | "partial" | "failed" | "reconnect";
       entry: ConnectedAccountView;
     }
   | { kind: "csv"; key: string; name: string; sub: string }
   | { kind: "csv-missing"; key: string; name: string; sub: string };
+
+export type PerformanceSyncWarning = {
+  key: string;
+  tone: "warn" | "bad";
+  /** Provider and handle, such as "TikTok @deskhabits". */
+  lead: string;
+  text: string;
+};
 
 export type PerformanceStatCell = {
   label: string;
