@@ -10,17 +10,19 @@ import { useEffect } from "react";
  * A click that came from the keyboard already has its focus. No ring shows after a pointer click.
  */
 export function ClickFocus() {
-  useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (event.detail === 0 || !(event.target instanceof Element)) return;
-      const control = event.target.closest<HTMLElement>(CLICK_FOCUSABLE);
-      if (!control || control === document.activeElement || control.matches(":disabled")) return;
-      control.focus({ preventScroll: true });
-    };
-    document.addEventListener("click", onClick, true);
-    return () => document.removeEventListener("click", onClick, true);
-  }, []);
+  useEffect(installClickFocus, []);
   return null;
+}
+
+function installClickFocus() {
+  const onClick = (event: MouseEvent) => {
+    if (event.detail === 0 || !(event.target instanceof Element)) return;
+    const control = event.target.closest<HTMLElement>(CLICK_FOCUSABLE);
+    if (!control || control === document.activeElement || control.matches(":disabled")) return;
+    control.focus({ preventScroll: true });
+  };
+  document.addEventListener("click", onClick, true);
+  return () => document.removeEventListener("click", onClick, true);
 }
 
 const CLICK_FOCUSABLE = "button, a[href], summary, input, select, textarea, [tabindex]";

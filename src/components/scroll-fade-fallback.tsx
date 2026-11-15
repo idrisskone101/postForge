@@ -10,33 +10,35 @@ import { useEffect } from "react";
  * engine that has scroll timelines.
  */
 export function ScrollFadeFallback() {
-  useEffect(() => {
-    if (CSS.supports("animation-timeline: scroll()")) return;
-    let frame = 0;
-    const sync = () => {
-      frame = 0;
-      document.querySelectorAll<HTMLElement>(FADED_SCROLLERS).forEach(syncEdgeFades);
-      syncStuckFade();
-    };
-    const schedule = () => {
-      frame ||= window.requestAnimationFrame(sync);
-    };
-    const observer = new MutationObserver(schedule);
-    observer.observe(document.body, { childList: true, subtree: true });
-    // Scroll and load do not bubble, so both are caught on the way down.
-    document.addEventListener("scroll", schedule, true);
-    document.addEventListener("load", schedule, true);
-    window.addEventListener("resize", schedule);
-    schedule();
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer.disconnect();
-      document.removeEventListener("scroll", schedule, true);
-      document.removeEventListener("load", schedule, true);
-      window.removeEventListener("resize", schedule);
-    };
-  }, []);
+  useEffect(installScrollFadeFallback, []);
   return null;
+}
+
+function installScrollFadeFallback() {
+  if (CSS.supports("animation-timeline: scroll()")) return;
+  let frame = 0;
+  const sync = () => {
+    frame = 0;
+    document.querySelectorAll<HTMLElement>(FADED_SCROLLERS).forEach(syncEdgeFades);
+    syncStuckFade();
+  };
+  const schedule = () => {
+    frame ||= window.requestAnimationFrame(sync);
+  };
+  const observer = new MutationObserver(schedule);
+  observer.observe(document.body, { childList: true, subtree: true });
+  // Scroll and load do not bubble, so both are caught on the way down.
+  document.addEventListener("scroll", schedule, true);
+  document.addEventListener("load", schedule, true);
+  window.addEventListener("resize", schedule);
+  schedule();
+  return () => {
+    window.cancelAnimationFrame(frame);
+    observer.disconnect();
+    document.removeEventListener("scroll", schedule, true);
+    document.removeEventListener("load", schedule, true);
+    window.removeEventListener("resize", schedule);
+  };
 }
 
 function syncEdgeFades(scroller: HTMLElement) {
