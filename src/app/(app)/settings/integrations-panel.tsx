@@ -43,14 +43,14 @@ export function IntegrationsPanel({
         <div className="@container flex flex-col">
           <div
             aria-hidden="true"
-            className="hidden h-8 shrink-0 items-center gap-3.5 text-xs font-semibold leading-4 text-fg-muted @min-[852px]:flex"
+            className="hidden h-8 shrink-0 items-center gap-3.5 text-xs font-semibold leading-4 text-fg-muted @min-[841px]:flex"
           >
             <span className="w-11 shrink-0" />
             <span className="min-w-[153px] flex-1">Platform</span>
-            <span className="w-[168px] shrink-0">Connection</span>
+            <span className="w-[168px] min-w-[157px]">Connection</span>
             <span className="w-[150px] shrink-0">Metrics</span>
             <span className="w-[170px] shrink-0">Publishing</span>
-            <span className="w-28 min-w-[97px]" />
+            <span className="w-28 min-w-[97px] shrink-[1000]" />
           </div>
           {SOCIAL_PROVIDERS.map((provider) => (
             <SocialIntegrationCard
