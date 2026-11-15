@@ -6,7 +6,7 @@ import { getModelsByType } from "@/lib/ai/models";
 import { buildAvatarGenerationPrompt } from "@/lib/avatar-workflow";
 import type { Avatar, AvatarCreatedHandoff, AvatarJobResult } from "@/lib/avatar-picker-model";
 import { userErrorMessage } from "@/lib/user-error-message";
-import { Button, Chip, Icon } from "@/components/workbench";
+import { Button, Chip, Icon, Meter } from "@/components/workbench";
 import { AvatarActionErrorNotice } from "@/components/avatar-picker-cards";
 import { AvatarPickerModeHead } from "@/components/avatar-picker-mode-head";
 
@@ -152,10 +152,14 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
       )}
 
       {isGenerating && (
-        <p role="status" className="flex items-center gap-2.5 rounded-lg bg-raised px-4 py-3.5 text-[14px] font-semibold leading-[18px] text-fg">
-          <span className="wb-live-dot" />
-          Generating avatar
-        </p>
+        <div role="status" className="flex flex-col gap-2.5 rounded-lg bg-raised p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[14px] font-semibold leading-[18px] text-fg">Generating avatar</span>
+            <span className="text-[13px] leading-4 text-fg-secondary">{jobStageLabel(genJob)}</span>
+          </div>
+          {/* The job reports no percentage, so the track is full and sweeps: it says running, not how far. */}
+          <Meter label="Avatar generation in progress" value={100} running className="flex-none" />
+        </div>
       )}
 
       {isFailed && (
@@ -172,7 +176,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
 
       {isCompleted && genJob && (
         <div className="wb-fade-in flex flex-wrap items-end gap-4">
-          <div className="wb-tile size-[200px] shrink-0">
+          <div className="wb-tile h-[240px] w-[180px] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/api/files/${genJob.outputs[0].id}`} alt="Generated avatar" />
           </div>
@@ -190,4 +194,11 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
       )}
     </div>
   );
+}
+
+/** The stage the job itself reports. Before the first poll answers there is nothing to report but the start. */
+function jobStageLabel(job: AvatarJobResult | null) {
+  if (job?.status === "processing") return "Processing";
+  if (job?.status === "queued") return "Queued";
+  return "Starting";
 }

@@ -8,7 +8,7 @@ import {
   type AvatarSeedReferenceImage,
 } from "@/lib/avatar-workflow";
 import { cn } from "@/lib/utils";
-import { Button, buttonClass, Icon, IconButton } from "@/components/workbench";
+import { Button, buttonClass, Icon, IconButton, Meter } from "@/components/workbench";
 import { AvatarPickerModeHead } from "@/components/avatar-picker-mode-head";
 
 export type AvatarImportWorkspace = {
@@ -178,16 +178,19 @@ export function AvatarImportPanel({
           </div>
 
           {isGeneratingCandidates && (
-            <p role="status" className="flex items-center gap-2 wb-meta text-fg-secondary">
-              <span className="wb-live-dot" />
-              Generating another candidate set. Previous candidates stay available for review.
-            </p>
+            <div role="status" className="flex flex-col gap-2">
+              <p className="text-[13px] leading-4 text-fg-secondary">
+                Generating another candidate set. Previous candidates stay available for review.
+              </p>
+              <Meter label="Candidate generation in progress" value={100} running className="flex-none" />
+            </div>
           )}
 
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+          {/* 200px tracks give three columns in the 708px step, as drawn, and one on a phone. */}
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
               <div key={candidate.fileId} className="flex min-w-0 flex-col gap-2">
-                <div className="wb-tile aspect-[3/4]">
+                <div className="wb-tile h-[280px]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={`/api/files/${candidate.fileId}`} alt={`Candidate ${index + 1}`} />
                 </div>
