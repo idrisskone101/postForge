@@ -34,8 +34,12 @@ export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
           </DialogTitle>
           <IconButton icon="x" label="Close" size={30} onClick={onClose} />
         </div>
-        {/* The 4px of room on every side keeps a tile's selection ring whole inside the scroller. */}
-        <div className="wb-scroll-fade-y wb-scroll-fade-deep -m-1 min-h-0 flex-1 overflow-y-auto p-1">
+        {/*
+          The 4px of room on every side keeps a tile's selection ring whole inside the scroller. From 640
+          the body stops at the collection field and two rows of tiles (42 + 18 + 270, plus the room), and
+          the rest scrolls under the fade.
+        */}
+        <div className="wb-scroll-fade-y wb-scroll-fade-deep -m-1 min-h-0 flex-1 overflow-y-auto p-1 sm:max-h-[338px]">
           <CollectionReferencePicker
             layout="select"
             selectedAssetIds={pickerAssetIds}
