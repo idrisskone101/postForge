@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { ReferencePickerPopover } from "@/components/collection-reference-picker-popover";
-import { apiGet } from "@/lib/api/client";
-import type { AvatarListPage } from "@/lib/avatar-picker-model";
+import { loadAvatars } from "@/lib/avatar-list-cache";
 import { ReferenceField } from "./form-reference-field";
 import type { GenerateIdentityActions, GenerateIdentityView } from "./form-types";
 
@@ -17,7 +16,7 @@ export function GenerateIdentitySection({
 }) {
   const { show, avatarId, identityStatus, identityError } = view;
   const { onSelect } = actions;
-  const name = useAvatarName(avatarId);
+  const name = useAvatarName(avatarId, show);
   if (!show) return undefined;
 
   return (
@@ -71,13 +70,15 @@ export function GenerateIdentitySection({
   );
 }
 
-function useAvatarName(avatarId: string | null) {
-  const [names, setNames] = useState<Record<string, string>>({});
-  const known = avatarId ? names[avatarId] : undefined;
+/** Loads the saved identities with the form, so the picker opens on them and the row can name the chosen one. */
+function useAvatarName(avatarId: string | null, enabled: boolean) {
+  const [names, setNames] = useState<Record<string, string> | null>(null);
+  const known = avatarId ? names?.[avatarId] : undefined;
+  const stale = names === null || Boolean(avatarId && !known);
   useEffect(() => {
-    if (!avatarId || known) return;
+    if (!enabled || !stale) return;
     let active = true;
-    apiGet<AvatarListPage>("/api/avatars")
+    loadAvatars()
       .then((page) => {
         if (!active) return;
         setNames(Object.fromEntries(page.items.map((avatar) => [avatar.id, avatar.name])));
@@ -86,6 +87,6 @@ function useAvatarName(avatarId: string | null) {
     return () => {
       active = false;
     };
-  }, [avatarId, known]);
+  }, [enabled, stale]);
   return known ?? null;
 }

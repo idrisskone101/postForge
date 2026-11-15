@@ -9,6 +9,7 @@ import type {
   AvatarListPage,
   AvatarPickerMode,
 } from "@/lib/avatar-picker-model";
+import { loadAvatars, rememberAvatars, rememberedAvatars } from "@/lib/avatar-list-cache";
 import { userErrorMessage } from "@/lib/user-error-message";
 import {
   AvatarActionErrorNotice,
@@ -28,9 +29,11 @@ export function AvatarPicker({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
-  const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [avatars, setAvatars] = useState<Avatar[]>(() => rememberedAvatars()?.items ?? []);
+  const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(
+    () => rememberedAvatars()?.nextCursor ?? null
+  );
+  const [isLoading, setIsLoading] = useState(() => rememberedAvatars() === null);
   const [isLoadingMoreAvatars, setIsLoadingMoreAvatars] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [mode, setMode] = useState<AvatarPickerMode>("grid");
@@ -40,7 +43,7 @@ export function AvatarPicker({
   const fetchAvatars = async () => {
     try {
       setActionError(null);
-      const page = await apiGet<AvatarListPage>("/api/avatars");
+      const page = await loadAvatars();
       setAvatars(page.items);
       setAvatarsNextCursor(page.nextCursor);
     } catch (err) {
@@ -75,6 +78,10 @@ export function AvatarPicker({
   useEffect(() => {
     fetchAvatars();
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) rememberAvatars({ items: avatars, nextCursor: avatarsNextCursor });
+  }, [isLoading, avatars, avatarsNextCursor]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
