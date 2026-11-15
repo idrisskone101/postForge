@@ -1,8 +1,15 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { TikTokInput } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
-import { CLONE_STEP_FOCUS_CLASS, useCloneStepEntry } from "@/components/clone/use-clone-step-entry";
+import {
+  CLONE_STEP_FOCUS_CLASS,
+  focusCloneStep,
+  useCloneStepEntry,
+} from "@/components/clone/use-clone-step-entry";
 import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSourceStep({
@@ -29,6 +36,27 @@ export function CloneSourceStep({
   } = draft;
   const stepEntry = useCloneStepEntry("source", hidden);
   const trimming = sourceReady && showTrimmer && originalVideoInfo && videoInfo;
+
+  // Choosing a source, applying a trim or cancelling one swaps the tools for the trimmer or back, and
+  // the control that was pressed leaves with them. Focus then goes to the step, not to the body.
+  const focusLeaving = useRef(false);
+  function keepingFocus<Args extends unknown[]>(handler: (...args: Args) => void) {
+    return (...args: Args) => {
+      focusLeaving.current = stepEntry.ref.current?.contains(document.activeElement) ?? false;
+      handler(...args);
+    };
+  }
+  useLayoutEffect(() => {
+    const step = stepEntry.ref.current;
+    if (!focusLeaving.current || !step) return;
+    if (hidden) {
+      focusLeaving.current = false;
+      return;
+    }
+    if (step.contains(document.activeElement)) return;
+    focusLeaving.current = false;
+    if (document.activeElement === document.body) focusCloneStep(step);
+  });
   return (
     <section
       {...stepEntry}
@@ -43,8 +71,8 @@ export function CloneSourceStep({
           width={originalVideoInfo.width}
           height={originalVideoInfo.height}
           sourceId={videoInfo.id}
-          onTrimmed={onTrimmed}
-          onCancel={onCancelTrim}
+          onTrimmed={keepingFocus(onTrimmed)}
+          onCancel={keepingFocus(onCancelTrim)}
         />
       ) : null}
 
@@ -72,7 +100,7 @@ export function CloneSourceStep({
             {sourceReady ? "Replace the source" : "Choose a source"}
           </h2>
           <TikTokInput
-            onDownloaded={onVideoDownloaded}
+            onDownloaded={keepingFocus(onVideoDownloaded)}
             videoInfo={videoInfo}
             refreshKey={sourcesRefreshKey}
             preselectedSourceId={sourceReady ? null : pendingSourceId}
