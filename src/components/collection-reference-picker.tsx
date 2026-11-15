@@ -87,7 +87,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
                 check={false}
                 chosen={collection.id === selectedCollectionId}
                 onClick={() => setSelectedCollectionId(collection.id)}
-                className="h-[34px] max-w-full px-3"
+                className="max-w-full px-3"
               >
                 <span className="truncate">{collection.name}</span>
               </Chip>
@@ -237,8 +237,8 @@ function TileSkeletons({ inline }: { inline: boolean }) {
     <div role="status" aria-label="Loading collections…" className="flex flex-col gap-3.5">
       {inline ? (
         <div className="flex gap-1.5">
-          <Skeleton className="h-[34px] w-28 rounded-full" />
-          <Skeleton className="h-[34px] w-20 rounded-full" />
+          <Skeleton className="h-9 w-28 rounded-full" />
+          <Skeleton className="h-9 w-20 rounded-full" />
         </div>
       ) : null}
       <div className={inline ? INLINE_GRID : POPOVER_GRID}>
