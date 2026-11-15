@@ -103,10 +103,14 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
     const { overflow, paddingRight } = page.style;
     const scrollbar = window.innerWidth - page.clientWidth;
     page.style.overflow = "hidden";
-    if (scrollbar > 0) page.style.paddingRight = `${scrollbar}px`;
+    if (scrollbar > 0) {
+      page.style.paddingRight = `${scrollbar}px`;
+      page.style.setProperty("--pf-scroll-lock-pad", `${scrollbar}px`);
+    }
     return () => {
       page.style.overflow = overflow;
       page.style.paddingRight = paddingRight;
+      page.style.removeProperty("--pf-scroll-lock-pad");
       document
         .querySelector<HTMLElement>(
           `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`

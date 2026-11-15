@@ -62,7 +62,8 @@
     gap: 8px;
     border-bottom: 1px solid var(--pf-hairline);
     background: var(--pf-floor);
-    padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0
+    /* A dialog that locks the page publishes the scrollbar width it replaced, so the bar does not move. */
+    padding: env(safe-area-inset-top) calc(max(16px, env(safe-area-inset-right)) + var(--pf-scroll-lock-pad, 0px)) 0
       max(16px, env(safe-area-inset-left));
   }
 
