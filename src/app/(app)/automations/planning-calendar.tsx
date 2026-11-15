@@ -34,6 +34,7 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
             label="Previous week"
             variant="ghost"
             size={28}
+            className={WEEK_ARROW}
             aria-disabled={weeksAhead === 0 || undefined}
             onClick={() => setWeeksAhead((weeks) => Math.max(0, weeks - 1))}
           />
@@ -45,6 +46,7 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
             label="Next week"
             variant="ghost"
             size={28}
+            className={WEEK_ARROW}
             onClick={() => setWeeksAhead((weeks) => weeks + 1)}
           />
         </div>
@@ -94,3 +96,6 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
 }
 
 const VISIBLE_PER_DAY = 2;
+
+/** The design draws the week arrows as 16px glyphs; the 28px icon button defaults to 18. */
+const WEEK_ARROW = "[&>svg]:size-4";
