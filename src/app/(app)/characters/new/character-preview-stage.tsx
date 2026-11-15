@@ -52,10 +52,9 @@ export function CharacterPreviewStage({
           <span role="status" aria-live="polite">{status.label}</span>
         </StatusChip>
       </div>
-      {/* The cost is stated before the first paid click. The second sentence is true once a photo exists or is on its way. */}
+      {/* The cost is stated before the first paid click. The copy never changes, so a render starting moves nothing. */}
       <p id="character-preview-generation-cost" className="text-[13px] leading-[19px] text-fg-muted">
-        Uses one paid image generation per click.
-        {previewRequiresRender || rendering ? " Re-render before saving changes so the photo matches the recipe." : null}
+        Uses one paid image generation per click. Once rendered, the photo has to match the recipe to save.
       </p>
       <Button
         size={40}
