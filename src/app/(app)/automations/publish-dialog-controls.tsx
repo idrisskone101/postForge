@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
 import { lockPageScroll } from "@/lib/page-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -97,7 +97,8 @@ export type DialogPhase = "open" | "busy" | "leaving";
 /**
  * Keys, focus and motion for a hub dialog. The handler runs in the capture phase, before a video or a
  * field can keep the key for its own text, so Escape, the Tab trap and keyboard scrolling stay in the
- * dialog. The page behind does not scroll. Escape closes unless busy.
+ * dialog. Escape closes unless busy. The page behind does not scroll for as long as the dialog is
+ * mounted, its exit included, and the lock is taken before the first paint.
  *
  * The dialog moves like every overlay: `motion` carries the attributes the `.wb-overlay-*` classes
  * read, set for the first frame and again in the `leaving` phase, when the dialog stays mounted for
@@ -109,10 +110,10 @@ export function useDialogKeys(input: { recordId: string; phase: DialogPhase; onC
   const leaving = phase === "leaving";
   const ref = useRef<HTMLDivElement>(null);
   const [entering, setEntering] = useState(true);
+  useLayoutEffect(lockPageScroll, []);
   useEffect(() => {
     if (leaving) return;
     const dialog = ref.current;
-    const unlock = lockPageScroll();
     if (dialog && !dialog.contains(document.activeElement)) {
       (dialog.querySelector<HTMLElement>("button:not(:disabled)") ?? dialog).focus();
     }
@@ -120,7 +121,6 @@ export function useDialogKeys(input: { recordId: string; phase: DialogPhase; onC
     // Runs as the exit starts, and on an unmount that had no exit.
     return () => {
       window.cancelAnimationFrame(frame);
-      unlock();
       const active = document.activeElement;
       if (!active || active === document.body || dialog?.contains(active)) focusRowActions(recordId);
     };
