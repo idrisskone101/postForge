@@ -111,7 +111,7 @@ components:
     backgroundColor: "{colors.action-dark}"
     textColor: "{colors.action-foreground-dark}"
     rounded: "{rounded.pill}"
-    padding: "0 18px"
+    padding: "0 20px"
     height: "40px"
   button-primary-hover:
     backgroundColor: "{colors.action-hover-dark}"

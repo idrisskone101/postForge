@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import { Children, isValidElement, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant =
@@ -25,15 +25,28 @@ export function Button({
   size = 36,
   block = false,
   className,
+  children,
   ...rest
 }: ButtonProps) {
   return (
     <button
       type="button"
       className={cn(buttonClass(variant, size, block), className)}
+      data-icon={endsWithIcon(children) ? "end" : undefined}
       {...rest}
-    />
+    >
+      {children}
+    </button>
   );
+}
+
+/**
+ * A label followed by an icon. CSS cannot tell this from an icon followed by a label when the
+ * label is a bare text node, since the icon is the first and the last element child either way.
+ */
+function endsWithIcon(children: ReactNode) {
+  const items = Children.toArray(children);
+  return items.length > 1 && typeof items[0] === "string" && isValidElement(items[items.length - 1]);
 }
 
 /** Class string for a Workbench pill button. Use it on a `<Link>` or `<a>`. */

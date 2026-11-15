@@ -187,13 +187,13 @@
     height: 18px;
   }
 
-  .wb-btn-40:has(> svg:first-child) {
+  .wb-btn-40:has(> svg:first-child):not([data-icon="end"]) {
     padding-left: 14px;
   }
 
-  .wb-btn-40:has(> svg:last-child):not(:has(> svg:first-child)) {
+  /* A trailing icon: 14px after it, and the variant's own side padding before the label */
+  .wb-btn-40:has(> svg:last-child):is([data-icon="end"], :not(:has(> svg:first-child))) {
     gap: 6px;
-    padding-left: 20px;
     padding-right: 14px;
   }
 
@@ -216,6 +216,15 @@
   .wb-btn-primary {
     background: var(--pf-action);
     color: var(--pf-action-fg);
+  }
+
+  /* The 40px primary: 20px beside its label, 14 / 18 around a leading icon */
+  .wb-btn-primary.wb-btn-40:not(.wb-btn-block) {
+    padding-left: 20px;
+  }
+
+  .wb-btn-primary.wb-btn-40:not(.wb-btn-block, :has(> svg)) {
+    padding-right: 20px;
   }
 
   .wb-btn-primary:hover {
