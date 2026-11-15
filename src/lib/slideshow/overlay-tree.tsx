@@ -1,10 +1,12 @@
 import { createElement, type ReactNode } from "react";
 
 import {
+  SLIDESHOW_OVERLAY_LAYERS,
   slideshowHeadlineFontSize,
   slideshowOverlayTextColor,
   slideshowTextScale,
   wrapSlideshowText,
+  type SlideshowOverlayLayer,
   type SlideshowRenderTextSettings,
   type SlideshowTextOverlaySlide,
 } from "./text-overlay";
@@ -107,11 +109,20 @@ function cleanStyle(style: OverlayStyle): OverlayStyle {
   );
 }
 
-function box(children: ReactNode, style: OverlayStyle): ReactNode {
-  return createElement("div", { style: cleanStyle(style) }, children);
+function box(children: ReactNode, style: OverlayStyle, key?: string): ReactNode {
+  return createElement("div", { key, style: cleanStyle(style) }, children);
+}
+
+// A layer's boxes carry its name as their key, so the renderer can report where it drew each one.
+export function slideshowOverlayLayerOfKey(
+  key: string | number | undefined,
+): SlideshowOverlayLayer | null {
+  const name = String(key ?? "").split(":")[0];
+  return SLIDESHOW_OVERLAY_LAYERS.find((layer) => layer === name) ?? null;
 }
 
 function pillLines(
+  layer: SlideshowOverlayLayer,
   lines: string[],
   options: {
     fontSize: number;
@@ -148,7 +159,7 @@ function pillLines(
       borderTopRightRadius: index === 0 ? options.radius : 0,
       borderBottomLeftRadius: index === lines.length - 1 ? options.radius : 0,
       borderBottomRightRadius: index === lines.length - 1 ? options.radius : 0,
-    }),
+    }, `${layer}:${index}`),
   );
 }
 
@@ -168,12 +179,13 @@ function overlayLayers(
     const background =
       layout.style === "solid" ? "rgba(17,17,17,0.9)" : "#ffffff";
     const pill = (
+      layer: SlideshowOverlayLayer,
       lines: string[],
       fontSize: number,
       fontWeight: 400 | 600 | 700,
       extra: { letterSpacing?: number; opacity?: number } = {},
     ) =>
-      pillLines(lines, {
+      pillLines(layer, lines, {
         fontSize,
         fontWeight,
         color: layout.color,
@@ -186,13 +198,14 @@ function overlayLayers(
       });
     return [
       ...(copy.eyebrow
-        ? pill([copy.eyebrow], layout.eyebrow, 700, {
+        ? pill("eyebrow", [copy.eyebrow], layout.eyebrow, 700, {
             letterSpacing: layout.eyebrow * 0.12,
             opacity: 0.92,
           })
         : []),
       ...(copy.headline
         ? pill(
+            "headline",
             wrapSlideshowText(
               copy.headline,
               layout.wrapChars(layout.headline, 0.56, 12),
@@ -204,6 +217,7 @@ function overlayLayers(
         : []),
       ...(copy.body
         ? pill(
+            "body",
             wrapSlideshowText(
               copy.body,
               layout.wrapChars(layout.body, 0.53, 18),
@@ -224,14 +238,14 @@ function overlayLayers(
           opacity: 0.92,
           letterSpacing: layout.eyebrow * 0.12,
           lineHeight: 1.2,
-        })
+        }, "eyebrow")
       : null,
     copy.headline
       ? box(copy.headline, {
           ...layout.typeStyle(layout.headline, 700),
           lineHeight: 1.12,
           lineClamp: 5,
-        })
+        }, "headline")
       : null,
     copy.body
       ? box(copy.body, {
@@ -239,7 +253,7 @@ function overlayLayers(
           opacity: 0.96,
           lineHeight: 1.42,
           lineClamp: 4,
-        })
+        }, "body")
       : null,
   ].filter(Boolean);
 }

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { SlidePreview } from "./slide-preview";
 import { slideCoverImage } from "./slideshow-view";
+import { useCopyFocusLayer } from "./editor-copy-focus";
 import { EditorStageHead } from "./editor-stage-head";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
 import type { SlideshowAspectRatio } from "./types";
@@ -26,6 +27,7 @@ export function EditorPreview() {
   const previous = draft.slides[activeIndex - 1];
   const next = draft.slides[activeIndex + 1];
   const cover = slideCoverImage(activeSlide);
+  const focusLayer = useCopyFocusLayer();
   return (
     <section
       aria-label="Slideshow preview"
@@ -62,6 +64,7 @@ export function EditorPreview() {
             aspectRatio={draft.aspectRatio}
             phaseSettings={draft.phaseSettings[activeSlide.kind]}
             textSettings={draft.textSettings}
+            focusLayer={focusLayer}
             className="w-full rounded-lg"
           />
           {cover ? (

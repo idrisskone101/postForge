@@ -85,6 +85,23 @@
     color: var(--pf-ember-text);
   }
 
+  /* The frame around the canvas copy block whose field has focus. Its box comes from the overlay renderer. */
+  .wb-copy-frame {
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: 0 0 0 0 var(--pf-ember);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      box-shadow var(--pf-dur-feedback) var(--pf-ease),
+      opacity var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-copy-frame[data-active] {
+    box-shadow: 0 0 0 2px var(--pf-ember);
+    opacity: 1;
+  }
+
   .wb-live-dot {
     display: inline-block;
     width: 8px;

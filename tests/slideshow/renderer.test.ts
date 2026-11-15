@@ -17,10 +17,15 @@ import {
 import { SlideshowApiError } from "../../src/lib/slideshow/errors";
 import { parseSlideshowOverlayRequest } from "../../src/lib/slideshow/overlay-request";
 import {
+  parseSlideshowOverlayBoxes,
+  SLIDESHOW_OVERLAY_BOXES_HEADER,
   SLIDESHOW_TEXT_REFERENCE_WIDTH,
   slideshowHeadlineFontSize,
 } from "../../src/lib/slideshow/text-overlay";
-import { createSlideshowTextOverlayMarkup } from "../../src/lib/slideshow/text-overlay-satori";
+import {
+  createSlideshowTextOverlay,
+  createSlideshowTextOverlayMarkup,
+} from "../../src/lib/slideshow/text-overlay-satori";
 import { POST as overlayPost } from "../../src/app/api/slideshows/overlay/route";
 
 function readZipEntry(archive: Buffer, target: string) {
@@ -64,6 +69,10 @@ async function overlayInk(svg: string) {
   }
   return {
     count,
+    minX,
+    minY,
+    maxX,
+    maxY,
     width: Math.max(0, maxX - minX),
     height: Math.max(0, maxY - minY),
   };
@@ -279,6 +288,39 @@ async function main() {
   const overlayBody = await overlayResponse.text();
   assert.match(overlayBody, /data-slideshow-text-overlay="true"/);
   assert.match(overlayBody, /viewBox="0 0 1080 1920"/);
+  const overlayBoxes = parseSlideshowOverlayBoxes(
+    overlayResponse.headers.get(SLIDESHOW_OVERLAY_BOXES_HEADER),
+  );
+  assert.deepEqual(Object.keys(overlayBoxes), ["headline"]);
+  const headlineBox = overlayBoxes.headline!;
+  const headlineInk = await overlayInk(overlayBody);
+  assert.ok(headlineInk.count > 0);
+  // The plain style drops a soft shadow below the glyphs, which this ink count includes.
+  const shadowReach = 24;
+  assert.ok(headlineInk.minX >= headlineBox.x - shadowReach);
+  assert.ok(headlineInk.maxX <= headlineBox.x + headlineBox.width + shadowReach);
+  assert.ok(headlineInk.minY >= headlineBox.y - 2);
+  assert.ok(headlineInk.maxY <= headlineBox.y + headlineBox.height + shadowReach);
+  assert.ok(headlineBox.height < 400);
+  assert.deepEqual(parseSlideshowOverlayBoxes("not json"), {});
+  assert.deepEqual(
+    parseSlideshowOverlayBoxes('{"headline":{"x":1,"y":2,"width":3},"other":{}}'),
+    {},
+  );
+
+  const pillOverlay = await createSlideshowTextOverlay(
+    { id: "pill", eyebrow: "Step one", headline: "Hello overlay", body: "" },
+    1080,
+    1350,
+    { style: "solid", size: 20, align: "left" },
+  );
+  assert.deepEqual(Object.keys(pillOverlay.boxes), ["eyebrow", "headline"]);
+  const pillInk = await overlayInk(pillOverlay.markup);
+  const pillTop = pillOverlay.boxes.eyebrow!;
+  const pillBottom = pillOverlay.boxes.headline!;
+  assert.ok(Math.abs(pillInk.minY - pillTop.y) <= 2);
+  assert.ok(Math.abs(pillInk.maxY - (pillBottom.y + pillBottom.height)) <= 2);
+  assert.ok(Math.abs(pillInk.minX - pillTop.x) <= 2);
 
   const archive = await renderSlideshowArchive({
     id: "project-1",

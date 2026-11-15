@@ -5,6 +5,11 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   getSlideshowDimensions,
+  parseSlideshowOverlayBoxes,
+  SLIDESHOW_OVERLAY_BOXES_HEADER,
+  SLIDESHOW_OVERLAY_LAYERS,
+  type SlideshowOverlayBoxes,
+  type SlideshowOverlayLayer,
   type SlideshowRenderTextSettings,
 } from "@/lib/slideshow/text-overlay";
 
@@ -24,6 +29,7 @@ export function SlidePreview({
   className,
   showCounter,
   counter,
+  focusLayer = null,
 }: {
   slide: SlideshowSlide;
   aspectRatio: SlideshowAspectRatio;
@@ -32,6 +38,7 @@ export function SlidePreview({
   className?: string;
   showCounter?: boolean;
   counter?: string;
+  focusLayer?: SlideshowOverlayLayer | null;
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
   const displayText = phaseSettings.displayText;
@@ -46,18 +53,23 @@ export function SlidePreview({
     height,
     settings: overlayTextSettings(textSettings),
   });
-  const [fetchedOverlay, setFetchedOverlay] = useState<{
-    key: string;
-    src: string;
-  } | null>(null);
-  const overlaySrc = displayText
-    ? overlaySrcCache.get(overlayKey) ??
-      (fetchedOverlay?.key === overlayKey ? fetchedOverlay.src : null)
+  const [fetchedOverlay, setFetchedOverlay] = useState<
+    (PreviewOverlay & { key: string; slideId: string }) | null
+  >(null);
+  const overlay = displayText
+    ? overlayCache.get(overlayKey) ??
+      (fetchedOverlay?.key === overlayKey ? fetchedOverlay : null)
+    : null;
+  const overlaySrc = overlay?.src ?? null;
+  // While the next render of the same slide is on its way the frame keeps its last place, so it does not blink on every keystroke.
+  const frameBoxes = displayText
+    ? overlay?.boxes ??
+      (fetchedOverlay?.slideId === slide.id ? fetchedOverlay.boxes : null)
     : null;
 
   useEffect(() => {
     if (!displayText) return;
-    if (overlaySrcCache.has(overlayKey)) return;
+    if (overlayCache.has(overlayKey)) return;
 
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
@@ -72,10 +84,15 @@ export function SlidePreview({
           if (!response.ok) return;
           const svg = (await response.text()).trim();
           if (!svg.includes('data-slideshow-text-overlay="true"')) return;
-          const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-          rememberOverlaySrc(overlayKey, src);
+          const fetched = {
+            src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+            boxes: parseSlideshowOverlayBoxes(
+              response.headers.get(SLIDESHOW_OVERLAY_BOXES_HEADER),
+            ),
+          };
+          rememberOverlay(overlayKey, fetched);
           if (!controller.signal.aborted) {
-            setFetchedOverlay({ key: overlayKey, src });
+            setFetchedOverlay({ ...fetched, key: overlayKey, slideId: slide.id });
           }
         } catch (error) {
           if (error instanceof DOMException && error.name === "AbortError") return;
@@ -87,7 +104,7 @@ export function SlidePreview({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [displayText, overlayKey]);
+  }, [displayText, overlayKey, slide.id]);
 
   return (
     <div
@@ -126,6 +143,27 @@ export function SlidePreview({
             }
           />
         ) : null}
+        {frameBoxes
+          ? SLIDESHOW_OVERLAY_LAYERS.map((layer) => {
+              const box = frameBoxes[layer];
+              if (!box) return null;
+              return (
+                <span
+                  key={layer}
+                  aria-hidden="true"
+                  data-copy-frame={layer}
+                  data-active={focusLayer === layer || undefined}
+                  className="wb-copy-frame"
+                  style={{
+                    left: `max(2px, calc(${(box.x / width) * 100}% - 8px))`,
+                    top: `max(2px, calc(${(box.y / height) * 100}% - 4px))`,
+                    right: `max(2px, calc(${(1 - (box.x + box.width) / width) * 100}% - 8px))`,
+                    bottom: `max(2px, calc(${(1 - (box.y + box.height) / height) * 100}% - 4px))`,
+                  }}
+                />
+              );
+            })
+          : null}
       </div>
       {showCounter && counter ? (
         <span className="wb-mono absolute bottom-3 right-3 z-20 rounded-full bg-[var(--pf-scrim)] px-2 py-1 text-[var(--pf-on-media)]">
@@ -164,15 +202,17 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
   "16:9": "aspect-video",
 };
 
-const overlaySrcCache = new Map<string, string>();
-const OVERLAY_SRC_CACHE_LIMIT = 40;
+type PreviewOverlay = { src: string; boxes: SlideshowOverlayBoxes };
 
-function rememberOverlaySrc(key: string, src: string) {
-  if (overlaySrcCache.size >= OVERLAY_SRC_CACHE_LIMIT) {
-    const oldest = overlaySrcCache.keys().next().value;
-    if (oldest) overlaySrcCache.delete(oldest);
+const overlayCache = new Map<string, PreviewOverlay>();
+const OVERLAY_CACHE_LIMIT = 40;
+
+function rememberOverlay(key: string, overlay: PreviewOverlay) {
+  if (overlayCache.size >= OVERLAY_CACHE_LIMIT) {
+    const oldest = overlayCache.keys().next().value;
+    if (oldest) overlayCache.delete(oldest);
   }
-  overlaySrcCache.set(key, src);
+  overlayCache.set(key, overlay);
 }
 
 function overlayTextSettings(

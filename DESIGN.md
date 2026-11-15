@@ -291,6 +291,7 @@ Depth comes from the charcoal steps, not from shadows. A panel carries only its 
 
 - **Selection ring on media:** `box-shadow: 0 0 0 2px <panel>, 0 0 0 4px <ember>`.
 - **Focus on inputs:** a 2px ember ring that grows from 0. Error swaps it to red in place.
+- **Focused copy on the slide canvas:** while the eyebrow, headline or supporting copy field has focus, the slideshow editor draws a 2px ember frame with a 4px radius around that block on the canvas (`.wb-copy-frame`, 160ms). The frame takes its box from the overlay renderer, so it never guesses where the text is, and it is never part of an export.
 - **Focus on buttons and links:** a 2px ember outline with a 2px offset. Focus is drawn with `outline`, never with `box-shadow`, on any control that also uses a shadow for its edge, so the ring always shows. The Focus Ring Rule (Layout) keeps it whole and in view.
 
 ## Shapes

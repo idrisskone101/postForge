@@ -1,6 +1,7 @@
 "use client";
 
 import { EditorCollectionPicker } from "./editor-collection-picker";
+import { EditorCopyFocusProvider } from "./editor-copy-focus";
 import { EditorHeader } from "./editor-header";
 import { EditorInspector } from "./editor-inspector";
 import { EditorPreview } from "./editor-preview";
@@ -28,8 +29,10 @@ export function EditorWorkspace() {
           className="wb-fade-in flex min-h-0 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] xl:flex xl:h-[calc(100dvh-100px)] xl:min-h-[728px] xl:flex-row"
         >
           <EditorSlideRail />
-          <EditorPreview />
-          <EditorInspector />
+          <EditorCopyFocusProvider>
+            <EditorPreview />
+            <EditorInspector />
+          </EditorCopyFocusProvider>
         </div>
       ) : null}
 

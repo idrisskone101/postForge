@@ -1,8 +1,10 @@
 "use client";
 
 import { Button } from "@/components/workbench";
+import type { SlideshowOverlayLayer } from "@/lib/slideshow/text-overlay";
 import { cn } from "@/lib/utils";
 
+import { useCopyFocusHandlers } from "./editor-copy-focus";
 import { EditorAdvancedSettings, EditorSlideSettings } from "./editor-slide-settings";
 import { EditorTypeControls } from "./editor-type-controls";
 import { useSlideshowEditor } from "./slideshow-editor-provider";
@@ -17,6 +19,7 @@ export function EditorInspector() {
     onRegenerateText,
     onRegenerateImage,
   } = useSlideshowEditor();
+  const eyebrowFocus = useCopyFocusHandlers("eyebrow");
   return (
     <aside
       aria-label="Slide inspector"
@@ -34,10 +37,12 @@ export function EditorInspector() {
             value={activeSlide.eyebrow}
             onChange={(event) => updateActiveSlide({ eyebrow: event.target.value })}
             className="wb-input"
+            {...eyebrowFocus}
           />
         </label>
         <CopyField
           label="Headline"
+          layer="headline"
           strong
           value={activeSlide.headline}
           max={HEADLINE_MAX}
@@ -45,6 +50,7 @@ export function EditorInspector() {
         />
         <CopyField
           label="Supporting copy"
+          layer="body"
           value={activeSlide.body}
           max={BODY_MAX}
           onChange={(body) => updateActiveSlide({ body })}
@@ -93,18 +99,21 @@ export function EditorInspector() {
 
 function CopyField({
   label,
+  layer,
   strong = false,
   value,
   max,
   onChange,
 }: {
   label: string;
+  layer: SlideshowOverlayLayer;
   strong?: boolean;
   value: string;
   max: number;
   onChange: (value: string) => void;
 }) {
   const nearLimit = value.length >= max * 0.8;
+  const focus = useCopyFocusHandlers(layer);
   return (
     <label className="wb-field group">
       <span className="flex items-center justify-between">
@@ -126,6 +135,7 @@ function CopyField({
           "wb-input field-sizing-content min-h-[42px] resize-none py-2.5 leading-5",
           strong && "font-medium",
         )}
+        {...focus}
       />
     </label>
   );
