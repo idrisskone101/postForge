@@ -12,7 +12,7 @@ export function JobsStats({ counts }: { counts: JobsCounts | null }) {
         className={STRIP_CLASS}
         stats={["Running now", COMPLETED_LABEL, FAILED_LABEL].map((label) => ({
           label,
-          value: <Skeleton shape="tile" className="h-7 w-11 rounded-sm" />,
+          value: <Skeleton shape="tile" className="my-1.5 h-7 w-11 rounded-sm" />,
         }))}
       />
     );
