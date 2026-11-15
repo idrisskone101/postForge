@@ -29,6 +29,7 @@ export default function JobDetailPage() {
   if (error && !job) {
     return (
       <div className="pf-content-viewport flex min-w-0 items-center justify-center">
+        <h1 className="sr-only">Generation</h1>
         <EmptyState
           icon="alert"
           tone="error"
@@ -167,6 +168,7 @@ function JobDetailLoading() {
       aria-label="Loading generation"
       className="pf-content-viewport flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-2*var(--pf-page-pad))] xl:min-h-[760px]"
     >
+      <h1 className="sr-only">Generation</h1>
       <div className="flex h-14 flex-none items-center gap-5 px-1 max-lg:h-28 max-lg:items-start">
         <Skeleton className="h-10 w-[92px] flex-none" />
         <Skeleton className="h-7 w-full max-w-md" />

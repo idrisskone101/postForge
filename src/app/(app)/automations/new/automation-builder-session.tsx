@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AutomationBuilderPhaseFormLazy } from "./automation-builder-phase-form-lazy";
 import { AutomationBuilderPreviewPaneLazy } from "./automation-builder-preview-pane-lazy";
-import { AutomationBuilderSkeleton } from "./automation-builder-skeleton";
+import { AutomationBuilderLoading } from "./automation-builder-loading";
 import { AutomationPlaybookOverlay } from "./automation-playbook-overlay";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
 import { useAutomationBuilder } from "./use-automation-builder";
@@ -39,7 +39,7 @@ export function AutomationBuilderSession({
   if (loading) {
     return (
       <div data-automation-builder="true" aria-busy="true" className="flex min-h-0 flex-1 flex-col">
-        <AutomationBuilderSkeleton />
+        <AutomationBuilderLoading />
       </div>
     );
   }

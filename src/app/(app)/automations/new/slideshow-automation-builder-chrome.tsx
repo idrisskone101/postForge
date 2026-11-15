@@ -21,7 +21,12 @@ export function SlideshowAutomationBuilderChrome({
 export function SlideshowAutomationBuilderSkeleton() {
   return (
     <SlideshowAutomationBuilderChrome
-      title={<Skeleton className="inline-block h-7 w-64 max-w-full align-middle" />}
+      title={
+        <>
+          <span className="sr-only">Carousel draft schedule</span>
+          <Skeleton className="inline-block h-7 w-64 max-w-full align-middle" />
+        </>
+      }
     >
       <Panel pad="roomy" aria-busy="true" aria-label="Loading automation" className="flex-1 gap-6">
         <div className="flex flex-col gap-2.5 sm:flex-row">

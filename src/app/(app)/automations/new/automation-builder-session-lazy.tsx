@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { AutomationBuilderSkeleton } from "./automation-builder-skeleton";
+import { AutomationBuilderLoading } from "./automation-builder-loading";
 
 export const AutomationBuilderSessionLazy = dynamic(
   () =>
     import("./automation-builder-session").then((mod) => ({
       default: mod.AutomationBuilderSession,
     })),
-  { ssr: false, loading: AutomationBuilderSkeleton },
+  { ssr: false, loading: AutomationBuilderLoading },
 );
