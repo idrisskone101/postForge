@@ -313,6 +313,7 @@
 
   .wb-step[data-state="done"] {
     color: var(--pf-text);
+    font-weight: 600;
   }
 
   .wb-step[data-state="done"] > .wb-step-dot {
@@ -803,10 +804,6 @@
 
   .wb-step-rail[data-size="28"] .wb-step[data-state="upcoming"] > .wb-step-dot {
     box-shadow: inset 0 0 0 1px var(--pf-hairline);
-    font-weight: 600;
-  }
-
-  .wb-step-rail[data-size="28"] .wb-step[data-state="done"] {
     font-weight: 600;
   }
 }
