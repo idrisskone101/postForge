@@ -42,7 +42,7 @@ export function PerformanceFailureNotice({
           label="Dismiss performance error"
           variant="ghost"
           size={28}
-          className="text-bad"
+          className="text-bad [&>svg]:size-3.5"
           onClick={onDismiss}
         />
       ) : null}
