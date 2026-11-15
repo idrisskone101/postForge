@@ -77,6 +77,10 @@
     color: var(--pf-text-secondary);
   }
 
+  #workspace-mobile-bar > .wb-icon-btn[data-quiet-focus]:focus-visible {
+    outline: none;
+  }
+
   #workspace-mobile-bar > .wb-icon-btn > svg {
     width: 20px;
     height: 20px;
@@ -103,31 +107,14 @@
   }
 
   /*
-   * The drawer is a native dialog. allow-discrete keeps it rendered while it slides and fades out over
-   * 160ms; @starting-style gives the 220ms enter. Where neither is supported it opens and closes at once.
+   * The drawer is a native dialog. @starting-style gives the 220ms enter. The 160ms exit runs on
+   * [data-closing] while the dialog is still open, and the dialog closes when it ends.
    */
   .sidebar-mobile-drawer,
   .sidebar-mobile-drawer::backdrop {
-    opacity: 0;
     transition:
-      opacity var(--pf-dur-exit) var(--pf-ease),
-      transform var(--pf-dur-exit) var(--pf-ease),
-      display var(--pf-dur-exit) var(--pf-ease) allow-discrete,
-      overlay var(--pf-dur-exit) var(--pf-ease) allow-discrete;
-  }
-
-  .sidebar-mobile-drawer {
-    transform: translateX(-16px);
-  }
-
-  .sidebar-mobile-drawer[open],
-  .sidebar-mobile-drawer[open]::backdrop {
-    opacity: 1;
-    transition-duration: var(--pf-dur-enter);
-  }
-
-  .sidebar-mobile-drawer[open] {
-    transform: translateX(0);
+      opacity var(--pf-dur-enter) var(--pf-ease),
+      transform var(--pf-dur-enter) var(--pf-ease);
   }
 
   @starting-style {
@@ -139,6 +126,16 @@
     .sidebar-mobile-drawer[open] {
       transform: translateX(-16px);
     }
+  }
+
+  .sidebar-mobile-drawer[data-closing],
+  .sidebar-mobile-drawer[data-closing]::backdrop {
+    opacity: 0;
+    transition-duration: var(--pf-dur-exit);
+  }
+
+  .sidebar-mobile-drawer[data-closing] {
+    transform: translateX(-16px);
   }
 
   .sidebar-mobile-drawer::backdrop {

@@ -19,6 +19,8 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const mobileNavRef = useRef<HTMLDialogElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closedByPointer = useRef(false);
   const unlockPage = useRef<(() => void) | null>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const { counts, workspaceName } = useWorkspaceNotifications(
@@ -40,7 +42,24 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
 
   if (publicPolicyPage) return null;
 
-  const closeMobileNav = () => mobileNavRef.current?.close();
+  // The drawer leaves through [data-closing] and is closed once that transition ends, because
+  // Safari drops a closed dialog at once and would skip the exit.
+  const closeMobileNav = () => {
+    const drawer = mobileNavRef.current;
+    if (!drawer?.open || drawer.dataset.closing) return;
+    drawer.dataset.closing = "true";
+    void Promise.allSettled(drawer.getAnimations().map((animation) => animation.finished)).then(() => {
+      delete drawer.dataset.closing;
+      // Closing hands focus back to the menu button, and Safari rings it whatever closed the
+      // drawer. After a pointer close the button stays quiet until focus leaves it.
+      const menuButton = menuButtonRef.current;
+      if (closedByPointer.current && menuButton) {
+        menuButton.dataset.quietFocus = "true";
+        menuButton.addEventListener("blur", () => delete menuButton.dataset.quietFocus, { once: true });
+      }
+      drawer.close();
+    });
+  };
   const toggleCollapsed = () => {
     const nextCollapsed = !desktopCollapsed;
     setDesktopCollapsed(nextCollapsed);
@@ -57,6 +76,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
         <PostForgeBrand name={workspaceName} />
         <button
           type="button"
+          ref={menuButtonRef}
           aria-label="Open workspace navigation"
           className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-40"
           onClick={(event) => {
@@ -75,12 +95,22 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           aria-label="Workspace navigation"
           tabIndex={-1}
           className="sidebar-mobile-drawer"
+          onPointerDown={() => {
+            closedByPointer.current = true;
+          }}
+          onKeyDown={() => {
+            closedByPointer.current = false;
+          }}
+          onCancel={(event) => {
+            event.preventDefault();
+            closeMobileNav();
+          }}
           onClose={() => {
             unlockPage.current?.();
             unlockPage.current = null;
           }}
           onClick={(event) => {
-            if (event.target === event.currentTarget) event.currentTarget.close();
+            if (event.target === event.currentTarget) closeMobileNav();
           }}
         >
           <div className="sidebar-mobile-frame">
