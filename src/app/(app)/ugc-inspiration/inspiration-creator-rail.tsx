@@ -26,9 +26,9 @@ export function InspirationCreatorRail({ workspace }: { workspace: InspirationWo
   return (
     <section
       aria-labelledby="tracked-creators-heading"
-      className="wb-panel min-w-0 gap-2.5 px-3 pt-[18px] pb-3 lg:w-[264px] lg:flex-none"
+      className="wb-panel min-w-0 gap-2.5 px-3 pt-[18px] pb-3 max-md:pt-3.5 lg:w-[264px] lg:flex-none"
     >
-      <div className="flex h-8 items-center justify-between px-2">
+      <div className="flex h-8 items-center justify-between px-2 max-md:h-[30px]">
         <h2 id="tracked-creators-heading" className="wb-panel-title">
           Tracked creators
         </h2>
@@ -52,7 +52,7 @@ export function InspirationCreatorRail({ workspace }: { workspace: InspirationWo
         aria-label="Creators"
         className="wb-scroll-fade -mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 max-lg:snap-x max-lg:overscroll-x-contain lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:[mask-image:none]"
       >
-        <li className="max-lg:w-[200px] max-lg:flex-none max-lg:snap-start">
+        <li className="max-md:w-[168px] md:max-lg:w-[200px] max-lg:flex-none max-lg:snap-start">
           <button
             type="button"
             onClick={() => setActiveFilter("all")}
