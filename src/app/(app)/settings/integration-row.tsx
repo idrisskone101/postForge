@@ -24,10 +24,17 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
   return (
     <div className="flex flex-col gap-4 border-t border-hairline py-[22px]">
       <div className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 @min-[720px]:flex @min-[720px]:gap-3.5">
-        <RowTile tile={view.tile} />
-        <div className="flex min-w-0 flex-col justify-center gap-0.5 @max-[270px]:min-h-[52px] @min-[720px]:flex-1">
-          <span className="text-sm font-semibold leading-[18px] text-fg">{view.name}</span>
-          {view.sub && <span className="text-balance break-words text-[13px] leading-4 text-fg-muted">{view.sub}</span>}
+        <RowTile tile={view.tile} className={view.sub ? "@max-[720px]:row-span-2" : undefined} />
+        <div
+          className={cn(
+            "flex min-w-0 flex-col justify-center gap-0.5 @min-[720px]:flex-1",
+            view.sub && "@max-[720px]:contents"
+          )}
+        >
+          <span className="text-sm font-semibold leading-[18px] text-fg @max-[720px]:col-start-2 @max-[720px]:row-start-1">
+            {view.name}
+          </span>
+          {view.sub && <span className={SUB_CLASS}>{view.sub}</span>}
           {!view.sub && view.chip === null && (
             <span aria-hidden="true" className="wb-skeleton my-0.5 h-3 w-28 rounded-full" />
           )}
@@ -70,10 +77,25 @@ export function RowNotice({ notice, children }: { notice: Notice; children?: Rea
   );
 }
 
-function RowTile({ tile }: { tile: IntegrationRowView["tile"] }) {
+/*
+ * In the stacked card the sub line has its own grid row across the name and chip columns, so it
+ * reads on one line beside nothing narrower than the card. The negative margin trades the 12px row
+ * gap for the 2px that separates it from the name in the table row.
+ */
+const SUB_CLASS = [
+  "text-balance break-words text-[13px] leading-4 text-fg-muted",
+  "@max-[720px]:col-span-2 @max-[720px]:col-start-2 @max-[720px]:row-start-2 @max-[720px]:-mt-2.5",
+].join(" ");
+
+function RowTile({ tile, className }: { tile: IntegrationRowView["tile"]; className?: string }) {
   if ("glyph" in tile) {
     return (
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-dashed border-edge text-fg-muted">
+      <span
+        className={cn(
+          "flex size-11 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-dashed border-edge text-fg-muted",
+          className
+        )}
+      >
         {tile.glyph}
       </span>
     );
@@ -82,7 +104,8 @@ function RowTile({ tile }: { tile: IntegrationRowView["tile"] }) {
     <span
       className={cn(
         "flex size-11 shrink-0 items-center justify-center rounded-lg",
-        tile.dashed ? "border-[1.5px] border-dashed border-edge" : "bg-raised"
+        tile.dashed ? "border-[1.5px] border-dashed border-edge" : "bg-raised",
+        className
       )}
     >
       <SocialProviderIcon
