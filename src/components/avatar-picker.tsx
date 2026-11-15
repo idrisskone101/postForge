@@ -276,7 +276,7 @@ export function AvatarPicker({
           {/* Two 16px lines beside the button are the button's own 32px, so the note adds no height on a phone. */}
           {query ? (
             <p role="status" className="min-w-0 text-[13px] leading-4 text-fg-secondary">
-              Searching the {avatars.length} loaded. Load more to search the rest.
+              Only the {avatars.length} loaded are searched.
             </p>
           ) : null}
         </div>

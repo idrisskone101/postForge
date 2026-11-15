@@ -53,11 +53,11 @@ export function CloneIdentityStatusPanel({
           {isStartingIdentityPack ? "Retrying" : "Retry identity prep"}
         </Button>
       )}
-      {/* One row: the sentence sits beside the button on two 16px lines, the row's own 32px, so a
-          failed identity does not push Back and Continue down. The tile already reads "Failed". */}
+      {/* The sentence sits beside the button inside the row the step reserves, so a failed identity does
+          not push Back and Continue down. The tile already reads "Failed", so phones keep only the reason. */}
       {failed || error ? (
         <p className="min-w-0 text-[13px] leading-4 text-bad [overflow-wrap:anywhere]">
-          {avatarReady && failed ? <strong className="font-semibold">Reference prep failed. </strong> : null}
+          {avatarReady && failed ? <strong className="font-semibold max-sm:hidden">Reference prep failed. </strong> : null}
           {avatarReady && failed ? <span className="max-sm:hidden">The original avatar is still usable. </span> : null}
           {error}
         </p>
