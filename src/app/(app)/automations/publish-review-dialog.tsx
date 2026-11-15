@@ -1,6 +1,7 @@
 "use client";
 
 import { Send } from "lucide-react";
+import { videoFrameSrc } from "@/lib/video-frame";
 import { createPortal } from "react-dom";
 import { Button, Icon, IconButton, KeyValueList, type KeyValueRow } from "@/components/workbench";
 import type { PublishDialogState } from "./hub-types";
@@ -163,7 +164,7 @@ function PublishMedia({ state }: { state: PublishDialogState }) {
     <aside className="flex min-w-0 flex-col gap-3">
       <div className="wb-well">
         <video
-          src={asset.previewUrl}
+          src={videoFrameSrc(asset.previewUrl)}
           controls
           preload="metadata"
           className="aspect-[9/16] max-h-[32dvh] w-full max-w-[220px] rounded-lg bg-media object-contain md:max-h-[391px]"

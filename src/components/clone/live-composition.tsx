@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
+import { videoFrameSrc } from "@/lib/video-frame";
 import type { CloneSetupStep } from "@/components/clone/types";
 import type { CloneDraft } from "@/components/clone/view-models";
 
@@ -154,7 +155,7 @@ function CompositionVideo({
     >
       <video
         ref={videoRef}
-        src={clip.src}
+        src={videoFrameSrc(clip.src)}
         width={clip.width}
         height={clip.height}
         muted

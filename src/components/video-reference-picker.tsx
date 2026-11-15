@@ -6,6 +6,7 @@ import { Play } from "lucide-react";
 import { FileImage } from "@/components/file-image";
 import { Button, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
 import { apiGet } from "@/lib/api/client";
+import { videoFrameSrc } from "@/lib/video-frame";
 import {
   ReferencePickerPopover,
   ReferenceTile,
@@ -146,7 +147,7 @@ function OutputMedia({ file }: { file: OutputFile }) {
   }
   return (
     <>
-      <video src={`/api/files/${file.id}`} preload="metadata" muted playsInline aria-label={file.filename} />
+      <video src={videoFrameSrc(`/api/files/${file.id}`)} preload="metadata" muted playsInline aria-label={file.filename} />
       <span className="wb-tile-duration" aria-hidden="true">
         <Play className="size-2.5 fill-current" strokeWidth={0} />
       </span>
@@ -289,7 +290,7 @@ function rowSummary({
     meta: selected ? undefined : "Linked",
     thumb:
       chosen.kind === "video" ? (
-        <video src={`/api/files/${chosen.id}`} preload="metadata" muted playsInline aria-hidden="true" />
+        <video src={videoFrameSrc(`/api/files/${chosen.id}`)} preload="metadata" muted playsInline aria-hidden="true" />
       ) : (
         <FileImage src={`/api/files/${chosen.id}`} alt="" sizes="32px" />
       ),

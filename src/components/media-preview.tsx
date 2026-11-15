@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MEDIA_REVEAL_CLASS, useMediaReveal } from "@/components/workbench/media-image";
 import {
@@ -10,6 +10,8 @@ import {
   type MediaThumbnail,
 } from "@/lib/file-thumbnail";
 import { cn } from "@/lib/utils";
+import { videoFrameSrc } from "@/lib/video-frame";
+import { useNearViewport } from "@/lib/use-near-viewport";
 import { ImageOff } from "lucide-react";
 
 type MediaPreviewVariant = "card" | "work" | "detail";
@@ -121,6 +123,9 @@ export function MediaPreviewFrame({
   const { markLoaded } = reveal;
   const [hasError, setHasError] = useState(false);
   const isLoading = !reveal.loaded && !hasError;
+  const wellRef = useRef<HTMLDivElement>(null);
+  const deferred = type === "video" && variant === "card";
+  const near = useNearViewport(wellRef, deferred);
   const [failedThumbnailSrc, setFailedThumbnailSrc] = useState<string | null>(null);
   const resized =
     thumbnail && type === "image" && failedThumbnailSrc !== src && hasFileThumbnail(src);
@@ -184,6 +189,7 @@ export function MediaPreviewFrame({
       style={shouldUseAspectRatio ? { aspectRatio: frameAspectRatio || aspectRatio } : undefined}
     >
       <div
+        ref={wellRef}
         className={cn(
           "relative flex w-full items-center justify-center overflow-hidden rounded-lg",
           mediaWellClasses[variant]
@@ -201,7 +207,7 @@ export function MediaPreviewFrame({
         ) : (
           <video
             {...reveal.props}
-            src={src}
+            src={deferred && !near ? undefined : videoFrameSrc(src)}
             width={width}
             height={height}
             preload={variant === "card" ? "metadata" : "auto"}

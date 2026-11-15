@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import { useNearViewport } from "@/lib/use-near-viewport";
 
 /**
  * Decorative first-frame preview of a stored video. The video is only requested
@@ -9,26 +10,7 @@ import { useEffect, useRef, useState } from "react";
  */
 export function DeferredVideoFrame({ src, className }: { src: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [near, setNear] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (typeof IntersectionObserver === "undefined") {
-      const frame = window.requestAnimationFrame(() => setNear(true));
-      return () => window.cancelAnimationFrame(frame);
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        setNear(true);
-        observer.disconnect();
-      },
-      { rootMargin: NEAR_VIEWPORT_MARGIN },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+  const near = useNearViewport(ref);
 
   return (
     <video
@@ -41,5 +23,3 @@ export function DeferredVideoFrame({ src, className }: { src: string; className?
     />
   );
 }
-
-const NEAR_VIEWPORT_MARGIN = "300px";

@@ -5,6 +5,7 @@ import { Maximize, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { FileImage } from "@/components/file-image";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
+import { videoFrameSrc } from "@/lib/video-frame";
 import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
 export function CloneOutputPlayer({ review }: { review: CloneOutputReviewView }) {
@@ -63,7 +64,7 @@ function VideoPlayer({
     <figure className={frameClass} style={style} data-clone-output-media="video">
       <video
         ref={videoRef}
-        src={src}
+        src={videoFrameSrc(src)}
         preload="metadata"
         playsInline
         muted={muted}

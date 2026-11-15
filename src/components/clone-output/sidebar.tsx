@@ -4,6 +4,7 @@ import { Icon, KeyValueList, buttonClass } from "@/components/workbench";
 import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { videoFrameSrc } from "@/lib/video-frame";
 import { formatDuration } from "@/components/clone-output/parse";
 import { formatRunDuration } from "@/components/clone-output/run-state";
 import type { CloneOutputReviewView } from "@/components/clone-output/types";
@@ -68,7 +69,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
             <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
               <span className="relative grid h-14 w-9 shrink-0 place-items-center overflow-hidden rounded-sm bg-media">
                 <video
-                  src={sourcePreviewUrl}
+                  src={videoFrameSrc(sourcePreviewUrl)}
                   muted
                   preload="metadata"
                   aria-hidden="true"
@@ -85,7 +86,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
               </span>
             </summary>
             <video
-              src={sourcePreviewUrl}
+              src={videoFrameSrc(sourcePreviewUrl)}
               width={sourceVideo.width}
               height={sourceVideo.height}
               controls

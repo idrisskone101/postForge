@@ -1,6 +1,7 @@
 import { FileImage } from "@/components/file-image";
 import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
+import { videoFrameSrc } from "@/lib/video-frame";
 import { CloneOutputPanelHead } from "@/components/clone-output/header";
 import { CloneOutputPlayer } from "@/components/clone-output/player";
 import { CloneRunRail } from "@/components/clone-output/rail";
@@ -65,7 +66,7 @@ function VariantRail({ review }: { review: CloneOutputReviewView }) {
                 <FileImage src={`/api/files/${output.id}`} alt="" sizes="84px" />
               ) : (
                 <video
-                  src={`/api/files/${output.id}`}
+                  src={videoFrameSrc(`/api/files/${output.id}`)}
                   muted
                   preload="metadata"
                   className="size-full object-cover"
