@@ -78,6 +78,8 @@ export function ReferencePickerPopover({
           align="start"
           sideOffset={8}
           collisionPadding={16}
+          // Above or below its row, never beside it: a side placement covers the neighbouring fields.
+          collisionAvoidance={{ side: "flip", align: "shift", fallbackAxisSide: "none" }}
           className="z-50 outline-none"
         >
           <Popover.Popup
