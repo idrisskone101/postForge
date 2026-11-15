@@ -55,7 +55,7 @@ export function useCharacterBuilder(editId: string | null = null) {
   const [loading, setLoading] = useState(Boolean(editId));
   const [missingEditRecord, setMissingEditRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const toastCount = useRef(0);
   const clearButtonRef = useRef<HTMLButtonElement>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -122,11 +122,13 @@ export function useCharacterBuilder(editId: string | null = null) {
 
   function notify(message: string, action?: ToastMessage["action"]) {
     toastCount.current += 1;
-    setToast({ id: `character-toast-${toastCount.current}`, tone: "ok", message, action });
+    const next: ToastMessage = { id: `character-toast-${toastCount.current}`, tone: "ok", message, action };
+    // A confirmation replaces the last confirmation. A toast that holds Undo stays for its own five seconds.
+    setToasts((current) => [...current.filter((toast) => toast.action), next]);
   }
 
   const dismissToast = useCallback((id: string) => {
-    setToast((current) => (current?.id === id ? null : current));
+    setToasts((current) => current.filter((toast) => toast.id !== id));
   }, []);
 
   /** Empties the current section. Nothing is saved until Save, and the toast puts the values back. */
@@ -349,6 +351,7 @@ export function useCharacterBuilder(editId: string | null = null) {
     onImport: () => setImportOpen(true),
     copyAttributes,
     selectAttribute,
+    toastKey: toasts.map((toast) => toast.id).join(" "),
   };
 
   return {
@@ -365,7 +368,7 @@ export function useCharacterBuilder(editId: string | null = null) {
     setImportValue,
     applyImport,
     importError: importOpen ? error : null,
-    toast,
+    toasts,
     dismissToast,
   };
 }

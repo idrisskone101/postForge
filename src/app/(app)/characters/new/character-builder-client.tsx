@@ -25,7 +25,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
     setImportValue,
     applyImport,
     importError,
-    toast,
+    toasts,
     dismissToast,
   } = useCharacterBuilder(editId);
   const mountedInBrowser = useMountedInBrowser();
@@ -62,7 +62,9 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
         actions={{ onOpenChange: setImportOpen, onValueChange: setImportValue, onApply: applyImport }}
       />
       <div className="wb-toast-region">
-        {toast ? <Toast key={toast.id} toast={toast} onDismiss={dismissToast} /> : null}
+        {toasts.map((toast) => (
+          <Toast key={toast.id} toast={toast} onDismiss={dismissToast} />
+        ))}
       </div>
     </>
   );

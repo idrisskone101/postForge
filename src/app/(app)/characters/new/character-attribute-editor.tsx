@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import {
   CHARACTER_ATTRIBUTE_SECTIONS,
   type CharacterAttributeSection,
@@ -17,11 +18,16 @@ export function CharacterAttributeEditor({
 }: {
   view: CharacterAttributeEditorViewModel;
 }) {
-  const { active, error, errorIsMissingRecord, onDismissError, onSelectSection, copyPrompt, clearSection, clearButtonRef, sectionIsEmpty } = view;
+  const { active, error, errorIsMissingRecord, onDismissError, onSelectSection, copyPrompt, clearSection, clearButtonRef, sectionIsEmpty, toastKey } = view;
   const index = CHARACTER_ATTRIBUTE_SECTIONS.findIndex((section) => section.id === active?.id);
   const previous = index > 0 ? CHARACTER_ATTRIBUTE_SECTIONS[index - 1] : undefined;
   const next = CHARACTER_ATTRIBUTE_SECTIONS[index + 1];
   const { markStepChange, stepRef } = useStepEntry();
+  const sectionId = active?.id;
+  const footerBar = useRef<HTMLDivElement>(null);
+  // Below 1280 the row is in flow, so a new section moves it without resizing it. Publishing again on
+  // a new section and on a new toast says where it sits now, before the toast paints.
+  useLayoutEffect(() => publishPinnedBar(footerBar.current), [sectionId, toastKey]);
 
   function goTo(sectionId: string) {
     markStepChange();
@@ -81,7 +87,7 @@ export function CharacterAttributeEditor({
       ) : null}
       {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
       {/* A long step name does not fit beside Back at 320, so Next wraps to its own line and stays whole. */}
-      <div ref={publishPinnedBar} className={FOOTER_ROW}>
+      <div ref={footerBar} className={FOOTER_ROW}>
         <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && goTo(previous.id)}>
           Back
         </Button>

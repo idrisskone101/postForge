@@ -50,4 +50,6 @@ export type CharacterAttributeEditorViewModel = {
   onImport: () => void;
   copyAttributes: () => void;
   selectAttribute: (key: string, value: string) => void;
+  /** Names the toasts on screen. The footer republishes where it sits when one arrives. */
+  toastKey: string;
 };
