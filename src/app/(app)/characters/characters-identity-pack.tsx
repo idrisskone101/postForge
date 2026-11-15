@@ -26,7 +26,7 @@ export function CharacterIdentityPackNotice({ identity }: { identity: IdentityPa
   if (!identityPackNeedsNotice(identity)) return null;
   const reason = identity.error ?? identity.pack?.error ?? "No reason was recorded.";
   return (
-    <div className="wb-notice wb-fade-in flex-col items-start gap-2.5" data-tone="bad" role="alert">
+    <div className="wb-notice wb-fade-in flex-col items-start gap-2.5 py-3" data-tone="bad" role="alert">
       <p className="text-[13px] leading-[19px] text-fg [overflow-wrap:anywhere]">
         <strong className="font-bold text-bad">{failed ? "Identity prep failed." : "Identity pack unavailable."}</strong> {reason}
         {failed ? " The saved portrait still works in Clone." : null}
