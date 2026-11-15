@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
 import { SidebarNav, SidebarNavItem } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icon } from "@/components/workbench/icon";
@@ -98,8 +98,9 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           onPointerDown={() => {
             closedByPointer.current = true;
           }}
-          onKeyDown={() => {
+          onKeyDown={(event) => {
             closedByPointer.current = false;
+            wrapTabInDrawer(event);
           }}
           onCancel={(event) => {
             event.preventDefault();
@@ -175,6 +176,21 @@ function SidebarFoot({ active, onNavigate }: { active: boolean; onNavigate?: () 
       </span>
     </div>
   );
+}
+
+/**
+ * A modal dialog keeps Tab out of the page behind it, but past its last control the browser takes
+ * focus to its own toolbar. The drawer wraps instead, both ways.
+ */
+function wrapTabInDrawer(event: KeyboardEvent<HTMLDialogElement>) {
+  if (event.key !== "Tab") return;
+  const drawer = event.currentTarget;
+  const stops = [...drawer.querySelectorAll<HTMLElement>("a[href], button:not(:disabled)")];
+  const edge = event.shiftKey ? stops[0] : stops[stops.length - 1];
+  const active = document.activeElement;
+  if (active !== edge && !(event.shiftKey && active === drawer)) return;
+  event.preventDefault();
+  (event.shiftKey ? stops[stops.length - 1] : stops[0])?.focus();
 }
 
 /** A modal drawer left open while the mobile bar disappears would make the page inert. */
