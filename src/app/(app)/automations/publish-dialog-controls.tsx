@@ -100,13 +100,13 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const page = document.documentElement;
-    const { overflow, scrollbarGutter } = page.style;
-    const hasScrollbar = window.innerWidth > page.clientWidth;
+    const { overflow, paddingRight } = page.style;
+    const scrollbar = window.innerWidth - page.clientWidth;
     page.style.overflow = "hidden";
-    if (hasScrollbar) page.style.scrollbarGutter = "stable";
+    if (scrollbar > 0) page.style.paddingRight = `${scrollbar}px`;
     return () => {
       page.style.overflow = overflow;
-      page.style.scrollbarGutter = scrollbarGutter;
+      page.style.paddingRight = paddingRight;
       document
         .querySelector<HTMLElement>(
           `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`

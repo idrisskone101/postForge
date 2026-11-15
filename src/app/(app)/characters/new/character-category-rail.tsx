@@ -19,9 +19,9 @@ export function CharacterCategoryRail({
     <nav
       aria-label="Character attribute recipe"
       data-character-rail
-      className="wb-scroll-fade -mx-1 overflow-x-auto px-1 max-xl:py-1 max-sm:-mx-4 max-sm:-my-1 max-sm:px-4 max-sm:[scrollbar-width:none] xl:[animation:none] xl:[mask-image:none] sm:max-xl:-my-0.5 xl:mx-0 xl:w-[272px] xl:shrink-0 xl:overflow-y-auto xl:rounded-xl xl:bg-panel xl:p-5 xl:shadow-panel"
+      className="wb-scroll-fade snap-none -mx-1 overflow-x-auto px-1 max-xl:py-1 max-sm:-mx-4 max-sm:-my-1 max-sm:px-4 max-sm:[scrollbar-width:none] xl:[animation:none] xl:[mask-image:none] sm:max-xl:-my-0.5 xl:mx-0 xl:w-[272px] xl:shrink-0 xl:overflow-y-auto xl:rounded-xl xl:bg-panel xl:p-5 xl:shadow-panel"
     >
-      <ol className="flex gap-2 xl:h-full xl:flex-col xl:gap-0">
+      <ol className="flex w-max gap-2 xl:h-full xl:w-auto xl:flex-col xl:gap-0">
         {CHARACTER_ATTRIBUTE_SECTIONS.map((section, index) => {
           const current = section.id === activeSection;
           const filled = section.groups.filter((group) => Boolean(attributes[group.key]?.trim())).length;
