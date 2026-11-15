@@ -17,6 +17,8 @@ export function CloneIdentityStep({
 }) {
   const stepEntry = useCloneStepEntry("identity", hidden);
   const [query, setQuery] = useState("");
+  // The field filters the character list, so it leaves while Generate, Gallery or Import is open.
+  const [listShowing, setListShowing] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
   // The Clear search button leaves with the empty state, so focus goes back to the field.
   const clearSearch = () => {
@@ -33,6 +35,7 @@ export function CloneIdentityStep({
         <h2 className="wb-panel-title">
           Choose who appears
         </h2>
+        {listShowing && (
         <label className="wb-input-wrap w-[220px] max-sm:w-full" data-size="36">
           <Icon name="search" size={15} className="shrink-0 text-fg-muted" />
           <span className="sr-only">Search characters</span>
@@ -45,11 +48,13 @@ export function CloneIdentityStep({
             className="[&::-webkit-search-cancel-button]:hidden"
           />
         </label>
+        )}
       </div>
       <AvatarPicker
         selectedId={draft.avatarId}
         onSelect={draft.onSelectAvatar}
         search={{ query, onClear: clearSearch }}
+        onModeChange={(mode) => setListShowing(mode === "grid")}
       />
       {/* The row is always there, so choosing an identity does not move the footer under it. */}
       <div data-clone-identity-status="true" className="flex min-h-8 min-w-0 items-center">

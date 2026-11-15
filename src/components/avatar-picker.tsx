@@ -26,11 +26,14 @@ export function AvatarPicker({
   selectedId,
   onSelect,
   search,
+  onModeChange,
 }: {
   selectedId: string | null;
   onSelect: (id: string) => void;
   /** Filters the loaded identities by the label on their tile. The field belongs to the caller. */
   search?: AvatarSearch;
+  /** Tells the caller which view is showing, so a search field can leave when there is no list to filter. */
+  onModeChange?: (mode: AvatarPickerMode) => void;
 }) {
   const [avatars, setAvatars] = useState<Avatar[]>(() => rememberedAvatars()?.items ?? []);
   const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(
@@ -39,7 +42,11 @@ export function AvatarPicker({
   const [isLoading, setIsLoading] = useState(() => rememberedAvatars() === null);
   const [isLoadingMoreAvatars, setIsLoadingMoreAvatars] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [mode, setMode] = useState<AvatarPickerMode>("grid");
+  const [mode, setModeState] = useState<AvatarPickerMode>("grid");
+  const setMode = (next: AvatarPickerMode) => {
+    setModeState(next);
+    onModeChange?.(next);
+  };
   const [actionError, setActionError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
