@@ -17,13 +17,23 @@ export function ScrollFadeFallback() {
 function installScrollFadeFallback() {
   if (CSS.supports("animation-timeline: scroll()")) return;
   let frame = 0;
-  const sync = () => {
-    frame = 0;
-    document.querySelectorAll<HTMLElement>(FADED_SCROLLERS).forEach(syncEdgeFades);
-    syncStuckFade();
-  };
   const schedule = () => {
     frame ||= window.requestAnimationFrame(sync);
+  };
+  // A scroller that comes into view without a DOM change, such as the nav in the phone drawer when
+  // the dialog opens, changes size from nothing. Each scroller is watched for that.
+  const sizes = new ResizeObserver(schedule);
+  const watched = new WeakSet<HTMLElement>();
+  const sync = () => {
+    frame = 0;
+    document.querySelectorAll<HTMLElement>(FADED_SCROLLERS).forEach((scroller) => {
+      if (!watched.has(scroller)) {
+        watched.add(scroller);
+        sizes.observe(scroller);
+      }
+      syncEdgeFades(scroller);
+    });
+    syncStuckFade();
   };
   const observer = new MutationObserver(schedule);
   observer.observe(document.body, { childList: true, subtree: true });
@@ -35,6 +45,7 @@ function installScrollFadeFallback() {
   return () => {
     window.cancelAnimationFrame(frame);
     observer.disconnect();
+    sizes.disconnect();
     document.removeEventListener("scroll", schedule, true);
     document.removeEventListener("load", schedule, true);
     window.removeEventListener("resize", schedule);
