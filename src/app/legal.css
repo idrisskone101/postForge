@@ -224,7 +224,7 @@ a {
   padding-block: 20px max(32px, env(safe-area-inset-bottom));
   color: var(--pf-text-muted);
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .policy-footerLinks {
