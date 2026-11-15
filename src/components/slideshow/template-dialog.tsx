@@ -66,11 +66,12 @@ export function TemplateDialog({
         </div>
         <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1 pb-1">
           {visible.length ? (
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="@container grid gap-3 sm:grid-cols-2">
               {visible.map((template) => (
                 <li
                   key={template.id}
-                  className="flex min-w-0 items-center gap-3 rounded-lg bg-raised p-3"
+                  // Below 300px of list width the copy has no room beside the thumbnails, so it takes its own row.
+                  className="flex min-w-0 items-center gap-3 rounded-lg bg-raised p-3 @max-[300px]:grid @max-[300px]:grid-cols-[minmax(0,1fr)_auto]"
                 >
                   <span className="flex shrink-0 gap-[3px]">
                     {template.visualKeys.slice(0, 3).map((visualKey, index) => (
@@ -81,7 +82,7 @@ export function TemplateDialog({
                       />
                     ))}
                   </span>
-                  <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                  <span className="flex min-w-0 flex-1 flex-col gap-[3px] @max-[300px]:col-span-2 @max-[300px]:row-start-2">
                     <span className="break-words text-[14px] font-semibold leading-[18px] text-fg">
                       {template.name}
                     </span>
@@ -92,6 +93,7 @@ export function TemplateDialog({
                   <Button
                     variant="strong"
                     size={32}
+                    className="@max-[300px]:col-start-2 @max-[300px]:row-start-1"
                     onClick={() => onUseTemplate(template)}
                     aria-label={`Use the ${template.name} template`}
                   >
