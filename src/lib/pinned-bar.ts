@@ -1,5 +1,9 @@
-/** How close to the viewport bottom a bar's lower edge sits when it rests there: the page padding plus slack. */
-const REST_ZONE = 24;
+/**
+ * A bar rests on the viewport bottom while its lower edge is inside the band a toast would take:
+ * the 16px gap under the toast region plus the 48px toast. A bar any lower than that band's top
+ * would be covered, so it has to count.
+ */
+const REST_ZONE = 64;
 
 /**
  * Ref callback for a bar that sits on the viewport bottom at some sizes: pinned there, or laid out
