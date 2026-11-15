@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { cn } from "@/lib/utils";
 import { CountBadge } from "@/components/workbench/count-badge";
 import { Icon, type IconName } from "@/components/workbench/icon";
 import {
@@ -16,17 +17,18 @@ type SidebarNavProps = {
   activeHref: string | undefined;
   counts: WorkspaceNotificationCounts;
   onNavigate?: () => void;
+  className?: string;
 };
 
 /** Four unlabelled groups. The raised pill slides to the active item in 200ms. */
-export function SidebarNav({ activeHref, counts, onNavigate }: SidebarNavProps) {
+export function SidebarNav({ activeHref, counts, onNavigate, className }: SidebarNavProps) {
   const pillOffset = getSidebarPillOffset(activeHref);
   const pillStyle: CSSProperties & Record<"--sidebar-pill-y", string> = {
     "--sidebar-pill-y": `${pillOffset ?? 0}px`,
   };
 
   return (
-    <nav className="sidebar-nav" aria-label="Workspace navigation">
+    <nav className={cn("sidebar-nav", className)} aria-label="Workspace navigation">
       <span
         aria-hidden="true"
         className="sidebar-nav-pill"

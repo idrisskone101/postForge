@@ -181,9 +181,23 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 12px;
-    overflow-y: auto;
     padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom))
       max(16px, env(safe-area-inset-left));
+  }
+
+  /* On a short phone the header and the Settings row stay put and the nav scrolls between them. */
+  .sidebar-mobile-frame > .sidebar-top {
+    min-height: 0;
+  }
+
+  .sidebar-mobile-frame .sidebar-nav {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .sidebar-mobile-frame .sidebar-nav-group {
+    flex-shrink: 0;
   }
 
   /* Sidebar: sits on the floor, it is not a panel */

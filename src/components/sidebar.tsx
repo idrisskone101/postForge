@@ -96,6 +96,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
                 activeHref={activeItem?.href}
                 counts={counts}
                 onNavigate={closeMobileNav}
+                className="wb-scroll-fade-y wb-scroll-fade-deep"
               />
             </div>
             <SidebarFoot active={settingsActive} onNavigate={closeMobileNav} />
