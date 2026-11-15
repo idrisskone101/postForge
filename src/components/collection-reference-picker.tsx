@@ -10,6 +10,7 @@ import {
 } from "@/lib/collections";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
 import { Button, Chip, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 import {
   ReferencePickerPopover,
   ReferenceTile,
@@ -24,8 +25,11 @@ interface CollectionReferencePickerProps {
   disabledMessage?: string;
   refreshKey?: number;
   preferredAssetIds?: string[];
-  /** "inline" lays the collections out as chips over the image grid, for a surface that is already a dialog. */
-  layout?: "popover" | "inline";
+  /**
+   * For a surface that is already a dialog, the picker draws in place instead of in a popover:
+   * "inline" lays the collections out as chips over the image grid, "select" as one select over it.
+   */
+  layout?: "popover" | "inline" | "select";
 }
 
 type LoadStatus = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
@@ -65,10 +69,12 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
     count,
   });
 
-  const inline = props.layout === "inline";
+  const layout = props.layout ?? "popover";
+  const inline = layout === "inline";
+  const grid = GRID[layout];
   const body =
     status.kind === "loading" ? (
-      <TileSkeletons inline={inline} />
+      <TileSkeletons layout={layout} />
     ) : status.kind === "error" ? (
       <EmptyState icon="alert" tone="error" title="Collections could not be loaded" detail={status.message} className="min-h-0 py-6">
         <Button variant="strong" onClick={retry}>Retry</Button>
@@ -105,19 +111,20 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
               aria-label="Visual collection"
               value={selectedCollectionId}
               onChange={(event) => setSelectedCollectionId(event.target.value)}
-              className="wb-input min-w-0 flex-1 bg-raised-strong"
-              data-size="36"
+              className={cn("wb-input min-w-0 flex-1", layout === "select" ? "font-medium" : "bg-raised-strong")}
+              data-size={layout === "select" ? undefined : "36"}
             >
               {collections.map((collection) => (
                 <option key={collection.id} value={collection.id}>
-                  {collection.name} · {collection.assetIds.length} images
+                  {collection.name}{layout === "select" ? "," : " ·"} {collection.assetIds.length} images
                 </option>
               ))}
             </select>
-            <span className="wb-mono shrink-0 text-fg" aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
+            <span className={cn("wb-mono shrink-0", layout === "select" ? "text-fg-muted" : "text-fg")} aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
               {count}
             </span>
-            {selectedAssetIds.length > 0 ? (
+            {/* With one image to pick, the chosen tile is its own clear control. */}
+            {selectedAssetIds.length > 0 && !(layout === "select" && maxSelection === 1) ? (
               <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
             ) : null}
           </div>
@@ -125,7 +132,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
         {collectionAssets.length === 0 ? (
           <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
         ) : (
-          <div className={inline ? INLINE_GRID : POPOVER_GRID}>
+          <div className={grid}>
             {collectionAssets.map((asset) => {
               const selected = selectedAssetIds.includes(asset.id);
               return (
@@ -146,6 +153,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
     );
 
   if (inline) return <div className="flex min-w-0 flex-col gap-3.5">{body}</div>;
+  if (layout === "select") return <div className="flex min-w-0 flex-col gap-[18px]">{body}</div>;
   return (
     <ReferencePickerPopover summary={summary} label="Visual collection" disabled={disabled}>
       {() => body}
@@ -153,9 +161,14 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
   );
 }
 
-const POPOVER_GRID = "grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1";
-const INLINE_GRID =
-  "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]";
+const GRID = {
+  popover: "grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1",
+  inline:
+    "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]",
+  select: "grid grid-cols-3 gap-2 sm:grid-cols-6",
+} as const;
+
+const SKELETON_TILES = { popover: 8, inline: 4, select: 6 } as const;
 
 function useCollectionRecords(preferredAssetIds: string[] | undefined, refreshKey: number) {
   const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
@@ -232,17 +245,23 @@ function rowSummary({
   };
 }
 
-function TileSkeletons({ inline }: { inline: boolean }) {
+function TileSkeletons({ layout }: { layout: keyof typeof GRID }) {
+  const inline = layout === "inline";
   return (
-    <div role="status" aria-label="Loading collections…" className="flex flex-col gap-3.5">
+    <div
+      role="status"
+      aria-label="Loading collections…"
+      className={cn("flex flex-col", layout === "select" ? "gap-[18px]" : "gap-3.5")}
+    >
+      {layout === "select" ? <Skeleton className="h-[42px] w-full rounded-lg" /> : null}
       {inline ? (
         <div className="flex gap-1.5">
           <Skeleton className="h-9 w-28 rounded-full" />
           <Skeleton className="h-9 w-20 rounded-full" />
         </div>
       ) : null}
-      <div className={inline ? INLINE_GRID : POPOVER_GRID}>
-        {Array.from({ length: inline ? 4 : 8 }, (_, index) => (
+      <div className={GRID[layout]}>
+        {Array.from({ length: SKELETON_TILES[layout] }, (_, index) => (
           <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
         ))}
       </div>
