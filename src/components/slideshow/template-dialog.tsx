@@ -93,7 +93,8 @@ export function TemplateDialog({
                   <Button
                     variant="strong"
                     size={32}
-                    className="@max-[300px]:col-start-2 @max-[300px]:row-start-1"
+                    // The 40px cap on 32px pills is for stacked pills 8px apart; this one sits alone in a 60px row.
+                    className="[--wb-hit-h:44px]! @max-[300px]:col-start-2 @max-[300px]:row-start-1"
                     onClick={() => onUseTemplate(template)}
                     aria-label={`Use the ${template.name} template`}
                   >
