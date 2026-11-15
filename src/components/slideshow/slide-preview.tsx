@@ -29,7 +29,7 @@ export function SlidePreview({
   className,
   showCounter,
   counter,
-  focusLayer = null,
+  focusLayer,
 }: {
   slide: SlideshowSlide;
   aspectRatio: SlideshowAspectRatio;
@@ -38,6 +38,7 @@ export function SlidePreview({
   className?: string;
   showCounter?: boolean;
   counter?: string;
+  /** The copy field that has focus. Only a preview that passes it (the editor stage) draws frames. */
   focusLayer?: SlideshowOverlayLayer | null;
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
@@ -61,11 +62,13 @@ export function SlidePreview({
       (fetchedOverlay?.key === overlayKey ? fetchedOverlay : null)
     : null;
   const overlaySrc = overlay?.src ?? null;
-  // While the next render of the same slide is on its way the frame keeps its last place, so it does not blink on every keystroke.
-  const frameBoxes = displayText
-    ? overlay?.boxes ??
-      (fetchedOverlay?.slideId === slide.id ? fetchedOverlay.boxes : null)
-    : null;
+  // While the next render of the same slide is on its way the frame keeps its last place, so it
+  // does not blink on every keystroke.
+  const frameBoxes =
+    displayText && focusLayer !== undefined
+      ? overlay?.boxes ??
+        (fetchedOverlay?.slideId === slide.id ? fetchedOverlay.boxes : null)
+      : null;
 
   useEffect(() => {
     if (!displayText) return;
