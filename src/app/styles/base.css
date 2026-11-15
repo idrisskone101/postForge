@@ -8,6 +8,11 @@
   html {
     @apply font-sans;
     background: var(--pf-floor);
+    /*
+     * An always-on scrollbar keeps its 11px whether or not the page scrolls yet, so the header does
+     * not move when content arrives. Overlay scrollbars take no room and are unaffected.
+     */
+    scrollbar-gutter: stable;
     font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
