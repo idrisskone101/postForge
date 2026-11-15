@@ -27,7 +27,7 @@ export function PerformanceEmptyState({
         <Link href="/settings?tab=integrations" className={buttonClass("strong")}>
           Open integrations
         </Link>
-        <Button onClick={onImport} disabled={importing}>
+        <Button className="gap-2 pl-3.5 pr-[18px]" onClick={onImport} disabled={importing}>
           <Icon name="upload" size={16} />
           {importing ? "Importing" : "Import CSV"}
         </Button>

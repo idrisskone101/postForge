@@ -45,7 +45,7 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
           <Button
             size={32}
             aria-label="New collection"
-            className="pl-2.5 max-[359px]:w-8 max-[359px]:px-0"
+            className="max-[359px]:w-8 max-[359px]:px-0"
             onClick={() => setCreating(true)}
           >
             <Icon name="plus" size={16} />

@@ -138,15 +138,15 @@ export function SlideshowBoardView() {
         >
           <ArrowRight strokeWidth={1.5} aria-hidden="true" />
         </button>
-        <Button size={32} onClick={onDuplicate} disabled={atMax}>
+        <Button size={32} className="pl-3" onClick={onDuplicate} disabled={atMax}>
           <Copy className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
           Duplicate
         </Button>
         <Button variant="danger" size={32} onClick={onDelete} disabled={atMin}>
           Delete slide
         </Button>
-        <Button variant="strong" size={32} onClick={() => openInEditor(activeIndex)}>
-          <Icon name="pencil" size={14} />
+        <Button variant="strong" size={32} className="pl-3" onClick={() => openInEditor(activeIndex)}>
+          <Icon name="pencil" className="size-3.5" />
           Edit slide
         </Button>
       </div>

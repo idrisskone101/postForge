@@ -59,7 +59,7 @@ export function TemplateDialog({
               aria-label="Search formats"
             />
           </label>
-          <Button variant="strong" onClick={onCustom}>
+          <Button variant="strong" className="gap-2 pl-3" onClick={onCustom}>
             <Icon name="plus" size={16} strokeWidth={2} />
             Blank slideshow
           </Button>

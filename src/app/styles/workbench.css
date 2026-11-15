@@ -207,6 +207,11 @@
     padding-inline: 14px;
   }
 
+  /* A leading 16px icon sits 10px from the edge; a 14px icon sets 12px itself (07 Slideshow editor, 13 Collections) */
+  .wb-btn-32:has(> svg:first-child):not([data-icon="end"], .wb-btn-block) {
+    padding-left: 10px;
+  }
+
   .wb-btn-block {
     width: 100%;
     min-width: 0;

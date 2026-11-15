@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Copy } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { Button, Segmented, Toggle, iconButtonClass } from "@/components/workbench";
 
@@ -107,7 +107,6 @@ export function EditorSlideSettings() {
           <ArrowDown strokeWidth={1.5} aria-hidden="true" />
         </button>
         <Button size={32} onClick={editor.duplicateSlide} disabled={total >= MAX_SLIDESHOW_SLIDES}>
-          <Copy className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
           Duplicate
         </Button>
         <Button variant="danger" size={32} onClick={editor.deleteSlide} disabled={total <= 1}>
