@@ -87,7 +87,7 @@ export function PinterestImportFooter({
           <Button
             variant="primary"
             size={40}
-            block
+            className="max-sm:w-full"
             onClick={() => runImport("import")}
             disabled={!count || importing}
           >

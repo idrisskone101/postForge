@@ -87,7 +87,7 @@ export function PinterestImportSearch({
               onClick={() => updateQuery(suggestion)}
               disabled={importing}
               aria-pressed={query === suggestion}
-              className="wb-chip h-[30px] px-3 text-[13px]"
+              className="wb-chip h-[30px] px-3 text-[13px] text-fg-secondary disabled:text-fg-disabled aria-pressed:text-ember-text"
             >
               {suggestion}
             </button>
