@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import {
   AlertDialog,
@@ -26,7 +25,6 @@ export function useEditorLeaveGuard(
   flushSave: () => Promise<unknown>,
   onBack: () => void,
 ) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const leaveRef = useRef<() => void>(onBack);
   const confirmedRef = useRef(false);
@@ -47,8 +45,8 @@ export function useEditorLeaveGuard(
   const saveFailed = saveState === "error";
   useEffect(() => {
     if (!saveFailed) return;
-    return installLeaveGuard((href, link) => ask(() => router.push(href), link));
-  }, [ask, router, saveFailed]);
+    return installLeaveGuard((link, follow) => ask(follow, link));
+  }, [ask, saveFailed]);
 
   const dialog = (
     <AlertDialog
@@ -85,17 +83,28 @@ export function useEditorLeaveGuard(
   return { requestBack, dialog };
 }
 
-/** Holds in-app link clicks that would change the route, and asks the browser to prompt on unload. */
-function installLeaveGuard(onLinkLeave: (href: string, link: HTMLAnchorElement) => void) {
+/**
+ * Holds in-app link clicks that would change the route, and asks the browser to prompt on unload.
+ * `follow` clicks the held link again with the guard stood down, so the link navigates as it always does.
+ */
+function installLeaveGuard(onHeld: (link: HTMLAnchorElement, follow: () => void) => void) {
+  let leaving = false;
+  const follow = (link: HTMLAnchorElement) => {
+    leaving = true;
+    if (link.isConnected) link.click();
+    else window.location.assign(link.href);
+  };
   const onClick = (event: MouseEvent) => {
-    const link = plainLinkClick(event);
+    const link = leaving ? null : plainLinkClick(event);
     if (!link) return;
     const url = new URL(link.href);
     if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
     event.preventDefault();
-    onLinkLeave(`${url.pathname}${url.search}${url.hash}`, link);
+    onHeld(link, () => follow(link));
   };
-  const onBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
+  const onBeforeUnload = (event: BeforeUnloadEvent) => {
+    if (!leaving) event.preventDefault();
+  };
   document.addEventListener("click", onClick, true);
   window.addEventListener("beforeunload", onBeforeUnload);
   return () => {
