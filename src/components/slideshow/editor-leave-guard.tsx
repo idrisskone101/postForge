@@ -45,7 +45,20 @@ export function useEditorLeaveGuard(
   const saveFailed = saveState === "error";
   useEffect(() => {
     if (!saveFailed) return;
-    return installLeaveGuard((link, follow) => ask(follow, link));
+    return installLeaveGuard((link, follow) => {
+      // A link in the phone drawer closes the drawer, which then hands focus to the menu button.
+      // Asking after that keeps focus inside the dialog, and the menu button is what it returns to.
+      const drawer = link.closest("dialog");
+      if (!drawer?.open) return ask(follow, link);
+      let asked = false;
+      const askOnce = () => {
+        if (asked) return;
+        asked = true;
+        ask(follow, document.activeElement);
+      };
+      drawer.addEventListener("close", askOnce, { once: true });
+      window.setTimeout(askOnce, 600);
+    });
   }, [ask, saveFailed]);
 
   const dialog = (
