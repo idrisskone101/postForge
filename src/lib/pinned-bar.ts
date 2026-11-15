@@ -8,6 +8,8 @@ const REST_ZONE = 24;
  * reads it, so keyboard focus never lands under the bar, and the toast region reads it, so a toast
  * never covers the bar.
  */
+const BAR_MAX_HEIGHT = 240;
+
 export function publishPinnedBar(bar: HTMLElement | null) {
   if (!bar) return;
   const root = document.documentElement;
@@ -16,7 +18,8 @@ export function publishPinnedBar(bar: HTMLElement | null) {
     const rect = bar.getBoundingClientRect();
     const pinned = (style.position === "fixed" || style.position === "sticky") && style.bottom !== "auto";
     const pinnedReach = pinned ? bar.offsetHeight + (parseFloat(style.bottom) || 0) : 0;
-    const resting = rect.height > 0 && rect.top < window.innerHeight && rect.bottom > window.innerHeight - REST_ZONE;
+    // A tall panel that happens to end at the viewport bottom is content, not a bar.
+    const resting = rect.height > 0 && rect.height <= BAR_MAX_HEIGHT && rect.top < window.innerHeight && rect.bottom > window.innerHeight - REST_ZONE;
     const reach = Math.max(pinnedReach, resting ? window.innerHeight - rect.top : 0);
     if (reach > 0) root.style.setProperty("--wb-pinned-bottom", `${Math.round(reach)}px`);
     else root.style.removeProperty("--wb-pinned-bottom");
