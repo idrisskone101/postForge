@@ -33,12 +33,15 @@ export function AvatarActionErrorNotice({
 
 export function AvatarCreationCard({
   isUploading,
+  takeFocus,
   onUpload,
   onGenerate,
   onGallery,
   onImport,
 }: {
   isUploading: boolean;
+  /** True once after the list comes back from a mode: the toggle then takes focus as it mounts. */
+  takeFocus?: () => boolean;
   onUpload: () => void;
   onGenerate: () => void;
   onGallery: () => void;
@@ -83,7 +86,10 @@ export function AvatarCreationCard({
       }}
     >
       <button
-        ref={toggleRef}
+        ref={(toggle) => {
+          toggleRef.current = toggle;
+          if (toggle && takeFocus?.()) toggle.focus({ preventScroll: true });
+        }}
         type="button"
         hidden={open}
         aria-expanded={open}

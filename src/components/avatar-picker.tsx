@@ -145,10 +145,15 @@ export function AvatarPicker({
   const handleCreated = (avatar: Avatar) => {
     setAvatars((prev) => [avatar, ...prev]);
     onSelect(avatar.id);
-    setMode("grid");
+    backToGrid();
   };
 
-  const backToGrid = () => setMode("grid");
+  // Back and a finished mode both remove the control that had focus, so the list hands it to New character.
+  const returnFocus = useRef(false);
+  const backToGrid = () => {
+    returnFocus.current = true;
+    setMode("grid");
+  };
   const createdHandoff: AvatarCreatedHandoff = {
     onCreated: handleCreated,
     onBack: backToGrid,
@@ -252,6 +257,11 @@ export function AvatarPicker({
 
         <AvatarCreationCard
           isUploading={isUploading}
+          takeFocus={() => {
+            const returning = returnFocus.current;
+            returnFocus.current = false;
+            return returning;
+          }}
           onUpload={() => fileInputRef.current?.click()}
           onGenerate={() => setMode("generate")}
           onGallery={() => setMode("gallery")}
