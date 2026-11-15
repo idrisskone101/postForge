@@ -6,6 +6,8 @@ import { ScrollFadeFallback } from "@/components/scroll-fade-fallback";
 import { ShellStateSync } from "@/components/shell-state-sync";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { isMissingPagePath } from "@/lib/app-routes";
+import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 import { readWorkspaceName } from "@/lib/workspace-name";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
 import "../globals.css";
@@ -19,7 +21,7 @@ export default async function AppLayout({
   const pathname = requestHeaders.get("x-pathname") || "/";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link
           rel="preload"
@@ -52,10 +54,21 @@ export default async function AppLayout({
   );
 }
 
-export const metadata: Metadata = {
-  title: "PostForge",
-  description: "Self-hosted AI content generation platform",
-};
+/** A route without a title of its own is named after its navigation item. */
+export async function generateMetadata(): Promise<Metadata> {
+  // The middleware names the path. A request it does not see (a missing file) has no section.
+  const pathname = (await headers()).get("x-pathname");
+  const section =
+    pathname === null
+      ? undefined
+      : isMissingPagePath(pathname)
+        ? "Page not found"
+        : getActiveWorkspaceItem(pathname)?.label;
+  return {
+    title: section ? `${section} - PostForge` : "PostForge",
+    description: "Self-hosted AI content generation platform",
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

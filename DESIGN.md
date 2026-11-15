@@ -385,7 +385,7 @@ A row menu (`RowActionsMenu`) opens with focus on its first item. ArrowDown, Arr
 - **`Skeleton`:** static raised shapes. No shimmer, no pulse.
 - **`Toast`:** a 48px raised pill with a 20px status badge, the message and one inline action.
 - **Confirm:** a destructive or irreversible action asks through `useConfirmDialog` (`ui/confirm-dialog`), the 420px alert dialog with Cancel focused first and a labelled destructive pill. `window.confirm` is not used.
-- **Not found:** every URL under no route shows the not-found page inside the shell, in the stored theme, with a 404 status.
+- **Not found:** every URL under no route shows the not-found page inside the shell, in the stored theme, with a 404 status. The server renders it, so it paints on the first frame and reads without JavaScript. Its header is the title "Page not found" alone: a missing page under a section shows no section title, no current nav item and no section action.
 
 ### Navigation
 36px pill items: 10px inline padding, 10px gap, an 18px icon at 1.5 stroke, 14px / 500 secondary text. Active: the raised pill, 600 bone text, an ember icon. Jobs carries a red-tint count of failed jobs; Gallery carries a neutral count of outputs waiting for review.

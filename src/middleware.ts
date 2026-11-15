@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isMissingPagePath } from "@/lib/app-routes";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 
 const AUTH_CHALLENGE = 'Basic realm="postForge"';
@@ -67,6 +68,10 @@ function nextWithPathname(request: NextRequest) {
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
   return NextResponse.next({
     request: { headers: requestHeaders },
+    // A URL under no route still renders: the catch-all draws the not-found page inside the shell.
+    // The status has to be set here, because a page that throws notFound() is answered with an
+    // empty document that only JavaScript fills in.
+    ...(isMissingPagePath(request.nextUrl.pathname) ? { status: 404 } : {}),
   });
 }
 

@@ -37,10 +37,12 @@ assert.equal(getActiveWorkspaceItem("/ugc-inspiration")?.label, "Inspiration");
 assert.equal(getActiveWorkspaceItem("/ugc-clone")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/ugc-clone/abc123")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/slideshow")?.label, "Slideshow");
-assert.equal(
-  getActiveWorkspaceItem("/slideshow/project-123")?.label,
-  "Slideshow"
-);
+// A URL under a navigation item that is no page of the app belongs to no item, so the not-found
+// page never shows a section's title, current item or actions.
+assert.equal(getActiveWorkspaceItem("/slideshow/project-123"), undefined);
+assert.equal(getActiveWorkspaceItem("/gallery/nope"), undefined);
+assert.equal(getActiveWorkspaceItem("/collections/nope/deeper"), undefined);
+assert.equal(getActiveWorkspaceItem("/nope"), undefined);
 assert.equal(
   getActiveWorkspaceItem("/slideshow?new=true")?.label,
   "Slideshow"

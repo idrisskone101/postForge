@@ -1,3 +1,5 @@
+import { isAppPagePath } from "@/lib/app-routes";
+
 export type WorkspaceNavigationLabel =
   | "Home"
   | "Jobs"
@@ -100,8 +102,10 @@ export const workspaceNavigationItems: WorkspaceNavigationItem[] = [
   ...workspaceNavigationGroups.utility,
 ];
 
+/** The navigation item a page belongs to. A URL under an item that is no page of the app has none. */
 export function getActiveWorkspaceItem(pathname: string) {
   const cleanPath = pathname.split(/[?#]/)[0] || "/";
+  if (!isAppPagePath(cleanPath)) return undefined;
 
   return workspaceNavigationItems.find((item) =>
     item.match.some((match) => {
