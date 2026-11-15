@@ -92,7 +92,7 @@ export function InspirationVideoCard({
               <span aria-hidden="true" className="text-fg-muted">
                 <PlayGlyph size={28} />
               </span>
-              <span className="max-w-full truncate text-[12px] leading-4 text-fg-secondary">
+              <span className="max-w-full text-center text-[12px] leading-4 text-fg-secondary [overflow-wrap:anywhere]">
                 {video.creatorHandle}
               </span>
             </span>
