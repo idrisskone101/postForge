@@ -30,7 +30,7 @@ export function CollectionTile({
       onClick={() => onOpen(collection.id)}
       className="group flex min-w-0 flex-col gap-2.5 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ember focus-visible:ring-offset-4 focus-visible:ring-offset-panel max-sm:w-[240px] max-sm:shrink-0 max-sm:snap-start"
     >
-      <span className="flex h-[196px] w-full gap-1 overflow-hidden rounded-lg bg-media shadow-[0_0_0_0_var(--pf-outline)] transition-shadow duration-[var(--pf-dur-feedback)] ease-pf group-hover:shadow-[0_0_0_1px_var(--pf-outline)]">
+      <span className="flex h-[196px] w-full gap-1 max-sm:h-[160px] overflow-hidden rounded-lg bg-media shadow-[0_0_0_0_var(--pf-outline)] transition-shadow duration-[var(--pf-dur-feedback)] ease-pf group-hover:shadow-[0_0_0_1px_var(--pf-outline)]">
         {lead ? (
           <MosaicImage asset={lead} priority={priority} className="h-full flex-[1.7_1_0%]" />
         ) : (
