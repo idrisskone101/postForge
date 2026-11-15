@@ -187,7 +187,8 @@
     height: 18px;
   }
 
-  .wb-btn-40:has(> svg:first-child):not([data-icon="end"]) {
+  /* The back pill sets its own 10px lead in shell.css; the two rules weigh the same, so it is named here. */
+  .wb-btn-40:has(> svg:first-child):not([data-icon="end"], .wb-back-pill) {
     padding-left: 14px;
   }
 
