@@ -80,6 +80,19 @@
   initial-value: 0px;
 }
 
+/* Which axis a scroller fades along and how deep. Not inherited, so a nested scroller declares its own. */
+@property --wb-fade-axis {
+  syntax: "none | inline | block";
+  inherits: false;
+  initial-value: none;
+}
+
+@property --wb-fade-size {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @keyframes wb-stuck-fade-out {
   from {
     opacity: 1;

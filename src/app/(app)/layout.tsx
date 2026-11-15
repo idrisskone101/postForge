@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { ClickFocus } from "@/components/click-focus";
 import { FocusReveal } from "@/components/focus-reveal";
+import { ScrollFadeFallback } from "@/components/scroll-fade-fallback";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { readWorkspaceName } from "@/lib/workspace-name";
@@ -43,6 +44,7 @@ export default async function AppLayout({
         </div>
         <FocusReveal />
         <ClickFocus />
+        <ScrollFadeFallback />
       </body>
     </html>
   );

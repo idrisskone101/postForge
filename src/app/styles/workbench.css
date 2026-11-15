@@ -503,11 +503,97 @@
     scroll-snap-align: start;
   }
 
+  /*
+   * Scroll Cut Rule. Each scroller masks its two edges by --wb-fade-start and --wb-fade-end, which
+   * rest at 0. A scroll timeline drives them where the engine has one. Where it has none,
+   * ScrollFadeFallback sets them from the scroll position, reading the axis and depth declared here.
+   */
+
   /* The same cue for a block that scrolls down inside a fixed-height column. */
+  .wb-scroll-fade-y {
+    --wb-fade-axis: block;
+    --wb-fade-size: 16px;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--wb-fade-start),
+      #000 calc(100% - var(--wb-fade-end)),
+      transparent
+    );
+  }
+
+  /* A body that scrolls over controls takes the deeper 24px cut so a control is never sliced
+     by a hard edge. */
+  .wb-scroll-fade-deep {
+    --wb-fade-size: 24px;
+    scroll-padding-block: 28px;
+  }
+
   @supports (animation-timeline: scroll()) {
     .wb-scroll-fade-y {
       animation: wb-scroll-fade linear both;
       animation-timeline: scroll(self block);
+    }
+
+    .wb-scroll-fade-deep {
+      animation-name: wb-scroll-fade-deep;
+    }
+  }
+
+  /* A bar pinned to the viewport bottom below 1280: the page fades out over the 24px above it, so
+     what it cuts reads as scroll. The fade leaves over the last 24px of the page, where the bar
+     comes to rest in flow, and never shows on a page that does not scroll. Set --wb-stuck-fade-color to the bar's own fill. */
+  @media (max-width: 1279.98px) {
+    .wb-stuck-fade::before {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: -24px;
+      z-index: -1;
+      height: 36px;
+      background: linear-gradient(to bottom, transparent, var(--wb-stuck-fade-color, var(--pf-panel)) 24px);
+      opacity: var(--wb-stuck-fade-opacity, 0);
+      pointer-events: none;
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (max-width: 1279.98px) {
+      .wb-stuck-fade::before {
+        animation: wb-stuck-fade-out linear both;
+        animation-timeline: scroll(root block);
+        animation-range: calc(100% - 24px) 100%;
+      }
+    }
+  }
+
+  .wb-segmented,
+  .wb-scroll-fade {
+    --wb-fade-axis: inline;
+    --wb-fade-size: 16px;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--wb-fade-start),
+      #000 calc(100% - var(--wb-fade-end)),
+      transparent
+    );
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .wb-segmented,
+    .wb-scroll-fade {
+      animation: wb-scroll-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    /* A column that only scrolls on its own from 1280 (the job inspector) takes the deep cut there. */
+    .wb-scroll-fade-from-xl {
+      --wb-fade-axis: block;
+      --wb-fade-size: 24px;
+      scroll-padding-block: 28px;
       mask-image: linear-gradient(
         to bottom,
         transparent,
@@ -517,43 +603,13 @@
       );
     }
 
-    /* A body that scrolls over controls takes the deeper 24px cut so a control is never sliced
-       by a hard edge. */
-    .wb-scroll-fade-deep {
-      scroll-padding-block: 28px;
-      animation-name: wb-scroll-fade-deep;
-    }
-  }
-
-  /* A bar pinned to the viewport bottom below 1280: the page fades out over the 24px above it, so
-     what it cuts reads as scroll. The fade leaves over the last 24px of the page, where the bar
-     comes to rest in flow, and never shows on a page that does not scroll. Set --wb-stuck-fade-color to the bar's own fill. */
-  @supports (animation-timeline: scroll()) {
-    @media (max-width: 1279.98px) {
-      .wb-stuck-fade::before {
-        content: "";
-        position: absolute;
-        inset-inline: 0;
-        top: -24px;
-        z-index: -1;
-        height: 36px;
-        background: linear-gradient(to bottom, transparent, var(--wb-stuck-fade-color, var(--pf-panel)) 24px);
-        opacity: 0;
-        pointer-events: none;
-        animation: wb-stuck-fade-out linear both;
-        animation-timeline: scroll(root block);
-        animation-range: calc(100% - 24px) 100%;
-      }
-    }
-  }
-
-  @supports (animation-timeline: scroll()) {
-    .wb-segmented,
-    .wb-scroll-fade {
-      animation: wb-scroll-fade linear both;
-      animation-timeline: scroll(self inline);
+    /* A sideways rail that turns into a column from 1280 fades along the block axis there. */
+    .wb-scroll-fade-xl-y {
+      --wb-fade-axis: block;
+      scroll-padding-block: 20px;
+      scroll-snap-type: none;
       mask-image: linear-gradient(
-        to right,
+        to bottom,
         transparent,
         #000 var(--wb-fade-start),
         #000 calc(100% - var(--wb-fade-end)),
@@ -562,38 +618,15 @@
     }
   }
 
-  /* A column that only scrolls on its own from 1280 (the job inspector) takes the deep cut there. */
   @supports (animation-timeline: scroll()) {
     @media (min-width: 1280px) {
       .wb-scroll-fade-from-xl {
-        scroll-padding-block: 28px;
         animation: wb-scroll-fade-deep linear both;
         animation-timeline: scroll(self block);
-        mask-image: linear-gradient(
-          to bottom,
-          transparent,
-          #000 var(--wb-fade-start),
-          #000 calc(100% - var(--wb-fade-end)),
-          transparent
-        );
       }
-    }
-  }
 
-  /* A sideways rail that turns into a column from 1280 fades along the block axis there. */
-  @supports (animation-timeline: scroll()) {
-    @media (min-width: 1280px) {
       .wb-scroll-fade-xl-y {
-        scroll-padding-block: 20px;
-        scroll-snap-type: none;
         animation-timeline: scroll(self block);
-        mask-image: linear-gradient(
-          to bottom,
-          transparent,
-          #000 var(--wb-fade-start),
-          #000 calc(100% - var(--wb-fade-end)),
-          transparent
-        );
       }
     }
   }
