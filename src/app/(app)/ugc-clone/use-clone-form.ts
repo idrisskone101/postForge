@@ -179,7 +179,6 @@ export function useCloneForm() {
     });
     if (!next) return;
     if (next.clearPendingSourceId) setPendingSourceId(null);
-    setSubmitError(next.error);
     router.replace(next.path);
   };
 
