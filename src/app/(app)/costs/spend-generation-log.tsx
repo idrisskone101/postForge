@@ -24,7 +24,7 @@ export function SpendGenerationLog({
   return (
     <Panel pad="none" className="min-w-0 gap-0 p-5 max-md:p-4" aria-labelledby="spend-log-title">
       <div className="flex flex-wrap items-center gap-2 pb-3">
-        <h2 id="spend-log-title" className="wb-panel-title min-w-max flex-1 whitespace-nowrap">
+        <h2 id="spend-log-title" className="wb-panel-title min-w-max flex-1 whitespace-nowrap max-md:basis-[calc(100%_-_44px)]">
           Generation log
         </h2>
         <label className="wb-input-wrap w-[240px] rounded-[var(--pf-radius-pill)] px-3 [&>svg]:size-4 max-md:order-last max-md:w-auto max-md:min-w-[150px] max-md:flex-1" data-size="36">
@@ -57,9 +57,14 @@ export function SpendGenerationLog({
             ))}
           </select>
         </label>
-        <Button onClick={exporter.run} disabled={exporter.busy} className="pl-3 pr-3.5 text-[13px]">
+        <Button
+          onClick={exporter.run}
+          disabled={exporter.busy}
+          aria-label={exporter.busy ? "Exporting" : "Export CSV"}
+          className="pl-3 pr-3.5 text-[13px] max-md:size-9 max-md:px-0"
+        >
           <Icon name="download" size={16} />
-          {exporter.busy ? "Exporting" : "Export CSV"}
+          <span className="max-md:hidden">{exporter.busy ? "Exporting" : "Export CSV"}</span>
         </Button>
       </div>
 

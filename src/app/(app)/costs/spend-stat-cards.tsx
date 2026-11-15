@@ -50,7 +50,7 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
           label: "Budget left",
           value: <span className={cn(over && "text-bad")}>{formatCost(view.budgetRemaining)}</span>,
           aside: (
-            <span className="flex min-w-0 flex-1 items-center gap-4 md:ml-1.5 text-[12px] font-normal leading-4 tracking-normal max-md:basis-full">
+            <span className="flex min-w-0 flex-1 items-center gap-4 text-[12px] font-normal leading-4 tracking-normal max-md:basis-full max-md:gap-2.5 md:ml-1.5">
               <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">
                 <Meter
                   label="Budget used"
@@ -62,8 +62,10 @@ export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCards
                   {formatCost(dashboard.currentPeriodCost)} / {budgetMoney(view.budget)}
                 </span>
               </span>
-              <Button size={32} onClick={onEditBudget}>
-                Edit budget
+              <Button size={32} onClick={onEditBudget} aria-label="Edit budget">
+                <span>
+                  Edit<span className="max-md:hidden"> budget</span>
+                </span>
               </Button>
             </span>
           ),
@@ -77,7 +79,7 @@ const CHIP =
   "inline-flex h-[22px] shrink-0 items-center whitespace-pre rounded-full bg-raised px-[9px] font-mono text-[12px] font-normal leading-4 tracking-normal text-fg-secondary";
 
 const SIDE_FIGURE =
-  "shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:basis-full max-md:text-right";
+  "shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:hidden";
 
 const STRIP_CLASS = cn(
   "shrink-0 [&>.wb-stat:nth-child(2)]:flex-[0.8] [&>.wb-stat:nth-child(3)]:flex-[1.6]",
@@ -86,8 +88,9 @@ const STRIP_CLASS = cn(
   "max-md:flex-col max-md:px-5 max-md:py-1",
   "max-md:[&>.wb-stat]:min-h-[60px] max-md:[&>.wb-stat]:flex-none max-md:[&>.wb-stat]:flex-row max-md:[&>.wb-stat]:flex-wrap max-md:[&>.wb-stat]:items-center max-md:[&>.wb-stat]:justify-between max-md:[&>.wb-stat]:py-3",
   "max-md:[&>.wb-stat]:border-l-0 max-md:[&>.wb-stat]:px-0 max-md:[&_.wb-stat-value]:text-[28px] max-md:[&_.wb-stat-value]:leading-8",
-  "max-md:[&_.wb-stat-value]:flex-wrap max-md:[&_.wb-stat-value]:justify-end max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:gap-y-3",
+  "max-md:[&_.wb-stat-value]:flex-wrap max-md:[&_.wb-stat-value]:justify-end",
+  "max-md:[&>.wb-stat:nth-child(3)]:gap-y-2.5 max-md:[&>.wb-stat:nth-child(3)]:py-3.5 max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:contents",
   "max-md:[&>.wb-stat+.wb-stat]:border-t max-md:[&>.wb-stat+.wb-stat]:border-hairline",
-  "max-md:[&_.wb-stat-foot]:basis-full max-md:[&_.wb-stat-foot]:justify-end",
+  "max-md:[&_.wb-stat-foot]:hidden",
   "md:max-lg:flex-wrap md:max-lg:gap-y-4 md:max-lg:[&>.wb-stat:nth-child(3)]:basis-full md:max-lg:[&>.wb-stat:nth-child(3)]:border-l-0 md:max-lg:[&>.wb-stat:nth-child(3)]:border-t md:max-lg:[&>.wb-stat:nth-child(3)]:border-hairline md:max-lg:[&>.wb-stat:nth-child(3)]:pl-0 md:max-lg:[&>.wb-stat:nth-child(3)]:pt-4",
 );

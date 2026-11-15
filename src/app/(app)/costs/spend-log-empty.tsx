@@ -25,11 +25,11 @@ export function SpendRangeEmpty({
   onWiden: () => void;
 }) {
   return (
-    <Panel pad="none" className="min-w-0 flex-1 p-5 max-md:p-4" aria-label="No spend in this period">
+    <Panel pad="none" className="min-w-0 p-5 max-md:p-4" aria-label="No spend in this period">
       <EmptyState
         icon="spend"
         title={`No spend in the last ${periodDays(period)} days`}
-        className="min-h-[320px] flex-1"
+        className="min-h-[320px]"
       >
         {period === "90d" ? (
           <Link href="/generate" className={buttonClass("strong")}>
