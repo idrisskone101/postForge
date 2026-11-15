@@ -103,6 +103,9 @@ for (const sample of [
   "/_next/static/x",
   "/_next/image",
   "/favicon.ico",
+  "/favicon.icox",
+  "/favicon.ico.map",
+  "/faviconXico",
   "/api/nope",
 ]) {
   if (isMissingPagePath(sample)) {
