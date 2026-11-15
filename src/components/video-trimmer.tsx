@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect, type PointerEvent } from "react";
 import { apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
-import { Button, Icon } from "@/components/workbench";
+import { Button } from "@/components/workbench";
 import {
   MAX_MOTION_SOURCE_DURATION_SEC,
   isMotionSourceWithinLimit,
@@ -257,7 +257,6 @@ export function VideoTrimmer({
           {canUseFullVideo ? "Use full video" : "Trim required"}
         </Button>
         <Button variant="strong" onClick={handleTrim} disabled={isTrimming || !trimRange.hasTrim}>
-          <Icon name="check" size={16} />
           {isTrimming ? "Trimming" : "Apply trim"}
         </Button>
       </div>
