@@ -42,6 +42,7 @@ export function CloneIdentityStep({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search characters"
+            className="[&::-webkit-search-cancel-button]:hidden"
           />
         </label>
       </div>
