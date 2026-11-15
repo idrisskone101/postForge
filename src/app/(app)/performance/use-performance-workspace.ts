@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   fetchIntegrationPerformance,
   integrationAccountKey,
@@ -38,6 +39,7 @@ const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
 
 export function usePerformanceWorkspace(initial: PerformanceInitial | null) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { confirm, dialog: confirmDialog } = useConfirmDialog();
   // Until hydration ends, dates are measured from the server's clock so both renders agree.
   const hydrated = useHydrated();
   const hydrationTime = initial && !hydrated ? initial.renderedAt : null;
@@ -242,7 +244,12 @@ export function usePerformanceWorkspace(initial: PerformanceInitial | null) {
 
   async function clearCsvData() {
     if (!csvDataset) return;
-    if (!window.confirm("Remove only the imported CSV dataset? Connected account data will remain available.")) return;
+    const confirmed = await confirm({
+      title: "Remove the imported CSV data?",
+      body: "Only the imported CSV dataset is removed. Connected account data will remain available.",
+      confirmLabel: "Remove CSV data",
+    });
+    if (confirmed !== true) return;
     try {
       await removeWorkspaceFeature("connections", "performance-dataset");
       setCsvDataset(null);
@@ -309,6 +316,7 @@ export function usePerformanceWorkspace(initial: PerformanceInitial | null) {
   }, [activeAccount, activeSource, connectedAccounts]);
 
   return {
+    confirmDialog,
     hydrationTime,
     inputRef,
     csvDataset,

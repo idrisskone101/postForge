@@ -43,6 +43,8 @@ export function InspirationPageClient(props: InspirationPageClientProps) {
         <InspirationSourceLibrary workspace={workspace} loadFailed={loadFailed} />
       </div>
 
+      {workspace.confirmDialog}
+
       {pageError && !loadFailed ? (
         <div className="wb-toast-region">
           <Toast

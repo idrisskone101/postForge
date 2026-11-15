@@ -168,6 +168,7 @@ export function PerformancePageClient({ initial }: { initial: PerformanceInitial
           <Toast key={toast.id} toast={toast} onDismiss={dismissToast} />
         </div>
       ) : null}
+      {workspace.confirmDialog}
     </>
   );
 }

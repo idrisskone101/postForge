@@ -11,9 +11,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
+/**
+ * The one confirm for a destructive or irreversible action: `confirm()` opens the shared alert dialog
+ * and resolves with the answer, and `dialog` is rendered once by the page. Nothing in the app uses
+ * `window.confirm`.
+ */
 export type ConfirmRequest = {
   title: string;
-  body: string;
+  body?: string;
   confirmLabel: string;
   /** When set, the dialog asks the person to type this phrase and resolves with what they typed. */
   phrase?: string;
@@ -66,7 +71,7 @@ export function useConfirmDialog() {
       <AlertDialogContent finalFocus={openerRef}>
         <AlertDialogHeader>
           <AlertDialogTitle>{request?.title}</AlertDialogTitle>
-          <AlertDialogDescription>{request?.body}</AlertDialogDescription>
+          {request?.body && <AlertDialogDescription>{request.body}</AlertDialogDescription>}
         </AlertDialogHeader>
         {request?.phrase && (
           <input

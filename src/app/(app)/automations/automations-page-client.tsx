@@ -104,6 +104,8 @@ export function AutomationsPageClient({
         </div>
       )}
 
+      {hub.confirmDialog}
+
       {publishState && (
         <PublishReviewDialog
           state={publishState}

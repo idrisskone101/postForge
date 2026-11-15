@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
   type InspirationSourceFeedFilter,
@@ -35,6 +36,7 @@ export function useInspirationWorkspace({
   initialVideoPage,
 }: InspirationPageClientProps) {
   const [pageError, setPageError] = useState<string | null>(null);
+  const { confirm, dialog: confirmDialog } = useConfirmDialog();
   const {
     accounts, setAccounts, accountCursor, isLoadingMoreAccounts, handleLoadMoreAccounts,
   } = useInspirationAccountList(initialAccountPage, setPageError);
@@ -250,6 +252,7 @@ export function useInspirationWorkspace({
   async function handleDeleteAccount(account: TrackedInspirationAccount) {
     await deleteWorkspaceAccount({
       account,
+      confirm,
       selectedVideoAccountId: selectedVideo?.accountId,
       activeFilter,
       setDeletingIds,
@@ -322,6 +325,7 @@ export function useInspirationWorkspace({
   }
 
   return {
+    confirmDialog,
     accounts,
     accountCursor,
     isLoadingMoreAccounts,

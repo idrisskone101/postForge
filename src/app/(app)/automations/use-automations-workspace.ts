@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { SlideshowAutomation } from "@/components/slideshow/types";
 import {
   isAutomationExecutionEnabled,
@@ -28,6 +29,7 @@ import { useVideoPublish } from "./use-video-publish";
 
 export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = []) {
   const router = useRouter();
+  const { confirm, dialog: confirmDialog } = useConfirmDialog();
   const [records, setRecords] = useState<AutomationRecord[]>(initialRecords);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -198,12 +200,19 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   }
 
   async function remove(record: AutomationRecord) {
-    if (
-      !window.confirm(
-        `Delete ${record.name}? Existing generated media will stay in Gallery.`
+    // The menu closes first, and its row's Actions button becomes the place focus returns to.
+    setMenu(null);
+    document
+      .querySelector<HTMLElement>(
+        `[data-automation-row=${JSON.stringify(record.id)}] [aria-label^="Actions for"]`
       )
-    )
-      return;
+      ?.focus({ preventScroll: true });
+    const confirmed = await confirm({
+      title: `Delete ${record.name}?`,
+      body: "Existing generated media will stay in Gallery.",
+      confirmLabel: "Delete automation",
+    });
+    if (confirmed !== true) return;
     setBusy(record.id);
     try {
       setRecords(await deleteAutomationRecord(record.id));
@@ -287,6 +296,7 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
   ];
 
   return {
+    confirmDialog,
     records,
     filtered,
     loading,

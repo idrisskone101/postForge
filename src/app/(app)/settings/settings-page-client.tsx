@@ -7,7 +7,7 @@ import {
   fetchWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
-import { useConfirmDialog } from "./confirm-dialog";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import { attentionCount } from "./integration-row-model";
 import { IntegrationsPanel } from "./integrations-panel";
 import { ModelsPanel } from "./models-panel";

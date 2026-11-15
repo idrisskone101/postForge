@@ -15,7 +15,7 @@ import {
   readIntegrationCallbackFeedback,
   removeIntegrationCallbackParams,
 } from "./integration-callback";
-import type { ConfirmAction } from "./confirm-dialog";
+import type { ConfirmAction } from "@/components/ui/confirm-dialog";
 import type { IntegrationsNotice } from "./types";
 
 export function useSettingsIntegrations({

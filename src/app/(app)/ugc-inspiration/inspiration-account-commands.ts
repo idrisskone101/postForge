@@ -1,3 +1,4 @@
+import type { ConfirmAction } from "@/components/ui/confirm-dialog";
 import type { TrackedInspirationAccount } from "@/lib/inspiration/types";
 import {
   inspirationPageError,
@@ -74,6 +75,7 @@ export async function refreshWorkspaceAccount(options: {
 
 export async function deleteWorkspaceAccount(options: {
   account: TrackedInspirationAccount;
+  confirm: ConfirmAction;
   selectedVideoAccountId: string | undefined;
   activeFilter: "all" | string;
   setDeletingIds: IdListSetter;
@@ -83,11 +85,11 @@ export async function deleteWorkspaceAccount(options: {
   setActiveFilterAndReload: (filter: "all" | string) => void;
   replaceVideoPage: () => Promise<void>;
 }): Promise<void> {
-  if (
-    !window.confirm(`Remove ${options.account.handleDisplay} from Inspiration?`)
-  ) {
-    return;
-  }
+  const confirmed = await options.confirm({
+    title: `Remove ${options.account.handleDisplay} from Inspiration?`,
+    confirmLabel: "Remove account",
+  });
+  if (confirmed !== true) return;
 
   options.setDeletingIds((current) => withId(current, options.account.id));
   options.setPageError(null);
