@@ -36,8 +36,8 @@ export function weekRangeLabel(weekDates: readonly Date[]) {
   const last = weekDates[weekDates.length - 1];
   const month = (date: Date) => date.toLocaleDateString([], { month: "short" });
   return first.getMonth() === last.getMonth()
-    ? `${first.getDate()} to ${last.getDate()} ${month(last)}`
-    : `${first.getDate()} ${month(first)} to ${last.getDate()} ${month(last)}`;
+    ? `${first.getDate()} - ${last.getDate()} ${month(last)}`
+    : `${first.getDate()} ${month(first)} - ${last.getDate()} ${month(last)}`;
 }
 
 export function slideshowNextRunLabel(input: {

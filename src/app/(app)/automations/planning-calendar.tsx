@@ -1,15 +1,22 @@
 "use client";
 
-import { Panel } from "@/components/workbench";
+import { useState } from "react";
+import { IconButton, Panel } from "@/components/workbench";
 import { cn } from "@/lib/utils";
-import { DAYS, currentWeekDates, localDateKey } from "./hub-status";
+import { DAYS, localDateKey, weekDatesFrom } from "./hub-status";
 import { weekRangeLabel } from "./hub-visual";
 import type { AutomationsWorkspace } from "./use-automations-workspace";
 
+/**
+ * The weekly plan. Schedules repeat by weekday, so a later week shows the same plan on its own
+ * dates. There is no run history by date, so the calendar does not go back before this week.
+ */
 export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
   const { calendarEntries } = hub;
-  const weekDates = currentWeekDates();
-  const todayKey = localDateKey(new Date());
+  const [weeksAhead, setWeeksAhead] = useState(0);
+  const now = new Date();
+  const weekDates = weekDatesFrom(now, weeksAhead);
+  const todayKey = localDateKey(now);
 
   return (
     <Panel
@@ -17,9 +24,30 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
       className="shrink-0 p-5 [&>.wb-panel-head]:h-9"
       title="Planning calendar"
       action={
-        <span className="inline-flex h-9 items-center rounded-[var(--pf-radius-pill)] bg-raised px-3.5 text-[13px] font-semibold leading-4 text-fg">
-          {weekRangeLabel(weekDates)}
-        </span>
+        <div
+          role="group"
+          aria-label="Week"
+          className="wb-on-raised inline-flex h-9 items-center gap-1.5 rounded-[var(--pf-radius-pill)] bg-raised px-1.5"
+        >
+          <IconButton
+            icon="chevron-left"
+            label="Previous week"
+            variant="ghost"
+            size={28}
+            aria-disabled={weeksAhead === 0 || undefined}
+            onClick={() => setWeeksAhead((weeks) => Math.max(0, weeks - 1))}
+          />
+          <span aria-live="polite" className="text-[13px] font-semibold leading-4 text-fg">
+            {weekRangeLabel(weekDates)}
+          </span>
+          <IconButton
+            icon="chevron-right"
+            label="Next week"
+            variant="ghost"
+            size={28}
+            onClick={() => setWeeksAhead((weeks) => weeks + 1)}
+          />
+        </div>
       }
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">

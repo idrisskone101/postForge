@@ -8,6 +8,7 @@ import {
   buttonClass,
 } from "@/components/workbench";
 import { isAutomationExecutionEnabled } from "@/lib/automations";
+import { useHydrated } from "@/lib/use-hydrated";
 import { AutomationDestinationCell } from "./destination-cell";
 import { FILTERS, automationNeedsAttention } from "./hub-status";
 import { automationListStatusLabel, automationListStatusTone } from "./hub-visual";
@@ -42,6 +43,9 @@ export function VideoAutomationList({
     duplicate,
     remove,
   } = hub;
+  // A schedule runs in its own zone. The zone is named only when it is not the viewer's.
+  const hydrated = useHydrated();
+  const viewerZone = hydrated ? Intl.DateTimeFormat().resolvedOptions().timeZone : null;
 
   return (
     <section className="flex min-w-0 flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
@@ -94,7 +98,8 @@ export function VideoAutomationList({
                 <div className="min-w-0 lg:col-start-1">
                   <p className="wb-row-title">{record.name}</p>
                   <p className="wb-row-sub">
-                    {templateLabel(record.template)}, {record.content.slideCount} slides
+                    {templateLabel(record.template)}, {record.content.slideCount}{" "}
+                    {record.content.slideCount === 1 ? "slide" : "slides"}
                   </p>
                 </div>
 
@@ -111,7 +116,10 @@ export function VideoAutomationList({
                     {record.schedule.days.join(", ") || "No days"}
                   </span>
                   <span className="wb-mono text-fg-muted" title={record.schedule.timezone}>
-                    {record.schedule.time} {record.schedule.timezone}
+                    {record.schedule.time}
+                    {viewerZone && record.schedule.timezone !== viewerZone
+                      ? ` ${record.schedule.timezone}`
+                      : null}
                   </span>
                   {record.lastRunAt && (
                     <span className="text-[12px] leading-4 text-fg-muted">
