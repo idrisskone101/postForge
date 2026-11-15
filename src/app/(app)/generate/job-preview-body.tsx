@@ -26,7 +26,8 @@ export function JobStage({
     if (!node) return;
     const read = (event?: Event) => {
       const size = reportedSize(event?.target ?? node.querySelector("img, video"));
-      if (size) setReported(size);
+      // An unchanged size keeps the old object. A fresh one would re-render, the image would reload and fire load again.
+      if (size) setReported((prev) => (prev?.src === size.src && prev.label === size.label ? prev : size));
     };
     node.addEventListener("load", read, true);
     node.addEventListener("loadedmetadata", read, true);
