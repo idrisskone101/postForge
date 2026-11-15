@@ -143,7 +143,7 @@ export type AvatarOptionView = {
 export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
   const { avatar, label, isSelected, onSelect, onDelete } = option;
   const originLabel = getAvatarOriginLabel(avatar.origin);
-  const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack);
+  const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack, originLabel ? "short" : "full");
   const identityFailed = avatar.identityPack?.status === "failed";
   let metaTone = isSelected ? "text-fg-secondary" : "text-fg-muted";
   if (identityFailed) metaTone = "text-bad";

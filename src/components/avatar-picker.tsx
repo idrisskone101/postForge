@@ -224,21 +224,26 @@ export function AvatarPicker({
         <div className="wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]">
           {avatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
-          ) : ordered.length === 0 ? (
-            // The unfiltered row stays in the layout, unseen, so a search with no match keeps its height.
-            <div className="relative">
-              <div aria-hidden="true" inert className="invisible">
+          ) : query ? (
+            // While a search is on, the unfiltered row stays in the layout, unseen, so the result
+            // keeps its height however few tiles match and the controls below do not move.
+            <div className="grid">
+              <div aria-hidden="true" inert className="invisible col-start-1 row-start-1 min-w-0 overflow-hidden">
                 {avatarRow(labelled)}
               </div>
-              <EmptyState
-                icon="search"
-                title={avatarsNextCursor ? "No match in the characters loaded so far" : "No characters match"}
-                className="absolute inset-0 min-h-0"
-              >
-                <Button variant="strong" onClick={search?.onClear}>
-                  Clear search
-                </Button>
-              </EmptyState>
+              {ordered.length === 0 ? (
+                <EmptyState
+                  icon="search"
+                  title={avatarsNextCursor ? "No match in the characters loaded so far" : "No characters match"}
+                  className="col-start-1 row-start-1 min-h-0"
+                >
+                  <Button variant="strong" onClick={search?.onClear}>
+                    Clear search
+                  </Button>
+                </EmptyState>
+              ) : (
+                <div className="col-start-1 row-start-1 min-w-0">{avatarRow(ordered)}</div>
+              )}
             </div>
           ) : (
             avatarRow(ordered)
@@ -254,13 +259,14 @@ export function AvatarPicker({
         />
       </div>
       {avatarsNextCursor && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <Button size={32} onClick={() => void loadMoreAvatars()} disabled={isLoadingMoreAvatars}>
+        <div className="flex min-h-8 items-center gap-3">
+          <Button size={32} className="shrink-0" onClick={() => void loadMoreAvatars()} disabled={isLoadingMoreAvatars}>
             {isLoadingMoreAvatars ? "Loading" : "Load more"}
           </Button>
+          {/* Two 16px lines beside the button are the button's own 32px, so the note adds no height on a phone. */}
           {query ? (
-            <p role="status" className="min-w-0 text-[13px] leading-[18px] text-fg-secondary">
-              Search covers the {avatars.length} characters loaded so far. Load more to search the rest.
+            <p role="status" className="min-w-0 text-[13px] leading-4 text-fg-secondary">
+              Searching the {avatars.length} loaded. Load more to search the rest.
             </p>
           ) : null}
         </div>

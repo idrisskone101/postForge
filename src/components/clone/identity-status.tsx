@@ -28,40 +28,40 @@ export function CloneIdentityStatusPanel({
     isStartingIdentityPack;
   const error = identityPackError || identityPack?.error;
   if (!avatarReady && !error) return null;
+  const failed = identityPack?.status === "failed";
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       {avatarReady && identityPack?.status === "completed" && !isBackfillingHairstyles ? (
         <StatusChip tone="ok" icon="check">
           {identityPack.images.length} identity references ready
         </StatusChip>
       ) : null}
-      {avatarReady && identityPack?.status === "failed" ? (
-        <StatusChip tone="bad" icon="alert">
-          Reference prep failed, original avatar is still usable
-        </StatusChip>
-      ) : null}
-      {avatarReady && identityPack?.status !== "failed" && (preparing || isBackfillingHairstyles) ? (
+      {avatarReady && !failed && (preparing || isBackfillingHairstyles) ? (
         <StatusChip tone="live">
           <span className="wb-live-dot" />
           {isBackfillingHairstyles ? "Generating hairstyles" : "Preparing identity references, original avatar remains usable"}
         </StatusChip>
       ) : null}
       {canGenerateHairstyles && (
-        <Button size={32} onClick={onGenerateHairstyles}>
+        <Button size={32} className="shrink-0" onClick={onGenerateHairstyles}>
           Generate hairstyles
         </Button>
       )}
-      {identityPack?.status === "failed" && (
-        <Button size={32} onClick={onRetry} disabled={isStartingIdentityPack}>
+      {failed && (
+        <Button size={32} className="shrink-0" onClick={onRetry} disabled={isStartingIdentityPack}>
           {isStartingIdentityPack ? "Retrying" : "Retry identity prep"}
         </Button>
       )}
-      {error && (
-        <p className="w-full min-w-0 text-[13px] leading-[18px] text-bad [overflow-wrap:anywhere]">
+      {/* One row: the sentence sits beside the button on two 16px lines, the row's own 32px, so a
+          failed identity does not push Back and Continue down. The tile already reads "Failed". */}
+      {failed || error ? (
+        <p className="min-w-0 text-[13px] leading-4 text-bad [overflow-wrap:anywhere]">
+          {avatarReady && failed ? <strong className="font-semibold">Reference prep failed. </strong> : null}
+          {avatarReady && failed ? <span className="max-sm:hidden">The original avatar is still usable. </span> : null}
           {error}
         </p>
-      )}
+      ) : null}
     </div>
   );
 }

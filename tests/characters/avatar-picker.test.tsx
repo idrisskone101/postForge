@@ -205,7 +205,7 @@ const importedPreparingMarkup = renderToStaticMarkup(
 );
 
 assert.match(importedPreparingMarkup, /Imported/);
-assert.match(importedPreparingMarkup, /Identity preparing/);
+assert.match(importedPreparingMarkup, />Preparing</);
 
 const importedReadyMarkup = renderToStaticMarkup(
   <AvatarOptionCard
@@ -221,7 +221,7 @@ const importedReadyMarkup = renderToStaticMarkup(
 );
 
 assert.match(importedReadyMarkup, /Imported/);
-assert.match(importedReadyMarkup, /Identity ready/);
+assert.match(importedReadyMarkup, />Ready</);
 
 const importedFailedMarkup = renderToStaticMarkup(
   <AvatarOptionCard
@@ -237,7 +237,7 @@ const importedFailedMarkup = renderToStaticMarkup(
 );
 
 assert.match(importedFailedMarkup, /Imported/);
-assert.match(importedFailedMarkup, /Identity failed - retry available/);
+assert.match(importedFailedMarkup, />Failed</);
 assert.match(importedFailedMarkup, /Identity 3/);
 
 const componentsDir = path.resolve(

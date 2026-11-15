@@ -85,13 +85,18 @@ export function getAvatarOriginLabel(origin: AvatarOrigin | undefined): string |
   return null;
 }
 
+/**
+ * The identity pack's state under a tile. Beside an origin ("Generated · Ready") the short form keeps
+ * the line whole on a 120px tile; alone it names what is ready.
+ */
 export function getAvatarIdentityPackStatusLabel(
   identityPack: AvatarIdentityPackSummary | null | undefined,
+  form: "full" | "short" = "full",
 ): string {
-  if (!identityPack) return "Identity preparing";
-  if (identityPack.status === "completed") return "Identity ready";
-  if (identityPack.status === "failed") return "Identity failed - retry available";
-  return "Identity preparing";
+  let state = "preparing";
+  if (identityPack?.status === "completed") state = "ready";
+  if (identityPack?.status === "failed") state = "failed";
+  return form === "short" ? `${state[0].toUpperCase()}${state.slice(1)}` : `Identity ${state}`;
 }
 
 export function getAvatarImportReadiness(rawJson: string, seedReferenceImageCount: number) {
