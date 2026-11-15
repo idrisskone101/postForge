@@ -162,7 +162,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
       )}
 
       {isFailed && (
-        <div role="alert" className="wb-notice items-start py-2 pr-2" data-tone="bad">
+        <div role="alert" className="wb-notice items-start pr-2.5" data-tone="bad">
           <p className="min-w-0 flex-1 break-words pt-[7px] [overflow-wrap:anywhere]">
             <strong className="text-bad">Generation failed.</strong>
             {genJob?.error ? ` ${genJob.error}` : ""}
