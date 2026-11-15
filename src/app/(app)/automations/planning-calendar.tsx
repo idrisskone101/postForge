@@ -62,7 +62,7 @@ export function PlanningCalendar({ hub }: { hub: AutomationsWorkspace }) {
               key={day}
               aria-current={isToday ? "date" : undefined}
               className={cn(
-                "flex min-h-[108px] min-w-0 flex-col gap-2.5 rounded-lg bg-raised p-3",
+                "flex min-h-[108px] min-w-0 flex-col gap-2.5 rounded-lg bg-raised p-3 max-[359px]:px-2.5",
                 isToday && "shadow-[0_0_0_2px_var(--pf-ember)]"
               )}
             >

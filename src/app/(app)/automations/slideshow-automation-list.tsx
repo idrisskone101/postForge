@@ -54,7 +54,7 @@ export function SlideshowAutomationList({
               <div
                 key={automation.id}
                 data-carousel-row="true"
-                className="flex min-h-[77px] min-w-0 items-center gap-3 border-b border-hairline py-2.5 last:border-b-0"
+                className="flex min-h-[77px] min-w-0 items-center gap-3 border-b border-hairline py-2.5 last:border-b-0 max-[359px]:flex-wrap max-[359px]:gap-y-1"
               >
                 <VisualTile
                   visualKey={automation.visualKey ?? "coral-glow"}
@@ -64,12 +64,12 @@ export function SlideshowAutomationList({
                   <p className="wb-row-title line-clamp-2 whitespace-normal [overflow-wrap:anywhere]" title={automation.name}>
                     {automation.name}
                   </p>
-                  <p className="wb-row-sub truncate" title={policy.full}>
+                  <p className="wb-row-sub whitespace-normal [overflow-wrap:anywhere]" title={policy.full}>
                     {policy.short}
                   </p>
                   <p className="flex items-center gap-1.5 pt-0.5" title={automation.cadence}>
                     <Icon name="clock" size={12} className="shrink-0 text-fg-muted" />
-                    <span className="wb-mono truncate text-fg">
+                    <span className="wb-mono min-w-0 whitespace-normal text-fg">
                       {slideshowNextRunLabel({
                         active: isActive,
                         nextRunAt: automation.nextRunAt,
@@ -77,7 +77,8 @@ export function SlideshowAutomationList({
                     </span>
                   </p>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
+                {/* Below 360 the controls take their own line, so the copy keeps the row's width. */}
+                <div className="flex shrink-0 items-center gap-1 max-[359px]:basis-full max-[359px]:justify-end">
                   <Toggle
                     checked={isActive}
                     disabled={busy === automation.id}
