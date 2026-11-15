@@ -8,6 +8,7 @@ export function PlaybookOverlayStatic({ templateId }: { templateId: unknown }) {
   const picker = firstPaintPlaybookPicker(selectedTemplate);
   return (
     <div data-playbook-first-paint="true" className="flex min-h-0 flex-1 flex-col gap-3">
+      <h1 className="sr-only">New automation</h1>
       <AutomationBuilderSkeleton />
       <PlaybookOverlayShell picker={picker} selectedTemplate={selectedTemplate} firstPaint>
         <PlaybookPicker picker={picker} />

@@ -44,6 +44,8 @@ export function AutomationBuilderClient({
       data-picker-open={templateOpen ? "true" : undefined}
       className="flex min-h-0 flex-1 flex-col gap-3"
     >
+      {/* The builder's header, with the page title, mounts once a playbook is applied. */}
+      <h1 className="sr-only">New automation</h1>
       <AutomationBuilderSkeleton />
       <AutomationPlaybookOverlay
         picker={playbookPicker}
