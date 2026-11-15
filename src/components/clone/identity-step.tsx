@@ -56,11 +56,7 @@ export function CloneIdentityStep({
         search={{ query, onClear: clearSearch }}
         onModeChange={(mode) => setListShowing(mode === "grid")}
       />
-      {/* The row is always there, so choosing an identity does not move the footer under it. On a phone
-          it holds the button beside three lines of reason. */}
-      <div data-clone-identity-status="true" className="flex min-h-8 min-w-0 items-center max-sm:min-h-12">
-        <CloneIdentityStatusPanel identity={draft} />
-      </div>
+      <CloneIdentityStatusPanel key={draft.avatarId ?? ""} identity={draft} />
     </section>
   );
 }
