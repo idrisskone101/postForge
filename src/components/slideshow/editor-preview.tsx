@@ -54,7 +54,8 @@ export function EditorPreview() {
         />
         <div
           className={cn(
-            "relative min-w-0 shrink transition-opacity duration-200 ease-pf",
+            // Below 640 the slide is too narrow for the image notice, so the notice spans the well instead.
+            "min-w-0 shrink transition-opacity duration-200 ease-pf sm:relative",
             regeneratingImage && "opacity-60",
           )}
           style={{ width: stageSlideWidth(draft.aspectRatio) }}
