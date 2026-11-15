@@ -17,6 +17,7 @@ import {
 } from "./editor-generate";
 import { gridRequiredCount } from "./editor-image";
 import { handleEditorKeyDown } from "./editor-keyboard";
+import { useEditorLeaveGuard } from "./editor-leave-guard";
 import { flushEditorSave } from "./editor-save";
 import {
   projectForPhaseSelection,
@@ -341,6 +342,7 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
     [activeIndex, draft.slides.length],
   );
 
+  const leaveGuard = useEditorLeaveGuard(saveState, flushSave, onBack);
   if (!activeSlide) return null;
 
   return (
@@ -383,9 +385,7 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
         setPickerAssetIds,
         setAdvanced,
         onSelectImageModel,
-        onBack: () => {
-          void flushSave().then(onBack).catch(() => undefined);
-        },
+        onBack: leaveGuard.requestBack,
         onPublish: () => {
           void flushSave().then(onPublish).catch(() => undefined);
         },
@@ -394,6 +394,7 @@ export function SlideshowEditor(props: SlideshowEditorProps) {
       }}
     >
       <EditorWorkspace />
+      {leaveGuard.dialog}
     </SlideshowEditorProvider>
   );
 }
