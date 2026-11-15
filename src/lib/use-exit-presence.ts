@@ -23,3 +23,14 @@ export function useExitPresence(show: boolean, exitMs: number) {
 
 /** Matches --pf-dur-exit. */
 export const EXIT_MS = 160;
+
+/**
+ * Keeps the last non-null value for its exit animation: an overlay drawn from nullable state stays
+ * mounted, with what it last showed, for `exitMs` after the state clears. `leaving` is true then.
+ */
+export function useLingering<T>(value: T | null, exitMs = EXIT_MS) {
+  const [last, setLast] = useState(value);
+  if (value !== null && value !== last) setLast(value);
+  const { mounted, leaving } = useExitPresence(value !== null, exitMs);
+  return { value: value ?? (mounted ? last : null), leaving };
+}

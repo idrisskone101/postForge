@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
 import { lockPageScroll } from "@/lib/page-scroll-lock";
 import { cn } from "@/lib/utils";
@@ -92,39 +92,74 @@ const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
 
 /**
- * Props for a hand-rolled modal root. The root and its scroller take focus when a click lands on scrim or
- * text, so Escape, the Tab trap and keyboard scrolling stay in the dialog. The page behind does not scroll.
- * Escape closes unless busy. Focus goes back to the row's Actions button on close.
+ * Keys, focus and motion for a hub dialog. The handler runs in the capture phase, before a video or a
+ * field can keep the key for its own text, so Escape, the Tab trap and keyboard scrolling stay in the
+ * dialog. The page behind does not scroll. Escape closes unless busy.
+ *
+ * The dialog moves like every overlay: `motion` carries the attributes the `.wb-overlay-*` classes
+ * read, set for the first frame and again while `leaving`, when the dialog stays mounted for its
+ * exit. A leaving dialog is inert, and focus goes back to the row's Actions button as the exit starts.
  */
-export function useDialogKeys(input: { recordId: string; busy: boolean; onClose: () => void }) {
-  const { recordId, busy, onClose } = input;
+export function useDialogKeys(input: {
+  recordId: string;
+  busy: boolean;
+  leaving: boolean;
+  onClose: () => void;
+}) {
+  const { recordId, busy, leaving, onClose } = input;
   const ref = useRef<HTMLDivElement>(null);
+  const [entering, setEntering] = useState(true);
   useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setEntering(false));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  useEffect(() => {
+    const dialog = ref.current;
     const unlock = lockPageScroll();
+    if (dialog && !dialog.contains(document.activeElement)) {
+      (dialog.querySelector<HTMLElement>("button:not(:disabled)") ?? dialog).focus();
+    }
     return () => {
       unlock();
-      document
-        .querySelector<HTMLElement>(
-          `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`
-        )
-        ?.focus({ preventScroll: true });
+      const active = document.activeElement;
+      if (!active || active === document.body || dialog?.contains(active)) focusRowActions(recordId);
     };
   }, [recordId]);
   useEffect(() => {
+    if (leaving) focusRowActions(recordId);
+  }, [leaving, recordId]);
+  useEffect(() => {
     if (!busy && document.activeElement === document.body) ref.current?.focus();
   }, [busy]);
+  const motion = {
+    "data-starting-style": entering ? "" : undefined,
+    "data-ending-style": leaving ? "" : undefined,
+  };
   return {
-    ref,
-    tabIndex: -1,
-    onKeyDownCapture: (event: KeyboardEvent<HTMLElement>) => {
-      if (event.key === "Escape" && !busy) {
-        event.stopPropagation();
-        onClose();
-        return;
-      }
-      keepTabInDialog(event);
+    motion,
+    overlay: {
+      ref,
+      tabIndex: -1,
+      inert: leaving,
+      ...motion,
+      onKeyDownCapture: (event: KeyboardEvent<HTMLElement>) => {
+        if (event.key === "Escape" && !busy) {
+          event.stopPropagation();
+          onClose();
+          return;
+        }
+        keepTabInDialog(event);
+      },
     },
   };
+}
+
+function focusRowActions(recordId: string) {
+  document
+    .querySelector<HTMLElement>(
+      `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`
+    )
+    ?.focus({ preventScroll: true });
 }
 
 function keepTabInDialog(event: KeyboardEvent<HTMLElement>) {

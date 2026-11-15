@@ -13,18 +13,21 @@ import { PublishDialogYoutubeFields } from "./publish-dialog-youtube";
 export function PublishReviewDialog({
   state,
   busy,
+  leaving,
   onChange,
   onClose,
   onPublish,
 }: {
   state: PublishDialogState;
   busy: boolean;
+  /** The dialog is closed and drawing its exit. */
+  leaving: boolean;
   onChange: (next: PublishDialogState) => void;
   onClose: () => void;
   onPublish: () => void;
 }) {
   const { preflight } = state;
-  const dialogKeys = useDialogKeys({ recordId: state.recordId, busy, onClose });
+  const dialog = useDialogKeys({ recordId: state.recordId, busy, leaving, onClose });
   const providerName = PROVIDER_NAMES[preflight.provider];
   const accountName =
     preflight.account.displayName || preflight.account.username || preflight.account.id;
@@ -34,13 +37,16 @@ export function PublishReviewDialog({
 
   return createPortal(
     <div
-      className="pf-safe-overlay fixed inset-0 z-[90] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
+      className="wb-overlay-backdrop pf-safe-overlay fixed inset-0 z-[90] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="publish-review-title"
-      {...dialogKeys}
+      {...dialog.overlay}
     >
-      <div className="flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-hidden rounded-xl bg-panel shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both]">
+      <div
+        {...dialog.motion}
+        className="wb-overlay-dialog flex max-h-full w-full min-w-0 max-w-[820px] flex-col overflow-hidden rounded-xl bg-panel shadow-float"
+      >
         <header className="flex min-w-0 shrink-0 items-start justify-between gap-3 px-4 pb-4 pt-5 sm:px-6">
           <div className="flex min-w-0 flex-col gap-1">
             <h2

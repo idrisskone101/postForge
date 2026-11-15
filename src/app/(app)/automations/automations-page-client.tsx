@@ -8,6 +8,7 @@ import {
   buttonClass,
 } from "@/components/workbench";
 import type { AutomationRecord } from "@/lib/automations";
+import { useLingering } from "@/lib/use-exit-presence";
 import { HubOverview } from "./hub-overview";
 import { HubSkeleton } from "./hub-skeleton";
 import { ManualResolutionDialog } from "./manual-resolution-dialog";
@@ -41,6 +42,8 @@ export function AutomationsPageClient({
     resolveUnknownPublication,
     busy,
   } = hub;
+  const { value: publishState, leaving: publishLeaving } = useLingering(publishDialog);
+  const { value: manualState, leaving: manualLeaving } = useLingering(manualResolutionDialog);
   const firstLoad = integrationsLoading && records.length === 0 && !error;
   const nothingSaved =
     records.length === 0 && slideshowAutomations.length === 0 && !slideshowError;
@@ -101,27 +104,24 @@ export function AutomationsPageClient({
         </div>
       )}
 
-      {publishDialog && (
+      {publishState && (
         <PublishReviewDialog
-          state={publishDialog}
-          busy={busy === publishDialog.recordId}
+          state={publishState}
+          busy={busy === publishState.recordId}
+          leaving={publishLeaving}
           onChange={(next) => setPublishDialog({ ...next, error: null })}
           onClose={() => setPublishDialog(null)}
           onPublish={submitPublication}
         />
       )}
 
-      {manualResolutionDialog && (
+      {manualState && (
         <ManualResolutionDialog
-          state={manualResolutionDialog}
-          busy={busy === manualResolutionDialog.record.id}
+          state={manualState}
+          busy={busy === manualState.record.id}
+          leaving={manualLeaving}
           onClose={() => setManualResolutionDialog(null)}
-          onConfirm={() =>
-            resolveUnknownPublication(
-              manualResolutionDialog.record,
-              manualResolutionDialog.resolution
-            )
-          }
+          onConfirm={() => resolveUnknownPublication(manualState.record, manualState.resolution)}
         />
       )}
     </div>

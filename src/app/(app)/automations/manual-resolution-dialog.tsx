@@ -10,26 +10,33 @@ import { useDialogKeys } from "./publish-dialog-controls";
 export function ManualResolutionDialog({
   state,
   busy,
+  leaving,
   onClose,
   onConfirm,
 }: {
   state: ManualResolutionDialogState;
   busy: boolean;
+  /** The dialog is closed and drawing its exit. */
+  leaving: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }) {
   const published = state.resolution === "published";
-  const dialogKeys = useDialogKeys({ recordId: state.record.id, busy, onClose });
+  const dialog = useDialogKeys({ recordId: state.record.id, busy, leaving, onClose });
   const provider = automationDestinationLabel(state.record.destination);
   return createPortal(
     <div
-      className="pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none [animation:wb-fade-in_var(--pf-dur-enter)_var(--pf-ease)_both]"
+      className="wb-overlay-backdrop pf-safe-overlay fixed inset-0 z-[100] grid min-w-0 place-items-center overflow-y-auto bg-[var(--pf-scrim)] outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="manual-resolution-title"
-      {...dialogKeys}
+      {...dialog.overlay}
     >
-      <div tabIndex={-1} className="flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto overscroll-contain rounded-xl outline-none bg-panel p-5 shadow-float [animation:wb-rise-in_var(--pf-dur-enter)_var(--pf-ease)_both] sm:p-6">
+      <div
+        {...dialog.motion}
+        tabIndex={-1}
+        className="wb-overlay-dialog flex max-h-full w-full min-w-0 max-w-[460px] flex-col gap-4 overflow-y-auto overscroll-contain rounded-xl bg-panel p-5 shadow-float outline-none sm:p-6"
+      >
         <span
           className={cn(
             "grid size-9 shrink-0 place-items-center rounded-full",
