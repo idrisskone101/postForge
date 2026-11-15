@@ -186,8 +186,8 @@ export function AvatarImportPanel({
             </div>
           )}
 
-          {/* 200px tracks give three columns in the 708px step, as drawn, and one on a phone. */}
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+          {/* A set is three candidates: three columns, as drawn, or one on a phone, never two and an orphan. */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
               <div key={candidate.fileId} className="flex min-w-0 flex-col gap-2">
                 <div className="wb-tile h-[280px]">
