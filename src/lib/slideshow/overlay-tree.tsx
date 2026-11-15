@@ -270,7 +270,8 @@ export function overlayTree(
       height,
       flexDirection: "column",
       justifyContent: layout.justifyContent,
-      alignItems: layout.alignItems,
+      // The copy column is centred, so left and right aligned copy keeps the side margin the width setting leaves.
+      alignItems: "center",
       paddingTop: layout.inset,
       paddingBottom: layout.inset,
       overflow: "hidden",
