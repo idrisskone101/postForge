@@ -149,6 +149,7 @@ function AlertDialogDescription({
 function AlertDialogAction({
   className,
   size = "default",
+  onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
   return (
@@ -156,6 +157,12 @@ function AlertDialogAction({
       data-slot="alert-dialog-action"
       size={size}
       className={cn(className)}
+      onClick={(event) => {
+        // A dismissed dialog stays mounted while it fades. Its action must not fire in that time.
+        const popup = event.currentTarget.closest("[data-slot=alert-dialog-content]")
+        if (popup?.matches("[data-closed], [data-ending-style]")) return
+        onClick?.(event)
+      }}
       {...props}
     />
   )
