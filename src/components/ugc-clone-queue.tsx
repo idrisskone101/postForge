@@ -141,7 +141,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
         <span aria-hidden="true" className="h-12 w-9 shrink-0 rounded-sm bg-media" />
       )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+        <span className="text-balance text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]">
           {label.source ?? (
             <>
               Clone <span className="wb-mono text-fg-secondary">{label.shortId}</span>
@@ -152,7 +152,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
           className={
             job.error
               ? "line-clamp-2 text-[13px] leading-4 text-bad [overflow-wrap:anywhere]"
-              : "truncate text-[13px] leading-4 text-fg-muted"
+              : "text-[13px] leading-4 text-fg-muted [overflow-wrap:anywhere]"
           }
         >
           {label.sourceId ? (
@@ -160,7 +160,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
           ) : null}
           {job.error ? `${label.sub} · ${job.error}` : label.sub}
         </span>
-        <span className="wb-mono truncate text-fg-secondary md:hidden">
+        <span className="wb-mono text-balance text-fg-secondary md:hidden">
           {formatRelativeDate(job.createdAt)} · {formatCost(job.estimatedCost)}
         </span>
       </span>
