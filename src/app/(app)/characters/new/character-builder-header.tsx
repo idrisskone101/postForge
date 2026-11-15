@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, type RefObject } from "react";
 import { Button, Icon, PageHeader } from "@/components/workbench";
 import type { CharacterBuilderHeaderViewModel } from "./types";
 
@@ -17,12 +18,15 @@ export function CharacterBuilderHeader({
     saveCharacter,
     saveAction,
   } = view;
+  const wideName = useRef<HTMLInputElement>(null);
+  const narrowName = useRef<HTMLInputElement>(null);
+  useNameFocusAcrossBreakpoint(wideName, narrowName);
 
   return (
     <PageHeader
       className={HEADER_CLASS}
       back={{ href: "/characters", label: "Characters", labelled: true }}
-      title={<NameField view={view} />}
+      title={<NameField view={view} inputRef={wideName} />}
     >
       <Button
         variant="strong"
@@ -48,15 +52,22 @@ export function CharacterBuilderHeader({
         {saveAction.label === "Save" ? "Save character" : saveAction.label}
       </Button>
       <h1 className="col-span-full row-start-2 min-w-0 sm:hidden">
-        <NameField view={view} />
+        <NameField view={view} inputRef={narrowName} />
       </h1>
     </PageHeader>
   );
 }
 
-function NameField({ view }: { view: CharacterBuilderHeaderViewModel }) {
+function NameField({
+  view,
+  inputRef,
+}: {
+  view: CharacterBuilderHeaderViewModel;
+  inputRef: RefObject<HTMLInputElement | null>;
+}) {
   return (
     <input
+      ref={inputRef}
       value={view.name}
       onChange={(event) => view.onNameChange(event.target.value)}
       aria-label="Character name"
@@ -66,6 +77,42 @@ function NameField({ view }: { view: CharacterBuilderHeaderViewModel }) {
     />
   );
 }
+
+const NARROW_HEADER = "(max-width: 639.98px)";
+
+/**
+ * The name field is drawn twice and each width shows one. Crossing 640px hides the one that is being
+ * typed in, so focus and the caret move to its twin instead of dropping to the page.
+ */
+function useNameFocusAcrossBreakpoint(
+  wide: RefObject<HTMLInputElement | null>,
+  narrow: RefObject<HTMLInputElement | null>
+) {
+  useEffect(() => {
+    const query = window.matchMedia(NARROW_HEADER);
+    const onChange = () => {
+      const hidden = query.matches ? wide.current : narrow.current;
+      const shown = query.matches ? narrow.current : wide.current;
+      if (!hidden || !shown || nameFocus.owner !== hidden) return;
+      shown.focus({ preventScroll: true });
+      shown.setSelectionRange(hidden.selectionStart, hidden.selectionEnd);
+    };
+    const onFocusIn = (event: FocusEvent) => {
+      const target = event.target;
+      nameFocus.owner = target === wide.current || target === narrow.current ? target : null;
+    };
+    query.addEventListener("change", onChange);
+    document.addEventListener("focusin", onFocusIn);
+    return () => {
+      query.removeEventListener("change", onChange);
+      document.removeEventListener("focusin", onFocusIn);
+      nameFocus.owner = null;
+    };
+  }, [wide, narrow]);
+}
+
+/** The name field that last took focus, if nothing else has taken it since. A hidden field gets no blur. */
+const nameFocus: { owner: EventTarget | null } = { owner: null };
 
 /*
  * Below 640px the header is Paper's two rows ("17 Character builder / 390"): the back pill with the
