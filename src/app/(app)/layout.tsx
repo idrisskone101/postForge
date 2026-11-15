@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { ClickFocus } from "@/components/click-focus";
 import { FocusReveal } from "@/components/focus-reveal";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
@@ -41,6 +42,7 @@ export default async function AppLayout({
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
         </div>
         <FocusReveal />
+        <ClickFocus />
       </body>
     </html>
   );
