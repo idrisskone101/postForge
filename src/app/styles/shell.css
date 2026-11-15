@@ -97,6 +97,11 @@
     box-shadow: var(--pf-float-shadow);
   }
 
+  /* A pointer open parks focus on the drawer itself. It is a container, so it draws no ring. */
+  .sidebar-mobile-drawer:focus-visible {
+    outline: none;
+  }
+
   /*
    * The drawer is a native dialog. allow-discrete keeps it rendered while it slides and fades out over
    * 160ms; @starting-style gives the 220ms enter. Where neither is supported it opens and closes at once.

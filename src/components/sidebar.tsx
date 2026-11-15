@@ -59,9 +59,12 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           type="button"
           aria-label="Open workspace navigation"
           className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-40"
-          onClick={() => {
+          onClick={(event) => {
             unlockPage.current ??= lockPageScroll();
             mobileNavRef.current?.showModal();
+            // showModal focuses the brand link, and Safari rings it even for a tap. A keyboard
+            // click has no detail and keeps that focus; a pointer open parks focus on the drawer.
+            if (event.detail > 0) mobileNavRef.current?.focus();
           }}
         >
           <Icon name="menu" />
@@ -70,6 +73,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           ref={mobileNavRef}
           id="workspace-mobile-drawer"
           aria-label="Workspace navigation"
+          tabIndex={-1}
           className="sidebar-mobile-drawer"
           onClose={() => {
             unlockPage.current?.();
