@@ -10,6 +10,7 @@ import {
 } from "../../src/app/(app)/characters/characters-helpers";
 import { CharactersEmpty } from "../../src/app/(app)/characters/characters-empty";
 import { characterDeletionDetail } from "../../src/app/(app)/characters/characters-mutations";
+import { characterSaveAction } from "../../src/app/(app)/characters/new/character-save-action";
 import { previewStatus } from "../../src/app/(app)/characters/new/character-preview-status";
 import type { useIdentityPack } from "../../src/app/(app)/characters/use-identity-pack";
 import { DEFAULT_CHARACTER_ATTRIBUTES } from "../../src/lib/character-attributes";
@@ -87,6 +88,13 @@ assert.deepEqual(previewStatus(true, true, true), { tone: "live", label: "Render
 assert.deepEqual(previewStatus(false, true, true), { tone: "warn", label: "Changes not rendered" });
 assert.deepEqual(previewStatus(false, false, true), { tone: "ok", label: "Preview ready" });
 assert.deepEqual(previewStatus(false, false, false), { tone: "neutral", label: "Draft, preview optional" });
+
+// While a render runs the status chip alone says so: Save keeps the name of what it does.
+const resting = { saving: false, rendering: false, missingEditRecord: false, previewSaveBlocked: false, readyPreviewFingerprint: null };
+assert.deepEqual(characterSaveAction({ ...resting, rendering: true }), { label: "Save draft", title: "Wait for the preview render to finish" });
+assert.equal(characterSaveAction({ ...resting, rendering: true, previewSaveBlocked: true }).label, "Preview changed");
+assert.equal(characterSaveAction({ ...resting, rendering: true, readyPreviewFingerprint: "character-recipe-v1-0" }).label, "Save");
+assert.equal(characterSaveAction({ ...resting, saving: true, rendering: true }).label, "Saving…");
 
 const emptyMarkup = renderToStaticMarkup(<CharactersEmpty />);
 assert.match(emptyMarkup, /No characters yet/);

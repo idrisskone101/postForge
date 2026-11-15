@@ -33,13 +33,13 @@ export function CharacterBuilderHeader({
         size={40}
         onClick={randomizeAndRender}
         disabled={saving || rendering}
-        aria-label={rendering ? "Rendering…" : "Randomize & render"}
+        aria-label="Randomize & render"
         aria-describedby="character-preview-generation-cost"
         title="Uses one paid image generation"
         className="max-sm:w-10 max-sm:px-0"
       >
         <Icon name="shuffle" />
-        <span className="max-sm:hidden">{rendering ? "Rendering…" : "Randomize & render"}</span>
+        <span className="max-sm:hidden">Randomize & render</span>
       </Button>
       <Button
         variant="primary"

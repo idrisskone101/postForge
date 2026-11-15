@@ -52,18 +52,18 @@ export function CharacterPreviewStage({
           <span role="status" aria-live="polite">{status.label}</span>
         </StatusChip>
       </div>
-      {previewRequiresRender ? (
-        <p id="character-preview-generation-cost" className="text-[13px] leading-[19px] text-fg-muted">
-          Uses one paid image generation per click. Re-render before saving changes so the photo matches the recipe.
-        </p>
-      ) : null}
+      {/* The cost is stated before the first paid click. The second sentence is true once a photo exists or is on its way. */}
+      <p id="character-preview-generation-cost" className="text-[13px] leading-[19px] text-fg-muted">
+        Uses one paid image generation per click.
+        {previewRequiresRender || rendering ? " Re-render before saving changes so the photo matches the recipe." : null}
+      </p>
       <Button
         size={40}
         block
         className="flex-none px-0 max-md:h-11"
         onClick={rerender}
         disabled={saving || rendering}
-        aria-describedby={previewRequiresRender ? "character-preview-generation-cost" : undefined}
+        aria-describedby="character-preview-generation-cost"
       >
         <Icon name="rerender" size={16} className="size-4" />
         Re-render preview
