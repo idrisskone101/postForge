@@ -6,28 +6,26 @@ import { createPortal } from "react-dom";
 import { Button, Icon, IconButton, KeyValueList, type KeyValueRow } from "@/components/workbench";
 import type { PublishDialogState } from "./hub-types";
 import { canSubmitPublishReview } from "./publish-dialog-model";
-import { CheckControl, FieldLabel, useDialogKeys } from "./publish-dialog-controls";
+import { CheckControl, FieldLabel, useDialogKeys, type DialogPhase } from "./publish-dialog-controls";
 import { PublishDialogTiktokFields } from "./publish-dialog-tiktok";
 import { PublishDialogYoutubeFields } from "./publish-dialog-youtube";
 
 export function PublishReviewDialog({
   state,
-  busy,
-  leaving,
+  phase,
   onChange,
   onClose,
   onPublish,
 }: {
   state: PublishDialogState;
-  busy: boolean;
-  /** The dialog is closed and drawing its exit. */
-  leaving: boolean;
+  phase: DialogPhase;
   onChange: (next: PublishDialogState) => void;
   onClose: () => void;
   onPublish: () => void;
 }) {
   const { preflight } = state;
-  const dialog = useDialogKeys({ recordId: state.recordId, busy, leaving, onClose });
+  const dialog = useDialogKeys({ recordId: state.recordId, phase, onClose });
+  const busy = phase === "busy";
   const providerName = PROVIDER_NAMES[preflight.provider];
   const accountName =
     preflight.account.displayName || preflight.account.username || preflight.account.id;

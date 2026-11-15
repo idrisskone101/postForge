@@ -91,43 +91,40 @@ export const publishLinkClass =
 const FOCUSABLE =
   'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), video[controls]';
 
+/** A hub dialog is open, waiting on its request, or closed and drawing its exit. */
+export type DialogPhase = "open" | "busy" | "leaving";
+
 /**
  * Keys, focus and motion for a hub dialog. The handler runs in the capture phase, before a video or a
  * field can keep the key for its own text, so Escape, the Tab trap and keyboard scrolling stay in the
  * dialog. The page behind does not scroll. Escape closes unless busy.
  *
  * The dialog moves like every overlay: `motion` carries the attributes the `.wb-overlay-*` classes
- * read, set for the first frame and again while `leaving`, when the dialog stays mounted for its
- * exit. A leaving dialog is inert, and focus goes back to the row's Actions button as the exit starts.
+ * read, set for the first frame and again in the `leaving` phase, when the dialog stays mounted for
+ * its exit. A leaving dialog is inert, and focus goes back to the row's Actions button as the exit starts.
  */
-export function useDialogKeys(input: {
-  recordId: string;
-  busy: boolean;
-  leaving: boolean;
-  onClose: () => void;
-}) {
-  const { recordId, busy, leaving, onClose } = input;
+export function useDialogKeys(input: { recordId: string; phase: DialogPhase; onClose: () => void }) {
+  const { recordId, phase, onClose } = input;
+  const busy = phase === "busy";
+  const leaving = phase === "leaving";
   const ref = useRef<HTMLDivElement>(null);
   const [entering, setEntering] = useState(true);
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => setEntering(false));
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-  useEffect(() => {
+    if (leaving) return;
     const dialog = ref.current;
     const unlock = lockPageScroll();
     if (dialog && !dialog.contains(document.activeElement)) {
       (dialog.querySelector<HTMLElement>("button:not(:disabled)") ?? dialog).focus();
     }
+    const frame = window.requestAnimationFrame(() => setEntering(false));
+    // Runs as the exit starts, and on an unmount that had no exit.
     return () => {
+      window.cancelAnimationFrame(frame);
       unlock();
       const active = document.activeElement;
       if (!active || active === document.body || dialog?.contains(active)) focusRowActions(recordId);
     };
-  }, [recordId]);
-  useEffect(() => {
-    if (leaving) focusRowActions(recordId);
-  }, [leaving, recordId]);
+  }, [recordId, leaving]);
   useEffect(() => {
     if (!busy && document.activeElement === document.body) ref.current?.focus();
   }, [busy]);

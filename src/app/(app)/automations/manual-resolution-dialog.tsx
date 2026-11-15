@@ -5,24 +5,22 @@ import { Button, Icon } from "@/components/workbench";
 import { automationDestinationLabel } from "@/lib/automations";
 import { cn } from "@/lib/utils";
 import type { ManualResolutionDialogState } from "./hub-types";
-import { useDialogKeys } from "./publish-dialog-controls";
+import { useDialogKeys, type DialogPhase } from "./publish-dialog-controls";
 
 export function ManualResolutionDialog({
   state,
-  busy,
-  leaving,
+  phase,
   onClose,
   onConfirm,
 }: {
   state: ManualResolutionDialogState;
-  busy: boolean;
-  /** The dialog is closed and drawing its exit. */
-  leaving: boolean;
+  phase: DialogPhase;
   onClose: () => void;
   onConfirm: () => void;
 }) {
   const published = state.resolution === "published";
-  const dialog = useDialogKeys({ recordId: state.record.id, busy, leaving, onClose });
+  const dialog = useDialogKeys({ recordId: state.record.id, phase, onClose });
+  const busy = phase === "busy";
   const provider = automationDestinationLabel(state.record.destination);
   return createPortal(
     <div

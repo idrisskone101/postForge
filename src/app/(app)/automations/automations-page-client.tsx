@@ -13,6 +13,7 @@ import { HubOverview } from "./hub-overview";
 import { HubSkeleton } from "./hub-skeleton";
 import { ManualResolutionDialog } from "./manual-resolution-dialog";
 import { PlanningCalendar } from "./planning-calendar";
+import type { DialogPhase } from "./publish-dialog-controls";
 import { PublishReviewDialog } from "./publish-review-dialog";
 import { SlideshowAutomationList } from "./slideshow-automation-list";
 import { useAutomationsWorkspace } from "./use-automations-workspace";
@@ -109,8 +110,7 @@ export function AutomationsPageClient({
       {publishState && (
         <PublishReviewDialog
           state={publishState}
-          busy={busy === publishState.recordId}
-          leaving={publishLeaving}
+          phase={dialogPhase(publishLeaving, busy === publishState.recordId)}
           onChange={(next) => setPublishDialog({ ...next, error: null })}
           onClose={() => setPublishDialog(null)}
           onPublish={submitPublication}
@@ -120,12 +120,16 @@ export function AutomationsPageClient({
       {manualState && (
         <ManualResolutionDialog
           state={manualState}
-          busy={busy === manualState.record.id}
-          leaving={manualLeaving}
+          phase={dialogPhase(manualLeaving, busy === manualState.record.id)}
           onClose={() => setManualResolutionDialog(null)}
           onConfirm={() => resolveUnknownPublication(manualState.record, manualState.resolution)}
         />
       )}
     </div>
   );
+}
+
+function dialogPhase(leaving: boolean, busy: boolean): DialogPhase {
+  if (leaving) return "leaving";
+  return busy ? "busy" : "open";
 }
