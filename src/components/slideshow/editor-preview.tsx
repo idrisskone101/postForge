@@ -112,7 +112,7 @@ function StageImageCheck({ src, onChoose }: { src: string; onChoose: () => void 
   return (
     <div
       role="alert"
-      className="wb-notice wb-fade-in absolute inset-x-3 top-3 justify-between"
+      className="wb-notice wb-fade-in absolute inset-x-3 top-3 flex-wrap justify-between py-2 pr-2"
       data-tone="warn"
     >
       <span>
