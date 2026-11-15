@@ -50,7 +50,7 @@ export function AutomationsPageClient({
       {error && (
         <div role="alert" className="wb-notice shrink-0" data-tone="bad">
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong>Automations did not load.</strong> {error}
+            <strong className="font-semibold text-bad">Automations did not load.</strong> {error}
           </span>
           <Button size={32} onClick={load}>
             Retry
@@ -61,7 +61,7 @@ export function AutomationsPageClient({
       {integrationsError && !integrationsLoading && (
         <div role="status" className="wb-notice shrink-0" data-tone="warn">
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong>Connection status unavailable.</strong> {integrationsError}
+            <strong className="font-semibold text-warn">Connection status unavailable.</strong> {integrationsError}
           </span>
           <Button size={32} onClick={load}>
             Check again

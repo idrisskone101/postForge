@@ -44,7 +44,7 @@ export function SlideshowAutomationList({
       {slideshowError ? (
         <div role="alert" className="wb-notice" data-tone="bad">
           <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong>Schedules did not load.</strong> {slideshowError}
+            <strong className="font-semibold text-bad">Schedules did not load.</strong> {slideshowError}
           </span>
           <Button size={32} onClick={load}>
             Retry

@@ -113,7 +113,7 @@ function StageImageCheck({ src, onChoose }: { src: string; onChoose: () => void 
       data-tone="warn"
     >
       <span>
-        <strong>Image unavailable.</strong>
+        <strong className="font-semibold text-warn">Image unavailable.</strong>
       </span>
       <Button size={32} onClick={onChoose}>
         Choose images

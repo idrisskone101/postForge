@@ -121,10 +121,7 @@ export function DestinationSelector({
           ) : (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusChip
-                  tone={readiness.ready ? "ok" : "warn"}
-                  icon={readiness.ready ? "check" : "alert"}
-                >
+                <StatusChip tone={readiness.ready ? "ok" : "warn"}>
                   {readiness.ready
                     ? "Connection verified"
                     : "Connection required"}
@@ -188,18 +185,22 @@ export function DestinationSelector({
               {!readiness.ready &&
                 readiness.code !== "account_changed" &&
                 readiness.code !== "account_unbound" && (
-                  <Link
-                    href={
-                      providerStatus?.configuration === "ready"
-                        ? providerStatus.connectUrl
-                        : "/settings?tab=integrations"
-                    }
-                    className={`${buttonClass("strong", 32)} self-start`}
-                  >
-                    {providerStatus?.configuration === "ready"
-                      ? `Connect ${providerStatus.displayName}`
-                      : "Open integrations"}
-                  </Link>
+                  providerStatus?.configuration === "ready" ? (
+                    // A plain anchor: the connect route starts an OAuth handshake, and a Link would prefetch it.
+                    <a
+                      href={providerStatus.connectUrl}
+                      className={`${buttonClass("strong", 32)} self-start`}
+                    >
+                      Connect {providerStatus.displayName}
+                    </a>
+                  ) : (
+                    <Link
+                      href="/settings?tab=integrations"
+                      className={`${buttonClass("strong", 32)} self-start`}
+                    >
+                      Open integrations
+                    </Link>
+                  )
                 )}
             </>
           )}

@@ -50,7 +50,7 @@ export function PublishDialogTiktokFields({
                   tiktokPrivacy: event.target.value as "" | TikTokPrivacyLevel,
                 })
               }
-              className="wb-input"
+              className={state.tiktokPrivacy ? "wb-input" : "wb-input text-fg-muted"}
             >
               <option value="">Select TikTok privacy</option>
               {creator.privacyLevelOptions.map((privacy) => (

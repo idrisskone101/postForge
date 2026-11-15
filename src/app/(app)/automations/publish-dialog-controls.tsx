@@ -44,6 +44,7 @@ export function CheckControl({
   onChange,
   children,
   className,
+  strong = false,
 }: {
   label: string;
   checked: boolean;
@@ -51,12 +52,15 @@ export function CheckControl({
   onChange: (checked: boolean) => void;
   children?: ReactNode;
   className?: string;
+  /** 600 weight, for the one consent a dialog asks for. */
+  strong?: boolean;
 }) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <label
         className={cn(
           "flex min-w-0 cursor-pointer items-start gap-2.5 text-[14px] leading-5 text-fg",
+          strong && "font-semibold",
           disabled && "cursor-not-allowed text-fg-disabled"
         )}
       >

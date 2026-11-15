@@ -56,7 +56,7 @@ export function PlaybookCard({
                   ? `Remove ${template.name} from favorites`
                   : `Add ${template.name} to favorites`
               }
-              className={cn(iconButtonClass("ghost", 30), "-mr-1.5 hover:bg-raised-strong")}
+              className={cn(iconButtonClass("ghost", 30), "-my-[5px] -mr-1.5 hover:bg-raised-strong")}
             >
               <Heart
                 strokeWidth={1.5}
