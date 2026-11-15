@@ -104,7 +104,7 @@ export function CreateView() {
                       visualKey={template.visualKeys[0] ?? "coral-glow"}
                       className="h-[92px] w-full rounded-sm transition-opacity duration-[160ms] ease-pf group-hover:opacity-80"
                     />
-                    <span className="line-clamp-2 break-words text-[12px] font-semibold leading-4 text-fg">
+                    <span className="text-balance break-words text-[12px] font-semibold leading-4 text-fg">
                       {template.name}
                     </span>
                   </button>
