@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { SidebarNav, SidebarNavItem } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icon } from "@/components/workbench/icon";
+import { lockPageScroll } from "@/lib/page-scroll-lock";
 import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
 import { useWorkspaceNotifications } from "@/lib/use-workspace-notifications";
@@ -18,6 +19,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
   const pathname = usePathname();
   const publicPolicyPage = isPublicPolicyPath(pathname);
   const mobileNavRef = useRef<HTMLDialogElement>(null);
+  const unlockPage = useRef<(() => void) | null>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const { counts, workspaceName } = useWorkspaceNotifications(
     !publicPolicyPage,
@@ -57,7 +59,10 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           type="button"
           aria-label="Open workspace navigation"
           className="wb-icon-btn wb-icon-btn-ghost wb-icon-btn-40"
-          onClick={() => mobileNavRef.current?.showModal()}
+          onClick={() => {
+            unlockPage.current ??= lockPageScroll();
+            mobileNavRef.current?.showModal();
+          }}
         >
           <Icon name="menu" />
         </button>
@@ -66,6 +71,10 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
           id="workspace-mobile-drawer"
           aria-label="Workspace navigation"
           className="sidebar-mobile-drawer"
+          onClose={() => {
+            unlockPage.current?.();
+            unlockPage.current = null;
+          }}
           onClick={(event) => {
             if (event.target === event.currentTarget) event.currentTarget.close();
           }}

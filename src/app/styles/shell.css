@@ -62,7 +62,7 @@
     gap: 8px;
     border-bottom: 1px solid var(--pf-hairline);
     background: var(--pf-floor);
-    /* A dialog that locks the page publishes the scrollbar width it replaced, so the bar does not move. */
+    /* lockPageScroll publishes the scrollbar width it replaced, so the bar does not move. */
     padding: env(safe-area-inset-top) calc(max(16px, env(safe-area-inset-right)) + var(--pf-scroll-lock-pad, 0px)) 0
       max(16px, env(safe-area-inset-left));
   }
@@ -138,11 +138,6 @@
 
   .sidebar-mobile-drawer::backdrop {
     background: var(--pf-backdrop);
-  }
-
-  /* The page behind the open drawer does not scroll. */
-  html:has(.sidebar-mobile-drawer[open]) {
-    overflow: hidden;
   }
 
   /* Collapse and expand: the width changes in one step, the contents cross-fade and settle 8px. */
