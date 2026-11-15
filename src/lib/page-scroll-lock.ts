@@ -24,3 +24,10 @@ export function lockPageScroll(): () => void {
     page.style.removeProperty("--pf-scroll-lock-pad");
   };
 }
+
+/**
+ * The same lock as an inline script, for a modal that is drawn by the server and so paints before
+ * any effect runs. It has no holder: the client that hydrates the modal calls lockPageScroll, which
+ * finds no scrollbar left to measure, keeps the published width and releases both as usual.
+ */
+export const PAGE_SCROLL_LOCK_SCRIPT = `(function(){var p=document.documentElement,w=window.innerWidth-p.getBoundingClientRect().width;if(w>0)p.style.setProperty("--pf-scroll-lock-pad",w+"px");p.dataset.pfScrollLock=""})()`;

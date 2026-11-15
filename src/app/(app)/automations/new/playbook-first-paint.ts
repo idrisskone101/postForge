@@ -5,11 +5,30 @@
  * control of the live picker, so it is never lost.
  */
 
+import { lockPageScroll } from "@/lib/page-scroll-lock";
+
 const FIRST_PAINT = "[data-playbook-first-paint]";
 const KEYED = "[data-playbook-key]";
 
 let pendingKey: string | null = null;
 let disarm: (() => void) | null = null;
+let unlock: (() => void) | null = null;
+
+/**
+ * Holds the page scroll lock for the server copy until the live picker takes over or the route
+ * leaves. Runs in a layout effect, so a copy that arrives by client navigation is locked before it
+ * paints; on a full load the inline script beside the copy has already drawn it locked.
+ */
+export function lockPlaybookFirstPaint() {
+  if (!document.querySelector(FIRST_PAINT)) return;
+  unlock = lockPageScroll();
+  return releasePlaybookFirstPaint;
+}
+
+function releasePlaybookFirstPaint() {
+  unlock?.();
+  unlock = null;
+}
 
 export function armPlaybookFirstPaint(load: () => void) {
   const root = document.querySelector<HTMLElement>(FIRST_PAINT);
@@ -41,6 +60,7 @@ export function armPlaybookFirstPaint(load: () => void) {
 export function handOffPlaybookFirstPaint() {
   disarm?.();
   disarm = null;
+  releasePlaybookFirstPaint();
   const root = document.querySelector<HTMLElement>(FIRST_PAINT);
   if (!root || root.hidden) return;
   const live = Array.from(

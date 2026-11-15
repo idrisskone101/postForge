@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
-import { armPlaybookFirstPaint } from "./playbook-first-paint";
+import { armPlaybookFirstPaint, lockPlaybookFirstPaint } from "./playbook-first-paint";
 
 export function AutomationBuilderClientLazy({
   search,
@@ -12,6 +12,10 @@ export function AutomationBuilderClientLazy({
 }) {
   const needsSession = Boolean(search.id) || search.intent === "apply";
   const [ready, setReady] = useState(needsSession);
+  useLayoutEffect(() => {
+    if (needsSession) return;
+    return lockPlaybookFirstPaint();
+  }, [needsSession]);
   useEffect(() => {
     if (needsSession) return;
     return armPlaybookFirstPaint(() => setReady(true));

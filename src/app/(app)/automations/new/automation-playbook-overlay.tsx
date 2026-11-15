@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/workbench/button";
 import { Icon } from "@/components/workbench/icon";
 import { IconButton } from "@/components/workbench/icon-button";
+import { PageScrollLock } from "@/components/ui/page-scroll-lock";
 import {
   templateNumber,
   type AutomationTemplate,
@@ -29,6 +30,7 @@ export function AutomationPlaybookOverlay({
       selectedTemplate={selectedTemplate}
       onApply={(templateId) => leaveThen(() => onApply(templateId))}
     >
+      <PageScrollLock />
       <PlaybookEscape onClose={exiting.onClose} />
       <PlaybookPicker picker={exiting} />
     </PlaybookOverlayShell>

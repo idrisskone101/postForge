@@ -1,3 +1,4 @@
+import { PAGE_SCROLL_LOCK_SCRIPT } from "@/lib/page-scroll-lock";
 import { AutomationBuilderSkeleton } from "./automation-builder-skeleton";
 import { PlaybookOverlayShell } from "./automation-playbook-overlay";
 import { firstPaintPlaybookPicker, resolvePlaybookTemplate } from "./playbook-model";
@@ -9,6 +10,7 @@ export function PlaybookOverlayStatic({ templateId }: { templateId: unknown }) {
   return (
     <div data-playbook-first-paint="true" className="flex min-h-0 flex-1 flex-col gap-3">
       <h1 className="sr-only">New automation</h1>
+      <script>{PAGE_SCROLL_LOCK_SCRIPT}</script>
       <AutomationBuilderSkeleton />
       <PlaybookOverlayShell picker={picker} selectedTemplate={selectedTemplate} firstPaint>
         <PlaybookPicker picker={picker} />
