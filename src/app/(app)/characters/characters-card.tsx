@@ -25,7 +25,7 @@ export function CharacterTile({
       onClick={() => onSelect(record)}
       className="wb-tile-cell group cursor-pointer rounded-lg text-left outline-none focus-visible:[&>.wb-tile]:shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]"
     >
-      <span className="wb-tile aspect-[343/600]" data-selected={selected ? "true" : undefined}>
+      <span className="wb-tile aspect-[343/600] max-sm:aspect-[157/200]" data-selected={selected ? "true" : undefined}>
         <CharacterPhoto
           avatarId={ready ? record.avatarId : null}
           alt={`${record.name} portrait`}

@@ -6,7 +6,11 @@ import { Button, buttonClass, Icon, StatusChip } from "@/components/workbench";
 import { buildCharacterPrompt } from "@/lib/character-attributes";
 import type { CharacterRecord } from "@/lib/characters";
 import { cn } from "@/lib/utils";
-import { CharacterIdentityPackRow, CharacterIdentityPackNotice } from "./characters-identity-pack";
+import {
+  CharacterIdentityPackRow,
+  CharacterIdentityPackNotice,
+  identityPackNeedsNotice,
+} from "./characters-identity-pack";
 import { formatShortDate, photoReady } from "./characters-helpers";
 import { CharacterPromptBed } from "./characters-prompt-bed";
 import type { CharacterInspectorModel } from "./types";
@@ -23,6 +27,8 @@ export function CharacterDetailPanel({
   const ready = photoReady(record);
   const identity = useIdentityPack(ready ? record.avatarId ?? null : null);
   const sheet = variant === "sheet";
+  // The notice takes the prompt bed's place, so the four actions stay in view. Copy prompt still copies it.
+  const showPromptBed = !sheet && !identityPackNeedsNotice(identity);
 
   return (
     <div className={cn("flex min-h-0 min-w-0 flex-col gap-4", !sheet && "flex-1")} aria-busy={busy}>
@@ -30,8 +36,9 @@ export function CharacterDetailPanel({
         <div
           data-character-stage
           className={cn(
-            "grid shrink-0 place-items-center",
-            sheet ? "h-28 w-[84px]" : STAGE_CLASS
+            "grid place-items-center",
+            // Beside the notice the stage gives up height, so a long provider error still leaves the actions in view.
+            sheet ? "h-28 w-[84px] shrink-0" : cn(STAGE_CLASS, showPromptBed ? "shrink-0" : "min-h-[200px] shrink")
           )}
         >
           <span
@@ -73,11 +80,11 @@ export function CharacterDetailPanel({
 
       <CharacterIdentityPackNotice identity={identity} />
 
-      {sheet ? null : (
+      {showPromptBed ? (
         <CharacterPromptBed key={record.id} prompt={buildCharacterPrompt(record.attributes)} />
-      )}
+      ) : null}
 
-      <div className="flex shrink-0 flex-col gap-2">
+      <div className={cn("flex shrink-0 flex-col gap-2", !sheet && !showPromptBed && "mt-auto")}>
         <div className="flex gap-2">
           <Link
             href={`/characters/new?id=${encodeURIComponent(record.id)}`}
@@ -92,13 +99,13 @@ export function CharacterDetailPanel({
           </Button>
         </div>
         <div className="flex gap-2">
-          <Button size={32} className={cn("min-w-0 flex-1", sheet && "h-11")} disabled={busy} onClick={() => onDuplicate(record)}>
+          <Button size={32} className={cn("min-w-0 flex-1", sheet && "h-11 text-sm")} disabled={busy} onClick={() => onDuplicate(record)}>
             Duplicate
           </Button>
           <Button
             variant="danger"
             size={32}
-            className={cn("min-w-0 flex-1", sheet && "h-11")}
+            className={cn("min-w-0 flex-1", sheet && "h-11 text-sm")}
             disabled={busy}
             onClick={() => onRequestDelete(record)}
           >

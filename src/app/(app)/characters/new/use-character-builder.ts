@@ -30,6 +30,8 @@ function makeCharacterId() {
   return `character_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
+const MISSING_RECORD_MESSAGE = "Return to Characters and choose an existing draft.";
+
 export function useCharacterBuilder(editId: string | null = null) {
   const router = useRouter();
   const [recordId, setRecordId] = useState(() => editId ?? makeCharacterId());
@@ -105,7 +107,7 @@ export function useCharacterBuilder(editId: string | null = null) {
         }
         if (!cancelled && !record) {
           setMissingEditRecord(true);
-          setError("That character could not be found. Return to Characters and choose an existing draft.");
+          setError(MISSING_RECORD_MESSAGE);
         }
       })
       .catch((cause) => !cancelled && setError(cause instanceof Error ? cause.message : "Unable to load character"))
@@ -309,6 +311,7 @@ export function useCharacterBuilder(editId: string | null = null) {
     activeSection,
     active,
     error,
+    errorIsMissingRecord: missingEditRecord && error === MISSING_RECORD_MESSAGE,
     onDismissError: () => setError(null),
     onSelectSection: setActiveSection,
     copyPrompt,

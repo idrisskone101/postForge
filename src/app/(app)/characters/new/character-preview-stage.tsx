@@ -60,7 +60,7 @@ export function CharacterPreviewStage({
       <Button
         size={40}
         block
-        className="flex-none px-0"
+        className="flex-none px-0 max-md:h-11"
         onClick={rerender}
         disabled={saving || rendering}
         aria-describedby={previewRequiresRender ? "character-preview-generation-cost" : undefined}

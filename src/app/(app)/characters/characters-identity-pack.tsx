@@ -16,9 +16,14 @@ export function CharacterIdentityPackRow({ identity }: { identity: IdentityPackV
   );
 }
 
+/** True when the inspector shows the identity pack notice. It takes the prompt bed's place. */
+export function identityPackNeedsNotice(identity: IdentityPackView) {
+  return identity.pack?.status === "failed" || Boolean(identity.error);
+}
+
 export function CharacterIdentityPackNotice({ identity }: { identity: IdentityPackView }) {
   const failed = identity.pack?.status === "failed";
-  if (!failed && !identity.error) return null;
+  if (!identityPackNeedsNotice(identity)) return null;
   const reason = identity.error ?? identity.pack?.error ?? "No reason was recorded.";
   return (
     <div className="wb-notice wb-fade-in flex-col items-start gap-2.5" data-tone="bad" role="alert">

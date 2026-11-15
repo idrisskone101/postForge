@@ -36,6 +36,8 @@ export type CharacterAttributeEditorViewModel = {
   activeSection: string;
   active: CharacterAttributeSection | undefined;
   error: string | null;
+  /** The edit link points at no saved character. The notice names that and cannot be dismissed. */
+  errorIsMissingRecord?: boolean;
   onDismissError: () => void;
   onSelectSection: (sectionId: string) => void;
   copyPrompt: () => void;

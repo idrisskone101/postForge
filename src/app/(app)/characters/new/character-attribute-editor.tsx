@@ -16,7 +16,7 @@ export function CharacterAttributeEditor({
 }: {
   view: CharacterAttributeEditorViewModel;
 }) {
-  const { active, error, onDismissError, onSelectSection, copyPrompt } = view;
+  const { active, error, errorIsMissingRecord, onDismissError, onSelectSection, copyPrompt } = view;
   const index = CHARACTER_ATTRIBUTE_SECTIONS.findIndex((section) => section.id === active?.id);
   const previous = index > 0 ? CHARACTER_ATTRIBUTE_SECTIONS[index - 1] : undefined;
   const next = CHARACTER_ATTRIBUTE_SECTIONS[index + 1];
@@ -53,12 +53,16 @@ export function CharacterAttributeEditor({
       {error ? (
         <div role="alert" className="wb-notice wb-fade-in items-start justify-between" data-tone="bad">
           <p className="min-w-0 text-[13px] leading-[19px] text-fg [overflow-wrap:anywhere]">
-            <strong className="font-bold text-bad">Not saved. </strong>
+            <strong className="font-bold text-bad">
+              {errorIsMissingRecord ? "Character not found. " : "Not saved. "}
+            </strong>
             {error}
           </p>
-          <button type="button" onClick={onDismissError} aria-label="Dismiss error" className="shrink-0 rounded-full text-bad outline-none focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]">
-            <Icon name="x" size={16} />
-          </button>
+          {errorIsMissingRecord ? null : (
+            <button type="button" onClick={onDismissError} aria-label="Dismiss error" className="shrink-0 rounded-full text-bad outline-none focus-visible:shadow-[0_0_0_2px_var(--pf-ember)]">
+              <Icon name="x" size={16} />
+            </button>
+          )}
         </div>
       ) : null}
       {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
