@@ -14,8 +14,10 @@ import type { Avatar } from "../../src/lib/avatar-picker-model";
 import { importWorkspace } from "./avatar-import-workspace";
 import {
   buildAvatarGenerationPrompt,
+  avatarLabelMatchesSearch,
   getAvatarImportReadiness,
   getAvatarOptionLabel,
+  getAvatarTileLabel,
 } from "../../src/lib/avatar-workflow";
 import { userErrorMessage } from "../../src/lib/user-error-message";
 
@@ -35,6 +37,21 @@ assert.match(avatarErrorMarkup, /Dismiss avatar error/);
 assert.equal(getAvatarOptionLabel(0), "Identity 1");
 assert.equal(getAvatarOptionLabel(4), "Identity 5");
 assert.doesNotMatch(getAvatarOptionLabel(0), /[0-9a-f]{8}-[0-9a-f-]{27}/i);
+
+// A tile shows the stored name when a person would recognise it. An empty name or a generated id
+// keeps the positional label, so an id still never reaches the screen.
+assert.equal(getAvatarTileLabel("Imani Okafor", 0), "Imani Okafor");
+assert.equal(getAvatarTileLabel("  Untitled character ", 2), "Untitled character");
+assert.equal(getAvatarTileLabel("8d20f30a-2f6f-47db-9114-6196942ee119", 3), "Identity 4");
+assert.equal(getAvatarTileLabel("avatar-8D20F30A-2F6F-47DB-9114-6196942EE119", 3), "Identity 4");
+assert.equal(getAvatarTileLabel("", 0), "Identity 1");
+assert.equal(getAvatarTileLabel("   ", 1), "Identity 2");
+assert.equal(getAvatarTileLabel(null, 1), "Identity 2");
+assert.equal(getAvatarTileLabel("1731234567890", 4), "Identity 5");
+// Search matches the label on the tile, whichever of the two it is.
+assert.equal(avatarLabelMatchesSearch("Imani Okafor", " imani "), true);
+assert.equal(avatarLabelMatchesSearch("Identity 4", "identity 4"), true);
+assert.equal(avatarLabelMatchesSearch("Identity 4", "8d20f30a"), false);
 
 const creationMarkup = renderToStaticMarkup(
   <AvatarCreationCard

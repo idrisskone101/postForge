@@ -178,7 +178,7 @@ export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
       <div className="flex min-w-0 flex-col">
         <p
           className={cn(
-            "truncate text-[14px] leading-[18px] text-fg",
+            "text-[14px] leading-[18px] text-fg [overflow-wrap:anywhere]",
             isSelected ? "font-bold" : "font-semibold"
           )}
         >

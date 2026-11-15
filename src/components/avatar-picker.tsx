@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { apiDelete, apiGet } from "@/lib/api/client";
-import { getAvatarOptionLabel } from "@/lib/avatar-workflow";
+import { avatarLabelMatchesSearch, getAvatarTileLabel } from "@/lib/avatar-workflow";
 import type {
   Avatar,
   AvatarCreatedHandoff,
@@ -25,9 +25,12 @@ import { AvatarImportMode } from "@/components/avatar-picker-import-mode";
 export function AvatarPicker({
   selectedId,
   onSelect,
+  search,
 }: {
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** Filters the loaded identities by the label on their tile. The field belongs to the caller. */
+  search?: AvatarSearch;
 }) {
   const [avatars, setAvatars] = useState<Avatar[]>(() => rememberedAvatars()?.items ?? []);
   const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(
@@ -163,11 +166,34 @@ export function AvatarPicker({
     }
   }
 
-  const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId);
-  const orderedAvatars = (
-    selectedAvatar
-      ? [selectedAvatar, ...avatars.filter((avatar) => avatar.id !== selectedAvatar.id)]
-      : avatars
+  const labelled = avatars.map((avatar, index) => ({
+    avatar,
+    label: getAvatarTileLabel(avatar.name, index),
+  }));
+  const query = search?.query.trim() ?? "";
+  const matching = query
+    ? labelled.filter((item) => avatarLabelMatchesSearch(item.label, query))
+    : labelled;
+  const selected = matching.find((item) => item.avatar.id === selectedId);
+  const ordered = selected
+    ? [selected, ...matching.filter((item) => item !== selected)]
+    : matching;
+
+  const avatarRow = (items: typeof labelled) => (
+    <div className={AVATAR_ROW} style={avatarRowStyle(items.length)}>
+      {items.map(({ avatar, label }) => (
+        <AvatarOptionCard
+          key={avatar.id}
+          option={{
+            avatar,
+            label,
+            isSelected: selectedId === avatar.id,
+            onSelect: () => onSelect(avatar.id),
+            onDelete: (event) => handleDelete(avatar.id, event),
+          }}
+        />
+      ))}
+    </div>
   );
 
   return (
@@ -189,28 +215,26 @@ export function AvatarPicker({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
         <div className="wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]">
-          {orderedAvatars.length === 0 ? (
+          {avatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
-          ) : (
-            <div className={AVATAR_ROW} style={avatarRowStyle(orderedAvatars.length)}>
-              {orderedAvatars.map((avatar, index) => {
-          const isSelected = selectedId === avatar.id;
-          const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
-          const avatarLabel = getAvatarOptionLabel(sourceIndex >= 0 ? sourceIndex : index);
-          return (
-            <AvatarOptionCard
-              key={avatar.id}
-              option={{
-                avatar,
-                label: avatarLabel,
-                isSelected,
-                onSelect: () => onSelect(avatar.id),
-                onDelete: (event) => handleDelete(avatar.id, event),
-              }}
-            />
-          );
-              })}
+          ) : ordered.length === 0 ? (
+            // The unfiltered row stays in the layout, unseen, so a search with no match keeps its height.
+            <div className="relative">
+              <div aria-hidden="true" inert className="invisible">
+                {avatarRow(labelled)}
+              </div>
+              <EmptyState
+                icon="search"
+                title={avatarsNextCursor ? "No match in the characters loaded so far" : "No characters match"}
+                className="absolute inset-0 min-h-0"
+              >
+                <Button variant="strong" onClick={search?.onClear}>
+                  Clear search
+                </Button>
+              </EmptyState>
             </div>
+          ) : (
+            avatarRow(ordered)
           )}
         </div>
 
@@ -223,18 +247,22 @@ export function AvatarPicker({
         />
       </div>
       {avatarsNextCursor && (
-        <Button
-          size={32}
-          onClick={() => void loadMoreAvatars()}
-          disabled={isLoadingMoreAvatars}
-          className="self-start"
-        >
-          {isLoadingMoreAvatars ? "Loading" : "Load more"}
-        </Button>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Button size={32} onClick={() => void loadMoreAvatars()} disabled={isLoadingMoreAvatars}>
+            {isLoadingMoreAvatars ? "Loading" : "Load more"}
+          </Button>
+          {query ? (
+            <p role="status" className="min-w-0 text-[13px] leading-[18px] text-fg-secondary">
+              Search covers the {avatars.length} characters loaded so far. Load more to search the rest.
+            </p>
+          ) : null}
+        </div>
       )}
     </div>
   );
 }
+
+export type AvatarSearch = { query: string; onClear: () => void };
 
 const AVATAR_ROW =
   "grid grid-flow-col grid-cols-[var(--avatar-template)] gap-3 auto-cols-[max(120px,calc((100%-var(--avatar-gaps))/var(--avatar-cols)))] [[data-avatar-stacked]_&]:grid-flow-row [[data-avatar-stacked]_&]:auto-cols-auto [[data-avatar-stacked]_&]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]";

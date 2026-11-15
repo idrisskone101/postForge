@@ -30,7 +30,7 @@ export function CloneIdentityStatusPanel({
   if (!avatarReady && !error) return null;
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
+    <div className="flex min-w-0 flex-wrap items-center gap-2">
       {avatarReady && identityPack?.status === "completed" && !isBackfillingHairstyles ? (
         <StatusChip tone="ok" icon="check">
           {identityPack.images.length} identity references ready
@@ -58,7 +58,7 @@ export function CloneIdentityStatusPanel({
         </Button>
       )}
       {error && (
-        <p className="w-full min-w-0 text-right text-[13px] leading-[18px] text-bad [overflow-wrap:anywhere]">
+        <p className="w-full min-w-0 text-[13px] leading-[18px] text-bad [overflow-wrap:anywhere]">
           {error}
         </p>
       )}

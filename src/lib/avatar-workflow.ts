@@ -45,6 +45,27 @@ export function getAvatarOptionLabel(index: number): string {
   return `Identity ${index + 1}`;
 }
 
+const GENERATED_ID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+/** A stored name a person would recognise: it has letters and is not a generated id. */
+function isReadableAvatarName(name: string): boolean {
+  return /\p{L}/u.test(name) && !GENERATED_ID.test(name);
+}
+
+/**
+ * The label drawn under an identity tile, and the text a search matches. The stored name when a
+ * person would recognise it; the positional label when the name is empty or a generated id (an
+ * upload named after its file id), so an id never reaches the screen.
+ */
+export function getAvatarTileLabel(name: string | null | undefined, index: number): string {
+  const stored = name?.trim() ?? "";
+  return isReadableAvatarName(stored) ? stored : getAvatarOptionLabel(index);
+}
+
+export function avatarLabelMatchesSearch(label: string, query: string): boolean {
+  return label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+}
+
 export function getAvatarOriginLabel(origin: AvatarOrigin | undefined): string | null {
   if (origin === "imported") return "Imported";
   if (origin === "generated") return "Generated";
