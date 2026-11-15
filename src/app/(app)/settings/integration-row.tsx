@@ -17,7 +17,7 @@ export type IntegrationRowView = {
 
 /**
  * One integration row. A table row from 720px of row width (tile, platform,
- * connection 152, metrics 150, publishing 170, action 112), a stacked card
+ * connection 168, metrics 150, publishing 170, action 112), a stacked card
  * below it. Notices and the detail region go in `children`.
  */
 export function IntegrationRow({ view, children }: { view: IntegrationRowView; children?: ReactNode }) {
@@ -39,7 +39,7 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
             <span aria-hidden="true" className="wb-skeleton my-0.5 h-3 w-28 rounded-full" />
           )}
         </div>
-        <div className="col-start-3 row-start-1 flex @min-[720px]:w-[152px] @min-[720px]:shrink-0">
+        <div className="col-start-3 row-start-1 flex @min-[720px]:w-[168px] @min-[720px]:shrink-0">
           {view.chip ? (
             <StatusChip tone={view.chip.tone} icon={view.chip.icon}>
               {view.chip.label}

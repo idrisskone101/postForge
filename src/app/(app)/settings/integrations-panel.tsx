@@ -47,7 +47,7 @@ export function IntegrationsPanel({
           >
             <span className="w-11 shrink-0" />
             <span className="min-w-0 flex-1">Platform</span>
-            <span className="w-[152px] shrink-0">Connection</span>
+            <span className="w-[168px] shrink-0">Connection</span>
             <span className="w-[150px] shrink-0">Metrics</span>
             <span className="w-[170px] shrink-0">Publishing</span>
             <span className="w-28 shrink-0" />
