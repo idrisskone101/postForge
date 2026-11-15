@@ -54,7 +54,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "wb-overlay-dialog pf-safe-dialog-viewport group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-xl bg-raised p-6 shadow-float outline-none data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-[420px]",
+          "wb-overlay-dialog wb-on-raised pf-safe-dialog-viewport group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-xl bg-raised p-6 shadow-float outline-none data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-[420px]",
           className
         )}
         {...props}
@@ -171,11 +171,7 @@ function AlertDialogCancel({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
-      // The dialog sits on the raised fill, so a quiet cancel steps up to the stronger raised fill.
-      className={cn(
-        variant === "secondary" && "bg-raised-strong hover:bg-strong active:bg-raised-strong",
-        className
-      )}
+      className={className}
       render={<Button variant={variant} size={size} />}
       {...props}
     />

@@ -81,10 +81,10 @@ export function useConfirmDialog() {
           />
         )}
         <AlertDialogFooter>
-          <Button key={shown?.id} autoFocus variant="secondary" size="lg" onClick={() => settle(null)}>
+          <Button key={shown?.id} autoFocus variant="secondary" onClick={() => settle(null)}>
             Cancel
           </Button>
-          <Button variant="destructive" size="lg" onClick={() => settle(request?.phrase ? typed : true)}>
+          <Button variant="destructive" onClick={() => settle(request?.phrase ? typed : true)}>
             {request?.confirmLabel}
           </Button>
         </AlertDialogFooter>

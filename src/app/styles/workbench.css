@@ -1087,6 +1087,36 @@
   }
 
   /*
+   * A surface drawn on the raised fill, such as a confirm dialog. Everything inside steps up one
+   * fill, so a quiet pill, an input or a disabled control still reads against it. The steps are
+   * resolved on the surface and handed to its children, because a custom property cannot read the
+   * value it replaces on the same element.
+   */
+  .wb-on-raised {
+    --wb-step-raised: var(--pf-strong);
+    --wb-step-raised-strong: var(--pf-strong-hover);
+    --wb-step-raised-pressed: var(--pf-strong-pressed);
+  }
+
+  /* Light needs the wider step: raised-strong on raised is 1.11:1 there. */
+  .dark .wb-on-raised {
+    --wb-step-raised: var(--pf-raised-strong);
+    --wb-step-raised-strong: var(--pf-strong);
+    --wb-step-raised-pressed: var(--pf-raised-strong);
+  }
+
+  .wb-on-raised > * {
+    --pf-raised: var(--wb-step-raised);
+    --pf-raised-strong: var(--wb-step-raised-strong);
+    --pf-raised-pressed: var(--wb-step-raised-pressed);
+  }
+
+  /* The muted placeholder is under 4:1 on the stepped fill. */
+  .wb-on-raised .wb-input::placeholder {
+    color: var(--pf-text-secondary);
+  }
+
+  /*
    * Overlay motion, shared by ui/dialog, alert-dialog, sheet, menus, selects, popovers and tooltips.
    * base-ui sets data-starting-style on mount and data-ending-style before unmount, and waits for the
    * transition. Only opacity and the individual transform properties move: 220ms in, 160ms out.
