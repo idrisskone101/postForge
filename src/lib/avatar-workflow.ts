@@ -45,17 +45,29 @@ export function getAvatarOptionLabel(index: number): string {
   return `Identity ${index + 1}`;
 }
 
-const GENERATED_ID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+/** What a name made by a machine looks like. One match and the name is not shown. */
+const MACHINE_NAME_SHAPES = [
+  // A UUID, alone or inside a file name.
+  /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
+  // An undashed UUID or a content hash: sixteen or more hex characters with a digit among them.
+  /(?<![0-9a-z])(?=[0-9a-f]*\d)[0-9a-f]{16,}(?![0-9a-z])/i,
+  // A cuid or similar token: twenty or more letters and digits in one run, with both kinds present.
+  /(?<![0-9a-z])(?=[0-9a-z]*\d)(?=[0-9a-z]*[a-z])[0-9a-z]{20,}(?![0-9a-z])/i,
+  // A timestamp or a date written as digits.
+  /\d{6,}/,
+  // A camera or export file: a media extension after a numbered stem.
+  /\d{3,}.*\.(?:jpe?g|png|webp|gif|heic|heif|avif|mp4|mov)$/i,
+];
 
-/** A stored name a person would recognise: it has letters and is not a generated id. */
+/** A stored name a person would recognise: it has letters and no machine-made shape. */
 function isReadableAvatarName(name: string): boolean {
-  return /\p{L}/u.test(name) && !GENERATED_ID.test(name);
+  return /\p{L}/u.test(name) && !MACHINE_NAME_SHAPES.some((shape) => shape.test(name));
 }
 
 /**
  * The label drawn under an identity tile, and the text a search matches. The stored name when a
- * person would recognise it; the positional label when the name is empty or a generated id (an
- * upload named after its file id), so an id never reaches the screen.
+ * person would recognise it; the positional label when the name is empty or looks machine-made (an
+ * id, a hash, a timestamp, a camera file name), so none of those reaches the screen.
  */
 export function getAvatarTileLabel(name: string | null | undefined, index: number): string {
   const stored = name?.trim() ?? "";

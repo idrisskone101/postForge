@@ -48,6 +48,32 @@ assert.equal(getAvatarTileLabel("", 0), "Identity 1");
 assert.equal(getAvatarTileLabel("   ", 1), "Identity 2");
 assert.equal(getAvatarTileLabel(null, 1), "Identity 2");
 assert.equal(getAvatarTileLabel("1731234567890", 4), "Identity 5");
+// Machine-made names take other shapes than a dashed UUID: none of them is a name to show or search.
+for (const machineName of [
+  "9b2d6c1e7a444f0b9c550d1e2f3a4b5c",
+  "clx7q2k3v0000abcd1234efgh",
+  "tz4a98xxat96iws9zmbrgj3a",
+  "IMG_20261101_093012.jpg",
+  "IMG_4521.JPG",
+  "DSC01234.png",
+  "avatar_8d20f30a-2f6f-47db-9114-6196942ee119.png",
+  "Screenshot 2026-11-01 at 093012.png",
+  "upload-20261101",
+]) {
+  assert.equal(getAvatarTileLabel(machineName, 6), "Identity 7", machineName);
+}
+// A long word, a name with a number, an accented name and a named file stay as stored.
+for (const givenName of [
+  "Supercalifragilisticexpialidociousantidisestablishmentarianism",
+  "Zoë 🌿 Çelik",
+  "Imani take 2",
+  "Agent 47",
+  "Studio 2026 lookbook",
+  "Deadbeef cafe",
+  "anna.png",
+]) {
+  assert.equal(getAvatarTileLabel(givenName, 6), givenName);
+}
 // Search matches the label on the tile, whichever of the two it is.
 assert.equal(avatarLabelMatchesSearch("Imani Okafor", " imani "), true);
 assert.equal(avatarLabelMatchesSearch("Identity 4", "identity 4"), true);
