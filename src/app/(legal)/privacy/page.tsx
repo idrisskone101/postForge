@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { PublicPolicyPage } from "@/components/public-policy-page";
 
@@ -78,7 +79,7 @@ export default function PrivacyPage() {
           title: "Your choices",
           content: (
             <>
-              <p>Connected accounts can be disconnected from Settings → Integrations. PostForge attempts provider revocation before deleting the local encrypted connection and cached provider data. Account owners can also revoke access directly from the connected platform. See the <a href="/data-deletion" className="font-semibold text-[var(--pf-link)] underline-offset-4 hover:underline">Data Deletion Instructions</a> for the full process.</p>
+              <p>Connected accounts can be disconnected from Settings → Integrations. PostForge attempts provider revocation before deleting the local encrypted connection and cached provider data. Account owners can also revoke access directly from the connected platform. See the <Link href="/data-deletion" className="font-semibold text-[var(--pf-link)] underline-offset-4 hover:underline">Data Deletion Instructions</Link> for the full process.</p>
             </>
           ),
         },
