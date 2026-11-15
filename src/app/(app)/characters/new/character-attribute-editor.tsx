@@ -7,6 +7,7 @@ import {
 } from "@/lib/character-attributes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button, Icon, Range, buttonClass, iconButtonClass } from "@/components/workbench";
+import { publishPinnedBar } from "@/lib/pinned-bar";
 import { useStepEntry } from "@/lib/use-step-entry";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
@@ -80,7 +81,7 @@ export function CharacterAttributeEditor({
       ) : null}
       {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
       {/* A long step name does not fit beside Back at 320, so Next wraps to its own line and stays whole. */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
+      <div ref={publishPinnedBar} className={FOOTER_ROW}>
         <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && goTo(previous.id)}>
           Back
         </Button>
@@ -94,6 +95,13 @@ export function CharacterAttributeEditor({
     </section>
   );
 }
+
+/**
+ * From 1280 the builder fills the viewport and this row rests on its bottom edge. Its box runs to the
+ * panel's edge (the padding is the panel's own 20px) so it counts as a bar there, and a toast, which
+ * can now hold Undo for five seconds, sits above Back and Next.
+ */
+const FOOTER_ROW = "-mb-5 flex shrink-0 flex-wrap items-center justify-between gap-3 pb-5";
 
 function AttributeGroups({
   view,
