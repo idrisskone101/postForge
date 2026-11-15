@@ -235,7 +235,7 @@ a {
 
 .policy-footer .policy-footerLinks a {
   color: var(--pf-text-muted);
-  font-weight: 500;
+  font-weight: 400;
   text-decoration: none;
   transition: color var(--pf-dur-feedback) var(--pf-ease);
 }
@@ -243,10 +243,6 @@ a {
 .policy-footer .policy-footerLinks a:hover,
 .policy-footer .policy-footerLinks a[aria-current="page"] {
   color: var(--pf-text);
-}
-
-.policy-footer .policy-footerLinks a[aria-current="page"] {
-  font-weight: 600;
 }
 
 .policy-page :is(a, button, summary, [tabindex]):focus-visible {
