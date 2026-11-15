@@ -13,6 +13,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /*
+   * Set by lockPageScroll while a modal surface is open. The declarations are important because
+   * Base UI writes its own lock as inline styles on the root, and its stable gutter would leave a
+   * strip beside the scrim.
+   */
+  html[data-pf-scroll-lock] {
+    overflow: hidden !important;
+    scrollbar-gutter: auto !important;
+    padding-right: var(--pf-scroll-lock-pad, 0px);
+  }
+
   body {
     @apply bg-background text-foreground;
     min-width: 320px;

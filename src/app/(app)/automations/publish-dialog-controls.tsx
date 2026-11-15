@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { Icon } from "@/components/workbench";
+import { lockPageScroll } from "@/lib/page-scroll-lock";
 import { cn } from "@/lib/utils";
 
 export function FieldLabel({
@@ -99,18 +100,9 @@ export function useDialogKeys(input: { recordId: string; busy: boolean; onClose:
   const { recordId, busy, onClose } = input;
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const page = document.documentElement;
-    const { overflow, paddingRight } = page.style;
-    const scrollbar = window.innerWidth - page.clientWidth;
-    page.style.overflow = "hidden";
-    if (scrollbar > 0) {
-      page.style.paddingRight = `${scrollbar}px`;
-      page.style.setProperty("--pf-scroll-lock-pad", `${scrollbar}px`);
-    }
+    const unlock = lockPageScroll();
     return () => {
-      page.style.overflow = overflow;
-      page.style.paddingRight = paddingRight;
-      page.style.removeProperty("--pf-scroll-lock-pad");
+      unlock();
       document
         .querySelector<HTMLElement>(
           `[data-automation-row=${JSON.stringify(recordId)}] [aria-label^="Actions for"]`

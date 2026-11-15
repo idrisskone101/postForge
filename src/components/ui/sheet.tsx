@@ -5,6 +5,7 @@ import { Dialog as SheetPrimitive } from "@base-ui/react/dialog"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { PageScrollLock } from "@/components/ui/page-scroll-lock"
 import { XIcon } from "lucide-react"
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
@@ -58,6 +59,7 @@ function SheetContent({
         )}
         {...props}
       >
+        <PageScrollLock />
         {children}
         {showCloseButton && (
           <SheetPrimitive.Close
