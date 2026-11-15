@@ -90,7 +90,7 @@ export function HomeReviewQueue({
                   <ReviewThumb item={item} />
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">
-                  <span className="line-clamp-1 text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere] group-hover:underline group-hover:decoration-fg-muted group-hover:underline-offset-2">
+                  <span className="line-clamp-1 max-md:line-clamp-2 text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere] group-hover:underline group-hover:decoration-fg-muted group-hover:underline-offset-2">
                     {item.title}
                   </span>
                   <span className="wb-meta truncate">{item.meta}</span>
