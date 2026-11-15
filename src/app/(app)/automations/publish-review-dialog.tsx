@@ -108,7 +108,7 @@ export function PublishReviewDialog({
 
             <div className="min-w-0 rounded-lg bg-raised px-3.5 py-3">
               <CheckControl
-                strong
+                className="[&>label]:font-semibold"
                 label={`Publish this exact approved video to ${providerName} now`}
                 checked={state.consent}
                 onChange={(checked) => onChange({ ...state, consent: checked })}
