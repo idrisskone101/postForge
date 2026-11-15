@@ -158,12 +158,7 @@ export function SlidePreview({
                   data-copy-frame={layer}
                   data-active={focusLayer === layer || undefined}
                   className="wb-copy-frame"
-                  style={{
-                    left: `max(2px, calc(${(box.x / width) * 100}% - 8px))`,
-                    top: `max(2px, calc(${(box.y / height) * 100}% - 4px))`,
-                    right: `max(2px, calc(${(1 - (box.x + box.width) / width) * 100}% - 8px))`,
-                    bottom: `max(2px, calc(${(1 - (box.y + box.height) / height) * 100}% - 4px))`,
-                  }}
+                  style={frameInsets(box, frameBoxes, width, height)}
                 />
               );
             })
@@ -207,6 +202,31 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
 };
 
 type PreviewOverlay = { src: string; boxes: SlideshowOverlayBoxes };
+
+// The frame sits 8px beside the copy and 4px above and below it. On a small canvas the blocks sit
+// closer than that, so the frame takes at most half the gap to the next block and leaves its lines.
+function frameInsets(
+  box: SlideshowOverlayBox,
+  boxes: SlideshowOverlayBoxes,
+  width: number,
+  height: number,
+) {
+  let above = Infinity;
+  let below = Infinity;
+  for (const other of Object.values(boxes)) {
+    if (!other || other === box) continue;
+    if (other.y + other.height <= box.y) above = Math.min(above, box.y - other.y - other.height);
+    if (other.y >= box.y + box.height) below = Math.min(below, other.y - box.y - box.height);
+  }
+  const outset = (gap: number) =>
+    Number.isFinite(gap) ? `min(4px, ${(gap / 2 / height) * 100}%)` : "4px";
+  return {
+    left: `max(2px, calc(${(box.x / width) * 100}% - 8px))`,
+    top: `max(2px, calc(${(box.y / height) * 100}% - ${outset(above)}))`,
+    right: `max(2px, calc(${(1 - (box.x + box.width) / width) * 100}% - 8px))`,
+    bottom: `max(2px, calc(${(1 - (box.y + box.height) / height) * 100}% - ${outset(below)}))`,
+  };
+}
 
 // Copy that runs past the canvas is cut off by it. A frame around a block that is mostly gone would
 // clamp to a sliver on the canvas edge and point at nothing.
