@@ -128,7 +128,7 @@ function SpendLogRowLink({ log, now }: { log: SpendLogRow; now: Date }) {
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="flex min-w-0 items-baseline gap-2">
             {log.job ? (
-              <span className="truncate text-[14px] font-semibold leading-5 text-fg">{log.job.title}</span>
+              <span className="line-clamp-2 min-w-0 text-[14px] font-semibold leading-5 text-fg [overflow-wrap:anywhere]">{log.job.title}</span>
             ) : null}
             <span className={log.job ? "wb-mono shrink-0 text-fg-muted" : "wb-mono truncate text-fg"} title={log.jobId}>
               {shortJobId(log.jobId)}
