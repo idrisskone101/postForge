@@ -122,7 +122,12 @@ export function TikTokSavedSources({
                       {name.title}
                     </span>
                     {name.shortId || source.fileSizeBytes ? (
-                      <span className="flex min-w-0 items-center gap-2 text-[12px] leading-4 text-fg-muted">
+                      <span
+                        className={cn(
+                          "flex min-w-0 items-center gap-2 text-[12px] leading-4",
+                          isSelected ? "text-fg-secondary" : "text-fg-muted"
+                        )}
+                      >
                         {name.shortId ? <span className="wb-mono">{name.shortId}</span> : null}
                         {source.fileSizeBytes ? (
                           <span className="truncate">{formatSize(source.fileSizeBytes)}</span>
@@ -159,9 +164,8 @@ export function TikTokSavedSources({
 
 
 function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+  const total = Math.round(sec);
+  return `${Math.floor(total / 60)}:${(total % 60).toString().padStart(2, "0")}`;
 }
 
 function formatSize(bytes: number | null) {
