@@ -53,14 +53,15 @@ export function CloneActionBar({
       className="pb-[22px]"
     >
       <h2 className="wb-panel-title">Generation settings</h2>
-      <div className="flex min-w-0 items-end gap-3 max-md:flex-col max-md:items-stretch xl:max-[1399px]:flex-wrap">
+      {/* Beside two fields the toggles leave each field too narrow for its value from 768 to 1023 and from 1280 to 1399, so there they take their own row. */}
+      <div className="flex min-w-0 items-end gap-3 max-md:flex-col max-md:items-stretch md:max-lg:flex-wrap xl:max-[1399px]:flex-wrap">
         <Field label={videoSelect.label} className="min-w-0 flex-1">
           <CloneModelSelect model={videoSelect} />
         </Field>
         <Field label={referenceSelect.label} className="min-w-0 flex-1">
           <CloneModelSelect model={referenceSelect} />
         </Field>
-        <div className="flex shrink-0 flex-col gap-2.5 pl-3 max-md:pl-0 max-md:pt-1 xl:max-[1399px]:basis-full xl:max-[1399px]:flex-row xl:max-[1399px]:gap-6 xl:max-[1399px]:pl-0 xl:max-[1399px]:pt-1">
+        <div className="flex shrink-0 flex-col gap-2.5 pl-3 max-md:pl-0 max-md:pt-1 md:max-lg:basis-full md:max-lg:flex-row md:max-lg:gap-6 md:max-lg:pl-0 md:max-lg:pt-1 xl:max-[1399px]:basis-full xl:max-[1399px]:flex-row xl:max-[1399px]:gap-6 xl:max-[1399px]:pl-0 xl:max-[1399px]:pt-1">
           <div className="flex items-center gap-2.5">
             <Toggle
               size={26}

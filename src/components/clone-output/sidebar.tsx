@@ -37,9 +37,12 @@ export function CloneOutputReviewSidebar({ review }: { review: CloneOutputReview
   );
 }
 
-const ROW = "flex min-w-0 items-center gap-3 border-t border-hairline py-3 first:border-t-0";
-const ROW_TITLE = "truncate text-[14px] font-semibold leading-[18px] text-fg";
-const ROW_META = "truncate text-[13px] leading-4 text-fg-secondary";
+// Below 360px a row's action wraps under its text, so a handle or a label keeps the whole line.
+const ROW =
+  "flex min-w-0 items-center gap-3 border-t border-hairline py-3 first:border-t-0 max-[359px]:flex-wrap";
+const ROW_TEXT = "flex min-w-0 flex-1 flex-col gap-0.5 max-[359px]:basis-[calc(100%-48px)]";
+const ROW_TITLE = "[overflow-wrap:anywhere] text-[14px] font-semibold leading-[18px] text-fg";
+const ROW_META = "[overflow-wrap:anywhere] text-[13px] leading-4 text-fg-secondary";
 
 function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
   const {
@@ -65,7 +68,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
     <section aria-label="Clone inputs" className="wb-panel gap-0 py-2">
       <div className={ROW}>
         {sourcePreviewUrl && sourceVideo ? (
-          <details className="group min-w-0 flex-1">
+          <details className="group min-w-0 flex-1 max-[359px]:basis-full">
             <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
               <span className="relative grid h-14 w-9 shrink-0 place-items-center overflow-hidden rounded-sm bg-media">
                 <video
@@ -97,7 +100,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
         ) : (
           <>
             <span className="h-14 w-9 shrink-0 rounded-sm bg-media" />
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className={ROW_TEXT}>
               <span className={ROW_TITLE}>{sourceTitle}</span>
               <span className={ROW_META}>{sourceMeta}</span>
             </span>
@@ -108,7 +111,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${buttonClass("quiet", 32)} mt-3 self-start`}
+            className={`${buttonClass("quiet", 32)} mt-3 self-start max-[359px]:mt-0`}
           >
             View original
           </a>
@@ -133,7 +136,7 @@ function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
               sizes="36px"
             />
           </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className={ROW_TEXT}>
             <span className={ROW_TITLE}>{reference.label}</span>
             <span className="font-mono text-[12px] leading-4 text-fg-muted" title={reference.id}>
               {reference.id.slice(0, 8)}

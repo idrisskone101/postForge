@@ -166,7 +166,7 @@ export function CloneReferenceInputs() {
                 title="Identity preview"
                 action={preparing ? <StatusChip tone="warn">Preparing</StatusChip> : null}
               >
-                <span className="truncate text-[12px] leading-4 text-fg-muted">
+                <span className="text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
                   {primaryAvatarReference.label} · {primaryAvatarReference.detail}
                 </span>
               </SlotCaption>

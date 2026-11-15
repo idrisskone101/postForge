@@ -82,7 +82,7 @@ export function TemplateDialog({
                     ))}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                    <span className="line-clamp-2 break-words text-[14px] font-semibold leading-[18px] text-fg">
+                    <span className="break-words text-[14px] font-semibold leading-[18px] text-fg">
                       {template.name}
                     </span>
                     <span className="break-words text-[13px] leading-4 text-fg-secondary">

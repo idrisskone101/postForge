@@ -79,7 +79,7 @@ export function CloneProductionStatePanel({
       </div>
       <ul className="flex flex-col gap-1.5">
         {rows.map((row) => (
-          <li key={row.label} title={row.detail} className="flex h-8 min-w-0 items-center gap-2.5">
+          <li key={row.label} title={row.detail} className="flex min-h-8 min-w-0 items-center gap-2.5">
             <span
               className={cn(
                 "grid size-5 shrink-0 place-items-center rounded-full",
@@ -97,7 +97,7 @@ export function CloneProductionStatePanel({
             </span>
             <span
               className={cn(
-                "min-w-0 flex-1 truncate text-right text-[13px] leading-4",
+                "min-w-0 flex-1 text-right text-[13px] leading-4 [overflow-wrap:anywhere]",
                 row.ready ? "text-fg-secondary" : "font-semibold text-warn"
               )}
             >

@@ -24,7 +24,7 @@ export function CloneOutputPanelHead({ review }: { review: CloneOutputReviewView
 
   return (
     <div className="flex min-h-[34px] shrink-0 flex-wrap items-center justify-between gap-3">
-      <h2 className="wb-panel-title min-w-0 truncate">{title}</h2>
+      <h2 className="wb-panel-title min-w-0 [overflow-wrap:anywhere]">{title}</h2>
       {(featured || isCompleted) && (
         <div className="flex shrink-0 items-center gap-2">
           {featured && (

@@ -31,7 +31,7 @@ export function CloneModelSelect({
           className,
         )}
       >
-        <span className="min-w-0 truncate">No model enabled</span>
+        <span className="min-w-0">No model enabled</span>
         <span className="shrink-0 text-fg-secondary">Settings</span>
       </Link>
     );

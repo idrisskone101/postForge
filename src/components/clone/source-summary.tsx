@@ -33,10 +33,10 @@ export function CloneSourceSummary({
         className="h-14 w-9 shrink-0 rounded-sm bg-media object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <p className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+        <p className="text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere]">
           {sourceName?.title ?? "Selected source"}
         </p>
-        <p className="truncate text-[13px] leading-4 text-fg-secondary">
+        <p className="text-[13px] leading-4 text-fg-secondary [overflow-wrap:anywhere]">
           {sourceName?.shortId ? (
             <span className="wb-mono mr-2">{sourceName.shortId}</span>
           ) : null}

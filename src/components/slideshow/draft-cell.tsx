@@ -70,7 +70,7 @@ export function DraftCell({
           {formatRelativeDate(project.updatedAt)}
         </span>
         {status || project.successfulExportCount ? (
-          <span className="flex min-w-0 items-center gap-2">
+          <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             {status ? (
               <StatusChip tone={status.tone}>
                 {status.tone === "live" ? (
@@ -83,7 +83,7 @@ export function DraftCell({
               <Meter label="Rendering slide visuals" value={40} running className="max-w-24" />
             ) : null}
             {project.successfulExportCount ? (
-              <span className="wb-mono truncate text-fg-muted">
+              <span className="wb-mono whitespace-nowrap text-fg-muted">
                 {project.successfulExportCount}{" "}
                 {project.successfulExportCount === 1 ? "export" : "exports"}
               </span>

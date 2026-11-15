@@ -66,12 +66,13 @@ export function CharacterAttributeEditor({
         </div>
       ) : null}
       {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
-      <div className="flex shrink-0 items-center justify-between gap-3">
+      {/* A long step name does not fit beside Back at 320, so Next wraps to its own line and stays whole. */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && goTo(previous.id)}>
           Back
         </Button>
         {next ? (
-          <Button variant="strong" size={40} className="gap-1.5 pr-3.5 pl-[18px]" onClick={() => goTo(next.id)}>
+          <Button variant="strong" size={40} className="ml-auto gap-1.5 pr-3.5 pl-[18px]" onClick={() => goTo(next.id)}>
             Next: {next.label}
             <Icon name="chevron-right" />
           </Button>
@@ -151,7 +152,7 @@ function AttributeGroups({
           </Button>
         </div>
         <div className="wb-ring-host flex min-h-[160px] flex-1 basis-0 flex-col overflow-hidden rounded-lg bg-raised">
-          <pre className="wb-scroll-fade-y wb-scroll-fade-deep wb-mono min-h-0 flex-1 overflow-auto whitespace-pre px-4 py-3.5 text-xs leading-5 text-fg-secondary">
+          <pre className="wb-scroll-fade-y wb-scroll-fade-deep wb-mono min-h-0 flex-1 overflow-auto whitespace-pre-wrap px-4 py-3.5 text-xs leading-5 text-fg-secondary">
             {sectionRecipe(active, attributes)}
           </pre>
         </div>
