@@ -49,7 +49,15 @@ export function CloneIdentityStatusPanel({
         {avatarReady && !failed && (preparing || isBackfillingHairstyles) ? (
           <StatusChip tone="live">
             <span className="wb-live-dot" />
-            {isBackfillingHairstyles ? "Generating hairstyles" : "Preparing identity references, original avatar remains usable"}
+            {isBackfillingHairstyles ? (
+            "Generating hairstyles"
+          ) : (
+            <>
+              {/* The long sentence runs past a phone's row, so phones get the short form of it. */}
+              <span className="sm:hidden">Preparing, avatar still usable</span>
+              <span className="max-sm:hidden">Preparing identity references, original avatar remains usable</span>
+            </>
+          )}
           </StatusChip>
         ) : null}
         {shown && canGenerateHairstyles && (
