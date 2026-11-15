@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { FileJson, Trash2 } from "lucide-react";
 import { getAvatarIdentityPackStatusLabel, getAvatarOriginLabel } from "@/lib/avatar-workflow";
 import type { Avatar } from "@/lib/avatar-picker-model";
@@ -52,13 +53,15 @@ export function AvatarCreationCard({
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstActionRef = useRef<HTMLButtonElement>(null);
 
+  // The control that had focus is hidden in the same commit, so focus moves before the browser can
+  // drop it to the page.
   const openChooser = () => {
-    setOpen(true);
-    requestAnimationFrame(() => firstActionRef.current?.focus());
+    flushSync(() => setOpen(true));
+    firstActionRef.current?.focus();
   };
   const closeChooser = () => {
-    setOpen(false);
-    requestAnimationFrame(() => toggleRef.current?.focus());
+    flushSync(() => setOpen(false));
+    toggleRef.current?.focus();
   };
 
   const actions: { key: string; label: string; icon: ReactNode; onClick: () => void; disabled?: boolean }[] = [
