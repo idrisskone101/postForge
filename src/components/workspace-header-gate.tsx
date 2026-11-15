@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import {
   getActiveWorkspaceItem,
-  workspaceNavigationGroups,
   type WorkspaceNavigationItem,
 } from "@/lib/workspace-navigation";
 
@@ -24,8 +23,9 @@ export function WorkspaceHeaderGate({
 }) {
   const pathname = usePathname() || serverPathname;
   if (routeOwnsHeader(pathname)) return null;
-  const activeItem =
-    getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.overview[0];
+  const activeItem = getActiveWorkspaceItem(pathname);
+  // A path under no navigation item is not a page of the app: the not-found page draws below.
+  if (!activeItem) return <PageHeader id="workspace-header" title="Page not found" />;
   return (
     <WorkspaceRouteHeader
       activeItem={activeItem}

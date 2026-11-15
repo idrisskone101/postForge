@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { ClickFocus } from "@/components/click-focus";
 import { FocusReveal } from "@/components/focus-reveal";
 import { ScrollFadeFallback } from "@/components/scroll-fade-fallback";
+import { ShellStateSync } from "@/components/shell-state-sync";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { readWorkspaceName } from "@/lib/workspace-name";
@@ -35,6 +36,7 @@ export default async function AppLayout({
         />
       </head>
       <body className="antialiased">
+        <ShellStateSync />
         <div id="workspace-root">
           <a href="#workspace-shell" className="wb-skip-link">
             Skip to content
