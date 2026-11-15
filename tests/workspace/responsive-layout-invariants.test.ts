@@ -146,7 +146,7 @@ assert.match(sidebar, /<aside id="workspace-sidebar">/);
 assert.match(sidebar, /id="workspace-mobile-bar"/);
 assert.match(sidebar, /id="workspace-mobile-drawer"/);
 assert.match(shellStyles, /#workspace-shell \{[\s\S]*?min-width: 0;[\s\S]*?overflow-x: clip;/);
-assert.match(source("src/app/styles/base.css"), /body \{[\s\S]*?min-width: 320px;/);
+assert.match(source("src/app/styles/base.css"), /body \{[\s\S]*?min-width: 300px;/);
 assert.match(shellStyles, /\.pf-content-viewport \{[\s\S]*?100dvh/);
 assert.match(shellStyles, /--pf-sidebar-w|var\(--pf-sidebar-w\)/);
 assert.match(tokens, /--pf-sidebar-w: 248px;/);
