@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Edit3, Layers, Trash2 } from "lucide-react";
 import { VisualTile } from "@/components/slideshow/slide-preview";
 import {
-  Button,
   EmptyState,
   Icon,
   Toggle,
@@ -27,7 +26,6 @@ export function SlideshowAutomationList({
     busy,
     menu,
     setMenu,
-    load,
     toggleSlideshow,
     removeSlideshow,
   } = hub;
@@ -41,18 +39,9 @@ export function SlideshowAutomationList({
         </Link>
       </div>
 
-      {slideshowError ? (
-        <div role="alert" className="wb-notice" data-tone="bad">
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong className="font-semibold text-bad">Schedules did not load.</strong> {slideshowError}
-          </span>
-          <Button size={32} onClick={load}>
-            Retry
-          </Button>
-        </div>
-      ) : null}
-
-      {slideshowAutomations.length === 0 && !slideshowError ? (
+      {slideshowAutomations.length === 0 && slideshowError ? (
+        <EmptyState icon="alert" tone="error" title="Schedules unavailable" className="flex-1" />
+      ) : slideshowAutomations.length === 0 ? (
         <EmptyState icon="slideshow" title="No carousel schedules yet" className="flex-1" />
       ) : (
         <div className="flex flex-col">

@@ -69,11 +69,9 @@ export function useAutomationsWorkspace(initialRecords: AutomationRecord[] = [])
     setError: reportActionError,
     notify,
   });
+  // A reload keeps the last failures on screen until its own result replaces them.
   async function load() {
     setIntegrationsLoading(true);
-    setError(null);
-    setIntegrationsError(null);
-    setSlideshowError(null);
     const snapshot = await loadAutomationsPageSnapshot();
     setRecords(snapshot.records);
     setError(snapshot.recordsError);

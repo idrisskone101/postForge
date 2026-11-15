@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Button,
-  EmptyState,
-  Toast,
-  buttonClass,
-} from "@/components/workbench";
+import { EmptyState, Toast, buttonClass } from "@/components/workbench";
 import type { AutomationRecord } from "@/lib/automations";
 import { useLingering } from "@/lib/use-exit-presence";
+import { HubLoadNotice, hubLoadFailures } from "./hub-load-notice";
 import { HubOverview } from "./hub-overview";
 import { HubSkeleton } from "./hub-skeleton";
 import { ManualResolutionDialog } from "./manual-resolution-dialog";
@@ -45,43 +41,26 @@ export function AutomationsPageClient({
   } = hub;
   const { value: publishState, leaving: publishLeaving } = useLingering(publishDialog);
   const { value: manualState, leaving: manualLeaving } = useLingering(manualResolutionDialog);
+  const failures = hubLoadFailures({
+    records: error,
+    schedules: slideshowError,
+    connections: integrationsError,
+  });
   const firstLoad = integrationsLoading && records.length === 0 && !error;
   const nothingListed =
     records.length === 0 && slideshowAutomations.length === 0 && !slideshowError;
 
   return (
     <div data-automations-hub="true" className="flex min-h-0 flex-1 flex-col gap-3">
-      {error && (
-        <div role="alert" className="wb-notice shrink-0" data-tone="bad">
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong className="font-semibold text-bad">Automations did not load.</strong> {error}
-          </span>
-          <Button size={32} onClick={load}>
-            Retry
-          </Button>
-        </div>
-      )}
-
-      {integrationsError && !integrationsLoading && (
-        <div role="status" className="wb-notice shrink-0" data-tone="warn">
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            <strong className="font-semibold text-warn">Connection status unavailable.</strong> {integrationsError}
-          </span>
-          <Button size={32} onClick={load}>
-            Check again
-          </Button>
-        </div>
+      {failures.length > 0 && (
+        <HubLoadNotice failures={failures} loading={integrationsLoading} onRetry={load} />
       )}
 
       {firstLoad ? (
         <HubSkeleton />
       ) : nothingListed && error ? (
         <section className="flex min-h-[420px] flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
-          <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1">
-            <Button variant="strong" size={36} onClick={load}>
-              Retry
-            </Button>
-          </EmptyState>
+          <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1" />
         </section>
       ) : nothingListed ? (
         <section className="flex min-h-[420px] flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
