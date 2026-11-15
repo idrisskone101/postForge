@@ -46,13 +46,13 @@ export function AutomationBuilderPhaseForm({
     >
       <div className="flex min-w-0 flex-col gap-6">
         <div className="wb-step-scroll">
-          <ol className="wb-step-rail sm:min-w-[420px]">
+          <ol className={RAIL}>
             {BUILDER_STEPS.map((step, index) => {
               const state =
                 index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming";
               return (
                 <li key={step.id} className="contents">
-                  {index > 0 && <span aria-hidden="true" className="wb-step-line" />}
+                  {index > 0 && <span aria-hidden="true" className={RAIL_LINE} />}
                   <button
                     type="button"
                     className="wb-step rounded-full"
@@ -126,6 +126,13 @@ export function AutomationBuilderPhaseForm({
     </section>
   );
 }
+
+/**
+ * Four 30px steps and the current name need 291px at the 12px rhythm. A 320 or 360 screen leaves the
+ * rail 240 or 280, so below 390 the gaps and connectors drop to 6px and the rail fits with no scroll.
+ */
+const RAIL = "wb-step-rail max-[389.98px]:gap-1.5 sm:min-w-[420px]";
+const RAIL_LINE = "wb-step-line max-[389.98px]:min-w-1.5";
 
 /** Below 480 the footer is two rows on every step: the quiet actions, then the primary across the panel. */
 const PRIMARY_ROW = "max-[479.98px]:basis-full";

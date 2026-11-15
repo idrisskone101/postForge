@@ -53,17 +53,30 @@ export function AutomationBuilderSession({
       <PageHeader
         back={{ href: "/automations", label: "Back to automations" }}
         title={
-          <label className="flex min-w-0 items-center gap-2 pl-2 leading-[34px]">
+          <label className="flex min-w-0 items-start gap-2 pl-2 leading-[34px]">
             <span className="sr-only">{record.name || "Untitled automation"}</span>
-            <input
-              value={record.name}
-              onChange={(event) => setRecord((current) => ({ ...current, name: event.target.value }))}
-              size={Math.max(8, record.name.length)}
-              className="-mx-2 min-w-[4ch] max-w-full rounded-lg [field-sizing:content] bg-transparent px-2 font-[inherit] tracking-[inherit] text-fg outline-none transition-shadow duration-[var(--pf-dur-feedback)] ease-pf placeholder:text-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
-              placeholder="Name this automation"
-              aria-label="Automation name"
-            />
-            <Icon name="pencil" className="shrink-0 text-fg-muted" />
+            <span className="-mx-2 grid min-w-[4ch] max-w-full">
+              <span aria-hidden="true" className={cn(NAME_BOX, "invisible overflow-hidden")}>
+                {record.name || NAME_PLACEHOLDER}
+              </span>
+              <textarea
+                rows={1}
+                value={record.name}
+                onChange={(event) =>
+                  setRecord((current) => ({ ...current, name: event.target.value.replace(/\n/g, " ") }))
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.preventDefault();
+                }}
+                className={cn(
+                  NAME_BOX,
+                  "size-full resize-none overflow-hidden rounded-lg bg-transparent font-[inherit] tracking-[inherit] text-fg outline-none transition-shadow duration-[var(--pf-dur-feedback)] ease-pf placeholder:text-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+                )}
+                placeholder={NAME_PLACEHOLDER}
+                aria-label="Automation name"
+              />
+            </span>
+            <Icon name="pencil" className="mt-2 shrink-0 text-fg-muted" />
           </label>
         }
       >
@@ -107,6 +120,15 @@ export function AutomationBuilderSession({
     </div>
   );
 }
+
+const NAME_PLACEHOLDER = "Name this automation";
+
+/**
+ * The name field and the hidden copy that sizes it share one grid cell, so the field is as wide as its
+ * text and as tall as the lines a long name wraps to. An input would cut the name instead.
+ */
+const NAME_BOX =
+  "col-start-1 row-start-1 min-w-0 whitespace-pre-wrap px-2 [overflow-wrap:anywhere]";
 
 function statusWord(status: string) {
   const words = status.replace("_", " ");
