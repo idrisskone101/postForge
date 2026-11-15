@@ -88,7 +88,7 @@ export function CharacterAttributeEditor({
       {active ? <AttributeGroups key={active.id} view={view} active={active} /> : null}
       {/* A long step name does not fit beside Back at 320, so Next wraps to its own line and stays whole. */}
       <div ref={footerBar} className={FOOTER_ROW}>
-        <Button size={40} className="disabled:text-fg-muted" disabled={!previous} onClick={() => previous && goTo(previous.id)}>
+        <Button size={40} disabled={!previous} onClick={() => previous && goTo(previous.id)}>
           Back
         </Button>
         {next ? (
