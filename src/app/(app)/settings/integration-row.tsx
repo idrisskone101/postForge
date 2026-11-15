@@ -16,22 +16,25 @@ export type IntegrationRowView = {
 };
 
 /**
- * One integration row. A table row from 720px of row width (tile, platform,
- * connection 168, metrics 150, publishing 170, action 112), a stacked card
- * below it. Notices and the detail region go in `children`.
+ * One integration row. A table row from 852px of row width, the width of the row on the 1440 board
+ * (tile, platform, connection 168, metrics 150, publishing 170, action 112), a stacked card below
+ * it. The fixed columns and gaps take 714px, so a narrower table would leave the platform column
+ * too little for its sub line. The platform column keeps 153px, one line of the longest sub line
+ * ("Server credentials missing"), and the action column gives up to 15px for it.
+ * Notices and the detail region go in `children`.
  */
 export function IntegrationRow({ view, children }: { view: IntegrationRowView; children?: ReactNode }) {
   return (
     <div className="flex flex-col gap-4 border-t border-hairline py-[22px]">
-      <div className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 @min-[720px]:flex @min-[720px]:gap-3.5">
-        <RowTile tile={view.tile} className={view.sub ? "@max-[720px]:row-span-2" : undefined} />
+      <div className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-3 @min-[852px]:flex @min-[852px]:gap-3.5">
+        <RowTile tile={view.tile} className={view.sub ? "@max-[852px]:row-span-2" : undefined} />
         <div
           className={cn(
-            "flex min-w-0 flex-col justify-center gap-0.5 @min-[720px]:flex-1",
-            view.sub && "@max-[720px]:contents"
+            "flex min-w-0 flex-col justify-center gap-0.5 @min-[852px]:min-w-[153px] @min-[852px]:flex-1",
+            view.sub && "@max-[852px]:contents"
           )}
         >
-          <span className="text-sm font-semibold leading-[18px] text-fg @max-[720px]:col-start-2 @max-[720px]:row-start-1">
+          <span className="text-sm font-semibold leading-[18px] text-fg @max-[852px]:col-start-2 @max-[852px]:row-start-1">
             {view.name}
           </span>
           {view.sub && <span className={SUB_CLASS}>{view.sub}</span>}
@@ -39,7 +42,7 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
             <span aria-hidden="true" className="wb-skeleton my-0.5 h-3 w-28 rounded-full" />
           )}
         </div>
-        <div className="col-start-3 row-start-1 flex @min-[720px]:w-[168px] @min-[720px]:shrink-0">
+        <div className="col-start-3 row-start-1 flex @min-[852px]:w-[168px] @min-[852px]:shrink-0">
           {view.chip ? (
             <StatusChip tone={view.chip.tone} icon={view.chip.icon}>
               {view.chip.label}
@@ -48,11 +51,11 @@ export function IntegrationRow({ view, children }: { view: IntegrationRowView; c
             <span aria-hidden="true" className="wb-skeleton h-6 w-24 rounded-full" />
           )}
         </div>
-        <div className="col-span-2 col-start-2 grid grid-cols-2 gap-3 @min-[720px]:contents">
-          <RowCell label="Metrics" cell={view.metrics} className="@min-[720px]:w-[150px]" />
-          <RowCell label="Publishing" cell={view.publishing} className="@min-[720px]:w-[170px]" />
+        <div className="col-span-2 col-start-2 grid grid-cols-2 gap-3 @min-[852px]:contents">
+          <RowCell label="Metrics" cell={view.metrics} className="@min-[852px]:w-[150px]" />
+          <RowCell label="Publishing" cell={view.publishing} className="@min-[852px]:w-[170px]" />
         </div>
-        <div className="col-span-3 flex justify-end empty:hidden @min-[720px]:w-28 @min-[720px]:shrink-0 [&>*]:@max-[720px]:h-11 [&>*]:@max-[720px]:w-full">
+        <div className="col-span-3 flex justify-end empty:hidden @min-[852px]:w-28 @min-[852px]:min-w-[97px] [&>*]:@max-[852px]:h-11 [&>*]:@max-[852px]:w-full">
           {view.action}
         </div>
       </div>
@@ -84,7 +87,7 @@ export function RowNotice({ notice, children }: { notice: Notice; children?: Rea
  */
 const SUB_CLASS = [
   "text-balance break-words text-[13px] leading-4 text-fg-muted",
-  "@max-[720px]:col-span-2 @max-[720px]:col-start-2 @max-[720px]:row-start-2 @max-[720px]:-mt-2.5",
+  "@max-[852px]:col-span-2 @max-[852px]:col-start-2 @max-[852px]:row-start-2 @max-[852px]:-mt-2.5",
 ].join(" ");
 
 function RowTile({ tile, className }: { tile: IntegrationRowView["tile"]; className?: string }) {
@@ -126,8 +129,8 @@ const CELL_TONE: Record<Cell["tone"], string> = {
 
 function RowCell({ label, cell, className }: { label: string; cell: Cell | null; className: string }) {
   return (
-    <div className={cn("flex min-w-0 flex-col gap-0.5 @min-[720px]:shrink-0", className)}>
-      <span className="wb-label @min-[720px]:sr-only">{label}</span>
+    <div className={cn("flex min-w-0 flex-col gap-0.5 @min-[852px]:shrink-0", className)}>
+      <span className="wb-label @min-[852px]:sr-only">{label}</span>
       {cell ? (
         <>
           <span className={cn("text-sm font-medium leading-[18px]", CELL_TONE[cell.tone])}>{cell.text}</span>
