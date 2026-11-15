@@ -88,6 +88,8 @@ function overlayLayout(
         fontSize,
         fontWeight,
         textAlign: align,
+        // A line that does not wrap ignores textAlign in the renderer, so the box places it as well.
+        justifyContent: ITEMS[align],
         width: "100%",
         letterSpacing:
           settings.font === "Condensed" ? -headline * 0.02 : undefined,
