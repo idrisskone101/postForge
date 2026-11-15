@@ -8,6 +8,7 @@ import {
   parseSlideshowOverlayBoxes,
   SLIDESHOW_OVERLAY_BOXES_HEADER,
   SLIDESHOW_OVERLAY_LAYERS,
+  type SlideshowOverlayBox,
   type SlideshowOverlayBoxes,
   type SlideshowOverlayLayer,
   type SlideshowRenderTextSettings,
@@ -149,7 +150,7 @@ export function SlidePreview({
         {frameBoxes
           ? SLIDESHOW_OVERLAY_LAYERS.map((layer) => {
               const box = frameBoxes[layer];
-              if (!box) return null;
+              if (!box || !mostlyOnCanvas(box, width, height)) return null;
               return (
                 <span
                   key={layer}
@@ -206,6 +207,19 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
 };
 
 type PreviewOverlay = { src: string; boxes: SlideshowOverlayBoxes };
+
+// Copy that runs past the canvas is cut off by it. A frame around a block that is mostly gone would
+// clamp to a sliver on the canvas edge and point at nothing.
+function mostlyOnCanvas(box: SlideshowOverlayBox, width: number, height: number) {
+  const shown = (start: number, size: number, limit: number) =>
+    Math.min(start + size, limit) - Math.max(start, 0);
+  return (
+    box.width > 0 &&
+    box.height > 0 &&
+    shown(box.x, box.width, width) >= box.width / 2 &&
+    shown(box.y, box.height, height) >= box.height / 2
+  );
+}
 
 const overlayCache = new Map<string, PreviewOverlay>();
 const OVERLAY_CACHE_LIMIT = 40;
