@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   isCollectionAssetRecord,
@@ -30,6 +30,11 @@ interface CollectionReferencePickerProps {
    * "inline" lays the collections out as chips over the image grid, "select" as one select over it.
    */
   layout?: "popover" | "inline" | "select";
+  /**
+   * Puts the image grid in its own scroller, so the collection field stays put while the tiles scroll.
+   * The picker then fills its flex parent and the scroller takes these classes, which set its height.
+   */
+  gridScrollClassName?: string;
 }
 
 type LoadStatus = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
@@ -71,7 +76,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
 
   const layout = props.layout ?? "popover";
   const inline = layout === "inline";
-  const grid = GRID[layout];
+  const gridScroll = props.gridScrollClassName;
   const body =
     status.kind === "loading" ? (
       <TileSkeletons layout={layout} />
@@ -132,28 +137,34 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
         {collectionAssets.length === 0 ? (
           <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
         ) : (
-          <div className={grid}>
-            {collectionAssets.map((asset) => {
-              const selected = selectedAssetIds.includes(asset.id);
-              return (
-                <ReferenceTile
-                  key={asset.id}
-                  selected={selected}
-                  label={`${selected ? "Remove" : "Use"} ${asset.name}`}
-                  onToggle={() => toggle(asset.id)}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
-                </ReferenceTile>
-              );
-            })}
-          </div>
+          <GridScroller className={gridScroll}>
+            <div className={GRID[layout]}>
+              {collectionAssets.map((asset) => {
+                const selected = selectedAssetIds.includes(asset.id);
+                return (
+                  <ReferenceTile
+                    key={asset.id}
+                    selected={selected}
+                    label={`${selected ? "Remove" : "Use"} ${asset.name}`}
+                    onToggle={() => toggle(asset.id)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
+                  </ReferenceTile>
+                );
+              })}
+            </div>
+          </GridScroller>
         )}
       </>
     );
 
   if (inline) return <div className="flex min-w-0 flex-col gap-3.5">{body}</div>;
-  if (layout === "select") return <div className="flex min-w-0 flex-col gap-[18px]">{body}</div>;
+  if (layout === "select") {
+    return (
+      <div className={cn("flex min-w-0 flex-col gap-[18px]", gridScroll && "min-h-0 flex-1")}>{body}</div>
+    );
+  }
   return (
     <ReferencePickerPopover summary={summary} label="Visual collection" disabled={disabled}>
       {() => body}
@@ -167,6 +178,19 @@ const GRID = {
     "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]",
   select: "grid grid-cols-3 gap-2 sm:grid-cols-6",
 } as const;
+
+/**
+ * With a class, the scroller around the grid: the Scroll Cut fade, and 4px of room so a tile's ring
+ * stays whole inside it. The grid keeps its own height inside, so its rows are never squeezed.
+ */
+function GridScroller({ className, children }: { className?: string; children: ReactNode }) {
+  if (!className) return children;
+  return (
+    <div className={cn("wb-scroll-fade-y wb-scroll-fade-deep wb-ring-room min-h-0 overflow-y-auto", className)}>
+      {children}
+    </div>
+  );
+}
 
 const SKELETON_TILES = { popover: 8, inline: 4, select: 6 } as const;
 

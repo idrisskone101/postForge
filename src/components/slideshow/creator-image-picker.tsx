@@ -34,21 +34,17 @@ export function CreatorImagePicker({ draft }: { draft: CreatorDraft }) {
           </DialogTitle>
           <IconButton icon="x" label="Close" size={30} onClick={onClose} />
         </div>
-        {/*
-          The 4px of room on every side keeps a tile's selection ring whole inside the scroller. From 640
-          the body stops at the collection field and two rows of tiles (42 + 18 + 270, plus the room), and
-          the rest scrolls under the fade.
-        */}
-        <div className="wb-scroll-fade-y wb-scroll-fade-deep -m-1 min-h-0 flex-1 overflow-y-auto p-1 sm:max-h-[338px]">
-          <CollectionReferencePicker
-            layout="select"
-            selectedAssetIds={pickerAssetIds}
-            onChange={onPickerAssetIdsChange}
-            maxSelection={1}
-            refreshKey={referenceRefreshKey}
-            preferredAssetIds={preferredReferenceAssetIds}
-          />
-        </div>
+        {/* From 640 the grid stops at two rows of tiles (270px plus its ring room) and the rest scrolls
+            under the fade. On phones it takes the height the dialog has left. */}
+        <CollectionReferencePicker
+          layout="select"
+          gridScrollClassName="flex-1 sm:max-h-[278px] sm:flex-none"
+          selectedAssetIds={pickerAssetIds}
+          onChange={onPickerAssetIdsChange}
+          maxSelection={1}
+          refreshKey={referenceRefreshKey}
+          preferredAssetIds={preferredReferenceAssetIds}
+        />
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 border-t border-hairline pt-4">
           <span className="wb-meta" role="status">
             {pickerAssetIds.length ? "1 image selected" : "No image selected"}
