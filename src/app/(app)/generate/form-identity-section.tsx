@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AvatarPicker } from "@/components/avatar-picker";
 import { ReferencePickerPopover } from "@/components/collection-reference-picker-popover";
 import { loadAvatars } from "@/lib/avatar-list-cache";
+import { getAvatarTileLabel } from "@/lib/avatar-workflow";
 import { ReferenceField } from "./form-reference-field";
 import type { GenerateIdentityActions, GenerateIdentityView } from "./form-types";
 
@@ -81,7 +82,7 @@ function useAvatarName(avatarId: string | null, enabled: boolean) {
     loadAvatars()
       .then((page) => {
         if (!active) return;
-        setNames(Object.fromEntries(page.items.map((avatar) => [avatar.id, avatar.name])));
+        setNames(Object.fromEntries(page.items.map((avatar, index) => [avatar.id, getAvatarTileLabel(avatar.name, index)])));
       })
       .catch(() => undefined);
     return () => {
