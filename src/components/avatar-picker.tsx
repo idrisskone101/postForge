@@ -18,6 +18,7 @@ import {
   AvatarPickerSkeleton,
 } from "@/components/avatar-picker-cards";
 import { Button, EmptyState } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 import { AvatarGalleryPanel } from "@/components/avatar-picker-gallery";
 import { AvatarGeneratePanel } from "@/components/avatar-picker-generate";
 import { AvatarImportMode } from "@/components/avatar-picker-import-mode";
@@ -226,7 +227,14 @@ export function AvatarPicker({
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
-        <div className="wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]">
+        <div
+          className={cn(
+            "wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]",
+            // A search keeps the full row's scrollbar track, so an always-on scrollbar does not take its
+            // height away and move the controls below while typing.
+            query && rowScrolls(labelled.length) && "overflow-x-scroll [[data-avatar-stacked]_&]:overflow-x-auto"
+          )}
+        >
           {avatars.length === 0 ? (
             <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
           ) : query ? (
@@ -295,8 +303,12 @@ const AVATAR_ROW =
  * where a percentage would not; from five on, four and a part of the fifth show, so the row reads
  * as scrollable.
  */
+function rowScrolls(count: number) {
+  return count > 4;
+}
+
 function avatarRowStyle(count: number): CSSProperties {
-  const scrolls = count > 4;
+  const scrolls = rowScrolls(count);
   const visible = scrolls ? 4.4 : Math.max(count, 3);
   return {
     "--avatar-cols": visible,
