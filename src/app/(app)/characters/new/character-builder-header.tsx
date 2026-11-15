@@ -28,19 +28,29 @@ export function CharacterBuilderHeader({
       back={{ href: "/characters", label: "Characters", labelled: true }}
       title={<NameField view={view} inputRef={wideName} />}
     >
-      <Button
-        variant="strong"
-        size={40}
-        onClick={randomizeAndRender}
-        disabled={saving || rendering}
-        aria-label="Randomize & render"
-        aria-describedby="character-preview-generation-cost"
-        title="Uses one paid image generation"
-        className="max-sm:w-10 max-sm:px-0"
-      >
-        <Icon name="shuffle" />
-        <span className="max-sm:hidden">Randomize & render</span>
-      </Button>
+      {/* Below 1024 the cost line under the preview is off screen when this button is in reach, so
+          the cost is stated under the button. On a phone the button is an icon, so it takes a row. */}
+      <div className="flex flex-col items-start gap-1 max-sm:contents">
+        <Button
+          variant="strong"
+          size={40}
+          onClick={randomizeAndRender}
+          disabled={saving || rendering}
+          aria-label="Randomize & render"
+          aria-describedby="character-randomize-cost"
+          title="Uses one paid image generation"
+          className="max-sm:w-10 max-sm:px-0"
+        >
+          <Icon name="shuffle" />
+          <span className="max-sm:hidden">Randomize & render</span>
+        </Button>
+        <p
+          id="character-randomize-cost"
+          className="text-xs leading-4 text-fg-muted lg:hidden max-sm:col-span-full max-sm:row-start-3"
+        >
+          Randomize & render uses one paid image generation.
+        </p>
+      </div>
       <Button
         variant="primary"
         size={40}
@@ -126,4 +136,6 @@ const HEADER_CLASS = [
   "max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto_auto] max-sm:items-center max-sm:gap-x-2 max-sm:gap-y-2.5",
   "[&_.wb-page-header-lead]:max-sm:contents [&_.wb-back-pill]:max-sm:justify-self-start",
   "[&_.wb-page-title]:max-sm:hidden [&_.wb-page-actions]:max-sm:contents",
+  // The cost note under Randomize makes that group taller below 1024, so the buttons align by their tops.
+  "sm:max-lg:[&_.wb-page-actions]:items-start",
 ].join(" ");
