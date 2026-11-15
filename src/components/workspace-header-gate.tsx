@@ -24,8 +24,9 @@ export function WorkspaceHeaderGate({
   const pathname = usePathname() || serverPathname;
   if (routeOwnsHeader(pathname)) return null;
   const activeItem = getActiveWorkspaceItem(pathname);
-  // A path under no navigation item is not a page of the app: the not-found page draws below.
-  if (!activeItem) return <PageHeader id="workspace-header" title="Page not found" />;
+  // A path under no navigation item is not a page of the app. The not-found page below names itself,
+  // so a header here would say "Page not found" twice.
+  if (!activeItem) return null;
   return (
     <WorkspaceRouteHeader
       activeItem={activeItem}
