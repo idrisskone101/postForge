@@ -27,6 +27,7 @@ function editorView(
     onImport() {},
     copyAttributes() {},
     selectAttribute() {},
+    toastKey: "",
     ...overrides,
   };
 }
