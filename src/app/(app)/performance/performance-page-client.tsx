@@ -1,9 +1,9 @@
 "use client";
 
-import { IconButton } from "@/components/workbench/icon-button";
 import { Toast } from "@/components/workbench/toast";
 import { PerformanceChart } from "./performance-chart";
 import { PerformanceEmptyState } from "./performance-empty-state";
+import { PerformanceFailureNotice } from "./performance-failure-notice";
 import {
   buildChartSeries,
   buildStatStripCells,
@@ -93,7 +93,8 @@ export function PerformancePageClient({ initial }: { initial: PerformanceInitial
     onView: setView,
     onRange: setRange,
   };
-  const errors = [providerError, localError].filter(Boolean).join(" ");
+  const errors = [providerError, localError].filter((error): error is string => Boolean(error));
+  const syncWarnings = buildSyncWarnings(connectedAccounts);
   const hasData = sourceOptions.length > 0;
 
   return (
@@ -107,29 +108,23 @@ export function PerformancePageClient({ initial }: { initial: PerformanceInitial
       />
       {hasData ? <PerformanceRangePill range={range} onRange={setRange} /> : null}
 
-      {errors ? (
-        <div role="alert" className="wb-notice wb-fade-in shrink-0 py-2 pr-2" data-tone="bad">
-          <span className="min-w-0 flex-1 text-bad [overflow-wrap:anywhere]">{errors}</span>
-          <IconButton
-            icon="x"
-            label="Dismiss performance error"
-            variant="ghost"
-            size={28}
-            className="text-bad"
-            onClick={() => {
-              setProviderError(null);
-              setLocalError(null);
-            }}
-          />
-        </div>
-      ) : null}
+      <PerformanceFailureNotice
+        errors={errors}
+        syncFailures={syncWarnings.filter((warning) => warning.tone === "bad")}
+        onDismiss={() => {
+          setProviderError(null);
+          setLocalError(null);
+        }}
+      />
 
-      {buildSyncWarnings(connectedAccounts).map((warning) => (
-        <p key={warning.key} className="wb-notice shrink-0" data-tone={warning.tone}>
-          <strong>{warning.lead}</strong>
-          <span className="min-w-0 [overflow-wrap:anywhere]">{warning.text}</span>
-        </p>
-      ))}
+      {syncWarnings
+        .filter((warning) => warning.tone === "warn")
+        .map((warning) => (
+          <p key={warning.key} className="wb-notice shrink-0" data-tone="warn">
+            <strong>{warning.lead}</strong>
+            <span className="min-w-0 [overflow-wrap:anywhere]">{warning.text}</span>
+          </p>
+        ))}
 
       {hasData ? (
         <>
