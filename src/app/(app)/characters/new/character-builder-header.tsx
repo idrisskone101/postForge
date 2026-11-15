@@ -43,7 +43,6 @@ export function CharacterBuilderHeader({
         className="px-5 max-sm:px-[18px]"
         onClick={saveCharacter}
         disabled={saving || rendering || missingEditRecord || previewSaveBlocked}
-        aria-label="Save character"
         title={saveAction.title}
       >
         {saveAction.label === "Save" ? "Save character" : saveAction.label}
