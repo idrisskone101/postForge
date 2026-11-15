@@ -13,6 +13,7 @@ import {
   Panel,
   Skeleton,
   StatusBadge,
+  StatusChip,
 } from "@/components/workbench";
 
 interface CloneJob {
@@ -96,7 +97,7 @@ export function UGCCloneQueue() {
       ) : isLoading ? (
         <div aria-hidden="true" className="flex flex-col">
           {[0, 1, 2].map((index) => (
-            <div key={index} className={`${ROW} border-t border-hairline`}>
+            <div key={index} className={`${ROW} border-t border-hairline max-md:min-h-[75px]`}>
               <Skeleton shape="tile" className="h-12 w-9 shrink-0 rounded-sm" />
               <div className="flex flex-1 flex-col gap-2">
                 <Skeleton className="w-48 max-w-full" />
@@ -120,7 +121,7 @@ export function UGCCloneQueue() {
   );
 }
 
-const ROW = "flex min-w-0 items-center gap-3.5 py-2.5";
+const ROW = "flex min-w-0 items-center gap-3.5 py-2.5 max-md:gap-3";
 const MONO = "wb-mono shrink-0 text-fg-secondary";
 
 function CloneJobRow({ job }: { job: CloneJob }) {
@@ -129,7 +130,7 @@ function CloneJobRow({ job }: { job: CloneJob }) {
   return (
     <Link
       href={`/ugc-clone/${job.id}`}
-      className={`${ROW} -mx-2 rounded-lg px-2 transition-colors duration-[160ms] ease-pf hover:bg-raised max-md:flex-wrap`}
+      className={`${ROW} -mx-2 rounded-lg px-2 transition-colors duration-[160ms] ease-pf hover:bg-raised`}
     >
       {output ? (
         <DeferredVideoFrame
@@ -159,13 +160,15 @@ function CloneJobRow({ job }: { job: CloneJob }) {
           ) : null}
           {job.error ? `${label.sub} · ${job.error}` : label.sub}
         </span>
+        <span className="wb-mono truncate text-fg-secondary md:hidden">
+          {formatRelativeDate(job.createdAt)} · {formatCost(job.estimatedCost)}
+        </span>
       </span>
       <span className="flex w-[120px] shrink-0 max-md:w-auto">
         <CloneJobStatus status={job.status} />
       </span>
-      <span className={`${MONO} w-[120px] max-md:ml-[50px] max-md:w-auto max-md:basis-[calc(100%-50px)] max-md:order-last`}>
+      <span className={`${MONO} w-[120px] max-md:hidden`}>
         {formatRelativeDate(job.createdAt)}
-        <span className="md:hidden"> · {formatCost(job.estimatedCost)}</span>
       </span>
       <span className={`${MONO} w-14 text-right max-md:hidden`}>
         {formatCost(job.estimatedCost)}
@@ -179,6 +182,9 @@ function CloneJobStatus({ status }: { status: CloneJob["status"] }) {
   if (status === "failed") return <StatusBadge tone="bad" label="Failed" />;
   if (status === "queued") return <StatusBadge tone="warn" label="Queued" />;
   return (
-    <span className="text-[13px] font-semibold leading-[22px] text-ember-text">Running</span>
+    <StatusChip tone="live">
+      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ember" />
+      Running
+    </StatusChip>
   );
 }

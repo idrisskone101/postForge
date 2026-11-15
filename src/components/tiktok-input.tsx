@@ -41,7 +41,7 @@ export function TikTokInput({
 }: TikTokInputProps) {
   const [url, setUrl] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; importFailed?: true } | null>(null);
   const [savedSources, setSavedSources] = useState<SavedTikTokSource[]>([]);
   const [sourcesNextCursor, setSourcesNextCursor] = useState<string | null>(null);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
@@ -124,7 +124,10 @@ export function TikTokInput({
       onDownloaded(toVideoInfo(result));
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Import failed");
+      setError({
+        message: err instanceof Error ? err.message : "The source could not be imported.",
+        importFailed: true,
+      });
       return null;
     } finally {
       setIsDownloading(false);
@@ -147,7 +150,7 @@ export function TikTokInput({
       if (!source) {
         if (sourcesNextCursor) return;
         autoSelectedIdRef.current = preselectedSourceId;
-        setError("The handed-off saved source is no longer available. Choose another source.");
+        setError({ message: "The handed-off saved source is no longer available. Choose another source." });
         onPreselectedSourceResolved?.({
           handoff: "sourceId",
           status: "missing",
@@ -266,7 +269,14 @@ export function TikTokInput({
           className="wb-notice wb-fade-in min-w-0 [overflow-wrap:anywhere]"
           data-tone="bad"
         >
-          <span className="min-w-0 text-fg">{error}</span>
+          <span className="min-w-0">
+            {error.importFailed ? (
+              <>
+                <strong className="font-semibold text-bad">Import failed.</strong>{" "}
+              </>
+            ) : null}
+            {error.message}
+          </span>
         </p>
       )}
 

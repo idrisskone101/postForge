@@ -115,7 +115,7 @@ export function TikTokSavedSources({
                   <span className="flex min-w-0 flex-col">
                     <span
                       className={cn(
-                        "truncate text-[13px] leading-4 text-fg",
+                        "text-[13px] leading-4 text-fg [overflow-wrap:anywhere]",
                         isSelected ? "font-bold" : "font-semibold"
                       )}
                     >
