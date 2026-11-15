@@ -703,13 +703,12 @@
     white-space: nowrap;
   }
 
+  /* Product meta under a row title wraps rather than ending in an ellipsis (No Orphan Rule). */
   .wb-row-sub {
-    overflow: hidden;
     color: var(--pf-text-muted);
     font-size: 13px;
     line-height: 18px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 
   .wb-row-sub[data-tone="bad"] {

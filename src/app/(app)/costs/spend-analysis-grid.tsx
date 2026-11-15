@@ -86,7 +86,7 @@ export function SpendAnalysisGrid({ dashboard, view }: SpendAnalysisGridProps) {
           {models.map(([name, data], index) => (
             <li key={name} className="flex flex-col gap-[5px]">
               <span className="flex items-baseline justify-between gap-3">
-                <span className="truncate text-[13px] font-semibold leading-4 text-fg" title={name}>
+                <span className="min-w-0 text-[13px] font-semibold leading-4 text-fg [overflow-wrap:anywhere]" title={name}>
                   {modelLabel(name)}
                 </span>
                 <span className="wb-mono shrink-0 text-fg">{formatCost(data.cost)}</span>

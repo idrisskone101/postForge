@@ -134,7 +134,7 @@ function SpendLogRowLink({ log, now }: { log: SpendLogRow; now: Date }) {
               {shortJobId(log.jobId)}
             </span>
           </span>
-          <span className="truncate text-[12px] leading-4 text-fg-muted lg:hidden">
+          <span className="text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere] lg:hidden">
             {modelLabel(log.model)} - {typeLabel(log.type)}
             <BrowserLocalText>{` - ${createdLabel(log.createdAt, now)}`}</BrowserLocalText>
           </span>

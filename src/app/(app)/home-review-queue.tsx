@@ -93,7 +93,7 @@ export function HomeReviewQueue({
                   <span className="line-clamp-1 max-md:line-clamp-2 text-[14px] font-semibold leading-[18px] text-fg [overflow-wrap:anywhere] group-hover:underline group-hover:decoration-fg-muted group-hover:underline-offset-2">
                     {item.title}
                   </span>
-                  <span className="wb-meta truncate">{item.meta}</span>
+                  <span className="wb-meta min-w-0 [overflow-wrap:anywhere]">{item.meta}</span>
                 </span>
               </Link>
               <span className="flex shrink-0 items-center gap-1.5">
