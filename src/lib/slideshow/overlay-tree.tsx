@@ -43,6 +43,12 @@ function overlayFont(settings: SlideshowRenderTextSettings) {
   return { fontFamily: "Inter", fontStyle: "normal" as const };
 }
 
+// Solid and light copy sits on one pill per line, so each line's box is already the drawn shape.
+export function slideshowOverlayDrawsPills(settings: SlideshowRenderTextSettings) {
+  const style = settings.style ?? "outline";
+  return style === "solid" || style === "light";
+}
+
 function overlayLayout(
   width: number,
   height: number,
@@ -52,7 +58,7 @@ function overlayLayout(
   const align = settings.align ?? "center";
   const headline = slideshowHeadlineFontSize(settings.size, width);
   const copyWidth = width * (clamp(settings.width ?? 88, 45, 100) / 100);
-  const pills = style === "solid" || style === "light";
+  const pills = slideshowOverlayDrawsPills(settings);
   const color =
     style === "light" ? "#111111" : slideshowOverlayTextColor(settings.color);
   const stroke = style === "outline" ? Math.max(2.5, headline * 0.052) : 0;

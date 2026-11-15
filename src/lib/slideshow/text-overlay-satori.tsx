@@ -3,7 +3,11 @@ import { join } from "node:path";
 import satori from "satori";
 import type { Font } from "satori";
 
-import { overlayTree, slideshowOverlayLayerOfKey } from "./overlay-tree";
+import {
+  overlayTree,
+  slideshowOverlayDrawsPills,
+  slideshowOverlayLayerOfKey,
+} from "./overlay-tree";
 import type {
   SlideshowOverlayBoxes,
   SlideshowRenderTextSettings,
@@ -142,7 +146,7 @@ export async function createSlideshowTextOverlay(
   });
   const overlay = {
     markup: svg.replace("<svg ", '<svg data-slideshow-text-overlay="true" '),
-    boxes,
+    boxes: slideshowOverlayDrawsPills(settings) ? boxes : hugGlyphs(svg, boxes),
   };
   if (overlayCache.size >= MARKUP_CACHE_LIMIT) {
     const oldest = overlayCache.keys().next().value;
@@ -150,6 +154,44 @@ export async function createSlideshowTextOverlay(
   }
   overlayCache.set(key, overlay);
   return overlay;
+}
+
+// Unpilled copy fills the copy column, so its layout box says nothing about where its lines end.
+// The renderer draws text as outline paths in canvas coordinates (the only paths without an x
+// attribute; backgrounds carry their box), so each block shrinks to the glyph points inside its rows.
+function hugGlyphs(svg: string, boxes: SlideshowOverlayBoxes) {
+  const points: number[][] = [];
+  for (const [, attributes] of svg.matchAll(/<path\b([^>]*)>/g)) {
+    if (/\sx="/.test(attributes)) continue;
+    const numbers = (/\sd="([^"]*)"/.exec(attributes)?.[1] ?? "")
+      .match(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi)
+      ?.map(Number);
+    if (!numbers) continue;
+    for (let index = 0; index + 1 < numbers.length; index += 2) {
+      points.push([numbers[index], numbers[index + 1]]);
+    }
+  }
+  const hugged: SlideshowOverlayBoxes = {};
+  for (const layer of Object.keys(boxes) as (keyof SlideshowOverlayBoxes)[]) {
+    const box = boxes[layer]!;
+    let left = Infinity;
+    let right = -Infinity;
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (const [x, y] of points) {
+      if (y < box.y || y > box.y + box.height) continue;
+      if (x < box.x || x > box.x + box.width) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+    hugged[layer] =
+      right > left && bottom > top
+        ? { x: left, y: top, width: right - left, height: bottom - top }
+        : box;
+  }
+  return hugged;
 }
 
 export async function createSlideshowTextOverlayMarkup(
