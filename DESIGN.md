@@ -332,6 +332,7 @@ The primitives live in `src/components/workbench` (one component per file) with 
 - **Strong:** `#3A3C40` pill (light: `#D4D4CF` with ink text, so the primary stays the only ink pill), the second most important action and the action in an empty state.
 - **Quiet:** raised pill, 32 to 40px, 13px / 600. The default.
 - **Outline:** transparent with a 1px inset ring, for buttons sitting on a raised surface such as the bulk dock.
+- **On a raised surface:** a confirm dialog is drawn on the raised fill, so its surface carries `.wb-on-raised`, which hands everything inside the next fill up. A quiet pill, an input and a disabled control keep reading as controls there with no rule of their own. Light steps to the strong fill, because raised-strong on raised is 1.11:1.
 - **Danger:** red tint with red text. Always labelled.
 - **Icon buttons (`IconButton`):** round, 28 to 40px: quiet, strong, outline or ghost.
 - **Disabled:** raised fill with `#6F6E6A` text. No opacity fade on text buttons. The primary has its own disabled tokens (`--pf-action-disabled`, `--pf-action-disabled-fg`): the same values in dark, and in light the raised-strong fill `#E9E9E6` with muted `#666666` ink, because the raised fill is 1.09:1 on a white panel.
@@ -382,6 +383,8 @@ A row menu (`RowActionsMenu`) opens with focus on its first item. ArrowDown, Arr
 - **`EmptyState`:** a dashed 12px tile with a 44px round icon, one 14px / 600 line and one strong action. It fades in once.
 - **`Skeleton`:** static raised shapes. No shimmer, no pulse.
 - **`Toast`:** a 48px raised pill with a 20px status badge, the message and one inline action.
+- **Confirm:** a destructive or irreversible action asks through `useConfirmDialog` (`ui/confirm-dialog`), the 420px alert dialog with Cancel focused first and a labelled destructive pill. `window.confirm` is not used.
+- **Not found:** every URL under no route shows the not-found page inside the shell, in the stored theme, with a 404 status.
 
 ### Navigation
 36px pill items: 10px inline padding, 10px gap, an 18px icon at 1.5 stroke, 14px / 500 secondary text. Active: the raised pill, 600 bone text, an ember icon. Jobs carries a red-tint count of failed jobs; Gallery carries a neutral count of outputs waiting for review.
