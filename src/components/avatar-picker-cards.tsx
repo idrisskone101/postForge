@@ -98,9 +98,18 @@ export function AvatarCreationCard({
       </button>
 
       <div id={menuId} hidden={!open} className="wb-fade-in flex flex-col gap-1.5 p-2.5">
-        <div className="flex items-center justify-between pl-1">
-          <span className="text-[13px] font-semibold leading-4 text-fg">New character</span>
-          <IconButton icon="x" label="Close new character options" variant="ghost" size={28} onClick={closeChooser} />
+        {/* The 132px card leaves the title row 112px. The ghost button overhangs the padding by its
+            own 6px glyph inset, so its glyph ends on the content edge and the title keeps one line. */}
+        <div className="flex items-center justify-between">
+          <span className="whitespace-nowrap text-[13px] font-semibold leading-4 text-fg">New character</span>
+          <IconButton
+            icon="x"
+            label="Close new character options"
+            variant="ghost"
+            size={28}
+            onClick={closeChooser}
+            className="-mr-1.5"
+          />
         </div>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-1 [[data-avatar-stacked]_&]:grid-cols-2">
           {actions.map((action, index) => (
