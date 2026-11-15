@@ -32,7 +32,7 @@ export function SettingsRow({
           {label}
         </Label>
         {detail && (
-          <span className="break-words text-[13px] leading-[18px] text-fg-muted [overflow-wrap:anywhere]">
+          <span className="break-words text-[13px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
             {detail}
           </span>
         )}
