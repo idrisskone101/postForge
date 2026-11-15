@@ -47,7 +47,10 @@ export function CharacterPreviewStage({
             priority
           />
         </span>
-        <StatusChip tone={status.tone} className="absolute left-3 top-3">
+        <StatusChip
+          tone={status.tone}
+          className={cn("absolute left-3 top-3", status.tone === "neutral" && "bg-raised-strong")}
+        >
           {status.tone === "live" ? <span className="wb-live-dot" /> : null}
           <span role="status" aria-live="polite">{status.label}</span>
         </StatusChip>
