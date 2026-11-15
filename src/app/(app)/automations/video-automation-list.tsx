@@ -65,7 +65,9 @@ export function VideoAutomationList({
         </div>
       </div>
 
-      {records.length === 0 ? (
+      {records.length === 0 && hub.error ? (
+        <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1" />
+      ) : records.length === 0 ? (
         <EmptyState icon="automations" title="No video automations yet" className="flex-1">
           <Link href="/automations/new" className={buttonClass("strong", 36)}>
             Choose a playbook
