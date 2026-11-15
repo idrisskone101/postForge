@@ -6,7 +6,7 @@ import {
   type CharacterAttributes,
 } from "@/lib/character-attributes";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Button, Icon, Range, iconButtonClass } from "@/components/workbench";
+import { Button, Icon, Range, buttonClass, iconButtonClass } from "@/components/workbench";
 import { useStepEntry } from "@/lib/use-step-entry";
 import { cn } from "@/lib/utils";
 import type { CharacterAttributeEditorViewModel } from "./types";
@@ -16,7 +16,7 @@ export function CharacterAttributeEditor({
 }: {
   view: CharacterAttributeEditorViewModel;
 }) {
-  const { active, error, errorIsMissingRecord, onDismissError, onSelectSection, copyPrompt } = view;
+  const { active, error, errorIsMissingRecord, onDismissError, onSelectSection, copyPrompt, clearSection, clearButtonRef, sectionIsEmpty } = view;
   const index = CHARACTER_ATTRIBUTE_SECTIONS.findIndex((section) => section.id === active?.id);
   const previous = index > 0 ? CHARACTER_ATTRIBUTE_SECTIONS[index - 1] : undefined;
   const next = CHARACTER_ATTRIBUTE_SECTIONS[index + 1];
@@ -43,12 +43,25 @@ export function CharacterAttributeEditor({
         >
           {active?.label}
         </h2>
-        <Tooltip>
-          <TooltipTrigger type="button" aria-label="Copy prompt" className={iconButtonClass("quiet", 30)} onClick={copyPrompt}>
-            <Icon name="copy" />
-          </TooltipTrigger>
-          <TooltipContent side="left">Copy prompt</TooltipContent>
-        </Tooltip>
+        <div className="flex shrink-0 items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger type="button" aria-label="Copy prompt" className={iconButtonClass("quiet", 30)} onClick={copyPrompt}>
+              <Icon name="copy" />
+            </TooltipTrigger>
+            <TooltipContent side="left">Copy prompt</TooltipContent>
+          </Tooltip>
+          {/* Stays focusable when there is nothing to clear, so focus never drops after a clear. */}
+          <button
+            ref={clearButtonRef}
+            type="button"
+            className={buttonClass("quiet", 32)}
+            aria-disabled={sectionIsEmpty || undefined}
+            aria-label={`Clear ${active?.label ?? "section"}`}
+            onClick={clearSection}
+          >
+            Clear
+          </button>
+        </div>
       </div>
       {error ? (
         <div role="alert" className="wb-notice wb-fade-in items-start justify-between" data-tone="bad">
@@ -106,7 +119,7 @@ function AttributeGroups({
             )}
           >
             <span>{group.label}</span>
-            {group.key === "lipFullness" ? <span className="wb-mono text-fg-secondary">{attributes[group.key]}%</span> : null}
+            {group.key === "lipFullness" && attributes[group.key] ? <span className="wb-mono text-fg-secondary">{attributes[group.key]}%</span> : null}
           </legend>
           {group.key === "lipFullness" ? (
             <Range

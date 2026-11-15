@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type {
   CharacterAttributeSection,
   CharacterAttributes,
@@ -41,6 +42,11 @@ export type CharacterAttributeEditorViewModel = {
   onDismissError: () => void;
   onSelectSection: (sectionId: string) => void;
   copyPrompt: () => void;
+  /** Empties the current section's attributes. Local until Save; the toast offers Undo. */
+  clearSection: () => void;
+  /** Undo sends focus back here: the toast that held it is leaving. */
+  clearButtonRef: RefObject<HTMLButtonElement | null>;
+  sectionIsEmpty: boolean;
   onImport: () => void;
   copyAttributes: () => void;
   selectAttribute: (key: string, value: string) => void;

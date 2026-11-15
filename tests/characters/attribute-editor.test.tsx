@@ -21,6 +21,9 @@ function editorView(
     onDismissError() {},
     onSelectSection() {},
     copyPrompt() {},
+    clearSection() {},
+    clearButtonRef: { current: null },
+    sectionIsEmpty: false,
     onImport() {},
     copyAttributes() {},
     selectAttribute() {},
@@ -46,6 +49,15 @@ assert.match(identityMarkup, /data-character-attribute-editor/);
 assert.match(identityMarkup, />Identity</);
 assert.match(identityMarkup, /<button[^>]*aria-label="Copy prompt"[^>]*class="wb-icon-btn/);
 assert.doesNotMatch(identityMarkup, />Copy prompt</);
+// Paper "17 Character builder": a quiet 32px Clear pill ends the step header. It stays focusable when empty.
+assert.match(identityMarkup, /<button[^>]*class="wb-btn wb-btn-32"[^>]*aria-label="Clear Identity"[^>]*>Clear<\/button>/);
+assert.doesNotMatch(identityMarkup, /aria-label="Clear Identity"[^>]*aria-disabled/);
+assert.match(
+  renderToStaticMarkup(
+    <CharacterAttributeEditor view={editorView({ activeSection: "identity", active: identity, attributes: {}, sectionIsEmpty: true })} />
+  ),
+  /aria-disabled="true"[^>]*aria-label="Clear Identity"|aria-label="Clear Identity"[^>]*aria-disabled="true"/
+);
 assert.match(identityMarkup, /min-h-\[160px\]/);
 
 // A group named like its step keeps its legend for assistive tech only

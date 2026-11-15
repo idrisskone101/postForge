@@ -26,6 +26,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
     applyImport,
     importError,
     toast,
+    dismissToast,
   } = useCharacterBuilder(editId);
   const mountedInBrowser = useMountedInBrowser();
 
@@ -61,7 +62,7 @@ export function CharacterBuilderClient({ editId = null }: { editId?: string | nu
         actions={{ onOpenChange: setImportOpen, onValueChange: setImportValue, onApply: applyImport }}
       />
       <div className="wb-toast-region">
-        {toast ? <Toast key={toast} toast={{ id: toast, tone: "ok", message: toast }} onDismiss={noop} /> : null}
+        {toast ? <Toast key={toast.id} toast={toast} onDismiss={dismissToast} /> : null}
       </div>
     </>
   );
@@ -78,5 +79,3 @@ function CharacterBuilderSkeleton() {
     </div>
   );
 }
-
-function noop() {}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   buildCharacterImagePrompt,
   buildCharacterPrompt,
@@ -12,6 +12,7 @@ import {
   type CharacterAttributes,
 } from "@/lib/character-attributes";
 import { apiPost } from "@/lib/api/client";
+import type { ToastMessage } from "@/components/workbench";
 import { isCharacterRecord, type CharacterRecord } from "@/lib/characters";
 import {
   fetchWorkspaceFeature,
@@ -54,7 +55,9 @@ export function useCharacterBuilder(editId: string | null = null) {
   const [loading, setLoading] = useState(Boolean(editId));
   const [missingEditRecord, setMissingEditRecord] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const toastCount = useRef(0);
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [importValue, setImportValue] = useState("");
 
@@ -117,9 +120,34 @@ export function useCharacterBuilder(editId: string | null = null) {
     };
   }, [editId]);
 
-  function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1800);
+  function notify(message: string, action?: ToastMessage["action"]) {
+    toastCount.current += 1;
+    setToast({ id: `character-toast-${toastCount.current}`, tone: "ok", message, action });
+  }
+
+  const dismissToast = useCallback((id: string) => {
+    setToast((current) => (current?.id === id ? null : current));
+  }, []);
+
+  /** Empties the current section. Nothing is saved until Save, and the toast puts the values back. */
+  function clearSection() {
+    if (!active) return;
+    const keys = new Set(active.groups.map((group) => group.key));
+    const cleared = Object.fromEntries(
+      Object.entries(attributes).filter(([key]) => keys.has(key))
+    );
+    if (Object.keys(cleared).length === 0) return;
+    setAttributes((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => !keys.has(key)))
+    );
+    setError(null);
+    notify(`${active.label} cleared`, {
+      label: "Undo",
+      onClick: () => {
+        setAttributes((current) => ({ ...current, ...cleared }));
+        clearButtonRef.current?.focus();
+      },
+    });
   }
 
   function selectAttribute(key: string, value: string) {
@@ -315,6 +343,9 @@ export function useCharacterBuilder(editId: string | null = null) {
     onDismissError: () => setError(null),
     onSelectSection: setActiveSection,
     copyPrompt,
+    clearSection,
+    clearButtonRef,
+    sectionIsEmpty: !active?.groups.some((group) => group.key in attributes),
     onImport: () => setImportOpen(true),
     copyAttributes,
     selectAttribute,
@@ -335,5 +366,6 @@ export function useCharacterBuilder(editId: string | null = null) {
     applyImport,
     importError: importOpen ? error : null,
     toast,
+    dismissToast,
   };
 }
