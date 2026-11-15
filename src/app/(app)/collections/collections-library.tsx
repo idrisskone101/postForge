@@ -42,9 +42,14 @@ export function CollectionsLibrary({ workspace }: { workspace: CollectionsWorksp
             Visual systems
             <CountBadge className="tracking-normal" count={collections.length} label={`${collections.length} collections`} />
           </h2>
-          <Button size={32} className="pl-2.5" onClick={() => setCreating(true)}>
+          <Button
+            size={32}
+            aria-label="New collection"
+            className="pl-2.5 max-[359px]:w-8 max-[359px]:px-0"
+            onClick={() => setCreating(true)}
+          >
             <Icon name="plus" size={16} />
-            New collection
+            <span className="max-[359px]:hidden">New collection</span>
           </Button>
         </div>
         {collections.length === 0 ? (
