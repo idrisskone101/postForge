@@ -87,12 +87,12 @@ export function CharacterCategoryRail({
  * Below 1280px the steps are one row that scrolls sideways. A step chosen from the editor's Next button
  * can be off screen, so the current pill is centred in the row. Only the row scrolls, never the page.
  * Pills change width per step. A row that stops overflowing would keep the edge fade of its last scroll
- * position, so the fade is switched off while everything fits.
+ * position, so the fade is switched off while everything fits or only the 4px ring room is hidden.
  */
 function centerInRail(pill: HTMLButtonElement | null) {
   const rail = pill?.closest("nav");
   if (!pill || !rail) return;
-  rail.style.animationName = rail.scrollWidth > rail.clientWidth ? "" : "none";
+  rail.style.animationName = rail.scrollWidth - rail.clientWidth > 4 ? "" : "none";
   const pillBox = pill.getBoundingClientRect();
   const railBox = rail.getBoundingClientRect();
   rail.scrollTo({
