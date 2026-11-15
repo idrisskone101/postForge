@@ -16,7 +16,7 @@ export function GenerateContinuitySection({
 
   return (
     <ReferenceField
-      label="Character continuity"
+      label="Video seed"
       onClear={videoReferenceFileId && !videoSeedMissing ? actions.onClear : undefined}
     >
       <VideoReferencePicker

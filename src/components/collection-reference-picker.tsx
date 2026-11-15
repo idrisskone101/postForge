@@ -130,7 +130,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
             </span>
             {/* With one image to pick, the chosen tile is its own clear control. */}
             {selectedAssetIds.length > 0 && !(layout === "select" && maxSelection === 1) ? (
-              <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
+              <Button variant="link" size={32} className={layout === "popover" ? "-mr-2.5" : undefined} onClick={() => onChange([])}>Clear</Button>
             ) : null}
           </div>
         )}
@@ -173,7 +173,7 @@ export function CollectionReferencePicker(props: CollectionReferencePickerProps)
 }
 
 const GRID = {
-  popover: "grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-2 p-1",
+  popover: "grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 p-1",
   inline:
     "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]",
   select: "grid grid-cols-3 gap-2 sm:grid-cols-6",

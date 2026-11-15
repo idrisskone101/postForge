@@ -30,7 +30,7 @@ export function ReferencePickerPopover({
   summary: ReferenceRowSummary;
   label: string;
   disabled?: boolean;
-  /** 560px instead of 400px, for a picker that shows a three-column grid. */
+  /** At least 560px, for a picker that shows a three-column grid. Otherwise as wide as the row. */
   wide?: boolean;
   children: (close: () => void) => ReactNode;
 }) {
@@ -76,7 +76,7 @@ export function ReferencePickerPopover({
         <Popover.Positioner
           side="bottom"
           align="start"
-          sideOffset={6}
+          sideOffset={8}
           collisionPadding={16}
           className="z-50 outline-none"
         >
@@ -95,7 +95,7 @@ export function ReferencePickerPopover({
               "wb-float wb-overlay-menu flex max-h-[min(640px,var(--available-height))] max-w-[calc(100vw-32px)] origin-[var(--transform-origin)] flex-col overflow-hidden outline-none",
               wide
                 ? "w-[max(var(--anchor-width),min(560px,calc(100vw-32px)))]"
-                : "w-[max(var(--anchor-width),min(400px,calc(100vw-32px)))]"
+                : "w-[max(var(--anchor-width),min(280px,calc(100vw-32px)))]"
             )}
           >
             <div className="wb-scroll-fade-y wb-scroll-fade-deep flex min-h-0 flex-col gap-3 overflow-y-auto p-3">

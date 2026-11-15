@@ -58,7 +58,7 @@ export function VideoReferencePicker(props: VideoReferencePickerProps) {
               <div className="flex min-h-8 items-center gap-2.5 pl-1">
                 <span className="wb-label flex-1 text-fg-secondary">Recent outputs</span>
                 {selectedFileId ? (
-                  <Button variant="link" size={32} onClick={() => onChange(null)}>Clear</Button>
+                  <Button variant="link" size={32} className="-mr-2.5" onClick={() => onChange(null)}>Clear</Button>
                 ) : null}
               </div>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] gap-2 p-1">

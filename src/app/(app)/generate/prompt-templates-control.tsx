@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button, EmptyState, Skeleton } from "@/components/workbench";
+import { Button, EmptyState, IconButton, Skeleton } from "@/components/workbench";
 import {
   PROMPT_TEMPLATE_NAME_MAX_LENGTH,
   PROMPT_TEMPLATE_PROMPT_MAX_LENGTH,
@@ -50,9 +50,13 @@ export function PromptTemplatesControl({
         Templates
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="flex max-h-[min(640px,calc(100dvh-2rem))] flex-col gap-4 sm:max-w-[460px]">
-          <DialogHeader className="min-h-7 justify-center pr-10">
-            <DialogTitle className="wb-panel-title">Prompt templates</DialogTitle>
+        <DialogContent
+          showCloseButton={false}
+          className="flex max-h-[min(640px,calc(100dvh-2rem))] flex-col gap-4 sm:max-w-[460px]"
+        >
+          <DialogHeader className="h-7 shrink-0 flex-row items-center gap-2.5">
+            <DialogTitle className="wb-panel-title min-w-0 flex-1">Prompt templates</DialogTitle>
+            <IconButton icon="x" label="Close" size={30} onClick={() => setOpen(false)} />
           </DialogHeader>
           <div className="flex min-w-0 gap-2">
             <input

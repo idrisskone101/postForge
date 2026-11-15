@@ -161,7 +161,7 @@ function SwapWell({
     <div className="flex min-w-0 flex-col gap-1.5">
       <span className="wb-label">{label}</span>
       {asset ? (
-        <div className="flex min-h-24 min-w-0 items-center gap-3 rounded-lg bg-raised p-3">
+        <div className="wb-on-raised flex min-h-24 min-w-0 items-center gap-3 rounded-lg bg-raised p-3">
           <span className="relative grid h-[72px] w-[54px] shrink-0 place-items-center overflow-hidden rounded-[10px] bg-media text-fg-muted [&>:is(img,video)]:absolute [&>:is(img,video)]:inset-0 [&>:is(img,video)]:size-full [&>:is(img,video)]:object-cover">
             {field === "video" ? <Film className="size-4" /> : <ImageIcon className="size-4" />}
             {state.preview && field === "video" ? (
@@ -176,7 +176,6 @@ function SwapWell({
             <span className="wb-mono text-fg-secondary">{assetMeta(asset)}</span>
           </span>
           <Button
-            variant="outline"
             size={32}
             aria-label={`Remove ${label.toLowerCase()}`}
             onClick={state.onRemove}

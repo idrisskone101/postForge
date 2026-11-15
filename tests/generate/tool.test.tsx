@@ -85,7 +85,7 @@ const videoModel = models.find((model) => model.type === "video") ?? models[0];
 
 const continuitySection = (
   <div>
-    <h2>Character continuity</h2>
+    <h2>Video seed</h2>
     <VideoReferencePicker selectedFileId={null} onChange={() => {}} />
   </div>
 );
@@ -101,7 +101,7 @@ const videoMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(videoMarkup, /Character continuity/);
+assert.match(videoMarkup, /Video seed/);
 assert.match(videoMarkup, /aria-label="Duration"/);
 assert.match(videoMarkup, />5s</);
 assert.match(videoMarkup, /Loading recent outputs…/);
@@ -119,4 +119,4 @@ const formSource = [
 assert.match(formSource, /getContinuityVideoModel\(\)/);
 assert.match(formSource, /referenceFileId/);
 assert.match(formSource, /VideoReferencePicker/);
-assert.match(formSource, /Character continuity/);
+assert.match(formSource, /label="Video seed"/);

@@ -50,7 +50,8 @@ export function GenerateIdentitySection({
         )}
       </ReferencePickerPopover>
       {avatarId && identityStatus.tone === "ready" ? (
-        <p role="status" className="wb-meta">
+        // The chosen row already says the identity is in use; the count is for a screen reader.
+        <p role="status" className="sr-only">
           {identityStatus.label}
         </p>
       ) : avatarId ? (
