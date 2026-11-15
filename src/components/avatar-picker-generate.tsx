@@ -157,8 +157,7 @@ export function AvatarGeneratePanel({ onCreated, onBack }: AvatarCreatedHandoff)
             <span className="text-[14px] font-semibold leading-[18px] text-fg">Generating avatar</span>
             <span className="text-[13px] leading-4 text-fg-secondary">{jobStageLabel(genJob)}</span>
           </div>
-          {/* The job reports no percentage, so the track is full and sweeps: it says running, not how far. */}
-          <Meter label="Avatar generation in progress" value={100} running className="flex-none" />
+          <Meter label={`Avatar generation, ${jobStageLabel(genJob).toLowerCase()}`} running className="flex-none" />
         </div>
       )}
 

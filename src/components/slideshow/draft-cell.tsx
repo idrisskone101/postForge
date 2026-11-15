@@ -80,7 +80,7 @@ export function DraftCell({
               </StatusChip>
             ) : null}
             {project.status === "generating" ? (
-              <Meter label="Rendering slide visuals" value={40} running className="max-w-24" />
+              <Meter label="Rendering slide visuals" running className="max-w-24" />
             ) : null}
             {project.successfulExportCount ? (
               <span className="wb-mono whitespace-nowrap text-fg-muted">

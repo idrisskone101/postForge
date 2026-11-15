@@ -132,7 +132,7 @@ function JobStageBody({ view }: { view: JobDetailViewModel }) {
         {isFailed ? humanizeGenerationFailure(job.error, statusCopy.description) : statusCopy.description}
       </p>
       {isActive && job.status === "processing" && (
-        <Meter label="Generation in progress" value={100} running className="h-1.5 w-60 flex-none" />
+        <Meter label="Generation processing" running className="h-1.5 w-60 flex-none" />
       )}
     </div>
   );

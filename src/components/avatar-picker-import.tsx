@@ -182,7 +182,7 @@ export function AvatarImportPanel({
               <p className="text-[13px] leading-4 text-fg-secondary">
                 Generating another candidate set. Previous candidates stay available for review.
               </p>
-              <Meter label="Candidate generation in progress" value={100} running className="flex-none" />
+              <Meter label="Generating another candidate set" running className="flex-none" />
             </div>
           )}
 
