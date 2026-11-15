@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  Button,
   EmptyState,
   Segmented,
   StatusChip,
@@ -66,7 +67,11 @@ export function VideoAutomationList({
       </div>
 
       {records.length === 0 && hub.error ? (
-        <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1" />
+        <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1">
+          <Button variant="strong" size={36} onClick={hub.load}>
+            Retry
+          </Button>
+        </EmptyState>
       ) : records.length === 0 ? (
         <EmptyState icon="automations" title="No video automations yet" className="flex-1">
           <Link href="/automations/new" className={buttonClass("strong", 36)}>

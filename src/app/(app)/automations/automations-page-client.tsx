@@ -46,7 +46,7 @@ export function AutomationsPageClient({
   const { value: publishState, leaving: publishLeaving } = useLingering(publishDialog);
   const { value: manualState, leaving: manualLeaving } = useLingering(manualResolutionDialog);
   const firstLoad = integrationsLoading && records.length === 0 && !error;
-  const nothingSaved =
+  const nothingListed =
     records.length === 0 && slideshowAutomations.length === 0 && !slideshowError;
 
   return (
@@ -75,7 +75,15 @@ export function AutomationsPageClient({
 
       {firstLoad ? (
         <HubSkeleton />
-      ) : nothingSaved ? (
+      ) : nothingListed && error ? (
+        <section className="flex min-h-[420px] flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
+          <EmptyState icon="alert" tone="error" title="Automations unavailable" className="flex-1">
+            <Button variant="strong" size={36} onClick={load}>
+              Retry
+            </Button>
+          </EmptyState>
+        </section>
+      ) : nothingListed ? (
         <section className="flex min-h-[420px] flex-1 flex-col rounded-xl bg-panel p-5 shadow-panel">
           <EmptyState
             icon="automations"
