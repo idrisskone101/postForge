@@ -31,7 +31,11 @@
 
   body {
     @apply bg-background text-foreground;
-    min-width: 320px;
+    /*
+     * The narrowest window is 320px. An always-on scrollbar takes up to 17px of that, and engines
+     * disagree on whether 100vw counts it, so the floor is a fixed width under what is left.
+     */
+    min-width: 300px;
     font-size: 14px;
     line-height: 21px;
     text-rendering: optimizeLegibility;
