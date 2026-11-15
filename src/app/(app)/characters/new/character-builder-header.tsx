@@ -48,7 +48,7 @@ export function CharacterBuilderHeader({
           id="character-randomize-cost"
           className="text-xs leading-4 text-fg-muted lg:hidden max-sm:col-span-full max-sm:row-start-3"
         >
-          Randomize & render uses one paid image generation.
+          Randomize & render, the shuffle button, uses one paid image generation.
         </p>
       </div>
       <Button
