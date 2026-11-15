@@ -19,7 +19,7 @@ export function SpendRangeControl({
         value={period}
         onChange={onChange}
         options={OPTIONS}
-        className="h-10 gap-0 p-1 [&>.wb-segment]:h-8 [&>.wb-segment]:w-auto [&>.wb-segment]:px-3.5"
+        className="h-10 gap-0 p-1 [&>.wb-segment]:h-8 [&>.wb-segment]:w-auto [&>.wb-segment]:px-3.5 max-md:[&>.wb-segment]:px-3"
       />
     </WorkspaceHeaderAccessory>
   );
