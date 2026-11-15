@@ -170,14 +170,13 @@ assert.doesNotMatch(
 
 const connectedMarkup = renderCard("tiktok", connectedTikTok);
 assert.match(connectedMarkup, /data-social-provider="tiktok"/);
-assert.match(connectedMarkup, /Real Creator/);
 assert.match(connectedMarkup, /@real_creator/);
 assert.match(connectedMarkup, /Sync failed/);
-assert.match(connectedMarkup, /Sync error\./);
+assert.match(connectedMarkup, /Sync failed\./);
 assert.match(connectedMarkup, /previously stored metrics were kept/);
 assert.match(connectedMarkup, /Upload scope not granted/);
 assert.match(connectedMarkup, />Connected</);
-assert.match(connectedMarkup, />Sync</);
+assert.match(connectedMarkup, />Sync now</);
 assert.match(connectedMarkup, />Disconnect</);
 assert.doesNotMatch(connectedMarkup, /Connect TikTok/);
 

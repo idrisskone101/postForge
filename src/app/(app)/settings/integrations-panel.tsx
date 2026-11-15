@@ -23,7 +23,7 @@ export function IntegrationsPanel({
         pad="wide"
         title="Social accounts"
         aria-busy={loading}
-        className="gap-2 [&>.wb-panel-head]:min-h-5"
+        className="gap-2 max-md:px-4 max-md:pb-4 [&>.wb-panel-head]:min-h-5"
         action={
           <Button size={32} onClick={onRefresh} disabled={loading} className="-my-1.5">
             Refresh status

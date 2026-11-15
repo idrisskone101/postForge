@@ -62,7 +62,6 @@ export function AccountRow({ row }: { row: AccountRowModel }) {
       <div id={detailId} hidden={!open} className="wb-fade-in rounded-lg bg-raised px-4 py-3.5">
         <div className="flex flex-col gap-4 @min-[720px]:flex-row @min-[720px]:items-center @min-[720px]:gap-6">
           <dl className="grid flex-1 grid-cols-2 gap-x-7 gap-y-3 @min-[560px]:flex @min-[560px]:flex-wrap">
-            <Fact label="Account">{name}</Fact>
             <Fact label="Connected" mono>{formatConnectionDate(account.connectedAt)}</Fact>
             <Fact label="Last successful sync" mono>
               {account.sync.lastSuccessfulAt ? (
@@ -94,7 +93,17 @@ export function AccountRow({ row }: { row: AccountRowModel }) {
                 disabled={busy}
                 onClick={() => row.onSync(providerStatus, account.account.id)}
               >
-                {busy ? "Syncing" : "Sync"}
+                {busy ? "Syncing" : "Sync now"}
+              </Button>
+            )}
+            {row.onConnectAnother && (
+              <Button
+                variant="outline"
+                disabled={busy || !row.canStartOAuth}
+                aria-label={`Connect another ${providerStatus.displayName} account`}
+                onClick={row.onConnectAnother}
+              >
+                Connect another
               </Button>
             )}
             <Button

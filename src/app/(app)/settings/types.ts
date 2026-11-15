@@ -56,6 +56,8 @@ export type AccountRowModel = {
   onSync: AccountHandler;
   onDisconnect: AccountHandler;
   onReconnect: () => void;
+  /** Null when the provider cannot start another OAuth connection. */
+  onConnectAnother: (() => void) | null;
 };
 
 export type SettingsFormModel = {

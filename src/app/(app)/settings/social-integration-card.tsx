@@ -60,6 +60,7 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
               canStartOAuth,
               onSync: card.onSync,
               onDisconnect: card.onDisconnect,
+              onConnectAnother: status.configuration === "ready" ? connect : null,
               onReconnect: () =>
                 onConnect(
                   { ...status, connected: false, accounts: [], accountCount: 0 },
@@ -68,19 +69,6 @@ export function SocialIntegrationCard({ card }: { card: SocialIntegrationCardMod
             }}
           />
         ))}
-        {status.configuration === "ready" && (
-          <div className="-mt-2 flex justify-end pb-4">
-            <Button
-              size={32}
-              disabled={busy || !canStartOAuth}
-              aria-label={`Connect another ${displayName} account`}
-              onClick={connect}
-            >
-              <Icon name="plus" size={14} strokeWidth={2} />
-              Connect another
-            </Button>
-          </div>
-        )}
         {consentBlock && <div className="pb-4">{consentBlock}</div>}
         {policyLinks && <PolicyLinks links={policyLinks} />}
       </div>

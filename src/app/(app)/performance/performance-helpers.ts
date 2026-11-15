@@ -1,3 +1,4 @@
+import { dayMonth } from "@/lib/day-month";
 import type { PublicIntegrationStatus } from "@/lib/integrations/types";
 import type { PerformanceDataset } from "@/lib/performance/csv";
 import {
@@ -34,7 +35,6 @@ const compact = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 const grouped = new Intl.NumberFormat("en");
-const dayMonth = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 const hourMinute = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" });
 
 const PLOT_TOP = 8;

@@ -1,3 +1,4 @@
+import { dayMonth, dayMonthTime } from "@/lib/day-month";
 import type {
   ConnectedIntegrationAccountStatus,
   PublicIntegrationStatus,
@@ -95,7 +96,7 @@ export function accountNotices(account: ConnectedIntegrationAccountStatus): Noti
     });
   }
   if (account.sync.status === "error" && account.sync.warnings[0]) {
-    notices.push({ tone: "bad", lead: "Sync error.", text: account.sync.warnings[0] });
+    notices.push({ tone: "bad", lead: "Sync failed.", text: account.sync.warnings[0] });
   } else if (account.sync.status === "partial" && account.sync.warnings[0]) {
     notices.push({ tone: "warn", lead: "Partially synced.", text: account.sync.warnings[0] });
   }
@@ -137,12 +138,7 @@ export function formatConnectionDate(value: string | null): string {
   if (!value) return "Never";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.valueOf())) return "Unknown";
-  return parsed.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  return dayMonthTime.format(parsed);
 }
 
 function lastSyncLine(account: ConnectedIntegrationAccountStatus): string {
@@ -150,5 +146,5 @@ function lastSyncLine(account: ConnectedIntegrationAccountStatus): string {
   if (!at) return "Never synced";
   const parsed = new Date(at);
   if (Number.isNaN(parsed.valueOf())) return "Last sync unknown";
-  return `Last sync ${parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" })}`;
+  return `Last sync ${dayMonth.format(parsed)}`;
 }
