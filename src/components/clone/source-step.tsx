@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { TikTokInput } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
+import { CLONE_STEP_FOCUS_CLASS, useCloneStepEntry } from "@/components/clone/use-clone-step-entry";
 import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSourceStep({
@@ -26,12 +27,13 @@ export function CloneSourceStep({
     onVideoDownloaded,
     onPreselectedSourceResolved,
   } = draft;
+  const stepEntry = useCloneStepEntry("source", hidden);
   const trimming = sourceReady && showTrimmer && originalVideoInfo && videoInfo;
   return (
     <section
+      {...stepEntry}
       data-clone-source-section="true"
-      aria-label="Source"
-      className={cn("flex min-w-0 flex-col gap-3", hidden && "hidden")}
+      className={cn("flex min-w-0 flex-col gap-3", CLONE_STEP_FOCUS_CLASS, hidden && "hidden")}
     >
       {trimming ? (
         <VideoTrimmer

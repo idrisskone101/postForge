@@ -33,7 +33,7 @@ export function CloneReferenceInputs() {
   return (
     <div data-reference-comparison-stage="true" className="flex min-w-0 flex-col gap-2.5">
       <div className="flex min-h-9 flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <h2 id="clone-reference-heading" className="wb-panel-title">
+        <h2 className="wb-panel-title">
           Set the look
         </h2>
         {isGenerating ? (
