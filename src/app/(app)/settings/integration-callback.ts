@@ -42,8 +42,11 @@ export function readIntegrationCallbackFeedback(params: URLSearchParams): {
     params.get("error_description") ??
     params.get("error");
   if (failure) {
+    // Only known codes are worded. The parameter is never echoed: it is text from the URL.
     const failureMessages: Record<string, string> = {
       oauth_denied: "authorization was denied",
+      // The provider's own code, when its redirect reaches this page without the server's.
+      access_denied: "authorization was denied",
       state_invalid: "the OAuth security check expired or was invalid",
       exchange_failed: "the provider token exchange failed",
       not_configured: "the server integration is not configured",

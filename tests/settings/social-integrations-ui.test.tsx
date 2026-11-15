@@ -341,6 +341,13 @@ assert.deepEqual(
   }
 );
 assert.equal(
+  readIntegrationCallbackFeedback(
+    new URLSearchParams("provider=tiktok&integration_error=access_denied")
+  )?.message,
+  "TikTok connection failed: authorization was denied",
+  "The provider's standard denial code is worded like the server's"
+);
+assert.equal(
   readIntegrationCallbackFeedback(new URLSearchParams("connected=1")),
   null,
   "A success flag without a known provider must never create a success toast"
