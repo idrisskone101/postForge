@@ -63,7 +63,7 @@ function NameField({
   inputRef,
 }: {
   view: CharacterBuilderHeaderViewModel;
-  inputRef: RefObject<HTMLInputElement | null>;
+  inputRef: NameRef;
 }) {
   return (
     <input
@@ -84,31 +84,32 @@ const NARROW_HEADER = "(max-width: 639.98px)";
  * The name field is drawn twice and each width shows one. Crossing 640px hides the one that is being
  * typed in, so focus and the caret move to its twin instead of dropping to the page.
  */
-function useNameFocusAcrossBreakpoint(
-  wide: RefObject<HTMLInputElement | null>,
-  narrow: RefObject<HTMLInputElement | null>
-) {
-  useEffect(() => {
-    const query = window.matchMedia(NARROW_HEADER);
-    const onChange = () => {
-      const hidden = query.matches ? wide.current : narrow.current;
-      const shown = query.matches ? narrow.current : wide.current;
-      if (!hidden || !shown || nameFocus.owner !== hidden) return;
-      shown.focus({ preventScroll: true });
-      shown.setSelectionRange(hidden.selectionStart, hidden.selectionEnd);
-    };
-    const onFocusIn = (event: FocusEvent) => {
-      const target = event.target;
-      nameFocus.owner = target === wide.current || target === narrow.current ? target : null;
-    };
-    query.addEventListener("change", onChange);
-    document.addEventListener("focusin", onFocusIn);
-    return () => {
-      query.removeEventListener("change", onChange);
-      document.removeEventListener("focusin", onFocusIn);
-      nameFocus.owner = null;
-    };
-  }, [wide, narrow]);
+function useNameFocusAcrossBreakpoint(wide: NameRef, narrow: NameRef) {
+  useEffect(() => watchNameFocus(wide, narrow), [wide, narrow]);
+}
+
+type NameRef = RefObject<HTMLInputElement | null>;
+
+function watchNameFocus(wide: NameRef, narrow: NameRef) {
+  const query = window.matchMedia(NARROW_HEADER);
+  const onChange = () => {
+    const hidden = query.matches ? wide.current : narrow.current;
+    const shown = query.matches ? narrow.current : wide.current;
+    if (!hidden || !shown || nameFocus.owner !== hidden) return;
+    shown.focus({ preventScroll: true });
+    shown.setSelectionRange(hidden.selectionStart, hidden.selectionEnd);
+  };
+  const onFocusIn = (event: FocusEvent) => {
+    const target = event.target;
+    nameFocus.owner = target === wide.current || target === narrow.current ? target : null;
+  };
+  query.addEventListener("change", onChange);
+  document.addEventListener("focusin", onFocusIn);
+  return () => {
+    query.removeEventListener("change", onChange);
+    document.removeEventListener("focusin", onFocusIn);
+    nameFocus.owner = null;
+  };
 }
 
 /** The name field that last took focus, if nothing else has taken it since. A hidden field gets no blur. */
