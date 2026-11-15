@@ -71,7 +71,7 @@ export function CharacterAttributeEditor({
         </div>
       </div>
       {error ? (
-        <div role="alert" className="wb-notice wb-fade-in items-start justify-between" data-tone="bad">
+        <div role="alert" className="wb-notice wb-fade-in items-start justify-between py-3" data-tone="bad">
           <p className="min-w-0 text-[13px] leading-[19px] text-fg [overflow-wrap:anywhere]">
             <strong className="font-bold text-bad">
               {errorIsMissingRecord ? "Character not found. " : "Not saved. "}
