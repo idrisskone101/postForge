@@ -232,13 +232,14 @@ export function randomCharacterAttributes(): CharacterAttributes {
 
 export function buildCharacterPrompt(attributes: CharacterAttributes) {
   return CHARACTER_ATTRIBUTE_SECTIONS.flatMap((section) => section.groups)
-    .map((group) => `${group.label}: ${attributes[group.key] ?? group.options[0]}`)
+    .filter((group) => attributes[group.key])
+    .map((group) => `${group.label}: ${attributes[group.key]}`)
     .join(", ");
 }
 
 export function characterRecipeFingerprint(attributes: CharacterAttributes) {
   const recipe = CHARACTER_ATTRIBUTE_SECTIONS.flatMap((section) => section.groups)
-    .map((group) => `${group.key}=${attributes[group.key] ?? group.options[0]}`)
+    .map((group) => `${group.key}=${attributes[group.key] ?? ""}`)
     .join("|");
   let hash = 2166136261;
   for (let index = 0; index < recipe.length; index += 1) {
@@ -256,7 +257,7 @@ export function buildCharacterImagePrompt(attributes: CharacterAttributes) {
       Object.fromEntries(
         section.groups.map((group) => [
           group.key,
-          attributes[group.key] ?? group.options[0],
+          attributes[group.key] ?? "unspecified",
         ])
       ),
     ])
