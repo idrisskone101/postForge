@@ -116,7 +116,7 @@ function providerSub(
     case "loading":
       return undefined;
     case "unavailable":
-      return "The integration service did not return this provider";
+      return "Not returned by the integration service";
     case "not_configured":
       return status?.credentialsMissing ? "Server credentials missing" : undefined;
     case "ready":
