@@ -12,7 +12,7 @@ export function JobStatusChip({
 }) {
   const { tone, icon } = TONES[status];
   return (
-    <StatusChip tone={tone} icon={icon}>
+    <StatusChip tone={tone} icon={icon} className={status === "queued" ? "bg-raised-strong" : undefined}>
       {status === "processing" && <span className="wb-live-dot size-1.5 shadow-none" />}
       {getGenerationStatusCopy(status, queueStage).label}
     </StatusChip>
