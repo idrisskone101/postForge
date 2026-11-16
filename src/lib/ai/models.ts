@@ -143,3 +143,46 @@ export function mapAspectRatioToFalFormat(
 
   return aspectRatio;
 }
+
+// Explicit sizes for endpoints whose presets fall short: fal's portrait_16_9
+// preset (576x1024) is below Seedream 5.5's 921,600-pixel minimum. Every size
+// is a multiple of 16 and at most 2.36 MP.
+const EXPLICIT_IMAGE_SIZES: Record<string, { width: number; height: number }> = {
+  "9:16": GPT_IMAGE_2_PORTRAIT_9_16,
+  "16:9": { width: 2048, height: 1152 },
+  "1:1": { width: 1536, height: 1536 },
+  "4:5": { width: 1280, height: 1600 },
+  "3:2": { width: 1872, height: 1248 },
+  "4:3": { width: 1728, height: 1296 },
+};
+
+function explicitImageSize(aspectRatio: string) {
+  return EXPLICIT_IMAGE_SIZES[aspectRatio] ?? EXPLICIT_IMAGE_SIZES["1:1"];
+}
+
+// Endpoints that size by aspect_ratio, or whose safety_tolerance scale differs
+// from the "6" every image payload starts with.
+const FAL_IMAGE_SIZING: Record<string, (aspectRatio: string) => Record<string, unknown>> = {
+  "nano-banana-2.1": (aspectRatio) => ({ aspect_ratio: aspectRatio }),
+  "muse-image": (aspectRatio) => ({ aspect_ratio: aspectRatio, output_format: "png" }),
+  "flux-3": (aspectRatio) => ({ aspect_ratio: aspectRatio, resolution: "1k", safety_tolerance: 4 }),
+  "seedream-5.5": (aspectRatio) => ({ image_size: explicitImageSize(aspectRatio) }),
+  "flux-2-pro": (aspectRatio) => ({
+    image_size: explicitImageSize(aspectRatio),
+    safety_tolerance: "5",
+  }),
+  "z-image-turbo": (aspectRatio) => ({ image_size: explicitImageSize(aspectRatio) }),
+  "ideogram-v3": (aspectRatio) => ({
+    image_size: SEEDREAM_5_SIZE_MAP[aspectRatio] ?? "square_hd",
+  }),
+};
+
+/** The sizing fields of a text-to-image fal payload, merged over its defaults. */
+export function falImageSizingInput(
+  modelId: string,
+  aspectRatio: string
+): Record<string, unknown> {
+  const sizing = FAL_IMAGE_SIZING[modelId];
+  if (sizing) return sizing(aspectRatio);
+  return { image_size: mapAspectRatioToFalFormat(aspectRatio, modelId) };
+}

@@ -1,7 +1,7 @@
 import {
   calculateEstimatedCost,
   getModel,
-  mapAspectRatioToFalFormat,
+  falImageSizingInput,
 } from "./models";
 
 const SLIDESHOW_ASPECT_RATIOS = new Set(["9:16", "4:5", "1:1", "16:9"]);
@@ -64,9 +64,7 @@ export function buildSlideshowImageQueueRequest(input: QueueSlideshowImageInput)
           aspect_ratio: aspectRatio,
           thinking_level: "high",
         }
-      : {
-          image_size: mapAspectRatioToFalFormat(aspectRatio ?? "9:16", model),
-        }),
+      : falImageSizingInput(model, aspectRatio ?? "9:16")),
   };
   const jobInput = {
     kind: "slideshow-slide-image",

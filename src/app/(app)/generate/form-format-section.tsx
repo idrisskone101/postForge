@@ -25,7 +25,7 @@ export function GenerateFormFormatSection({
 
   const hasWebSearch = isImage && model.capabilities.webSearch === true;
   const hasAudio =
-    isVideo && model.capabilities.nativeAudio === true && model.id !== "gemini-omni-flash";
+    isVideo && model.capabilities.nativeAudio === true && !model.id.startsWith("gemini-omni-flash");
   const hasAdvanced = isImage || hasAudio;
 
   return (

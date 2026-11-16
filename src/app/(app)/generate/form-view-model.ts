@@ -20,7 +20,10 @@ export function getGenerateFormViewModel({
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";
   const isSwap = model?.capabilities.subjectSwap === true;
-  const requiresVideoSeed = model?.id === "kling-3.0-i2v" && !avatarName;
+  const requiresVideoSeed =
+    model?.capabilities.imageToVideo === true &&
+    model.capabilities.textToVideo !== true &&
+    !avatarName;
   const canSubmit =
     Boolean(model) &&
     prompt.trim().length > 0 &&

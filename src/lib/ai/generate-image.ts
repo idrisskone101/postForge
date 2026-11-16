@@ -3,6 +3,7 @@ import {
   getModel,
   mapAspectRatioToFalFormat,
   calculateEstimatedCost,
+  falImageSizingInput,
   usesGptImageFalPayload,
 } from "./models";
 import { subscribeToGeneration } from "./fal-client";
@@ -40,7 +41,7 @@ export function buildImageProviderRequest(request: ImageGenerationRequest): {
     payload.image_size = { width: 1024, height: 1024 };
     payload.output_format = "jpeg";
   } else {
-    payload.image_size = mapAspectRatioToFalFormat(aspectRatio, request.model);
+    Object.assign(payload, falImageSizingInput(request.model, aspectRatio));
   }
 
   if (request.negativePrompt) payload.negative_prompt = request.negativePrompt;

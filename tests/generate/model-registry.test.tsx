@@ -93,6 +93,22 @@ assert.equal(
 assert.equal(calculateEstimatedCost("pixverse-swap", { durationSec: 5 }), 0.2);
 assert.equal(calculateEstimatedCost("pixverse-swap", { durationSec: 8 }), 0.4);
 
+// fal's published rates for the payloads PostForge sends
+assert.equal(getModel("nano-banana-2.1")?.pricing.amount, 0.04);
+assert.equal(getModel("nano-banana-2.1")?.capabilities.referenceImages, true);
+assert.equal(calculateEstimatedCost("seedream-5.5", { numImages: 2 }), 0.06);
+assert.equal(getModel("kling-4.0")?.endpoint, "kling/v4/text-to-video");
+assert.equal(Number(calculateEstimatedCost("kling-4.0", { durationSec: 10 }).toFixed(4)), 1.57);
+assert.equal(
+  Number(calculateEstimatedCost("seedance-2.5", { durationSec: 10, enableAudio: true }).toFixed(4)),
+  4.73
+);
+assert.equal(
+  Number(calculateEstimatedCost("pixverse-v6", { durationSec: 5, enableAudio: true }).toFixed(4)),
+  0.3
+);
+assert.equal(Number(calculateEstimatedCost("pixverse-v6", { durationSec: 5 }).toFixed(4)), 0.225);
+assert.equal(getModel("kling-4.0-i2v")?.capabilities.textToVideo, undefined);
 
 // Every model the registry offers must be reachable in the picker: selecting it
 // shows its card as the chosen one under one of the generation types.

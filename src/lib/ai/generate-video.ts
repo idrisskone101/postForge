@@ -5,13 +5,70 @@ import { createJob, failJob } from "@/lib/jobs/queue";
 import { prisma } from "@/lib/db";
 import { ensurePollerRunning } from "@/lib/jobs/poller";
 
-function buildVideoInput(
+interface FalVideoInputShape {
+  resolution: string;
+  durationAsString?: boolean;
+  /** Image-to-video endpoints take the frame's aspect ratio from the start image. */
+  startImageField?: "image_url" | "start_image_url";
+  audioField?: "generate_audio" | "audio" | "generate_audio_switch";
+  extra?: Record<string, unknown>;
+}
+
+const VIDEO_INPUT_SHAPES: Record<string, FalVideoInputShape> = {
+  "kling-4.0": { resolution: "720p" },
+  "kling-4.0-i2v": { resolution: "720p", startImageField: "start_image_url" },
+  "kling-4.0-flash": { resolution: "720p" },
+  "minimax-h3-max": { resolution: "768P", extra: { prompt_expansion_mode: "balanced" } },
+  "seedance-2.5": { resolution: "720p", durationAsString: true, audioField: "generate_audio" },
+  "seedance-2.5-i2v": {
+    resolution: "720p",
+    durationAsString: true,
+    audioField: "generate_audio",
+    startImageField: "image_url",
+  },
+  "wan-3.0": { resolution: "720p", audioField: "audio" },
+  "wan-3.0-i2v": { resolution: "720p", audioField: "audio", startImageField: "start_image_url" },
+  "gemini-omni-flash-1.2": { resolution: "720p" },
+  "flux-3-video": {
+    resolution: "720p",
+    audioField: "generate_audio",
+    extra: { safety_tolerance: 4 },
+  },
+  "grok-imagine-video-1.5": { resolution: "720p" },
+  "pixverse-v6": { resolution: "720p", audioField: "generate_audio_switch" },
+};
+
+function buildShapedVideoInput(
+  shape: FalVideoInputShape,
+  request: VideoGenerationRequest,
+  duration: number,
+  aspectRatio: string
+): Record<string, unknown> {
+  const input: Record<string, unknown> = {
+    prompt: request.prompt,
+    duration: shape.durationAsString ? String(duration) : duration,
+    resolution: shape.resolution,
+    ...shape.extra,
+  };
+  if (shape.startImageField) {
+    if (request.inputImageUrl) input[shape.startImageField] = request.inputImageUrl;
+  } else {
+    input.aspect_ratio = aspectRatio;
+  }
+  if (shape.audioField) input[shape.audioField] = request.enableAudio === true;
+  return input;
+}
+
+export function buildVideoInput(
   modelId: string,
   request: VideoGenerationRequest
 ): Record<string, unknown> {
   const model = getModel(modelId)!;
   const duration = request.duration ?? model.defaults.duration ?? 5;
   const aspectRatio = request.aspectRatio ?? model.defaults.aspectRatio;
+
+  const shape = VIDEO_INPUT_SHAPES[modelId];
+  if (shape) return buildShapedVideoInput(shape, request, duration, aspectRatio);
 
   if (modelId.startsWith("kling")) {
     const input: Record<string, unknown> = {

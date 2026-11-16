@@ -5,7 +5,7 @@ import { ensurePollerRunning } from "@/lib/jobs/poller";
 import {
   calculateEstimatedCost,
   getModel,
-  mapAspectRatioToFalFormat,
+  falImageSizingInput,
 } from "./models";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/generated/prisma/client";
@@ -167,7 +167,7 @@ async function queueCreatorSlideImage(input: QueueCreatorSlideInput) {
     safety_tolerance: "6",
     quality: "high",
     output_format: "png",
-    image_size: mapAspectRatioToFalFormat(input.aspectRatio, input.modelId),
+    ...falImageSizingInput(input.modelId, input.aspectRatio),
   };
 
   const jobId = randomUUID();
