@@ -60,6 +60,8 @@ export function GenerateFormFormatSection({
       </div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-3">
+        {/* An image-to-video model takes its shape from the start image, so it offers no ratio. */}
+        {availableRatios.length ? (
         <div className="flex min-w-[min(100%,280px)] flex-1 flex-col gap-1.5">
           <span id="generate-ratio-label" className="wb-label">
             Aspect ratio
@@ -80,6 +82,7 @@ export function GenerateFormFormatSection({
             ))}
           </div>
         </div>
+        ) : null}
 
         {isImage ? (
           <div className="flex shrink-0 flex-col gap-1.5">
