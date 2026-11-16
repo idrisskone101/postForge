@@ -35,8 +35,7 @@ export function DemoBlockedNotice() {
 type DemoRefusal = "blocked" | "limited";
 
 const NOTICE_COPY: Record<DemoRefusal, string> = {
-  blocked:
-    "Turned off in the demo. Generation, uploads and external connections are disabled, but you can still browse and edit the sample content.",
+  blocked: "Turned off in the demo. Generation, uploads and connections stay off here.",
   limited: "The demo limits how fast its sample content can change. Try again in a minute.",
 };
 
