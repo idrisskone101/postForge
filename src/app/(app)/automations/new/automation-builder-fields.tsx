@@ -1,54 +1,50 @@
-import type { ReactNode } from "react";
-import { Check, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-export function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-[13px] font-semibold text-muted-foreground">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-export function Select({
-  value,
-  onChange,
-  options,
-  labels,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: readonly string[];
-  labels?: Record<string, string>;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className="h-10 w-full rounded-lg border border-border bg-[var(--pf-surface)] px-2 text-[11px] text-[var(--pf-ink)] outline-none focus:border-[var(--pf-orange)]"
-    >
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {labels?.[option] ?? option}
-        </option>
-      ))}
-    </select>
-  );
-}
+import { StatusBadge } from "@/components/workbench";
 
 export function ValidationRow({ ok, text }: { ok: boolean; text: string }) {
   return (
-    <div className="flex min-w-0 items-start gap-2">
-      <span
-        className={cn(
-          "grid size-5 shrink-0 place-items-center rounded-full",
-          ok ? "bg-[var(--pf-success)]/10 text-[var(--pf-success)]" : "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-        )}
-      >
-        {ok ? <Check className="size-3 shrink-0" /> : <X className="size-3 shrink-0" />}
+    <div className="flex min-h-[44px] min-w-0 items-center gap-3 border-b border-hairline py-2.5 last:border-b-0">
+      <StatusBadge tone={ok ? "ok" : "bad"} label={ok ? "Ready" : "Needs a fix"} />
+      <span className="min-w-0 flex-1 break-words text-[14px] leading-5 text-fg [overflow-wrap:anywhere]">
+        {text}
       </span>
-      <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{text}</span>
     </div>
   );
 }
+
+export const HOOK_STRATEGIES = [
+  "Contrarian truth",
+  "Curiosity gap",
+  "Unexpected result",
+  "Specific transformation",
+  "Concrete promise",
+] as const;
+
+export const STORY_STRUCTURES = [
+  "Problem → Shift → Result",
+  "3 quick lessons",
+  "Before → Change → After",
+  "Myth → Evidence → Reality",
+  "Product → Proof → Outcome",
+] as const;
+
+export const CTA_STYLES = [
+  "Save this post",
+  "Follow for part two",
+  "Comment a keyword",
+  "Visit profile link",
+  "No CTA",
+] as const;
+
+export const TIMEZONES = [
+  "America/Toronto",
+  "America/New_York",
+  "America/Los_Angeles",
+  "Europe/London",
+] as const;
+
+export const BUILDER_STEPS = [
+  { id: "Hook", name: "Hook" },
+  { id: "Content", name: "Content" },
+  { id: "CTA", name: "Close" },
+  { id: "Review", name: "Review" },
+] as const;

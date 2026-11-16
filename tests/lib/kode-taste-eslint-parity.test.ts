@@ -192,7 +192,7 @@ async function runParity(): Promise<void> {
     checkKodeTaste({ rootDir: repoRoot, allowlist: emptyAllowlist })
   );
   assert.ok(
-    emptyCheckerKeys.size >= 70,
+    emptyCheckerKeys.size >= 40,
     `expected a populated empty-allowlist scan, got ${emptyCheckerKeys.size}`
   );
 

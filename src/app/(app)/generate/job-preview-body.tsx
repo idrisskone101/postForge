@@ -1,209 +1,205 @@
 "use client";
 
-import {
-  AlertCircle,
-  Clock3,
-  Crop,
-  Loader2,
-  Maximize2,
-  Plus,
-  Redo2,
-  RefreshCw,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
+import { useCallback, useState, type Ref } from "react";
 import { MediaPreview, MediaPreviewFrame } from "@/components/media-preview";
-import { Button } from "@/components/ui/button";
+import { EmptyState, Icon, Meter } from "@/components/workbench";
 import { humanizeGenerationFailure } from "@/lib/ai/prompt-presentation";
-import {
-  getGenerationStatusCopy,
-  type JobDetail,
-  type JobOutput,
-} from "@/lib/generation-editor";
+import { getGenerationStatusCopy, type JobDetail, type JobOutput } from "@/lib/generation-editor";
 import { cn } from "@/lib/utils";
-import type { JobDetailActions, JobDetailViewModel, JobPreviewToolbarView } from "./job-enhancements";
+import { JobIcon } from "./job-icons";
+import { JobStatusChip } from "./job-status-badge";
+import type { JobDetailViewModel, JobPreviewToolbarView } from "./job-enhancements";
 
-export function JobPreviewBody({
+export function JobStage({
   view,
-  actions,
+  toolbar,
+  stageRef,
 }: {
   view: JobDetailViewModel;
-  actions: JobDetailActions;
+  toolbar: JobPreviewToolbarView;
+  stageRef: Ref<HTMLDivElement>;
 }) {
-  const {
-    job,
-    featured,
-    isActive,
-    isFailed,
-    isCompleted,
-    isRetrying,
-    cropMode,
-    previewZoom,
-  } = view;
-  const { onRetry, onGenerateSimilar } = actions;
-  const statusCopy = getGenerationStatusCopy(job.status, job.queueStage);
-
+  const { job, featured, isCompleted } = view;
+  const hasMedia = isCompleted && Boolean(featured);
+  const [reported, setReported] = useState<{ src: string; label: string } | null>(null);
+  const bodyRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const read = (event?: Event) => {
+      const size = reportedSize(event?.target ?? node.querySelector("img, video"));
+      // An unchanged size keeps the old object. A fresh one would re-render, the image would reload and fire load again.
+      if (size) setReported((prev) => (prev?.src === size.src && prev.label === size.label ? prev : size));
+    };
+    node.addEventListener("load", read, true);
+    node.addEventListener("loadedmetadata", read, true);
+    read();
+    return () => {
+      node.removeEventListener("load", read, true);
+      node.removeEventListener("loadedmetadata", read, true);
+    };
+  }, []);
+  const dimensions =
+    formatDimensions(featured) ??
+    (featured && reported?.src === `/api/files/${featured.id}` ? reported.label : null);
   return (
-    <>
-      {isActive && (
-        <div className="flex max-w-sm flex-col items-center px-5 text-center">
-          {job.status === "processing" ? (
-            <Loader2 className="size-8 animate-spin text-[var(--pf-orange)]" />
-          ) : (
-            <span className="grid size-10 place-items-center rounded-full bg-card text-muted-foreground shadow-sm">
-              <Clock3 className="size-5" />
-            </span>
-          )}
-          <h2 className="mt-4 text-[15px] font-semibold text-foreground">
-            {statusCopy.title}
-          </h2>
-          <p className="mt-1.5 text-[12px] leading-5 text-muted-foreground">
-            {statusCopy.description}
-          </p>
-          <div className="mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-[var(--pf-border)]">
-            <span
-              className={cn(
-                "block h-full rounded-full bg-[var(--pf-orange)]",
-                job.status === "queued" ? "w-[18%]" : "w-[64%] animate-pulse"
-              )}
-            />
+    <section
+      ref={stageRef}
+      aria-label="Preview"
+      className={cn(
+        "flex min-h-[420px] min-w-0 flex-1 flex-col gap-3.5 rounded-xl bg-floor p-3.5 shadow-[inset_0_0_0_1px_var(--pf-hairline)] sm:min-h-[520px] xl:min-h-0",
+        isCompleted && job.outputs.length > 1 && STAGE_ABOVE_STRIP,
+      )}
+    >
+      <div className="flex min-h-10 flex-none flex-wrap items-center justify-between gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+        <div className="flex min-w-0">
+          <JobStatusChip status={job.status} queueStage={job.queueStage} />
+        </div>
+        {hasMedia && (
+          <div className="order-last flex w-full justify-center sm:order-none sm:w-auto">
+            <JobPreviewToolbar view={toolbar} />
           </div>
-        </div>
-      )}
-
-      {isFailed && (
-        <div className="flex w-full min-w-0 max-w-sm flex-col items-center px-5 text-center">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]">
-            <AlertCircle className="size-5 shrink-0" />
-          </span>
-          <h2 className="mt-4 text-[15px] font-semibold text-foreground">
-            {statusCopy.title}
-          </h2>
-          <p className="mt-1.5 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
-            {humanizeGenerationFailure(job.error, statusCopy.description)}
-          </p>
-          <Button
-            type="button"
-            onClick={onRetry}
-            disabled={isRetrying}
-            className="pf-button-primary mt-4 h-9 shrink-0 px-4 text-[12px]"
-          >
-            {isRetrying ? (
-              <Loader2 className="size-3.5 shrink-0 animate-spin" />
-            ) : (
-              <RefreshCw className="size-3.5 shrink-0" />
-            )}
-            {isRetrying ? "Retrying…" : "Try again"}
-          </Button>
-        </div>
-      )}
-
-      {isCompleted && featured && (
-        <div
-          className="w-full max-w-[760px] transition-transform duration-150"
-          style={{ transform: `scale(${previewZoom / 100})` }}
-        >
-          <MediaPreviewFrame
-            type={job.type}
-            src={`/api/files/${featured.id}`}
-            width={featured.width ?? undefined}
-            height={featured.height ?? undefined}
-            alt={job.prompt}
-            variant="detail"
-            cover={cropMode}
-            showMetadata
-            className="w-full rounded-lg shadow-[var(--pf-shadow-lg)]"
-          />
-        </div>
-      )}
-
-      {isCompleted && !featured && (
-        <div className="flex max-w-sm flex-col items-center text-center">
-          <AlertCircle className="size-7 text-[var(--pf-danger)]" />
-          <h2 className="mt-3 text-[13px] font-semibold">No output was returned</h2>
-          <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
-            The job completed without a media file. Recreate it from the saved prompt.
-          </p>
-          <Button
-            type="button"
-            onClick={onGenerateSimilar}
-            className="mt-4 h-9 rounded-lg"
-          >
-            <Redo2 className="size-3.5" /> Generate similar
-          </Button>
-        </div>
-      )}
-    </>
+        )}
+        <span className="wb-mono text-right text-fg-secondary sm:col-start-3 sm:justify-self-end">
+          {hasMedia && dimensions}
+        </span>
+      </div>
+      <div ref={bodyRef} className={`relative min-h-0 w-full flex-1 overflow-auto rounded-lg ${SCROLL_FOCUS_RING}`}>
+        <JobStageBody view={view} />
+      </div>
+    </section>
   );
 }
 
-export function JobPreviewToolbar({
-  view,
-}: {
-  view: JobPreviewToolbarView;
-}) {
-  const {
-    previewZoom,
-    cropMode,
-    isFullscreen,
-    isCompleted,
-    featured,
-    onZoomOut,
-    onZoomIn,
-    onToggleCrop,
-    onFullscreen,
-  } = view;
+function JobStageBody({ view }: { view: JobDetailViewModel }) {
+  const { job, featured, isActive, isFailed, isCompleted, cropMode, previewZoom } = view;
+  const statusCopy = getGenerationStatusCopy(job.status, job.queueStage);
+
+  if (isCompleted && featured) {
+    return (
+      <div
+        className="absolute inset-0 flex items-center justify-center py-3 transition-transform duration-[var(--pf-dur-state)] ease-pf"
+        style={{ transform: `scale(${previewZoom / 100})` }}
+      >
+        <MediaPreviewFrame
+          type={job.type}
+          src={`/api/files/${featured.id}`}
+          width={featured.width ?? undefined}
+          height={featured.height ?? undefined}
+          alt={job.prompt}
+          variant="detail"
+          cover={cropMode}
+          mediaClassName={cropMode ? undefined : "h-auto w-auto"}
+          className="size-full bg-transparent [&>div]:h-full [&>div]:max-h-none [&>div]:min-h-0"
+        />
+      </div>
+    );
+  }
+
+  if (isCompleted) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center p-4">
+        <EmptyState
+          icon="alert"
+          tone="error"
+          title="No output was returned"
+          detail="The job completed without a media file. Remix it from the saved prompt."
+          className="max-w-md flex-none"
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          aria-label="Zoom out"
-          onClick={onZoomOut}
-          disabled={previewZoom <= 50}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
-        >
-          <ZoomOut className="size-3.5" />
-        </button>
-        <span className="w-12 text-center text-[12px] font-semibold text-muted-foreground">
-          {previewZoom}%
+    <div
+      className={`absolute inset-0 flex flex-col items-center justify-center gap-3 overflow-auto rounded-lg px-6 text-center ${SCROLL_FOCUS_RING}`}
+    >
+      {isFailed && (
+        <span className="grid size-11 flex-none place-items-center rounded-full bg-bad-tint text-bad">
+          <Icon name="x" size={20} />
         </span>
-        <button
-          type="button"
-          aria-label="Zoom in"
-          onClick={onZoomIn}
-          disabled={previewZoom >= 150}
-          className="grid size-7 place-items-center rounded-lg border border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)] disabled:opacity-35"
-        >
-          <ZoomIn className="size-3.5" />
-        </button>
-      </div>
-      <div className="flex items-center gap-1.5">
-        {isCompleted && featured && (
-          <button
-            type="button"
-            aria-pressed={cropMode}
-            onClick={onToggleCrop}
-            className={cn(
-              "inline-flex h-7 items-center gap-1.5 rounded-lg border px-2 text-[12px] font-semibold transition-colors",
-              cropMode
-                ? "border-[var(--pf-ink)] bg-[var(--pf-canvas)] text-foreground"
-                : "border-border bg-[var(--pf-surface)] text-muted-foreground hover:bg-[var(--pf-active)]"
-            )}
-          >
-            <Crop className="size-3.5" /> {cropMode ? "Fit" : "Crop"}
-          </button>
+      )}
+      {job.status === "queued" && (
+        <span className="grid size-11 flex-none place-items-center rounded-full bg-raised text-fg-secondary">
+          <Icon name="clock" size={20} />
+        </span>
+      )}
+      <h2 className="wb-panel-title">{statusCopy.title}</h2>
+      <p
+        className={cn(
+          "max-w-[340px] text-[13px] leading-[18px] [overflow-wrap:anywhere]",
+          isFailed ? "text-fg-secondary" : "text-fg-muted"
         )}
-        <button
-          type="button"
-          onClick={onFullscreen}
-          className="pf-button-secondary inline-flex h-7 items-center gap-1.5 px-2 text-[12px]"
-        >
-          <Maximize2 className="size-3.5" />
-          {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-        </button>
-      </div>
+      >
+        {isFailed ? humanizeGenerationFailure(job.error, statusCopy.description) : statusCopy.description}
+      </p>
+      {isActive && job.status === "processing" && (
+        <Meter label="Generation processing" running className="h-1.5 w-60 flex-none" />
+      )}
+    </div>
+  );
+}
+
+/** A scroll region can take keyboard focus, so it draws the same ember ring as a control, inside its edge. */
+export const SCROLL_FOCUS_RING =
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ember";
+
+/** The size the loaded image or video itself reports, keyed by its path so a stale variation never shows. */
+function reportedSize(media: EventTarget | null) {
+  if (!(media instanceof HTMLImageElement) && !(media instanceof HTMLVideoElement)) return null;
+  const [width, height] =
+    media instanceof HTMLImageElement
+      ? [media.naturalWidth, media.naturalHeight]
+      : [media.videoWidth, media.videoHeight];
+  if (!(width > 0 && height > 0)) return null;
+  const src = new URL(media.currentSrc || media.src, window.location.href).pathname;
+  return { src, label: `${width} x ${height}` };
+}
+
+function formatDimensions(output: JobOutput | undefined) {
+  return output?.width && output.height ? `${output.width} x ${output.height}` : null;
+}
+
+function JobPreviewToolbar({ view }: { view: JobPreviewToolbarView }) {
+  const { previewZoom, cropMode, isFullscreen, onZoomOut, onZoomIn, onToggleCrop, onFullscreen } = view;
+  const tool =
+    "wb-hit inline-flex h-8 flex-none items-center justify-center rounded-full text-fg [--wb-hit-w:36px] focus-visible:z-[1] transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent aria-pressed:bg-panel aria-pressed:shadow-[0_1px_2px_rgb(0_0_0/0.08)] dark:aria-pressed:bg-strong dark:aria-pressed:shadow-none";
+  return (
+    <div role="toolbar" aria-label="Preview controls" className="flex h-10 items-center gap-0.5 rounded-[var(--pf-radius-pill)] bg-raised px-1.5">
+      <button type="button" aria-label="Zoom out" onClick={onZoomOut} disabled={previewZoom <= 50} className={cn(tool, "w-[34px]")}>
+        <JobIcon name="zoom-out" />
+      </button>
+      <span className="wb-mono w-10 flex-none text-center text-fg" aria-live="polite">
+        {previewZoom}%
+      </span>
+      <button type="button" aria-label="Zoom in" onClick={onZoomIn} disabled={previewZoom >= 150} className={cn(tool, "w-[34px]")}>
+        <JobIcon name="zoom-in" />
+      </button>
+      <span aria-hidden="true" className="h-[18px] w-px flex-none bg-edge" />
+      <button
+        type="button"
+        aria-pressed={!cropMode}
+        onClick={() => cropMode && onToggleCrop()}
+        className={cn(tool, "px-3 text-[13px] font-semibold leading-4")}
+      >
+        Fit
+      </button>
+      <button
+        type="button"
+        aria-pressed={cropMode}
+        onClick={() => !cropMode && onToggleCrop()}
+        className={cn(tool, "gap-1.5 px-2.5 text-[13px] font-semibold leading-4")}
+      >
+        <JobIcon name="crop" />
+        Crop
+      </button>
+      <button
+        type="button"
+        aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+        aria-pressed={isFullscreen}
+        onClick={onFullscreen}
+        className={cn(tool, "w-[34px]")}
+      >
+        <JobIcon name="fullscreen" />
+      </button>
     </div>
   );
 }
@@ -212,57 +208,63 @@ export function JobVariationStrip({
   job,
   featured,
   onSelect,
-  onNewVariation,
 }: {
   job: JobDetail;
   featured: JobOutput | undefined;
   onSelect: (index: number) => void;
-  onNewVariation: () => void;
 }) {
+  const position = job.outputs.findIndex((output) => output.id === featured?.id) + 1;
   return (
-    <div className="flex min-h-[92px] items-center gap-2 overflow-x-auto border-t border-border px-3 py-2.5">
-      <div className="mr-1 w-20 shrink-0">
-        <span className="block text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Variations
+    <section aria-label="Variations" className="wb-panel flex-none gap-3 p-5">
+      <div className="flex h-8 items-center gap-2.5">
+        <h2 className="wb-panel-title">Variations</h2>
+        <span className="font-mono text-[12px] leading-[18px] text-fg-muted">
+          {position} / {job.outputs.length}
         </span>
-        <strong className="mt-1 block text-[12px] font-semibold text-foreground">
-          {job.outputs.length} output{job.outputs.length === 1 ? "" : "s"}
-        </strong>
       </div>
-      {job.outputs.map((output, index) => (
-        <button
-          key={output.id}
-          type="button"
-          aria-label={`Select variation ${index + 1}`}
-          aria-pressed={featured?.id === output.id}
-          onClick={() => onSelect(index)}
-          className={cn(
-            "relative h-[68px] w-[54px] shrink-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition-colors",
-            featured?.id === output.id
-              ? "border-[var(--pf-orange)]"
-              : "border-transparent hover:border-[var(--pf-border-strong)]"
-          )}
-        >
-          <MediaPreview
-            type={job.type}
-            src={`/api/files/${output.id}`}
-            width={output.width ?? undefined}
-            height={output.height ?? undefined}
-            cover
-            className="size-full rounded-lg"
-          />
-          <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1 py-0.5 text-[12px] font-semibold text-white">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        </button>
-      ))}
-      <button
-        type="button"
-        onClick={onNewVariation}
-        className="flex h-[68px] w-[72px] shrink-0 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-[var(--pf-border-strong)] text-[13px] font-semibold text-muted-foreground hover:border-[var(--pf-orange)] hover:text-[var(--pf-orange)]"
-      >
-        <Plus className="size-4" /> New variation
-      </button>
-    </div>
+      <div className="wb-scroll-fade -m-1 flex gap-3 overflow-x-auto p-1">
+        {job.outputs.map((output, index) => {
+          const selected = featured?.id === output.id;
+          return (
+            <button
+              key={output.id}
+              type="button"
+              aria-label={`Select variation ${index + 1}`}
+              aria-pressed={selected}
+              onClick={() => onSelect(index)}
+              className="relative h-[65px] w-[52px] flex-none rounded-lg bg-media transition-shadow duration-[var(--pf-dur-feedback)] ease-pf hover:shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-outline)] aria-pressed:shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]"
+            >
+              <MediaPreview
+                type={job.type}
+                src={`/api/files/${output.id}`}
+                width={output.width ?? undefined}
+                height={output.height ?? undefined}
+                cover
+                className="size-full rounded-lg bg-transparent"
+              />
+              {selected && (
+                <span className="absolute left-1 top-1 grid size-[18px] place-items-center rounded-full bg-ember text-white">
+                  <Icon name="check" size={12} strokeWidth={3} />
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }
+
+/*
+ * Below 1280 the action dock is pinned to the viewport bottom. With variations the stage gives up
+ * height, down to 200px, so the strip lands above the dock on the first screen instead of under it.
+ * The offset is everything else on that screen: page top and header, the 149px strip, the dock and
+ * its 12px foot, the 12px gap above the strip and the 24px fade gap above the dock. Under 680px tall
+ * the dock is in flow, so the stage keeps a 300px floor and the page scrolls.
+ */
+const STAGE_ABOVE_STRIP = [
+  "max-xl:[--first-screen-rest:493px] md:max-xl:[--first-screen-rest:393px] lg:max-xl:[--first-screen-rest:345px]",
+  "[--stage-floor:200px] [@media(max-height:679.98px)]:[--stage-floor:300px]",
+  "max-sm:min-h-[max(var(--stage-floor),min(420px,calc(100dvh-var(--first-screen-rest))))]",
+  "sm:max-xl:min-h-[max(var(--stage-floor),min(520px,calc(100dvh-var(--first-screen-rest))))]",
+].join(" ");

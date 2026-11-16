@@ -62,7 +62,10 @@ assert.match(
 const studioSource = readFileSync(path.join(slideshowDir, "slideshow-studio.tsx"), "utf8");
 assert.match(studioSource, /fetchSlideshowProject\(item\.id/);
 
-const draftsSource = readFileSync(path.join(slideshowDir, "drafts-view.tsx"), "utf8");
+const draftsSource = [
+  readFileSync(path.join(slideshowDir, "drafts-view.tsx"), "utf8"),
+  readFileSync(path.join(slideshowDir, "draft-cell.tsx"), "utf8"),
+].join("\n");
 assert.match(draftsSource, /previewImageUrls/);
 assert.doesNotMatch(draftsSource, /project\.slides\b/);
 
@@ -258,12 +261,6 @@ for (const file of appFiles) {
   assert.ok(lines <= CAP, `${rel} is ${lines} lines (cap ${CAP})`);
 }
 
-assert.equal(
-  existsSync(path.join(slideshowAppDir, "slideshow-paint-text.tsx")),
-  true,
-  "slideshow-paint-text.tsx must exist",
-);
-
 const MEDIA_STAGE = "#09090B";
 const MEDIA_STAGE_FILES = new Set([
   "src/components/slideshow/editor-preview.tsx",
@@ -283,11 +280,11 @@ const chromeFiles = [
 
 for (const file of chromeFiles) {
   const rel = path.relative(rootDir, file);
-  if (rel.endsWith("slideshow-paint-text.tsx")) continue;
   const source = readFileSync(file, "utf8");
   assert.doesNotMatch(
     source,
-    /(?<![\w-])(?<![\w]+:)hidden\b/,
+    // A variant prefix makes it conditional: `md:hidden`, or an arbitrary one such as `min-[1440px]:hidden`.
+    /(?<![\w-])(?<![\w\]]+:)hidden\b/,
     `${rel} must not use bare hidden class`,
   );
   const hexMatches = source.match(/#(?:[0-9A-Fa-f]{3,8})\b/g) ?? [];
@@ -305,21 +302,18 @@ for (const file of chromeFiles) {
 }
 
 const chromeSource = [
-  path.join(slideshowAppDir, "slideshow-owned-header.tsx"),
   path.join(slideshowDir, "create-idea-form.tsx"),
   path.join(slideshowDir, "create-view.tsx"),
-  path.join(slideshowDir, "studio-section-nav.tsx"),
+  path.join(slideshowDir, "studio-home.tsx"),
   path.join(slideshowDir, "drafts-view.tsx"),
-  path.join(slideshowDir, "studio-ui.tsx"),
+  path.join(slideshowDir, "recent-drafts.tsx"),
+  path.join(slideshowDir, "template-dialog.tsx"),
 ]
   .map((file) => readFileSync(file, "utf8"))
   .join("\n");
 
-assert.match(chromeSource, /SlideshowPaintText/);
-assert.match(chromeSource, /paintReady \? undefined/);
-assert.match(chromeSource, /pf-card/);
-assert.match(chromeSource, /pf-button-primary/);
-assert.match(chromeSource, /pf-button-secondary/);
-assert.match(chromeSource, /pf-section-title/);
+assert.match(chromeSource, /@\/components\/workbench\//);
+assert.doesNotMatch(chromeSource, /pf-card|pf-button-|pf-section-title|sr-only|paintReady/);
+assert.doesNotMatch(chromeSource, /data-slideshow-copy|data-home-title|data-lcp/);
 
 console.log("slideshow studio UI split tests passed");

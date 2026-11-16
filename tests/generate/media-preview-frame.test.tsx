@@ -54,3 +54,61 @@ const cardVideoMarkup = renderToStaticMarkup(
 assert.match(cardVideoMarkup, /preload="metadata"/);
 assert.match(cardVideoMarkup, /aspect-ratio:9\/16/);
 assert.doesNotMatch(cardVideoMarkup, /controls=""/);
+
+const thumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/api/files/abc"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px" }}
+  />
+);
+
+assert.match(thumbnailMarkup, /srcSet="[^"]*\/api\/files\/abc\/thumbnail\?w=240 256w[^"]*\/api\/files\/abc\/thumbnail\?w=480 640w[^"]*\/api\/files\/abc\/thumbnail\?w=720 750w/);
+assert.match(thumbnailMarkup, /sizes="236px"/);
+assert.match(thumbnailMarkup, /loading="lazy"/);
+assert.match(
+  thumbnailMarkup,
+  /<img(?![^>]*data-loaded)[^>]*class="wb-media-reveal /,
+  "server markup carries the reveal class and no data-loaded, which arms the CSS fallback"
+);
+
+const priorityThumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/api/files/abc"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px", priority: true }}
+  />
+);
+
+assert.match(priorityThumbnailMarkup, /loading="eager"/);
+assert.match(priorityThumbnailMarkup, /fetchPriority="high"/i);
+assert.match(
+  priorityThumbnailMarkup,
+  /<img[^>]*class="wb-media-reveal /,
+  "the priority thumbnail loads eagerly and still follows the shared loading motion"
+);
+
+const originalMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame
+    type="image"
+    src="/landscape.jpg"
+    alt=""
+    cover
+    variant="card"
+    thumbnail={{ sizes: "236px" }}
+  />
+);
+
+assert.doesNotMatch(originalMarkup, /thumbnail\?w=/, "only stored files have resized variants");
+
+const videoThumbnailMarkup = renderToStaticMarkup(
+  <MediaPreviewFrame type="video" src="/api/files/abc" variant="card" thumbnail={{ sizes: "236px" }} />
+);
+
+assert.doesNotMatch(videoThumbnailMarkup, /thumbnail\?w=/, "videos keep their own element");

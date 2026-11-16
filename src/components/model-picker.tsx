@@ -1,23 +1,8 @@
 "use client";
 
-import { useState, type ComponentType, type ReactNode } from "react";
-import {
-  Check,
-  Circle,
-  Film,
-  Globe,
-  ImageIcon,
-  Layers,
-  Palette,
-  Sparkles,
-  UserRound,
-  Video,
-  Volume2,
-  Zap,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Segmented } from "@/components/workbench";
 import { formatCost } from "@/lib/utils/format-cost";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
 import type { ModelDefinition } from "@/lib/ai/types";
 
 interface ModelPickerProps {
@@ -33,212 +18,136 @@ export function ModelPicker({
   models,
   recommendedModelId,
 }: ModelPickerProps) {
-  const paintReady = useWindowLoadReady();
   const selected = models.find((model) => model.id === selectedModel);
-  const [requestedType, setRequestedType] = useState<"image" | "video">(
-    selected?.type ?? "image"
+  const [requestedMode, setRequestedMode] = useState<ModelMode>(
+    () => (selected ? modesOf(selected)[0] : "image")
   );
-  const activeType = selected?.type ?? requestedType;
+  const selectedModes = selected ? modesOf(selected) : [];
+  const activeMode =
+    selectedModes.length === 0 || selectedModes.includes(requestedMode)
+      ? requestedMode
+      : selectedModes[0];
+  const options = MODES.filter((mode) =>
+    models.some((model) => modesOf(model).includes(mode.value))
+  );
+  const visibleModels = models.filter((model) => modesOf(model).includes(activeMode));
 
-  const visibleModels = models.filter((model) => model.type === activeType);
-
-  const selectType = (type: "image" | "video") => {
-    setRequestedType(type);
-    if (selected?.type !== type) {
-      const firstModel = models.find((model) => model.type === type);
-      if (firstModel) onModelSelect(firstModel.id);
-    }
+  const selectMode = (mode: ModelMode) => {
+    setRequestedMode(mode);
+    if (selected && modesOf(selected).includes(mode)) return;
+    const first = models.find((model) => modesOf(model).includes(mode));
+    if (first) onModelSelect(first.id);
   };
 
   return (
-    <div>
-      <div
-        role="tablist"
-        aria-label="Generation type"
-        className="grid grid-cols-2 rounded-[6px] bg-[var(--pf-active)] p-1"
-      >
-        {(["image", "video"] as const).map((type) => {
-          const active = activeType === type;
-          const Icon = type === "image" ? ImageIcon : Video;
-          return (
-            <button
-              key={type}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => selectType(type)}
-              className={cn(
-                "flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150",
-                active
-                  ? "bg-[var(--pf-surface)] text-foreground shadow-[var(--pf-shadow-2xs)]"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Icon className="size-3.5" />
-              {type}
-            </button>
-          );
-        })}
+    <>
+      <div className="flex min-h-9 flex-wrap items-center justify-between gap-x-2.5 gap-y-2">
+        <h2 className="wb-panel-title">Choose a model</h2>
+        <div className="max-w-full max-sm:w-full">
+          <Segmented
+            label="Generation type"
+            className="gap-0 max-sm:grid max-sm:h-auto max-sm:w-full max-sm:grid-cols-2 max-sm:rounded-[20px] max-sm:[&>button]:h-[30px] max-sm:[&>button]:justify-center"
+            options={options}
+            value={activeMode}
+            onChange={selectMode}
+          />
+        </div>
       </div>
-
-      <div
-        key={activeType}
-        data-generate-model-grid={paintReady ? undefined : "true"}
-        className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"
-      >
+      <div className="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
         {visibleModels.map((model) => (
           <ModelCard
             key={model.id}
             model={model}
             selected={selectedModel === model.id}
             recommended={recommendedModelId === model.id}
-            onClick={() => onModelSelect(model.id)}
+            onSelect={onModelSelect}
           />
         ))}
       </div>
-
-      {visibleModels.length === 0 && (
-        <div className="mt-3 rounded-lg border border-dashed border-border px-4 py-8 text-center text-[12px] text-muted-foreground">
-          No {activeType} models are configured.
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 
+type ModelMode = "image" | "text-video" | "image-video" | "swap";
 
-const MODEL_ICON_MAP: Record<string, ComponentType<{ className?: string; strokeWidth?: number }>> = {
-  "nano-banana-2": Zap,
-  "nano-banana-pro": Palette,
-  "nano-banana": Sparkles,
-  "kling-3.0": Film,
-  "kling-3.0-pro": Film,
-  "kling-3.0-i2v": Layers,
-  veo3: Video,
-  "veo3-fast": Zap,
-  "veo3.1": Video,
-  "seedance-2.0": Film,
-  "gemini-omni-flash": Sparkles,
-  "minimax-h3": Film,
-  "pixverse-swap": Layers,
-  "gemini-omni-edit": Video,
-  "gpt-image-2": ImageIcon,
-  "gpt-image-2.5": ImageIcon,
-  "gpt-image-2.5-sunburst": ImageIcon,
-  "seedream-5.0-pro": ImageIcon,
-  "flux-2-flex": Palette,
-};
+const MODES: { value: ModelMode; label: string }[] = [
+  { value: "image", label: "Text to image" },
+  { value: "text-video", label: "Text to video" },
+  { value: "image-video", label: "Image to video" },
+  { value: "swap", label: "Subject swap" },
+];
 
-function capabilityItems(model: ModelDefinition): Array<{
-  icon: ReactNode;
-  label: string;
-}> {
-  const items: Array<{ icon: ReactNode; label: string }> = [];
-  const capabilities = model.capabilities;
+/** Every model lands in at least one mode, so no configured model can drop out of the picker. */
+function modesOf(model: ModelDefinition): ModelMode[] {
+  if (model.type === "image") return ["image"];
+  const { capabilities } = model;
+  if (capabilities.subjectSwap) return ["swap"];
+  const modes: ModelMode[] = [];
+  if (capabilities.textToVideo) modes.push("text-video");
+  if (capabilities.imageToVideo) modes.push("image-video");
+  return modes.length > 0 ? modes : ["text-video"];
+}
 
-  if (capabilities.textToImage) {
-    items.push({ icon: <ImageIcon className="size-3" />, label: "Text to image" });
-  }
-  if (capabilities.textToVideo) {
-    items.push({ icon: <Video className="size-3" />, label: "Text to video" });
-  }
-  if (capabilities.imageToVideo) {
-    items.push({ icon: <Layers className="size-3" />, label: "Image to video" });
-  }
-  if (capabilities.characterReference) {
-    items.push({ icon: <UserRound className="size-3" />, label: "Character identity" });
-  }
-  if (capabilities.nativeAudio) {
-    items.push({ icon: <Volume2 className="size-3" />, label: "Native audio" });
-  }
-  if (capabilities.webSearch) {
-    items.push({ icon: <Globe className="size-3" />, label: "Web grounding" });
-  }
+function priceLabel(model: ModelDefinition) {
+  const unit =
+    model.pricing.unit === "per_image"
+      ? "image"
+      : model.pricing.unit === "per_clip"
+        ? "clip"
+        : "second";
+  return `${formatCost(model.pricing.amount)} / ${unit}`;
+}
 
-  return items;
+function capabilityLine(model: ModelDefinition) {
+  const { capabilities } = model;
+  const parts: string[] = [];
+  if (capabilities.characterReference || capabilities.referenceImages) {
+    parts.push("Character identity");
+  }
+  if (capabilities.nativeAudio) parts.push("Native audio");
+  if (capabilities.webSearch) parts.push("Web grounding");
+  if (capabilities.keepOriginalAudio) parts.push("Keeps audio");
+  return parts.slice(0, 2).join(", ");
 }
 
 function ModelCard({
   model,
   selected,
   recommended,
-  onClick,
+  onSelect,
 }: {
   model: ModelDefinition;
   selected: boolean;
   recommended: boolean;
-  onClick: () => void;
+  onSelect: (modelId: string) => void;
 }) {
-  const priceLabel =
-    model.pricing.unit === "per_image"
-      ? `${formatCost(model.pricing.amount)}/image`
-      : model.pricing.unit === "per_clip"
-        ? `${formatCost(model.pricing.amount)}/clip`
-        : `${formatCost(model.pricing.amount)}/second`;
-  const capabilityList = capabilityItems(model);
-  const Icon = MODEL_ICON_MAP[model.id] ?? Sparkles;
-
+  const line = recommended ? "Recommended" : capabilityLine(model);
   return (
     <button
       type="button"
       aria-pressed={selected}
-      onClick={onClick}
-      style={{ height: "8.125rem" }}
-      className={cn(
-        "group relative h-[8.125rem] min-w-0 overflow-hidden rounded-lg border bg-card p-2.5 text-left shadow-[var(--pf-shadow-2xs)] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]",
-        selected
-          ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25 shadow-[var(--pf-shadow-2xs)]"
-          : "border-border hover:border-[var(--pf-border-strong)] hover:shadow-[var(--pf-shadow-2xs)]"
-      )}
+      onClick={() => onSelect(model.id)}
+      className="flex min-w-0 flex-col gap-0.5 rounded-lg bg-raised px-3.5 py-3 text-left transition-[background-color,box-shadow,transform] duration-160 ease-pf hover:bg-raised-strong active:scale-[0.98] aria-pressed:shadow-[inset_0_0_0_2px_var(--pf-ember)] aria-pressed:hover:bg-raised"
     >
-      <span className="flex items-center gap-2.5">
-        <span
-          className={cn(
-            "grid size-9 shrink-0 place-items-center rounded-lg",
-            selected
-              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-accent-foreground)]"
-              : "bg-[var(--pf-active)] text-muted-foreground"
-          )}
-        >
-          <Icon className="size-4" strokeWidth={1.9} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center justify-between gap-2">
-            <strong className="min-w-0 text-[13px] font-semibold leading-[1.25] text-foreground line-clamp-2">
-              {model.name}
-            </strong>
-            {selected ? (
-              <Check className="size-3.5 shrink-0 text-[var(--pf-orange)]" />
-            ) : (
-              <Circle className="size-3.5 shrink-0 text-muted-foreground" />
-            )}
-          </span>
-          <span className="mt-1 flex min-w-0 items-center gap-1.5">
-            <span className="min-w-0 truncate text-[12px] text-muted-foreground">
-              {priceLabel}
-            </span>
-            {recommended ? (
-              <span className="shrink-0 rounded-full border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-success)]">
-                Recommended
-              </span>
-            ) : null}
-          </span>
-        </span>
+      <span
+        className={
+          selected
+            ? "text-[14px] font-bold leading-5 text-fg"
+            : "text-[14px] font-semibold leading-5 text-fg"
+        }
+      >
+        {model.name}
       </span>
-      {capabilityList.length > 0 && (
-        <span className="mt-2 flex flex-wrap gap-1" aria-label="Model capabilities">
-          {capabilityList.map((item) => (
-            <span
-              key={item.label}
-              title={item.label}
-              className="inline-flex items-center gap-1 rounded-md bg-[var(--pf-active)] px-1.5 py-1 text-[12px] font-medium text-muted-foreground"
-            >
-              {item.icon}
-              {item.label}
-            </span>
-          ))}
-        </span>
-      )}
+      <span
+        className={
+          recommended
+            ? "line-clamp-2 min-h-4 text-[12px] font-semibold leading-4 text-fg-secondary"
+            : "line-clamp-2 min-h-4 text-[12px] leading-4 text-fg-muted"
+        }
+      >
+        {line}
+      </span>
+      <span className="wb-mono mt-auto pt-1 text-fg-secondary">{priceLabel(model)}</span>
     </button>
   );
 }

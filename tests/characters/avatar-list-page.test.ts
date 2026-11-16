@@ -20,6 +20,10 @@ const avatarPicker = readFileSync(
   new URL("../../src/components/avatar-picker.tsx", import.meta.url),
   "utf8"
 );
+const avatarListCache = readFileSync(
+  new URL("../../src/lib/avatar-list-cache.ts", import.meta.url),
+  "utf8"
+);
 
 assert.match(avatarsRoute, /take,/);
 assert.match(avatarsRoute, /DEFAULT_LIST_TAKE = 50/);
@@ -27,7 +31,8 @@ assert.match(avatarsRoute, /MAX_LIST_TAKE = 100/);
 assert.match(avatarsRoute, /items: avatars\.map\(serializeAvatarApiRecord\)/);
 assert.match(avatarsRoute, /nextCursor/);
 assert.match(avatarsRoute, /avatars\.length === take/);
-assert.match(avatarPicker, /apiGet<AvatarListPage>\("\/api\/avatars"\)/);
+assert.match(avatarListCache, /apiGet<AvatarListPage>\("\/api\/avatars"\)/);
+assert.match(avatarPicker, /const page = await loadAvatars\(\);/);
 assert.match(
   avatarPicker,
   /\/api\/avatars\?cursor=\$\{encodeURIComponent\(avatarsNextCursor\)\}/

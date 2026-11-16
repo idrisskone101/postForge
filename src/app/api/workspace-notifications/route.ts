@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { buildGalleryWhere } from "@/lib/gallery";
+import { jobsHistoryCutoff } from "@/lib/jobs/history-window";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const recentFailures = { status: "failed", createdAt: { gte: jobsHistoryCutoff() } };
     const [generationFailures, approvalsWaiting, latestFailedJob] = await Promise.all([
-      prisma.generationJob.count({ where: { status: "failed" } }),
-      prisma.generatedFile.count({ where: { reviewStatus: "needs_review" } }),
+      prisma.generationJob.count({ where: recentFailures }),
+      prisma.generatedFile.count({
+        where: buildGalleryWhere({ type: "all", reviewStatus: "needs_review" }),
+      }),
       prisma.generationJob.findFirst({
-        where: { status: "failed" },
+        where: recentFailures,
         orderBy: { createdAt: "desc" },
         select: { id: true },
       }),

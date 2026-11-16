@@ -1,7 +1,15 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { MediaPreviewFrame } from "@/components/media-preview";
 import { TikTokInput } from "@/components/tiktok-input";
 import { VideoTrimmer } from "@/components/video-trimmer";
+import {
+  CLONE_STEP_FOCUS_CLASS,
+  focusCloneStep,
+  useCloneStepEntry,
+} from "@/components/clone/use-clone-step-entry";
 import type { CloneDraft } from "@/components/clone/view-models";
 
 export function CloneSourceStep({
@@ -17,110 +25,90 @@ export function CloneSourceStep({
     originalVideoInfo,
     sourcePreviewSrc,
     showTrimmer,
-    sourceToolsOpen,
     shouldShowSourceTools,
     sourcesRefreshKey,
     pendingSourceId,
     pendingSourceUrl,
-    onToggleTrim,
-    onTogglePicker,
     onTrimmed,
     onCancelTrim,
     onVideoDownloaded,
     onPreselectedSourceResolved,
   } = draft;
+  const stepEntry = useCloneStepEntry("source", hidden);
+  const trimming = sourceReady && showTrimmer && originalVideoInfo && videoInfo;
+
+  // Choosing a source, applying a trim or cancelling one swaps the tools for the trimmer or back, and
+  // the control that was pressed leaves with them. Focus then goes to the step, not to the body.
+  const focusLeaving = useRef(false);
+  function keepingFocus<Args extends unknown[]>(handler: (...args: Args) => void) {
+    return (...args: Args) => {
+      focusLeaving.current = stepEntry.ref.current?.contains(document.activeElement) ?? false;
+      handler(...args);
+    };
+  }
+  useLayoutEffect(() => {
+    const step = stepEntry.ref.current;
+    if (!focusLeaving.current || !step) return;
+    if (hidden) {
+      focusLeaving.current = false;
+      return;
+    }
+    if (step.contains(document.activeElement)) return;
+    focusLeaving.current = false;
+    if (document.activeElement === document.body) focusCloneStep(step);
+  });
   return (
     <section
+      {...stepEntry}
       data-clone-source-section="true"
-      className={cn(
-        "pf-card p-4 sm:p-5",
-        hidden && "hidden"
-      )}
+      className={cn("flex min-w-0 flex-col gap-3", CLONE_STEP_FOCUS_CLASS, hidden && "hidden")}
     >
-      <div className="mb-5 flex flex-col items-start justify-between gap-3 sm:flex-row">
-        <div className="flex items-center gap-3">
-          <div>
-            <h2 className="pf-section-title">Source &amp; trim</h2>
-            <p
-              data-clone-copy="Choose the clip and trim the part to clone."
-              className="mt-1"
-            >
-              <span className="sr-only">
-                Choose the clip and trim the part to clone.
-              </span>
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {sourceReady && (
-            <button
-              type="button"
-              onClick={onToggleTrim}
-              className="text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {showTrimmer ? "Close trim" : "Trim source"}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={onTogglePicker}
-            className="text-xs font-semibold text-[var(--pf-link)] transition-colors hover:underline"
-          >
-            {sourceReady
-              ? sourceToolsOpen
-                ? "Close picker"
-                : "Replace source"
-              : "Choose source"}
-          </button>
-        </div>
-      </div>
+      {trimming ? (
+        <VideoTrimmer
+          key={originalVideoInfo.localPath}
+          videoPath={originalVideoInfo.localPath}
+          durationSec={originalVideoInfo.durationSec}
+          width={originalVideoInfo.width}
+          height={originalVideoInfo.height}
+          sourceId={videoInfo.id}
+          onTrimmed={keepingFocus(onTrimmed)}
+          onCancel={keepingFocus(onCancelTrim)}
+        />
+      ) : null}
 
-      <div className="space-y-4">
-        {sourceReady && videoInfo && sourcePreviewSrc && (
-          showTrimmer && originalVideoInfo ? (
-            <VideoTrimmer
-              key={originalVideoInfo.localPath}
-              videoPath={originalVideoInfo.localPath}
-              durationSec={originalVideoInfo.durationSec}
-              width={originalVideoInfo.width}
-              height={originalVideoInfo.height}
-              sourceId={videoInfo.id}
-              onTrimmed={onTrimmed}
-              onCancel={onCancelTrim}
-            />
-          ) : (
-            <div
-              data-clone-source-selected-preview="true"
-              className="mx-auto w-full max-w-[320px]"
-            >
-              <MediaPreviewFrame
-                type="video"
-                src={sourcePreviewSrc}
-                width={videoInfo.width}
-                height={videoInfo.height}
-                alt={videoInfo.label || "Selected source preview"}
-                variant="card"
-                frameAspectRatio="9/16"
-                className="w-full border border-border"
-                mediaClassName="rounded-none"
-              />
-            </div>
-          )
-        )}
-
-        {shouldShowSourceTools && (
-          <div className="rounded-lg border border-dashed border-border bg-muted/25 p-4">
-            <TikTokInput
-              onDownloaded={onVideoDownloaded}
-              videoInfo={videoInfo}
-              refreshKey={sourcesRefreshKey}
-              preselectedSourceId={sourceReady ? null : pendingSourceId}
-              handoffSourceUrl={sourceReady ? null : pendingSourceUrl}
-              onPreselectedSourceResolved={onPreselectedSourceResolved}
+      {!trimming && !shouldShowSourceTools && videoInfo && sourcePreviewSrc ? (
+        <div className="wb-well">
+          <div data-clone-source-selected-preview="true" className="w-full max-w-[236px]">
+            <MediaPreviewFrame
+              type="video"
+              src={sourcePreviewSrc}
+              width={videoInfo.width}
+              height={videoInfo.height}
+              alt={videoInfo.label || "Selected source preview"}
+              variant="card"
+              frameAspectRatio="9/16"
+              className="w-full"
+              mediaClassName="rounded-none"
             />
           </div>
-        )}
-      </div>
+        </div>
+      ) : null}
+
+      {shouldShowSourceTools && (
+        <>
+          <h2 className="wb-panel-title">
+            {sourceReady ? "Replace the source" : "Choose a source"}
+          </h2>
+          <TikTokInput
+            onDownloaded={keepingFocus(onVideoDownloaded)}
+            videoInfo={videoInfo}
+            refreshKey={sourcesRefreshKey}
+            preselectedSourceId={sourceReady ? null : pendingSourceId}
+            handoffSourceUrl={sourceReady ? null : pendingSourceUrl}
+            onPreselectedSourceResolved={onPreselectedSourceResolved}
+          />
+        </>
+      )}
     </section>
   );
 }

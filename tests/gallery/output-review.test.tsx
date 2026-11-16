@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { GalleryPageClient } from "../../src/app/(app)/gallery/gallery-page-client";
 import { GalleryFirstPaint } from "../../src/app/(app)/gallery/gallery-first-paint";
-import { GalleryHeaderControls } from "../../src/app/(app)/gallery/gallery-header-controls";
 import { GalleryLoadErrorState } from "../../src/app/(app)/gallery/gallery-load-error-state";
 import { getFailedGalleryActionIds } from "../../src/app/(app)/gallery/gallery-models";
 import { GallerySelectionInspector } from "../../src/components/gallery/selection-inspector";
@@ -71,7 +70,6 @@ const approvedMarkup = renderToStaticMarkup(
     initialReviewStatus="approved_output"
   />
 );
-const headerControlsMarkup = renderToStaticMarkup(<GalleryHeaderControls />);
 const firstPaintMarkup = renderToStaticMarkup(<GalleryFirstPaint />);
 const emptyMarkup = renderToStaticMarkup(
   <GalleryPageClient
@@ -92,109 +90,114 @@ const longFailureToken = `request_${"x".repeat(512)}`;
 const longErrorMarkup = renderToStaticMarkup(
   <GalleryLoadErrorState message={longFailureToken} onRetry={() => {}} />
 );
+const videoItem = {
+  ...initialPage.items[0],
+  type: "video" as const,
+  reviewStatus: {
+    value: "needs_review" as const,
+    label: "Needs Review",
+    tone: "neutral" as const,
+  },
+};
 const inspectorMarkup = renderToStaticMarkup(
   <GallerySelectionInspector
     selection={{
-      item: {
-        ...initialPage.items[0],
-        type: "video",
-        reviewStatus: {
-          value: "needs_review",
-          label: "Needs Review",
-          tone: "neutral",
-        },
-      },
-      onDeselect: () => {},
+      item: videoItem,
+      position: { index: 0, total: 2 },
+      onStep: () => {},
       onOpenPreview: () => {},
-      onDelete: async () => true,
+      onDownload: () => {},
+      onCopySource: () => {},
+    }}
+  />
+);
+const singleInspectorMarkup = renderToStaticMarkup(
+  <GallerySelectionInspector
+    selection={{
+      item: { ...initialPage.items[1], type: "image", reviewStatus: { value: "approved_output", label: "Approved Output", tone: "approved" } },
+      position: { index: 0, total: 1 },
+      onStep: () => {},
+      onOpenPreview: () => {},
+      onDownload: () => {},
+      onCopySource: () => {},
     }}
   />
 );
 
-assert.doesNotMatch(markup, /Output Review/);
-assert.doesNotMatch(markup, /Review, approve, reject, download, and hand off Outputs/);
-assert.match(headerControlsMarkup, /href="\/ugc-clone"/);
-assert.match(headerControlsMarkup, /Start Clone/);
-assert.match(headerControlsMarkup, /href="\/generate"/);
-assert.match(headerControlsMarkup, /Generate asset/);
-assert.match(firstPaintMarkup, /data-gallery-first-paint="true"/);
-assert.match(firstPaintMarkup, /data-gallery-page="true"/);
-assert.match(firstPaintMarkup, /data-gallery-toolbar="true"/);
+assert.match(firstPaintMarkup, /<h1 class="wb-page-title">Gallery<\/h1>/);
+assert.match(firstPaintMarkup, /class="wb-page-header"/);
+assert.match(firstPaintMarkup, /href="\/ugc-clone"/);
+assert.match(firstPaintMarkup, />Start clone</);
+assert.match(firstPaintMarkup, /wb-btn-primary/);
 assert.match(firstPaintMarkup, /data-gallery-first-body="true"/);
-assert.match(firstPaintMarkup, />Gallery</);
-assert.match(firstPaintMarkup, /data-gallery-title="true"/);
-assert.match(firstPaintMarkup, /fetchPriority="high"/);
-assert.match(firstPaintMarkup, /data:image\/svg\+xml/);
-assert.match(firstPaintMarkup, />Start Clone</);
-assert.match(firstPaintMarkup, />Open Generate</);
-assert.match(firstPaintMarkup, />Generate asset</);
-assert.doesNotMatch(firstPaintMarkup, /data-workspace-title/);
-assert.match(markup, /Needs Review/);
-assert.match(markup, /Approved Output/);
-assert.match(markup, /Rejected Output/);
-assert.match(markup, /All/);
-assert.match(markup, /whitespace-nowrap/);
-assert.match(markup, /Media type/);
-assert.match(markup, /Search gallery/);
+assert.match(firstPaintMarkup, /wb-skeleton/);
+assert.doesNotMatch(firstPaintMarkup, /data-lcp|sr-only|workspace-header-grid|<img/);
+
+assert.match(markup, /aria-label="Review status"/);
+assert.match(markup, /aria-label="Media type"/);
 assert.match(markup, /aria-label="Grid view"/);
 assert.match(markup, /aria-label="List view"/);
-assert.ok(markup.indexOf("Needs Review") < markup.indexOf("Media type"));
-assert.match(markup, /bg-\[var\(--pf-surface\)\] text-\[var\(--pf-ink\)\][^>]*>Videos/);
-assert.match(markup, /pf-card/);
-assert.match(markup, /pf-data/);
-assert.match(markup, /pf-button-secondary/);
-assert.match(markup, /Showing 1 of 17 outputs needing review/);
-assert.match(markup, />17</);
-assert.match(markup, />8</);
-assert.match(markup, />3</);
-assert.match(markup, />28</);
+assert.match(markup, /Search gallery/);
+assert.match(markup, /Sort: Newest/);
+assert.ok(markup.indexOf(">All<") < markup.indexOf("Needs review"));
+assert.match(markup, /aria-pressed="true"[^>]*>Needs review<span class="wb-segment-count">17<\/span>/);
+assert.match(markup, /aria-pressed="true"[^>]*>All media</);
+assert.match(markup, /data-gallery-count="true"[^>]*>1 of 17</);
+assert.match(markup, /class="wb-tile /);
 assert.match(markup, /data-media-preview-frame="card"/);
-assert.match(markup, /object-cover/);
-assert.match(markup, /lg:grid-cols-3/);
-assert.doesNotMatch(markup, /xl:grid-cols-4/);
-assert.match(markup, /aria-label="Open Source Selection"/);
-assert.doesNotMatch(markup, />Source Selection</);
-assert.doesNotMatch(markup, />https:\/\/www\.tiktok\.com\/@creator\/video\/123</);
-assert.match(markup, /wan-2\.2-video/);
-assert.match(markup, /Preview/);
-assert.match(markup, /Mark as Approved Output/);
-assert.match(markup, /Mark as Rejected Output/);
-assert.match(markup, /aria-label="Copy Source URL"/);
-assert.match(markup, /Download/);
-assert.match(markup, /Handoff/);
-assert.match(markup, /aria-label="Delete Output file-needs-review"/);
-assert.doesNotMatch(markup, /clone-output\.mp4/);
-assert.doesNotMatch(markup, /Match the source energy/);
-assert.doesNotMatch(markup, /Approved creator still/);
-assert.match(approvedMarkup, /Showing 1 of 8 outputs in approved output/);
+assert.match(
+  markup,
+  /aria-label="Select Match the source energy with a polished product demo\., Jun 1\d, \d\d:\d\d"/
+);
+assert.match(markup, /aria-label="Needs review"/);
+assert.match(markup, /class="wb-tile-duration">0:15</);
+assert.match(markup, />Preview</);
+assert.match(markup, /<a class="wb-tile-action"[^>]*href="\/generate\/job-clone-1">Open<\/a>/);
+assert.doesNotMatch(markup, /class="wb-tile-action"[^>]*>Download</);
+assert.match(markup, /class="wb-tile-meta">Video - wan-2\.2-video</, "the tile caption carries kind and model, not the date");
+assert.match(markup, /Load more/);
+assert.doesNotMatch(markup, /\/api\/files\/file-approved"/);
+assert.doesNotMatch(markup, /data-gallery-bulk-bar/);
+assert.doesNotMatch(markup, /data-gallery-selection-inspector/);
+assert.match(markup, /<aside aria-label="Selected output"[^>]*>[\s\S]*Select media to inspect/);
+assert.match(markup, /data-gallery-dock-row="true"[^>]*>[\s\S]*data-gallery-count="true"/);
+assert.doesNotMatch(markup, /pf-card|pf-button|pf-review-stamp/);
+
+assert.match(approvedMarkup, /data-gallery-count="true"[^>]*>1 of 8</);
 assert.match(approvedMarkup, /\/api\/files\/file-approved/);
 assert.doesNotMatch(approvedMarkup, /\/api\/files\/file-needs-review/);
-assert.match(approvedMarkup, /pf-review-stamp !top-2 !bottom-auto/);
-assert.match(approvedMarkup, /pf-review-stamp--approved/);
-assert.match(approvedMarkup, /bg-\[var\(--pf-success\)\]/);
+assert.match(approvedMarkup, /aria-label="Approved"/);
 
-assert.match(emptyMarkup, /data-workspace-state="empty"/);
-assert.match(emptyMarkup, /No Outputs ready for review/);
-assert.match(emptyMarkup, /Start Clone/);
+assert.match(emptyMarkup, /class="wb-empty /);
+assert.match(emptyMarkup, /No outputs yet/);
+assert.match(emptyMarkup, /href="\/generate"/);
 assert.match(emptyMarkup, /Open Generate/);
 
-assert.match(errorMarkup, /data-workspace-state="error"/);
+assert.match(errorMarkup, /data-tone="error"/);
 assert.match(errorMarkup, /Gallery failed to load/);
 assert.match(errorMarkup, /Failed to load gallery/);
 assert.match(errorMarkup, /Retry Gallery/);
 assert.equal(/\s/.test(longFailureToken), false);
 assert.match(longErrorMarkup, new RegExp(longFailureToken));
-assert.match(longErrorMarkup, /min-w-0/);
 assert.match(longErrorMarkup, /\[overflow-wrap:anywhere\]/);
 
 assert.match(inspectorMarkup, /data-gallery-selection-inspector/);
-assert.match(inspectorMarkup, /Selected asset preview/);
-assert.match(inspectorMarkup, /Previewing asset/);
-assert.match(inspectorMarkup, /Open selected asset preview/);
-assert.match(inspectorMarkup, /Deselect previewed asset/);
-assert.match(inspectorMarkup, /clone-output\.mp4/);
-assert.match(inspectorMarkup, /1080 × 1920/);
+assert.match(inspectorMarkup, />Selection</);
+assert.match(inspectorMarkup, /Previous selected output/);
+assert.match(inspectorMarkup, /1 \/ 2/);
+assert.match(inspectorMarkup, /aria-label="Inspector view"/);
+assert.match(inspectorMarkup, />Source</);
+assert.match(inspectorMarkup, /1080 x 1920/);
+assert.match(inspectorMarkup, /Video, 9:16/);
+assert.match(inspectorMarkup, />0:15</);
+assert.match(inspectorMarkup, /Needs review/);
+assert.match(inspectorMarkup, /Match the source energy/);
 assert.doesNotMatch(inspectorMarkup, /Use in Clone/);
+assert.doesNotMatch(singleInspectorMarkup, /Previous selected output/);
+assert.doesNotMatch(singleInspectorMarkup, /Inspector view/);
+assert.match(singleInspectorMarkup, /Use in Clone/);
+assert.match(singleInspectorMarkup, /href="\/ugc-clone\?referenceFileId=file-approved"/);
+assert.match(singleInspectorMarkup, /Image, 4:5/);
 
 assert.deepEqual(
   getFailedGalleryActionIds(
@@ -255,14 +258,19 @@ const pageSource = readFileSync(
   "utf8"
 );
 
-assert.deepEqual(componentPropNames(gridSource, "GalleryGrid"), ["session"]);
+assert.deepEqual(componentPropNames(gridSource, "GalleryGrid"), [
+  "session",
+  "renderHeader",
+  "fallback",
+  "footer",
+]);
 assert.deepEqual(
   componentPropNames(inspectorSource, "GallerySelectionInspector"),
-  ["selection", "children"]
+  ["selection"]
 );
 assert.match(gridSource, /export type GalleryGridSession/);
 assert.match(inspectorSource, /export type GallerySelection/);
-assert.match(pageSource, /<GalleryGrid session=\{gridSession\} \/>/);
+assert.match(pageSource, /<GalleryGrid\s+session=\{gridSession\}/);
 assert.doesNotMatch(gridSource, /createContext|useContext/);
 assert.doesNotMatch(inspectorSource, /createContext|useContext/);
 assert.doesNotMatch(pageSource, /createContext|useContext/);

@@ -15,20 +15,26 @@ import {
   readIntegrationCallbackFeedback,
   removeIntegrationCallbackParams,
 } from "./integration-callback";
+import type { ConfirmAction } from "@/components/ui/confirm-dialog";
+import type { IntegrationsNotice } from "./types";
 
 export function useSettingsIntegrations({
   onOAuthCallback,
   setError,
   setToast,
+  confirm,
 }: {
   onOAuthCallback: () => void;
   setError: (message: string) => void;
-  setToast: (message: string | null) => void;
+  setToast: (message: string) => void;
+  confirm: ConfirmAction;
 }) {
   const router = useRouter();
   const [providers, setProviders] = useState<PublicIntegrationStatus[]>([]);
   const [integrationsLoading, setIntegrationsLoading] = useState(true);
-  const [integrationsError, setIntegrationsError] = useState<string | null>(null);
+  const [integrationsError, setIntegrationsError] = useState<IntegrationsNotice | null>(null);
+  const reportStatusError = (detail: string) =>
+    setIntegrationsError({ lead: "Status unavailable.", detail });
   const [busyProvider, setBusyProvider] = useState<SocialProvider | null>(null);
   const handledCallbackRef = useRef<string | null>(null);
 
@@ -40,13 +46,13 @@ export function useSettingsIntegrations({
       setProviders(response.providers);
       if (announce) {
         setToast("Connection status refreshed");
-        window.setTimeout(() => setToast(null), 1700);
       }
       return response.providers;
     } catch (cause) {
-      setIntegrationsError(
-        cause instanceof Error ? cause.message : "Unable to load integration status"
-      );
+      setIntegrationsError({
+        lead: "Status unavailable.",
+        detail: cause instanceof Error ? cause.message : "Unable to load integration status",
+      });
       return null;
     } finally {
       setIntegrationsLoading(false);
@@ -92,7 +98,6 @@ export function useSettingsIntegrations({
       const accountLabel =
         account?.displayName || account?.username || confirmed.displayName;
       setToast(`${confirmed.displayName} connected as ${accountLabel}.`);
-      window.setTimeout(() => setToast(null), 2600);
     });
   }, [onOAuthCallback, refreshIntegrations, router, setError, setToast]);
 
@@ -115,7 +120,7 @@ export function useSettingsIntegrations({
       });
       window.location.assign(result.authorizationUrl);
     } catch (cause) {
-      setIntegrationsError(
+      reportStatusError(
         cause instanceof Error
           ? cause.message
           : "Unable to start YouTube authorization"
@@ -136,9 +141,8 @@ export function useSettingsIntegrations({
       setToast(
         `${status.displayName} synced ${result.posts.length} owned post${result.posts.length === 1 ? "" : "s"}`
       );
-      window.setTimeout(() => setToast(null), 1700);
     } catch (cause) {
-      setIntegrationsError(
+      reportStatusError(
         cause instanceof Error ? cause.message : `Unable to sync ${status.displayName}`
       );
     } finally {
@@ -157,30 +161,36 @@ export function useSettingsIntegrations({
       bound?.account.displayName ||
       bound?.account.username ||
       status.displayName;
-    if (
-      !window.confirm(
-        `Disconnect ${accountName} from ${status.displayName}? Provider-owned metrics will stop refreshing. Imported CSV data will not be removed. Disconnect is blocked while a publication is pending or processing.`
-      )
-    ) {
+    const confirmed = await confirm({
+      title: `Disconnect ${accountName} from ${status.displayName}?`,
+      body: "Provider-owned metrics will stop refreshing. Imported CSV data will not be removed. Disconnect is blocked while a publication is pending or processing.",
+      confirmLabel: "Disconnect",
+    });
+    if (confirmed !== true) {
       return;
     }
 
+    const reportNotDisconnected = (detail: string) =>
+      setIntegrationsError({ lead: `${accountName} was not disconnected.`, detail });
     setBusyProvider(status.provider);
     setIntegrationsError(null);
     try {
       await disconnectIntegration(status.provider, accountId);
       await refreshIntegrations();
       setToast(`${accountName} disconnected from ${status.displayName}`);
-      window.setTimeout(() => setToast(null), 1700);
     } catch (cause) {
       const message =
         cause instanceof Error
           ? cause.message
           : `Unable to disconnect ${accountName}`;
       if (/provider revocation failed/i.test(message)) {
-        const confirmation = window.prompt(
-          `${status.displayName} did not confirm remote revocation. To permanently delete the local connection, encrypted tokens, and cached metrics anyway, type ${LOCAL_INTEGRATION_DELETE_CONFIRMATION}. You must separately revoke PostForge in ${status.displayName}'s account permissions.`
-        );
+        const answer = await confirm({
+          title: `${status.displayName} did not confirm revocation`,
+          body: `To permanently delete the local connection, encrypted tokens, and cached metrics anyway, type ${LOCAL_INTEGRATION_DELETE_CONFIRMATION}. You must separately revoke PostForge in ${status.displayName}'s account permissions.`,
+          confirmLabel: "Delete local data",
+          phrase: LOCAL_INTEGRATION_DELETE_CONFIRMATION,
+        });
+        const confirmation = typeof answer === "string" ? answer : null;
         if (confirmation === LOCAL_INTEGRATION_DELETE_CONFIRMATION) {
           try {
             await disconnectIntegration(status.provider, accountId, {
@@ -191,10 +201,9 @@ export function useSettingsIntegrations({
             setToast(
               `${status.displayName} local data deleted; remote revocation was not confirmed`
             );
-            window.setTimeout(() => setToast(null), 1700);
             return;
           } catch (forceDeleteCause) {
-            setIntegrationsError(
+            reportNotDisconnected(
               forceDeleteCause instanceof Error
                 ? forceDeleteCause.message
                 : `Unable to delete local ${status.displayName} data`
@@ -202,14 +211,14 @@ export function useSettingsIntegrations({
             return;
           }
         }
-        setIntegrationsError(
+        reportNotDisconnected(
           confirmation === null
-            ? message
+            ? `${status.displayName} did not confirm revocation, so the connection was kept. Disconnect again to retry.`
             : `Local ${status.displayName} data was not deleted because the confirmation phrase did not match. Remote access remains unconfirmed; use the provider permission link below.`
         );
         return;
       }
-      setIntegrationsError(message);
+      reportNotDisconnected(message);
     } finally {
       setBusyProvider(null);
     }

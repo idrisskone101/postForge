@@ -4,20 +4,14 @@
     "src/app/(app)/automations/publish-review-dialog.tsx",
     "src/components/character-photo.tsx",
     "src/components/avatar-picker-cards.tsx",
-    "src/components/collection-reference-picker.tsx",
     "src/components/gallery/delete-dialog.tsx",
-    "src/components/gallery/review-status-control.tsx",
     "src/components/media-preview.tsx",
     "src/components/pinterest-import-dialog.tsx",
     "src/components/public-policy-page.tsx",
-    "src/components/slideshow/editor-controls.tsx",
     "src/components/slideshow/slide-preview.tsx",
     "src/components/slideshow/template-dialog.tsx",
-    "src/components/swap-input-section.tsx",
     "src/components/tiktok-input.tsx",
     "src/components/tiktok-saved-sources.tsx",
-    "src/components/video-reference-picker.tsx",
-    "src/components/video-trim-range-fields.tsx",
     "src/components/video-trim-timeline.tsx",
     "src/components/video-trimmer.tsx",
     "src/components/workspace-state.tsx"
@@ -27,7 +21,6 @@
     "src/app/(app)/automations/new/use-automation-builder-resources.ts",
     "src/app/(app)/automations/new/use-automation-builder.ts",
     "src/app/(app)/automations/use-automations-workspace.ts",
-    "src/app/(app)/characters/characters-page-client.tsx",
     "src/app/(app)/characters/new/use-character-builder.ts",
     "src/app/(app)/collections/use-collections-workspace.ts",
     "src/app/(app)/costs/spend-page-content.tsx",
@@ -50,14 +43,14 @@
     "src/components/slideshow/slideshow-editor.tsx",
     "src/components/slideshow/slideshow-studio.tsx",
     "src/components/tiktok-input.tsx",
-    "src/components/video-reference-picker.tsx",
     "src/components/video-trimmer.tsx"
   ],
   "useEffect": [
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "innerHtml": [
-    "src/app/(app)/layout.tsx"
+    "src/app/(app)/layout.tsx",
+    "src/app/(legal)/layout.tsx"
   ],
   "hookSize": [
     "src/app/(app)/automations/new/use-automation-builder.ts",
@@ -70,9 +63,6 @@
     "src/app/(app)/ugc-inspiration/use-inspiration-workspace.ts"
   ],
   "effectFns": [
-    "src/app/(app)/automations/new/automation-builder-client-lazy.tsx",
-    "src/app/(app)/automations/new/playbook-picker.tsx",
-    "src/app/(app)/characters/new/character-builder-client-lazy.tsx",
     "src/app/(app)/costs/costs-page-client.tsx",
     "src/app/(app)/generate/use-generation-form.ts",
     "src/app/(app)/generate/use-job-detail.ts",
@@ -80,11 +70,9 @@
     "src/app/(app)/settings/models-panel.tsx",
     "src/components/avatar-picker-generate.tsx",
     "src/components/avatar-picker-import-mode.tsx",
-    "src/components/sidebar.tsx",
     "src/components/slideshow/slideshow-editor.tsx",
     "src/components/slideshow/slideshow-view-modes.tsx",
     "src/components/slideshow/use-slideshow-studio-bootstrap.ts",
-    "src/components/video-reference-picker.tsx",
     "src/components/video-trimmer.tsx",
     "src/lib/hooks/use-polling.ts",
     "src/lib/use-window-load-ready.ts"

@@ -1,18 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
-import {
-  AlertCircle,
-  RefreshCw,
-  ShieldCheck,
-  Webhook,
-} from "lucide-react";
-import {
-  SOCIAL_PROVIDERS,
-} from "@/lib/integrations-client";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { cn } from "@/lib/utils";
-import { SettingsPaintText } from "./settings-paint-text";
+import { Button, Icon, Panel, StatusChip } from "@/components/workbench";
+import { SOCIAL_PROVIDERS } from "@/lib/integrations-client";
+import { needsReauthorization } from "./integration-row-model";
 import { SocialIntegrationCard } from "./social-integration-card";
 import type { IntegrationsWorkspace } from "./types";
 
@@ -21,276 +11,86 @@ export function IntegrationsPanel({
 }: {
   workspace: IntegrationsWorkspace;
 }) {
-  const paintReady = useWindowLoadReady();
-  const {
-    providers,
-    loading,
-    error,
-    busyProvider,
-    onRefresh,
-    onConnect,
-    onSync,
-    onDisconnect,
-    onOpenWebhooks,
-  } = workspace;
-  const connectedCount = providers.reduce(
-    (sum, provider) => sum + provider.accounts.length,
-    0
-  );
-  const connectedLabel = `${connectedCount} connected`;
+  const { providers, loading, error, busyProvider, onRefresh, onOpenWebhooks } = workspace;
+  const primaryReconnectId =
+    providers
+      .flatMap((provider) => provider.accounts)
+      .find((account) => needsReauthorization(account))?.account.id ?? null;
 
   return (
     <>
-      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
-        <div>
-          <SettingsPaintText
-            ready={paintReady}
-            liveAs="h2"
-            liveClassName="pf-section-title"
-            paint={
-              <h2 data-settings-heading="true" data-settings-title="Integrations">
-                <span className="sr-only">Integrations</span>
-              </h2>
-            }
-          >
-            Integrations
-          </SettingsPaintText>
-          <SettingsCopy
-            paintReady={paintReady}
-            intro
-            text="Connect every account you publish or measure. Each account keeps its own scope and sync state."
-          />
-        </div>
-        {paintReady ? (
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="pf-button-secondary shrink-0"
-          >
-            <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+      <Panel
+        pad="wide"
+        title="Social accounts"
+        aria-busy={loading}
+        className="gap-2 max-md:px-4 max-md:pb-4 [&>.wb-panel-head]:min-h-5"
+        action={
+          <Button size={32} onClick={onRefresh} disabled={loading} className="-my-1.5">
             Refresh status
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="pf-button-secondary shrink-0"
-            data-lcp="Refresh status"
-          >
-            <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
-            <span className="sr-only">Refresh status</span>
-          </button>
-        )}
-      </div>
-
-      <div
-        data-settings-owned="true"
-        className="mt-5 grid min-w-0 grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-[var(--pf-link)]/30 bg-[var(--pf-link)]/10 p-3"
+          </Button>
+        }
       >
-        <span className="grid size-7 place-items-center rounded-full bg-[var(--pf-link)] text-[12px] text-[var(--pf-canvas)]">
-          i
-        </span>
-        <div className="min-w-0">
-          <SettingsPaintText
-            ready={paintReady}
-            liveAs="b"
-            liveClassName="block text-[12px] font-semibold text-[var(--pf-link)]"
-            paint={
-              <b data-lcp="Connections are server-owned">
-                <span className="sr-only">Connections are server-owned</span>
-              </b>
-            }
-          >
-            Connections are server-owned
-          </SettingsPaintText>
-          <SettingsCopy
-            paintReady={paintReady}
-            text="PostForge only reports an account as connected after OAuth and server-side token storage succeed. Multiple accounts per platform are supported."
-          />
-        </div>
-        <ShieldCheck className="size-4 text-[var(--pf-link)]" />
-      </div>
-
-      {error && (
-        <div
-          role="alert"
-          className="mt-4 flex flex-col items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-3 text-[12px] text-[var(--pf-danger)] sm:flex-row sm:items-center"
-        >
-          <span className="flex min-w-0 items-start gap-2 break-words [overflow-wrap:anywhere]">
-            <AlertCircle className="size-4 shrink-0" />
-            {error}
-          </span>
-          <button type="button" onClick={onRefresh} className="pf-button-secondary shrink-0 text-[12px]">
-            Try again
-          </button>
-        </div>
-      )}
-
-      <div className="mt-5 flex items-end justify-between gap-3">
-        <div>
-          <SettingsPaintText
-            ready={paintReady}
-            liveAs="h3"
-            liveClassName="text-[13px] font-semibold text-[var(--pf-ink)]"
-            paint={
-              <h3 data-lcp="Social accounts">
-                <span className="sr-only">Social accounts</span>
-              </h3>
-            }
-          >
-            Social accounts
-          </SettingsPaintText>
-          <SettingsCopy
-            paintReady={paintReady}
-            text="Multiple accounts per platform share the same server-owned connection state in Performance and Automations."
-          />
-        </div>
-        <SettingsPaintText
-          ready={paintReady}
-          liveAs="span"
-          liveClassName="shrink-0 text-[12px] font-semibold text-muted-foreground"
-          paint={
-            <span data-lcp={connectedLabel} className="shrink-0">
-              <span className="sr-only">{connectedLabel}</span>
+        {error && (
+          <p role="alert" className="wb-notice my-1 break-words py-1.5 pr-1.5 [overflow-wrap:anywhere]" data-tone="bad">
+            <span className="min-w-0 flex-1 py-1">
+              <strong>{error.lead}</strong> {error.detail}
             </span>
-          }
-        >
-          {connectedLabel}
-        </SettingsPaintText>
-      </div>
-      <div className="mt-3 grid gap-3" aria-busy={loading}>
-        {SOCIAL_PROVIDERS.map((provider) => (
-          <SocialIntegrationCard
-            key={provider}
-            card={{
-              provider,
-              status: providers.find((candidate) => candidate.provider === provider) ?? null,
-              loading,
-              busy: busyProvider === provider,
-              onConnect,
-              onSync,
-              onDisconnect,
-            }}
-          />
-        ))}
-      </div>
+            <Button size={32} onClick={onRefresh}>
+              Try again
+            </Button>
+          </p>
+        )}
+        <div className="@container flex flex-col">
+          <div
+            aria-hidden="true"
+            className="hidden h-8 shrink-0 items-center gap-3.5 text-xs font-semibold leading-4 text-fg-muted @min-[841px]:flex"
+          >
+            <span className="w-11 shrink-0" />
+            <span className="min-w-[153px] flex-1">Platform</span>
+            <span className="w-[168px] min-w-[157px]">Connection</span>
+            <span className="w-[150px] shrink-0">Metrics</span>
+            <span className="w-[170px] shrink-0">Publishing</span>
+            <span className="w-28 min-w-[97px] shrink-[1000]" />
+          </div>
+          {SOCIAL_PROVIDERS.map((provider) => (
+            <SocialIntegrationCard
+              key={provider}
+              card={{
+                provider,
+                status: providers.find((candidate) => candidate.provider === provider) ?? null,
+                loading,
+                busy: busyProvider === provider,
+                onConnect: workspace.onConnect,
+                onSync: workspace.onSync,
+                onDisconnect: workspace.onDisconnect,
+                onRefresh,
+                primaryReconnectId,
+              }}
+            />
+          ))}
+        </div>
+      </Panel>
 
-      <SectionHeading
-        paintReady={paintReady}
-        title="Automation handoffs"
-        description="Register server-owned delivery before sending review events outside PostForge."
-      />
-      <div className="grid gap-2 xl:grid-cols-2">
-        <ServiceRow
-          paintReady={paintReady}
-          icon={<Webhook className="size-4" />}
-          name="Custom webhook"
-          description="No endpoint is registered. Open the delivery requirements and current status."
-          action="View status"
-          onAction={onOpenWebhooks}
-        />
-      </div>
+      <Panel pad="wide" title="Automation handoffs" className="gap-[18px] [&>.wb-panel-head]:min-h-5">
+        <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-dashed border-edge text-fg-muted">
+            <Icon name="link" size={22} />
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-sm font-semibold leading-[18px] text-fg">Custom webhook</span>
+            <span className="text-balance text-[13px] leading-4 text-fg-muted">No endpoint is registered</span>
+          </div>
+          <StatusChip tone="neutral" className="shrink-0">
+            Not configured
+          </StatusChip>
+          <div className="flex w-full justify-end sm:w-[132px] sm:shrink-0">
+            <Button onClick={onOpenWebhooks} className="max-sm:h-11 max-sm:w-full">
+              View status
+            </Button>
+          </div>
+        </div>
+      </Panel>
     </>
   );
 }
 
-function SettingsCopy({
-  text,
-  intro = false,
-}: {
-  text: string;
-  intro?: boolean;
-  paintReady?: boolean;
-}) {
-  return (
-    <p
-      data-settings-copy="true"
-      data-settings-intro={intro ? "true" : undefined}
-      data-settings-text={text}
-    >
-      <span className="sr-only">{text}</span>
-    </p>
-  );
-}
-
-function SectionHeading({
-  title,
-  description,
-  paintReady,
-}: {
-  title: string;
-  description: string;
-  paintReady: boolean;
-}) {
-  return (
-    <div className="mb-2 mt-6">
-      <SettingsPaintText
-        ready={paintReady}
-        liveAs="h3"
-        liveClassName="text-[13px] font-semibold text-[var(--pf-ink)]"
-        paint={
-          <h3 data-lcp={title}>
-            <span className="sr-only">{title}</span>
-          </h3>
-        }
-      >
-        {title}
-      </SettingsPaintText>
-      <SettingsCopy paintReady={paintReady} text={description} />
-    </div>
-  );
-}
-
-function ServiceRow({
-  icon,
-  name,
-  description,
-  action,
-  onAction,
-  paintReady,
-}: {
-  icon: ReactNode;
-  name: string;
-  description: string;
-  action: string;
-  onAction?: () => void;
-  paintReady: boolean;
-}) {
-  return (
-    <article className="pf-card grid min-w-0 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 p-3 sm:grid-cols-[36px_minmax(0,1fr)_auto]">
-      <span className="grid size-9 place-items-center rounded-lg bg-[var(--pf-active)] text-foreground">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <SettingsPaintText
-          ready={paintReady}
-          liveAs="h3"
-          liveClassName="truncate text-[13px] font-semibold text-[var(--pf-ink)]"
-          paint={
-            <h3 data-lcp={name} className="truncate">
-              <span className="sr-only">{name}</span>
-            </h3>
-          }
-        >
-          {name}
-        </SettingsPaintText>
-        <SettingsCopy paintReady={paintReady} text={description} />
-      </div>
-      {onAction ? (
-        <button
-          type="button"
-          onClick={onAction}
-          className="pf-button-secondary col-span-2 w-full text-[12px] sm:col-span-1 sm:w-auto"
-        >
-          {action}
-        </button>
-      ) : (
-        <span className="col-span-2 text-[12px] text-muted-foreground sm:col-span-1">
-          {action}
-        </span>
-      )}
-    </article>
-  );
-}

@@ -1,6 +1,7 @@
 "use client";
 
 import { EditorCollectionPicker } from "./editor-collection-picker";
+import { EditorCopyFocusProvider } from "./editor-copy-focus";
 import { EditorHeader } from "./editor-header";
 import { EditorInspector } from "./editor-inspector";
 import { EditorPreview } from "./editor-preview";
@@ -15,7 +16,7 @@ export function EditorWorkspace() {
   const { viewMode } = useSlideshowEditor();
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--pf-canvas)]">
+    <>
       <EditorHeader />
 
       {viewMode === "board" ? <SlideshowBoardView /> : null}
@@ -23,17 +24,19 @@ export function EditorWorkspace() {
       {viewMode === "play" ? <SlideshowPlayView /> : null}
 
       {viewMode === "edit" ? (
-      <div
-        data-slideshow-view="edit"
-        className="grid min-h-0 flex-1 overflow-y-auto xl:grid-cols-[264px_minmax(300px,1fr)_304px]"
-      >
-        <EditorSlideRail />
-        <EditorPreview />
-        <EditorInspector />
-      </div>
+        <div
+          data-slideshow-view="edit"
+          className="wb-fade-in flex min-h-0 flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] xl:flex xl:h-[calc(100dvh-100px)] xl:min-h-[728px] xl:flex-row"
+        >
+          <EditorSlideRail />
+          <EditorCopyFocusProvider>
+            <EditorPreview />
+            <EditorInspector />
+          </EditorCopyFocusProvider>
+        </div>
       ) : null}
 
       <EditorCollectionPicker />
-    </div>
+    </>
   );
 }

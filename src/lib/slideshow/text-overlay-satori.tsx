@@ -3,11 +3,21 @@ import { join } from "node:path";
 import satori from "satori";
 import type { Font } from "satori";
 
-import { overlayTree } from "./overlay-tree";
+import {
+  overlayTree,
+  slideshowOverlayDrawsPills,
+  slideshowOverlayLayerOfKey,
+} from "./overlay-tree";
 import type {
+  SlideshowOverlayBoxes,
   SlideshowRenderTextSettings,
   SlideshowTextOverlaySlide,
 } from "./text-overlay";
+
+export type SlideshowTextOverlay = {
+  markup: string;
+  boxes: SlideshowOverlayBoxes;
+};
 
 type FontFace = {
   file: string;
@@ -62,7 +72,7 @@ const FONT_FILES: FontFace[] = [
 ];
 
 const MARKUP_CACHE_LIMIT = 64;
-const markupCache = new Map<string, string>();
+const overlayCache = new Map<string, SlideshowTextOverlay>();
 
 let fontCache: Font[] | null = null;
 
@@ -96,32 +106,102 @@ function overlayCacheKey(
   });
 }
 
+export async function createSlideshowTextOverlay(
+  slide: SlideshowTextOverlaySlide,
+  width: number,
+  height: number,
+  settings: SlideshowRenderTextSettings = {},
+): Promise<SlideshowTextOverlay> {
+  const key = overlayCacheKey(slide, width, height, settings);
+  const cached = overlayCache.get(key);
+  if (cached) return cached;
+
+  const boxes: SlideshowOverlayBoxes = {};
+  const svg = await satori(overlayTree(slide, width, height, settings), {
+    width,
+    height,
+    fonts: await overlayFonts(),
+    embedFont: true,
+    onNodeDetected(node) {
+      const layer = slideshowOverlayLayerOfKey(node.key);
+      if (!layer) return;
+      const seen = boxes[layer];
+      const left = Math.min(seen?.x ?? node.left, node.left);
+      const top = Math.min(seen?.y ?? node.top, node.top);
+      const right = Math.max(
+        seen ? seen.x + seen.width : node.left + node.width,
+        node.left + node.width,
+      );
+      const bottom = Math.max(
+        seen ? seen.y + seen.height : node.top + node.height,
+        node.top + node.height,
+      );
+      boxes[layer] = {
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top,
+      };
+    },
+  });
+  const overlay = {
+    markup: svg.replace("<svg ", '<svg data-slideshow-text-overlay="true" '),
+    boxes: slideshowOverlayDrawsPills(settings) ? boxes : hugGlyphs(svg, boxes),
+  };
+  if (overlayCache.size >= MARKUP_CACHE_LIMIT) {
+    const oldest = overlayCache.keys().next().value;
+    if (oldest) overlayCache.delete(oldest);
+  }
+  overlayCache.set(key, overlay);
+  return overlay;
+}
+
+// Unpilled copy fills the copy column, so its layout box says nothing about where its lines end.
+// The renderer draws text as outline paths in canvas coordinates (the only paths without an x
+// attribute; backgrounds carry their box), so each block shrinks to the glyph points inside its rows.
+function hugGlyphs(svg: string, boxes: SlideshowOverlayBoxes) {
+  const points: number[][] = [];
+  for (const [, attributes] of svg.matchAll(/<path\b([^>]*)>/g)) {
+    if (/\sx="/.test(attributes)) continue;
+    const numbers = (/\sd="([^"]*)"/.exec(attributes)?.[1] ?? "")
+      .match(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi)
+      ?.map(Number);
+    if (!numbers) continue;
+    for (let index = 0; index + 1 < numbers.length; index += 2) {
+      points.push([numbers[index], numbers[index + 1]]);
+    }
+  }
+  const hugged: SlideshowOverlayBoxes = {};
+  for (const layer of Object.keys(boxes) as (keyof SlideshowOverlayBoxes)[]) {
+    const box = boxes[layer]!;
+    let left = Infinity;
+    let right = -Infinity;
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (const [x, y] of points) {
+      if (y < box.y || y > box.y + box.height) continue;
+      if (x < box.x || x > box.x + box.width) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+    hugged[layer] =
+      right > left && bottom > top
+        ? { x: left, y: top, width: right - left, height: bottom - top }
+        : box;
+  }
+  return hugged;
+}
+
 export async function createSlideshowTextOverlayMarkup(
   slide: SlideshowTextOverlaySlide,
   width: number,
   height: number,
   settings: SlideshowRenderTextSettings = {},
 ) {
-  const key = overlayCacheKey(slide, width, height, settings);
-  const cached = markupCache.get(key);
-  if (cached) return cached;
-
-  const svg = await satori(overlayTree(slide, width, height, settings), {
-    width,
-    height,
-    fonts: await overlayFonts(),
-    embedFont: true,
-  });
-  const marked = svg.replace(
-    "<svg ",
-    '<svg data-slideshow-text-overlay="true" ',
-  );
-  if (markupCache.size >= MARKUP_CACHE_LIMIT) {
-    const oldest = markupCache.keys().next().value;
-    if (oldest) markupCache.delete(oldest);
-  }
-  markupCache.set(key, marked);
-  return marked;
+  return (await createSlideshowTextOverlay(slide, width, height, settings))
+    .markup;
 }
 
 export async function createSlideshowTextOverlaySvg(

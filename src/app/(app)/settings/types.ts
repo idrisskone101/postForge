@@ -16,18 +16,21 @@ export type SettingsTab =
   | "api-keys"
   | "webhooks";
 
+type ConnectHandler = (status: PublicIntegrationStatus, acceptPolicies?: boolean) => void;
+type AccountHandler = (status: PublicIntegrationStatus, accountId: string) => void;
+
+/** A failure shown above the integration rows: what failed, then why. */
+export type IntegrationsNotice = { lead: string; detail: string };
+
 export type IntegrationsWorkspace = {
   providers: PublicIntegrationStatus[];
   loading: boolean;
-  error: string | null;
+  error: IntegrationsNotice | null;
   busyProvider: SocialProvider | null;
   onRefresh: () => void;
-  onConnect: (
-    status: PublicIntegrationStatus,
-    acceptPolicies?: boolean
-  ) => void;
-  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
-  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
+  onConnect: ConnectHandler;
+  onSync: AccountHandler;
+  onDisconnect: AccountHandler;
   onOpenWebhooks: () => void;
 };
 
@@ -36,38 +39,29 @@ export type SocialIntegrationCardModel = {
   status: PublicIntegrationStatus | null;
   loading: boolean;
   busy: boolean;
-  onConnect: (
-    status: PublicIntegrationStatus,
-    acceptPolicies?: boolean
-  ) => void;
-  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
-  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
+  onConnect: ConnectHandler;
+  onSync: AccountHandler;
+  onDisconnect: AccountHandler;
+  onRefresh?: () => void;
+  /** The one account whose Reconnect is the bone primary on screen. */
+  primaryReconnectId?: string | null;
 };
 
 export type AccountRowModel = {
   providerStatus: PublicIntegrationStatus;
-  displayName: string;
   account: PublicIntegrationStatus["accounts"][number];
   busy: boolean;
-  onSync: (status: PublicIntegrationStatus, accountId: string) => void;
-  onDisconnect: (status: PublicIntegrationStatus, accountId: string) => void;
+  primaryReconnect: boolean;
+  canStartOAuth: boolean;
+  onSync: AccountHandler;
+  onDisconnect: AccountHandler;
   onReconnect: () => void;
-  canStartOAuth: boolean;
-};
-
-export type ConnectedAccountsModel = {
-  status: PublicIntegrationStatus;
-  displayName: string;
-  busy: boolean;
-  canStartOAuth: boolean;
-  youtubePolicyConsent: boolean;
-  onSync: SocialIntegrationCardModel["onSync"];
-  onDisconnect: SocialIntegrationCardModel["onDisconnect"];
-  onConnect: SocialIntegrationCardModel["onConnect"];
+  /** Null when the provider cannot start another OAuth connection. */
+  onConnectAnother: (() => void) | null;
 };
 
 export type SettingsFormModel = {
-  tab: string;
+  tab: "profile" | "publishing" | "notifications";
   settings: SettingsRecord;
   setSettings: Dispatch<SetStateAction<SettingsRecord>>;
   saving: boolean;

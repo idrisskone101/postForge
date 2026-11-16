@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  AlertCircle,
-  ArrowLeft,
-  Check,
-  Loader2,
-  Trash2,
-  Users,
-  Workflow,
-} from "lucide-react";
 import { GenerateOutputActions } from "@/components/generate-output-actions";
 import {
   AlertDialog,
@@ -21,150 +12,98 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type {
-  JobDetailActions,
-  JobDetailViewModel,
-} from "./job-enhancements";
+import { Button } from "@/components/workbench";
+import { publishPinnedBar } from "@/lib/pinned-bar";
+import { JobIcon } from "./job-icons";
+import type { JobDetailActions, JobDetailViewModel } from "./job-enhancements";
 
-export function JobInspectorFooter({
+export function JobActionDock({
   view,
   actions,
 }: {
   view: JobDetailViewModel;
   actions: JobDetailActions;
 }) {
-  const {
-    job,
-    featured,
-    isCompleted,
-    canDiscard,
-    isRetrying,
-    isDownloading,
-    isDiscarding,
-    feedback,
-  } = view;
-  const {
-    onDownload,
-    onRetry,
-    onSaveToGallery,
-    onUseInClone,
-    onGenerateSimilar,
-    onAddToAutomation,
-    onDiscard,
-    onLeave,
-  } = actions;
-  return (
-    <div className="min-w-0 border-t border-border p-4 pb-[max(16px,env(safe-area-inset-bottom))] [&_[role=alert]]:min-w-0 [&_[role=alert]]:break-words [&_[role=alert]]:[overflow-wrap:anywhere] [&_[role=status]]:min-w-0 [&_[role=status]]:break-words [&_[role=status]]:[overflow-wrap:anywhere] [&_[role=alert]_svg]:shrink-0 [&_[role=status]_svg]:shrink-0">
-      {isCompleted && featured ? (
-        <GenerateOutputActions
-          view={{
-            canDownload: true,
-            isRetrying,
-            isDownloading,
-            showRetry: false,
-            actionError: feedback?.tone === "error" ? feedback.message : null,
-            actionNotice: feedback?.tone === "success" ? feedback.message : null,
-            onDownload,
-            onRetry,
-            onSaveToGallery,
-            onUseInClone: job.type === "image" ? onUseInClone : undefined,
-            onGenerateSimilar,
-            onAddToAutomation,
-          }}
-        />
-      ) : (
-        feedback && (
-          <div
-            role={feedback.tone === "error" ? "alert" : "status"}
-            className={cn(
-              "flex min-w-0 items-start gap-2 rounded-lg px-3 py-2.5 text-[12px] leading-4",
-              feedback.tone === "error"
-                ? "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-                : "bg-[var(--pf-success)]/10 text-[var(--pf-success)]"
-            )}
-          >
-            {feedback.tone === "error" ? (
-              <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-            ) : (
-              <Check className="mt-0.5 size-3.5 shrink-0" />
-            )}
-            <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-              {feedback.message}
-            </span>
-          </div>
-        )
-      )}
+  const { job, featured, isCompleted, isFailed, canDiscard, isRetrying, isDownloading, isDiscarding } = view;
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {featured && job.type === "image" && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onUseInClone}
-            className="pf-button-secondary h-9 text-[12px] xl:hidden"
-          >
-            <Users className="size-3.5 shrink-0" /> Use in Clone
+  return (
+    <div ref={publishPinnedBar} className={DOCK_BAR}>
+      <div
+        role="toolbar"
+        aria-label="Generation actions"
+        className="flex flex-wrap items-center justify-between gap-2 rounded-[28px] bg-raised p-2 shadow-float sm:h-14 sm:flex-nowrap sm:rounded-[var(--pf-radius-pill)] sm:py-0"
+      >
+        {canDiscard ? (
+          <AlertDialog>
+            <AlertDialogTrigger
+              disabled={isDiscarding}
+              render={
+                <button
+                  type="button"
+                  className="wb-btn wb-btn-40 bg-transparent px-4 text-bad hover:bg-bad-tint disabled:text-fg-disabled"
+                />
+              }
+            >
+              {isDiscarding ? "Discarding…" : "Discard"}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Discard this generation?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently removes the job and its generated files. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel variant="secondary">Keep generation</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={actions.onDiscard}>
+                  Discard
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <span aria-hidden="true" />
+        )}
+
+        {isCompleted && featured && (
+          <GenerateOutputActions
+            view={{
+              canDownload: true,
+              isRetrying,
+              isDownloading,
+              showRetry: false,
+              onDownload: actions.onDownload,
+              onRetry: actions.onRetry,
+              onSaveToGallery: actions.onSaveToGallery,
+              onUseInClone: job.type === "image" ? actions.onUseInClone : undefined,
+              onAddToAutomation: actions.onAddToAutomation,
+            }}
+          />
+        )}
+
+        {isFailed && (
+          <Button variant="primary" size={40} onClick={actions.onRetry} disabled={isRetrying}>
+            <JobIcon name="retry" strokeWidth={2} />
+            {isRetrying ? "Retrying…" : "Retry"}
           </Button>
         )}
-        {featured && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onAddToAutomation}
-            className="pf-button-secondary h-9 text-[12px] xl:hidden"
-          >
-            <Workflow className="size-3.5 shrink-0" /> Automate
+
+        {!canDiscard && (
+          <Button variant="outline" size={40} onClick={actions.onLeave}>
+            Leave editor
           </Button>
         )}
       </div>
-
-      {canDiscard ? (
-        <AlertDialog>
-          <AlertDialogTrigger
-            disabled={isDiscarding}
-            render={
-              <button
-                type="button"
-                className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-danger)]/40 text-[12px] font-semibold text-[var(--pf-danger)] transition-colors hover:bg-[var(--pf-danger)]/10 disabled:opacity-50"
-              />
-            }
-          >
-            {isDiscarding ? (
-              <Loader2 className="size-3.5 shrink-0 animate-spin" />
-            ) : (
-              <Trash2 className="size-3.5 shrink-0" />
-            )}
-            Discard generation
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Discard this generation?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This permanently removes the job and its generated files. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Keep generation</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                onClick={onDiscard}
-              >
-                Discard
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      ) : (
-        <button
-          type="button"
-          onClick={onLeave}
-          className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-border text-[12px] font-semibold text-muted-foreground transition-colors hover:bg-[var(--pf-active)]"
-        >
-          <ArrowLeft className="size-3.5" /> Leave editor
-        </button>
-      )}
     </div>
   );
 }
+
+/*
+ * Below 1280 the dock is pinned to the viewport bottom on the page floor, and the page fades out above
+ * it. A window under 680px tall has no room to pin it, so there it stays in flow under the preview.
+ */
+const DOCK_BAR = [
+  "wb-stuck-fade sticky bottom-0 z-20 flex-none bg-floor pb-[max(12px,env(safe-area-inset-bottom))] [--wb-stuck-fade-color:var(--pf-floor)]",
+  "max-xl:order-2 xl:static xl:bg-transparent xl:pb-0",
+  "[@media(max-height:679.98px)]:static [@media(max-height:679.98px)]:pb-0 [@media(max-height:679.98px)]:before:hidden [@media(max-height:679.98px)]:max-xl:order-none",
+].join(" ");

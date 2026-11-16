@@ -226,72 +226,59 @@ const manyAccountsMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(headerMarkup, /Source Selection/);
-assert.match(headerMarkup, /Compare creator posts/);
-assert.match(headerMarkup, /Track Creator/);
-assert.match(headerMarkup, /pf-button-primary/);
-assert.match(headerMarkup, /lg:w-\[31rem\]/);
-assert.doesNotMatch(markup, /Source Selection/);
+assert.match(headerMarkup, /Track creator/);
+assert.match(headerMarkup, /wb-btn-primary/);
+assert.match(headerMarkup, /placeholder="@creator or TikTok profile URL"/);
+assert.match(headerMarkup, /id="inspiration-track-creator"/);
+assert.doesNotMatch(headerMarkup, /Source Selection|sr-only">Source/);
 assert.match(markup, /Preview source from @creator/);
 assert.match(markup, /Use in Clone/);
-assert.match(markup, /pf-card/);
-assert.match(markup, /pf-button-primary/);
-assert.match(markup, /pf-button-secondary/);
-assert.match(markup, /pf-data/);
-assert.match(markup, /pf-section-title/);
-assert.doesNotMatch(markup, /hover:text-\[var\(--pf-orange\)\]/);
-assert.doesNotMatch(markup, /bg-zinc-950/);
+assert.match(markup, /Use again/);
+assert.match(markup, />Restore</);
+assert.match(markup, /Reject source from @creator/);
+assert.match(markup, /Open original source from @creator/);
+assert.match(
+  markup,
+  /href="\/ugc-clone\?sourceUrl=https%3A%2F%2Fwww\.tiktok\.com%2F%40creator%2Fvideo%2F7350000000000000000"/,
+  "Use in Clone hands the TikTok URL to Clone"
+);
+assert.doesNotMatch(
+  markup,
+  /href="\/ugc-clone\?sourceUrl=[^"]*7350000000000000002"/,
+  "a rejected source offers Restore, not Clone"
+);
+assert.match(markup, /wb-panel/);
+assert.match(markup, /wb-tile/);
+assert.match(markup, /class="wb-tile-duration">0:13</);
+assert.match(markup, /aria-label="Used in Clone"/);
+assert.match(markup, /aria-label="Rejected"/);
 assert.match(markup, /Tracked creators/);
-assert.match(markup, /Creator Feed/);
-assert.match(markup, /All tracked creator videos/);
-assert.doesNotMatch(markup, /Find the source worth rebuilding/);
-assert.match(markup, /Refresh all/);
-assert.match(markup, /Source library/);
+assert.match(markup, /All creators/);
+assert.match(markup, /3 posts/);
+assert.match(markup, /Refresh all creators/);
 assert.match(markup, /Search source library/);
 assert.match(markup, /Sort source library/);
-assert.match(markup, /Use compact source grid/);
-assert.match(markup, /data-source-feed-tabs="true"/);
+assert.match(markup, /aria-label="Small tiles"/);
+assert.match(markup, /aria-label="Large tiles"/);
+assert.match(markup, /aria-label="Source usage filter"/);
 assert.match(markup, /data-source-feed-filter="all"/);
 assert.match(markup, /data-source-feed-filter="unused"/);
 assert.match(markup, /data-source-feed-filter="used"/);
 assert.match(markup, /data-source-feed-filter="rejected"/);
-assert.match(markup, /Source usage filter/);
 assert.match(markup, />All</);
 assert.match(markup, />Not used</);
 assert.match(markup, />Used</);
 assert.match(markup, />Rejected</);
-assert.match(markup, /Fresh source options/);
-assert.match(markup, /Already sent to Clone/);
-assert.match(markup, /Won&#x27;t use/);
-assert.match(markup, /Used in Clone/);
-assert.match(markup, /Used as a source/);
-assert.match(markup, /Rejected as a source/);
-assert.match(markup, /Reject/);
-assert.match(markup, /Reject source from @creator/);
-assert.match(markup, /Restore Source/);
-assert.match(markup, /data-creator-list="true"/);
-assert.match(markup, /data-creator-scroll-viewport="true"/);
-assert.match(markup, /size-8 shrink-0 items-center/);
-assert.match(markup, /max-w-full snap-x gap-2 overflow-x-auto overscroll-x-contain/);
-assert.match(markup, /max-w-full overflow-hidden/);
-assert.match(markup, /Refresh @creator/);
-assert.match(markup, /Remove @creator/);
-assert.match(markup, /sr-only">Refresh</);
-assert.match(markup, /sr-only">Remove</);
-assert.match(markup, /size-full object-cover/);
 assert.match(markup, /\/api\/ugc-inspiration\/accounts\/account-1\/avatar/);
-assert.doesNotMatch(markup, /All sources/);
-assert.doesNotMatch(markup, /Recent creator discoveries/);
-assert.doesNotMatch(markup, /Manage creators/);
-assert.doesNotMatch(markup, /New Sources/);
-assert.doesNotMatch(markup, /Tracked Creators/);
-assert.doesNotMatch(markup, /Top Creator/);
-assert.match(markup, />Preview</);
-assert.match(markup, /snap-start/);
-assert.doesNotMatch(markup, /max-h-\[440px\]/);
-assert.doesNotMatch(markup, /overflow-y-auto pr-1/);
+assert.match(markup, /@creator/);
 assert.match(markup, /data-source-preview-frame="portrait"/);
-assert.match(markup, /object-cover/);
+assert.match(markup, /loading="lazy"/);
+assert.doesNotMatch(markup, /Creator Feed|Source library<\/h3>|Fresh posts stay at the front/);
+assert.doesNotMatch(markup, /pf-card|pf-button-|pf-section-title/);
+assert.doesNotMatch(markup, /animate-spin/);
+assert.doesNotMatch(markup, /[\u2013\u2014]/);
+assert.doesNotMatch(markup, /bg-zinc-950/);
+assert.doesNotMatch(markup, /launch-card glass/);
 
 assert.equal(filterVideosBySourceUsage(videos, "all").length, 3);
 assert.equal(filterVideosBySourceUsage(videos, "unused").length, 1);
@@ -301,16 +288,17 @@ assert.equal(filterVideosBySourceUsage(videos, "unused")[0]?.id, "video-1");
 assert.equal(filterVideosBySourceUsage(videos, "used")[0]?.id, "video-2");
 assert.equal(filterVideosBySourceUsage(videos, "rejected")[0]?.id, "video-3");
 
-assert.match(emptyMarkup, /data-workspace-state="empty"/);
-assert.match(emptyMarkup, /Start your discovery board/);
-assert.match(emptyMarkup, /Track Creator/);
+assert.match(emptyMarkup, /wb-empty/);
+assert.match(emptyMarkup, /No creators tracked yet/);
+assert.match(emptyMarkup, /Track creator/);
+assert.match(emptyMarkup, /href="\/ugc-clone"/);
 
 assert.equal(
   (manySourcesMarkup.match(/data-inspiration-video-id=/g) ?? []).length,
   24,
   "the initial source library should stay bounded"
 );
-assert.match(manySourcesMarkup, /Showing 24 of 30 matching sources/);
+assert.match(manySourcesMarkup, /24 \/ 30/);
 assert.match(manySourcesMarkup, /Load 6 more/);
 assert.match(manySourcesMarkup, /data-inspiration-load-more="true"/);
 assert.doesNotMatch(markup, /data-inspiration-load-more-accounts="true"/);
@@ -324,7 +312,4 @@ assert.equal(
 );
 
 assert.doesNotMatch(markup, /<aside/);
-assert.match(markup, /<section class="min-w-0 px-4 py-5/);
-assert.doesNotMatch(markup, /launch-card glass/);
 assert.doesNotMatch(markup, /Manual refresh required/);
-assert.doesNotMatch(markup, /transition-opacity/);

@@ -6,11 +6,10 @@ export function characterSaveAction(input: {
   readyPreviewFingerprint: string | null;
 }): { label: string; title: string | undefined } {
   if (input.saving) return { label: "Saving…", title: undefined };
+  // The preview's status chip is the one place that says a render is running. This button keeps the
+  // name of what it does, disabled, and the title says what it waits for.
   if (input.rendering) {
-    return {
-      label: "Rendering…",
-      title: "Wait for the preview render to finish",
-    };
+    return { label: characterSaveAction({ ...input, rendering: false }).label, title: "Wait for the preview render to finish" };
   }
   if (input.missingEditRecord) return { label: "Unavailable", title: undefined };
   if (input.previewSaveBlocked) {

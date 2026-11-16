@@ -56,7 +56,7 @@ const activity = readFileSync(
   new URL("src/app/(app)/jobs/jobs-activity.tsx", repoRoot),
   "utf8"
 );
-assert.match(activity, /data-jobs-filters="true"/);
+assert.match(activity, /aria-label="Filter jobs by status"/);
 assert.doesNotMatch(activity, /data-bulk/i);
 assert.doesNotMatch(activity, /bulk-bar/i);
 assert.doesNotMatch(activity, /type="checkbox"/i);

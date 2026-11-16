@@ -1,4 +1,5 @@
 import type { ModelDefinition } from "./types";
+import { MODEL_REGISTRY_ADDITIONS } from "./model-registry-additions";
 
 const IMAGE_ASPECT_RATIOS = ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"];
 const VIDEO_ASPECT_RATIOS = ["9:16", "16:9", "1:1"];
@@ -326,4 +327,5 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
     defaults: { aspectRatio: "9:16", duration: 5 },
     limits: { maxDuration: 30, aspectRatios: VIDEO_ASPECT_RATIOS },
   },
+  ...MODEL_REGISTRY_ADDITIONS,
 };

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { AUTOMATION_TEMPLATES } from "@/lib/automations/templates";
+import { AutomationBuilderSkeleton } from "./automation-builder-skeleton";
 import { AutomationPlaybookOverlay } from "./automation-playbook-overlay";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
 import { AutomationBuilderSessionLazy } from "./automation-builder-session-lazy";
+import { handOffPlaybookFirstPaint } from "./playbook-first-paint";
 import { usePlaybookEntry } from "./use-playbook-entry";
 
 export function AutomationBuilderClient({
@@ -26,6 +28,7 @@ export function AutomationBuilderClient({
     initialTemplateId,
     onClose: () => setTemplateOpen(false),
   });
+  useLayoutEffect(handOffPlaybookFirstPaint, []);
 
   if (!templateOpen) {
     return (
@@ -39,14 +42,11 @@ export function AutomationBuilderClient({
     <div
       data-automation-builder="true"
       data-picker-open={templateOpen ? "true" : undefined}
-      className="pf-content-viewport flex flex-col bg-[var(--pf-canvas)]"
+      className="flex min-h-0 flex-1 flex-col gap-3"
     >
-      <header className="flex h-[82px] shrink-0 items-center border-b border-border bg-[var(--pf-active)] px-4 sm:px-6" />
-      <div data-automation-phases="true" className="h-[59px] shrink-0 border-b border-[var(--pf-border)] bg-[var(--pf-surface)]" />
-      <section data-automation-workspace="true" className="grid min-h-0 flex-1 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside data-automation-form="true" />
-        <div data-automation-preview="true" />
-      </section>
+      {/* The builder's header, with the page title, mounts once a playbook is applied. */}
+      <h1 className="sr-only">New automation</h1>
+      <AutomationBuilderSkeleton />
       <AutomationPlaybookOverlay
         picker={playbookPicker}
         selectedTemplate={selectedTemplate}

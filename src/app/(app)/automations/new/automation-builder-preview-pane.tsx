@@ -1,17 +1,14 @@
 "use client";
 
-import { ImageIcon, Minus, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { IconButton } from "@/components/workbench";
 import {
   clampPreviewZoom,
   PREVIEW_ZOOM_MAX,
   PREVIEW_ZOOM_MIN,
   PREVIEW_ZOOM_STEP,
 } from "./automation-builder-preview";
-import {
-  previewOverlayPositionClass,
-  previewSlideOverlayTitle,
-} from "./automation-builder-preview-layout";
+import { previewSlideOverlayTitle } from "./automation-builder-preview-layout";
+import { AutomationBuilderPlanSettings } from "./automation-builder-plan-settings";
 import { AutomationPreviewMedia } from "./automation-preview-media";
 import type { AutomationBuilderWorkspace } from "./use-automation-builder";
 
@@ -22,7 +19,6 @@ export function AutomationBuilderPreviewPane({
 }) {
   const {
     record,
-    setRecord,
     previewSlide,
     setPreviewSlide,
     previewZoom,
@@ -31,137 +27,117 @@ export function AutomationBuilderPreviewPane({
     previewEmptyCopy,
     slideCopy,
   } = workspace;
+  const slideCount = record.content.slideCount;
 
   return (
-    <div
-      data-automation-preview="true"
-      className="hidden min-w-0 flex-col bg-[var(--pf-active)] lg:flex"
-    >
-      <div
-        data-automation-preview-bar="true"
-        className="flex h-12 items-center justify-between border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4"
+    <div data-automation-preview="true" className="flex min-w-0 shrink-0 flex-col gap-3 xl:w-[372px]">
+      <section
+        aria-labelledby="builder-preview-title"
+        className="flex min-h-[380px] flex-1 flex-col gap-3 rounded-xl bg-panel p-5 shadow-panel"
       >
-        <div>
-          <b className="mt-0.5 block text-[11px] text-[var(--pf-ink)]">
-            Slide {previewSlide + 1} of {record.content.slideCount}
-          </b>
-        </div>
-        <div className="flex items-center gap-1 text-[12px] text-[var(--pf-muted)]" aria-label="Preview zoom controls">
-          <button
-            type="button"
-            onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))}
-            disabled={previewZoom === PREVIEW_ZOOM_MIN}
-            aria-label="Zoom preview out"
-            className="grid size-6 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-35"
+        <div className="flex items-center gap-2.5">
+          <h2 id="builder-preview-title" className="wb-panel-title min-w-0 flex-1">
+            Preview
+          </h2>
+          <div
+            className="flex shrink-0 items-center rounded-full bg-raised p-px"
+            role="group"
+            aria-label="Preview zoom controls"
           >
-            <Minus className="size-3" />
-          </button>
-          <output aria-live="polite" className="w-9 text-center tabular-nums text-[var(--pf-ink)]">
-            {previewZoom}%
-          </output>
-          <button
-            type="button"
-            onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))}
-            disabled={previewZoom === PREVIEW_ZOOM_MAX}
-            aria-label="Zoom preview in"
-            className="grid size-6 place-items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] disabled:cursor-not-allowed disabled:opacity-35"
-          >
-            <Plus className="size-3" />
-          </button>
+            <ZoomButton
+              label="Zoom preview out"
+              sign="-"
+              disabled={previewZoom === PREVIEW_ZOOM_MIN}
+              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current - PREVIEW_ZOOM_STEP))}
+            />
+            <output aria-live="polite" className="wb-mono w-9 text-center text-fg-secondary">
+              {previewZoom}%
+            </output>
+            <ZoomButton
+              label="Zoom preview in"
+              sign="+"
+              disabled={previewZoom === PREVIEW_ZOOM_MAX}
+              onClick={() => setPreviewZoom((current) => clampPreviewZoom(current + PREVIEW_ZOOM_STEP))}
+            />
+          </div>
+          <span className="wb-mono text-fg-secondary" aria-live="polite">
+            {previewSlide + 1} / {slideCount}
+          </span>
+          <IconButton
+            icon="chevron-left"
+            size={30}
+            label="Previous slide"
+            disabled={previewSlide === 0}
+            onClick={() => setPreviewSlide((current) => current - 1)}
+          />
+          <IconButton
+            icon="chevron-right"
+            size={30}
+            label="Next slide"
+            disabled={previewSlide >= slideCount - 1}
+            onClick={() => setPreviewSlide((current) => current + 1)}
+          />
         </div>
-      </div>
-      <div
-        data-automation-preview-stage="true"
-        className="grid min-h-[610px] flex-1 place-items-center overflow-auto bg-[#09090B] p-5"
-      >
         <div
-          style={{ width: `${Math.round((320 * previewZoom) / 58)}px` }}
-          className="relative aspect-[9/16] shrink-0 overflow-hidden rounded-[8px] border-[6px] border-[var(--pf-surface)] bg-[#09090B] shadow-[var(--pf-shadow-lg)] transition-[width] duration-150 motion-reduce:transition-none"
+          data-automation-preview-stage="true"
+          className="wb-well relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-3.5"
         >
-          <div className="absolute inset-0 grid place-items-center bg-[var(--pf-active)] p-8 text-center text-[var(--pf-muted)]">
-            <div>
-              <span className="mx-auto grid size-12 place-items-center rounded-full border border-[var(--pf-border)] bg-[var(--pf-surface)]">
-                <ImageIcon className="size-5 text-[var(--pf-muted)]" />
+          <div
+            style={{ width: `${Math.round((160 * previewZoom) / 58)}px` }}
+            className="relative flex aspect-[160/284] shrink-0 flex-col justify-end overflow-hidden rounded-lg bg-media"
+          >
+            {previewAsset && (
+              <AutomationPreviewMedia asset={previewAsset} className="absolute inset-0 size-full object-cover" />
+            )}
+            {previewAsset && (
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-[var(--pf-scrim)]" />
+            )}
+            <div className={previewAsset ? "relative p-3.5 text-[var(--pf-on-media)]" : "relative p-3.5 text-fg"}>
+              <span className="block text-[12px] font-semibold leading-4 opacity-80">
+                {previewSlideOverlayTitle({
+                  previewSlide,
+                  slideCount,
+                  hookStrategy: record.hook.strategy,
+                })}
               </span>
-              <b className="mt-3 block text-[12px] text-[var(--pf-ink)]">No real media preview</b>
-              <p className="mt-1 text-[12px] leading-3 text-[var(--pf-muted)]">{previewEmptyCopy}</p>
+              <b className="block min-w-0 break-words text-[15px] font-bold leading-[19px] [overflow-wrap:anywhere]">
+                {slideCopy[Math.min(previewSlide, slideCopy.length - 1)]}
+              </b>
             </div>
           </div>
-          {previewAsset && (
-            <AutomationPreviewMedia asset={previewAsset} className="absolute inset-0 size-full object-cover" />
-          )}
-          {previewAsset && (
-            <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/55" />
-          )}
-          {previewAsset && (
-            <span className="absolute left-3 top-3 z-20 max-w-[calc(100%-24px)] truncate rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white">
-              {previewAsset.origin} · {previewAsset.name}
-            </span>
-          )}
-          <div
-            className={cn(
-              "absolute inset-x-5 z-20 min-w-0 break-words text-center [overflow-wrap:anywhere]",
-              previewOverlayPositionClass(Boolean(previewAsset), previewSlide, record.content.slideCount)
-            )}
-          >
-            <span className="block text-[13px] font-semibold uppercase tracking-[.09em]">
-              {previewSlideOverlayTitle({
-                previewSlide,
-                slideCount: record.content.slideCount,
-                hookStrategy: record.hook.strategy,
-              })}
-            </span>
-            <b className="mt-1 block min-w-0 break-words font-serif text-[20px] italic leading-tight [overflow-wrap:anywhere]">
-              {slideCopy[Math.min(previewSlide, slideCopy.length - 1)]}
-            </b>
-          </div>
-          <span className="absolute bottom-2 right-2 z-20 rounded-full bg-black/70 px-2 py-1 text-[12px] text-white">
-            {previewSlide + 1} / {record.content.slideCount}
-          </span>
         </div>
-      </div>
-      <div
-        data-automation-preview-strip="true"
-        className="flex h-24 gap-2 overflow-x-auto border-t border-[var(--pf-border)] bg-[var(--pf-surface)] p-3"
-      >
-        {Array.from({ length: record.content.slideCount }, (_, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => setPreviewSlide(index)}
-            aria-label={`Preview slide ${index + 1}`}
-            aria-pressed={previewSlide === index}
-            className={cn(
-              "relative aspect-[9/16] h-16 shrink-0 overflow-hidden rounded-[8px] border-2 bg-[var(--pf-active)]",
-              previewSlide === index ? "border-[var(--pf-orange)]" : "border-transparent"
-            )}
-          >
-            {previewAsset?.kind === "image" ? (
-              <AutomationPreviewMedia asset={previewAsset} className="size-full object-cover" />
-            ) : (
-              <span className="absolute inset-0 grid place-items-center text-[var(--pf-muted)]">
-                <ImageIcon className="size-3" />
-              </span>
-            )}
-            <span className="absolute bottom-1 right-1 grid size-3 place-items-center rounded-full bg-black/70 text-[11px] text-white">
-              {index + 1}
-            </span>
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() =>
-            setRecord((current) => ({
-              ...current,
-              content: { ...current.content, slideCount: Math.min(9, current.content.slideCount + 1) },
-            }))
-          }
-          className="flex aspect-[9/16] h-16 shrink-0 flex-col items-center justify-center gap-1 rounded-[8px] border border-dashed border-[var(--pf-border-strong)] text-[var(--pf-muted)]"
-        >
-          <Plus className="size-3" />
-          <span className="text-[11px]">Add</span>
-        </button>
-      </div>
+        {!previewAsset && previewEmptyCopy ? (
+          <p role="status" className="wb-meta min-w-0 break-words [overflow-wrap:anywhere]">
+            {previewEmptyCopy}
+          </p>
+        ) : null}
+      </section>
+      <AutomationBuilderPlanSettings workspace={workspace} />
     </div>
+  );
+}
+
+function ZoomButton({
+  label,
+  sign,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  sign: "+" | "-";
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="wb-hit grid size-7 place-items-center rounded-full text-[15px] font-semibold leading-none text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong disabled:text-fg-disabled"
+    >
+      {sign === "+" ? "+" : "−"}
+    </button>
   );
 }

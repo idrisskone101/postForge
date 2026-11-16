@@ -1,16 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Clipboard,
-  Dices,
-  Loader2,
-  Save,
-  Upload,
-} from "lucide-react";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { CharactersPaintText } from "../characters-paint-text";
+import { useEffect, useRef, type RefObject } from "react";
+import { Button, Icon, PageHeader } from "@/components/workbench";
 import type { CharacterBuilderHeaderViewModel } from "./types";
 
 export function CharacterBuilderHeader({
@@ -19,128 +10,132 @@ export function CharacterBuilderHeader({
   view: CharacterBuilderHeaderViewModel;
 }) {
   const {
-    editId,
-    name,
     saving,
     rendering,
     missingEditRecord,
     previewSaveBlocked,
-    onNameChange,
     randomizeAndRender,
-    onImport,
-    copyAttributes,
     saveCharacter,
     saveAction,
   } = view;
-  const paintReady = useWindowLoadReady();
-  const title = editId ? "Edit character" : "Character builder";
-  const randomizeLabel = rendering ? "Rendering…" : "Randomize & render";
+  const wideName = useRef<HTMLInputElement>(null);
+  const narrowName = useRef<HTMLInputElement>(null);
+  useNameFocusAcrossBreakpoint(wideName, narrowName);
 
   return (
-    <header
-      data-character-workbench-header={paintReady ? undefined : "true"}
-      className="flex flex-col gap-3 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-4 py-3 min-[1280px]:col-span-3 min-[1280px]:row-start-1 min-[1280px]:h-16 min-[1280px]:flex-row min-[1280px]:items-center min-[1280px]:gap-4 min-[1280px]:py-2"
+    <PageHeader
+      className={HEADER_CLASS}
+      back={{ href: "/characters", label: "Characters", labelled: true }}
+      title={<NameField view={view} inputRef={wideName} />}
     >
-      <div className="flex min-w-0 items-center gap-2 min-[1280px]:w-[184px] min-[1280px]:shrink-0">
-        <Link
-          href="/characters"
-          aria-label="Back to characters"
-          className="grid size-8 shrink-0 place-items-center rounded-[8px] border border-[var(--pf-border)] text-[var(--pf-ink)] hover:bg-[var(--pf-active)]"
-        >
-          <ArrowLeft className="size-4" />
-        </Link>
-        <div className="min-w-0">
-          <CharactersPaintText
-            ready={paintReady}
-            liveAs="span"
-            liveClassName="text-[13px] font-semibold text-[var(--pf-ink)] [overflow-wrap:anywhere]"
-            paint={
-              <h1 data-character-title={title}>
-                <span className="sr-only">{title}</span>
-              </h1>
-            }
-          >
-            {title}
-          </CharactersPaintText>
-        </div>
-      </div>
-
-      <label
-        className="min-w-0 min-[1280px]:max-w-[300px] min-[1280px]:flex-1"
-        style={paintReady ? undefined : { height: 36, overflow: "hidden" }}
-      >
-        <span className="sr-only">Character name</span>
-        <input
-          value={name}
-          onChange={(event) => onNameChange(event.target.value)}
-          aria-label="Character name"
-          className="h-9 w-full rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-canvas)] px-3 text-[11px] font-medium text-[var(--pf-ink)] outline-none transition focus:border-[var(--pf-orange)] focus:ring-2 focus:ring-[var(--pf-orange)]/15"
-          placeholder="Add character name…"
-        />
-      </label>
-
-      <div
-        className={
-          paintReady
-            ? "flex min-w-0 flex-wrap gap-2 min-[1280px]:ml-auto min-[1280px]:flex-nowrap"
-            : "flex min-w-0 flex-nowrap gap-2 min-[1280px]:ml-auto"
-        }
-        style={paintReady ? undefined : { height: 36, overflow: "hidden" }}
-      >
-        <button
-          type="button"
+      {/* Below 1024 the cost line under the preview is off screen when this button is in reach, so
+          the cost is stated under the button. On a phone the button is an icon, so it takes a row. */}
+      <div className="flex flex-col items-start gap-1 max-sm:contents">
+        <Button
+          variant="strong"
+          size={40}
           onClick={randomizeAndRender}
           disabled={saving || rendering}
-          aria-describedby="character-preview-generation-cost"
+          aria-label="Randomize & render"
+          aria-describedby="character-randomize-cost"
           title="Uses one paid image generation"
-          data-character-action={paintReady ? undefined : randomizeLabel}
-          className="pf-button-secondary h-9 disabled:cursor-not-allowed disabled:opacity-45"
+          className="max-sm:w-10 max-sm:px-0"
         >
-          {rendering ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Dices className="size-3.5" />
-          )}
-          <CharacterActionLabel ready={paintReady} label={randomizeLabel} />
-        </button>
-        <button
-          type="button"
-          onClick={onImport}
-          aria-label="Import prompt or JSON"
-          data-character-action={paintReady ? undefined : "Import"}
-          className="pf-button-secondary h-9"
+          <Icon name="shuffle" />
+          <span className="max-sm:hidden">Randomize & render</span>
+        </Button>
+        <p
+          id="character-randomize-cost"
+          className="text-xs leading-4 text-fg-muted lg:hidden max-sm:col-span-full max-sm:row-start-3"
         >
-          <Upload className="size-3.5" />
-          <CharacterActionLabel ready={paintReady} label="Import" />
-        </button>
-        <button
-          type="button"
-          onClick={copyAttributes}
-          aria-label="Copy attributes JSON"
-          data-character-action={paintReady ? undefined : "Copy JSON"}
-          className="pf-button-secondary h-9"
-        >
-          <Clipboard className="size-3.5" />
-          <CharacterActionLabel ready={paintReady} label="Copy JSON" />
-        </button>
-        <button
-          type="button"
-          onClick={saveCharacter}
-          disabled={saving || rendering || missingEditRecord || previewSaveBlocked}
-          aria-label="Save character"
-          title={saveAction.title}
-          data-character-action={paintReady ? undefined : saveAction.label}
-          className="pf-button-primary h-9 shrink-0 px-4 disabled:cursor-not-allowed disabled:opacity-45"
-        >
-          <Save className="size-3.5" />
-          <CharacterActionLabel ready={paintReady} label={saveAction.label} />
-        </button>
+          Randomize & render, the shuffle button, uses one paid image generation.
+        </p>
       </div>
-    </header>
+      <Button
+        variant="primary"
+        size={40}
+        className="px-5 max-sm:px-[18px]"
+        onClick={saveCharacter}
+        disabled={saving || rendering || missingEditRecord || previewSaveBlocked}
+        title={saveAction.title}
+      >
+        {saveAction.label === "Save" ? "Save character" : saveAction.label}
+      </Button>
+      <h1 className="col-span-full row-start-2 min-w-0 sm:hidden">
+        <NameField view={view} inputRef={narrowName} />
+      </h1>
+    </PageHeader>
   );
 }
 
-function CharacterActionLabel({ ready, label }: { ready: boolean; label: string }) {
-  if (!ready) return <span className="sr-only">{label}</span>;
-  return <span>{label}</span>;
+function NameField({
+  view,
+  inputRef,
+}: {
+  view: CharacterBuilderHeaderViewModel;
+  inputRef: NameRef;
+}) {
+  return (
+    <input
+      ref={inputRef}
+      value={view.name}
+      onChange={(event) => view.onNameChange(event.target.value)}
+      aria-label="Character name"
+      aria-invalid={view.nameInvalid || undefined}
+      placeholder="Add character name…"
+      className="wb-input h-12 w-[340px] max-w-full text-2xl font-bold leading-[30px] tracking-[-0.02em] max-sm:w-full max-sm:text-[22px]"
+    />
+  );
 }
+
+const NARROW_HEADER = "(max-width: 639.98px)";
+
+/**
+ * The name field is drawn twice and each width shows one. Crossing 640px hides the one that is being
+ * typed in, so focus and the caret move to its twin instead of dropping to the page.
+ */
+function useNameFocusAcrossBreakpoint(wide: NameRef, narrow: NameRef) {
+  useEffect(() => watchNameFocus(wide, narrow), [wide, narrow]);
+}
+
+type NameRef = RefObject<HTMLInputElement | null>;
+
+function watchNameFocus(wide: NameRef, narrow: NameRef) {
+  const query = window.matchMedia(NARROW_HEADER);
+  const onChange = () => {
+    const hidden = query.matches ? wide.current : narrow.current;
+    const shown = query.matches ? narrow.current : wide.current;
+    if (!hidden || !shown || nameFocus.owner !== hidden) return;
+    shown.focus({ preventScroll: true });
+    shown.setSelectionRange(hidden.selectionStart, hidden.selectionEnd);
+  };
+  const onFocusIn = (event: FocusEvent) => {
+    const target = event.target;
+    nameFocus.owner = target === wide.current || target === narrow.current ? target : null;
+  };
+  query.addEventListener("change", onChange);
+  document.addEventListener("focusin", onFocusIn);
+  return () => {
+    query.removeEventListener("change", onChange);
+    document.removeEventListener("focusin", onFocusIn);
+    nameFocus.owner = null;
+  };
+}
+
+/** The name field that last took focus, if nothing else has taken it since. A hidden field gets no blur. */
+const nameFocus: { owner: EventTarget | null } = { owner: null };
+
+/*
+ * Below 640px the header is Paper's two rows ("17 Character builder / 390"): the back pill with the
+ * randomize icon button and the save action, then the name field across the full width. The name
+ * field is rendered twice, once in the title and once after the actions, and each width shows one,
+ * so the Tab order matches the drawn order at every width.
+ */
+const HEADER_CLASS = [
+  "gap-y-3 pr-1 [&_.wb-page-header-lead]:gap-2 [&_.wb-page-title]:overflow-visible [&_.wb-page-title]:p-0.5",
+  "max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto_auto] max-sm:items-center max-sm:gap-x-2 max-sm:gap-y-2.5",
+  "[&_.wb-page-header-lead]:max-sm:contents [&_.wb-back-pill]:max-sm:justify-self-start",
+  "[&_.wb-page-title]:max-sm:hidden [&_.wb-page-actions]:max-sm:contents",
+  // The cost note under Randomize makes that group taller below 1024, so the buttons align by their tops.
+  "sm:max-lg:[&_.wb-page-actions]:items-start",
+].join(" ");

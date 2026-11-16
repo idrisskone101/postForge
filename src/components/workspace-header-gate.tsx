@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { buttonClass } from "@/components/workbench/button";
+import { Icon } from "@/components/workbench/icon";
+import { PageHeader, type PageHeaderStack } from "@/components/workbench/page-header";
 import {
+  routeHeaderStackBelow,
   routeOwnsHeader,
   routeProvidesHeaderAccessory,
 } from "@/lib/workspace-header-route";
+import { cn } from "@/lib/utils";
 import {
   getActiveWorkspaceItem,
-  workspaceNavigationGroups,
   type WorkspaceNavigationItem,
 } from "@/lib/workspace-navigation";
 
@@ -21,64 +23,55 @@ export function WorkspaceHeaderGate({
 }) {
   const pathname = usePathname() || serverPathname;
   if (routeOwnsHeader(pathname)) return null;
-  const activeItem =
-    getActiveWorkspaceItem(pathname) ?? workspaceNavigationGroups.primary[0];
+  const activeItem = getActiveWorkspaceItem(pathname);
+  // A path under no navigation item is not a page of the app. The not-found page below names itself,
+  // so a header here would say "Page not found" twice.
+  if (!activeItem) return null;
   return (
     <WorkspaceRouteHeader
       activeItem={activeItem}
       hasAccessory={routeProvidesHeaderAccessory(pathname)}
+      stackBelow={routeHeaderStackBelow(pathname)}
     />
   );
 }
 
+/**
+ * Shared page header: the title only. Routes that pass controls through
+ * WorkspaceHeaderAccessory own the actions slot; otherwise the slot holds the
+ * route's one primary action when the design gives it one.
+ */
 export function WorkspaceRouteHeader({
   activeItem,
   hasAccessory = false,
+  stackBelow,
 }: {
   activeItem: WorkspaceNavigationItem;
   hasAccessory?: boolean;
+  stackBelow?: PageHeaderStack;
 }) {
+  const primaryAction = hasAccessory ? undefined : activeItem.primaryAction;
   return (
-    <div
-      id="workspace-header"
-      className="border-b border-[var(--pf-border)] bg-[var(--pf-canvas)]"
-    >
-      <div
-        id="workspace-header-grid"
-        data-header-accessory={hasAccessory ? "true" : "false"}
-        className={cn(
-          "grid min-h-[120px] gap-4 px-5 pb-6 pt-6 sm:px-7 lg:items-end lg:px-8 lg:grid-cols-[minmax(0,1fr)_auto]"
-        )}
-      >
-        <div className="min-w-0">
-          <h1 data-workspace-title={activeItem.label}>
-            <span className="sr-only">{activeItem.label}</span>
-          </h1>
-          <p data-header-copy={activeItem.description}>
-            <span className="sr-only">{activeItem.description}</span>
-          </p>
-        </div>
-
-        <div
+    <PageHeader id="workspace-header" title={activeItem.label} stackBelow={stackBelow}>
+      <div id="workspace-header-accessory" />
+      {primaryAction && (
+        <Link
+          id="workspace-header-default-action"
+          href={primaryAction.href}
+          aria-label={primaryAction.iconOnlyOnPhone ? primaryAction.label : undefined}
           className={cn(
-            "min-w-0 lg:justify-self-end",
-            hasAccessory && "min-h-9"
+            buttonClass("primary", 40),
+            primaryAction.iconOnlyOnPhone && "max-sm:w-10 max-sm:px-0"
           )}
         >
-          <div id="workspace-header-accessory" />
-          {!hasAccessory && (
-            <Link
-              id="workspace-header-default-action"
-              href={activeItem.primaryAction.href}
-              data-header-action={activeItem.primaryAction.label}
-              className="pf-button-primary w-fit"
-            >
-              <span className="sr-only">{activeItem.primaryAction.label}</span>
-              <ArrowRight className="size-3.5" />
-            </Link>
+          <Icon name={primaryAction.icon} strokeWidth={2} />
+          {primaryAction.iconOnlyOnPhone ? (
+            <span className="max-sm:hidden">{primaryAction.label}</span>
+          ) : (
+            primaryAction.label
           )}
-        </div>
-      </div>
-    </div>
+        </Link>
+      )}
+    </PageHeader>
   );
 }

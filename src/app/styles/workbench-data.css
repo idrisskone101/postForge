@@ -1,0 +1,825 @@
+/*
+ * Workbench primitives: status, counts, stats, meters, media tiles, rows.
+ * Dimensions are taken from the Paper route artboards (Home, Jobs, Gallery,
+ * Automation builder, Settings).
+ */
+@layer components {
+  /* 22px round icon badge: ok check, warn clock, bad x, neutral clock */
+  .wb-status-badge {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    color: var(--pf-text-secondary);
+  }
+
+  .wb-status-badge > svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Worded chip for real states such as "Reconnect required" */
+  .wb-status-chip {
+    display: inline-flex;
+    height: 24px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    padding-inline: 10px;
+    color: var(--pf-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+  }
+
+  .wb-status-chip:has(> svg) {
+    padding-left: 8px;
+  }
+
+  .wb-status-chip > svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wb-count {
+    display: inline-flex;
+    min-width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised-strong);
+    padding-inline: 6px;
+    color: var(--pf-text);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :is(.wb-status-badge, .wb-status-chip, .wb-count)[data-tone="ok"] {
+    background: var(--pf-ok-tint);
+    color: var(--pf-ok);
+  }
+
+  :is(.wb-status-badge, .wb-status-chip, .wb-count)[data-tone="warn"] {
+    background: var(--pf-warn-tint);
+    color: var(--pf-warn);
+  }
+
+  :is(.wb-status-badge, .wb-status-chip, .wb-count)[data-tone="bad"] {
+    background: var(--pf-bad-tint);
+    color: var(--pf-bad);
+  }
+
+  :is(.wb-status-badge, .wb-status-chip)[data-tone="live"] {
+    background: var(--pf-ember-wash);
+    color: var(--pf-ember-text);
+  }
+
+  /* The frame around the canvas copy block whose field has focus. Its box comes from the overlay renderer. */
+  .wb-copy-frame {
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: 0 0 0 0 var(--pf-ember);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      box-shadow var(--pf-dur-feedback) var(--pf-ease),
+      opacity var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-copy-frame[data-active] {
+    box-shadow: 0 0 0 2px var(--pf-ember);
+    opacity: 1;
+  }
+
+  .wb-live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-ember);
+    box-shadow: 0 0 0 4px var(--pf-ember-wash);
+  }
+
+  /* Stat strip: stats in one panel split by hairlines */
+  .wb-stat-strip {
+    display: flex;
+    min-width: 0;
+    border-radius: var(--pf-radius-panel);
+    background: var(--pf-panel);
+    box-shadow: var(--pf-panel-shadow);
+    padding: 20px 24px;
+  }
+
+  .wb-stat {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 0%;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 1px solid var(--pf-hairline);
+    padding-inline: 24px;
+  }
+
+  .wb-stat:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .wb-stat:last-child {
+    padding-right: 0;
+  }
+
+  .wb-stat-value {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    color: var(--pf-text);
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 40px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wb-stat-foot {
+    display: flex;
+    min-height: 16px;
+    align-items: center;
+    gap: 8px;
+    color: var(--pf-text-secondary);
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  /* Meter: thin 4px bar */
+  .wb-meter {
+    display: flex;
+    min-width: 0;
+    height: 4px;
+    flex: 1 1 0%;
+    overflow: hidden;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-track);
+    box-shadow: inset 0 0 0 1px var(--pf-track-edge);
+  }
+
+  .wb-meter-fill {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-chart-1);
+    width: 100%;
+    transform-origin: left center;
+    transition: transform var(--pf-dur-enter) var(--pf-ease);
+  }
+
+  .wb-meter[data-tone="ember"] > .wb-meter-fill,
+  .wb-meter[data-running="true"] > .wb-meter-fill {
+    background: var(--pf-ember);
+  }
+
+  .wb-meter[data-tone="ok"] > .wb-meter-fill {
+    background: var(--pf-ok);
+  }
+
+  .wb-meter[data-tone="bad"] > .wb-meter-fill {
+    background: var(--pf-bad);
+  }
+
+  .wb-meter[data-tone="warn"] > .wb-meter-fill {
+    background: var(--pf-warn);
+  }
+
+  /* The one loop in the product: an ember highlight sweeping a running bar */
+  .wb-meter[data-running="true"] > .wb-meter-fill::after {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--pf-ember-sweep), transparent);
+    content: "";
+    animation: wb-sweep 1.6s linear infinite;
+  }
+
+  .wb-meter-split,
+  .wb-meter-segments {
+    display: flex;
+    min-width: 0;
+    height: 4px;
+    flex: 1 1 0%;
+    gap: 2px;
+  }
+
+  .wb-meter-split > span,
+  .wb-meter-segments > span {
+    height: 100%;
+    min-width: 2px;
+    flex: 1 1 0%;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-track);
+  }
+
+  :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="ok"] {
+    background: var(--pf-ok);
+  }
+
+  :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="bad"] {
+    background: var(--pf-bad);
+  }
+
+  :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="warn"] {
+    background: var(--pf-warn);
+  }
+
+  :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="ember"] {
+    background: var(--pf-ember);
+  }
+
+  :is(.wb-meter-split, .wb-meter-segments) > span[data-tone="neutral"] {
+    background: var(--pf-chart-1);
+  }
+
+  /* Step rail */
+  .wb-step-rail {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* A step rail that may scroll sideways: 6px of room all round keeps each step's focus ring whole. */
+  .wb-step-scroll {
+    margin: -6px;
+    overflow-x: auto;
+    padding: 6px;
+    scrollbar-width: none;
+  }
+
+  /* On touch the room is 7px, the reach of a 44px hit area past a 30px step, so the areas add no
+     scroll range in either axis. */
+  @media (pointer: coarse) {
+    .wb-step-scroll {
+      margin: -7px;
+      padding: 7px;
+    }
+  }
+
+  .wb-step {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--pf-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  button.wb-step {
+    cursor: pointer;
+  }
+
+  .wb-step-dot {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-pill);
+    box-shadow: inset 0 0 0 1.5px var(--pf-hairline);
+    color: var(--pf-text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16px;
+    transition:
+      box-shadow var(--pf-dur-state) var(--pf-ease),
+      background-color var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .wb-step-dot > svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wb-step[data-state="current"] {
+    color: var(--pf-text);
+    font-weight: 700;
+  }
+
+  .wb-step[data-state="current"] > .wb-step-dot {
+    box-shadow: inset 0 0 0 2px var(--pf-ember);
+    color: var(--pf-ember-text);
+  }
+
+  .wb-step[data-state="done"] {
+    color: var(--pf-text);
+    font-weight: 600;
+  }
+
+  .wb-step[data-state="done"] > .wb-step-dot {
+    background: var(--pf-strong);
+    box-shadow: none;
+    color: var(--pf-strong-fg);
+  }
+
+  .wb-step-line {
+    height: 2px;
+    min-width: 12px;
+    flex: 1 1 0%;
+    border-radius: 2px;
+    background: var(--pf-hairline);
+  }
+
+  /* Media tile: 12px radius, ember selection ring, the image never zooms */
+  .wb-tile-cell {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wb-tile {
+    position: relative;
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-media);
+    box-shadow:
+      0 0 0 0 var(--pf-panel),
+      0 0 0 0 var(--pf-ember);
+    transition: box-shadow var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-tile > :is(img, video) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Loading motion for media: the image sits invisible on its media-coloured box and cross-fades in
+     once it has loaded. `data-loaded` is absent until React owns the element, so the delayed
+     animation shows media when scripts are slow or never run; `shown` keeps that animation when
+     React arrives after it. */
+  @media (prefers-reduced-motion: no-preference) {
+    .wb-media-reveal {
+      opacity: 0;
+    }
+
+    .wb-media-reveal:not([data-loaded]),
+    .wb-media-reveal[data-loaded="shown"] {
+      animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) 1s both;
+    }
+
+    /* A keyframe animation that keeps filling, not a transition: Chrome reports a transitioned image
+       as the largest contentful paint when the transition ends, and does not report this one. Its own
+       name makes it start from 0 when it replaces the fallback above. */
+    .wb-media-reveal[data-loaded="true"] {
+      animation: wb-media-reveal var(--pf-dur-state) var(--pf-ease) both;
+    }
+
+    /* Mounted by the browser with the file already decoded: nothing to wait for, so nothing fades. */
+    .wb-media-reveal[data-loaded="cached"] {
+      opacity: 1;
+    }
+  }
+
+  .wb-tile[data-selected="true"] {
+    box-shadow:
+      0 0 0 2px var(--pf-panel),
+      0 0 0 4px var(--pf-ember);
+  }
+
+  .wb-tile-check {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--pf-on-media);
+    border-radius: var(--pf-radius-pill);
+    background: rgb(22 22 22 / 0.28);
+    color: transparent;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+    transition: opacity var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-tile-check > svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .wb-tile:hover > .wb-tile-check,
+  .wb-tile:has(:focus-visible) > .wb-tile-check {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .wb-tile[data-selected="true"] > .wb-tile-check {
+    border-color: transparent;
+    background: var(--pf-ember);
+    color: var(--pf-on-ember);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .wb-tile[data-selected="true"] > .wb-tile-check > svg {
+    animation: wb-check-in var(--pf-dur-feedback) var(--pf-ease) both;
+  }
+
+  .wb-tile-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+  }
+
+  .wb-tile-duration {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 1;
+    display: inline-flex;
+    height: 20px;
+    align-items: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-scrim);
+    padding-inline: 7px;
+    color: var(--pf-on-media);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 14px;
+    transition: opacity var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-tile-actions {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 2;
+    display: flex;
+    gap: 6px;
+    background: linear-gradient(180deg, transparent, rgb(22 22 22 / 0.7));
+    padding: 40px 8px 8px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition:
+      opacity var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-tile:hover > .wb-tile-actions,
+  .wb-tile:has(:focus-visible) > .wb-tile-actions {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Touch has no hover: the check stays visible at 28px, the action row is not drawn (a tap on the media
+     opens the preview, which carries the secondary actions). A row that is the only way to its action opts
+     back in with "keep"; "primary" keeps the first action alone as one 40px pill (Paper "08 Gallery / 390"). */
+  @media (hover: none) {
+    .wb-tile > .wb-tile-check {
+      width: 28px;
+      height: 28px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .wb-tile > .wb-tile-check > svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .wb-tile > .wb-tile-actions {
+      display: none;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch] {
+      display: flex;
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="keep"] ~ .wb-tile-duration {
+      bottom: 46px;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] {
+      background: none;
+      padding-top: 0;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] > .wb-tile-action {
+      height: 40px;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] > .wb-tile-action:not(:first-child) {
+      display: none;
+    }
+
+    .wb-tile > .wb-tile-actions[data-touch="primary"] ~ .wb-tile-duration {
+      bottom: 56px;
+    }
+  }
+
+  @media (hover: hover) {
+    .wb-tile:hover > .wb-tile-actions ~ .wb-tile-duration,
+    .wb-tile:has(:focus-visible) > .wb-tile-actions ~ .wb-tile-duration {
+      opacity: 0;
+    }
+  }
+
+  .wb-tile-action {
+    display: inline-flex;
+    height: 30px;
+    min-width: 0;
+    flex: 1 1 0%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: rgb(255 255 255 / 0.24);
+    color: var(--pf-on-media);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .wb-tile-action:first-child {
+    background: var(--pf-media-action);
+    color: var(--pf-media-action-fg);
+  }
+
+  /* A first action that is not the tile's primary (Remove): dark translucent, never bone. */
+  .wb-tile-action[data-tone="neutral"] {
+    background: var(--pf-scrim);
+    color: var(--pf-on-media);
+  }
+
+  .wb-tile-title {
+    overflow: hidden;
+    color: var(--pf-text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Product copy (kind, model, date): it takes a second line where the tile is narrow, never an ellipsis */
+  .wb-tile-meta {
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    line-height: 16px;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  .wb-thumb {
+    display: block;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-media);
+    object-fit: cover;
+  }
+
+  /* Key-value rows: inspector lists split by hairlines */
+  .wb-kv {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .wb-kv-row {
+    display: flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--pf-hairline);
+  }
+
+  .wb-kv-row:first-child {
+    border-top: 0;
+  }
+
+  .wb-kv-row > dt {
+    flex-shrink: 0;
+    color: var(--pf-text-muted);
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  /* The value clips long text, so it carries 4px of ring room for a link or button inside it. */
+  .wb-kv-row > dd {
+    min-width: 0;
+    margin: -4px;
+    overflow: hidden;
+    padding: 4px;
+    color: var(--pf-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wb-kv-row > dd[data-mono="true"] {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  /* Dense table: filled header bar, 60px hairline rows */
+  .wb-table-head {
+    display: flex;
+    height: 36px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 16px;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    padding-inline: 12px;
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .wb-row {
+    display: flex;
+    min-height: 60px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--pf-hairline);
+    padding-inline: 12px;
+  }
+
+  .wb-row:last-child {
+    border-bottom: 0;
+  }
+
+  .wb-row-title {
+    overflow: hidden;
+    color: var(--pf-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Product meta under a row title wraps rather than ending in an ellipsis (No Orphan Rule). */
+  .wb-row-sub {
+    color: var(--pf-text-muted);
+    font-size: 13px;
+    line-height: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  .wb-row-sub[data-tone="bad"] {
+    color: var(--pf-bad);
+  }
+
+  /* Empty state: dashed 12px tile, fades in once */
+  .wb-empty {
+    display: flex;
+    min-width: 0;
+    min-height: 200px;
+    flex: 1 1 0%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1.5px dashed var(--pf-outline);
+    border-radius: var(--pf-radius-tile);
+    padding: 20px;
+    text-align: center;
+    animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  .wb-empty[data-tone="error"] {
+    border-color: color-mix(in srgb, var(--pf-bad) 50%, transparent);
+  }
+
+  .wb-empty-icon {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    color: var(--pf-text);
+  }
+
+  .wb-empty-icon > svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .wb-empty[data-tone="error"] .wb-empty-icon {
+    background: var(--pf-bad-tint);
+    color: var(--pf-bad);
+  }
+
+  .wb-empty-title,
+  .wb-empty-copy {
+    text-wrap: balance;
+  }
+
+  .wb-empty-title {
+    max-width: 44ch;
+    color: var(--pf-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+
+  .wb-empty-copy {
+    max-width: 52ch;
+    color: var(--pf-text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .wb-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Skeleton: static, no shimmer */
+  .wb-skeleton {
+    display: block;
+    height: 10px;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+  }
+
+  .wb-skeleton[data-shape="tile"] {
+    height: auto;
+    border-radius: var(--pf-radius-tile);
+  }
+
+  .wb-skeleton[data-shape="panel"] {
+    height: auto;
+    border-radius: var(--pf-radius-panel);
+    background: var(--pf-panel);
+    box-shadow: var(--pf-panel-shadow);
+  }
+}
+
+@layer components {
+  /* Step rail at the 28px size drawn on 04 Clone: wider gap, 1px upcoming ring, 600 numerals */
+  .wb-step-rail[data-size="28"] {
+    gap: 14px;
+  }
+
+  .wb-step-rail[data-size="28"] .wb-step-dot {
+    width: 28px;
+    height: 28px;
+  }
+
+  .wb-step-rail[data-size="28"] .wb-step[data-state="upcoming"] > .wb-step-dot {
+    box-shadow: inset 0 0 0 1px var(--pf-hairline);
+    font-weight: 600;
+  }
+}

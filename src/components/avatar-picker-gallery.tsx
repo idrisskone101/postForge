@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Image as ImageIcon, Loader2 } from "lucide-react";
 import { apiGet, apiPost } from "@/lib/api/client";
 import type {
   Avatar,
@@ -9,7 +8,9 @@ import type {
   AvatarGalleryFile,
 } from "@/lib/avatar-picker-model";
 import { userErrorMessage } from "@/lib/user-error-message";
+import { EmptyState, Skeleton } from "@/components/workbench";
 import { AvatarActionErrorNotice } from "@/components/avatar-picker-cards";
+import { AvatarPickerModeHead } from "@/components/avatar-picker-mode-head";
 
 export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff }) {
   const { onCreated, onBack } = handoff;
@@ -58,61 +59,60 @@ export function AvatarGalleryPanel({ handoff }: { handoff: AvatarCreatedHandoff 
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-w-0 flex-col gap-4">
+      <AvatarPickerModeHead title="Pick from gallery" onBack={onBack} />
       {actionError && (
         <AvatarActionErrorNotice
           message={actionError}
           onDismiss={() => setActionError(null)}
         />
       )}
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="size-4" />
-        Back to avatars
-      </button>
 
       {isLoadingGallery ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div aria-busy="true" aria-label="Loading gallery images" className={GALLERY_GRID}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-2xl bg-muted animate-pulse" />
+            <Skeleton key={i} shape="tile" className="aspect-[3/4]" />
           ))}
         </div>
       ) : galleryFiles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-          <ImageIcon className="size-8 mb-2" />
-          <p className="text-sm">No generated images yet</p>
-          <p className="text-xs mt-1">Generate some images first, then pick them here</p>
-        </div>
+        <EmptyState icon="gallery" title="No generated images yet" className={EMPTY_TILE} />
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {galleryFiles.map((file) => (
-            <button
-              key={file.id}
-              type="button"
-              onClick={() => handlePickFromGallery(file.id)}
-              disabled={savingFileId === file.id}
-              className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-border transition-all hover:border-accent-green/50"
-            >
-              <img
-                src={`/api/files/${file.id}`}
-                alt={file.filename}
-                className="size-full object-cover"
-              />
-              {savingFileId === file.id && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <Loader2 className="size-6 text-white animate-spin" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-accent-green/0 group-hover:bg-accent-green/10 transition-colors flex items-center justify-center">
-                <Check className="size-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-              </div>
-            </button>
-          ))}
+        <div className="-m-1 max-h-[600px] overflow-y-auto p-1">
+        <div className={GALLERY_GRID}>
+          {galleryFiles.map((file) => {
+            const isSaving = savingFileId === file.id;
+            return (
+              <button
+                key={file.id}
+                type="button"
+                onClick={() => handlePickFromGallery(file.id)}
+                disabled={isSaving}
+                aria-label={`Use ${file.filename} as avatar`}
+                className="wb-tile aspect-[3/4] w-full cursor-pointer border-0 p-0 disabled:cursor-progress [&:focus-visible>.wb-tile-actions]:translate-y-0 [&:focus-visible>.wb-tile-actions]:opacity-100"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/api/files/${file.id}`} alt="" loading="lazy" decoding="async" />
+                {isSaving ? (
+                  <span className="absolute inset-0 z-[3] flex items-end gap-2 bg-[var(--pf-scrim)] p-2.5 text-[12px] font-semibold leading-4 text-[var(--pf-on-media)]">
+                    <span className="wb-live-dot mb-1" />
+                    Saving
+                  </span>
+                ) : (
+                  <span className="wb-tile-actions" aria-hidden="true">
+                    <span className="wb-tile-action">Use as avatar</span>
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
         </div>
       )}
     </div>
   );
 }
+
+/** Paper "04 Clone / avatar picker gallery": the empty tile is 160px tall with no padding of its own. */
+const EMPTY_TILE = "h-40 min-h-0 flex-none p-0";
+
+const GALLERY_GRID = "grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3";

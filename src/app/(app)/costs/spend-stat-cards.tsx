@@ -1,109 +1,96 @@
-"use client";
-
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { Button } from "@/components/workbench/button";
+import { Meter } from "@/components/workbench/meter";
+import { StatStrip } from "@/components/workbench/stat-strip";
 import { cn } from "@/lib/utils";
 import { formatCost } from "@/lib/utils/format-cost";
+import { budgetMoney, changeLabel } from "./spend-format";
 import type { SpendStatCardsProps } from "./types";
 
-export function SpendStatCards({ dashboard, view }: SpendStatCardsProps) {
-  const changeLabel =
-    dashboard.changePercent === 0 ? "No change" : `${Math.abs(dashboard.changePercent).toFixed(0)}%`;
-  const modelName = dashboard.topModel ? dashboard.topModel.name : "No data yet";
-  const modelNote = dashboard.topModel
-    ? `${formatCost(dashboard.topModel.cost)} · ${dashboard.topModel.pct}% of ${dashboard.period.toUpperCase()} spend`
-    : "Model usage appears after your first generation";
-  const allTimeNote = `${formatCost(dashboard.totalCost)} all-time spend`;
-  const avgNote = `Avg cost ${formatCost(dashboard.avgCycleCost)} per generation`;
-  const budgetNote = `of ${formatCost(view.budget)} production budget`;
-  const periodSpend = formatCost(dashboard.currentPeriodCost);
-  const generations = String(dashboard.totalJobs);
-  const budgetRemaining = formatCost(view.budgetRemaining);
-
+export function SpendStatCards({ dashboard, view, onEditBudget }: SpendStatCardsProps) {
+  const change = changeLabel(dashboard.currentPeriodCost, dashboard.previousPeriodCost);
+  const over = dashboard.currentPeriodCost > view.budget;
   return (
-    <section data-spend-stats="true" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
-        <div className="flex items-start justify-between gap-3">
-          <span data-lcp="Period Spend">
-            <span className="sr-only">Period Spend</span>
-          </span>
-          <ChangeChip dashboard={dashboard} view={view} changeLabel={changeLabel} />
-        </div>
-        <strong data-spend-value="true" data-spend-text={periodSpend}>
-          <span className="sr-only">{periodSpend}</span>
-        </strong>
-        <p data-spend-note="true" data-spend-note-text={allTimeNote}>
-          <span className="sr-only">{allTimeNote}</span>
-        </p>
-      </article>
-
-      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
-        <div className="flex items-start justify-between gap-3">
-          <span data-lcp="Generations">
-            <span className="sr-only">Generations</span>
-          </span>
-        </div>
-        <strong data-spend-value="true" data-spend-text={generations}>
-          <span className="sr-only">{generations}</span>
-        </strong>
-        <p data-spend-note="true" data-spend-note-text={avgNote}>
-          <span className="sr-only">{avgNote}</span>
-        </p>
-      </article>
-
-      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
-        <div className="flex items-start justify-between gap-3">
-          <span data-lcp="Top Model">
-            <span className="sr-only">Top Model</span>
-          </span>
-        </div>
-        <strong data-spend-model="true" data-spend-text={modelName}>
-          <span className="sr-only">{modelName}</span>
-        </strong>
-        <p data-spend-note="true" data-spend-note-text={modelNote}>
-          <span className="sr-only">{modelNote}</span>
-        </p>
-      </article>
-
-      <article className="pf-card p-4 transition-colors duration-[180ms] hover:border-[var(--pf-border-strong)]">
-        <div className="flex items-start justify-between gap-3">
-          <span data-lcp="Budget remaining">
-            <span className="sr-only">Budget remaining</span>
-          </span>
-        </div>
-        <strong data-spend-value="true" data-spend-text={budgetRemaining}>
-          <span className="sr-only">{budgetRemaining}</span>
-        </strong>
-        <p data-spend-note="true" data-spend-note-text={budgetNote}>
-          <span className="sr-only">{budgetNote}</span>
-        </p>
-      </article>
-    </section>
+    <StatStrip
+      className={STRIP_CLASS}
+      stats={[
+        {
+          label: "Spend",
+          value: (
+            <span className="flex min-w-0 flex-wrap items-center gap-x-2.5 max-md:justify-end">
+              {formatCost(dashboard.currentPeriodCost)}
+              {change ? (
+                <span className={CHIP} title="Against the previous period of the same length">
+                  {change}
+                </span>
+              ) : null}
+            </span>
+          ),
+          aside: view.emptyPeriod ? null : (
+            <span className={SIDE_FIGURE}>
+              <span className="font-mono">{formatCost(dashboard.totalCost)}</span> all time
+            </span>
+          ),
+          foot: view.emptyPeriod ? (
+            <span className="wb-mono">{formatCost(dashboard.totalCost)} all time</span>
+          ) : null,
+        },
+        {
+          label: "Generations",
+          value: dashboard.totalJobs,
+          aside: view.emptyPeriod ? null : (
+            <span className={SIDE_FIGURE}>
+              Avg cost{" "}
+              <span className="font-mono">
+                {dashboard.totalJobs > 0 ? formatCost(dashboard.avgCycleCost) : "-"}
+              </span>
+            </span>
+          ),
+        },
+        {
+          label: "Budget left",
+          value: <span className={cn(over && "text-bad")}>{formatCost(view.budgetRemaining)}</span>,
+          aside: (
+            <span className="flex min-w-0 flex-1 items-center gap-4 text-[12px] font-normal leading-4 tracking-normal max-md:basis-full max-md:gap-2.5 md:ml-1.5">
+              <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">
+                <Meter
+                  label="Budget used"
+                  value={view.budgetPercent}
+                  tone={over ? "bad" : "ember"}
+                  className="min-w-24"
+                />
+                <span className="wb-mono shrink-0 leading-[18px] text-fg-secondary">
+                  {formatCost(dashboard.currentPeriodCost)} / {budgetMoney(view.budget)}
+                </span>
+              </span>
+              <Button size={32} onClick={onEditBudget} aria-label="Edit budget">
+                <span>
+                  Edit<span className="max-md:hidden"> budget</span>
+                </span>
+              </Button>
+            </span>
+          ),
+        },
+      ]}
+    />
   );
 }
 
-function ChangeChip({
-  dashboard,
-  view,
-  changeLabel,
-}: {
-  dashboard: SpendStatCardsProps["dashboard"];
-  view: SpendStatCardsProps["view"];
-  changeLabel: string;
-}) {
-  const showTrendUp = dashboard.changePercent !== 0 && view.changeIsUp;
-  const showTrendDown = dashboard.changePercent < 0;
-  const chipClass = cn(
-    "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold",
-    dashboard.changePercent === 0 && "bg-[var(--pf-active)] text-[var(--pf-muted)]",
-    view.changeIsUp && dashboard.changePercent > 0 && "bg-[color-mix(in_srgb,var(--pf-danger)_10%,transparent)] text-[var(--pf-danger)]",
-    dashboard.changePercent < 0 && "bg-[color-mix(in_srgb,var(--pf-success)_10%,transparent)] text-[var(--pf-success)]"
-  );
+const CHIP =
+  "inline-flex h-[22px] shrink-0 items-center whitespace-pre rounded-full bg-raised px-[9px] font-mono text-[12px] font-normal leading-4 tracking-normal text-fg-secondary";
 
-  return (
-    <span data-lcp={changeLabel} className={chipClass}>
-      {showTrendUp ? <TrendingUp className="size-3" /> : null}
-      {showTrendDown ? <TrendingDown className="size-3" /> : null}
-      <span className="sr-only">{changeLabel}</span>
-    </span>
-  );
-}
+const SIDE_FIGURE =
+  "shrink-0 whitespace-nowrap text-[12px] font-normal leading-[18px] tracking-normal text-fg-secondary max-md:hidden";
+
+const STRIP_CLASS = cn(
+  "shrink-0 [&>.wb-stat:nth-child(2)]:flex-[0.8] [&>.wb-stat:nth-child(3)]:flex-[1.6]",
+  "md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:flex-wrap md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:justify-between md:[&>.wb-stat:nth-child(-n+2)_.wb-stat-value]:gap-y-0",
+  "lg:max-xl:[&>.wb-stat:nth-child(3)]:flex-[2.2]",
+  "max-md:flex-col max-md:px-5 max-md:py-1",
+  "max-md:[&>.wb-stat]:min-h-[60px] max-md:[&>.wb-stat]:flex-none max-md:[&>.wb-stat]:flex-row max-md:[&>.wb-stat]:flex-wrap max-md:[&>.wb-stat]:items-center max-md:[&>.wb-stat]:justify-between max-md:[&>.wb-stat]:py-3",
+  "max-md:[&>.wb-stat]:border-l-0 max-md:[&>.wb-stat]:px-0 max-md:[&_.wb-stat-value]:text-[28px] max-md:[&_.wb-stat-value]:leading-8",
+  "max-md:[&_.wb-stat-value]:flex-wrap max-md:[&_.wb-stat-value]:justify-end",
+  "max-md:[&>.wb-stat:nth-child(3)]:gap-y-2.5 max-md:[&>.wb-stat:nth-child(3)]:py-3.5 max-md:[&>.wb-stat:nth-child(3)_.wb-stat-value]:contents",
+  "max-md:[&>.wb-stat+.wb-stat]:border-t max-md:[&>.wb-stat+.wb-stat]:border-hairline",
+  "max-md:[&_.wb-stat-foot]:hidden",
+  "md:max-lg:flex-wrap md:max-lg:gap-y-4 md:max-lg:[&>.wb-stat:nth-child(3)]:basis-full md:max-lg:[&>.wb-stat:nth-child(3)]:border-l-0 md:max-lg:[&>.wb-stat:nth-child(3)]:border-t md:max-lg:[&>.wb-stat:nth-child(3)]:border-hairline md:max-lg:[&>.wb-stat:nth-child(3)]:pl-0 md:max-lg:[&>.wb-stat:nth-child(3)]:pt-4",
+);

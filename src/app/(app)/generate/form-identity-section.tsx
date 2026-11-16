@@ -1,16 +1,12 @@
 "use client";
 
-import {
-  AlertCircle,
-  CheckCircle2,
-  Loader2,
-} from "lucide-react";
+import { useEffect, useState } from "react";
 import { AvatarPicker } from "@/components/avatar-picker";
-import { cn } from "@/lib/utils";
-import type {
-  GenerateIdentityActions,
-  GenerateIdentityView,
-} from "./form-types";
+import { ReferencePickerPopover } from "@/components/collection-reference-picker-popover";
+import { loadAvatars } from "@/lib/avatar-list-cache";
+import { getAvatarTileLabel } from "@/lib/avatar-workflow";
+import { ReferenceField } from "./form-reference-field";
+import type { GenerateIdentityActions, GenerateIdentityView } from "./form-types";
 
 export function GenerateIdentitySection({
   view,
@@ -19,75 +15,80 @@ export function GenerateIdentitySection({
   view: GenerateIdentityView;
   actions: GenerateIdentityActions;
 }) {
-  const { show, isVideo, avatarId, identityStatus, identityError } = view;
+  const { show, avatarId, identityStatus, identityError } = view;
   const { onSelect } = actions;
+  const name = useAvatarName(avatarId, show);
   if (!show) return undefined;
 
   return (
-    <div className="pf-card p-4">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="pf-section-title">
-              Character identity
-            </h2>
-            <span className="rounded-full bg-[var(--pf-active)] px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Optional
-            </span>
+    <ReferenceField label="Character identity" onClear={avatarId ? () => onSelect("") : undefined}>
+      <ReferencePickerPopover
+        label="Character identity"
+        wide
+        summary={
+          avatarId
+            ? {
+                text: name ?? "Character chosen",
+                thumb: (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/api/avatars/${encodeURIComponent(avatarId)}`} alt="" />
+                ),
+              }
+            : { text: "No character chosen", placeholder: true }
+        }
+      >
+        {(close) => (
+          <div data-avatar-stacked className="contents">
+            <AvatarPicker
+              selectedId={avatarId}
+              onSelect={(id) => {
+                onSelect(id);
+                if (id) close();
+              }}
+            />
           </div>
-          <p className="mt-2 max-w-lg text-[12px] leading-4 text-muted-foreground">
-            {isVideo
-              ? "Create an identity-locked opening frame, then bind the same character through the video."
-              : "Reuse a saved identity. A compatible image model is selected automatically."}
-          </p>
-        </div>
-        {avatarId && (
-          <button
-            type="button"
-            onClick={() => onSelect("")}
-            className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
-          >
-            Clear
-          </button>
         )}
-      </div>
-
-      {avatarId && (
-        <div
+      </ReferencePickerPopover>
+      {avatarId && identityStatus.tone === "ready" ? (
+        // The chosen row already says the identity is in use; the count is for a screen reader.
+        <p role="status" className="sr-only">
+          {identityStatus.label}
+        </p>
+      ) : avatarId ? (
+        <p
           role={identityStatus.tone === "failed" ? "alert" : "status"}
-          className={cn(
-            "mb-3 flex min-w-0 items-start gap-2 rounded-lg px-3 py-2 text-[12px] leading-4",
-            identityStatus.tone === "ready" && "bg-[var(--pf-success)]/10 text-[var(--pf-success)]",
-            identityStatus.tone === "working" && "bg-[var(--pf-link)]/10 text-[var(--pf-link)]",
-            identityStatus.tone === "failed" && "bg-[var(--pf-danger)]/10 text-[var(--pf-danger)]"
-          )}
+          className="wb-notice wb-fade-in"
+          data-tone={identityStatus.tone === "failed" ? "bad" : undefined}
         >
-          {identityStatus.tone === "ready" ? (
-            <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
-          ) : identityStatus.tone === "failed" ? (
-            <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-          ) : (
-            <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin" />
-          )}
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            {identityStatus.label}
-          </span>
-        </div>
-      )}
-
-      {identityError && (
-        <div
-          role="alert"
-          className="mb-3 flex min-w-0 items-start gap-2 rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] leading-4 text-[var(--pf-danger)]"
-        >
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
-          <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">
-            {identityError}
-          </span>
-        </div>
-      )}
-
-      <AvatarPicker selectedId={avatarId} onSelect={onSelect} />
-    </div>
+          {identityStatus.label}
+        </p>
+      ) : null}
+      {identityError ? (
+        <p role="alert" className="wb-notice wb-fade-in" data-tone="bad">
+          {identityError}
+        </p>
+      ) : null}
+    </ReferenceField>
   );
+}
+
+/** Loads the saved identities with the form, so the picker opens on them and the row can name the chosen one. */
+function useAvatarName(avatarId: string | null, enabled: boolean) {
+  const [names, setNames] = useState<Record<string, string> | null>(null);
+  const known = avatarId ? names?.[avatarId] : undefined;
+  const stale = names === null || Boolean(avatarId && !known);
+  useEffect(() => {
+    if (!enabled || !stale) return;
+    let active = true;
+    loadAvatars()
+      .then((page) => {
+        if (!active) return;
+        setNames(Object.fromEntries(page.items.map((avatar, index) => [avatar.id, getAvatarTileLabel(avatar.name, index)])));
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [enabled, stale]);
+  return known ?? null;
 }

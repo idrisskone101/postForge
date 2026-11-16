@@ -18,6 +18,7 @@ import {
   publicationIsUnresolved,
 } from "@/lib/automations";
 import type { VideoAutomationMenuModel } from "./hub-types";
+import { menuDangerItemClass, menuItemClass } from "./row-actions-menu";
 
 export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }) {
   const {
@@ -39,33 +40,34 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
     onDuplicate,
     onRemove,
   } = menu;
-
   return (
-    <div className="absolute right-0 top-8 z-30 max-h-[min(70dvh,420px)] w-56 min-w-0 overscroll-contain overflow-y-auto rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-1.5 text-[11px] shadow-[var(--pf-shadow-lg)]">
+    <>
       {canControlLocalSchedule ? (
         <button
           onClick={onChangeLocalSchedule}
-          className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-left hover:bg-[var(--pf-active)]"
+          role="menuitem"
+          className={menuItemClass}
         >
-          {scheduleActive ? <Pause className="size-3 shrink-0" /> : <Play className="size-3 shrink-0" />}
+          {scheduleActive ? <Pause className="size-4 shrink-0" strokeWidth={1.5} /> : <Play className="size-4 shrink-0" strokeWidth={1.5} />}
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">
             {scheduleActive ? "Pause local schedule" : "Activate local schedule"}
           </span>
         </button>
       ) : (
-        <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[12px] leading-3 text-[var(--pf-muted)]">
-          <CircleAlert className="mt-0.5 size-3 shrink-0" />
+        <p className="flex min-w-0 items-start gap-2.5 px-2.5 py-2 text-[12px] leading-4 text-fg-secondary">
+          <CircleAlert className="size-4 shrink-0" strokeWidth={1.5} />
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">
-            Local scheduling is unavailable for social destinations.
+            Local scheduling is unavailable for social destinations. Social plans never auto-publish: each post needs your review and explicit confirmation.
           </span>
         </p>
       )}
 
       <button
         onClick={onGenerateReviewDraft}
-        className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-left hover:bg-[var(--pf-active)]"
+        role="menuitem"
+        className={menuItemClass}
       >
-        <WandSparkles className="size-3 shrink-0" />
+        <WandSparkles className="size-4 shrink-0" strokeWidth={1.5} />
         Generate review draft
       </button>
 
@@ -76,9 +78,10 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
         record.publication?.providerStatus !== "LOCAL_RETENTION_OUTCOME_UNKNOWN" && (
           <button
             onClick={onOpenPublishReview}
-            className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-left hover:bg-[var(--pf-active)]"
+            role="menuitem"
+            className={menuItemClass}
           >
-            <Send className="size-3 shrink-0" />
+            <Send className="size-4 shrink-0" strokeWidth={1.5} />
             <span className="min-w-0 break-words [overflow-wrap:anywhere]">
               {record.publication?.status === "failed"
                 ? "Review and retry publish"
@@ -90,9 +93,10 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {canRefreshPublication && (
         <button
           onClick={onRefreshPublication}
-          className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-left hover:bg-[var(--pf-active)]"
+          role="menuitem"
+          className={menuItemClass}
         >
-          <RefreshCw className="size-3 shrink-0" />
+          <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
           Refresh provider status
         </button>
       )}
@@ -100,17 +104,18 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       {pendingRecoverable && (
         <button
           onClick={onRecoverPendingPublication}
-          className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-left hover:bg-[var(--pf-active)]"
+          role="menuitem"
+          className={menuItemClass}
         >
-          <RefreshCw className="size-3 shrink-0" />
+          <RefreshCw className="size-4 shrink-0" strokeWidth={1.5} />
           Recover interrupted attempt
         </button>
       )}
 
       {manualOutcomeStage && (
-        <div className="min-w-0 px-2 py-2 text-[12px] leading-3 text-[var(--pf-lamp-amber)]">
-          <p className="flex min-w-0 items-start gap-2">
-            <CircleAlert className="mt-0.5 size-3 shrink-0" />
+        <div className="min-w-0 px-2.5 py-2 text-[12px] leading-4 text-warn">
+          <p className="flex min-w-0 items-start gap-2.5">
+            <CircleAlert className="size-4 shrink-0" strokeWidth={1.5} />
             <span className="min-w-0 break-words [overflow-wrap:anywhere]">
               {failedReconciliationStage
                 ? "The latest provider reconciliation failed. You can retry this safe status check, but PostForge will not blindly publish again."
@@ -127,7 +132,7 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
                     error: null,
                   })
                 }
-                className="min-h-7 min-w-0 break-words rounded-[8px] border border-[var(--pf-success)]/30 bg-[var(--pf-success)]/10 px-2 text-left font-semibold text-[var(--pf-success)] [overflow-wrap:anywhere]"
+                className="min-h-8 min-w-0 break-words rounded-full bg-raised-strong px-3 text-left text-[12px] font-semibold text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-strong [overflow-wrap:anywhere]"
               >
                 I verified it published
               </button>
@@ -140,12 +145,12 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
                       error: null,
                     })
                   }
-                  className="min-h-7 min-w-0 break-words rounded-[8px] border border-[var(--pf-lamp-amber)]/40 bg-[var(--pf-lamp-amber)]/10 px-2 text-left font-semibold text-[var(--pf-lamp-amber)] [overflow-wrap:anywhere]"
+                  className="min-h-8 min-w-0 break-words rounded-full bg-raised-strong px-3 text-left text-[12px] font-semibold text-fg transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:bg-strong [overflow-wrap:anywhere]"
                 >
                   I verified it did not publish
                 </button>
               ) : (
-                <p className="min-w-0 break-words rounded-[8px] bg-[var(--pf-lamp-amber)]/10 px-2 py-1.5 [overflow-wrap:anywhere]">
+                <p className="min-w-0 break-words rounded-lg bg-warn-tint px-2.5 py-2 text-fg-secondary [overflow-wrap:anywhere]">
                   Negative resolution stays locked while provider processing or moderation may still be underway (
                   {record.publication?.provider === "tiktok" ? "6 hours" : "1 hour"}).
                 </p>
@@ -157,21 +162,23 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
 
       <Link
         href={`/automations/new?id=${encodeURIComponent(record.id)}`}
-        className="flex min-h-8 min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 hover:bg-[var(--pf-active)]"
+        role="menuitem"
+        className={menuItemClass}
       >
-        <Edit3 className="size-3 shrink-0" /> Edit workflow
+        <Edit3 className="size-4 shrink-0" strokeWidth={1.5} /> Edit workflow
       </Link>
 
       <button
         onClick={onDuplicate}
-        className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 hover:bg-[var(--pf-active)]"
+        role="menuitem"
+        className={menuItemClass}
       >
-        <Copy className="size-3 shrink-0" /> Duplicate
+        <Copy className="size-4 shrink-0" strokeWidth={1.5} /> Duplicate
       </button>
 
       {publicationIsUnresolved(record.publication) ? (
-        <p className="flex min-w-0 items-start gap-2 px-2 py-2 text-[12px] leading-3 text-[var(--pf-muted)]">
-          <ShieldCheck className="mt-0.5 size-3 shrink-0" />
+        <p className="flex min-w-0 items-start gap-2.5 px-2.5 py-2 text-[12px] leading-4 text-fg-secondary">
+          <ShieldCheck className="size-4 shrink-0" strokeWidth={1.5} />
           <span className="min-w-0 break-words [overflow-wrap:anywhere]">
             Destination, account, approved asset, and deletion stay locked until the provider reaches a final state.
           </span>
@@ -179,11 +186,12 @@ export function VideoAutomationMenu({ menu }: { menu: VideoAutomationMenuModel }
       ) : (
         <button
           onClick={onRemove}
-          className="flex min-h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2 py-1.5 text-[var(--pf-danger)] hover:bg-[var(--pf-danger)]/10"
+          role="menuitem"
+          className={menuDangerItemClass}
         >
-          <Trash2 className="size-3 shrink-0" /> Delete
+          <Trash2 className="size-4 shrink-0" strokeWidth={1.5} /> Delete
         </button>
       )}
-    </div>
+    </>
   );
 }

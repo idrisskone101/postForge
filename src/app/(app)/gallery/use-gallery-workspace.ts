@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { GalleryFeedback, GalleryItem, GalleryView } from "@/components/gallery/types";
 import type { OutputReviewStatus, SerializedOutputReviewStatus } from "@/lib/output-review-status";
 import {
   emptyReviewCounts,
   filterGalleryItems,
   galleryLoadError,
-  galleryReviewSummary,
+  galleryItemCountLabel,
   appendGalleryItems,
   normalizeGalleryItem,
   type GalleryItemInput,
@@ -28,7 +28,7 @@ import { useGalleryFilterReload } from "./gallery-filter-reload";
 
 export function useGalleryWorkspace({
   initialPage,
-  initialType = "video",
+  initialType = "all",
   initialSort = "newest",
   initialReviewStatus = "needs_review",
 }: {
@@ -60,14 +60,18 @@ export function useGalleryWorkspace({
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [isBulkDownloading, setIsBulkDownloading] = useState(false);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
-  const [feedback, setFeedback] = useState<GalleryFeedback | null>(null);
+  const [toast, setToast] = useState<GalleryToast | null>(null);
   const reloadRequestRef = useRef(0);
+  const toastSequenceRef = useRef(0);
 
-  useEffect(() => {
-    if (!feedback) return;
-    const timeout = window.setTimeout(() => setFeedback(null), 4200);
-    return () => window.clearTimeout(timeout);
-  }, [feedback]);
+  const setFeedback = useCallback((next: GalleryFeedback | null) => {
+    toastSequenceRef.current += 1;
+    setToast(next ? { ...next, id: `gallery-${toastSequenceRef.current}` } : null);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToast((current) => (current?.id === id ? null : current));
+  }, []);
 
   const applyPage = useCallback((page: GalleryPage) => {
     setItems(page.items);
@@ -334,10 +338,10 @@ export function useGalleryWorkspace({
   const selectionCount = selectedIds.size;
   const totalCount = filtered.length;
   const isGalleryEmpty = reviewCounts.all === 0;
-  const reviewSummary = galleryReviewSummary({
+  const countLabel = galleryItemCountLabel({
     reviewFilter,
     reviewCounts,
-    totalCount,
+    loadedCount: totalCount,
   });
 
   return {
@@ -357,8 +361,8 @@ export function useGalleryWorkspace({
     loadError,
     hasMore,
     reviewCounts,
-    feedback,
-    reviewSummary,
+    toast,
+    countLabel,
     isGalleryEmpty,
     totalCount,
     activeItems,
@@ -369,6 +373,7 @@ export function useGalleryWorkspace({
     setQuery,
     setSelectedIds,
     setFeedback,
+    dismissToast,
     replaceRouteFilters: replaceGalleryRouteFilters,
     toggleSelection,
     handleBulkDownload,
@@ -384,3 +389,5 @@ export function useGalleryWorkspace({
 }
 
 export type GalleryWorkspace = ReturnType<typeof useGalleryWorkspace>;
+
+type GalleryToast = GalleryFeedback & { id: string };

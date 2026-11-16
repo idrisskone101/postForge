@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 
 import { useSlideshowNew } from "@/app/(app)/slideshow/slideshow-new-context";
+import { Toast, type ToastMessage } from "@/components/workbench/toast";
 import { cn } from "@/lib/utils";
 
 import { fetchSlideshowProject } from "@/lib/slideshow/client";
@@ -25,14 +26,11 @@ import {
   regenerateStudioSlideImage,
   saveStudioProject,
 } from "./slideshow-studio-runtime";
+import { useSlideshowDraftPages } from "./use-slideshow-draft-pages";
 import { useSlideshowStudioBootstrap } from "./use-slideshow-studio-bootstrap";
 import { SlideshowHomeProvider } from "./slideshow-home-provider";
 import { StudioHome } from "./studio-home";
-import {
-  StudioCreatorProgressOverlay,
-  StudioDraftsLoading,
-  StudioToast,
-} from "./studio-overlays";
+import { StudioCreatorProgressOverlay } from "./studio-overlays";
 import {
   PublishDialog,
   SlideshowEditor,
@@ -82,11 +80,18 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
     initialProjects === undefined,
   );
   const [projectsError, setProjectsError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
   const [imageModels, setImageModels] = useState<
     Array<{ id: string; name: string }>
   >([]);
   const [selectedImageModel, setSelectedImageModel] = useState<string | null>(null);
+
+  const draftPages = useSlideshowDraftPages({
+    apiBaseUrl,
+    projects,
+    setProjects,
+    setProjectsError,
+  });
 
   useSlideshowStudioBootstrap({
     apiBaseUrl,
@@ -97,13 +102,16 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
     setSelectedImageModel,
     setCollections,
     setProjects,
+    setProjectsTotal: draftPages.reportTotals,
     setProjectsError,
     setLoadingProjects,
   });
 
   const showToast = useCallback((message: string) => {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 3200);
+    setToast({ id: `${Date.now()}`, tone: "ok", message });
+  }, []);
+  const dismissToast = useCallback((id: string) => {
+    setToast((current) => (current?.id === id ? null : current));
   }, []);
 
   const upsertDraft = useCallback((project: SlideshowProject) => {
@@ -259,37 +267,36 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
   );
 
   return (
-    <div className={cn("min-h-0", className)}>
+    <div className={cn("flex min-h-0 flex-1 flex-col gap-3", className)}>
       {activeProject ? (
-        <div className="fixed inset-0 z-40 overflow-hidden bg-[var(--pf-canvas)] pt-[calc(58px+env(safe-area-inset-top))] md:pt-[env(safe-area-inset-top)]">
-          <SlideshowEditor
-            key={editorSession}
-            project={activeProject}
-            collections={collections}
-            onBack={() => {
-              setActiveProject(null);
-              setSection("drafts");
-            }}
-            onProjectChange={handleProjectChange}
-            onSaveProject={handleSaveProject}
-            onRegenerateSlide={handleRegenerateSlide}
-            onRegenerateImage={handleRegenerateImage}
-            onPublish={(project) => {
-              setPublishProject(project);
-              setPublishOpen(true);
-            }}
-            imageModels={imageModels}
-            selectedImageModel={selectedImageModel}
-            onSelectImageModel={setSelectedImageModel}
-            initialViewMode={initialViewMode}
-          />
-        </div>
+        <SlideshowEditor
+          key={editorSession}
+          project={activeProject}
+          collections={collections}
+          onBack={() => {
+            setActiveProject(null);
+            setSection("drafts");
+          }}
+          onProjectChange={handleProjectChange}
+          onSaveProject={handleSaveProject}
+          onRegenerateSlide={handleRegenerateSlide}
+          onRegenerateImage={handleRegenerateImage}
+          onPublish={(project) => {
+            setPublishProject(project);
+            setPublishOpen(true);
+          }}
+          imageModels={imageModels}
+          selectedImageModel={selectedImageModel}
+          onSelectImageModel={setSelectedImageModel}
+          initialViewMode={initialViewMode}
+        />
       ) : (
           <SlideshowHomeProvider
             home={{
               section,
               onSectionChange: setSection,
-              draftsCount: projects.length,
+              draftsCount: draftPages.pages.total ?? projects.length,
+              draftPages: draftPages.pages,
               templates,
               generatingStory,
               onGenerateStory: handleGenerateStory,
@@ -320,7 +327,6 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         onUseTemplate={startTemplate}
       />
       <PublishDialog
-        key={publishProject?.id}
         dialog={{
           open: publishOpen,
           project: publishProject,
@@ -331,9 +337,10 @@ export function SlideshowStudio(props: SlideshowStudioProps) {
         }}
       />
 
-      {toast ? <StudioToast message={toast} /> : null}
-      {loadingProjects && section === "create" && !activeProject ? (
-        <StudioDraftsLoading />
+      {toast ? (
+        <div className="wb-toast-region">
+          <Toast key={toast.id} toast={toast} onDismiss={dismissToast} />
+        </div>
       ) : null}
       {creatorProgress ? (
         <StudioCreatorProgressOverlay progress={creatorProgress} />

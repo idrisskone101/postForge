@@ -63,6 +63,11 @@ export type PublicIntegrationStatus = {
   provider: IntegrationProvider;
   displayName: string;
   configuration: "ready" | "not_configured";
+  /**
+   * True only when the provider's OAuth client id or secret is absent on the server. A provider can be
+   * not_configured for other reasons (public URL, encryption key, YouTube compliance); those leave it false.
+   */
+  credentialsMissing: boolean;
   /** True when at least one account is connected. */
   connected: boolean;
   accountCount: number;

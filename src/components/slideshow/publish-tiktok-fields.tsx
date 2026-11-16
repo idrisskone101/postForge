@@ -1,8 +1,6 @@
 "use client";
 
-import { CalendarClock, MessageCircle } from "lucide-react";
-
-import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/workbench";
 
 import type { SlideshowPublishWorkspace } from "./view-models";
 
@@ -31,107 +29,74 @@ export function PublishTikTokFields({
     onAiGeneratedChange,
   } = publish;
   if (!publishingToTikTok) return null;
+  const switches = [
+    ["Allow comments", "Allow comments", allowComments, onAllowCommentsChange],
+    ["Allow duet", "Allow duet", allowDuet, onAllowDuetChange],
+    ["Allow stitch", "Allow stitch", allowStitch, onAllowStitchChange],
+    ["Branded content", "Disclose branded content", brandedContent, onBrandedContentChange],
+    [
+      "AI-generated content",
+      "Disclose AI generated content",
+      aiGenerated,
+      onAiGeneratedChange,
+    ],
+  ] as const;
   return (
-    <>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-2 block text-xs font-semibold">Visibility</span>
+    <div className="flex flex-col gap-3.5">
+      <div className="flex flex-col gap-3.5">
+        <div className="wb-field flex-1">
+          <label className="wb-label" htmlFor="slideshow-publish-visibility">
+            Visibility
+          </label>
           <select
+            id="slideshow-publish-visibility"
             value={visibility}
             onChange={(event) => onVisibilityChange(parseVisibility(event.target.value))}
-            className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs outline-none focus:border-accent-blue"
+            className="wb-input"
           >
             <option value="public">Everyone</option>
             <option value="friends">Friends</option>
             <option value="private">Only me</option>
           </select>
-        </label>
-        <label className="block">
-          <span className="mb-2 block text-xs font-semibold">Schedule</span>
-          <div className="flex h-10 items-center gap-2 rounded-lg border border-border bg-background px-3">
-            <CalendarClock className="size-4 text-muted-foreground" />
+        </div>
+        <div className="wb-field flex-1">
+          <label className="wb-label" htmlFor="slideshow-publish-schedule">
+            Schedule
+          </label>
+          <div className="flex items-center gap-2.5">
             <input
+              id="slideshow-publish-schedule"
               type="datetime-local"
               value={scheduledFor}
               onChange={(event) => onScheduledForChange(event.target.value)}
               disabled={!scheduleEnabled}
-              className="min-w-0 flex-1 bg-transparent text-[11px] outline-none disabled:opacity-40"
+              data-mono="true"
+              className="wb-input flex-1"
             />
-            <Switch
-              size="sm"
+            <Toggle
               checked={scheduleEnabled}
               onCheckedChange={onScheduleEnabledChange}
-              aria-label="Schedule publishing"
+              label="Schedule publishing"
+              size={26}
             />
           </div>
-        </label>
+        </div>
       </div>
 
-      <div className="grid gap-3 rounded-[6px] border border-border p-4 sm:grid-cols-3">
-        <label className="flex items-center justify-between gap-2 text-xs">
-          <span className="flex items-center gap-2">
-            <MessageCircle className="size-3.5 text-muted-foreground" />
-            Comments
-          </span>
-          <Switch
-            size="sm"
-            checked={allowComments}
-            onCheckedChange={onAllowCommentsChange}
-            aria-label="Allow comments"
-          />
-        </label>
-        <label className="flex items-center justify-between gap-2 text-xs">
-          <span>Duet</span>
-          <Switch
-            size="sm"
-            checked={allowDuet}
-            onCheckedChange={onAllowDuetChange}
-            aria-label="Allow duet"
-          />
-        </label>
-        <label className="flex items-center justify-between gap-2 text-xs">
-          <span>Stitch</span>
-          <Switch
-            size="sm"
-            checked={allowStitch}
-            onCheckedChange={onAllowStitchChange}
-            aria-label="Allow stitch"
-          />
-        </label>
+      <div className="flex flex-col">
+        {switches.map(([text, ariaLabel, checked, onChange]) => (
+          <label
+            key={ariaLabel}
+            className="flex min-h-11 cursor-pointer items-center justify-between gap-4 border-b border-hairline text-[14px] leading-5 font-medium text-fg last:border-b-0"
+          >
+            {text}
+            <Toggle checked={checked} onCheckedChange={onChange} label={ariaLabel} size={26} />
+          </label>
+        ))}
       </div>
-
-      <div className="space-y-3 rounded-[6px] border border-border p-4">
-        <label className="flex items-center justify-between gap-4 text-xs">
-          <span>
-            <span className="block font-semibold">Branded content</span>
-            <span className="mt-1 block text-[12px] text-muted-foreground">
-              Disclose promotional or paid content.
-            </span>
-          </span>
-          <Switch
-            checked={brandedContent}
-            onCheckedChange={onBrandedContentChange}
-            aria-label="Disclose branded content"
-          />
-        </label>
-        <label className="flex items-center justify-between gap-4 border-t border-border pt-3 text-xs">
-          <span>
-            <span className="block font-semibold">AI-generated content</span>
-            <span className="mt-1 block text-[12px] text-muted-foreground">
-              Apply TikTok&apos;s AI content disclosure.
-            </span>
-          </span>
-          <Switch
-            checked={aiGenerated}
-            onCheckedChange={onAiGeneratedChange}
-            aria-label="Disclose AI generated content"
-          />
-        </label>
-      </div>
-    </>
+    </div>
   );
 }
-
 
 const VISIBILITY_OPTIONS = ["public", "friends", "private"] as const;
 

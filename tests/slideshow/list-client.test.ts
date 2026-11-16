@@ -44,6 +44,7 @@ async function run() {
       JSON.stringify({
         projects: [listItemPayload("page-1")],
         total: 250,
+        statusCounts: { draft: 240, failed: 10, bogus: 3, ready: -1 },
         limit: SLIDESHOW_LIST_PAGE_SIZE,
         offset: 0,
       }),
@@ -57,6 +58,7 @@ async function run() {
     assert.match(urls[0], /limit=20/);
     assert.match(urls[0], /offset=0/);
     assert.equal(page.total, 250);
+    assert.deepEqual(page.statusCounts, { draft: 240, failed: 10 });
     assert.equal(page.projects.length, 1);
     assert.equal(page.projects[0]?.slideCount, 4);
     assert.equal(

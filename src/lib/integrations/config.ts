@@ -185,6 +185,14 @@ function getProviderCredentials(
   };
 }
 
+export function hasProviderCredentials(
+  provider: IntegrationProvider,
+  env: IntegrationEnvironment = process.env
+) {
+  const credentials = getProviderCredentials(provider, env);
+  return Boolean(credentials.clientId && credentials.clientSecret);
+}
+
 export function isProviderConfigured(
   provider: IntegrationProvider,
   env: IntegrationEnvironment = process.env

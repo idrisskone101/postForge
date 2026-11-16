@@ -1,35 +1,44 @@
 import type { RefObject } from "react";
+import type { ToastMessage } from "@/components/workbench";
 import type {
   CollectionAssetRecord,
   CollectionFeatureRecord,
   CollectionRecord,
 } from "@/lib/collections";
+import type { CollectionUsage } from "./collection-usage";
 
 export type CollectionsPageClientProps = {
   initialRecords: CollectionFeatureRecord[];
+  /** Counted on the server with the records. Absent for a collection made in this session. */
+  usage?: CollectionUsage;
   openUploader?: boolean;
 };
 
+export type UploadProgress = { done: number; total: number };
+
 export type CollectionsWorkspace = {
   inputRef: RefObject<HTMLInputElement | null>;
-  uploading: boolean;
+  uploadProgress: UploadProgress | null;
   error: string | null;
   search: string;
   active: CollectionRecord | null;
-  selected: string | null;
   selectedAsset: CollectionAssetRecord | null;
   pinterestOpen: boolean;
-  toast: string | null;
+  toast: ToastMessage | null;
   assets: CollectionAssetRecord[];
   collections: CollectionRecord[];
+  usage: CollectionUsage;
   filteredAssets: CollectionAssetRecord[];
   isEmpty: boolean;
-  setError: (error: string | null) => void;
+  dismissError: () => void;
+  dismissToast: () => void;
   setSearch: (search: string) => void;
-  setActive: (collection: CollectionRecord | null) => void;
+  setActiveId: (id: string | null) => void;
+  setSelected: (id: string | null) => void;
   setPinterestOpen: (open: boolean) => void;
   upload: (files: FileList | File[]) => Promise<void>;
-  createCollection: () => Promise<void>;
+  createCollection: (name: string) => Promise<void>;
+  renameCollection: (collection: CollectionRecord, name: string) => Promise<void>;
   toggleAsset: (collection: CollectionRecord, assetId: string) => Promise<void>;
   deleteCollection: (collection: CollectionRecord) => Promise<void>;
   deleteAsset: (asset: CollectionAssetRecord) => Promise<void>;
@@ -39,34 +48,21 @@ export type CollectionsWorkspace = {
   toggleSelectedAsset: (assetId: string) => void;
 };
 
-export type CollectionsEmptyProps = {
-  uploading: boolean;
-  onUpload: () => void;
-  onPinterest: () => void;
-};
-
-export type CollectionsLibraryModel = {
-  collections: CollectionRecord[];
-  assets: CollectionAssetRecord[];
-  filteredAssets: CollectionAssetRecord[];
-  search: string;
-  selectedId: string | null;
-  selectedAsset: CollectionAssetRecord | null;
-  uploading: boolean;
-  onSearchChange: (value: string) => void;
-  onSelect: (assetId: string) => void;
-  onOpenCollection: (collection: CollectionRecord) => void;
-  onCreateCollection: () => void;
-  onDeleteAsset: (asset: CollectionAssetRecord) => void;
-  onChooseFiles: () => void;
-  onPinterest: () => void;
-};
-
 export type CollectionsDetailModel = {
   collection: CollectionRecord;
   assets: CollectionAssetRecord[];
+  uploadProgress: UploadProgress | null;
   onClose: () => void;
   onAddImages: () => void;
+  onRename: (name: string) => void;
   onDelete: () => void;
   onToggleAsset: (assetId: string) => void;
+  onDropFiles: (files: FileList) => void;
+};
+
+export type ConfirmRequest = {
+  title: string;
+  description: string;
+  actionLabel: string;
+  onConfirm: () => void;
 };

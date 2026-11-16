@@ -8,27 +8,26 @@ export function assetUrl(id: string) {
   return `/api/collection-assets/${encodeURIComponent(id)}`;
 }
 
-export function formatAssetSizeMb(fileSizeBytes: number) {
-  return (fileSizeBytes / 1_000_000).toFixed(1);
-}
-
 export function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString();
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 }
 
-export function formatImageCount(count: number) {
-  return `${count} image${count === 1 ? "" : "s"}`;
+export function errorMessage(cause: unknown, fallback: string) {
+  return cause instanceof Error ? cause.message : fallback;
 }
 
-export function previewAssetsForCollection(
+export function assetsForCollection(
   collection: CollectionRecord,
-  assets: readonly CollectionAssetRecord[],
-  limit = 4
+  assets: readonly CollectionAssetRecord[]
 ) {
+  const byId = new Map(assets.map((asset) => [asset.id, asset]));
   return collection.assetIds
-    .map((id) => assets.find((asset) => asset.id === id))
-    .filter(isCollectionAssetRecord)
-    .slice(0, limit);
+    .map((id) => byId.get(id))
+    .filter(isCollectionAssetRecord);
 }
 
 export function createCollectionRecord(

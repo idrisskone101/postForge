@@ -1,29 +1,75 @@
 "use client";
 
-import {
-  ArrowRight,
-  CheckCircle2,
-  Compass,
-  ExternalLink,
-  LayoutGrid,
-  Loader2,
-  Search,
-} from "lucide-react";
-import { INSPIRATION_VIDEO_PAGE_SIZE, parseInspirationSourceSort } from "@/lib/inspiration/types";
+import Link from "next/link";
+import { Button, buttonClass } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { Segmented } from "@/components/workbench/segmented";
+import { Skeleton } from "@/components/workbench/skeleton";
 import { cn } from "@/lib/utils";
-import { WorkspaceState } from "@/components/workspace-state";
 import {
-  emptyLibraryCopy,
+  INSPIRATION_VIDEO_PAGE_SIZE,
+  parseInspirationSourceSort,
+  type InspirationSourceFeedFilter,
+} from "@/lib/inspiration/types";
+import {
+  emptyLibraryTitle,
   SOURCE_FEED_FILTERS,
+  TRACK_CREATOR_INPUT_ID,
 } from "./inspiration-models";
-import { InspirationVideoCard } from "./inspiration-video-card";
+import { InspirationVideoCard, TILE_ASPECT_CLASS } from "./inspiration-video-card";
 import type { InspirationWorkspace } from "./types";
 
 export function InspirationSourceLibrary({
   workspace,
+  loadFailed,
 }: {
   workspace: InspirationWorkspace;
+  loadFailed: boolean;
 }) {
+  const {
+    videoItems,
+    videoCursor,
+    videoHasMore,
+    videoTotal,
+    isLoadingMore,
+    remainingVideoCount,
+    handleLoadMore,
+  } = workspace;
+
+  return (
+    <section
+      aria-labelledby="source-library-heading"
+      className="wb-panel @container min-w-0 flex-1 gap-3.5 p-4 max-sm:gap-3 sm:p-5"
+    >
+      <h2 id="source-library-heading" className="sr-only">
+        Source library
+      </h2>
+      <LibraryToolbar workspace={workspace} />
+      <LibraryBody workspace={workspace} loadFailed={loadFailed} />
+      {videoHasMore && videoItems.length > 0 && (
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+          <span className="wb-mono text-fg-muted">
+            {videoItems.length} / {videoTotal}
+          </span>
+          <button
+            type="button"
+            onClick={() => void handleLoadMore()}
+            disabled={isLoadingMore || !videoCursor}
+            data-inspiration-load-more="true"
+            className={buttonClass("quiet", 36)}
+          >
+            {isLoadingMore
+              ? "Loading"
+              : `Load ${Math.min(INSPIRATION_VIDEO_PAGE_SIZE, remainingVideoCount)} more`}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function LibraryToolbar({ workspace }: { workspace: InspirationWorkspace }) {
   const {
     sourceFeedFilter,
     setSourceFeedFilter,
@@ -31,254 +77,248 @@ export function InspirationSourceLibrary({
     setSourceSearch,
     sourceSort,
     setSourceSort,
-    compactGrid,
-    setCompactGrid,
-    videoItems,
-    videoCursor,
-    videoHasMore,
-    videoTotal,
+    largeTiles,
+    setLargeTiles,
     sourceUsageCounts,
-    isLoadingMore,
-    remainingVideoCount,
-    activeSourceLabel,
-    activeFeedFilterLabel,
-    handleLoadMore,
   } = workspace;
 
   return (
-    <>
-      <div className="flex flex-wrap items-end justify-between gap-3 border-t border-[var(--pf-border)] pt-5">
-        <div className="min-w-0">
-          <h3
-            id="source-library-heading"
-            className="pf-section-title"
-          >
-            Source library
-          </h3>
-          <p className="mt-1 text-[12px] text-[var(--pf-muted)]">
-            {activeSourceLabel} · {videoItems.length} of {videoTotal}{" "}
-            {activeFeedFilterLabel.toLowerCase()}
-          </p>
-        </div>
-
-        <div
-          data-source-feed-tabs="true"
-          role="tablist"
-          aria-label="Source usage filter"
-          className="flex w-full min-w-0 gap-1 overflow-x-auto rounded-[8px] bg-[var(--pf-active)] p-1 sm:w-auto"
-        >
-          {SOURCE_FEED_FILTERS.map((filter) => {
-            const isActive = sourceFeedFilter === filter.value;
-
-            return (
-              <button
-                key={filter.value}
-                type="button"
-                role="tab"
-                data-source-feed-filter={filter.value}
-                aria-selected={isActive}
-                onClick={() => setSourceFeedFilter(filter.value)}
-                className={cn(
-                  "flex min-w-max items-center gap-2 rounded-[6px] px-3 py-2 text-left transition-colors",
-                  isActive
-                    ? "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-                    : "text-[var(--pf-muted)] hover:text-[var(--pf-ink)]"
-                )}
-              >
-                <span className="text-[12px] font-semibold">{filter.label}</span>
-                <span className="sr-only">{filter.description}</span>
-                <span
-                  className={cn(
-                    "pf-data shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-semibold",
-                    isActive
-                      ? "bg-[var(--pf-active)] text-[var(--pf-ink)]"
-                      : "bg-[var(--pf-surface)] text-[var(--pf-muted)]"
-                  )}
-                >
-                  {sourceUsageCounts[filter.value]}
+    <div className="flex min-w-0 flex-wrap items-center gap-2 @max-[440px]:gap-y-3">
+      <Segmented<InspirationSourceFeedFilter>
+        label="Source usage filter"
+        value={sourceFeedFilter}
+        onChange={setSourceFeedFilter}
+        className="max-w-full shrink-0 overflow-x-auto"
+        options={SOURCE_FEED_FILTERS.map((filter) => ({
+          value: filter.value,
+          label: (
+            <span data-source-feed-filter={filter.value} className="contents">
+              {filter.label}
+              {filter.value === "unused" && sourceUsageCounts.unused > 0 ? (
+                <span className="-mr-1.5 inline-flex h-[18px] min-w-5 items-center justify-center rounded-full bg-raised-strong px-1.5 text-[11px] leading-[14px] font-semibold text-fg">
+                  {sourceUsageCounts.unused}
                 </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="pf-card flex flex-col gap-2 p-2 sm:flex-row sm:items-center">
-        <label className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--pf-muted)]" />
-          <input
-            value={sourceSearch}
-            onChange={(event) => setSourceSearch(event.target.value)}
-            placeholder="Search captions or creators"
-            aria-label="Search source library"
-            className="h-9 w-full rounded-[8px] border-0 bg-[var(--pf-active)] pl-9 text-[12px] text-[var(--pf-ink)] shadow-none outline-none placeholder:text-[var(--pf-muted)] focus-visible:ring-1 focus-visible:ring-[var(--pf-orange)]/40"
-          />
-        </label>
-        <label className="relative flex h-9 min-w-40 items-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-2.5 text-[12px] text-[var(--pf-muted)]">
-          <span className="sr-only">Sort source library</span>
-          <select
-            value={sourceSort}
-            onChange={(event) =>
-              setSourceSort(parseInspirationSourceSort(event.target.value))
-            }
-            aria-label="Sort source library"
-            className="size-full appearance-none bg-transparent pr-6 text-[12px] font-medium text-[var(--pf-ink)] outline-none"
-          >
-            <option value="recent">Newest first</option>
-            <option value="views">Most viewed</option>
-            <option value="engagement">Most engagement</option>
-          </select>
-          <ArrowRight className="pointer-events-none absolute right-2.5 size-3.5 rotate-90" />
-        </label>
-        <button
-          type="button"
-          aria-label={compactGrid ? "Use comfortable source grid" : "Use compact source grid"}
-          aria-pressed={compactGrid}
-          onClick={() => setCompactGrid((current) => !current)}
-          className={cn(
-            "inline-flex size-9 items-center justify-center rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] text-[var(--pf-muted)] hover:bg-[var(--pf-active)] hover:text-[var(--pf-ink)]",
-            compactGrid &&
-              "bg-[var(--pf-active)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-          )}
+              ) : null}
+            </span>
+          ),
+        }))}
+      />
+      <label className="wb-input-wrap min-w-[208px] flex-1" data-size="36">
+        <Icon name="search" size={15} />
+        <input
+          value={sourceSearch}
+          onChange={(event) => setSourceSearch(event.target.value)}
+          placeholder="Search captions or creators"
+          aria-label="Search source library"
+          type="search"
+          className="text-ellipsis"
+        />
+      </label>
+      <div className={SORT_WRAP_CLASS}>
+        <span aria-hidden="true" className="@max-[440px]:hidden">
+          {SORT_LABEL[sourceSort]}
+        </span>
+        <span aria-hidden="true" className="hidden @max-[440px]:inline">
+          {SORT_SHORT_LABEL[sourceSort]}
+        </span>
+        <select
+          value={sourceSort}
+          onChange={(event) => setSourceSort(parseInspirationSourceSort(event.target.value))}
+          aria-label="Sort source library"
+          className={SORT_SELECT_CLASS}
         >
-          <LayoutGrid className="size-4" />
-        </button>
+          {SORT_VALUES.map((value) => (
+            <option key={value} value={value}>
+              {SORT_LABEL[value]}
+            </option>
+          ))}
+        </select>
+        <Icon
+          name="chevron-down"
+          size={14}
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-fg @max-[440px]:hidden"
+        />
       </div>
-
-      <InspirationLibraryBody workspace={workspace} />
-
-      {videoHasMore && (
-        <div className="flex flex-col items-center gap-2 border-t border-[var(--pf-border)] pt-5 text-center">
-          <p className="text-[11px] text-[var(--pf-muted)]">
-            Showing {videoItems.length} of {videoTotal} matching sources
-          </p>
-          <button
-            type="button"
-            onClick={() => void handleLoadMore()}
-            disabled={isLoadingMore || !videoCursor}
-            data-inspiration-load-more="true"
-            className="pf-button-secondary h-10 px-5 text-[12px]"
-          >
-            {isLoadingMore ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              `Load ${Math.min(INSPIRATION_VIDEO_PAGE_SIZE, remainingVideoCount)} more`
-            )}
-          </button>
-        </div>
-      )}
-    </>
+      <Segmented<"dense" | "large">
+        label="Tile size"
+        value={largeTiles ? "large" : "dense"}
+        onChange={(value) => setLargeTiles(value === "large")}
+        // Below 440px both sizes draw the same two columns, so the toggle has nothing to change.
+        className="shrink-0 @max-[440px]:hidden [&_.wb-segment]:w-8"
+        options={[
+          { value: "dense", label: <ColumnsGlyph count={3} />, ariaLabel: "Small tiles" },
+          { value: "large", label: <ColumnsGlyph count={2} />, ariaLabel: "Large tiles" },
+        ]}
+      />
+    </div>
   );
 }
 
-function InspirationLibraryBody({
+/*
+ * The sort is a drawn pill with the native select lying over it, invisible. The select owns the tap,
+ * the keyboard and the focus ring, and on touch it reaches 4px past the pill on both sides, a 44px
+ * target. Below 440px the pill is Paper's short one ("Newest", no chevron) so the search keeps its row.
+ * The search never goes below 208px, the width its placeholder needs; on a 320px phone the pill
+ * takes the next row instead.
+ */
+const SORT_WRAP_CLASS = [
+  "relative flex h-9 shrink-0 items-center rounded-full bg-raised pr-8 pl-3.5 text-[13px] leading-4 font-semibold text-fg",
+  "transition-[background-color,box-shadow] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised-strong",
+  "has-[:focus-visible]:shadow-[inset_0_0_0_2px_var(--pf-ember)] @max-[440px]:pr-3",
+].join(" ");
+
+const SORT_SELECT_CLASS =
+  "absolute inset-0 size-full cursor-pointer appearance-none opacity-0 pointer-coarse:-inset-y-1 pointer-coarse:h-auto";
+
+const SORT_VALUES = ["recent", "views", "engagement"] as const;
+
+const SORT_LABEL = {
+  recent: "Newest first",
+  views: "Most viewed",
+  engagement: "Most engagement",
+} as const;
+
+const SORT_SHORT_LABEL = { ...SORT_LABEL, recent: "Newest" } as const;
+
+const GRID_DENSE =
+  "grid-cols-2 @[440px]:grid-cols-3 @[580px]:grid-cols-4 @[680px]:grid-cols-5 @[800px]:grid-cols-6";
+const GRID_LARGE =
+  "grid-cols-1 @[300px]:grid-cols-2 @[580px]:grid-cols-3 @[800px]:grid-cols-4";
+
+function LibraryBody({
   workspace,
+  loadFailed,
 }: {
   workspace: InspirationWorkspace;
+  loadFailed: boolean;
 }) {
   const {
     accounts,
     selectedAccount,
     sourceFeedFilter,
     sourceSearch,
-    compactGrid,
+    setSourceSearch,
+    largeTiles,
     videoItems,
     videoTotal,
     sourceUsageCounts,
     isLoadingVideos,
+    pageError,
+    reloadVideos,
   } = workspace;
+  const gridClass = cn("grid gap-x-3 gap-y-3.5", largeTiles ? GRID_LARGE : GRID_DENSE);
 
   if (accounts.length === 0) {
     return (
-      <WorkspaceState
-        tone="empty"
-        icon={Compass}
-        title="Start your discovery board"
-        description="Add a few creators you already trust. PostForge will keep a cached feed of their recent TikToks here, ready for preview and one-click cloning."
-        action={{
-          label: "Track Creator",
-          onClick: () => {
-            document
-              .querySelector<HTMLInputElement>(
-                'input[placeholder="@creator or TikTok profile URL"]'
-              )
-              ?.focus();
-          },
-        }}
-        secondaryAction={{ href: "/ugc-clone", label: "Start Clone" }}
-        className="min-h-[360px]"
-      />
+      <EmptyState icon="inspiration" title="No creators tracked yet" className="min-h-[320px] flex-none">
+        <Button
+          variant="strong"
+          onClick={() => document.getElementById(TRACK_CREATOR_INPUT_ID)?.focus()}
+        >
+          Track creator
+        </Button>
+        <Link href="/ugc-clone" className={buttonClass("quiet", 36)}>
+          Start clone
+        </Link>
+      </EmptyState>
     );
   }
 
   if (isLoadingVideos && videoItems.length === 0) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[8px] border border-dashed border-[var(--pf-border)] bg-[var(--pf-surface)] px-6 py-14 text-center">
-        <Loader2 className="mb-4 size-6 animate-spin text-[var(--pf-muted)]" />
-        <h2 className="pf-section-title">Loading sources</h2>
+      <div className={gridClass} aria-busy="true" aria-label="Loading sources">
+        {Array.from({ length: 12 }, (_, index) => (
+          <div key={index} className="wb-tile-cell">
+            <Skeleton shape="tile" className={largeTiles ? "aspect-[9/16]" : TILE_ASPECT_CLASS} />
+            <Skeleton className="h-3 w-3/4" />
+            <Skeleton className="h-[30px] rounded-full" />
+          </div>
+        ))}
       </div>
     );
   }
 
-  if (sourceUsageCounts.all === 0 && videoTotal === 0) {
-    const emptyDetail = selectedAccount
-      ? `${selectedAccount.handleDisplay} is tracked, but there are no recent videos cached yet. Refresh the creator or open the profile on TikTok.`
-      : "Tracked creators are present, but no videos are cached yet.";
+  if (loadFailed) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[8px] border border-dashed border-[var(--pf-border)] bg-[var(--pf-surface)] px-6 py-14 text-center">
-        <div className="mb-4 flex size-12 items-center justify-center rounded-[8px] bg-[var(--pf-success)]/10 text-[var(--pf-success)]">
-          <CheckCircle2 className="size-6" />
-        </div>
-        <h2 className="pf-section-title">No cached videos yet</h2>
-        <p className="mt-2 min-w-0 max-w-md break-words text-[13px] text-[var(--pf-muted)] [overflow-wrap:anywhere]">
-          {emptyDetail}
-        </p>
+      <EmptyState
+        icon="exclamation"
+        tone="error"
+        title="Sources did not load"
+        detail={pageError ?? undefined}
+        className="min-h-[320px] flex-none"
+      >
+        <Button variant="strong" onClick={reloadVideos}>
+          Try again
+        </Button>
+      </EmptyState>
+    );
+  }
+
+  if (sourceUsageCounts.all === 0 && videoTotal === 0) {
+    return (
+      <EmptyState
+        icon="clock"
+        title={
+          selectedAccount
+            ? `No cached posts for ${selectedAccount.handleDisplay} yet`
+            : "No cached posts yet"
+        }
+        className="min-h-[320px] flex-none"
+      >
         {selectedAccount?.profileUrl ? (
           <a
             href={selectedAccount.profileUrl}
             target="_blank"
             rel="noreferrer"
-            className="pf-button-secondary mt-5 h-9 px-3 text-[13px]"
+            className={buttonClass("strong", 36)}
           >
-            Open Profile
-            <ExternalLink className="size-4 shrink-0" />
+            Open profile
           </a>
         ) : null}
-      </div>
+      </EmptyState>
     );
   }
 
   if (videoItems.length === 0) {
-    const emptyCopy = emptyLibraryCopy(sourceSearch, sourceFeedFilter);
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[8px] border border-dashed border-[var(--pf-border)] bg-[var(--pf-surface)] px-6 py-14 text-center">
-        <div className="mb-4 flex size-12 items-center justify-center rounded-[8px] bg-[var(--pf-active)] text-[var(--pf-muted)]">
-          <CheckCircle2 className="size-6" />
-        </div>
-        <h2 className="pf-section-title">{emptyCopy.title}</h2>
-        <p className="mt-2 max-w-md text-[13px] text-[var(--pf-muted)]">
-          {emptyCopy.description}
-        </p>
-      </div>
+      <EmptyState
+        icon={sourceSearch.trim() ? "search" : "check"}
+        title={emptyLibraryTitle(sourceSearch, sourceFeedFilter)}
+        className="min-h-[320px] flex-none"
+      >
+        {sourceSearch.trim() ? (
+          <Button variant="strong" onClick={() => setSourceSearch("")}>
+            Clear search
+          </Button>
+        ) : null}
+      </EmptyState>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "grid grid-cols-1 gap-4 sm:grid-cols-2",
-        compactGrid
-          ? "lg:grid-cols-4 2xl:grid-cols-5"
-          : "lg:grid-cols-3 2xl:grid-cols-4"
-      )}
-    >
+    <div className={cn(gridClass, "wb-fade-in")}>
       {videoItems.map((video) => (
-        <InspirationVideoCard
-          key={video.id}
-          video={video}
-          workspace={workspace}
-        />
+        <InspirationVideoCard key={video.id} video={video} workspace={workspace} />
       ))}
     </div>
+  );
+}
+
+function ColumnsGlyph({ count }: { count: 2 | 3 }) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="size-[15px]">
+      {count === 3 ? (
+        <>
+          <rect x="4" y="4" width="4" height="16" rx="1" />
+          <rect x="10" y="4" width="4" height="16" rx="1" />
+          <rect x="16" y="4" width="4" height="16" rx="1" />
+        </>
+      ) : (
+        <>
+          <rect x="4" y="4" width="7" height="16" rx="1.5" />
+          <rect x="13" y="4" width="7" height="16" rx="1.5" />
+        </>
+      )}
+    </svg>
   );
 }

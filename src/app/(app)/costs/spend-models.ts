@@ -18,6 +18,7 @@ export const EMPTY_COSTS_DASHBOARD: CostsPageClientProps = {
   totalCost: 0,
   currentPeriodCost: 0,
   changePercent: 0,
+  previousPeriodCost: null,
   avgCycleCost: 0,
   totalJobs: 0,
   topModel: null,

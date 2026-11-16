@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { resolveTikTokThumbnailWithYtDlp } from "@/lib/inspiration/fresh-thumbnail";
 
 const REQUEST_TIMEOUT_MS = 10_000;
 const IMAGE_ACCEPT_HEADER =
@@ -143,6 +144,26 @@ async function resolveFreshThumbnailUrl(postUrl: string): Promise<string | null>
   }
 }
 
+const refreshing = new Set<string>();
+
+function refreshThumbnailInBackground(videoId: string, postUrl: string, attempted: Set<string>) {
+  if (refreshing.has(videoId)) return;
+  refreshing.add(videoId);
+  void (async () => {
+    try {
+      const freshUrl =
+        (await resolveFreshThumbnailUrl(postUrl)) ?? (await resolveTikTokThumbnailWithYtDlp(postUrl));
+      if (!freshUrl || attempted.has(freshUrl)) return;
+      if (!(await fetchImageBytes(freshUrl))) return;
+      await prisma.inspirationVideo.update({ where: { id: videoId }, data: { thumbnailUrl: freshUrl } });
+    } catch (error) {
+      console.error("Failed to refresh inspiration thumbnail:", error);
+    } finally {
+      refreshing.delete(videoId);
+    }
+  })();
+}
+
 function imageResponse(result: ImageFetchResult): NextResponse {
   return new NextResponse(result.bytes, {
     headers: {
@@ -189,21 +210,13 @@ export async function GET(
       }
     }
 
-    const freshUrl = await resolveFreshThumbnailUrl(video.originalUrl);
-    if (freshUrl && !attempted.has(freshUrl)) {
-      const image = await fetchImageBytes(freshUrl);
-      if (image) {
-        if (video.thumbnailUrl !== freshUrl) {
-          await prisma.inspirationVideo.update({
-            where: { id: video.id },
-            data: { thumbnailUrl: freshUrl },
-          });
-        }
-        return imageResponse(image);
-      }
-    }
-
-    return NextResponse.json({ error: "Thumbnail unavailable" }, { status: 404 });
+    // An expired cover is refreshed in the background. Waiting for it here would hold one of the
+    // browser's few connections to the app for seconds, which stalls navigation; the tile retries.
+    refreshThumbnailInBackground(video.id, video.originalUrl, attempted);
+    return NextResponse.json(
+      { error: "Thumbnail unavailable" },
+      { status: 404, headers: { "Retry-After": "5", "Cache-Control": "no-store" } }
+    );
   } catch (error) {
     console.error("Failed to serve inspiration thumbnail:", error);
     return NextResponse.json(

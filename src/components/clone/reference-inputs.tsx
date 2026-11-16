@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
-import { Loader2, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { FileImage } from "@/components/file-image";
 import { MediaPreviewFrame } from "@/components/media-preview";
+import { Button, Icon, StatusChip } from "@/components/workbench";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { CloneSourceEmptyState } from "@/components/clone/source-empty-state";
 import { useCloneReference } from "@/components/clone/clone-reference-provider";
 import { cn } from "@/lib/utils";
@@ -20,31 +20,36 @@ export function CloneReferenceInputs() {
     primaryAvatarReference,
     identityPack,
     isStartingIdentityPack,
+    isGenerating,
+    referenceReady,
     onClearCollection,
     onClearSavedReference,
   } = useCloneReference();
+  const preparing =
+    identityPack?.status === "queued" ||
+    identityPack?.status === "processing" ||
+    isStartingIdentityPack;
+
   return (
-    <div
-      data-reference-comparison-stage="true"
-      className="rounded-lg border border-border bg-muted/40 p-3 sm:p-4"
-    >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold text-foreground">Inputs</p>
-          <p className="mt-0.5 text-[12px] text-muted-foreground">
-            Source motion and selected identity
-          </p>
-        </div>
-        <span className="rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-          Side by side
-        </span>
+    <div data-reference-comparison-stage="true" className="flex min-w-0 flex-col gap-2.5">
+      <div className="flex min-h-9 flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <h2 className="wb-panel-title">
+          Set the look
+        </h2>
+        {isGenerating ? (
+          <StatusChip tone="live">
+            <span className="wb-live-dot" />
+            Generating reference
+          </StatusChip>
+        ) : referenceReady ? (
+          <StatusChip tone="ok" icon="check">
+            Reference ready
+          </StatusChip>
+        ) : null}
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-3 sm:gap-4">
-        <div
-          data-reference-source-preview="true"
-          className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3"
-        >
+      <div className="wb-well items-start gap-3.5 p-5 max-sm:p-3">
+        <div data-reference-source-preview="true" className={SLOT}>
           {sourceReady && videoInfo && sourcePreviewSrc ? (
             <>
               <ReferencePortraitFrame>
@@ -53,28 +58,27 @@ export function CloneReferenceInputs() {
                   src={sourcePreviewSrc}
                   width={videoInfo.width}
                   height={videoInfo.height}
-                  alt={videoInfo.label || "Selected source preview"}
+                  alt={cloneSourceTitle(videoInfo.label)?.title ?? "Selected source preview"}
                   variant="card"
                   frameAspectRatio="9/16"
                   className="size-full"
                   mediaClassName="rounded-none"
                 />
               </ReferencePortraitFrame>
-              <div className="mt-3 min-w-0">
-                <span className="block text-[11px] font-medium">Selected source</span>
-                <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                  {durationSec.toFixed(1)}s • {videoInfo.width}x{videoInfo.height}
+              <SlotCaption title="Source">
+                <span className="wb-mono text-fg-muted">
+                  {durationSec.toFixed(1)}s · {videoInfo.width}x{videoInfo.height}
                 </span>
-              </div>
+              </SlotCaption>
             </>
           ) : (
-            <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
+            <ReferencePortraitFrame className="items-center justify-center border border-dashed border-edge bg-transparent">
               <CloneSourceEmptyState />
             </ReferencePortraitFrame>
           )}
         </div>
 
-        <div className="h-full min-w-0 rounded-lg border border-border bg-card p-2.5 sm:p-3">
+        <div className={SLOT}>
           {selectedCollectionAssetId ? (
             <>
               <ReferencePortraitFrame>
@@ -85,16 +89,14 @@ export function CloneReferenceInputs() {
                   fit="contain"
                 />
               </ReferencePortraitFrame>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-[11px] font-medium">Collection reference</span>
-                <button
-                  type="button"
-                  onClick={onClearCollection}
-                  className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
-                >
-                  Change
-                </button>
-              </div>
+              <SlotCaption
+                title="Collection reference"
+                action={
+                  <Button variant="link" onClick={onClearCollection}>
+                    Change
+                  </Button>
+                }
+              />
             </>
           ) : selectedSavedReference ? (
             <>
@@ -106,38 +108,34 @@ export function CloneReferenceInputs() {
                   fit="contain"
                 />
               </ReferencePortraitFrame>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-[11px] font-medium">Saved reference</span>
-                <button
-                  type="button"
-                  onClick={onClearSavedReference}
-                  className="text-[12px] font-semibold text-[var(--pf-link)] hover:underline"
-                >
-                  Change
-                </button>
-              </div>
+              <SlotCaption
+                title="Saved reference"
+                action={
+                  <Button variant="link" onClick={onClearSavedReference}>
+                    Change
+                  </Button>
+                }
+              />
             </>
           ) : selectedRef?.status === "generating" ? (
-            <ReferencePortraitFrame className="flex-col items-center justify-center bg-[var(--pf-active)] p-4 text-center">
-              <Loader2 className="size-7 animate-spin text-muted-foreground" />
-              <span className="mt-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Generating reference
-              </span>
-              <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/70">
-                Creating a still from the selected source and identity.
-              </span>
-            </ReferencePortraitFrame>
+            <>
+              <ReferencePortraitFrame className="items-center justify-center bg-raised">
+                <span className="wb-live-dot" />
+              </ReferencePortraitFrame>
+              <SlotCaption title="Generating reference" />
+            </>
           ) : selectedRef?.status === "failed" ? (
-            <ReferencePortraitFrame className="flex-col items-center justify-center bg-destructive/10 p-4 text-center">
-              <span className="text-xs font-semibold uppercase tracking-widest text-destructive">
-                Reference failed
-              </span>
-              {selectedRef.error && (
-                <span className="mt-2 min-w-0 max-w-[220px] break-words text-[12px] leading-4 text-destructive/80 [overflow-wrap:anywhere]">
-                  {selectedRef.error}
-                </span>
-              )}
-            </ReferencePortraitFrame>
+            <>
+              <ReferencePortraitFrame className="flex-col items-center justify-center gap-2 bg-bad-tint p-3 text-center">
+                <Icon name="x" size={18} strokeWidth={2.5} className="text-bad" />
+                {selectedRef.error && (
+                  <span className="min-w-0 max-w-full text-[12px] leading-4 text-fg-secondary [overflow-wrap:anywhere]">
+                    {selectedRef.error}
+                  </span>
+                )}
+              </ReferencePortraitFrame>
+              <SlotCaption title="Reference failed" tone="bad" />
+            </>
           ) : selectedRef?.status === "completed" && selectedRef.fileId ? (
             <>
               <ReferencePortraitFrame>
@@ -148,17 +146,11 @@ export function CloneReferenceInputs() {
                   fit="contain"
                 />
               </ReferencePortraitFrame>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <span className="block text-[11px] font-medium">Generated reference</span>
-                  <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                    Variant #{selectedRefIndex + 1}
-                  </span>
-                </div>
-                <Badge variant="outline" className="pf-status-success">
-                  Ready
-                </Badge>
-              </div>
+              <SlotCaption title="Generated reference">
+                <span className="text-[12px] leading-4 text-fg-muted">
+                  Variant {selectedRefIndex + 1}
+                </span>
+              </SlotCaption>
             </>
           ) : primaryAvatarReference ? (
             <>
@@ -170,30 +162,22 @@ export function CloneReferenceInputs() {
                   fit="contain"
                 />
               </ReferencePortraitFrame>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <span className="block text-[11px] font-medium">Identity preview</span>
-                  <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                    {primaryAvatarReference.label} • {primaryAvatarReference.detail}
-                  </span>
-                </div>
-                {identityPack?.status === "queued" || identityPack?.status === "processing" || isStartingIdentityPack ? (
-                  <Badge variant="outline" className="pf-status-warning">
-                    Preparing
-                  </Badge>
-                ) : null}
-              </div>
+              <SlotCaption
+                title="Identity preview"
+                action={preparing ? <StatusChip tone="warn">Preparing</StatusChip> : null}
+              >
+                <span className="text-[12px] leading-4 text-fg-muted [overflow-wrap:anywhere]">
+                  {primaryAvatarReference.label} · {primaryAvatarReference.detail}
+                </span>
+              </SlotCaption>
             </>
           ) : (
-            <ReferencePortraitFrame className="flex-col items-center justify-center border border-dashed border-[var(--pf-border-strong)] bg-[var(--pf-active)] p-4 text-center">
-              <Users className="size-6 text-muted-foreground/60" />
-              <span className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Choose identity
-              </span>
-              <span className="mt-1 max-w-[180px] text-[12px] leading-4 text-muted-foreground/60">
-                Identity preview appears here.
-              </span>
-            </ReferencePortraitFrame>
+            <>
+              <ReferencePortraitFrame className="items-center justify-center border border-dashed border-edge bg-transparent text-fg-muted">
+                <Icon name="characters" size={20} />
+              </ReferencePortraitFrame>
+              <SlotCaption title="Choose identity" />
+            </>
           )}
         </div>
       </div>
@@ -201,6 +185,36 @@ export function CloneReferenceInputs() {
   );
 }
 
+const SLOT = "flex w-full min-w-0 max-w-[180px] flex-col gap-2";
+
+function SlotCaption({
+  title,
+  tone,
+  action,
+  children,
+}: {
+  title: string;
+  tone?: "bad";
+  action?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="flex min-w-0 items-center justify-between gap-2">
+      <div className="flex min-w-0 flex-col">
+        <span
+          className={cn(
+            "truncate text-[13px] font-semibold leading-4",
+            tone === "bad" ? "text-bad" : "text-fg"
+          )}
+        >
+          {title}
+        </span>
+        {children}
+      </div>
+      {action}
+    </div>
+  );
+}
 
 function ReferencePortraitFrame({
   children,
@@ -213,7 +227,7 @@ function ReferencePortraitFrame({
     <div
       data-reference-portrait-frame="true"
       className={cn(
-        "relative mx-auto flex aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-[#09090B]",
+        "relative flex aspect-[9/16] w-full overflow-hidden rounded-lg bg-media",
         className
       )}
     >

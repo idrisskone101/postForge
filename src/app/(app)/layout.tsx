@@ -1,77 +1,80 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { ClickFocus } from "@/components/click-focus";
 import { DemoBlockedNotice } from "@/components/demo-blocked-notice";
-import { Sidebar } from "@/components/sidebar-lazy";
-import { isDemoMode } from "@/lib/demo/mode";
+import { FocusReveal } from "@/components/focus-reveal";
+import { ScrollFadeFallback } from "@/components/scroll-fade-fallback";
+import { ShellStateSync } from "@/components/shell-state-sync";
+import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { isMissingPagePath } from "@/lib/app-routes";
+import { isDemoMode } from "@/lib/demo/mode";
+import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
+import { readWorkspaceName } from "@/lib/workspace-name";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
+import "../globals.css";
 
 export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = (await headers()).get("x-pathname") || "/";
+  const [requestHeaders, workspaceName] = await Promise.all([headers(), readWorkspaceName()]);
+  const pathname = requestHeaders.get("x-pathname") || "/";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <link
+          rel="preload"
+          href="/fonts/figtree-latin-wght-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <style>{FIRST_PAINT_CSS}</style>
-        {isDemoMode() ? (
-          // The demo opens on pages full of sample media, which holds back
-          // window.load and with it the deferred stylesheet below. A first-time
-          // visitor would watch an unstyled page for about a second, so the
-          // demo takes the full stylesheet up front and the loader finds it.
-          // eslint-disable-next-line @next/next/no-css-tags
-          <link id="pf-dashboard-css" rel="stylesheet" href="/dashboard.css" />
-        ) : null}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t==="dark");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.remove("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,
+            __html: `(function(){try{var r=document.documentElement,t=localStorage.getItem("postforge-theme"),s=localStorage.getItem("postforge-sidebar-collapsed");r.classList.toggle("dark",t!=="light");if(s==="true")r.dataset.sidebarCollapsed="true";else delete r.dataset.sidebarCollapsed}catch(e){document.documentElement.classList.add("dark");delete document.documentElement.dataset.sidebarCollapsed}})()`,
           }}
         />
       </head>
       <body className="antialiased">
-        <div
-          id="pf-direction-contract"
-          hidden
-          dangerouslySetInnerHTML={{
-            __html: `<!--
-THESIS: PostForge is a calm professional instrument: the category-standard SaaS dashboard executed at Linear and Resend craft level, where restraint is the identity and the operator's media, pipeline state, and spend carry all the color. Refuses ornamental metaphor skins; clarity is the brand.
-OWN-WORLD: token-driven zinc-neutral light + dark themes; hairline-bordered cards with quiet elevation and 6-8px radii; Geist carries UI type, Geist Mono is the data voice for counts, costs, and dates; one coral #FF4A20 accent reserved for primary actions and active states.
-STORY: the operator opens the app, scans what is running, reviews finished media, approves publishing, and checks spend; nothing competes for attention.
-FIRST VIEWPORT: the existing left sidebar with its expand/collapse behavior; home is a quiet header, a compact stat strip, then the review queue and recent media.
-FORM: canon — category standard played straight, user-chosen from direction roll c509faa7; craft bar Linear + Resend.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
--->`,
-          }}
-        />
+        <ShellStateSync />
         <div id="workspace-root">
-          <script
-            dangerouslySetInnerHTML={{
-              __html: DASHBOARD_CSS_LOADER,
-            }}
-          />
-          <noscript>
-            <link rel="stylesheet" href="/dashboard.css" />
-          </noscript>
+          <a href="#workspace-shell" className="wb-skip-link">
+            Skip to content
+          </a>
+          <Sidebar initialWorkspaceName={workspaceName} />
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
-          <Sidebar />
           {isDemoMode() ? <DemoBlockedNotice /> : null}
         </div>
+        <FocusReveal />
+        <ClickFocus />
+        <ScrollFadeFallback />
       </body>
     </html>
   );
 }
 
-const DASHBOARD_CSS_LOADER = `(function(){function load(){if(document.getElementById("pf-dashboard-css"))return;var l=document.createElement("link");l.id="pf-dashboard-css";l.rel="stylesheet";l.href="/dashboard.css";document.head.appendChild(l)}if(document.readyState==="complete")setTimeout(load,0);else window.addEventListener("load",function(){setTimeout(load,0)})})()`;
-
-export const metadata: Metadata = {
-  title: isDemoMode() ? "PostForge demo" : "PostForge",
-  description: isDemoMode()
-    ? "Demo workspace for PostForge, a self-hosted AI content pipeline. Sample data only."
-    : "Self-hosted AI content generation platform",
-};
+/** A route without a title of its own is named after its navigation item. */
+export async function generateMetadata(): Promise<Metadata> {
+  // The middleware names the path. A request it does not see (a missing file) has no section.
+  const pathname = (await headers()).get("x-pathname");
+  const section =
+    pathname === null
+      ? undefined
+      : isMissingPagePath(pathname)
+        ? "Page not found"
+        : getActiveWorkspaceItem(pathname)?.label;
+  const product = isDemoMode() ? "PostForge demo" : "PostForge";
+  return {
+    title: section ? `${section} - ${product}` : product,
+    description: isDemoMode()
+      ? "Demo workspace for PostForge, a self-hosted AI content pipeline. Sample data only."
+      : "Self-hosted AI content generation platform",
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

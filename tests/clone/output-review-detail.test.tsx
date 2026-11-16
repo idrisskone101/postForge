@@ -66,7 +66,6 @@ const markup = renderToStaticMarkup(
     review={{
       job: completedJob,
       isRetrying: false,
-      onBack: () => {},
       onRetry: () => {},
       onDownload: () => {},
       onNewClone: () => {},
@@ -74,32 +73,32 @@ const markup = renderToStaticMarkup(
   />
 );
 
-assert.match(markup, /Clone Output/);
-assert.match(markup, /Review and approve your generated media asset/);
-assert.match(markup, /data-media-preview-frame="detail"/);
-assert.match(markup, /object-contain/);
-assert.match(markup, /Approve Output/);
-assert.match(markup, /Reject Output/);
-assert.match(markup, /Ready for handoff/);
-assert.match(markup, /Not usable/);
-assert.equal(
-  (markup.match(/Output review status:/g) ?? []).length,
-  0
-);
-assert.match(markup, /Download/);
-assert.match(markup, /Retry/);
-assert.match(markup, /Handoff/);
-assert.match(markup, /Source Selection/);
 assert.match(markup, /Morning skincare testimonial/);
+assert.match(markup, /data-clone-output-media="video"/);
+assert.match(markup, /object-contain/);
+assert.match(markup, /Approve output/);
+assert.match(markup, /Reject output/);
+assert.match(markup, /New clone/);
+assert.equal((markup.match(/Output review status:/g) ?? []).length, 0);
+assert.match(markup, /aria-label="Download output"/);
+assert.match(markup, /<button[^>]*>(?:<svg.*?<\/svg>)?Retry clone<\/button>/);
+assert.doesNotMatch(markup, /aria-label="Retry clone"/);
+assert.match(markup, /Handoff/);
+assert.match(markup, /View original/);
+assert.match(markup, /href="https:\/\/www\.tiktok\.com\/@creator\/video\/123"/);
 assert.match(markup, /View source video/);
 assert.match(markup, /\/api\/ugc-clone\/preview\?path=%2Ftmp%2Fsource\.mp4/);
 assert.doesNotMatch(markup, /<a[^>]+href="\/api\/ugc-clone\/preview/);
-assert.match(markup, /Identity Used/);
 assert.match(markup, /Maya Studio/);
 assert.match(markup, /src="\/api\/avatars\/avatar-456"/);
-assert.match(markup, /Production State/);
 assert.match(markup, /wan-2\.2-video/);
 assert.match(markup, /\$0\.31/);
+assert.match(markup, /2 min 4 s/);
+assert.match(markup, /1080 x 1920/);
+assert.match(markup, /Input checks/);
+assert.match(markup, /4 \/ 4/);
+assert.doesNotMatch(markup, /wb-step-rail/);
+assert.doesNotMatch(markup, /#[0-9A-Fa-f]{6}/);
 
 const longFailureToken = `request_${"x".repeat(512)}`;
 const longFailureMarkup = renderToStaticMarkup(
@@ -113,7 +112,6 @@ const longFailureMarkup = renderToStaticMarkup(
       },
       isRetrying: false,
       actionFeedback: { tone: "error", message: longFailureToken },
-      onBack: () => {},
       onRetry: () => {},
       onDownload: () => {},
       onNewClone: () => {},
@@ -123,11 +121,14 @@ const longFailureMarkup = renderToStaticMarkup(
 
 assert.equal(/\s/.test(longFailureToken), false);
 assert.match(longFailureMarkup, new RegExp(longFailureToken));
-assert.match(longFailureMarkup, /min-w-0/);
 assert.match(longFailureMarkup, /\[overflow-wrap:anywhere\]/);
-assert.match(longFailureMarkup, /bg-\[#09090B\]/);
-assert.doesNotMatch(longFailureMarkup, /bg-card\/90/);
-assert.doesNotMatch(longFailureMarkup, /bg-card\/80/);
+assert.match(longFailureMarkup, /Clone failed/);
+assert.match(longFailureMarkup, /Retry clone/);
+assert.doesNotMatch(longFailureMarkup, /Approve output/);
+assert.match(longFailureMarkup, /wb-step-rail/);
+assert.match(longFailureMarkup, />Queued</);
+assert.match(longFailureMarkup, /Processing/);
+assert.match(longFailureMarkup, /, failed/);
 
 const portraitSourceFallbackMarkup = renderToStaticMarkup(
   <CloneOutputReviewDetail
@@ -143,7 +144,6 @@ const portraitSourceFallbackMarkup = renderToStaticMarkup(
         ],
       },
       isRetrying: false,
-      onBack: () => {},
       onRetry: () => {},
       onDownload: () => {},
       onNewClone: () => {},
@@ -151,8 +151,8 @@ const portraitSourceFallbackMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(portraitSourceFallbackMarkup, /9:16/);
-assert.match(portraitSourceFallbackMarkup, /1080 x 1920/);
+assert.match(portraitSourceFallbackMarkup, /aspect-ratio:1080 \/ 1920/);
+assert.match(portraitSourceFallbackMarkup, /Resolution<\/dt><dd>-</);
 
 const uuidOnlyAvatarId = "8e18566f-49cf-4607-ace1-15b6161d00cc";
 const avatarFallbackMarkup = renderToStaticMarkup(
@@ -168,7 +168,6 @@ const avatarFallbackMarkup = renderToStaticMarkup(
         },
       },
       isRetrying: false,
-      onBack: () => {},
       onRetry: () => {},
       onDownload: () => {},
       onNewClone: () => {},
@@ -199,7 +198,6 @@ const collectionReferenceMarkup = renderToStaticMarkup(
         },
       },
       isRetrying: false,
-      onBack: () => {},
       onRetry: () => {},
       onDownload: () => {},
       onNewClone: () => {},
@@ -213,3 +211,126 @@ assert.match(
   collectionReferenceMarkup,
   /src="\/api\/files\/collection%20asset%2Fportrait-1"/
 );
+
+function renderJob(
+  job: CloneOutputReviewJob,
+  extra: Partial<Parameters<typeof CloneOutputReviewDetail>[0]["review"]> = {}
+) {
+  return renderToStaticMarkup(
+    <CloneOutputReviewDetail
+      review={{
+        job,
+        isRetrying: false,
+        onRetry: () => {},
+        onDownload: () => {},
+        onNewClone: () => {},
+        ...extra,
+      }}
+    />
+  );
+}
+
+const generatingMarkup = renderJob({
+  ...completedJob,
+  status: "processing",
+  queueStage: "submitted",
+  outputs: [],
+  durationMs: null,
+});
+assert.match(generatingMarkup, /wb-step-rail/);
+assert.match(generatingMarkup, /data-state="current"[^>]*>.*?Generating/);
+assert.equal((generatingMarkup.match(/data-state="done"/g) ?? []).length, 2);
+assert.match(generatingMarkup, /wb-live-dot/);
+assert.match(generatingMarkup, /Started /);
+assert.match(generatingMarkup, /Time<\/dt><dd>-</);
+assert.doesNotMatch(generatingMarkup, /aria-label="Download output"/);
+assert.doesNotMatch(generatingMarkup, /wb-meter|role="progressbar"/);
+assert.match(generatingMarkup, /<button[^>]*disabled[^>]*>.*?Approve output/);
+
+const queuedMarkup = renderJob({
+  ...completedJob,
+  status: "queued",
+  queueStage: "queued",
+  startedAt: null,
+  outputs: [],
+});
+assert.match(queuedMarkup, /data-state="current"[^>]*>.*?Queued/);
+assert.match(queuedMarkup, />Queued \d/);
+
+const savingMarkup = renderJob({
+  ...completedJob,
+  status: "processing",
+  queueStage: "downloading",
+  outputs: [],
+});
+assert.match(savingMarkup, /data-state="current"[^>]*>.*?Saving output/);
+
+const knownFailureMarkup = renderJob({
+  ...completedJob,
+  status: "failed",
+  queueStage: "preparing",
+  error: "Source clip could not be read",
+  outputs: [],
+});
+assert.match(knownFailureMarkup, /Preparing<span class="sr-only">, failed/);
+assert.match(knownFailureMarkup, /Source clip could not be read/);
+
+const unstartedFailureMarkup = renderJob({
+  ...completedJob,
+  status: "failed",
+  queueStage: "failed",
+  startedAt: null,
+  error: "Queue rejected",
+  outputs: [],
+});
+assert.match(unstartedFailureMarkup, /Queued<span class="sr-only">, failed/);
+
+const retryingMarkup = renderJob(
+  { ...completedJob, status: "failed", error: "x", outputs: [] },
+  { isRetrying: true }
+);
+assert.match(retryingMarkup, /<button[^>]*disabled[^>]*>.*?Retrying clone/);
+
+const approvedMarkup = renderJob({
+  ...completedJob,
+  outputs: [
+    {
+      ...completedJob.outputs[0],
+      reviewStatus: { value: "approved_output", label: "Approved Output", tone: "approved" },
+    },
+  ],
+});
+assert.match(approvedMarkup, /aria-pressed="true"[^>]*>.*?Approved</);
+assert.match(approvedMarkup, /Reject output/);
+
+const rejectedMarkup = renderJob({
+  ...completedJob,
+  outputs: [
+    {
+      ...completedJob.outputs[0],
+      reviewStatus: { value: "rejected_output", label: "Rejected Output", tone: "rejected" },
+    },
+  ],
+});
+assert.match(rejectedMarkup, /aria-pressed="true"[^>]*>.*?Rejected</);
+assert.match(rejectedMarkup, /Approve output/);
+
+const pendingMarkup = renderJob(completedJob, { pendingReviewStatus: "approved_output" });
+assert.match(pendingMarkup, /Approving/);
+
+const variantsMarkup = renderJob({
+  ...completedJob,
+  outputs: [
+    completedJob.outputs[0],
+    { ...completedJob.outputs[0], id: "file-2" },
+    { ...completedJob.outputs[0], id: "file-3" },
+  ],
+});
+assert.equal((variantsMarkup.match(/aria-label="View variant \d"/g) ?? []).length, 3);
+assert.match(variantsMarkup, /1 \/ 3/);
+
+const toastMarkup = renderJob(completedJob, {
+  actionFeedback: { tone: "success", message: "Output approved and ready for handoff." },
+});
+assert.match(toastMarkup, /wb-toast-region/);
+assert.match(toastMarkup, /role="status"/);

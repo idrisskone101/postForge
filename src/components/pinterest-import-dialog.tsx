@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Images } from "lucide-react";
 
 import { PinterestImportFooter } from "@/components/pinterest-import-footer";
 import { PinterestImportResults } from "@/components/pinterest-import-results";
@@ -13,11 +12,13 @@ import type {
 } from "@/components/pinterest-import-workspace";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { IconButton } from "@/components/workbench";
 import {
   fetchPinterestCandidates,
   importPinterestImages,
@@ -285,19 +286,25 @@ export function PinterestImportDialog({
         if (!importing) onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col overflow-hidden rounded-none border-border p-0 sm:h-auto sm:max-h-[92vh] sm:w-[calc(100vw-2rem)] sm:max-w-4xl! sm:rounded-lg">
-        <DialogHeader className="shrink-0 border-b border-border px-6 py-5 pr-14">
-          <DialogTitle className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.02em] text-foreground">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-[var(--pf-active)] text-muted-foreground">
-              <Images className="size-4" />
-            </span>
-            {workflow === "slideshow" ? "Pinterest references" : "Import from Pinterest"}
-          </DialogTitle>
-          <DialogDescription className="text-[11px] text-muted-foreground">
-            {workflow === "slideshow"
-              ? "Choose Pinterest images, then use them as slide images or create visual style JSON. PostForge saves copies to a new Collection either way."
-              : "Load a public Pinterest page, hand-pick its images, and save the originals into your shared library. Import fails closed when page data is unavailable."}
-          </DialogDescription>
+      <DialogContent
+        showCloseButton={false}
+        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none! flex-col gap-0 overflow-hidden rounded-none p-0 sm:h-[min(92vh,720px)] sm:max-h-[92vh] sm:w-[calc(100vw-2rem)] sm:max-w-[880px]! sm:rounded-xl"
+      >
+        <DialogHeader className="shrink-0 flex-row items-center justify-between gap-3 px-6 pb-0 pt-[max(20px,env(safe-area-inset-top))] max-sm:px-4">
+          <div className="flex min-w-0 flex-col gap-1">
+            <DialogTitle className="text-[16px] font-bold leading-5 tracking-[-0.01em] text-fg">
+              {workflow === "slideshow" ? "Pinterest references" : "Import from Pinterest"}
+            </DialogTitle>
+            {workflow === "slideshow" ? (
+              <DialogDescription className="wb-meta">
+                Copies are saved to a new collection either way.
+              </DialogDescription>
+            ) : null}
+          </div>
+          <DialogClose
+            disabled={importing}
+            render={<IconButton icon="x" label="Close" variant="ghost" size={30} />}
+          />
         </DialogHeader>
 
         <PinterestImportSearch workspace={workspace} />

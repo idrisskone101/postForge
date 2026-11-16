@@ -38,6 +38,51 @@ export type SlideshowRenderTextSettings = {
   backgroundRadius?: number;
 };
 
+export type SlideshowOverlayBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export const SLIDESHOW_OVERLAY_LAYERS = ["eyebrow", "headline", "body"] as const;
+export type SlideshowOverlayLayer = (typeof SLIDESHOW_OVERLAY_LAYERS)[number];
+
+// Where the renderer drew each copy block, in canvas pixels. A block with no copy has no box.
+export type SlideshowOverlayBoxes = Partial<
+  Record<SlideshowOverlayLayer, SlideshowOverlayBox>
+>;
+
+export const SLIDESHOW_OVERLAY_BOXES_HEADER = "X-Slideshow-Overlay-Boxes";
+
+export function parseSlideshowOverlayBoxes(
+  header: string | null,
+): SlideshowOverlayBoxes {
+  if (!header) return {};
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(header);
+  } catch {
+    return {};
+  }
+  if (typeof parsed !== "object" || parsed === null) return {};
+  const boxes: SlideshowOverlayBoxes = {};
+  for (const layer of SLIDESHOW_OVERLAY_LAYERS) {
+    const box: unknown = (parsed as Record<string, unknown>)[layer];
+    if (typeof box !== "object" || box === null) continue;
+    const { x, y, width, height } = box as Record<string, unknown>;
+    if (
+      typeof x === "number" &&
+      typeof y === "number" &&
+      typeof width === "number" &&
+      typeof height === "number"
+    ) {
+      boxes[layer] = { x, y, width, height };
+    }
+  }
+  return boxes;
+}
+
 export function getSlideshowDimensions(aspectRatio: string) {
   return SLIDESHOW_ASPECT_DIMENSIONS[aspectRatio] ?? SLIDESHOW_ASPECT_DIMENSIONS["9:16"];
 }

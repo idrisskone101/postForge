@@ -166,7 +166,7 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
       ? selectedCollection.assetIds.length > 0
         ? "The first collection asset is unavailable. Check the collection and try again."
         : `${selectedCollection.name} does not contain a preview asset yet.`
-      : "Attach a generated asset or choose a visual collection to preview real media.";
+      : null;
   const recordSignature = JSON.stringify(record);
   const destinationReadiness = resolveAutomationDestination(
     record.destination,
@@ -176,9 +176,9 @@ export function useAutomationBuilder(search: AutomationBuilderSearch) {
       : undefined
   );
   const saveStatus = saving
-    ? "Saving draft…"
+    ? "Saving draft"
     : saveFailed
-      ? "Save failed — try again"
+      ? "Save failed, try again"
       : savedRecordSignature === recordSignature
         ? "Draft saved"
         : "Unsaved changes";

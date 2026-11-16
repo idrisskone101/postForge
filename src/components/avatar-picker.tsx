@@ -1,21 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Loader2, User } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { apiDelete, apiGet } from "@/lib/api/client";
-import { getAvatarOptionLabel } from "@/lib/avatar-workflow";
+import { avatarLabelMatchesSearch, getAvatarTileLabel } from "@/lib/avatar-workflow";
 import type {
   Avatar,
   AvatarCreatedHandoff,
   AvatarListPage,
   AvatarPickerMode,
 } from "@/lib/avatar-picker-model";
+import { loadAvatars, rememberAvatars, rememberedAvatars } from "@/lib/avatar-list-cache";
 import { userErrorMessage } from "@/lib/user-error-message";
 import {
   AvatarActionErrorNotice,
   AvatarCreationCard,
   AvatarOptionCard,
+  AvatarPickerSkeleton,
 } from "@/components/avatar-picker-cards";
+import { Button, EmptyState } from "@/components/workbench";
+import { cn } from "@/lib/utils";
 import { AvatarGalleryPanel } from "@/components/avatar-picker-gallery";
 import { AvatarGeneratePanel } from "@/components/avatar-picker-generate";
 import { AvatarImportMode } from "@/components/avatar-picker-import-mode";
@@ -23,23 +26,35 @@ import { AvatarImportMode } from "@/components/avatar-picker-import-mode";
 export function AvatarPicker({
   selectedId,
   onSelect,
+  search,
+  onModeChange,
 }: {
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** Filters the loaded identities by the label on their tile. The field belongs to the caller. */
+  search?: AvatarSearch;
+  /** Tells the caller which view is showing, so a search field can leave when there is no list to filter. */
+  onModeChange?: (mode: AvatarPickerMode) => void;
 }) {
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
-  const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [avatars, setAvatars] = useState<Avatar[]>(() => rememberedAvatars()?.items ?? []);
+  const [avatarsNextCursor, setAvatarsNextCursor] = useState<string | null>(
+    () => rememberedAvatars()?.nextCursor ?? null
+  );
+  const [isLoading, setIsLoading] = useState(() => rememberedAvatars() === null);
   const [isLoadingMoreAvatars, setIsLoadingMoreAvatars] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [mode, setMode] = useState<AvatarPickerMode>("grid");
+  const [mode, setModeState] = useState<AvatarPickerMode>("grid");
+  const setMode = (next: AvatarPickerMode) => {
+    setModeState(next);
+    onModeChange?.(next);
+  };
   const [actionError, setActionError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchAvatars = async () => {
     try {
       setActionError(null);
-      const page = await apiGet<AvatarListPage>("/api/avatars");
+      const page = await loadAvatars();
       setAvatars(page.items);
       setAvatarsNextCursor(page.nextCursor);
     } catch (err) {
@@ -74,6 +89,10 @@ export function AvatarPicker({
   useEffect(() => {
     fetchAvatars();
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) rememberAvatars({ items: avatars, nextCursor: avatarsNextCursor });
+  }, [isLoading, avatars, avatarsNextCursor]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -127,23 +146,22 @@ export function AvatarPicker({
   const handleCreated = (avatar: Avatar) => {
     setAvatars((prev) => [avatar, ...prev]);
     onSelect(avatar.id);
-    setMode("grid");
+    backToGrid();
   };
 
-  const backToGrid = () => setMode("grid");
+  // Back and a finished mode both remove the control that had focus, so the list hands it to New character.
+  const returnFocus = useRef(false);
+  const backToGrid = () => {
+    returnFocus.current = true;
+    setMode("grid");
+  };
   const createdHandoff: AvatarCreatedHandoff = {
     onCreated: handleCreated,
     onBack: backToGrid,
   };
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-4 gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
-        ))}
-      </div>
-    );
+    return <AvatarPickerSkeleton />;
   }
 
   switch (mode) {
@@ -161,15 +179,38 @@ export function AvatarPicker({
     }
   }
 
-  const selectedAvatar = avatars.find((avatar) => avatar.id === selectedId);
-  const orderedAvatars = (
-    selectedAvatar
-      ? [selectedAvatar, ...avatars.filter((avatar) => avatar.id !== selectedAvatar.id)]
-      : avatars
+  const labelled = avatars.map((avatar, index) => ({
+    avatar,
+    label: getAvatarTileLabel(avatar.name, index),
+  }));
+  const query = search?.query.trim() ?? "";
+  const matching = query
+    ? labelled.filter((item) => avatarLabelMatchesSearch(item.label, query))
+    : labelled;
+  const selected = matching.find((item) => item.avatar.id === selectedId);
+  const ordered = selected
+    ? [selected, ...matching.filter((item) => item !== selected)]
+    : matching;
+
+  const avatarRow = (items: typeof labelled) => (
+    <div className={AVATAR_ROW} style={avatarRowStyle(items.length)}>
+      {items.map(({ avatar, label }) => (
+        <AvatarOptionCard
+          key={avatar.id}
+          option={{
+            avatar,
+            label,
+            isSelected: selectedId === avatar.id,
+            onSelect: () => onSelect(avatar.id),
+            onDelete: (event) => handleDelete(avatar.id, event),
+          }}
+        />
+      ))}
+    </div>
   );
 
   return (
-    <div className="space-y-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -185,34 +226,50 @@ export function AvatarPicker({
         />
       )}
 
-      <div className="grid max-h-[520px] grid-cols-2 gap-3 overflow-y-auto pr-1 2xl:grid-cols-3">
-        {orderedAvatars.map((avatar, index) => {
-          const isSelected = selectedId === avatar.id;
-          const sourceIndex = avatars.findIndex((candidate) => candidate.id === avatar.id);
-          const avatarLabel = getAvatarOptionLabel(sourceIndex >= 0 ? sourceIndex : index);
-          return (
-            <AvatarOptionCard
-              key={avatar.id}
-              option={{
-                avatar,
-                label: avatarLabel,
-                isSelected,
-                onSelect: () => onSelect(avatar.id),
-                onDelete: (event) => handleDelete(avatar.id, event),
-              }}
-            />
-          );
-        })}
-
-        {orderedAvatars.length === 0 && (
-          <div className="flex min-h-[168px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/25 py-6 text-muted-foreground">
-            <User className="mb-2 size-7" />
-            <p className="text-xs font-semibold">No saved identities yet</p>
-          </div>
-        )}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start [[data-avatar-stacked]_&]:flex-col [[data-avatar-stacked]_&]:items-stretch">
+        <div
+          className={cn(
+            "wb-scroll-fade -m-1 max-h-[560px] min-w-0 flex-1 overflow-y-auto p-1 [scrollbar-width:thin]",
+            // A search keeps the full row's scrollbar track, so an always-on scrollbar does not take its
+            // height away and move the controls below while typing.
+            query && rowScrolls(labelled.length) && "overflow-x-scroll [[data-avatar-stacked]_&]:overflow-x-auto"
+          )}
+        >
+          {avatars.length === 0 ? (
+            <EmptyState icon="characters" title="No saved Avatars yet" className="h-[216px] min-h-0" />
+          ) : query ? (
+            // While a search is on, the unfiltered row stays in the layout, unseen, so the result
+            // keeps its height however few tiles match and the controls below do not move.
+            <div className="grid">
+              <div aria-hidden="true" inert className="invisible col-start-1 row-start-1 min-w-0 overflow-hidden">
+                {avatarRow(labelled)}
+              </div>
+              {ordered.length === 0 ? (
+                <EmptyState
+                  icon="search"
+                  title={avatarsNextCursor ? "No match in the characters loaded so far" : "No characters match"}
+                  className="col-start-1 row-start-1 min-h-0"
+                >
+                  <Button variant="strong" onClick={search?.onClear}>
+                    Clear search
+                  </Button>
+                </EmptyState>
+              ) : (
+                <div className="col-start-1 row-start-1 min-w-0">{avatarRow(ordered)}</div>
+              )}
+            </div>
+          ) : (
+            avatarRow(ordered)
+          )}
+        </div>
 
         <AvatarCreationCard
           isUploading={isUploading}
+          takeFocus={() => {
+            const returning = returnFocus.current;
+            returnFocus.current = false;
+            return returning;
+          }}
           onUpload={() => fileInputRef.current?.click()}
           onGenerate={() => setMode("generate")}
           onGallery={() => setMode("gallery")}
@@ -220,16 +277,42 @@ export function AvatarPicker({
         />
       </div>
       {avatarsNextCursor && (
-        <button
-          type="button"
-          onClick={() => void loadMoreAvatars()}
-          disabled={isLoadingMoreAvatars}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isLoadingMoreAvatars && <Loader2 className="size-3.5 animate-spin" />}
-          {isLoadingMoreAvatars ? "Loading..." : "Load more"}
-        </button>
+        <div className="flex min-h-8 items-center gap-3">
+          <Button size={32} className="shrink-0" onClick={() => void loadMoreAvatars()} disabled={isLoadingMoreAvatars}>
+            {isLoadingMoreAvatars ? "Loading" : "Load more"}
+          </Button>
+          {/* Two 16px lines beside the button are the button's own 32px, so the note adds no height on a phone. */}
+          {query ? (
+            <p role="status" className="min-w-0 text-[13px] leading-4 text-fg-secondary">
+              Only the {avatars.length} loaded are searched.
+            </p>
+          ) : null}
+        </div>
       )}
     </div>
   );
+}
+
+export type AvatarSearch = { query: string; onClear: () => void };
+
+const AVATAR_ROW =
+  "grid grid-flow-col grid-cols-[var(--avatar-template)] gap-3 auto-cols-[max(120px,calc((100%-var(--avatar-gaps))/var(--avatar-cols)))] [[data-avatar-stacked]_&]:grid-flow-row [[data-avatar-stacked]_&]:auto-cols-auto [[data-avatar-stacked]_&]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]";
+
+/**
+ * One row. Up to four identities share the width in equal fractions, which land on whole pixels
+ * where a percentage would not; from five on, four and a part of the fifth show, so the row reads
+ * as scrollable.
+ */
+function rowScrolls(count: number) {
+  return count > 4;
+}
+
+function avatarRowStyle(count: number): CSSProperties {
+  const scrolls = rowScrolls(count);
+  const visible = scrolls ? 4.4 : Math.max(count, 3);
+  return {
+    "--avatar-cols": visible,
+    "--avatar-gaps": `${(Math.ceil(visible) - 1) * 12}px`,
+    "--avatar-template": scrolls ? "none" : `repeat(${visible}, minmax(120px, 1fr))`,
+  } as CSSProperties;
 }

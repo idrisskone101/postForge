@@ -1,5 +1,4 @@
 import { calculateEstimatedCost } from "@/lib/ai/models";
-import { RATIO_LABELS } from "./form-constants";
 import type { GenerateFormModel } from "./form-types";
 
 export function getGenerateFormViewModel({
@@ -21,7 +20,10 @@ export function getGenerateFormViewModel({
   const isImage = model?.type === "image";
   const isVideo = model?.type === "video";
   const isSwap = model?.capabilities.subjectSwap === true;
-  const requiresVideoSeed = model?.id === "kling-3.0-i2v" && !avatarName;
+  const requiresVideoSeed =
+    model?.capabilities.imageToVideo === true &&
+    model.capabilities.textToVideo !== true &&
+    !avatarName;
   const canSubmit =
     Boolean(model) &&
     prompt.trim().length > 0 &&
@@ -52,7 +54,9 @@ export function getGenerateFormViewModel({
         enableAudio: enableAudio && model.capabilities.nativeAudio === true,
       })
     : 0;
-  const availableRatios = model?.limits.aspectRatios ?? ["9:16", "1:1", "16:9"];
+  const availableRatios = [...(model?.limits.aspectRatios ?? ["9:16", "1:1", "16:9"])].sort(
+    (a, b) => ratioValue(a) - ratioValue(b)
+  );
   const outputOptions = Array.from(
     { length: Math.max(1, model?.limits.maxImages ?? 1) },
     (_, index) => index + 1
@@ -67,15 +71,6 @@ export function getGenerateFormViewModel({
       (a, b) => a - b
     );
   })();
-  const previewWidthClass =
-    aspectRatio === "9:16"
-      ? "w-[min(72%,310px)]"
-      : aspectRatio === "16:9"
-        ? "w-[min(96%,560px)]"
-        : "w-[min(86%,430px)]";
-  const variationCount = isImage ? numImages : 1;
-  const ratioLabel = RATIO_LABELS[aspectRatio] ?? aspectRatio;
-
   return {
     model,
     isImage,
@@ -88,10 +83,13 @@ export function getGenerateFormViewModel({
     availableRatios,
     outputOptions,
     durationOptions,
-    previewWidthClass,
-    variationCount,
-    ratioLabel,
   };
 }
 
 export type GenerateFormViewModel = ReturnType<typeof getGenerateFormViewModel>;
+
+/** Narrowest to widest, so the tiles read as one portrait-to-landscape run. */
+function ratioValue(ratio: string) {
+  const [width, height] = ratio.split(":").map(Number);
+  return width > 0 && height > 0 ? width / height : 1;
+}

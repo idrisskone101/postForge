@@ -1,0 +1,655 @@
+/*
+ * Workspace shell: floor, sidebar, mobile bar and drawer, page header.
+ * Values come from Paper "00 Shell" (3-0) and "19 Interaction notes" (4I2-0).
+ */
+@layer components {
+  /*
+   * Focus Ring Rule: a control brought into view by keyboard focus stops clear of the fixed mobile bar
+   * and of any bar pinned to the viewport bottom. A pinned bar publishes its height as
+   * --wb-pinned-bottom (publishPinnedBar); 28px more clears its 24px fade and the ring.
+   */
+  html {
+    scroll-padding-top: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top) + 12px);
+    scroll-padding-bottom: calc(var(--wb-pinned-bottom, 0px) + 28px);
+  }
+
+  @media (min-width: 768px) {
+    html {
+      scroll-padding-top: 12px;
+    }
+  }
+
+  /* Focus inside a floating layer (FocusReveal marks it) is above both bars: the page keeps its place. */
+  html[data-focus-overlay] {
+    scroll-padding-block: 6px;
+  }
+
+  #workspace-root {
+    min-height: 100dvh;
+    background: var(--pf-floor);
+    color: var(--pf-text);
+  }
+
+  #workspace-shell {
+    display: flex;
+    min-width: 0;
+    min-height: 100dvh;
+    flex-direction: column;
+    gap: var(--pf-gap);
+    overflow-x: clip;
+    padding-top: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top) + var(--pf-gap));
+    padding-right: max(var(--pf-page-pad), env(safe-area-inset-right));
+    padding-bottom: max(var(--pf-page-pad), env(safe-area-inset-bottom));
+    padding-left: max(var(--pf-page-pad), env(safe-area-inset-left));
+  }
+
+  .pf-content-viewport {
+    min-width: 0;
+    min-height: calc(
+      100dvh - var(--pf-mobile-bar-h) - env(safe-area-inset-top) - var(--pf-gap) - var(--pf-page-pad)
+    );
+  }
+
+  /* Mobile bar */
+  #workspace-mobile-bar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    height: calc(var(--pf-mobile-bar-h) + env(safe-area-inset-top));
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--pf-hairline);
+    background: var(--pf-floor);
+    /* lockPageScroll publishes the scrollbar width it replaced, so the bar does not move. */
+    padding: env(safe-area-inset-top) calc(max(16px, env(safe-area-inset-right)) + var(--pf-scroll-lock-pad, 0px)) 0
+      max(16px, env(safe-area-inset-left));
+  }
+
+  #workspace-mobile-bar > .sidebar-brand {
+    flex: 0 1 auto;
+  }
+
+  /* The 20px glyph ends on the 16px gutter; the 40px target overhangs it. */
+  #workspace-mobile-bar > .wb-icon-btn {
+    margin-right: -10px;
+    color: var(--pf-text-secondary);
+  }
+
+  #workspace-mobile-bar > .wb-icon-btn[data-quiet-focus]:focus-visible {
+    outline: none;
+  }
+
+  #workspace-mobile-bar > .wb-icon-btn > svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sidebar-mobile-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 80;
+    width: min(296px, calc(100vw - 48px));
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    background: var(--pf-floor);
+    padding: 0;
+    color: var(--pf-text);
+    box-shadow: var(--pf-float-shadow);
+  }
+
+  /* A pointer open parks focus on the drawer itself. It is a container, so it draws no ring. */
+  .sidebar-mobile-drawer:focus-visible {
+    outline: none;
+  }
+
+  /*
+   * The drawer is a native dialog. @starting-style gives the 220ms enter. The 160ms exit runs on
+   * [data-closing] while the dialog is still open, and the dialog closes when it ends.
+   */
+  .sidebar-mobile-drawer,
+  .sidebar-mobile-drawer::backdrop {
+    transition:
+      opacity var(--pf-dur-enter) var(--pf-ease),
+      transform var(--pf-dur-enter) var(--pf-ease);
+  }
+
+  @starting-style {
+    .sidebar-mobile-drawer[open],
+    .sidebar-mobile-drawer[open]::backdrop {
+      opacity: 0;
+    }
+
+    .sidebar-mobile-drawer[open] {
+      transform: translateX(-16px);
+    }
+  }
+
+  .sidebar-mobile-drawer[data-closing],
+  .sidebar-mobile-drawer[data-closing]::backdrop {
+    opacity: 0;
+    transition-duration: var(--pf-dur-exit);
+  }
+
+  .sidebar-mobile-drawer[data-closing] {
+    transform: translateX(-16px);
+  }
+
+  .sidebar-mobile-drawer::backdrop {
+    background: var(--pf-backdrop);
+  }
+
+  /* Collapse and expand: the width changes in one step, the contents cross-fade and settle 8px. */
+  html[data-sidebar-animating="true"] #workspace-sidebar > * {
+    animation: wb-sidebar-swap var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  /* First focusable element: a bone pill that shows only on keyboard focus. */
+  .wb-skip-link {
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    z-index: 100;
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-action);
+    padding-inline: 18px;
+    color: var(--pf-action-fg);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-skip-link:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .sidebar-mobile-frame {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
+
+  /* On a short phone the header and the Settings row stay put and the nav scrolls between them. */
+  .sidebar-mobile-frame > .sidebar-top {
+    min-height: 0;
+  }
+
+  .sidebar-mobile-frame .sidebar-nav {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .sidebar-mobile-frame .sidebar-nav-group {
+    flex-shrink: 0;
+  }
+
+  /* Sidebar: sits on the floor, it is not a panel */
+  #workspace-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    display: none;
+    width: var(--pf-rail-w);
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    overflow-y: auto;
+    padding: var(--pf-page-pad) 14px;
+    scrollbar-width: none;
+  }
+
+  .sidebar-top {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-header {
+    display: flex;
+    height: 40px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    padding-left: 8px;
+    padding-right: 6px;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 0%;
+    align-items: center;
+    gap: 10px;
+    border-radius: 9px;
+  }
+
+  .sidebar-brand-tile {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: var(--pf-ember);
+    color: var(--pf-on-ember);
+  }
+
+  .sidebar-brand-name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--pf-text);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sidebar-nav {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav-pill {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 36px;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(var(--sidebar-pill-y, 0px));
+    transition:
+      transform var(--pf-dur-state) var(--pf-ease),
+      opacity var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .sidebar-nav-pill[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .sidebar-nav-item {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    height: 36px;
+    min-width: 0;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--pf-radius-pill);
+    padding-inline: 10px;
+    color: var(--pf-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    transition: color var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  /* The sidebar scrolls, so an outset ring would be clipped at its edges. */
+  .sidebar-nav-item:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .sidebar-nav-item::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--pf-raised) 60%, transparent);
+    content: "";
+    opacity: 0;
+    transition: opacity var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .sidebar-nav-item:hover {
+    color: var(--pf-text);
+  }
+
+  .sidebar-nav-item:hover::before {
+    opacity: 1;
+  }
+
+  .sidebar-nav-item[aria-current="page"] {
+    color: var(--pf-text);
+    font-weight: 600;
+  }
+
+  .sidebar-nav-item[aria-current="page"]::before {
+    opacity: 0;
+  }
+
+  .sidebar-nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--pf-nav-icon);
+    transition: color var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .sidebar-nav-item[aria-current="page"] .sidebar-nav-icon {
+    color: var(--pf-ember);
+  }
+
+  .sidebar-nav-label {
+    min-width: 0;
+    flex: 1 1 0%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Footer: one row, Settings with the theme toggle at its end */
+  .sidebar-foot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sidebar-foot .sidebar-nav-item {
+    padding-right: 50px;
+    transition:
+      color var(--pf-dur-feedback) var(--pf-ease),
+      background-color var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .sidebar-foot .sidebar-nav-item[aria-current="page"] {
+    background: var(--pf-raised);
+  }
+
+  /*
+   * A wrapper, not the button: on coarse pointers every control is position: relative for its hit
+   * area, which would take an absolutely placed button out of the Settings row.
+   */
+  .sidebar-foot-toggle {
+    position: absolute;
+    top: 3px;
+    right: 10px;
+    z-index: 2;
+    display: flex;
+  }
+
+  @keyframes wb-sidebar-swap {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Page header: title only, one actions slot */
+  .wb-page-header {
+    display: flex;
+    min-height: 56px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding-left: 8px;
+    padding-right: 4px;
+  }
+
+  .wb-page-header-lead {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wb-page-header[data-back="true"] {
+    padding-left: 4px;
+    padding-right: 8px;
+  }
+
+  .wb-btn.wb-back-pill,
+  .wb-btn.wb-back-pill:has(> svg:first-child) {
+    gap: 4px;
+    padding-left: 10px;
+    padding-right: 16px;
+  }
+
+  .wb-page-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--pf-text);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 32px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wb-page-actions {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-actions:empty,
+  #workspace-header-accessory:empty {
+    display: none;
+  }
+
+  #workspace-header-accessory {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/*
+ * Small screens: a header whose actions cannot sit beside the title declares two rows (title, then the
+ * actions across the full width). The rows are fixed tracks, so the height is final on the first frame,
+ * before a client accessory mounts into the actions slot.
+ */
+@media (max-width: 359.98px) {
+  .wb-page-header[data-stack="360"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="360"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .wb-page-header[data-stack="480"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="480"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .wb-page-header[data-stack="640"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 32px minmax(40px, auto);
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wb-page-header[data-stack="640"] > .wb-page-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .wb-page-header[data-stack] #workspace-header-accessory {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+/* 768 to 1279: the 72px icon rail */
+@media (min-width: 768px) {
+  #workspace-mobile-bar {
+    display: none;
+  }
+
+  #workspace-sidebar {
+    display: flex;
+  }
+
+  #workspace-shell {
+    margin-left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
+    padding: max(var(--pf-page-pad), env(safe-area-inset-top))
+      max(var(--pf-page-pad), env(safe-area-inset-right))
+      max(var(--pf-page-pad), env(safe-area-inset-bottom)) 0;
+  }
+
+  #workspace-sidebar {
+    left: env(safe-area-inset-left);
+  }
+
+  .pf-content-viewport {
+    min-height: calc(100dvh - 2 * var(--pf-page-pad));
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  #workspace-sidebar .sidebar-expanded-only {
+    display: none;
+  }
+
+  #workspace-sidebar .sidebar-header {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  #workspace-sidebar .sidebar-brand {
+    flex: 0 0 auto;
+  }
+
+  #workspace-sidebar .sidebar-nav-item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  #workspace-sidebar .sidebar-foot {
+    align-items: stretch;
+  }
+
+  #workspace-sidebar .sidebar-foot-toggle {
+    position: static;
+    align-self: center;
+  }
+}
+
+/* 1280 and up: 248px sidebar on the floor, collapsible to the rail */
+@media (min-width: 1280px) {
+  #workspace-sidebar {
+    left: calc(var(--pf-page-pad) + env(safe-area-inset-left));
+    width: var(--pf-sidebar-w);
+    padding-inline: 0;
+  }
+
+  #workspace-shell {
+    margin-left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left)
+    );
+  }
+
+  .workspace-sidebar-offset-left {
+    left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left)
+    );
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar {
+    left: env(safe-area-inset-left);
+    width: var(--pf-rail-w);
+    padding-inline: 14px;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-shell {
+    margin-left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
+  }
+
+  html[data-sidebar-collapsed="true"] .workspace-sidebar-offset-left {
+    left: calc(var(--pf-rail-w) + env(safe-area-inset-left));
+  }
+
+  /* The rail keeps the brand tile; the expand button sits under it. */
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-header {
+    height: auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding-inline: 0;
+    padding-top: 4px;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-brand {
+    flex: 0 0 auto;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-expanded-only {
+    display: none;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-nav-item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  html[data-sidebar-collapsed="true"] #workspace-sidebar .sidebar-foot-toggle {
+    position: static;
+    align-self: center;
+  }
+}

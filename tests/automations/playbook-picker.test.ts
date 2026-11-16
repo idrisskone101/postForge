@@ -98,8 +98,14 @@ const pickerSource = readFileSync(
   new URL("../../src/app/(app)/automations/new/playbook-picker.tsx", import.meta.url),
   "utf8"
 );
-assert.match(pickerSource, /picker: PlaybookPickerState/);
-assert.match(pickerSource, /Build from scratch/);
+assert.match(pickerSource, /picker: PlaybookPickerView/);
+assert.match(
+  readFileSync(
+    new URL("../../src/app/(app)/automations/new/automation-playbook-overlay.tsx", import.meta.url),
+    "utf8"
+  ),
+  /Build from scratch/
+);
 assert.doesNotMatch(pickerSource, /createContext/);
 
 console.log("playbook picker tests passed");

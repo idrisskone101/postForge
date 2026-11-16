@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button, EmptyState, IconButton, Skeleton } from "@/components/workbench";
 import {
   PROMPT_TEMPLATE_NAME_MAX_LENGTH,
   PROMPT_TEMPLATE_PROMPT_MAX_LENGTH,
@@ -45,96 +46,89 @@ export function PromptTemplatesControl({
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="Prompt templates"
-        onClick={() => setOpen(true)}
-        className="inline-flex min-h-9 items-center gap-1 rounded-md px-2 text-[12px] font-medium text-muted-foreground hover:bg-[var(--pf-active)] hover:text-foreground"
-      >
-        <Bookmark className="size-3" /> Templates
-      </button>
+      <Button size={32} aria-label="Prompt templates" onClick={() => setOpen(true)}>
+        Templates
+      </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md gap-0 p-0">
-          <DialogHeader className="border-b border-border px-4 py-3 pr-12">
-            <DialogTitle className="text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-              Prompt templates
-            </DialogTitle>
+        <DialogContent
+          showCloseButton={false}
+          className="flex max-h-[min(640px,calc(100dvh-2rem))] flex-col gap-4 sm:max-w-[460px]"
+        >
+          <DialogHeader className="h-7 shrink-0 flex-row items-center gap-2.5">
+            <DialogTitle className="wb-panel-title min-w-0 flex-1">Prompt templates</DialogTitle>
+            <IconButton icon="x" label="Close" size={30} onClick={() => setOpen(false)} />
           </DialogHeader>
-          <div className="space-y-3 px-4 py-4">
-            <label className="block">
-              <span className="sr-only">Template name</span>
-              <input
-                aria-label="Template name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Template name"
-                maxLength={PROMPT_TEMPLATE_NAME_MAX_LENGTH}
-                className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[12px] text-foreground shadow-none outline-none focus-visible:border-[var(--pf-orange)] focus-visible:ring-[var(--pf-orange)]/10"
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => void handleSave()}
+          <div className="flex min-w-0 gap-2">
+            <input
+              aria-label="Template name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Template name"
+              maxLength={PROMPT_TEMPLATE_NAME_MAX_LENGTH}
+              className="wb-input min-w-0 flex-1"
+            />
+            <Button
+              variant="strong"
+              size={40}
+              aria-label="Save prompt"
               disabled={!canSave || saving}
-              className="pf-button-primary inline-flex h-9 w-full items-center justify-center gap-1.5 text-[12px] font-semibold disabled:cursor-not-allowed disabled:opacity-45"
+              onClick={() => void handleSave()}
+              className="shrink-0"
             >
-              {saving ? <Loader2 className="size-3.5 animate-spin" /> : null}
-              Save prompt
-            </button>
-            {error ? (
-              <div
-                role="alert"
-                className="text-[12px] leading-4 text-[var(--pf-danger)]"
-              >
-                {error}
-              </div>
-            ) : null}
-            <div className="max-h-64 overflow-y-auto rounded-lg border border-border">
-              {loading ? (
-                <div className="flex items-center justify-center gap-2 px-4 py-8 text-[12px] text-muted-foreground">
-                  <Loader2 className="size-3.5 animate-spin" />
-                  Loading templates…
-                </div>
-              ) : templates.length === 0 ? (
-                <p className="px-4 py-8 text-center text-[12px] text-muted-foreground">
-                  No templates yet. Name this prompt and save it.
-                </p>
-              ) : (
-                <ul className="divide-y divide-border">
-                  {templates.map((template) => (
-                    <li
-                      key={template.id}
-                      className="flex items-start justify-between gap-3 px-3 py-2.5"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[12px] font-semibold text-foreground">
-                          {template.name}
-                        </p>
-                        <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-muted-foreground">
-                          {truncatePromptPreview(template.prompt)}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleApply(template.prompt)}
-                          className="pf-button-secondary h-8 px-2.5 text-[11px] font-semibold"
-                        >
-                          Use
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void remove(template.id)}
-                          className="text-[11px] font-medium text-muted-foreground hover:text-[var(--pf-danger)]"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {saving ? <Loader2 className="size-4 animate-spin" /> : null}
+              Save
+            </Button>
+          </div>
+          {error ? (
+            <div role="alert" className="wb-notice" data-tone="bad">
+              {error}
             </div>
+          ) : null}
+          <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
+            {loading ? (
+              <div role="status" aria-label="Loading templates…" className="flex flex-col gap-2">
+                {[0, 1, 2].map((index) => (
+                  <Skeleton key={index} shape="tile" className="h-[62px]" />
+                ))}
+              </div>
+            ) : templates.length === 0 ? (
+              <EmptyState
+                icon="list"
+                title="No templates yet. Name this prompt and save it."
+                className="min-h-0 py-8"
+              />
+            ) : (
+              <ul className="flex flex-col">
+                {templates.map((template) => (
+                  <li
+                    key={template.id}
+                    className="flex min-w-0 items-center gap-2 rounded-lg transition-colors duration-160 ease-pf hover:bg-raised"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleApply(template.prompt)}
+                      aria-label={`Use ${template.name}`}
+                      className="flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg py-3 pl-3 text-left"
+                    >
+                      <span className="truncate text-[14px] font-semibold leading-[18px] text-fg">
+                        {template.name}
+                      </span>
+                      <span className="line-clamp-2 text-[13px] leading-[18px] text-fg-muted">
+                        {truncatePromptPreview(template.prompt)}
+                      </span>
+                    </button>
+                    <Button
+                      size={32}
+                      aria-label={`Delete ${template.name}`}
+                      onClick={() => void remove(template.id)}
+                      className="mr-2 shrink-0 bg-transparent text-fg-secondary hover:text-bad"
+                    >
+                      Delete
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </DialogContent>
       </Dialog>

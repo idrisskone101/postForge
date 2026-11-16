@@ -9,14 +9,7 @@ import {
 } from "@/components/tiktok-saved-sources";
 import { apiGet, apiPost, apiDelete } from "@/lib/api/client";
 import { savedSourceMatchesHandoffUrl } from "@/lib/ugc-clone-handoff";
-import { cn } from "@/lib/utils";
-import {
-  Loader2,
-  Download,
-  Clock,
-  AlertCircle,
-  CheckCircle2,
-} from "lucide-react";
+import { Button, Skeleton } from "@/components/workbench";
 
 export interface TikTokVideoInfo {
   id: string;
@@ -48,13 +41,13 @@ export function TikTokInput({
 }: TikTokInputProps) {
   const [url, setUrl] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; importFailed?: true } | null>(null);
   const [savedSources, setSavedSources] = useState<SavedTikTokSource[]>([]);
   const [sourcesNextCursor, setSourcesNextCursor] = useState<string | null>(null);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
   const [isLoadingMoreSources, setIsLoadingMoreSources] = useState(false);
   const [sourcesError, setSourcesError] = useState<string | null>(null);
-  const [showSavedSources, setShowSavedSources] = useState(false);
+  const [showSavedSources, setShowSavedSources] = useState(savedSourcesOpenByDefault);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const autoSelectedIdRef = useRef<string | null>(null);
   const autoImportedUrlRef = useRef<string | null>(null);
@@ -131,7 +124,10 @@ export function TikTokInput({
       onDownloaded(toVideoInfo(result));
       return result;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Import failed");
+      setError({
+        message: err instanceof Error ? err.message : "The source could not be imported.",
+        importFailed: true,
+      });
       return null;
     } finally {
       setIsDownloading(false);
@@ -154,7 +150,7 @@ export function TikTokInput({
       if (!source) {
         if (sourcesNextCursor) return;
         autoSelectedIdRef.current = preselectedSourceId;
-        setError("The handed-off saved source is no longer available. Choose another source.");
+        setError({ message: "The handed-off saved source is no longer available. Choose another source." });
         onPreselectedSourceResolved?.({
           handoff: "sourceId",
           status: "missing",
@@ -236,86 +232,75 @@ export function TikTokInput({
   };
 
   return (
-    <div className="space-y-3">
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <div className="flex-1 relative">
-          <input
-            type="url"
-            aria-label="TikTok video URL"
-            placeholder="Paste TikTok URL"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            disabled={isDownloading}
-            className="h-10 w-full rounded-lg border border-border bg-muted/50 px-3 text-sm placeholder:text-muted-foreground transition-all focus:border-accent-coral/50 focus:bg-card focus:outline-none focus:ring-3 focus:ring-accent-coral/10"
-          />
-        </div>
-        <button
-          type="button"
+    <div className="flex min-w-0 flex-col gap-3">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 max-sm:grid-cols-1">
+        <input
+          type="url"
+          aria-label="TikTok video URL"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "tiktok-import-error" : undefined}
+          placeholder="Paste TikTok URL"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          disabled={isDownloading}
+          className="wb-input"
+        />
+        <Button
+          variant="strong"
+          size={40}
           onClick={handleDownload}
           disabled={!url.trim() || isDownloading}
-          className={cn(
-            "flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all",
-            isDownloading
-              ? "bg-muted text-muted-foreground"
-              : "bg-accent-coral text-white hover:brightness-[0.93]"
-          )}
         >
           {isDownloading ? (
             <>
-              <Loader2 className="size-4 animate-spin" />
-              Importing...
+              <span className="wb-live-dot" />
+              Importing
             </>
           ) : (
-            <>
-              <Download className="size-4" />
-              Import
-            </>
+            "Import"
           )}
-        </button>
+        </Button>
       </div>
 
       {error && (
-        <div className="flex min-w-0 items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
-          <AlertCircle className="size-4 text-destructive shrink-0" />
-          <p className="min-w-0 flex-1 break-words text-xs text-destructive [overflow-wrap:anywhere]">{error}</p>
-        </div>
-      )}
-
-      {videoInfo && (
-        <div className="rounded-lg border border-accent-green/30 bg-accent-green/5 px-3 py-2.5">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="size-4 text-accent-green shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium">{videoInfo.label || "Source ready"}</p>
-              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Clock className="size-3" />
-                  {formatDuration(videoInfo.durationSec)}
-                </span>
-                <span>
-                  {videoInfo.width}x{videoInfo.height}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isLoadingSources && (
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/25 px-3 py-2 text-xs text-muted-foreground">
-          <Loader2 className="size-3.5 animate-spin" />
-          Loading saved sources...
-        </div>
+        <p
+          id="tiktok-import-error"
+          role="alert"
+          className="wb-notice wb-fade-in min-w-0 [overflow-wrap:anywhere]"
+          data-tone="bad"
+        >
+          <span className="min-w-0">
+            {error.importFailed ? (
+              <>
+                <strong className="font-semibold text-bad">Import failed.</strong>{" "}
+              </>
+            ) : null}
+            {error.message}
+          </span>
+        </p>
       )}
 
       {sourcesError && (
-        <div className="flex min-w-0 items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
-          <AlertCircle className="size-4 shrink-0 text-destructive" />
-          <p className="min-w-0 flex-1 break-words text-xs text-destructive [overflow-wrap:anywhere]">{sourcesError}</p>
-        </div>
+        <p role="alert" className="wb-notice min-w-0 [overflow-wrap:anywhere]" data-tone="bad">
+          <span className="min-w-0">
+            <strong className="font-semibold text-bad">Saved sources did not load.</strong>{" "}
+            {sourcesError}
+          </span>
+        </p>
       )}
 
-      {!isLoadingSources && (
+      {isLoadingSources ? (
+        <div aria-hidden="true" className="flex min-w-0 flex-col gap-2.5">
+          <Skeleton className="h-5 w-32" />
+          {showSavedSources && (
+            <div className="grid h-[512px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] content-start gap-x-3 gap-y-4 overflow-hidden">
+              {SOURCE_SKELETON_TILES.map((index) => (
+                <Skeleton key={index} shape="tile" className="aspect-[9/16]" />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
         <TikTokSavedSources
           savedSources={savedSources}
           selectedSourceId={videoInfo?.id}
@@ -333,12 +318,18 @@ export function TikTokInput({
   );
 }
 
+// Below 640px the grid would put two 172px thumbnails in the first viewport, and the mobile Lighthouse
+// gate times the page by its largest first-viewport element. Any thumbnail there measured 2.6s or more,
+// so phones open with the list collapsed behind its toggle and wider screens open it.
+const SAVED_SOURCES_OPEN_QUERY = "(min-width: 640px)";
 
-function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+function savedSourcesOpenByDefault() {
+  return typeof window === "undefined" || window.matchMedia(SAVED_SOURCES_OPEN_QUERY).matches;
 }
+
+// The loaded grid takes 512px of layout (520px less its 4px outset), so the placeholder holds the same block and the
+// step footer below it does not move when the saved sources arrive.
+const SOURCE_SKELETON_TILES = Array.from({ length: 16 }, (_, index) => index);
 
 function toVideoInfo(source: SavedTikTokSource): TikTokVideoInfo {
   return {

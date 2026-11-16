@@ -1,14 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, FolderOpen, ImageIcon, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
   type CollectionFeatureRecord,
+  type CollectionRecord,
 } from "@/lib/collections";
 import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
+import { Button, Chip, EmptyState, Skeleton, buttonClass } from "@/components/workbench";
 import { cn } from "@/lib/utils";
+import {
+  ReferencePickerPopover,
+  ReferenceTile,
+  type ReferenceRowSummary,
+} from "./collection-reference-picker-popover";
 
 interface CollectionReferencePickerProps {
   selectedAssetIds: string[];
@@ -18,50 +25,24 @@ interface CollectionReferencePickerProps {
   disabledMessage?: string;
   refreshKey?: number;
   preferredAssetIds?: string[];
+  /**
+   * For a surface that is already a dialog, the picker draws in place instead of in a popover:
+   * "inline" lays the collections out as chips over the image grid, "select" as one select over it.
+   */
+  layout?: "popover" | "inline" | "select";
+  /**
+   * Puts the image grid in its own scroller, so the collection field stays put while the tiles scroll.
+   * The picker then fills its flex parent and the scroller takes these classes, which set its height.
+   */
+  gridScrollClassName?: string;
 }
 
-export function CollectionReferencePicker({
-  selectedAssetIds,
-  onChange,
-  maxSelection = 14,
-  disabled = false,
-  disabledMessage,
-  refreshKey = 0,
-  preferredAssetIds,
-}: CollectionReferencePickerProps) {
-  const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
-  const [selectedCollectionId, setSelectedCollectionId] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type LoadStatus = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
-      .then(({ records: next }) => {
-        if (cancelled) return;
-        setError(null);
-        setRecords(next);
-        const collections = next.filter(isCollectionRecord);
-        const selectedCollection = collections.find((collection) =>
-          collection.assetIds.some((id) => preferredAssetIds?.includes(id)),
-        );
-        const nextCollection = selectedCollection ?? collections[0];
-        if (nextCollection) setSelectedCollectionId(nextCollection.id);
-      })
-      .catch((cause) => {
-        if (!cancelled) {
-          setError(
-            cause instanceof Error ? cause.message : "Collections could not be loaded."
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [preferredAssetIds, refreshKey]);
+export function CollectionReferencePicker(props: CollectionReferencePickerProps) {
+  const { selectedAssetIds, onChange, maxSelection = 14, disabled = false } = props;
+  const { records, status, retry, selectedCollectionId, setSelectedCollectionId } =
+    useCollectionRecords(props.preferredAssetIds, props.refreshKey ?? 0);
 
   const assets = useMemo(() => records.filter(isCollectionAssetRecord), [records]);
   const collections = useMemo(() => records.filter(isCollectionRecord), [records]);
@@ -84,99 +65,230 @@ export function CollectionReferencePicker({
     onChange([...selectedAssetIds, assetId].slice(-maxSelection));
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-24 items-center justify-center rounded-lg border border-border bg-[var(--pf-active)] text-muted-foreground">
-        <Loader2 className="mr-2 size-3.5 animate-spin" />
-        <span className="text-[12px]">Loading collections…</span>
-      </div>
-    );
-  }
+  const count = `${selectedAssetIds.length} / ${maxSelection}`;
+  const summary = rowSummary({
+    status,
+    disabledMessage: disabled ? props.disabledMessage : undefined,
+    selectedAssetIds,
+    collections,
+    count,
+  });
 
-  if (error) {
-    return (
-      <p role="alert" className="min-w-0 break-words rounded-lg bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)] [overflow-wrap:anywhere]">
-        {error}
-      </p>
-    );
-  }
-
-  if (collections.length === 0) {
-    return (
-      <a
-        href="/collections"
-        className="flex min-h-24 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] bg-[var(--pf-active)] px-3 text-[12px] font-semibold text-muted-foreground"
-      >
-        <FolderOpen className="size-4" /> Create a collection to reuse its images
-      </a>
-    );
-  }
-
-  return (
-    <div className={cn("space-y-3", disabled && "opacity-60")}>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <label className="min-w-0 flex-1">
-          <span className="sr-only">Visual collection</span>
-          <select
-            aria-label="Visual collection"
-            value={selectedCollectionId}
-            onChange={(event) => setSelectedCollectionId(event.target.value)}
-            disabled={disabled}
-            className="h-9 w-full rounded-lg border border-border bg-card px-3 text-[12px] font-medium outline-none focus:border-[var(--pf-orange)]"
-          >
+  const layout = props.layout ?? "popover";
+  const inline = layout === "inline";
+  const gridScroll = props.gridScrollClassName;
+  const body =
+    status.kind === "loading" ? (
+      <TileSkeletons layout={layout} />
+    ) : status.kind === "error" ? (
+      <EmptyState icon="alert" tone="error" title="Collections could not be loaded" detail={status.message} className="min-h-0 py-6">
+        <Button variant="strong" onClick={retry}>Retry</Button>
+      </EmptyState>
+    ) : collections.length === 0 ? (
+      <EmptyState icon="collections" title="Create a collection to reuse its images" className="min-h-0 py-6">
+        <Link href="/collections" className={buttonClass("strong")}>Open collections</Link>
+      </EmptyState>
+    ) : (
+      <>
+        {inline ? (
+          <div role="group" aria-label="Visual collection" className="flex min-w-0 flex-wrap items-center gap-1.5">
             {collections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name} · {collection.assetIds.length} images
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="shrink-0 text-[11px] text-muted-foreground">
-          {selectedAssetIds.length}/{maxSelection} selected
-        </span>
-      </div>
-
-      {disabledMessage && disabled ? (
-        <p className="rounded-lg bg-[var(--pf-active)] px-3 py-2 text-[12px] leading-4 text-muted-foreground">
-          {disabledMessage}
-        </p>
-      ) : collectionAssets.length === 0 ? (
-        <p className="flex min-h-20 items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--pf-border)] text-[12px] text-muted-foreground">
-          <ImageIcon className="size-4" /> This collection has no images yet.
-        </p>
-      ) : (
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
-          {collectionAssets.map((asset) => {
-            const selected = selectedAssetIds.includes(asset.id);
-            return (
-              <button
-                type="button"
-                key={asset.id}
-                disabled={disabled}
-                aria-label={`${selected ? "Remove" : "Use"} ${asset.name}`}
-                aria-pressed={selected}
-                onClick={() => toggle(asset.id)}
-                className={cn(
-                  "relative aspect-[4/5] min-w-0 overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] transition",
-                  selected ? "border-[var(--pf-orange)]" : "border-transparent hover:border-[var(--pf-border-strong)]"
-                )}
+              <Chip
+                key={collection.id}
+                check={false}
+                chosen={collection.id === selectedCollectionId}
+                onClick={() => setSelectedCollectionId(collection.id)}
+                className="max-w-full px-3"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/api/files/${encodeURIComponent(asset.id)}`}
-                  alt={asset.name}
-                  className="size-full object-cover"
-                />
-                {selected && (
-                  <span className="absolute right-1 top-1 grid size-5 place-items-center rounded-full bg-[var(--pf-orange)] text-white shadow-sm">
-                    <Check className="size-3" />
-                  </span>
-                )}
-              </button>
-            );
-          })}
+                <span className="truncate">{collection.name}</span>
+              </Chip>
+            ))}
+            <span className="ml-auto text-[13px] leading-4 text-fg-muted" aria-live="polite">
+              {count} selected
+            </span>
+            {selectedAssetIds.length > 0 ? (
+              <Button variant="link" size={32} onClick={() => onChange([])}>Clear</Button>
+            ) : null}
+          </div>
+        ) : (
+          <div className="flex min-w-0 items-center gap-2.5">
+            <select
+              aria-label="Visual collection"
+              value={selectedCollectionId}
+              onChange={(event) => setSelectedCollectionId(event.target.value)}
+              className={cn("wb-input min-w-0 flex-1", layout === "select" ? "font-medium" : "bg-raised-strong")}
+              data-size={layout === "select" ? undefined : "36"}
+            >
+              {collections.map((collection) => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}{layout === "select" ? "," : " ·"} {collection.assetIds.length} images
+                </option>
+              ))}
+            </select>
+            <span className={cn("wb-mono shrink-0", layout === "select" ? "text-fg-muted" : "text-fg")} aria-label={`${selectedAssetIds.length} of ${maxSelection} selected`}>
+              {count}
+            </span>
+            {/* With one image to pick, the chosen tile is its own clear control. */}
+            {selectedAssetIds.length > 0 && !(layout === "select" && maxSelection === 1) ? (
+              <Button variant="link" size={32} className={layout === "popover" ? "-mr-2.5" : undefined} onClick={() => onChange([])}>Clear</Button>
+            ) : null}
+          </div>
+        )}
+        {collectionAssets.length === 0 ? (
+          <EmptyState icon="gallery" title="This collection has no images yet." className="min-h-0 py-6" />
+        ) : (
+          <GridScroller className={gridScroll}>
+            <div className={GRID[layout]}>
+              {collectionAssets.map((asset) => {
+                const selected = selectedAssetIds.includes(asset.id);
+                return (
+                  <ReferenceTile
+                    key={asset.id}
+                    selected={selected}
+                    label={`${selected ? "Remove" : "Use"} ${asset.name}`}
+                    onToggle={() => toggle(asset.id)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/api/files/${encodeURIComponent(asset.id)}`} alt={asset.name} />
+                  </ReferenceTile>
+                );
+              })}
+            </div>
+          </GridScroller>
+        )}
+      </>
+    );
+
+  if (inline) return <div className="flex min-w-0 flex-col gap-3.5">{body}</div>;
+  if (layout === "select") {
+    return (
+      <div className={cn("flex min-w-0 flex-col gap-[18px]", gridScroll && "min-h-0 flex-1")}>{body}</div>
+    );
+  }
+  return (
+    <ReferencePickerPopover summary={summary} label="Visual collection" disabled={disabled}>
+      {() => body}
+    </ReferencePickerPopover>
+  );
+}
+
+const GRID = {
+  popover: "grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2 p-1",
+  inline:
+    "wb-ring-room grid grid-cols-[repeat(auto-fill,minmax(128px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,128px)]",
+  select: "grid grid-cols-3 gap-2 sm:grid-cols-6",
+} as const;
+
+/**
+ * With a class, the scroller around the grid: the Scroll Cut fade, and 4px of room so a tile's ring
+ * stays whole inside it. The grid keeps its own height inside, so its rows are never squeezed.
+ */
+function GridScroller({ className, children }: { className?: string; children: ReactNode }) {
+  if (!className) return children;
+  return (
+    <div className={cn("wb-scroll-fade-y wb-scroll-fade-deep wb-ring-room min-h-0 overflow-y-auto", className)}>
+      {children}
+    </div>
+  );
+}
+
+const SKELETON_TILES = { popover: 8, inline: 4, select: 6 } as const;
+
+function useCollectionRecords(preferredAssetIds: string[] | undefined, refreshKey: number) {
+  const [records, setRecords] = useState<CollectionFeatureRecord[]>([]);
+  const [selectedCollectionId, setSelectedCollectionId] = useState("");
+  const [status, setStatus] = useState<LoadStatus>({ kind: "loading" });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchWorkspaceFeature<CollectionFeatureRecord>("collections")
+      .then(({ records: next }) => {
+        if (cancelled) return;
+        setStatus({ kind: "ready" });
+        setRecords(next);
+        const collections = next.filter(isCollectionRecord);
+        const preferred = collections.find((collection) =>
+          collection.assetIds.some((id) => preferredAssetIds?.includes(id)),
+        );
+        const nextCollection = preferred ?? collections[0];
+        if (nextCollection) setSelectedCollectionId(nextCollection.id);
+      })
+      .catch((cause) => {
+        if (cancelled) return;
+        setStatus({
+          kind: "error",
+          message: cause instanceof Error ? cause.message : "Collections could not be loaded.",
+        });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [preferredAssetIds, refreshKey, attempt]);
+
+  return {
+    records,
+    status,
+    selectedCollectionId,
+    setSelectedCollectionId,
+    retry: () => {
+      setStatus({ kind: "loading" });
+      setAttempt((value) => value + 1);
+    },
+  };
+}
+
+function rowSummary({
+  status,
+  disabledMessage,
+  selectedAssetIds,
+  collections,
+  count,
+}: {
+  status: LoadStatus;
+  disabledMessage: string | undefined;
+  selectedAssetIds: string[];
+  collections: CollectionRecord[];
+  count: string;
+}): ReferenceRowSummary {
+  if (disabledMessage) return { text: disabledMessage, placeholder: true };
+  if (status.kind === "loading") return { text: "Loading collections…", placeholder: true };
+  if (status.kind === "error") return { text: "Collections could not be loaded", tone: "bad" };
+  const first = selectedAssetIds[0];
+  if (!first) return { text: "No collection chosen", placeholder: true };
+  const owner = collections.find((collection) =>
+    selectedAssetIds.every((id) => collection.assetIds.includes(id)),
+  );
+  return {
+    text: owner?.name ?? `${selectedAssetIds.length} images`,
+    meta: count,
+    thumb: (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={`/api/files/${encodeURIComponent(first)}`} alt="" />
+    ),
+  };
+}
+
+function TileSkeletons({ layout }: { layout: keyof typeof GRID }) {
+  const inline = layout === "inline";
+  return (
+    <div
+      role="status"
+      aria-label="Loading collections…"
+      className={cn("flex flex-col", layout === "select" ? "gap-[18px]" : "gap-3.5")}
+    >
+      {layout === "select" ? <Skeleton className="h-[42px] w-full rounded-lg" /> : null}
+      {inline ? (
+        <div className="flex gap-1.5">
+          <Skeleton className="h-9 w-28 rounded-full" />
+          <Skeleton className="h-9 w-20 rounded-full" />
         </div>
-      )}
+      ) : null}
+      <div className={GRID[layout]}>
+        {Array.from({ length: SKELETON_TILES[layout] }, (_, index) => (
+          <Skeleton key={index} shape="tile" className="aspect-[4/5]" />
+        ))}
+      </div>
     </div>
   );
 }

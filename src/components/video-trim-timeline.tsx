@@ -1,5 +1,4 @@
 import type { PointerEvent, RefObject } from "react";
-import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function VideoTrimTimeline({
@@ -27,7 +26,7 @@ export function VideoTrimTimeline({
     <div
       ref={trackRef}
       data-trim-timeline="true"
-      className="relative h-20 w-full select-none overflow-hidden rounded-lg border border-border bg-muted"
+      className="relative h-16 w-full touch-none select-none overflow-hidden rounded-lg bg-media"
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
@@ -35,72 +34,80 @@ export function VideoTrimTimeline({
       <div className="absolute inset-0 flex">
         {thumbnails.length > 0
           ? thumbnails.map((thumb, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={i}
                 src={thumb}
                 alt=""
                 draggable={false}
-                className="flex-1 h-full object-cover border-r border-border/30 last:border-r-0"
+                className="h-full min-w-0 flex-1 border-r border-panel object-cover last:border-r-0"
               />
             ))
           : Array.from({ length: FILMSTRIP_PLACEHOLDER_COUNT }).map((_, i) => (
               <div
                 key={i}
                 data-filmstrip-placeholder="true"
-                className="flex-1 border-r border-border/40 bg-[linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))] last:border-r-0"
+                className="flex-1 border-r border-panel last:border-r-0"
               />
             ))}
       </div>
 
       <div
-        className="absolute inset-y-0 left-0 bg-black/75 transition-[width] duration-75"
+        className="absolute inset-y-0 left-0 bg-[var(--pf-scrim)]"
         style={{ width: `${startPct}%` }}
       />
-
       <div
-        className="absolute inset-y-0 right-0 bg-black/75 transition-[width] duration-75"
+        className="absolute inset-y-0 right-0 bg-[var(--pf-scrim)]"
         style={{ width: `${100 - endPct}%` }}
       />
-
       <div
-        className={cn(
-          "absolute inset-y-0 border-y-2 border-accent-green bg-accent-green/10 transition-[left,width] duration-75",
-          dragging && "shadow-[0_0_12px_rgba(22,163,74,0.3)]"
-        )}
-        style={{
-          left: `${startPct}%`,
-          width: `${endPct - startPct}%`,
-        }}
+        data-trim-window="true"
+        className="pointer-events-none absolute inset-y-0 shadow-[inset_0_0_0_2px_var(--pf-ember)]"
+        style={{ left: `${startPct}%`, width: `${endPct - startPct}%` }}
       />
 
-      <div
-        className={cn(
-          "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
-          "rounded-l-lg bg-accent-green transition-shadow",
-          dragging === "start" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
-        )}
-        style={{ left: `calc(${startPct}% - 12px)` }}
+      <TrimHandle
+        pct={startPct}
+        active={dragging === "start"}
+        label="Trim start handle"
         onPointerDown={onStartPointerDown}
-        aria-label="Trim start handle"
-      >
-        <GripVertical className="size-3 text-white/80" />
-      </div>
-
-      <div
-        className={cn(
-          "absolute inset-y-0 z-10 flex w-6 cursor-ew-resize items-center justify-center",
-          "rounded-r-lg bg-accent-green transition-shadow",
-          dragging === "end" && "shadow-[0_0_16px_rgba(22,163,74,0.5)]"
-        )}
-        style={{ left: `calc(${endPct}% - 12px)` }}
+      />
+      <TrimHandle
+        pct={endPct}
+        active={dragging === "end"}
+        label="Trim end handle"
         onPointerDown={onEndPointerDown}
-        aria-label="Trim end handle"
-      >
-        <GripVertical className="size-3 text-white/80" />
-      </div>
+      />
     </div>
   );
 }
 
+function TrimHandle({
+  pct,
+  active,
+  label,
+  onPointerDown,
+}: {
+  pct: number;
+  active: boolean;
+  label: string;
+  onPointerDown: (event: PointerEvent) => void;
+}) {
+  return (
+    <div
+      data-trim-handle="true"
+      aria-label={label}
+      className={cn(
+        "absolute inset-y-0 z-10 flex w-3.5 cursor-ew-resize items-center justify-center rounded-md bg-ember",
+        "shadow-[0_0_0_0_var(--pf-ember-wash)] transition-shadow duration-[var(--pf-dur-feedback)] ease-pf",
+        active && "shadow-[0_0_0_4px_var(--pf-ember-wash)]"
+      )}
+      style={{ left: `clamp(0px, calc(${pct}% - 7px), calc(100% - 14px))` }}
+      onPointerDown={onPointerDown}
+    >
+      <span className="h-5 w-0.5 rounded-full bg-[var(--pf-on-ember)]" />
+    </div>
+  );
+}
 
 export const FILMSTRIP_PLACEHOLDER_COUNT = 4;

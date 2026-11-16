@@ -70,6 +70,10 @@ export type CloneFormSnapshot = {
   submitRefImageGeneration: (prompt: string) => Promise<void>;
 };
 
+/**
+ * What the form does once the source picker has resolved a handed-off source: the path with the handoff
+ * consumed. A source that could not be found or imported is reported by the picker, on the Source step.
+ */
 export function cloneHandoffAfterPreselect(input: {
   result: ClonePreselectedSourceResult;
   sourceUrlParam: string | null;
@@ -83,10 +87,6 @@ export function cloneHandoffAfterPreselect(input: {
       }
       return {
         path: clonePathAfterHandoffConsume(input.search, "sourceUrl"),
-        error:
-          input.result.status === "missing"
-            ? "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source."
-            : null,
         clearPendingSourceId: false,
       };
     }
@@ -96,10 +96,6 @@ export function cloneHandoffAfterPreselect(input: {
       }
       return {
         path: clonePathAfterHandoffConsume(input.search, "sourceId"),
-        error:
-          input.result.status === "missing"
-            ? "The handed-off saved source is no longer available. Choose or import another source."
-            : null,
         clearPendingSourceId: true,
       };
     }

@@ -1,188 +1,89 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, X } from "lucide-react";
-import { isCharacterRecord, type CharacterRecord } from "@/lib/characters";
-import { fetchWorkspaceFeature } from "@/lib/workspace-features-client";
+import { useRouter } from "next/navigation";
+import { Button, EmptyState, IconButton, Toast } from "@/components/workbench";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { CharacterDeleteDialog } from "./characters-delete-dialog";
 import { CharacterDetailPanel } from "./characters-detail-panel";
 import { CharactersEmpty } from "./characters-empty";
-import { filterCharacters } from "./characters-helpers";
 import { CharactersLibrary } from "./characters-library";
-import {
-  copyCharacterPrompt,
-  duplicateCharacter,
-  removeCharacter,
-} from "./characters-mutations";
-import type { CharactersPageClientProps } from "./types";
+import type { CharacterInspectorModel, CharactersInitialData } from "./types";
+import { useCharactersLibrary } from "./use-characters-library";
 
-export function CharactersPageClient({ initialRecords }: CharactersPageClientProps) {
-  const [records, setRecords] = useState<CharacterRecord[]>(initialRecords);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [gender, setGender] = useState("All identities");
-  const [view, setView] = useState<"grid" | "list">("grid");
-  const [selected, setSelected] = useState<CharacterRecord | null>(null);
-  const [menu, setMenu] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetchWorkspaceFeature<CharacterRecord>("characters")
-      .then(({ records: next }) => {
-        if (!cancelled) setRecords(next.filter(isCharacterRecord));
-      })
-      .catch((cause) =>
-        !cancelled &&
-        setError(cause instanceof Error ? cause.message : "Unable to load characters")
-      )
-      .finally(() => !cancelled && setLoading(false));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const filtered = useMemo(
-    () => filterCharacters(records, search, gender),
-    [records, search, gender]
-  );
-
-  function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1700);
-  }
-
-  async function handleRemove(record: CharacterRecord) {
-    setBusyId(record.id);
-    setMenu(null);
-    const result = await removeCharacter(record, records);
-    setBusyId(null);
-    switch (result.kind) {
-      case "cancelled":
-        return;
-      case "deleted":
-        setRecords(result.records);
-        setSelected(null);
-        notify("Character deleted");
-        return;
-      case "failed":
-        setError(result.error);
-        if (result.records) setRecords(result.records);
-        if (result.recovered) setSelected(result.recovered);
-        return;
-      default: {
-        const _exhaustive: never = result;
-        return _exhaustive;
+export function CharactersPageClient({ initial }: { initial: CharactersInitialData }) {
+  const router = useRouter();
+  const library = useCharactersLibrary(initial);
+  const { selected } = library;
+  const inspector: CharacterInspectorModel | null = selected
+    ? {
+        record: selected,
+        busy: library.busyId === selected.id,
+        onCopyPrompt: library.copyPrompt,
+        onDuplicate: library.duplicate,
+        onRequestDelete: library.requestDelete,
       }
-    }
-  }
+    : null;
 
-  async function handleDuplicate(record: CharacterRecord) {
-    setBusyId(record.id);
-    setMenu(null);
-    const result = await duplicateCharacter(record);
-    setBusyId(null);
-    switch (result.kind) {
-      case "saved":
-        setRecords(result.records);
-        notify("Draft duplicated — open it and save to make the identity reusable");
-        return;
-      case "failed":
-        setError(result.error);
-        return;
-      default: {
-        const _exhaustive: never = result;
-        return _exhaustive;
-      }
-    }
-  }
-
-  async function handleCopyPrompt(record: CharacterRecord) {
-    await copyCharacterPrompt(record);
-    notify("Character prompt copied");
-  }
-
-  if (loading && records.length > 0) {
+  if (initial.error && library.records.length === 0) {
     return (
-      <div className="grid min-h-[520px] place-items-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto size-6 animate-spin text-[var(--pf-orange)]" />
-          <p className="mt-3 text-[12px] text-[var(--pf-muted)]">Loading identity library…</p>
-        </div>
-      </div>
+      <section aria-label="Character library" className="wb-panel flex-1 p-6">
+        <EmptyState icon="alert" tone="error" title="Characters could not load" detail={initial.error}>
+          <Button variant="strong" onClick={() => router.refresh()}>
+            Try again
+          </Button>
+        </EmptyState>
+      </section>
     );
   }
 
   return (
-    <div
-      data-page-inset="true"
-      className="mx-auto min-w-0 max-w-[1280px] px-5 py-5 sm:px-7 lg:px-8"
-    >
-      {error ? (
-        <div
-          role="alert"
-          className="mb-4 flex min-w-0 items-start justify-between gap-3 rounded-lg border border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 px-3 py-2 text-[12px] text-[var(--pf-danger)]"
-        >
-          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{error}</span>
-          <button type="button" onClick={() => setError(null)} className="shrink-0" aria-label="Dismiss error">
-            <X className="size-3.5" />
-          </button>
-        </div>
-      ) : null}
-      {records.length === 0 ? (
+    <div className="flex min-w-0 flex-col gap-3 xl:h-[calc(100dvh-100px)] xl:min-h-[640px] xl:flex-row" data-characters-page>
+      {library.records.length === 0 ? (
         <CharactersEmpty />
       ) : (
         <CharactersLibrary
           library={{
-            recordCount: records.length,
-            filtered,
-            search,
-            gender,
-            view,
-            menu,
-            busyId,
-            onSearchChange: setSearch,
-            onGenderChange: setGender,
-            onViewChange: setView,
-            onSelect: setSelected,
-            onMenuToggle: setMenu,
-            onDuplicate: (record) => void handleDuplicate(record),
-            onRemove: (record) => void handleRemove(record),
-            onClearFilters: () => {
-              setSearch("");
-              setGender("All identities");
-            },
+            recordCount: library.records.length,
+            filtered: library.filtered,
+            filters: library.filters,
+            selectedId: selected?.id ?? null,
+            onFiltersChange: library.onFiltersChange,
+            onSelect: library.select,
           }}
+          onClearFilters={library.clearFilters}
         />
       )}
-      {selected ? (
-        <div
-          className="pf-safe-overlay fixed inset-0 z-[70] grid place-items-center bg-black/45 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="character-detail-title"
-          onClick={() => setSelected(null)}
+      {inspector ? (
+        <aside
+          aria-labelledby="character-detail-title-panel"
+          data-characters-inspector
+          className="wb-panel hidden w-[360px] shrink-0 gap-4 overflow-y-auto p-5 xl:flex"
         >
-          <div
-            className="max-h-full min-w-0 w-full overflow-y-auto px-4"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <CharacterDetailPanel
-              record={selected}
-              onClose={() => setSelected(null)}
-              onCopyPrompt={(record) => void handleCopyPrompt(record)}
-              onRemove={(record) => void handleRemove(record)}
-            />
-          </div>
-        </div>
+          <CharacterDetailPanel key={inspector.record.id} inspector={inspector} />
+        </aside>
       ) : null}
-      {toast ? (
-        <div role="status" className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-5 right-5 z-[80] flex min-w-0 items-center gap-2 rounded-lg bg-foreground px-3 py-2.5 text-[12px] font-medium text-background shadow-xl sm:left-auto sm:max-w-[420px]">
-          <Check className="size-3.5 shrink-0 text-[var(--pf-success)]" />
-          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{toast}</span>
-        </div>
-      ) : null}
+      <Sheet open={library.sheetOpen && inspector !== null} onOpenChange={(open) => (open ? null : library.closeSheet())}>
+        <SheetContent
+          side="bottom"
+          aria-labelledby="character-detail-title-sheet"
+          showCloseButton={false}
+          className="max-h-[88dvh] gap-0 overflow-y-auto rounded-t-xl px-4 pt-3 data-[side=bottom]:pb-[max(24px,env(safe-area-inset-bottom))] xl:hidden"
+        >
+          <span className="mx-auto mb-3.5 block h-1 w-9 rounded-full bg-raised-strong" aria-hidden="true" />
+          <IconButton icon="x" label="Close details" size={34} className="absolute right-4 top-4" onClick={library.closeSheet} />
+          {inspector ? <CharacterDetailPanel key={inspector.record.id} inspector={inspector} variant="sheet" /> : null}
+        </SheetContent>
+      </Sheet>
+      <CharacterDeleteDialog
+        record={library.deleting}
+        onCancel={library.cancelDelete}
+        onConfirm={library.confirmDelete}
+      />
+      <div className="wb-toast-region">
+        {library.toasts.map((toast) => (
+          <Toast key={toast.id} toast={toast} onDismiss={library.dismissToast} />
+        ))}
+      </div>
     </div>
   );
 }

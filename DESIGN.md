@@ -1,331 +1,412 @@
 ---
 name: PostForge
-description: The calm category-standard SaaS dashboard, executed at Linear and Resend craft level.
+description: Workbench charcoal and ember. A dark working surface where the only colour is what is live.
 colors:
-  primary: "#FF4A20"
-  primary-deep: "#E9421C"
-  primary-bright: "#FF6540"
-  canvas: "#FAFAFA"
-  surface: "#FFFFFF"
-  surface-dark: "#131316"
-  canvas-dark: "#0A0A0B"
-  foreground: "#18181B"
-  foreground-dark: "#FAFAFA"
-  muted: "#71717A"
-  muted-dark: "#A1A1AA"
-  border: "#E4E4E7"
-  border-dark: "#26262B"
-  border-strong: "#D4D4D8"
-  border-strong-dark: "#3A3A40"
-  rail: "#FFFFFF"
-  rail-dark: "#0A0A0B"
-  rail-accent: "#FFF1EC"
-  rail-accent-dark: "#2A1710"
-  rail-accent-foreground: "#E9421C"
-  rail-accent-foreground-dark: "#FF8A70"
-  muted-surface: "#F4F4F5"
-  muted-surface-dark: "#1C1C20"
-  link: "#2563EB"
-  link-dark: "#6AA7FF"
-  success: "#16A34A"
-  success-dark: "#4ADE80"
-  danger: "#DC2626"
-  danger-dark: "#F87171"
-  lamp-amber: "#D97706"
-  lamp-amber-dark: "#FBBF24"
+  floor: "#EDEDEB"
+  floor-dark: "#141516"
+  panel: "#FFFFFF"
+  panel-dark: "#1D1E20"
+  raised: "#F5F5F3"
+  raised-dark: "#27282B"
+  raised-strong: "#E9E9E6"
+  raised-strong-dark: "#34363A"
+  strong: "#D4D4CF"
+  strong-dark: "#3A3C40"
+  hairline: "#DCDCD8"
+  hairline-dark: "#2E3033"
+  outline: "#C9C9C4"
+  outline-dark: "#45474C"
+  text: "#1A1A1A"
+  text-dark: "#F2F0EB"
+  text-secondary: "#4D4D4D"
+  text-secondary-dark: "#B9B7B1"
+  text-muted: "#666666"
+  text-muted-dark: "#8F8D88"
+  nav-icon-dark: "#9A9893"
+  action: "#1A1A1A"
+  action-dark: "#F2F0EB"
+  action-foreground: "#FFFFFF"
+  action-foreground-dark: "#141516"
+  action-hover-dark: "#FFFFFF"
+  action-pressed-dark: "#D9D6CF"
+  ember: "#FF4A20"
+  ember-dark: "#FF5B2E"
+  ember-text: "#C2330F"
+  ember-text-dark: "#FF8254"
+  ember-wash: "#FFEDE7"
+  ember-wash-dark: "#3A2118"
+  ok: "#15803D"
+  ok-dark: "#6FD99A"
+  ok-tint: "#E6F4EA"
+  ok-tint-dark: "#18301F"
+  warn: "#A16207"
+  warn-dark: "#EBC25B"
+  warn-tint: "#FBF1D9"
+  warn-tint-dark: "#352B10"
+  bad: "#B91C1C"
+  bad-dark: "#FF7A85"
+  bad-tint: "#FBE9E9"
+  bad-tint-dark: "#3B1B1F"
+  chart-primary-dark: "#D9D6CF"
+  chart-secondary-dark: "#6B6D72"
 typography:
   display:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "30px"
-    fontWeight: 600
-    lineHeight: 1.1
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "28px"
+    fontWeight: 700
+    lineHeight: "32px"
     letterSpacing: "-0.02em"
   headline:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Figtree, system-ui, sans-serif"
     fontSize: "28px"
-    fontWeight: 600
-    lineHeight: 1.1
+    fontWeight: 700
+    lineHeight: "32px"
     letterSpacing: "-0.02em"
-  headline-sm:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "24px"
-    fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: "-0.02em"
-  headline-xs:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "20px"
-    fontWeight: 600
-    lineHeight: 1.2
+  stat:
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "34px"
+    fontWeight: 700
+    lineHeight: "40px"
     letterSpacing: "-0.02em"
   title:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "15px"
-    fontWeight: 600
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 700
+    lineHeight: "20px"
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "13px"
-    fontWeight: 500
-    lineHeight: 1.35
-  meta:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "12px"
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "14px"
     fontWeight: 400
-    lineHeight: 1.4
+    lineHeight: "21px"
+  meta:
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: "16px"
   label:
-    fontFamily: "Geist, Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "11px"
+    fontFamily: "Figtree, system-ui, sans-serif"
+    fontSize: "12px"
     fontWeight: 600
-    letterSpacing: "0.08em"
-    textTransform: "uppercase"
+    lineHeight: "16px"
   data:
     fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12px"
+    lineHeight: "16px"
     fontVariantNumeric: "tabular-nums"
-    letterSpacing: "-0.01em"
 rounded:
-  sm: "6px"
-  md: "8px"
+  tile: "12px"
+  panel: "16px"
   pill: "999px"
 spacing:
   hairline: "1px"
-  xs: "3px"
+  xs: "2px"
   sm: "8px"
   md: "12px"
   lg: "16px"
-  xl: "24px"
+  xl: "20px"
+  2xl: "24px"
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "#FFFFFF"
-    rounded: "{rounded.md}"
-    padding: "0 14px"
-    height: "38px"
-  button-primary-hover:
-    backgroundColor: "{colors.primary-bright}"
-    textColor: "#FFFFFF"
-  button-primary-active:
-    backgroundColor: "{colors.primary-deep}"
-    textColor: "#FFFFFF"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 12px"
-    height: "36px"
-  card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.md}"
-    padding: "16px 20px"
-  nav-item-active:
-    backgroundColor: "{colors.rail-accent}"
-    textColor: "{colors.rail-accent-foreground}"
-    rounded: "{rounded.md}"
-    height: "38px"
-  status-pill:
-    backgroundColor: "{colors.muted-surface}"
-    textColor: "{colors.muted}"
+    backgroundColor: "{colors.action-dark}"
+    textColor: "{colors.action-foreground-dark}"
     rounded: "{rounded.pill}"
+    padding: "0 20px"
+    height: "40px"
+  button-primary-hover:
+    backgroundColor: "{colors.action-hover-dark}"
+    textColor: "{colors.action-foreground-dark}"
+  button-primary-active:
+    backgroundColor: "{colors.action-pressed-dark}"
+    textColor: "{colors.action-foreground-dark}"
+  button-strong:
+    backgroundColor: "{colors.strong-dark}"
+    textColor: "{colors.text-dark}"
+    rounded: "{rounded.pill}"
+    padding: "0 16px"
+    height: "36px"
+  button-quiet:
+    backgroundColor: "{colors.raised-dark}"
+    textColor: "{colors.text-dark}"
+    rounded: "{rounded.pill}"
+    padding: "0 16px"
+    height: "36px"
+  panel:
+    backgroundColor: "{colors.panel-dark}"
+    rounded: "{rounded.panel}"
+    padding: "18px 20px 20px"
+  input:
+    backgroundColor: "{colors.raised-dark}"
+    textColor: "{colors.text-dark}"
+    rounded: "{rounded.tile}"
+    padding: "0 14px"
+    height: "42px"
+  nav-item-active:
+    backgroundColor: "{colors.raised-dark}"
+    textColor: "{colors.text-dark}"
+    rounded: "{rounded.pill}"
+    height: "36px"
+  status-badge:
+    backgroundColor: "{colors.ok-tint-dark}"
+    textColor: "{colors.ok-dark}"
+    rounded: "{rounded.pill}"
+    height: "22px"
 ---
 
 # Design System: PostForge
 
 ## What this site is
 
-PostForge is a self-hosted, single-operator marketing dashboard: generate, UGC clone, slideshow, gallery, automations, performance, spend, and settings. It is not a marketing landing page. The product is an authenticated workspace — 240px / 72px rail, `WorkspaceRouteHeader`, zinc chrome, one coral accent, a dark media stage, and the 12-surface shared primitives. `PRODUCT.md` stays product context; this file stays visual canon.
+PostForge is a self-hosted, single-operator marketing dashboard: generate, UGC clone, slideshow, gallery, automations, performance, spend, and settings. It is not a marketing landing page. The product is an authenticated workspace: a 248px sidebar (72px rail) sitting on the floor, a title-only page header, charcoal panels, and one ember accent. `PRODUCT.md` stays product context; this file stays visual canon.
+
+## Visual source
+
+The designs are the source of truth. They live in Paper, file `01M74DGFD1W8647F6RFTFTT93Q`, page "3 Workbench" (`p-3-0`): `00 Shell`, one artboard per route, and `19 Interaction notes` for motion and states. Read them with the Paper MCP (`get_jsx`, `get_computed_styles`) and take sizes and colours from there, never from a screenshot. A surface with no artboard is designed from the same primitives; anything larger than a confirm dialog is drawn first on the page "4 Workbench additions" (`p-4-0`).
 
 ## Taste Skill / how agents design
 
 This file owns PostForge tokens, named rules, and primitives. It wins over any inferred palette or new theme. Kode mode owns structure (colocate, types files, kode-taste); it does not own look. [Taste Skill](https://www.tasteskill.dev/) owns the anti-slop UX (layout, hierarchy, spacing, motion, pre-flight) that this file does not specify.
 
-For a kode route pass: read this file, `PRODUCT.md`, and the shared shell, then load [`redesign-existing-projects`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md) (audit existing UI first) and [`design-taste-frontend`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) (v2 default: brief inference, design-system map, redesign-audit, pre-flight). [`minimalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/minimalist-skill/SKILL.md) matches the Linear / Resend bar already named here. Optional: [`high-end-visual-design`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/soft-skill/SKILL.md) for calm density. Never [`industrial-brutalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/brutalist-skill/SKILL.md). Load [`gpt-taste`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/gpt-tasteskill/SKILL.md) only if the runner is GPT / Codex. Imagegen skills are image-only; not for a kode route pass.
+For a kode route pass: read this file, `PRODUCT.md`, and the shared shell, then load [`redesign-existing-projects`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/redesign-skill/SKILL.md) (audit existing UI first) and [`design-taste-frontend`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md) (v2 default: brief inference, design-system map, redesign-audit, pre-flight). [`minimalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/minimalist-skill/SKILL.md) matches the subtraction rules below. Never [`industrial-brutalist-ui`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/brutalist-skill/SKILL.md). Load [`gpt-taste`](https://github.com/Leonxlnx/taste-skill/blob/main/skills/gpt-tasteskill/SKILL.md) only if the runner is GPT / Codex. Imagegen skills are image-only; not for a kode route pass.
 
 Redesign protocol: audit first, preserve the canon, do not modernize into a different product. Skills live under `skills/` in [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).
 
 ## Overview
 
-**Creative North Star: "The Category Standard, Owned"**
+**Creative North Star: "Workbench, charcoal and ember"**
 
-PostForge is a calm professional instrument: the category-standard SaaS dashboard executed at the Linear and Resend craft bar. Restraint and clarity are the identity. There is no creative metaphor to invent — the canon is the choice, made deliberately by the user over the metaphor worlds (print shop, rack, nixie). The operator's media, pipeline state, and spend carry all the color; the chrome around them stays quiet zinc. This surface should read as belonging next to Linear and Resend, not as a theme.
+A forge burns charcoal. The page is charcoal in four steps, the text is bone, and the only colour is the ember. Ember means live, current or selected. It never means "click me". Bone marks the one primary action on a screen.
 
-Density is comfortable-professional: hairline-bordered cards, a compact sidebar, a quiet route header, and a stat strip that reads at a glance. Every decision favors legibility and low noise over decoration. Corners are gently curved (8px), shadows are quiet and offset, and motion is one quick-but-weighty ease shared across the whole system. Nothing competes for attention with the work.
+Dark is the default theme. Light stays available behind the theme toggle with the same roles. The `.dark` class on `<html>` carries the dark values; the inline theme script adds it unless `localStorage["postforge-theme"]` is `"light"`.
 
-Across the full 12-surface redesign the canon settled into a set of shared, token-driven primitives: a single dark media stage for every focus surface, corner status badges on media, coral selection rings and a docked bulk-action bar, a real table grammar for list views, and segmented controls for filters and step navigation. These recurring patterns — not per-route invention — are what define the system's feel.
+**Key characteristics**
+- Surfaces are stepped charcoal with no borders: floor, panel, raised, stronger raised. A panel is a 16px rounded block with a one-pixel inner edge, not a card with a stroke.
+- One accent. Ember is reserved for what is live, current or selected: the active nav icon, a running bar, a selection ring, a chosen chip, an on toggle, a focus ring.
+- One primary. The bone pill appears at most once per screen. Everything else is a strong, quiet or outline pill.
+- Controls are full pills. Tiles, thumbnails and inputs are 12px. Panels are 16px.
+- Figtree carries all UI type. Geist Mono is only for ids, costs, timestamps and durations.
+- Motion confirms an action or a state change and never bounces.
 
-**Key Characteristics:**
-- Token-driven zinc-neutral light + dark themes; no per-route color invention and no literal hexes in component code.
-- One coral accent (`#FF4A20` light / `#FF6540` dark) reserved for primary actions and active navigation — nothing else.
-- A single dark media stage (`#09090B`) where all focused media renders object-contain/full-frame.
-- Hairline-bordered cards (8px radius) with quiet, top-lit elevation.
-- Geist carries all UI type; Geist Mono is reserved for true data (counts, costs, job ids, dates).
-- A single shared motion ease (`cubic-bezier(0.22,1,0.36,1)` at 180ms) — no bounce.
+## Tokens
 
-## Colors
+All colour, radius, shadow and motion values live in `src/app/styles/tokens.css`. `:root` holds the light values and `.dark` the dark ones. Component code uses the tokens or the Tailwind roles mapped from them; no literal hex appears in `src/**/*.ts(x)`.
 
-Zinc neutrals form the canvas and chrome; a single coral accent carries intent; semantic state colors (green/amber/red) are reserved for pipeline status only.
+| Role | Token | Tailwind | Dark | Light |
+|---|---|---|---|---|
+| Floor | `--pf-floor` | `bg-floor` | `#141516` | `#EDEDEB` |
+| Panel | `--pf-panel` | `bg-panel` | `#1D1E20` | `#FFFFFF` |
+| Raised, inset bed | `--pf-raised` | `bg-raised` | `#27282B` | `#F5F5F3` |
+| Stronger raised | `--pf-raised-strong` | `bg-raised-strong` | `#34363A` | `#E9E9E6` |
+| Strong secondary | `--pf-strong` / `--pf-strong-fg` | `bg-strong text-strong-fg` | `#3A3C40` / bone | `#D4D4CF` / ink `#1A1A1A` |
+| Strong hover, pressed | `--pf-strong-hover`, `--pf-strong-pressed` | | `#45474C`, `#34363A` | `#C9C9C4`, `#BDBDB8` |
+| Hairline | `--pf-hairline` | `border-hairline` | `#2E3033` | `#DCDCD8` |
+| Outline on raised | `--pf-outline` | `border-edge` | `#45474C` | `#C9C9C4` |
+| Media placeholder | `--pf-media` | `bg-media` | `#2A2B2E` | `#E4E4E1` |
+| Control track | `--pf-track`, `--pf-track-edge` | | `#34363A`, no edge | `#D4D4CF` with a 1px `#C9C9C4` edge |
+| Range fill | `--pf-range-fill` | | ember `#FF5B2E` | ink `#1A1A1A` |
+| Text | `--pf-text` | `text-fg` | `#F2F0EB` | `#1A1A1A` |
+| Text secondary | `--pf-text-secondary` | `text-fg-secondary` | `#B9B7B1` | `#4D4D4D` |
+| Text muted | `--pf-text-muted` | `text-fg-muted` | `#8F8D88` | `#666666` |
+| Disabled text | `--pf-disabled-fg` | `text-fg-disabled` | `#6F6E6A` | `#A3A3A0` |
+| Primary action | `--pf-action` / `--pf-action-fg` | `bg-action text-action-fg` | `#F2F0EB` / `#141516` | `#1A1A1A` / white |
+| Primary hover, pressed | `--pf-action-hover`, `--pf-action-pressed` | | `#FFFFFF`, `#D9D6CF` | `#000000`, `#333333` |
+| Ember | `--pf-ember` | `bg-ember` | `#FF5B2E` | `#FF4A20` |
+| Ember text | `--pf-ember-text` | `text-ember-text` | `#FF8254` | `#C2330F` |
+| Ember wash | `--pf-ember-wash` | `bg-ember-wash` | `#3A2118` | `#FFEDE7` |
+| OK | `--pf-ok` / `--pf-ok-tint` | `text-ok bg-ok-tint` | `#6FD99A` on `#18301F` | `#15803D` on `#E6F4EA` |
+| Warn | `--pf-warn` / `--pf-warn-tint` | `text-warn bg-warn-tint` | `#EBC25B` on `#352B10` | `#A16207` on `#FBF1D9` |
+| Bad | `--pf-bad` / `--pf-bad-tint` | `text-bad bg-bad-tint` | `#FF7A85` on `#3B1B1F` | `#B91C1C` on `#FBE9E9` |
+| Chart series | `--pf-chart-1`, `--pf-chart-2`, `--pf-chart-grid` | `chart-1`, `chart-2` | `#D9D6CF`, `#6B6D72`, `#2E3033` | `#1A1A1A`, `#B4B4B0`, `#DCDCD8` |
+| Panel edge | `--pf-panel-shadow` | `shadow-panel` | `inset 0 0 0 1px rgb(255 255 255 / 0.04)` | `0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.10)` |
+| Float | `--pf-float-shadow` | `shadow-float` | `0 0 0 1px #3A3C40, 0 10px 28px -10px rgb(0 0 0 / 0.5)` | hairline ring and a soft drop |
 
-### Primary
-- **Coral** (`#FF4A20` light, `#FF6540` dark; hover `#E9421C`): the platform's only brand accent. Used exclusively for primary action buttons, the quick-action in the mobile bar, active nav icons, focus rings, and the sidebar brand mark. Its rarity is the point.
-
-### Neutral
-- **Canvas** (`#FAFAFA` light, `#0A0A0B` dark): the page floor and route-header background.
-- **Surface** (`#FFFFFF` light, `#131316` dark): cards, panels, secondary buttons, popovers.
-- **Muted Surface** (`#F4F4F5` light, `#1C1C20` dark): pressed/hover rows, secondary fills, stat-card hover beds, segmented-control beds.
-- **Foreground** (`#18181B` light, `#FAFAFA` dark): primary text.
-- **Muted** (`#71717A` light, `#A1A1AA` dark): secondary text, labels, meta, inactive icons.
-- **Border** (`#E4E4E7` light, `#26262B` dark): hairlines around cards, rows, controls.
-- **Border Strong** (`#D4D4D8` light, `#3A3A40` dark): card hover stroke.
-- **Rail** (`#FFFFFF` light, `#0A0A0B` dark): sidebar and mobile top bar surface.
-- **Rail Accent** (`#FFF1EC` light, `#2A1710` dark): the active nav row bed and the selected-row tint — a pale coral wash, never the full accent.
-- **Rail Accent Foreground** (`#E9421C` light, `#FF8A70` dark): text of the active nav row and selected rows.
-
-### State
-- **Success** (`#16A34A` light, `#4ADE80` dark), **Danger** (`#DC2626` light, `#F87171` dark), **Lamp Amber** (`#D97706` light, `#FBBF24` dark): pipeline status — approved, rejected/failed, in-progress. Used in status pills, lamps, small review dots, and media-corner badge dots.
-- **Link** (`#2563EB` light, `#6AA7FF` dark): inline links in the sidebar footer.
+The shadcn tokens (`--background`, `--card`, `--primary`, `--border`, `--ring`, the sidebar and chart sets) and the older `--pf-*` names (`--pf-canvas`, `--pf-surface`, `--pf-ink`, `--pf-orange` and the rest) are aliases of these roles, so existing code follows the theme. New code uses the role names.
 
 ### Named Rules
-**The One Accent Rule.** Coral appears only on primary actions and active navigation. It is never used as a decorative flourish, a chart series, an idle icon, or a text highlight. When a surface needs more color, the operator's media and status provide it — the chrome does not.
+**The Ember Rule.** Ember marks what is live, current or selected. It is never a call to action, never a decoration, never a chart series. In a chart it marks the one current datum.
 
-**The Content Carries Color Rule.** The interface stays zinc. All chromatic meaning beyond the single coral accent is delegated to pipeline state (green/amber/red) and to the media itself. If a panel looks colorless, that is correct; the work supplies the color.
+**The One Primary Rule.** The bone pill appears at most once per screen. A second important action is a strong pill; the rest are quiet.
 
-**The No-Literal-Hex Rule.** Every route is token-driven in both themes. No literal hex color appears in component code; the only accepted literals are the `#09090B` media stage, the slide-theme palettes in the slideshow, and the `TEMPLATE_VISUALS` gradient maps (content, not chrome). The legacy dark hex-remap tables in `globals.css` remain only as a transition safety net for any literal that slips in.
+**The Status Only Rule.** Green, amber and red appear only as status: a 22px round badge, a worded chip for a real state, a count badge, a split bar. They never colour a surface or a heading.
+
+**The No-Literal-Hex Rule.** No literal hex in component code. The accepted literals are the `#09090B` media stage, the slide-theme palettes in the slideshow, and the `TEMPLATE_VISUALS` maps (content, not chrome). The gate counts the rest.
 
 ## Typography
 
-**Display/Body Font:** Geist (with Inter, ui-sans-serif, system-ui fallbacks)
-**Data Font:** Geist Mono (with ui-monospace, SFMono-Regular, Menlo fallbacks)
-
-**Character:** A single humanist-geometric sans carries the whole interface at tight tracking; a mono face is reserved for numerals and identifiers. The pairing reads calm and technical — Linear-like clarity, no flourish.
+**UI font:** Figtree, variable, weights 400 to 700, self-hosted as woff2 in `public/fonts` (SIL Open Font License) with `font-display: swap`.
+**Data font:** Geist Mono, self-hosted the same way.
 
 ### Hierarchy
-- **Display** (600, 30px, line-height 1.1, tracking -0.02em): the Home page title.
-- **Headline** (600, 28px, line-height 1.1, tracking -0.02em): the route header title in `WorkspaceRouteHeader`.
-- **Headline-sm** (600, 24px, line-height 1.15, tracking -0.02em): secondary page titles.
-- **Headline-xs** (600, 20px, line-height 1.2, tracking -0.02em): card-level emphasis, the top-model stat.
-- **Title** (600, 15px, tracking -0.01em): card headers and section titles (`pf-section-title`) — "Review queue", "Recent media", "In progress".
-- **Body** (500, 13px, line-height 1.35): row titles, list content.
-- **Meta** (400, 12px, line-height 1.4): secondary lines under titles, table cells, meta rows.
-- **Label** (600, 11px, tracking 0.08em, uppercase): group labels, stat-card labels, section labels, footer meta.
-- **Data** (Geist Mono, tabular-nums, tracking -0.01em): job ids, counts in badges, costs, dates. Reserved for true data, never decorative.
+- **Page title** (700, 28px / 32px, -0.02em): one per page, in `PageHeader`. The same size on every route.
+- **Stat numeral** (700, 34px / 40px, -0.02em, tabular): the figure in a stat strip.
+- **Panel title** (700, 16px / 20px, -0.01em): `.wb-panel-title`.
+- **Body** (400 to 500, 14px / 21px): row titles are 14px / 600.
+- **Meta** (400, 13px / 16px): secondary lines, table cells.
+- **Label** (600, 12px / 16px, muted): field labels, stat labels, table headers. Sentence case, never uppercase, never tracked.
+- **Data** (Geist Mono, 12px / 16px, tabular): ids, costs, timestamps, durations.
 
 ### Named Rules
-**The Data Voice Rule.** Geist Mono is reserved for true data: identifiers, counts in badges, costs in logs, dates. It is never used as costume or for labels — mono carries meaning only where the value is the content.
+**The Data Voice Rule.** Geist Mono is only for ids, costs, timestamps and durations. Stat numerals and counts in badges stay in the sans face.
 
-**The Sans Stat Rule.** Stat numerals are 28px semibold tabular-nums in the sans face — never mono. Geist Mono is reserved for true data (job ids, cost logs), not for headline figures. The tabular-nums feature gives the figures their alignment; the sans face keeps them part of the UI voice.
+**The Sentence Case Rule.** Sentence case everywhere. No uppercase tracked labels, no eyebrow above a title, no em dashes in copy, no emoji.
 
-**The No-Eyebrow Rule.** Eyebrow/kicker text above page titles is banned everywhere. The route header carries the title, a one-line description, and the primary action only — no `pf-masthead-plate` remains in use.
+**The No Orphan Rule.** Copy never ends on one word alone. Body copy uses `text-wrap: pretty` (set on `body`). Empty-state titles and copy (`.wb-empty-title`, `.wb-empty-copy`) and notices (`.wb-notice`) use `text-wrap: balance`. Text that does not fit gets room (a second line, a wider column, a wrapping field); it is not ellipsized, shrunk or shortened to fit.
 
 ## Layout
 
-The shell is a fixed left sidebar (240px at xl, `xl:w-64`) plus a content viewport that margin-offsets by the sidebar width. The sidebar collapses to a compact rail (72px) at desktop, expanding via a header toggle (state persisted to `postforge-sidebar-collapsed`); below `md`, it becomes a slide-in sheet triggered from a 58px mobile top bar. Route content is centered in a `max-w-[1280px]` container with `px-4`/`sm:px-6`/`lg:px-8` gutters.
+The shell matches `00 Shell` at 1440: floor background, 16px page padding, a 248px sidebar sitting on the floor (it is not a panel), a 12px gap, then the content column. Panels are separated by 12px and padded 20 to 24px inside.
 
-The route header is a hairline-banded band: a 28-30px/600 tracked title, a 13px muted one-line description, and a coral primary action on the right. Home composes a quiet header, a `grid-cols-2` stat strip that expands to 4 columns at `min-[860px]`, then the review queue and recent media side by side at `min-[1024px]` (9fr/11fr), then "In progress" and the start-action cards.
+- **1280 and up:** the 248px sidebar. The header button collapses it to the 72px rail; the choice persists in `localStorage["postforge-sidebar-collapsed"]` and is applied through `html[data-sidebar-collapsed]` before first paint.
+- **768 to 1279:** the 72px icon rail.
+- **Below 768:** a 56px top bar and a slide-in drawer. The page behind the open drawer does not scroll.
 
-Spacing rhythm is tight and consistent: card padding `16px` (`p-4`) with `20px` (`p-5`) at small screens; gaps of `12px` (`gap-3`) between cards; `8px` (`gap-2`) inside tiles and rows; `3px` (`gap-0.5`/`gap-1.5`) between sibling nav rows and inline controls. Hairline borders (1px) separate list rows.
+The sidebar comes before `<main>` in the DOM, so tab order follows what is drawn. The first focusable element is a "Skip to content" link: a bone pill at the top left that shows only on keyboard focus.
 
-Filter and toolbar controls sit in a hairline card directly above the content. When items are selected, a **docked contextual bulk-action bar** appears as a hairline card immediately under the filter controls — never a floating overlay. It leads with a coral count chip, quiet text actions, and the danger action pushed far right.
+The page header is a 56px row: the 28px title, and an actions slot holding at most the one bone primary plus one quiet secondary. Detail pages add a 40px round back button before the title.
+
+On small screens a header never reaches a second row by wrapping. A header whose actions cannot sit beside the title sets `stackBelow` (360, 480 or 640) on `PageHeader`; below that width it is a two-row grid with fixed tracks, the 32px title row and a 40px actions row across the full width, so its height is final on the first frame, before a client accessory mounts. A header whose actions fit at 320 stays one row. Anything that mounts late into a header or above content reserves its space first: nothing below it may move.
+
+From 1280 down, panels reflow and never clip. Check 1440, 1280, 1024, 768 and 390.
 
 ### Named Rules
-**The Docked Bulk Bar Rule.** The contextual bulk-action bar is a hairline card docked directly under the filter controls — never a floating overlay or a detached toolbar. It leads with a coral count chip, keeps actions as quiet text, and pushes the destructive action to the far right.
+**The Scroll Cut Rule.** Where content scrolls under an edge, the edge fades. A control is never sliced by a hard line at rest. A row that scrolls sideways carries `.wb-scroll-fade` (16px, and `.wb-scroll-fade-xl-y` when the row turns into a column from 1280). A block that scrolls down carries `.wb-scroll-fade-y`: 16px for a text bed, plus `.wb-scroll-fade-deep` (24px) for a body that scrolls over buttons, tiles or cards, such as a sheet body, a dialog body or a menu. The fade goes on the scroller itself, never on an element that carries a shadow, because a mask clips the shadow. A bar pinned to the viewport bottom carries `.wb-stuck-fade`: a 24px fade to the bar's own fill above it, which leaves when the page reaches its end and never shows on a page that does not scroll. A sheet first shrinks its media (down to 200px) so its body fits without scrolling. A text bed keeps its padding outside the scroller and cuts on whole lines. The fades follow a scroll timeline; an engine without one gets the same fades from `ScrollFadeFallback`, which sets them from the scroll position.
+
+**The Step Entry Rule.** A step change in a multi-step form scrolls the page to the top at once (no smooth scroll) and moves focus to the step: its heading, or the labelled step group where the step has no single heading (`useStepEntry`). The focus ring shows only for keyboard use.
+
+**The Focus Ring Rule.** Every focusable control shows a whole 2px ember ring on keyboard focus, at every size, in both themes. Three mechanisms make that structural.
+1. Room. An element that clips (any overflow other than visible, or a mask, which every `.wb-scroll-fade*` class is) and holds controls leaves at least 4px on the clipped sides and takes it back with a matching negative margin, so layout does not move: `.wb-ring-room`, or the scroller's own padding. A step rail that scrolls uses `.wb-step-scroll` (6px, 7px on touch). A value in a `KeyValueList` carries the room itself. Where there is no room to give, the control draws its ring inset (`outline-offset: -2px`, or an inset ring shadow).
+2. On top. The base layer gives anything that takes keyboard focus the ember outline, so a control never needs its own rule and `outline-none` is only for a control that draws a replacement. A ring is never an inset shadow or outline under a child that covers it: a control over media or over a thumbnail draws it on an `::after` overlay (`.wb-ring-over`). A control that is drawn by its wrapper (a hidden `select`, the slider thumb, a text bed that scrolls) rings the wrapper: `has-[:focus-visible]`, or `.wb-ring-host` on the unmasked parent. A segment is raised above its neighbour while focused. A range input rings its thumb, not its track.
+3. In view. Browsers leave a half-visible control where it is, so `FocusReveal` scrolls a keyboard-focused control to the nearest edge of every scroller around it. Each scroller says how far that is with `scroll-padding`: 6px by default, 20px along a 16px fade, 28px along a 24px fade, and on the root the mobile bar's height plus 12px at the top and `--wb-pinned-bottom` plus 28px at the bottom. A bar that sits on the viewport bottom, pinned or laid out there, publishes its reach with `publishPinnedBar`. Mouse and touch never trigger the scroll.
+
+### Subtraction rules
+- The page header is the title only. No description line.
+- No sidebar group labels. Groups are separated by a 20px gap. The sidebar footer is one row: Settings with the theme toggle at its end.
+- No filler copy: no panel sub-captions, no helper sentence that restates the control, no label that repeats its heading.
+- Status words on thumbnails and in dense tables are 22px round icon badges. Counts are badges or `x / y`. Budgets and splits are thin bars.
+- Destructive actions stay labelled. Real state stays visible: disconnected, failed, approval required, and unavailable metrics as a dash, never zero.
 
 ## Elevation & Depth
 
-Depth is conveyed through a quiet, top-lit shadow scale plus hairline borders — a hybrid of tonal layering and soft elevation. Surfaces sit flat at rest; shadows rise only on hover and on the primary action. Shadows are always neutral, offset, and softly blurred; there are no zero-offset colored halos.
+Depth comes from the charcoal steps, not from shadows. A panel carries only its one-pixel inner edge. The single drop shadow in the system belongs to floating surfaces: the bulk dock, toasts, menus, dialogs, the mobile drawer.
 
-### Shadow Vocabulary
-- **Tiny** (`0 1px 2px rgba(0,0,0,0.04)` light; darker in dark theme): resting elevation for stat cards, secondary buttons, hairline cards, segmented-control active pills.
-- **Small** (`0 1px 2px rgba(0,0,0,0.05), 0 4px 12px -2px rgba(0,0,0,0.08)`): quiet raised elements.
-- **Medium** (`0 1px 2px rgba(0,0,0,0.06), 0 8px 24px -6px rgba(0,0,0,0.12)`): card hover, media tile hover.
-- **Large** (`0 2px 4px rgba(0,0,0,0.06), 0 16px 40px -12px rgba(0,0,0,0.16)`): the tallest float.
-- **Coral** (`0 1px 2px rgba(130,25,0,0.15), 0 4px 12px -4px rgba(255,74,32,0.28)`): reserved for the primary button and the sidebar brand mark.
-
-### Named Rules
-**The Quiet-Shadow Rule.** All elevation is neutral, offset from the top light source, and softly blurred. Never a zero-offset block shadow and never a colored halo. The only colored shadow is the coral one on the primary action.
+- **Selection ring on media:** `box-shadow: 0 0 0 2px <panel>, 0 0 0 4px <ember>`.
+- **Focus on inputs:** a 2px ember ring that grows from 0. Error swaps it to red in place.
+- **Focused copy on the slide canvas:** while the eyebrow, headline or supporting copy field has focus, the slideshow editor draws a 2px ember frame with a 4px radius around that block on the canvas (`.wb-copy-frame`, 160ms). The frame takes its box from the overlay renderer, so it never guesses where the text is, and it is never part of an export.
+- **Focus on buttons and links:** a 2px ember outline with a 2px offset. Focus is drawn with `outline`, never with `box-shadow`, on any control that also uses a shadow for its edge, so the ring always shows. The Focus Ring Rule (Layout) keeps it whole and in view.
 
 ## Shapes
 
-The form language is gently rounded corners on a 0.5rem base. Cards, buttons, inputs, nav rows, and media tiles share an 8px radius (0.5rem); small icon buttons and the brand tile use 6-8px (`rounded-[6px]`/`rounded-[7px]`/`rounded-[8px]`). Status pills, media-corner badges, and lamps are fully round (999px). Borders are uniform 1px hairlines that separate surface from canvas and rows from one another. There is no clipping, no torn/tear geometry, and no rotated stamp shapes in the canon — corners are soft, edges are straight hairlines.
+16px panels. 12px tiles, thumbnails, inputs, option rows, wells and notices. Buttons, chips, nav items, segmented controls, badges and toasts are full pills. The brand tile is 32px with a 9px radius. Hairlines are 1px and appear only between rows inside a panel.
+
+## Motion
+
+From `19 Interaction notes`. Tokens: `--pf-dur-feedback` 160ms, `--pf-dur-state` 200ms, `--pf-dur-enter` 220ms, `--pf-dur-exit` 160ms, `--pf-ease` `cubic-bezier(0.22, 1, 0.36, 1)`.
+
+- **Feedback, 160ms:** hover, press, focus ring, selection ring.
+- **State change, 200ms:** nav pill, segmented control, toggle, content swap.
+- **Enter, 220ms:** toast, bulk dock, inspector panel. Exits use 160ms.
+- **Overlays:** one motion for every overlay, set by the `.wb-overlay-*` classes in `workbench.css` and used by `ui/dialog`, `alert-dialog`, `sheet`, `dropdown-menu`, `select`, `tooltip` and popovers. Dialogs fade and scale from 0.98, 220ms in and 160ms out. Sheets and the mobile drawer translate from their edge. Menus, selects, popovers and tooltips fade and move 4px, 160ms both ways. An overlay stays mounted while it leaves, so it animates out and focus returns to the control that opened it.
+- **Content swaps:** a tab or view that replaces another mounts with the 200ms `wb-fade-in`. Sidebar collapse and expand change the width in one step and cross-fade the sidebar contents over 200ms.
+- **Default timing:** a Tailwind transition utility with no duration or ease of its own resolves to 160ms on `--pf-ease` (set in `globals.css`). `transition-all` and a bare `transition` are not used; list the properties.
+- **Buttons:** the fill shifts in 160ms; press scales to 0.98 and steps the fill down one shade. Disabled does not animate.
+- **Navigation:** hover fades in a 60% raised bed; the active raised pill slides to the new item in 200ms and its icon turns ember.
+- **Media tile:** hover fades the action row in and lifts it 4px. The image never zooms. Select draws the ember ring and scales the check from 0.8 to 1.
+- **Loading:** skeletons are static. Content cross-fades in over 200ms. The only loop is an ember highlight sweeping a running bar every 1.6s.
+- **Toast:** rises 12px and fades in at the bottom centre of the content area, leaves after 5s. Failures stay until dismissed. It never covers a bar that sits on the viewport bottom: the toast region sits 16px above `--wb-pinned-bottom`.
+
+Only `transform` and `opacity` animate, plus `box-shadow` for rings and `background-color` for fills. A meter fill scales from its left edge; it does not animate `width`. `prefers-reduced-motion` is honoured globally.
+
+Selecting, hovering or loading never moves layout under the pointer. The Gallery keeps a 48px row above the grid for the item count, and the bulk dock lies over it; from 1280 the inspector column is always present, with an empty state when nothing is selected. Where the dock cannot fit one row (below 1024, and from 1280 to 1439 beside the inspector) it floats at the bottom of the content area.
+
+## Touch
+
+On coarse pointers every control has a hit area of at least 44px, and what is drawn does not change. The rule set is in `workbench.css` under `@media (pointer: coarse)`: a centred pseudo-element on `.wb-btn`, `.wb-icon-btn`, `.wb-segment`, `.wb-chip`, `.wb-toggle`, `.wb-step`, `.wb-tile-check` and labelled `.wb-input-wrap`. `--wb-hit-w` and `--wb-hit-h` cap the area where neighbours sit closer than 44px, so two areas split the gap and never overlap. A control built outside the primitives opts in with `.wb-hit`. A hit area never adds scroll range: a row that scrolls sideways has no vertical range on touch, so a page scroll that starts on it moves the page and nothing inside the row.
+
+On `hover: none` a media tile draws no action row. A tap on the media opens the preview, which holds the secondary actions; the selection check stays visible. A row that is the only way to its action keeps it with `MediaTile` `state.touchActions`. The Gallery grid passes `touchActions: "primary"`, which keeps one 40px Preview pill and drops the secondary actions.
 
 ## Components
 
+The primitives live in `src/components/workbench` (one component per file) with their classes in `src/app/styles/workbench.css` and `workbench-data.css`. The shell classes are in `shell.css`.
+
 ### Buttons
-- **Shape:** gently rounded (8px).
-- **Primary (`.pf-button-primary`):** coral fill (`var(--pf-orange)`), white 13px/600 text, min-height 38px, horizontal padding 14px, coral shadow. Hover darkens via `brightness(0.93)`; active scales to `0.98` and darkens to `0.88`; disabled drops to 45% opacity with no shadow. There is no lift and no inset press shadow — the press is a flat scale. This is the only element that may carry coral fill.
-- **Secondary (`.pf-button-secondary`):** surface fill, 1px hairline border, ink text, 36px min-height, 12px horizontal padding, tiny shadow. Hover tints with the muted-surface bed.
-- **Ghost (in the mobile bar, sidebar):** icon-only 36px, muted icon that inks on hover over a muted-surface bed.
+- **Primary (`Button variant="primary"`, `.wb-btn-primary`):** bone pill, ink text, 40px, 14px / 600. Hover `#FFFFFF`, pressed `#D9D6CF`.
+- **Strong:** `#3A3C40` pill (light: `#D4D4CF` with ink text, so the primary stays the only ink pill), the second most important action and the action in an empty state.
+- **Quiet:** raised pill, 32 to 40px, 13px / 600. The default.
+- **Outline:** transparent with a 1px inset ring, for buttons sitting on a raised surface such as the bulk dock.
+- **On a raised surface:** a confirm dialog is drawn on the raised fill, so its surface carries `.wb-on-raised`, which hands everything inside the next fill up. A quiet pill, an input and a disabled control keep reading as controls there with no rule of their own. Light steps to the strong fill, because raised-strong on raised is 1.11:1.
+- **Danger:** red tint with red text. Always labelled.
+- **Icon buttons (`IconButton`):** round, 28 to 40px: quiet, strong, outline or ghost.
+- **Disabled:** raised fill with `#6F6E6A` text. No opacity fade on text buttons. The primary has its own disabled tokens (`--pf-action-disabled`, `--pf-action-disabled-fg`): the same values in dark, and in light the raised-strong fill `#E9E9E6` with muted `#666666` ink, because the raised fill is 1.09:1 on a white panel.
 
-### Inputs / Fields
-- **Style:** hairline border (`var(--pf-border)`), rounded-lg (8px), surface background, 13px ink text.
-- **Focus:** the border shifts to coral and a soft coral ring appears (`ring` at 10-15% opacity) — a quiet glow, never a hard outline.
-- **Search fields** sit inside a hairline-bordered label with a leading search icon and muted placeholder.
+### Inputs
+42px on the raised colour, no border, 12px radius, 14px text, muted placeholder (`.wb-input`, `ui/input`). Search fields are the 36px variant with a leading 15px icon. A `Field` is a 12px / 600 muted label 6px above the control.
 
-### Cards / Containers
-- **Corner Style:** 8px radius.
-- **Background:** surface (`var(--pf-surface)`).
-- **Shadow:** resting `--pf-shadow-2xs`; hover lifts to `--pf-shadow-md` with a border-strong stroke and `translateY(-1px)` (via `.pf-card-hover`).
-- **Border:** 1px hairline (`var(--pf-border)`).
-- **Internal Padding:** 16px, growing to 20px on small+ screens. Card headers use a 15px/600 title with an optional quiet right-aligned link (12px, muted, inks on hover, arrow nudges right).
+### Panels
+`Panel`: 16px radius, panel colour, the inner edge, 18px 20px 20px padding. The title row is 32px tall with a 16px / 700 title and at most one trailing control, usually a quiet 32px pill. No caption under the title.
 
-### Chips / Status Pills
-- **Style (`.pf-status-success/warning/danger`):** fully round (999px) pills — a thin colored-tinted border, a very light tinted fill, and a 600-weight label in the matching hue, with an optional status lamp or check mark.
-- **State:** processing = amber with a pulsing lamp; queued/idle = hairline border on a muted bed; complete = green with a check.
+### Segmented control
+A raised pill bed, 36px tall with 3px padding. Segments are 30px, 13px / 500 secondary text. The active segment is `#3A3C40` with 600 bone text (light: white with a soft shadow). Used for filters, view toggles and period pickers.
 
-### Media-Corner Badge
-- **Style:** a fully round (999px) pill on the media tile corner, `bg-black/55` with white 11px text and a colored status dot. The dot is green (`#4ADE80`) for approved, red (`#F87171`) for rejected, amber (`#FBBF24`) for needs-review. A duration chip uses the same black/55 pill on the opposite corner.
-- **Reviewed cards** additionally carry a `.pf-review-stamp` pill (uppercase 11px, tinted fill) pressed onto the media corner; a user-driven review triggers the `.pf-stamp-slam` one-shot scale animation (expo-out ease only).
+### Toggle and range
+`Toggle` (`.wb-toggle`, `ui/switch`): 48 by 28, ember when on. Off sits on the control track token: `#34363A` in dark, and in light the strong fill `#D4D4CF` with a 1px outline edge and the white knob, so an off toggle stays visible on a white panel (1.49:1 against 1.22:1 for the raised-strong fill).
 
-### Segmented Controls
-- **Style:** a muted-surface bed (`--pf-active`) with `p-1`, containing equal-width segments. The active segment is a surface pill (`--pf-surface`) with the tiny shadow (`--pf-shadow-2xs`); inactive segments are muted text that ink on hover.
-- **Use:** gallery review filters, model type tabs, clone step navigation.
+`Range` (`.wb-range`): the native range input. A 6px track on the control track token, the filled part and the 2px thumb ring on the range fill: ember in dark, ink in light. Keyboard focus adds a 2px ember ring around the thumb, outside that edge. Range inputs do not use `accent-color`, which Chrome draws with a near-black track in light.
 
-### Table / List Rows
-- **Style:** a real table grammar — a header row (hidden below `md`), hairline row dividers, hover on the muted-surface bed, 40px media thumbs, status pills, and right-aligned row actions. The gallery list view is the canon list pattern.
+### Chips and option rows
+`Chip`: 36px raised pill. Chosen: ember wash, a 2px inset ember ring, ember text, and a leading check where the design shows one. Option rows are 60px, 12px radius, and gain only the ember ring.
 
-### Navigation (`.pf-nav-item`)
-- **Style:** 38px rows, 13px/500, rounded 8px, `gap-2.5`. Icons are 17px at 1.8 stroke.
-- **Default:** muted text and icon; hover inks over a muted-surface bed.
-- **Active:** the pale coral wash bed (`rail-accent`) with coral text and a coral icon — the tinted wash, not the full accent, so the primary action stays the sole solid-coral element.
-- **Group labels:** 11px/600 uppercase tracked 0.08em, muted, above each group.
-- **Behavior:** collapses to a centered 72px icon rail at xl; becomes a slide-in sheet below `md`.
+### Status
+- **`StatusBadge`:** 22px round icon badge: green check, amber clock, red x, neutral clock. Used on thumbnails and in dense tables in place of status words.
+- **`StatusChip`:** 24px worded chip for real states such as "Connected", "Reconnect required", "Not connected".
+- **`CountBadge`:** 20px pill. Neutral by default, red tint for failures, amber for attention.
+- **Live dot:** 8px ember dot with a 4px ember-wash halo.
 
-### Stat Cards
-- **Layout:** 8px hairline card with an 11px uppercase tracked label and a 28px tabular-numeral value in ink (sans, not mono). Hover strengthens the border to `border-strong`. A hairline card, never a filled or shadowed tile.
+### Stat strip
+`StatStrip`: stats in one panel split by hairlines. Each is a 12px / 600 muted label over a 34px / 700 numeral, with an optional inline bar or chip. A stat that links draws its focus ring 12px around its content, a 2px ember ring with an 8px radius, since the cells have square corners and the outer ones no side padding.
 
-### Media Tile
-- **Layout:** square (aspect-ratio 1) 8px media thumbnail with a hairline border. On hover it lifts with the medium shadow. State pills (black/55 bed, white 11px) sit on the bottom-left corner; a duration chip sits bottom-right.
+### Meters
+`Meter`: a 4px bar on the control track token, so an empty meter stays visible on a white panel. Neutral fill for budgets, ember for running work (with the sweep). A meter beside a figure keeps at least 96px; the figure wraps under it when the row is too narrow. `SplitMeter`: weighted parts with 2px gaps for a split such as completed against failed, or equal segments for a step count.
 
-### The Dark Media Stage
-- **Style:** a `#09090B` (near-black) stage is the shared media-focus treatment across the gallery lightbox, generate studio preview, generation editor, clone composition, slideshow editor canvas, automation builder preview, and character builder portrait stage. Media always renders `object-contain`/full-frame on it, centered on the dark floor. This is the one accepted literal hex in the chrome.
+### Step rail
+`StepRail`: a 30px numbered circle and a name per step, joined by 2px connectors. The current step has a 2px ember ring and an ember numeral. Done steps are a filled `#3A3C40` circle with a check. A rail never scrolls its current step out of view: where the names do not fit (below 640 in the Clone and automation builder rails, below 1280 in the character builder) it shows a dot for every step and the name on the current one only.
 
-### Signature: The Review Queue Row
-- Inline approve/reject controls on each row: two 32px ghost icon buttons (check / x). Each is hairline-bordered with a muted icon; on hover it tints toward its semantic color (green for approve, red for reject) with a 10%-tint fill and tinted border/icon. Disabled during a pending mutation (40% opacity). The row is a hairline-divided list with a 56px media thumb, a 13px prompt, and a 12px model · type meta line.
+### Media tile
+`MediaTile`: 12px radius on the media placeholder colour. Status badge top right, duration chip bottom right in Geist Mono on a dark scrim, selection check top left. Selected tiles carry the ember selection ring. The hover action row holds a bone "Preview" and a translucent second action; it is drawn only where hover exists (see Touch).
 
-### Signature: The Docked Bulk-Action Bar
-- A hairline card docked directly under the filter controls when items are selected. It leads with a coral count chip (the count in coral), a "N selected" label, quiet text actions (Select all / Clear), then the action group (Approve, Reject, Download, Handoff), and the destructive Delete pushed to the far right. Never a floating overlay.
+### Menus
+A row menu (`RowActionsMenu`) opens with focus on its first item. ArrowDown, ArrowUp, Home and End move between items and wrap, Escape closes and returns focus to the trigger, Tab closes and leaves from the trigger. Its height is capped to the room on the side it opens, with the scroll and the 24px fade on an inner body.
+
+### Rows
+- **Key-value rows (`KeyValueList`):** 30px inspector rows split by hairlines, muted label left, value right.
+- **Tables:** a filled 36px header bar on the raised colour with 12px / 600 labels, then 60px rows split by hairlines.
+
+### Empty, loading, feedback
+- **`EmptyState`:** a dashed 12px tile with a 44px round icon, one 14px / 600 line and one strong action. It fades in once.
+- **`Skeleton`:** static raised shapes. No shimmer, no pulse.
+- **`Toast`:** a 48px raised pill with a 20px status badge, the message and one inline action.
+- **Confirm:** a destructive or irreversible action asks through `useConfirmDialog` (`ui/confirm-dialog`), the 420px alert dialog with Cancel focused first and a labelled destructive pill. `window.confirm` is not used.
+- **Not found:** every URL under no route shows the not-found page inside the shell, in the stored theme, with a 404 status. The server renders it, so it paints on the first frame and reads without JavaScript. Its header is the title "Page not found" alone: a missing page under a section shows no section title, no current nav item and no section action.
+
+### Navigation
+36px pill items: 10px inline padding, 10px gap, an 18px icon at 1.5 stroke, 14px / 500 secondary text. Active: the raised pill, 600 bone text, an ember icon. Jobs carries a red-tint count of failed jobs; Gallery carries a neutral count of outputs waiting for review.
+
+### Icons
+`Icon`: 24 viewBox, 1.5 stroke, round caps and joins, `currentColor`. Paths come from the Paper file.
 
 ## Do's and Don'ts
 
-### Do:
-- **Do** use semantic tokens (`--pf-*`, shadcn tokens) for all new work; the token layer is the only source of truth for colors, radii, shadows, and motion.
-- **Do** reserve coral (`--pf-orange`) for primary actions and active navigation — apply **The One Accent Rule** on every surface.
-- **Do** render focused media on the `#09090B` dark stage with `object-contain`/full-frame (**The Dark Stage Rule**).
-- **Do** use the black/55 corner badge with a status dot for media state, and the `.pf-review-stamp` + `.pf-stamp-slam` for reviewed cards.
-- **Do** mark selected grid cards with the coral ring (`border-primary` + `ring-1 ring-primary/25`) and selected rows with the coral tint (`--sidebar-accent` bed + accent-foreground text).
-- **Do** dock the contextual bulk-action bar directly under the filter controls — never a floating overlay (**The Docked Bulk Bar Rule**).
-- **Do** use the segmented-control grammar (muted bed, surface active pill + tiny shadow) for filters and step navigation.
-- **Do** use the real table grammar for list views: hidden-below-md header, hairline dividers, hover bed, 40px thumbs, status pills, row actions.
-- **Do** use Geist Mono + tabular-nums for true data only (counts, ids, costs, dates) — **The Data Voice Rule**; keep stat numerals in the sans face (**The Sans Stat Rule**).
-- **Do** keep corners at the 8px canon radius and elevation within the `--pf-shadow-2xs..lg` + `--pf-shadow-orange` scale.
-- **Do** use the one shared ease (`--pf-ease`) at 180ms for all state transitions.
-- **Do** use hairline borders and muted-surface beds for dividers and hovers rather than heavy fills or shadows.
+### Do
+- **Do** use the role tokens and the `src/components/workbench` primitives for all new work.
+- **Do** keep ember for live, current and selected, and bone for the one primary.
+- **Do** keep real state visible: disconnected, failed, approval required, and a dash for an unavailable metric.
+- **Do** use round icon badges for status in dense places and worded chips where the state must be read.
+- **Do** check both themes and the five widths before calling a surface done.
 
-### Don't:
-- **Don't** reintroduce the legacy Forge Floor vocabulary — kraft/steel surfaces, ticket tears, rotated stamps, stamped-status squares, dark machine-panel rails. That world is discarded; the canon is the category standard played straight.
-- **Don't** place a new literal hex color into a component without also adding it to the dark-mode remap tables in `globals.css` in the same edit. This is the system's known sharp edge: literal hexes still rely on the remap tables; semantic tokens do not. The only accepted literals are the `#09090B` stage and content palettes.
-- **Don't** use coral as decoration, chart series, idle icon, or text highlight — it is reserved for intent.
-- **Don't** use Geist Mono as costume, for labels, or for anything that is not genuine data — and don't set stat numerals in mono.
-- **Don't** use zero-offset colored shadows, bounce easings, or glass-as-decoration.
-- **Don't** fabricate a new accent or per-route color palette; one coral accent and zinc neutrals are the system.
-- **Don't** add eyebrow/kicker text above page titles; the route header carries title, one-line description, and primary action only.
-- **Don't** float the bulk-action bar over content; it docks under the filter controls.
-- **Don't** use the forge metaphor in copy — "Forge Cycles" is "Generations"; the brand name PostForge stays.
+### Don't
+- **Don't** add a border to a panel, a description under a page title, a label above a sidebar group, or a caption under a panel title.
+- **Don't** use ember on a button, a link, a chart series or a heading.
+- **Don't** put two bone pills on one screen.
+- **Don't** add shimmer, pulse, bounce or image zoom.
+- **Don't** write a literal hex in component code, or pin a route's size from a stylesheet with `!important`.
+- **Don't** draw visible copy with CSS `content: attr(...)`. Text is real text rendered by React.
+- **Don't** use the forge metaphor in copy. The brand name PostForge stays.

@@ -6,18 +6,10 @@ export function HomeDemoIntro() {
   const cadence = minutes === 60 ? "every hour" : `every ${minutes} minutes`;
 
   return (
-    <section aria-label="About this demo" data-demo-intro="true" className="pf-card">
-      <i aria-hidden="true" />
-      <div>
-        <h2>You are in the PostForge demo</h2>
-        <p>
-          PostForge is a self-hosted pipeline for AI marketing content. This
-          copy runs on sample media generated for Loamly, a fictional plant-care
-          app. Open any tab and edit what you find. Generation, uploads, and
-          social connections are switched off, and the workspace restores
-          itself {cadence}.
-        </p>
-      </div>
+    <section aria-label="About this demo" className="wb-notice block">
+      <strong>You are in the PostForge demo.</strong> It runs on sample media made for Loamly, a
+      fictional plant-care app. Open any page and edit what you find. Generation, uploads and social
+      connections are switched off, and the workspace restores itself {cadence}.
     </section>
   );
 }

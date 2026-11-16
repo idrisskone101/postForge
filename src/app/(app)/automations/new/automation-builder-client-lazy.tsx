@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { AutomationBuilderLoading } from "./automation-builder-loading";
 import type { AutomationBuilderSearch } from "./automation-builder-search";
+import { armPlaybookFirstPaint, lockPlaybookFirstPaint } from "./playbook-first-paint";
 
 export function AutomationBuilderClientLazy({
   search,
@@ -11,28 +13,28 @@ export function AutomationBuilderClientLazy({
 }) {
   const needsSession = Boolean(search.id) || search.intent === "apply";
   const [ready, setReady] = useState(needsSession);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (needsSession) return;
-    const go = () => setReady(true);
-    window.addEventListener("pointerdown", go, { once: true });
-    window.addEventListener("keydown", go, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", go);
-      window.removeEventListener("keydown", go);
-    };
+    return lockPlaybookFirstPaint();
   }, [needsSession]);
   useEffect(() => {
-    if (!ready) return;
-    document.querySelector("[data-playbook-first-paint]")?.setAttribute("hidden", "");
-  }, [ready]);
+    if (needsSession) return;
+    return armPlaybookFirstPaint(() => setReady(true));
+  }, [needsSession]);
   if (!ready) return null;
-  return <AutomationBuilderClientDynamic search={search} />;
+  return needsSession ? <BuilderSessionEntry search={search} /> : <BuilderPickerEntry search={search} />;
 }
 
-const AutomationBuilderClientDynamic = dynamic(
-  () =>
-    import("./automation-builder-client").then((mod) => ({
-      default: mod.AutomationBuilderClient,
-    })),
-  { ssr: false },
-);
+const loadBuilderClient = () =>
+  import("./automation-builder-client").then((mod) => ({
+    default: mod.AutomationBuilderClient,
+  }));
+
+/** The server has already drawn the picker over a skeleton, so nothing stands in while this loads. */
+const BuilderPickerEntry = dynamic(loadBuilderClient, { ssr: false });
+
+/** An edit or an applied playbook has no server copy: the skeleton and heading are the first paint. */
+const BuilderSessionEntry = dynamic(loadBuilderClient, {
+  ssr: false,
+  loading: AutomationBuilderLoading,
+});

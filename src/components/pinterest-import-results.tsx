@@ -1,9 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Check, ExternalLink, Images, LoaderCircle } from "lucide-react";
-
 import type { PinterestImportWorkspace } from "@/components/pinterest-import-workspace";
+import { Button, EmptyState, Icon, Skeleton } from "@/components/workbench";
 import { MAX_PINTEREST_IMPORT_IMAGES } from "@/lib/pinterest-constants";
 import { cn } from "@/lib/utils";
 
@@ -30,79 +29,65 @@ export function PinterestImportResults({
   } = workspace;
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:min-h-72 sm:p-5">
+    <div className="wb-scroll-fade-y wb-scroll-fade-deep min-h-0 flex-1 overflow-y-auto px-6 py-4 sm:min-h-72 max-sm:px-4">
       {searching ? (
-        <div className="grid min-h-64 place-items-center text-center">
-          <div>
-            <LoaderCircle className="mx-auto size-6 animate-spin text-[var(--pf-orange)]" />
-            <p className="mt-3 text-[12px] font-semibold">
-              {source === "search" ? "Searching Pinterest..." : "Loading board images..."}
-            </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              Some public Pinterest pages may block automated access.
-            </p>
+        <div className="flex flex-col gap-3" aria-busy="true">
+          <p className="wb-label" role="status">
+            {source === "search" ? "Searching Pinterest" : "Loading board images"}
+          </p>
+          <div className="columns-2 gap-2.5 sm:columns-3 md:columns-4">
+            {Array.from({ length: 8 }, (_, index) => (
+              <Skeleton
+                key={index}
+                shape="tile"
+                className={cn("mb-2.5 break-inside-avoid", aspectFor(index))}
+              />
+            ))}
           </div>
         </div>
       ) : error && !candidates.length ? (
-        <div className="grid min-h-64 place-items-center text-center" role="alert">
-          <div className="max-w-md rounded-[6px] border border-destructive/25 bg-destructive/5 p-5">
-            <p className="text-[12px] font-semibold text-destructive">
-              {source === "search" ? "Pinterest search unavailable" : "Board unavailable"}
-            </p>
-            <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
-              {error}
-            </p>
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              {source === "search"
-                ? "Try again, switch to Board URL, or add images in Collections."
-                : "Try again, paste another public board URL, or add images in Collections."}
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon="alert"
+          tone="error"
+          title={source === "search" ? "Pinterest search unavailable" : "Board unavailable"}
+          detail={error}
+          className="min-h-full max-sm:gap-2 max-sm:p-3 sm:h-full"
+        />
       ) : candidates.length ? (
-        <>
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[12px] font-semibold text-foreground">Pinterest results</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                Loaded from public Pinterest pages. Saved copies do not retain the source links shown here.
-              </p>
-            </div>
-            <span aria-live="polite" className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
-              {candidates.length} options · {selected.length}/{MAX_PINTEREST_IMPORT_IMAGES} selected
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="wb-label">{candidates.length} results</p>
+            <span aria-live="polite" className="wb-mono text-fg-secondary">
+              {selected.length} / {MAX_PINTEREST_IMPORT_IMAGES} selected
             </span>
           </div>
-          <div className="columns-2 gap-2 sm:columns-3 md:columns-4">
+          <div className="columns-2 gap-2.5 sm:columns-3 md:columns-4">
             {candidates.map((candidate, index) => {
               const isSelected = selected.includes(candidate.id);
+              const failed = failedImages.includes(candidate.id);
               return (
-                <article key={candidate.imageUrl} className="group relative mb-2 break-inside-avoid">
+                <article
+                  key={candidate.imageUrl}
+                  className="group relative mb-2.5 break-inside-avoid p-1"
+                >
                   <button
                     type="button"
                     onClick={() => toggleSelected(candidate.id)}
-                    disabled={failedImages.includes(candidate.id) || importing}
+                    disabled={failed || importing}
                     aria-label={
-                      failedImages.includes(candidate.id)
+                      failed
                         ? `Result ${index + 1} is unavailable`
                         : `${isSelected ? "Deselect" : "Select"} result ${index + 1}${candidate.altText ? `: ${candidate.altText}` : ""}`
                     }
                     aria-pressed={isSelected}
-                    className={cn(
-                      "group relative block w-full overflow-hidden rounded-lg border-2 bg-[var(--pf-active)] outline-none transition focus-visible:ring-2 focus-visible:ring-[var(--pf-orange)]",
-                      isSelected
-                        ? "border-[var(--pf-orange)]"
-                        : "border-transparent hover:border-[var(--pf-border-strong)]",
-                    )}
+                    data-selected={isSelected ? "true" : undefined}
+                    className="wb-tile block w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ember disabled:cursor-not-allowed"
                   >
-                    {failedImages.includes(candidate.id) ? (
+                    {failed ? (
                       <span
                         className={cn(
-                          "grid w-full place-items-center px-3 text-[11px] text-muted-foreground",
-                          index % 3 === 0
-                            ? "aspect-[4/5]"
-                            : index % 3 === 1
-                              ? "aspect-square"
-                              : "aspect-[3/4]",
+                          "grid w-full place-items-center px-3 text-[13px] text-fg-muted",
+                          aspectFor(index),
                         )}
                       >
                         Image unavailable
@@ -114,19 +99,12 @@ export function PinterestImportResults({
                         loading="lazy"
                         referrerPolicy="no-referrer"
                         onError={() => markCandidateImageFailed(candidate.id)}
-                        className={cn(
-                          "w-full object-cover",
-                          index % 3 === 0
-                            ? "aspect-[4/5]"
-                            : index % 3 === 1
-                              ? "aspect-square"
-                              : "aspect-[3/4]",
-                        )}
+                        className={cn("block w-full object-cover", aspectFor(index))}
                       />
                     )}
                     {isSelected ? (
-                      <span className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-[var(--pf-orange)] text-white shadow-[var(--pf-shadow-sm)]">
-                        <Check className="size-3.5" />
+                      <span className="wb-tile-check">
+                        <Icon name="check" size={12} strokeWidth={3} />
                       </span>
                     ) : null}
                   </button>
@@ -135,70 +113,65 @@ export function PinterestImportResults({
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Open Pinterest result ${index + 1}`}
-                    className="absolute left-2 top-2 grid size-8 place-items-center rounded-full bg-black/65 text-white opacity-100 shadow-[var(--pf-shadow-sm)] transition sm:size-6 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                    className="wb-icon-btn wb-icon-btn-28 absolute right-3 top-3 bg-[var(--pf-scrim)] text-[var(--pf-on-media)] opacity-100 transition-opacity duration-[var(--pf-dur-feedback)] ease-pf sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                   >
-                    <ExternalLink className="size-3" />
+                    <Icon name="link" size={14} />
                   </a>
                 </article>
               );
             })}
           </div>
           {source === "search" ? (
-            <div className="mt-4 flex flex-col items-center border-t border-border pt-4 text-center">
+            <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 text-center">
               {hasMore ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={loadMore}
-                    disabled={loadingMore || importing}
-                    className="pf-button-secondary h-11 min-w-36 sm:h-10"
-                  >
-                    {loadingMore ? (
-                      <LoaderCircle className="size-3.5 animate-spin" />
-                    ) : null}
-                    {loadingMore ? "Loading more..." : "Load more"}
-                  </button>
-                  <p className="mt-2 text-[11px] text-muted-foreground">
-                    Keep loading until Pinterest has no more public results. Select up to {MAX_PINTEREST_IMPORT_IMAGES} per import.
-                  </p>
-                </>
+                <Button onClick={loadMore} aria-disabled={loadingMore || undefined} disabled={importing}>
+                  {loadingMore ? "Loading more" : "Load more"}
+                </Button>
               ) : (
-                <p
-                  aria-live="polite"
-                  className="text-[11px] text-muted-foreground"
-                >
+                <p ref={takeLostFocus} tabIndex={-1} aria-live="polite" className="wb-meta">
                   All available public results are loaded.
                 </p>
               )}
             </div>
           ) : null}
-        </>
-      ) : (
-        <div className="grid min-h-64 place-items-center text-center">
-          <div className="max-w-sm">
-            <Images className="mx-auto size-7 text-muted-foreground" />
-            <p className="mt-3 text-[12px] font-semibold text-foreground">
-              {hasSearched
-                ? source === "search"
-                  ? `No images found for “${query.trim()}”`
-                  : "No usable images found on this board"
-                : "Search Pinterest or load a public board"}
-            </p>
-            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
-              {hasSearched
-                ? source === "search"
-                  ? "Try a broader search or switch to Board URL."
-                  : "Check that the board is public or try another board."
-                : "Select images to continue."}
-            </p>
-          </div>
         </div>
+      ) : (
+        <EmptyState
+          icon={hasSearched ? "search" : "inspiration"}
+          className="min-h-full max-sm:gap-2 max-sm:p-3 sm:h-full"
+          title={
+            hasSearched
+              ? source === "search"
+                ? `No images found for “${query.trim()}”`
+                : "No usable images found on this board"
+              : "Search Pinterest or load a public board"
+          }
+          detail={
+            hasSearched
+              ? source === "search"
+                ? "Try a broader search or switch to Board URL."
+                : "Check that the board is public or try another board."
+              : undefined
+          }
+        />
       )}
       {error && candidates.length ? (
-        <p role="alert" className="mt-3 rounded-[5px] bg-destructive/10 p-3 text-[11px] text-destructive">
+        <p role="alert" className="wb-notice mt-3" data-tone="bad">
           {error}
         </p>
       ) : null}
     </div>
   );
+}
+
+/*
+ * The last page replaces "Load more" with this line. Focus that was on the button would fall to the
+ * page behind the dialog, so the line takes it.
+ */
+function takeLostFocus(node: HTMLParagraphElement | null) {
+  if (node && document.activeElement === document.body) node.focus({ preventScroll: true });
+}
+
+function aspectFor(index: number) {
+  return index % 3 === 0 ? "aspect-[4/5]" : index % 3 === 1 ? "aspect-square" : "aspect-[3/4]";
 }

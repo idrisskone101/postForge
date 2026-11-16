@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect, type PointerEvent } from "react";
 import { apiPost } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
-import { Loader2, Scissors, Film } from "lucide-react";
+import { Button } from "@/components/workbench";
 import {
   MAX_MOTION_SOURCE_DURATION_SEC,
   isMotionSourceWithinLimit,
@@ -188,112 +188,81 @@ export function VideoTrimmer({
   const canUseFullVideo = isMotionSourceWithinLimit(durationSec);
 
   return (
-    <div className="space-y-4 animate-fade-in-up">
-      <div className="flex items-center gap-2 text-[15px] font-semibold tracking-[-0.01em] text-foreground">
-        <Scissors className="size-3.5" />
-        Trim Video
-      </div>
-
-      <div className="flex justify-center">
-        <div
-          className="relative overflow-hidden rounded-2xl border-2 border-border bg-black"
-          style={{
-            aspectRatio: `${width} / ${height}`,
-            maxHeight: 300,
-          }}
+    <div data-video-trimmer="true" className="wb-fade-in flex min-w-0 flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="wb-panel-title">Trim video</h3>
+        <span
+          className={cn(
+            "inline-flex h-6 shrink-0 items-center rounded-full px-2.5 font-mono text-[12px] leading-4 tabular-nums",
+            trimRange.hasTrim ? "bg-ember-wash text-ember-text" : "bg-raised text-fg-secondary"
+          )}
         >
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            autoPlay
-            muted
-            playsInline
-            loop
-            className="h-full w-full object-cover"
-            style={{ maxHeight: 300 }}
-          />
-          <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-0.5 text-[12px] font-bold text-white backdrop-blur-sm">
-            {formatTrimTime(trimmedDuration)}
-          </div>
-        </div>
+          {formatTrimTime(trimmedDuration)} selected
+        </span>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
-          <Film className="size-3" />
-          Drag handles to select range
+      {!canUseFullVideo && (
+        <p className="wb-notice" data-tone="warn">
+          <span>
+            <strong className="font-bold text-warn">Over {MAX_MOTION_SOURCE_DURATION_SEC}s.</strong>{" "}
+            Clone sources must be {MAX_MOTION_SOURCE_DURATION_SEC}s or shorter, so a trim is required.
+          </span>
+        </p>
+      )}
+
+      <div className="flex flex-col gap-5 sm:flex-row">
+        <div
+          className="wb-tile mx-auto h-[300px] max-w-full shrink-0 sm:mx-0 sm:max-w-[45%]"
+          style={{ aspectRatio: `${width} / ${height}` }}
+        >
+          <video ref={videoRef} src={videoSrc} autoPlay muted playsInline loop />
+          <span className="wb-tile-duration">{formatTrimTime(trimmedDuration)}</span>
         </div>
-        <VideoTrimTimeline
-          trackRef={trackRef}
-          thumbnails={thumbnails}
-          startPct={startPct}
-          endPct={endPct}
-          dragging={dragging}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onStartPointerDown={handlePointerDown("start")}
-          onEndPointerDown={handlePointerDown("end")}
+        <VideoTrimRangeFields
+          range={trimRange}
+          durationSec={durationSec}
+          trimSummary={trimSummary}
+          onEdit={(edge, seconds) =>
+            edge === "start" ? applyRange(seconds, endTime) : applyRange(startTime, seconds)
+          }
         />
       </div>
 
-      <VideoTrimRangeFields
-        durationSec={durationSec}
-        startTime={trimRange.startTime}
-        endTime={trimRange.endTime}
-        trimmedDuration={trimmedDuration}
-        removedFromStart={trimRange.removedFromStart}
-        removedFromEnd={trimRange.removedFromEnd}
-        hasTrim={trimRange.hasTrim}
-        trimSummary={trimSummary}
-        onStartChange={(nextStartTime) => applyRange(nextStartTime, endTime)}
-        onEndChange={(nextEndTime) => applyRange(startTime, nextEndTime)}
+      <VideoTrimTimeline
+        trackRef={trackRef}
+        thumbnails={thumbnails}
+        startPct={startPct}
+        endPct={endPct}
+        dragging={dragging}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onStartPointerDown={handlePointerDown("start")}
+        onEndPointerDown={handlePointerDown("end")}
       />
 
       {trimError && (
-        <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive [overflow-wrap:anywhere]">
+        <p role="alert" className="wb-notice min-w-0 break-words text-bad [overflow-wrap:anywhere]" data-tone="bad">
           {trimError}
-        </div>
+        </p>
       )}
 
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isTrimming || !canUseFullVideo}
-          className="flex-1 rounded-2xl border border-border px-4 py-3 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground disabled:opacity-50"
-        >
-          {canUseFullVideo ? "Use Full Video" : "Trim required"}
-        </button>
-        <button
-          type="button"
-          onClick={handleTrim}
-          disabled={isTrimming || !trimRange.hasTrim}
-          className={cn(
-            "flex-1 flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-white transition-all",
-            isTrimming
-              ? "bg-accent-green/60"
-              : !trimRange.hasTrim
-                ? "cursor-not-allowed bg-muted text-muted-foreground"
-              : "bg-accent-green shadow-[0_4px_16px_rgba(22,163,74,0.25)] hover:shadow-[0_4px_24px_rgba(22,163,74,0.35)] hover:brightness-110"
-          )}
-        >
-          {isTrimming ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Trimming...
-            </>
-          ) : (
-            <>
-              <Scissors className="size-4" />
-              Apply Trim
-            </>
-          )}
-        </button>
+      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-hairline pt-4">
+        {isTrimming && (
+          <span role="status" className="wb-meta mr-auto flex items-center gap-2">
+            <span className="wb-live-dot" />
+            Trimming
+          </span>
+        )}
+        <Button onClick={onCancel} disabled={isTrimming || !canUseFullVideo}>
+          {canUseFullVideo ? "Use full video" : "Trim required"}
+        </Button>
+        <Button variant="strong" onClick={handleTrim} disabled={isTrimming || !trimRange.hasTrim}>
+          {isTrimming ? "Trimming" : "Apply trim"}
+        </Button>
       </div>
     </div>
   );
 }
-
 
 export { formatTrimTime, getTrimSummary, normalizeTrimRange };
 

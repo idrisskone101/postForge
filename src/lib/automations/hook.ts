@@ -33,7 +33,7 @@ export function composeAutomationHook(strategy: string, prompt: string) {
     case "Curiosity gap":
       return `What nobody tells you about ${lowercaseLead(topic)}`;
     case "Unexpected result":
-      return `${uppercaseLead(topic)} — then this happened`;
+      return `${uppercaseLead(topic)}, then this happened`;
     case "Contrarian truth":
       return `The usual advice on ${lowercaseLead(topic)} is wrong`;
     case "Specific transformation":

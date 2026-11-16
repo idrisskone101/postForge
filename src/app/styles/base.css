@@ -1,0 +1,223 @@
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pf-raised-strong) transparent;
+  }
+
+  html {
+    @apply font-sans;
+    background: var(--pf-floor);
+    /*
+     * An always-on scrollbar keeps its 11px whether or not the page scrolls yet, so the header does
+     * not move when content arrives. Overlay scrollbars take no room and are unaffected.
+     */
+    scrollbar-gutter: stable;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /*
+   * Set by lockPageScroll while a modal surface is open. The declarations are important because
+   * Base UI writes its own lock as inline styles on the root, and its stable gutter would leave a
+   * strip beside the scrim.
+   */
+  html[data-pf-scroll-lock] {
+    overflow: hidden !important;
+    scrollbar-gutter: auto !important;
+    padding-right: var(--pf-scroll-lock-pad, 0px);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /*
+     * The narrowest window is 320px. An always-on scrollbar takes up to 17px of that, and engines
+     * disagree on whether 100vw counts it, so the floor is a fixed width under what is left.
+     */
+    min-width: 300px;
+    font-size: 14px;
+    line-height: 21px;
+    text-rendering: optimizeLegibility;
+    /* Body copy never leaves one word alone on its last line. */
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--pf-ember) 28%, transparent);
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Focus Ring Rule: whatever takes keyboard focus draws a whole 2px ember ring. */
+  :where(:focus-visible) {
+    outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
+  }
+
+  /* Media and text beds that are tab stops themselves keep the ring inside their own box. */
+  :where(video, audio, p, pre):focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* Every scroller leaves the ring its room when it brings a focused control into view. */
+  :where(*) {
+    scroll-padding: 6px;
+  }
+
+  input,
+  select,
+  textarea {
+    caret-color: var(--pf-ember);
+  }
+}
+
+/* Edge fades of a sideways-scrolling pill row. Registered so the scroll timeline can interpolate them;
+   with nothing to scroll the timeline is inactive and both stay 0. */
+@property --wb-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --wb-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Which axis a scroller fades along and how deep. Not inherited, so a nested scroller declares its own. */
+@property --wb-fade-axis {
+  syntax: "none | inline | block";
+  inherits: false;
+  initial-value: none;
+}
+
+@property --wb-fade-size {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes wb-stuck-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes wb-scroll-fade-deep {
+  0% {
+    --wb-fade-start: 0px;
+    --wb-fade-end: 24px;
+  }
+  4%,
+  96% {
+    --wb-fade-start: 24px;
+    --wb-fade-end: 24px;
+  }
+  100% {
+    --wb-fade-start: 24px;
+    --wb-fade-end: 0px;
+  }
+}
+
+@keyframes wb-scroll-fade {
+  0% {
+    --wb-fade-start: 0px;
+    --wb-fade-end: 16px;
+  }
+  4%,
+  96% {
+    --wb-fade-start: 16px;
+    --wb-fade-end: 16px;
+  }
+  100% {
+    --wb-fade-start: 16px;
+    --wb-fade-end: 0px;
+  }
+}
+
+@keyframes wb-media-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wb-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wb-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wb-drop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes wb-check-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wb-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+
+/* The theme toggle cross-fades the whole page through a view transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--pf-dur-state);
+  animation-timing-function: var(--pf-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  *::backdrop {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

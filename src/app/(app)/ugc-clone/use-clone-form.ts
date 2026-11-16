@@ -161,9 +161,11 @@ export function useCloneForm() {
   const handleVideoDownloaded = (info: TikTokVideoInfo | null) => {
     setVideoInfo(info);
     setOriginalVideoInfo(info);
-    setShowTrimmer(!!info && !isMotionSourceWithinLimit(info.durationSec));
+    const needsTrim = !!info && !isMotionSourceWithinLimit(info.durationSec);
+    setShowTrimmer(needsTrim);
     setSourceToolsOpen(!info);
-    if (info) {
+    // A source over the limit stays on the Source step, where its trimmer opens. The step moves on once it is trimmed.
+    if (info && !needsTrim) {
       setActiveSetupStep("identity");
     }
   };
@@ -177,7 +179,6 @@ export function useCloneForm() {
     });
     if (!next) return;
     if (next.clearPendingSourceId) setPendingSourceId(null);
-    setSubmitError(next.error);
     router.replace(next.path);
   };
 
@@ -190,9 +191,13 @@ export function useCloneForm() {
   }) => {
     if (!videoInfo) return;
     const updated: TikTokVideoInfo = { ...videoInfo, ...info };
+    const wasRequired = !isMotionSourceWithinLimit(videoInfo.durationSec);
     setVideoInfo(updated);
     setOriginalVideoInfo(updated);
     setShowTrimmer(false);
+    if (wasRequired && isMotionSourceWithinLimit(updated.durationSec)) {
+      setActiveSetupStep("identity");
+    }
     setSourcesRefreshKey((k) => k + 1);
   };
 

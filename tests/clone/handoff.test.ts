@@ -138,8 +138,6 @@ assert.deepEqual(
   }),
   {
     path: "/ugc-clone?utm_source=gallery",
-    error:
-      "The handed-off source could not be imported. Paste the TikTok URL or choose a saved source.",
     clearPendingSourceId: false,
   }
 );

@@ -18,9 +18,14 @@ export type SlideshowProjectListItem = {
   updatedAt: string;
 };
 
+export type SlideshowStatusCounts = Partial<
+  Record<SlideshowProjectStatusValue, number>
+>;
+
 export type SlideshowProjectListPage = {
   projects: SlideshowProjectListItem[];
   total: number;
+  statusCounts: SlideshowStatusCounts | null;
   limit: number;
   offset: number;
 };

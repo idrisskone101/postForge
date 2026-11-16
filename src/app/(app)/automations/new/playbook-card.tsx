@@ -1,112 +1,93 @@
-"use client";
-
-import { Check, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
+import { buttonClass } from "@/components/workbench/button";
+import { Chip } from "@/components/workbench/chip";
+import { iconButtonClass } from "@/components/workbench/icon-button";
 import { cn } from "@/lib/utils";
-import { useWindowLoadReady } from "@/lib/use-window-load-ready";
-import { AutomationsPaintText } from "../automations-paint-text";
 import {
-  TEMPLATE_VISUALS,
   templateNumber,
   type AutomationTemplate,
-  type PlaybookPickerState,
+  type PlaybookPickerView,
 } from "./playbook-model";
-import {
-  playbookCardShellClass,
-  playbookSelectButtonClass,
-} from "./playbook-visual";
+import { bindPlaybookHandler, PLAYBOOK_ART_NUMBER, playbookArtClass } from "./playbook-visual";
 
 export function PlaybookCard({
   picker,
   template,
 }: {
-  picker: PlaybookPickerState;
+  picker: PlaybookPickerView;
   template: AutomationTemplate;
 }) {
-  const view = picker.view;
+  const list = picker.view === "list";
   const favorite = picker.favorites.includes(template.id);
   const selected = picker.selectedTemplateId === template.id;
-  const previewing = picker.previewTemplate.id === template.id;
-  const paintReady = useWindowLoadReady();
 
   return (
-    <article className={playbookCardShellClass(selected, previewing, view === "list")}>
+    <article
+      data-chosen={selected ? "true" : undefined}
+      data-playbook-card={template.id}
+      className={cn(
+        "relative flex min-w-0 flex-col overflow-hidden rounded-lg bg-raised",
+        "after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:opacity-0 after:shadow-[inset_0_0_0_2px_var(--pf-ember)] after:transition-opacity after:duration-[var(--pf-dur-feedback)] after:ease-pf",
+        "data-[chosen=true]:after:opacity-100",
+        list && "sm:flex-row"
+      )}
+    >
       <div
-        className={cn(
-          "relative overflow-hidden",
-          TEMPLATE_VISUALS[template.id],
-          view === "grid" ? "h-28" : "h-28 sm:h-full sm:min-h-[138px]"
-        )}
+        aria-hidden="true"
+        className={playbookArtClass(template.id, list ? "h-[104px] sm:h-auto sm:w-[120px]" : "h-[104px]")}
       >
-        <span className="absolute left-4 top-4 font-serif text-2xl font-bold italic text-white">
+        <span className={cn(PLAYBOOK_ART_NUMBER, "text-[24px] leading-7")}>
           {templateNumber(template)}
         </span>
-        <span className="absolute bottom-2 left-3 rounded-full bg-black/65 px-2 py-1 text-[11px] text-white">
-          {template.slides} slides
-        </span>
-        <button
-          type="button"
-          onClick={() => picker.onToggleFavorite(template.id)}
-          aria-label={
-            favorite
-              ? `Remove ${template.name} from favorites`
-              : `Add ${template.name} to favorites`
-          }
-          aria-pressed={favorite}
-          className="absolute right-2 top-2 grid size-7 place-items-center rounded-full bg-[var(--pf-surface)]/90 text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)] hover:bg-[var(--pf-surface)]"
-        >
-          <Heart className={cn("size-3.5", favorite && "fill-[var(--pf-orange)] text-[var(--pf-orange)]")} />
-        </button>
       </div>
-      <div className="flex min-w-0 flex-col p-3">
-        <span className="text-[11px] font-bold uppercase tracking-[.09em] text-[var(--pf-muted)]">
-          {template.category}
-        </span>
-        <div className="mt-1 flex items-start justify-between gap-2">
-          <AutomationsPaintText
-            ready={paintReady}
-            liveAs="span"
-            liveClassName="min-w-0 text-[13px] font-semibold text-[var(--pf-ink)] [overflow-wrap:anywhere]"
-            paint={
-              <h3 data-playbook-name={template.name} className="text-[13px] font-semibold text-[var(--pf-ink)]">
-                <span className="sr-only">{template.name}</span>
-              </h3>
-            }
-          >
-            {template.name}
-          </AutomationsPaintText>
-          {selected && <Check className="mt-0.5 size-3.5 shrink-0 text-[var(--pf-success)]" aria-label="Selected" />}
-        </div>
-        <AutomationsPaintText
-          ready={paintReady}
-          liveAs="span"
-          liveClassName="mt-1 min-h-8 text-[12px] leading-4 text-[var(--pf-muted)] [overflow-wrap:anywhere]"
-          paint={
-            <p
-              data-playbook-blurb={template.description}
-              className="mt-1 min-h-8 text-[12px] leading-4 text-[var(--pf-muted)]"
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex flex-col gap-1 px-4 pt-3.5">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="min-w-0 text-[14px] font-semibold leading-5 text-fg">
+              {template.name}
+            </h3>
+            <button
+              type="button"
+              data-playbook-key={`favorite:${template.id}`}
+              onClick={bindPlaybookHandler(picker.onToggleFavorite, template.id)}
+              aria-pressed={favorite}
+              aria-label={
+                favorite
+                  ? `Remove ${template.name} from favorites`
+                  : `Add ${template.name} to favorites`
+              }
+              className={cn(iconButtonClass("ghost", 30), "-my-[5px] -mr-1.5 hover:bg-raised-strong")}
             >
-              <span className="sr-only">{template.description}</span>
-            </p>
-          }
-        >
-          {template.description}
-        </AutomationsPaintText>
-        <div className="mt-3 flex items-center gap-2 border-t border-[var(--pf-border)] pt-2">
+              <Heart
+                strokeWidth={1.5}
+                className={cn("size-4", favorite ? "fill-current text-fg" : "text-fg-muted")}
+              />
+            </button>
+          </div>
+          <p className="text-[12px] leading-4 text-fg-muted">
+            {template.category}, {template.slides} slides
+          </p>
+          <p className="pt-1 text-[13px] leading-[18px] text-fg-secondary">
+            {template.description}
+          </p>
+        </div>
+        <div className="mt-auto flex flex-wrap gap-2 px-4 pb-4 pt-3.5">
           <button
             type="button"
-            onClick={() => picker.onPreview(template.id)}
-            className="h-7 flex-1 rounded-[8px] border border-[var(--pf-border)] text-[12px] font-semibold hover:bg-[var(--pf-active)]"
+            data-playbook-key={`preview:${template.id}`}
+            onClick={bindPlaybookHandler(picker.onPreview, template.id)}
+            className={buttonClass("outline", 32)}
           >
             Preview
           </button>
-          <button
-            type="button"
-            onClick={() => picker.onSelect(template.id)}
-            className={playbookSelectButtonClass(selected)}
+          <Chip
+            chosen={selected}
+            data-playbook-key={`select:${template.id}`}
+            onClick={bindPlaybookHandler(picker.onSelect, template.id)}
+            className="h-8 aria-[pressed=false]:bg-transparent aria-[pressed=false]:shadow-[inset_0_0_0_1px_var(--pf-outline)]"
           >
-            {selected && <Check className="size-2.5" />}
             {selected ? "Selected" : "Select"}
-          </button>
+          </Chip>
         </div>
       </div>
     </article>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   fetchIntegrationPerformance,
   integrationAccountKey,
@@ -26,6 +27,9 @@ import {
   removeWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
+import type { ToastMessage } from "@/components/workbench/toast";
+import { useHydrated } from "@/lib/use-hydrated";
+import type { PerformanceInitial, PerformanceRange } from "./types";
 
 const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
   providers: [],
@@ -33,22 +37,28 @@ const EMPTY_PROVIDER_PERFORMANCE: IntegrationPerformanceResponse = {
   lastUpdatedAt: null,
 };
 
-export function usePerformanceWorkspace() {
+export function usePerformanceWorkspace(initial: PerformanceInitial | null) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [csvDataset, setCsvDataset] = useState<PerformanceDataset | null>(null);
+  const { confirm, dialog: confirmDialog } = useConfirmDialog();
+  // Until hydration ends, dates are measured from the server's clock so both renders agree.
+  const hydrated = useHydrated();
+  const hydrationTime = initial && !hydrated ? initial.renderedAt : null;
+  const [csvDataset, setCsvDataset] = useState<PerformanceDataset | null>(
+    initial?.csvDataset ?? null
+  );
   const [providerData, setProviderData] = useState<IntegrationPerformanceResponse>(
-    EMPTY_PROVIDER_PERFORMANCE
+    initial?.providerData ?? EMPTY_PROVIDER_PERFORMANCE
   );
   const [selectedSource, setSelectedSource] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initial === null);
   const [importing, setImporting] = useState(false);
   const [providerError, setProviderError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [busyProvider, setBusyProvider] = useState<SocialProvider | null>(null);
-  const [range, setRange] = useState<7 | 30 | 90>(30);
+  const [range, setRange] = useState<PerformanceRange>(30);
   const [view, setView] = useState<"table" | "grid">("table");
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const loadProviderData = useCallback(async () => {
     setProviderError(null);
@@ -88,8 +98,9 @@ export function usePerformanceWorkspace() {
   }, [loadProviderData]);
 
   useEffect(() => {
+    if (initial) return;
     void loadAll();
-  }, [loadAll]);
+  }, [initial, loadAll]);
 
   const connectedAccounts = useMemo<ConnectedAccountView[]>(
     () =>
@@ -142,7 +153,7 @@ export function usePerformanceWorkspace() {
   }, [activeSource, connectedAccounts, csvDataset, providerData.posts]);
 
   const posts = useMemo(() => {
-    const threshold = Date.now() - range * 86_400_000;
+    const threshold = (hydrationTime ?? Date.now()) - range * 86_400_000;
     const query = search.trim().toLowerCase();
     return sourcePosts
       .filter((post) => {
@@ -163,7 +174,7 @@ export function usePerformanceWorkspace() {
         if (b.metrics.views === null) return -1;
         return b.metrics.views - a.metrics.views;
       });
-  }, [activeIsYouTube, range, search, sourcePosts]);
+  }, [activeIsYouTube, hydrationTime, range, search, sourcePosts]);
 
   const excludedUnknownDates = sourcePosts.filter((post) => !post.publishedAt).length;
   const aggregates = useMemo(
@@ -190,9 +201,10 @@ export function usePerformanceWorkspace() {
   );
 
   function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1900);
+    setToast({ id: `${Date.now()}`, tone: "ok", message });
   }
+
+  const dismissToast = useCallback(() => setToast(null), []);
 
   async function importFile(file: File) {
     setImporting(true);
@@ -232,7 +244,12 @@ export function usePerformanceWorkspace() {
 
   async function clearCsvData() {
     if (!csvDataset) return;
-    if (!window.confirm("Remove only the imported CSV dataset? Connected account data will remain available.")) return;
+    const confirmed = await confirm({
+      title: "Remove the imported CSV data?",
+      body: "Only the imported CSV dataset is removed. Connected account data will remain available.",
+      confirmLabel: "Remove CSV data",
+    });
+    if (confirmed !== true) return;
     try {
       await removeWorkspaceFeature("connections", "performance-dataset");
       setCsvDataset(null);
@@ -299,6 +316,8 @@ export function usePerformanceWorkspace() {
   }, [activeAccount, activeSource, connectedAccounts]);
 
   return {
+    confirmDialog,
+    hydrationTime,
     inputRef,
     csvDataset,
     providerData,
@@ -311,6 +330,7 @@ export function usePerformanceWorkspace() {
     view,
     search,
     toast,
+    dismissToast,
     connectedAccounts,
     sourceOptions,
     activeSource,

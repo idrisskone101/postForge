@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { buildCloneSourceUrlHandoffHref } from "@/lib/ugc-clone-handoff";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   INSPIRATION_VIDEO_PAGE_SIZE,
   type InspirationSourceFeedFilter,
@@ -14,7 +14,6 @@ import {
   applySourceDecisionToCounts,
   filterVideosBySourceUsage,
   inspirationPageError,
-  SOURCE_FEED_FILTERS,
   type VideoPageQuery,
   withId,
   withoutId,
@@ -37,6 +36,7 @@ export function useInspirationWorkspace({
   initialVideoPage,
 }: InspirationPageClientProps) {
   const [pageError, setPageError] = useState<string | null>(null);
+  const { confirm, dialog: confirmDialog } = useConfirmDialog();
   const {
     accounts, setAccounts, accountCursor, isLoadingMoreAccounts, handleLoadMoreAccounts,
   } = useInspirationAccountList(initialAccountPage, setPageError);
@@ -45,7 +45,7 @@ export function useInspirationWorkspace({
     useState<InspirationSourceFeedFilter>("all");
   const [sourceSearch, setSourceSearch] = useState("");
   const [sourceSort, setSourceSort] = useState<InspirationSourceSort>("recent");
-  const [compactGrid, setCompactGrid] = useState(false);
+  const [largeTiles, setLargeTiles] = useState(false);
   const [videoItems, setVideoItems] = useState(initialVideoPage.items);
   const [videoCursor, setVideoCursor] = useState(initialVideoPage.nextCursor);
   const [videoHasMore, setVideoHasMore] = useState(initialVideoPage.hasMore);
@@ -64,6 +64,7 @@ export function useInspirationWorkspace({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
+  const [thumbnailRetries, setThumbnailRetries] = useState<Record<string, number>>({});
   const didMountSearch = useRef(false);
   const replaceVideoPageRef = useRef<
     (query?: VideoPageQuery) => Promise<void>
@@ -201,12 +202,6 @@ export function useInspirationWorkspace({
     0
   );
   const remainingVideoCount = Math.max(0, videoTotal - videoItems.length);
-  const activeSourceLabel = selectedAccount
-    ? selectedAccount.handleDisplay
-    : "Creator Feed";
-  const activeFeedFilterLabel =
-    SOURCE_FEED_FILTERS.find((filter) => filter.value === sourceFeedFilter)
-      ?.label ?? "All";
 
   useEffect(() => {
     if (!selectedVideo) {
@@ -258,6 +253,7 @@ export function useInspirationWorkspace({
   async function handleDeleteAccount(account: TrackedInspirationAccount) {
     await deleteWorkspaceAccount({
       account,
+      confirm,
       selectedVideoAccountId: selectedVideo?.accountId,
       activeFilter,
       setDeletingIds,
@@ -267,10 +263,6 @@ export function useInspirationWorkspace({
       setActiveFilterAndReload,
       replaceVideoPage,
     });
-  }
-
-  function handleUseInClone(video: InspirationVideoCard) {
-    window.location.assign(buildCloneSourceUrlHandoffHref(video.originalUrl));
   }
 
   async function handleSetVideoRejection(
@@ -325,8 +317,14 @@ export function useInspirationWorkspace({
     }
   }
 
+  // An expired cover is refreshed on the server after a first miss, so the tile tries once more.
   function markThumbnailError(videoId: string) {
     setThumbnailErrorIds((prev) => withId(prev, videoId));
+    if ((thumbnailRetries[videoId] ?? 0) >= THUMBNAIL_RETRIES) return;
+    window.setTimeout(() => {
+      setThumbnailRetries((prev) => ({ ...prev, [videoId]: (prev[videoId] ?? 0) + 1 }));
+      setThumbnailErrorIds((prev) => withoutId(prev, videoId));
+    }, THUMBNAIL_RETRY_MS);
   }
 
   function clearThumbnailError(videoId: string) {
@@ -334,6 +332,7 @@ export function useInspirationWorkspace({
   }
 
   return {
+    confirmDialog,
     accounts,
     accountCursor,
     isLoadingMoreAccounts,
@@ -345,8 +344,8 @@ export function useInspirationWorkspace({
     setSourceSearch,
     sourceSort,
     setSourceSort: setSourceSortAndReload,
-    compactGrid,
-    setCompactGrid,
+    largeTiles,
+    setLargeTiles,
     videoItems,
     videoCursor,
     videoHasMore,
@@ -368,21 +367,23 @@ export function useInspirationWorkspace({
     embedState,
     setEmbedState,
     thumbnailErrorIds,
+    thumbnailRetries,
     selectedAccount,
     selectedVideo,
     trackedVideoCount,
     remainingVideoCount,
-    activeSourceLabel,
-    activeFeedFilterLabel,
     handleTrackAccount,
     handleRefreshAccount,
     handleDeleteAccount,
-    handleUseInClone,
     handleSetVideoRejection,
     handleCopySourceUrl,
     handleLoadMore,
     handleLoadMoreAccounts,
+    reloadVideos: () => void replaceVideoPage(),
     markThumbnailError,
     clearThumbnailError,
   };
 }
+
+const THUMBNAIL_RETRIES = 2;
+const THUMBNAIL_RETRY_MS = 6000;

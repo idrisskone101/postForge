@@ -1,223 +1,201 @@
-import { type ReactNode } from "react";
-import Image from "next/image";
-import {
-  AlertCircle,
-  Check,
-  ExternalLink,
-  PlayCircle,
-  Users,
-} from "lucide-react";
+import { Play } from "lucide-react";
 import { FileImage } from "@/components/file-image";
+import { Icon, KeyValueList, buttonClass } from "@/components/workbench";
+import { MODEL_REGISTRY } from "@/lib/ai/model-registry";
 import { formatCost } from "@/lib/utils/format-cost";
 import { formatRelativeDate } from "@/lib/utils/format-date";
+import { videoFrameSrc } from "@/lib/video-frame";
 import { formatDuration } from "@/components/clone-output/parse";
+import { formatRunDuration } from "@/components/clone-output/run-state";
 import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
-export function CloneOutputReviewSidebar({
-  review,
-}: {
-  review: CloneOutputReviewView;
-}) {
+export function CloneOutputReviewSidebar({ review }: { review: CloneOutputReviewView }) {
+  const { job, featured } = review;
+  return (
+    <>
+      <section aria-label="Clone details" className="wb-panel gap-3">
+        <KeyValueList
+          className="[&_dd]:font-normal"
+          rows={[
+            { label: "Cost", value: formatCost(job.actualCost ?? job.estimatedCost), mono: true },
+            { label: "Time", value: formatRunDuration(job.durationMs) },
+            { label: "Model", value: MODEL_REGISTRY[job.model]?.name ?? job.model },
+            {
+              label: "Resolution",
+              value:
+                featured?.width && featured.height
+                  ? `${featured.width} x ${featured.height}`
+                  : "-",
+            },
+            { label: "Created", value: formatRelativeDate(job.createdAt), mono: true },
+          ]}
+        />
+      </section>
+      <CloneOutputInputs review={review} />
+      <CloneOutputChecks review={review} />
+    </>
+  );
+}
+
+// Below 360px a row's action wraps under its text, so a handle or a label keeps the whole line.
+const ROW =
+  "flex min-w-0 items-center gap-3 border-t border-hairline py-3 first:border-t-0 max-[359px]:flex-wrap";
+const ROW_TEXT = "flex min-w-0 flex-1 flex-col gap-0.5 max-[359px]:basis-[calc(100%-48px)]";
+const ROW_TITLE = "[overflow-wrap:anywhere] text-[14px] font-semibold leading-[18px] text-fg";
+const ROW_META = "[overflow-wrap:anywhere] text-[13px] leading-4 text-fg-secondary";
+
+function CloneOutputInputs({ review }: { review: CloneOutputReviewView }) {
   const {
-    job,
-    featured,
     sourceVideo,
     sourceTitle,
+    sourceShortId,
     sourceUrl,
     sourcePreviewUrl,
-    avatarId,
     avatarPreviewUrl,
     identityName,
     reference,
   } = review;
+  const sourceMeta = (
+    <>
+      {sourceShortId ? <span className="wb-mono mr-2">{sourceShortId}</span> : null}
+      {sourceVideo
+        ? `${sourceVideo.width} x ${sourceVideo.height} - ${formatDuration(sourceVideo.durationSec)}`
+        : "Original source context"}
+    </>
+  );
+
   return (
-    <aside className="space-y-5">
-      <DetailSection title="Source Selection">
-        <div className="space-y-4">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{sourceTitle}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {sourceVideo
-                ? `${sourceVideo.width}x${sourceVideo.height} | ${formatDuration(sourceVideo.durationSec)}`
-                : "Original source context"}
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-              {sourceUrl && (
-                <a
-                  href={sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-w-0 items-center gap-1 text-[13px] font-semibold text-[var(--pf-link)] hover:underline"
-                >
-                  View original
-                  <ExternalLink className="size-3 shrink-0" />
-                </a>
-              )}
-            </div>
-          </div>
-          {sourcePreviewUrl && sourceVideo && (
-            <details className="rounded-lg border border-border bg-[#09090B] p-2">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-2 py-1 text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground">
-                <span className="inline-flex items-center gap-2">
-                  <PlayCircle className="size-3.5 text-[var(--pf-success)]" />
-                  View source video
-                </span>
-                <span className="text-[12px] uppercase tracking-wider text-muted-foreground">
-                  {formatDuration(sourceVideo.durationSec)}
-                </span>
-              </summary>
-              <div className="mt-2 overflow-hidden rounded-lg bg-[#09090B]">
+    <section aria-label="Clone inputs" className="wb-panel gap-0 py-2">
+      <div className={ROW}>
+        {sourcePreviewUrl && sourceVideo ? (
+          <details className="group min-w-0 flex-1 max-[359px]:basis-full">
+            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg focus-visible:shadow-[0_0_0_2px_var(--pf-ember)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+              <span className="relative grid h-14 w-9 shrink-0 place-items-center overflow-hidden rounded-sm bg-media">
                 <video
-                  src={sourcePreviewUrl}
-                  width={sourceVideo.width}
-                  height={sourceVideo.height}
-                  controls
+                  src={videoFrameSrc(sourcePreviewUrl)}
+                  muted
                   preload="metadata"
-                  className="max-h-80 w-full object-contain"
+                  aria-hidden="true"
+                  className="absolute inset-0 size-full object-cover"
                 />
-              </div>
-            </details>
-          )}
-        </div>
-      </DetailSection>
-
-      <DetailSection title="Identity Used">
-        <div className="flex items-center gap-4">
-          {avatarPreviewUrl ? (
-            <span className="relative size-12 shrink-0 overflow-hidden rounded-full border border-border bg-[var(--pf-active)]">
-              <FileImage
-                src={avatarPreviewUrl}
-                alt={`${identityName} avatar`}
-                sizes="48px"
-              />
+                <Play className="relative size-3.5 fill-current text-[var(--pf-on-media)]" strokeWidth={1.5} />
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className={ROW_TITLE}>{sourceTitle}</span>
+                <span className={ROW_META}>
+                  {sourceMeta}
+                  <span className="sr-only"> View source video</span>
+                </span>
+              </span>
+            </summary>
+            <video
+              src={videoFrameSrc(sourcePreviewUrl)}
+              width={sourceVideo.width}
+              height={sourceVideo.height}
+              controls
+              preload="metadata"
+              className="mt-3 max-h-80 w-full rounded-lg bg-media object-contain"
+            />
+          </details>
+        ) : (
+          <>
+            <span className="h-14 w-9 shrink-0 rounded-sm bg-media" />
+            <span className={ROW_TEXT}>
+              <span className={ROW_TITLE}>{sourceTitle}</span>
+              <span className={ROW_META}>{sourceMeta}</span>
             </span>
+          </>
+        )}
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${buttonClass("quiet", 32)} mt-3 self-start max-[359px]:mt-0`}
+          >
+            View original
+          </a>
+        )}
+      </div>
+      <div className={ROW}>
+        <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[var(--pf-radius-pill)] bg-media text-fg-muted">
+          {avatarPreviewUrl ? (
+            <FileImage src={avatarPreviewUrl} alt={`${identityName} avatar`} sizes="36px" />
           ) : (
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-[var(--pf-active)]">
-              <Users className="size-5 shrink-0 text-muted-foreground" />
-            </div>
+            <Icon name="characters" size={16} />
           )}
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{identityName}</p>
-            <p className="mt-1 text-[11px] uppercase tracking-tight text-muted-foreground">
-              Identity preserved for clone
-            </p>
-          </div>
-        </div>
-      </DetailSection>
-
-      <DetailSection title="Production State">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="mb-1 text-[12px] font-bold uppercase text-muted-foreground">
-              Spend
-            </p>
-            <p className="text-lg font-semibold tracking-tight">
-              {formatCost(job.actualCost ?? job.estimatedCost)}
-            </p>
-          </div>
-          <div>
-            <p className="mb-1 text-[12px] font-bold uppercase text-muted-foreground">
-              Generation Time
-            </p>
-            <p className="text-lg font-semibold tracking-tight">
-              {job.durationMs !== null
-                ? `${(job.durationMs / 1000).toFixed(0)}s`
-                : "Pending"}
-            </p>
-          </div>
-        </div>
-        <div className="mt-4 space-y-2 border-t border-border pt-4 text-xs">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-muted-foreground">Job Status</span>
-            <span className="capitalize">{job.status}</span>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-muted-foreground">Model</span>
-            <span className="text-right">{job.model}</span>
-          </div>
-          {featured?.width && featured.height && (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-muted-foreground">Resolution</span>
-              <span>{featured.width}x{featured.height}</span>
-            </div>
-          )}
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-muted-foreground">Created</span>
-            <span>{formatRelativeDate(job.createdAt)}</span>
-          </div>
-        </div>
-      </DetailSection>
-
-      <DetailSection title="Input Checks">
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Identity", ready: Boolean(avatarId) },
-            { label: "Source", ready: Boolean(sourceVideo || job.tikTokSource) },
-            { label: "Output", ready: Boolean(featured) },
-          ].map((signal) => (
-            <div
-              key={signal.label}
-              className="rounded-lg border border-border bg-muted/25 px-2 py-3 text-center"
-            >
-              {signal.ready ? (
-                <Check className="mx-auto size-4 shrink-0 text-[var(--pf-success)]" />
-              ) : (
-                <AlertCircle className="mx-auto size-4 shrink-0 text-muted-foreground" />
-              )}
-              <p className="mt-1.5 text-[12px] font-semibold">{signal.label}</p>
-              <p className="mt-0.5 text-[12px] text-muted-foreground">
-                {signal.ready ? "Ready" : "Unavailable"}
-              </p>
-            </div>
-          ))}
-        </div>
-      </DetailSection>
-
+        </span>
+        <span className={ROW_TITLE}>{identityName}</span>
+      </div>
       {reference && (
-        <DetailSection title="Reference">
-          <div className="mb-3 min-w-0">
-            <p className="min-w-0 break-words text-sm font-medium [overflow-wrap:anywhere]">{reference.label}</p>
-            <p className="mt-1 break-all font-mono text-[12px] text-muted-foreground">
-              {reference.id}
-            </p>
-          </div>
+        <div className={ROW}>
+          <span className="relative h-14 w-9 shrink-0 overflow-hidden rounded-sm bg-media">
+            <FileImage
+              src={reference.previewUrl}
+              alt={`${reference.label} used for this clone`}
+              sizes="36px"
+            />
+          </span>
+          <span className={ROW_TEXT}>
+            <span className={ROW_TITLE}>{reference.label}</span>
+            <span className="font-mono text-[12px] leading-4 text-fg-muted" title={reference.id}>
+              {reference.id.slice(0, 8)}
+            </span>
+          </span>
           <a
             href={reference.previewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative block max-h-56 overflow-hidden rounded-lg border border-border bg-[#09090B]"
+            className={buttonClass("quiet", 32)}
           >
-            <Image
-              src={reference.previewUrl}
-              alt={`${reference.label} used for this clone`}
-              width={720}
-              height={1280}
-              unoptimized
-              className="max-h-56 w-full object-contain transition-opacity hover:opacity-90"
-            />
+            Open
           </a>
-        </DetailSection>
+        </div>
       )}
-    </aside>
+    </section>
   );
 }
 
+function CloneOutputChecks({ review }: { review: CloneOutputReviewView }) {
+  const { avatarId, sourceVideo, job, featured, reference } = review;
+  const checks = [
+    { label: "Identity", ready: Boolean(avatarId) },
+    { label: "Source", ready: Boolean(sourceVideo || job.tikTokSource) },
+    { label: "Output", ready: Boolean(featured) },
+    { label: "Reference", ready: Boolean(reference) },
+  ];
+  const readyCount = checks.filter((check) => check.ready).length;
 
-function DetailSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
   return (
-    <section className="pf-card overflow-hidden">
-      <div className="border-b border-border px-4 py-3">
-        <h2 className="pf-section-title">
-          {title}
-        </h2>
+    <section aria-label="Input checks" className="wb-panel gap-1 pb-3.5">
+      <div className="flex h-[26px] shrink-0 items-baseline justify-between">
+        <h2 className="wb-panel-title">Input checks</h2>
+        <span className="text-[13px] leading-4 text-fg-secondary">
+          {readyCount} / {checks.length}
+        </span>
       </div>
-      <div className="p-4">{children}</div>
+      <ul className="flex flex-wrap gap-x-4">
+        {checks.map((check) => (
+          <li key={check.label} className="flex h-8 min-w-0 flex-[1_0_140px] items-center gap-2.5">
+            <span
+              className="wb-status-badge size-5 [&>svg]:size-[11px]"
+              data-tone={check.ready ? "ok" : "neutral"}
+            >
+              <Icon name={check.ready ? "check" : "x"} size={11} strokeWidth={3} />
+            </span>
+            <span
+              className={
+                check.ready
+                  ? "text-[14px] font-medium leading-[18px] text-fg"
+                  : "text-[14px] font-medium leading-[18px] text-fg-muted"
+              }
+            >
+              {check.label}
+              {!check.ready && <span className="sr-only"> unavailable</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

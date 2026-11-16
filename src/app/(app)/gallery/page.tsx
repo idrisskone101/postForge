@@ -46,9 +46,9 @@ async function GalleryDeferredPage({
     ? requested.reviewStatus[0]
     : requested.reviewStatus;
   const type =
-    requestedType === "image" || requestedType === "all"
+    requestedType === "image" || requestedType === "video"
       ? requestedType
-      : "video";
+      : "all";
   const sort = requestedSort === "oldest" ? "oldest" : "newest";
   const reviewStatus = normalizeGalleryReviewStatusFilter(
     requestedReviewStatus,
@@ -58,7 +58,7 @@ async function GalleryDeferredPage({
 
   return (
     <GalleryPageLazy
-      initialPage={page}
+      initialPageJson={JSON.stringify(page)}
       initialType={type}
       initialSort={sort}
       initialReviewStatus={reviewStatus}

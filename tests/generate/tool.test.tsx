@@ -54,16 +54,22 @@ const markup = renderToStaticMarkup(
   />
 );
 
-assert.match(markup, /Creative Prompt/);
-assert.match(markup, /Model Selection/);
-assert.match(markup, /Aspect Ratio/);
-assert.match(markup, /Cost Estimate/);
-assert.match(markup, /Generate Now/);
-assert.match(markup, /Current Config/);
+assert.match(markup, /Creative prompt/);
+assert.match(markup, /Choose a model/);
+assert.match(markup, /Text to image/);
+assert.match(markup, /Aspect ratio/);
+assert.match(markup, /Estimated cost/);
+assert.match(markup, /Generate now/);
 assert.match(markup, /9:16/);
-assert.match(markup, /2 img/);
+assert.match(markup, /aria-label="2 outputs" data-icon="true"|aria-pressed="true" aria-label="2 outputs"/);
+assert.doesNotMatch(markup, /aria-label="Duration"/);
 assert.match(markup, /Phone screenshot/);
-assert.match(markup, /Composite screenshot onto phone/);
+assert.match(
+  markup,
+  /aria-expanded="false"[^>]*>(?:(?!<\/button>).)*Phone screenshot/,
+  "the phone screenshot panel starts as a collapsed disclosure row",
+);
+assert.match(markup, /Composite screenshot onto phone/, "collapsed content stays mounted with its state");
 assert.match(markup, /GPT Image 2\.5/);
 assert.match(markup, /Phone screenshot scene/);
 assert.match(markup, /Bathroom counter/);
@@ -79,7 +85,7 @@ const videoModel = models.find((model) => model.type === "video") ?? models[0];
 
 const continuitySection = (
   <div>
-    <h2>Character continuity</h2>
+    <h2>Video seed</h2>
     <VideoReferencePicker selectedFileId={null} onChange={() => {}} />
   </div>
 );
@@ -95,8 +101,9 @@ const videoMarkup = renderToStaticMarkup(
   />
 );
 
-assert.match(videoMarkup, /Character continuity/);
-assert.match(videoMarkup, /5s video/);
+assert.match(videoMarkup, /Video seed/);
+assert.match(videoMarkup, /aria-label="Duration"/);
+assert.match(videoMarkup, />5s</);
 assert.match(videoMarkup, /Loading recent outputs…/);
 
 const formSource = [
@@ -112,4 +119,4 @@ const formSource = [
 assert.match(formSource, /getContinuityVideoModel\(\)/);
 assert.match(formSource, /referenceFileId/);
 assert.match(formSource, /VideoReferencePicker/);
-assert.match(formSource, /Character continuity/);
+assert.match(formSource, /label="Video seed"/);

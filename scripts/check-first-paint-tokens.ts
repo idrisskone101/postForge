@@ -2,26 +2,21 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-export type HeadingToken = {
-  selector: string;
-  fontSize: string;
-  minMaxWidth: string;
-};
+export const PAGE_TITLE_SIZE = "28px";
+export const FIRST_PAINT_BYTE_CAP = 1500;
 
-export const CRITICAL_HEADINGS: HeadingToken[] = [
-  { selector: "[data-home-title]", fontSize: "30px", minMaxWidth: "12rem" },
-  { selector: "#workspace-header-grid h1", fontSize: "28px", minMaxWidth: "12rem" },
-  { selector: "[data-character-title]", fontSize: "28px", minMaxWidth: "12rem" },
-  { selector: ".policy-heading", fontSize: "30px", minMaxWidth: "12rem" },
-];
+/** Every rule that draws a workspace page title, and the stylesheet that owns it. */
+export const PAGE_TITLE_RULES = [
+  { selector: ".wb-page-title", file: "src/app/styles/shell.css" },
+  { selector: ".pf-page-title", file: "src/app/styles/legacy.css" },
+] as const;
 
 export type FirstPaintTokenViolation =
   | { kind: "design-mismatch"; token: string; expected: string }
   | { kind: "missing-font"; selector: string; expected: string }
-  | { kind: "eight-rem-cap"; selector: string }
-  | { kind: "narrow-max-width"; selector: string; maxWidth: string };
-
-const EIGHT_REM = /max-width:\s*8rem/;
+  | { kind: "inline-route-rule"; match: string }
+  | { kind: "inline-too-large"; bytes: number }
+  | { kind: "missing-theme-floor" };
 
 export function readDesignHeadingSizes(designMarkdown: string): {
   display: string;
@@ -47,60 +42,52 @@ export function extractFirstPaintCss(moduleSource: string): string {
   return match[1];
 }
 
-function ruleBodiesForSelector(css: string, selector: string): string[] {
-  const bodies: string[] = [];
+function ruleBody(css: string, selector: string): string | null {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = new RegExp(
-    `(?:^|[,{}])\\s*${escaped}\\s*(?:,[^{]*)?\\{([^}]*)\\}`,
-    "g"
-  );
-  for (const match of css.matchAll(pattern)) {
-    bodies.push(match[1] ?? "");
-  }
-  return bodies;
+  const match = new RegExp(`(?:^|[\\s,}])${escaped}\\s*\\{([^}]*)\\}`).exec(css);
+  return match ? match[1] : null;
 }
 
+/**
+ * The page title is 28px on every route and is styled by the blocking
+ * stylesheet. The inline first-paint block stays a tiny theme floor: no route
+ * or heading rules may be copied into it again.
+ */
 export function checkFirstPaintTokens(options: {
-  css: string;
+  firstPaintCss: string;
+  titleSheets: Record<string, string>;
   design: { display: string; headline: string };
 }): FirstPaintTokenViolation[] {
   const violations: FirstPaintTokenViolation[] = [];
-  if (options.design.display !== "30px") {
-    violations.push({
-      kind: "design-mismatch",
-      token: "display",
-      expected: "30px",
-    });
-  }
-  if (options.design.headline !== "28px") {
-    violations.push({
-      kind: "design-mismatch",
-      token: "headline",
-      expected: "28px",
-    });
+  for (const token of ["display", "headline"] as const) {
+    if (options.design[token] !== PAGE_TITLE_SIZE) {
+      violations.push({ kind: "design-mismatch", token, expected: PAGE_TITLE_SIZE });
+    }
   }
 
-  for (const heading of CRITICAL_HEADINGS) {
-    const bodies = ruleBodiesForSelector(options.css, heading.selector);
-    const joined = bodies.join(";");
-    if (!joined.includes(`font-size:${heading.fontSize}`)) {
+  for (const rule of PAGE_TITLE_RULES) {
+    const body = ruleBody(options.titleSheets[rule.file] ?? "", rule.selector);
+    if (!body || !new RegExp(`font-size:\\s*${PAGE_TITLE_SIZE}`).test(body)) {
       violations.push({
         kind: "missing-font",
-        selector: heading.selector,
-        expected: heading.fontSize,
+        selector: rule.selector,
+        expected: PAGE_TITLE_SIZE,
       });
     }
-    if (EIGHT_REM.test(joined)) {
-      violations.push({ kind: "eight-rem-cap", selector: heading.selector });
-    }
-    const maxWidth = /max-width:\s*([0-9.]+rem)/.exec(joined);
-    if (maxWidth && Number.parseFloat(maxWidth[1]) < 12) {
-      violations.push({
-        kind: "narrow-max-width",
-        selector: heading.selector,
-        maxWidth: maxWidth[1],
-      });
-    }
+  }
+
+  const routeRule = /\[data-[a-z-]+|#workspace-[a-z-]+|\bh[1-6]\b|content:\s*attr\(/.exec(
+    options.firstPaintCss
+  );
+  if (routeRule) {
+    violations.push({ kind: "inline-route-rule", match: routeRule[0] });
+  }
+  const bytes = Buffer.byteLength(options.firstPaintCss);
+  if (bytes > FIRST_PAINT_BYTE_CAP) {
+    violations.push({ kind: "inline-too-large", bytes });
+  }
+  if (!/html\.dark\{background:#141516/i.test(options.firstPaintCss)) {
+    violations.push({ kind: "missing-theme-floor" });
   }
   return violations;
 }
@@ -108,28 +95,27 @@ export function checkFirstPaintTokens(options: {
 export function formatFirstPaintTokenViolations(
   violations: readonly FirstPaintTokenViolation[]
 ): string {
-  const lines = ["First-paint heading tokens failed."];
+  const lines = ["First-paint tokens failed."];
   for (const violation of violations) {
     switch (violation.kind) {
       case "design-mismatch":
-        lines.push(
-          `DESIGN.md ${violation.token} must be ${violation.expected}`
-        );
+        lines.push(`DESIGN.md ${violation.token} must be ${violation.expected}`);
         break;
       case "missing-font":
+        lines.push(`${violation.selector} must set font-size: ${violation.expected}`);
+        break;
+      case "inline-route-rule":
         lines.push(
-          `${violation.selector} must set font-size:${violation.expected}`
+          `inline first-paint CSS contains "${violation.match}"; route and heading rules belong in the stylesheet`
         );
         break;
-      case "eight-rem-cap":
+      case "inline-too-large":
         lines.push(
-          `${violation.selector} uses max-width:8rem; critical headings follow DESIGN.md, not an LCP clip`
+          `inline first-paint CSS is ${violation.bytes} bytes (cap ${FIRST_PAINT_BYTE_CAP}); keep it to the theme floor and font faces`
         );
         break;
-      case "narrow-max-width":
-        lines.push(
-          `${violation.selector} max-width ${violation.maxWidth} is tighter than 12rem`
-        );
+      case "missing-theme-floor":
+        lines.push("inline first-paint CSS must paint the dark floor on html.dark");
         break;
       default: {
         const _exhaustive: never = violation;
@@ -138,6 +124,17 @@ export function formatFirstPaintTokenViolations(
     }
   }
   return lines.join("\n");
+}
+
+export function readFirstPaintInputs(rootDir: string) {
+  const read = (file: string) => readFileSync(path.join(rootDir, file), "utf8");
+  return {
+    firstPaintCss: extractFirstPaintCss(read("src/app/first-paint-css.ts")),
+    titleSheets: Object.fromEntries(
+      PAGE_TITLE_RULES.map((rule) => [rule.file, read(rule.file)])
+    ),
+    design: readDesignHeadingSizes(read("DESIGN.md")),
+  };
 }
 
 function isCliEntry(): boolean {
@@ -150,13 +147,7 @@ function isCliEntry(): boolean {
 
 function main(): void {
   const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-  const css = extractFirstPaintCss(
-    readFileSync(path.join(rootDir, "src/app/first-paint-css.ts"), "utf8")
-  );
-  const design = readDesignHeadingSizes(
-    readFileSync(path.join(rootDir, "DESIGN.md"), "utf8")
-  );
-  const violations = checkFirstPaintTokens({ css, design });
+  const violations = checkFirstPaintTokens(readFirstPaintInputs(rootDir));
   if (violations.length > 0) {
     console.error(formatFirstPaintTokenViolations(violations));
     process.exit(1);

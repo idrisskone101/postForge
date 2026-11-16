@@ -1,201 +1,138 @@
-import { AlertCircle, Download, Loader2 } from "lucide-react";
-import { MediaPreviewFrame } from "@/components/media-preview";
+import { FileImage } from "@/components/file-image";
+import { Icon } from "@/components/workbench";
 import { cn } from "@/lib/utils";
-import type {
-  CloneOutputReviewJob,
-  CloneOutputReviewView,
-} from "@/components/clone-output/types";
+import { videoFrameSrc } from "@/lib/video-frame";
+import { CloneOutputPanelHead } from "@/components/clone-output/header";
+import { CloneOutputPlayer } from "@/components/clone-output/player";
+import { CloneRunRail } from "@/components/clone-output/rail";
+import {
+  cloneRunState,
+  formatClockTime,
+  runStepName,
+  type CloneRunState,
+} from "@/components/clone-output/run-state";
+import type { CloneOutputReviewView } from "@/components/clone-output/types";
 
-export function CloneOutputReviewPreview({
-  review,
-}: {
-  review: CloneOutputReviewView;
-}) {
-  const {
-    job,
-    featured,
-    featuredSize,
-    previewWidth,
-    previewHeight,
-    isActive,
-    isFailed,
-    isCompleted,
-    onDownload,
-    onSelectVariant,
-  } = review;
+export function CloneOutputReviewPreview({ review }: { review: CloneOutputReviewView }) {
+  const { job, featured } = review;
+  const run = cloneRunState(job);
+  const showMedia = run.kind === "completed" && featured;
+
   return (
-    <div className="pf-card p-4 sm:p-6">
-      <div className={cn("grid items-center justify-center gap-4", job.outputs.length > 1 && "sm:grid-cols-[minmax(0,1fr)_78px]")}>
-        <div className="relative min-w-0">
-          {isCompleted && featured ? (
-            <MediaPreviewFrame
-              type={featured.type === "image" ? "image" : "video"}
-              src={`/api/files/${featured.id}`}
-              width={previewWidth ?? undefined}
-              height={previewHeight ?? undefined}
-              alt={job.prompt}
-              variant="detail"
-              showMetadata
-              className="w-full rounded-lg"
-              actions={
-                <button
-                  type="button"
-                  onClick={() => onDownload(featured)}
-                  className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-white/10"
-                >
-                  <Download className="size-3.5 shrink-0" />
-                  Download
-                </button>
-              }
-            />
-          ) : (
-            <ClonePreviewStage
-              isActive={isActive}
-              isFailed={isFailed}
-              status={job.status}
-              error={job.error}
-            />
-          )}
-        </div>
-
-        {job.outputs.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto sm:flex-col sm:overflow-visible">
-            <p className="max-sm:hidden text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:block">
-              Variants
-            </p>
-            {job.outputs.map((output, index) => (
-              <button
-                key={output.id}
-                type="button"
-                onClick={() => onSelectVariant(index)}
-                aria-label={`View variant ${index + 1}`}
-                aria-pressed={featured?.id === output.id}
-                className={cn(
-                  "relative aspect-[9/16] w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#09090B] p-0.5 transition-colors",
-                  featured?.id === output.id
-                    ? "border-[var(--pf-orange)] ring-1 ring-[var(--pf-orange)]/25"
-                    : "border-border hover:border-[var(--pf-orange)]/50"
-                )}
-              >
-                {output.type === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`/api/files/${output.id}`}
-                    alt=""
-                    className="size-full rounded-md object-cover"
-                  />
-                ) : (
-                  <video
-                    src={`/api/files/${output.id}`}
-                    muted
-                    preload="metadata"
-                    className="size-full rounded-md object-cover"
-                  />
-                )}
-                <span className="absolute bottom-1 left-1 rounded bg-black/65 px-1 py-0.5 text-[13px] font-semibold text-white">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </button>
-            ))}
-          </div>
+    <section
+      aria-label="Clone output preview"
+      className="wb-panel min-w-0 flex-1 max-sm:px-4 max-sm:pb-4"
+    >
+      <CloneOutputPanelHead review={review} />
+      <CloneRunRail model={run} />
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-lg bg-well p-4 sm:min-h-[596px] sm:flex-row sm:gap-5 sm:px-0 sm:py-6">
+        {showMedia ? (
+          <>
+            <CloneOutputPlayer review={review} />
+            <VariantRail review={review} />
+          </>
+        ) : (
+          <RunStage run={run} job={job} />
         )}
       </div>
+    </section>
+  );
+}
 
-      {featured && (
-        <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-card px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground">
-              {featured.filename}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {[featuredSize, job.model].filter(Boolean).join(" | ")}
-            </p>
-          </div>
-        </div>
-      )}
+function VariantRail({ review }: { review: CloneOutputReviewView }) {
+  const { job, featured, onSelectVariant } = review;
+  if (job.outputs.length < 2) return null;
+  const featuredIndex = job.outputs.findIndex((output) => output.id === featured?.id);
+  return (
+    <div className="flex w-full max-w-[315px] items-center gap-2.5 sm:w-[84px] sm:flex-col sm:items-start">
+      <div className="-m-1 flex gap-2.5 overflow-x-auto p-1 sm:max-h-[568px] sm:flex-col sm:overflow-y-auto">
+        {job.outputs.map((output, index) => {
+          const selected = output.id === featured?.id;
+          return (
+            <button
+              key={output.id}
+              type="button"
+              onClick={() => onSelectVariant(index)}
+              aria-label={`View variant ${index + 1}`}
+              aria-pressed={selected}
+              className={cn(
+                "relative aspect-[84/149] w-14 shrink-0 overflow-hidden rounded-lg bg-media transition-[box-shadow] duration-[var(--pf-dur-feedback)] ease-pf focus-visible:outline-none sm:w-[84px]",
+                selected
+                  ? "shadow-[0_0_0_2px_var(--pf-well),0_0_0_4px_var(--pf-ember)]"
+                  : "hover:shadow-[0_0_0_2px_var(--pf-well),0_0_0_4px_var(--pf-outline)] focus-visible:shadow-[0_0_0_2px_var(--pf-well),0_0_0_4px_var(--pf-outline)]"
+              )}
+            >
+              {output.type === "image" ? (
+                <FileImage src={`/api/files/${output.id}`} alt="" sizes="84px" />
+              ) : (
+                <video
+                  src={videoFrameSrc(`/api/files/${output.id}`)}
+                  muted
+                  preload="metadata"
+                  className="size-full object-cover"
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <p className="ml-auto shrink-0 text-[12px] leading-4 text-fg-secondary sm:ml-0">
+        {featuredIndex + 1} / {job.outputs.length}
+      </p>
     </div>
   );
 }
 
-function ClonePreviewStage({
-  isActive,
-  isFailed,
-  status,
-  error,
+function RunStage({
+  run,
+  job,
 }: {
-  isActive: boolean;
-  isFailed: boolean;
-  status: CloneOutputReviewJob["status"];
-  error: string | null;
+  run: CloneRunState;
+  job: CloneOutputReviewView["job"];
 }) {
   return (
-    <div className="flex min-h-[min(720px,calc(100dvh-20rem))] flex-col items-center justify-center rounded-lg bg-[#09090B] px-6 text-center">
-      <ClonePreviewStageBody
-        isActive={isActive}
-        isFailed={isFailed}
-        status={status}
-        error={error}
-      />
+    <div className="flex aspect-[9/16] w-full max-w-[292px] flex-col items-center justify-center gap-3 rounded-lg bg-media px-7 text-center">
+      <RunStageBody run={run} job={job} />
     </div>
   );
 }
 
-function ClonePreviewStageBody({
-  isActive,
-  isFailed,
-  status,
-  error,
+function RunStageBody({
+  run,
+  job,
 }: {
-  isActive: boolean;
-  isFailed: boolean;
-  status: CloneOutputReviewJob["status"];
-  error: string | null;
+  run: CloneRunState;
+  job: CloneOutputReviewView["job"];
 }) {
-  if (isActive) {
+  if (run.kind === "active") {
     return (
       <>
-        <Loader2 className="mb-4 size-10 animate-spin text-[var(--pf-lamp-amber)]" />
-        <p className="text-sm font-semibold text-white">
-          {clonePreviewActiveLabel(status)}
+        <p className="flex items-center gap-2 text-[14px] font-semibold leading-[18px] text-fg">
+          <span className="wb-live-dot" aria-hidden="true" />
+          {runStepName(run.current)}
         </p>
-        <p className="mt-1 text-xs text-white/50">
-          This may take a few minutes
+        <p className="font-mono text-[12px] leading-4 text-fg-secondary">
+          {job.startedAt
+            ? `Started ${formatClockTime(job.startedAt)}`
+            : `Queued ${formatClockTime(job.createdAt)}`}
         </p>
       </>
     );
   }
-  if (isFailed) {
+  if (run.kind === "failed") {
     return (
       <>
-        <AlertCircle className="size-8 shrink-0 text-[var(--pf-danger)]" />
-        <p className="mt-4 text-sm font-semibold text-white">Clone Failed</p>
-        {error ? (
-          <p className="mx-auto mt-1 min-w-0 max-w-sm break-words text-xs text-white/70 [overflow-wrap:anywhere]">
-            {error}
+        <span className="grid size-11 place-items-center rounded-full bg-bad-tint text-bad">
+          <Icon name="x" size={18} strokeWidth={2} />
+        </span>
+        <p className="text-[14px] font-semibold leading-[18px] text-fg">Clone failed</p>
+        {run.reason ? (
+          <p className="min-w-0 max-w-full break-words text-[13px] leading-[18px] text-fg-secondary [overflow-wrap:anywhere]">
+            {run.reason}
           </p>
         ) : null}
       </>
     );
   }
-  return (
-    <p className="text-sm text-muted-foreground">
-      Output preview will appear here.
-    </p>
-  );
+  return <p className="text-[13px] leading-[18px] text-fg-secondary">No output file was saved</p>;
 }
-
-function clonePreviewActiveLabel(status: CloneOutputReviewJob["status"]) {
-  switch (status) {
-    case "queued":
-      return "Waiting in queue...";
-    case "processing":
-    case "completed":
-    case "failed":
-      return "Cloning motion...";
-    default: {
-      const _exhaustive: never = status;
-      return _exhaustive;
-    }
-  }
-}
-

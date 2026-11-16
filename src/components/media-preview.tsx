@@ -1,9 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useCallback, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MEDIA_REVEAL_CLASS, useMediaReveal } from "@/components/workbench/media-image";
+import {
+  fileThumbnailLoader,
+  hasFileThumbnail,
+  type MediaThumbnail,
+} from "@/lib/file-thumbnail";
 import { cn } from "@/lib/utils";
+import { videoFrameSrc } from "@/lib/video-frame";
+import { useNearViewport } from "@/lib/use-near-viewport";
 import { ImageOff } from "lucide-react";
 
 type MediaPreviewVariant = "card" | "work" | "detail";
@@ -24,6 +32,8 @@ interface MediaPreviewFrameProps extends MediaPreviewProps {
   showMetadata?: boolean;
   frameAspectRatio?: string;
   mediaClassName?: string;
+  /** Show a resized variant of a stored image; the original is the fallback if it fails. */
+  thumbnail?: MediaThumbnail;
 }
 
 export function MediaPreview({
@@ -107,36 +117,70 @@ export function MediaPreviewFrame({
   showMetadata = false,
   frameAspectRatio,
   mediaClassName,
+  thumbnail,
 }: MediaPreviewFrameProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const reveal = useMediaReveal();
+  const { markLoaded } = reveal;
   const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const markLoaded = useCallback(() => setIsLoading(false), []);
-  const setImageRef = useCallback((node: HTMLImageElement | null) => {
-    imgRef.current = node;
-    if (node?.complete && node.naturalWidth > 0) {
-      markLoaded();
-    }
-  }, [markLoaded]);
-  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
-    videoRef.current = node;
-    if (node && node.readyState >= 2) {
-      markLoaded();
-    }
-  }, [markLoaded]);
+  const isLoading = !reveal.loaded && !hasError;
+  const wellRef = useRef<HTMLDivElement>(null);
+  const deferred = type === "video" && variant === "card";
+  const near = useNearViewport(wellRef, deferred);
+  const [failedThumbnailSrc, setFailedThumbnailSrc] = useState<string | null>(null);
+  const resized =
+    thumbnail && type === "image" && failedThumbnailSrc !== src && hasFileThumbnail(src);
+  const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
 
   const aspectRatio = getAspectRatio(width, height);
   const metadata = getMetadata(width, height);
   const shouldUseAspectRatio = variant !== "detail" && (frameAspectRatio || aspectRatio);
-  const fillFrame = cover || !width || !height;
+  const mediaWidth = width ?? natural?.width;
+  const mediaHeight = height ?? natural?.height;
+  const fillFrame = cover || !mediaWidth || !mediaHeight;
   const mediaClass = cn(
-    "rounded-lg transition-opacity",
-    isLoading ? "opacity-0" : "opacity-100",
+    MEDIA_REVEAL_CLASS,
+    "rounded-lg",
     cover ? "size-full object-cover" : "max-h-full max-w-full object-contain",
+    !fillFrame && "h-auto w-auto",
     mediaClassName
   );
+
+  const image =
+    resized && thumbnail ? (
+      <Image
+        {...reveal.props}
+        src={src}
+        loader={fileThumbnailLoader}
+        sizes={thumbnail.sizes}
+        alt={alt}
+        fill={fillFrame}
+        width={fillFrame ? undefined : mediaWidth}
+        height={fillFrame ? undefined : mediaHeight}
+        loading={thumbnail.priority ? "eager" : "lazy"}
+        fetchPriority={thumbnail.priority ? "high" : "auto"}
+        onLoad={markLoaded}
+        onError={() => setFailedThumbnailSrc(src)}
+        className={mediaClass}
+      />
+    ) : (
+      <Image
+        {...reveal.props}
+        src={src}
+        alt={alt}
+        fill={fillFrame}
+        width={fillFrame ? undefined : mediaWidth}
+        height={fillFrame ? undefined : mediaHeight}
+        sizes={fillFrame ? "100vw" : undefined}
+        unoptimized
+        onLoad={(event) => {
+          const { naturalWidth, naturalHeight } = event.currentTarget;
+          if (!cover && naturalWidth > 0) setNatural({ width: naturalWidth, height: naturalHeight });
+          markLoaded();
+        }}
+        onError={() => setHasError(true)}
+        className={mediaClass}
+      />
+    );
 
   return (
     <figure
@@ -145,6 +189,7 @@ export function MediaPreviewFrame({
       style={shouldUseAspectRatio ? { aspectRatio: frameAspectRatio || aspectRatio } : undefined}
     >
       <div
+        ref={wellRef}
         className={cn(
           "relative flex w-full items-center justify-center overflow-hidden rounded-lg",
           mediaWellClasses[variant]
@@ -158,26 +203,11 @@ export function MediaPreviewFrame({
             <span className="text-xs">Failed to load</span>
           </div>
         ) : type === "image" ? (
-          <Image
-            ref={setImageRef}
-            src={src}
-            alt={alt}
-            fill={fillFrame}
-            width={fillFrame ? undefined : width}
-            height={fillFrame ? undefined : height}
-            sizes={fillFrame ? "100vw" : undefined}
-            unoptimized
-            onLoad={markLoaded}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
-            className={mediaClass}
-          />
+          image
         ) : (
           <video
-            ref={setVideoRef}
-            src={src}
+            {...reveal.props}
+            src={deferred && !near ? undefined : videoFrameSrc(src)}
             width={width}
             height={height}
             preload={variant === "card" ? "metadata" : "auto"}
@@ -186,10 +216,7 @@ export function MediaPreviewFrame({
             playsInline
             onLoadedMetadata={variant === "card" ? markLoaded : undefined}
             onLoadedData={markLoaded}
-            onError={() => {
-              setIsLoading(false);
-              setHasError(true);
-            }}
+            onError={() => setHasError(true)}
             className={mediaClass}
           />
         )}

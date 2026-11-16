@@ -1,6 +1,8 @@
 "use client";
 
-import { Loader2, Users } from "lucide-react";
+import { useState } from "react";
+import { Icon } from "@/components/workbench/icon";
+import { isTrackableHandle, TRACK_CREATOR_INPUT_ID } from "./inspiration-models";
 import type { InspirationHeaderControlsProps } from "./types";
 
 export function InspirationHeaderControls({
@@ -9,44 +11,93 @@ export function InspirationHeaderControls({
   onHandleInputChange,
   onTrackAccount,
 }: InspirationHeaderControlsProps) {
+  const [invalid, setInvalid] = useState(false);
+  const errorId = `${TRACK_CREATOR_INPUT_ID}-error`;
+
+  function submit() {
+    if (isAddingAccount) return;
+    if (!isTrackableHandle(handleInput)) {
+      setInvalid(true);
+      document.getElementById(TRACK_CREATOR_INPUT_ID)?.focus();
+      return;
+    }
+    setInvalid(false);
+    onTrackAccount();
+  }
+
   return (
-    <div className="w-full min-w-0 lg:w-[31rem]">
-      <p className="sr-only">
-        Source Selection. Compare creator posts and send the strongest source straight into Clone.
-      </p>
-      <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2">
+    <form
+      className="relative flex min-w-0 items-center gap-2 max-sm:w-full max-sm:flex-wrap max-sm:justify-end"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        submit();
+      }}
+    >
+      <label className={FIELD_CLASS}>
+        <AtIcon />
+        <span className="sr-only">Creator to track</span>
         <input
+          id={TRACK_CREATOR_INPUT_ID}
           value={handleInput}
-          onChange={(event) => onHandleInputChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              onTrackAccount();
-            }
+          onChange={(event) => {
+            onHandleInputChange(event.target.value);
+            if (invalid) setInvalid(false);
           }}
           placeholder="@creator or TikTok profile URL"
+          autoComplete="off"
+          spellCheck={false}
           disabled={isAddingAccount}
-          className="h-10 min-w-0 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-3 text-[13px] text-[var(--pf-ink)] shadow-none outline-none placeholder:text-[var(--pf-muted)] focus-visible:border-[var(--pf-orange)] focus-visible:ring-3 focus-visible:ring-[var(--pf-orange)]/15 disabled:opacity-50"
+          aria-invalid={invalid}
+          aria-describedby={invalid ? errorId : undefined}
+          className="h-full min-w-0 flex-1 bg-transparent text-[14px] leading-[18px] text-fg outline-none placeholder:text-fg-muted disabled:text-fg-disabled"
         />
-        <button
-          type="button"
-          onClick={onTrackAccount}
-          disabled={isAddingAccount || !handleInput.trim()}
-          className="pf-button-primary h-10 shrink-0 px-3 sm:px-4"
+      </label>
+      <button
+        type="submit"
+        disabled={isAddingAccount}
+        aria-label={isAddingAccount ? "Tracking creator" : "Track creator"}
+        className="wb-btn wb-btn-primary wb-btn-40 shrink-0 max-sm:w-10 max-sm:px-0"
+      >
+        <Icon name="plus" strokeWidth={2} />
+        <span className="max-sm:hidden">{isAddingAccount ? "Tracking" : "Track creator"}</span>
+      </button>
+      {invalid && (
+        <p
+          id={errorId}
+          role="alert"
+          className="wb-float wb-fade-in text-[13px] leading-4 text-bad max-sm:basis-full max-sm:rounded-none max-sm:bg-transparent max-sm:px-1 max-sm:shadow-none sm:absolute sm:top-full sm:left-0 sm:z-30 sm:mt-2 sm:px-3 sm:py-2"
         >
-          {isAddingAccount ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Tracking...
-            </>
-          ) : (
-            <>
-              <Users className="size-4" />
-              Track Creator
-            </>
-          )}
-        </button>
-      </div>
-    </div>
+          Enter a TikTok @handle or profile URL
+        </p>
+      )}
+    </form>
+  );
+}
+
+const FIELD_CLASS = [
+  "flex h-10 w-[min(300px,calc(100vw-108px))] min-w-0 shrink-0 items-center gap-2 rounded-lg bg-raised px-4 text-fg-muted max-sm:w-auto max-sm:flex-1",
+  "shadow-[inset_0_0_0_0_var(--pf-ember)] transition-shadow duration-[var(--pf-dur-feedback)] ease-pf",
+  "focus-within:shadow-[inset_0_0_0_2px_var(--pf-ember)]",
+  "has-[[aria-invalid=true]]:shadow-[inset_0_0_0_2px_var(--pf-bad)]",
+].join(" ");
+
+function AtIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      aria-hidden="true"
+      // Below 360px the placeholder needs the icon's 24px to read whole, and it already starts with "@".
+      className="shrink-0 max-[359px]:hidden"
+    >
+      <circle cx="12" cy="12" r="8" />
+      <path d="M16 12a4 4 0 1 1-4-4c2.2 0 4 1.5 4 4v1.5a2 2 0 0 0 4 0" />
+    </svg>
   );
 }

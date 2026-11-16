@@ -1,4 +1,5 @@
-import { isDemoMode } from "./demo/mode";
+import { isAppPagePath } from "@/lib/app-routes";
+import { isDemoMode } from "@/lib/demo/mode";
 
 export type WorkspaceNavigationLabel =
   | "Home"
@@ -6,181 +7,117 @@ export type WorkspaceNavigationLabel =
   | "Inspiration"
   | "Clone"
   | "Slideshow"
+  | "Generate"
   | "Gallery"
+  | "Collections"
+  | "Characters"
   | "Automations"
   | "Performance"
   | "Spend"
-  | "Generate"
-  | "Collections"
-  | "Characters"
   | "Settings";
+
+export type WorkspacePrimaryAction = {
+  label: string;
+  href: string;
+  icon: "plus" | "upload";
+  /** Below 640px the action is a round 40px icon button. Only where Paper draws the phone header so. */
+  iconOnlyOnPhone?: boolean;
+};
 
 export type WorkspaceNavigationItem = {
   label: WorkspaceNavigationLabel;
   href: string;
   match: string[];
-  eyebrow: string;
-  description: string;
-  primaryAction: {
-    label: string;
-    href: string;
-  };
-};
-
-type WorkspaceNavigationGroups = {
-  primary: readonly WorkspaceNavigationItem[];
-  tools: readonly WorkspaceNavigationItem[];
-  utility: readonly WorkspaceNavigationItem[];
+  /** The one bone primary in the route's page header. Absent when the design has none. */
+  primaryAction?: WorkspacePrimaryAction;
 };
 
 const fullWorkspaceNavigationGroups = {
-  primary: [
+  overview: [
     {
       label: "Home",
       href: "/",
       match: ["/"],
-      eyebrow: "Production",
-      description: "Today’s jobs, reviews, and the next useful action.",
-      primaryAction: { label: "New Clone", href: "/ugc-clone" },
+      primaryAction: { label: "New clone", href: "/ugc-clone", icon: "plus" },
     },
-    {
-      label: "Jobs",
-      href: "/jobs",
-      match: ["/jobs"],
-      eyebrow: "Activity",
-      description: "Track active generations and review the last 30 days of production history.",
-      primaryAction: { label: "Create Asset", href: "/generate" },
-    },
-    {
-      label: "Inspiration",
-      href: "/ugc-inspiration",
-      match: ["/ugc-inspiration"],
-      eyebrow: "Discover",
-      description: "Track creator posts and turn the strongest sources into new work.",
-      primaryAction: { label: "Open Clone", href: "/ugc-clone" },
-    },
-    {
-      label: "Clone",
-      href: "/ugc-clone",
-      match: ["/ugc-clone"],
-      eyebrow: "Create",
-      description: "Combine a source clip, identity, and reference into a new asset.",
-      primaryAction: { label: "Browse Inspiration", href: "/ugc-inspiration" },
-    },
-    {
-      label: "Slideshow",
-      href: "/slideshow",
-      match: ["/slideshow"],
-      eyebrow: "Create",
-      description: "Create, edit, automate, and export AI image carousels.",
-      primaryAction: { label: "New Slideshow", href: "/slideshow?new=true" },
-    },
+    { label: "Jobs", href: "/jobs", match: ["/jobs"] },
+  ],
+  create: [
+    { label: "Inspiration", href: "/ugc-inspiration", match: ["/ugc-inspiration"] },
+    { label: "Clone", href: "/ugc-clone", match: ["/ugc-clone"] },
+    { label: "Slideshow", href: "/slideshow", match: ["/slideshow"] },
+    { label: "Generate", href: "/generate", match: ["/generate"] },
+  ],
+  library: [
     {
       label: "Gallery",
       href: "/gallery",
       match: ["/gallery"],
-      eyebrow: "Review",
-      description: "Approve, reject, download, and hand off finished media.",
-      primaryAction: { label: "Create Asset", href: "/generate" },
-    },
-    {
-      label: "Automations",
-      href: "/automations",
-      match: ["/automations"],
-      eyebrow: "Publishing",
-      description: "Schedule repeatable content loops with explicit approval rules.",
-      primaryAction: { label: "New Automation", href: "/automations/new" },
-    },
-    {
-      label: "Performance",
-      href: "/performance",
-      match: ["/performance"],
-      eyebrow: "Content Intelligence",
-      description: "Learn which posts, hooks, and formats earn meaningful attention.",
-      primaryAction: { label: "Open Automations", href: "/automations" },
-    },
-    {
-      label: "Spend",
-      href: "/costs",
-      match: ["/costs"],
-      eyebrow: "Cost Intelligence",
-      description: "See where every generation credit goes and stay on budget.",
-      primaryAction: { label: "Create Asset", href: "/generate" },
-    },
-  ],
-  tools: [
-    {
-      label: "Generate",
-      href: "/generate",
-      match: ["/generate"],
-      eyebrow: "Create",
-      description: "Create production-ready images and videos from structured prompts.",
-      primaryAction: { label: "View Gallery", href: "/gallery" },
+      primaryAction: { label: "Start clone", href: "/ugc-clone", icon: "plus" },
     },
     {
       label: "Collections",
       href: "/collections",
       match: ["/collections"],
-      eyebrow: "Asset Library",
-      description: "Organize reusable visual systems for Generate, Clone, and Automations.",
-      primaryAction: { label: "Upload Images", href: "/collections?upload=1" },
+      primaryAction: {
+        label: "Upload images",
+        href: "/collections?upload=1",
+        icon: "upload",
+      },
     },
     {
       label: "Characters",
       href: "/characters",
       match: ["/characters"],
-      eyebrow: "Identity Studio",
-      description: "Create, refine, and reuse consistent on-screen identities.",
-      primaryAction: { label: "New Character", href: "/characters/new" },
+      primaryAction: { label: "New character", href: "/characters/new", icon: "plus" },
     },
   ],
-  utility: [
+  publish: [
     {
-      label: "Settings",
-      href: "/settings",
-      match: ["/settings"],
-      eyebrow: "Workspace",
-      description: "Manage connections, publishing defaults, usage, and preferences.",
-      primaryAction: { label: "Integrations", href: "/settings?tab=integrations" },
+      label: "Automations",
+      href: "/automations",
+      match: ["/automations"],
+      primaryAction: {
+        label: "New automation",
+        href: "/automations/new",
+        icon: "plus",
+        iconOnlyOnPhone: true,
+      },
     },
+    { label: "Performance", href: "/performance", match: ["/performance"] },
+    { label: "Spend", href: "/costs", match: ["/costs"] },
   ],
-} as const satisfies {
-  primary: WorkspaceNavigationItem[];
-  tools: WorkspaceNavigationItem[];
-  utility: WorkspaceNavigationItem[];
-};
+  utility: [{ label: "Settings", href: "/settings", match: ["/settings"] }],
+} as const satisfies Record<string, WorkspaceNavigationItem[]>;
 
-/**
- * The demo workspace does not carry Inspiration, which shows other creators'
- * posts. Drop it from the rail and retarget the one action that led there.
- */
+/** The demo workspace does not carry Inspiration, which shows other creators' posts. */
 export function withoutInspiration(
-  groups: WorkspaceNavigationGroups
-): WorkspaceNavigationGroups {
-  return {
-    ...groups,
-    primary: groups.primary
-      .filter((item) => item.label !== "Inspiration")
-      .map((item) =>
-        item.primaryAction.href === "/ugc-inspiration"
-          ? { ...item, primaryAction: { label: "View Gallery", href: "/gallery" } }
-          : item
-      ),
-  };
+  items: readonly WorkspaceNavigationItem[]
+): WorkspaceNavigationItem[] {
+  return items.filter((item) => item.href !== "/ugc-inspiration");
 }
 
-export const workspaceNavigationGroups: WorkspaceNavigationGroups = isDemoMode()
-  ? withoutInspiration(fullWorkspaceNavigationGroups)
+export const workspaceNavigationGroups = isDemoMode()
+  ? { ...fullWorkspaceNavigationGroups, create: withoutInspiration(fullWorkspaceNavigationGroups.create) }
   : fullWorkspaceNavigationGroups;
 
-export const workspaceNavigationItems = [
-  ...workspaceNavigationGroups.primary,
-  ...workspaceNavigationGroups.tools,
+/** Sidebar order: four unlabelled groups separated by a 20px gap. */
+export const workspaceSidebarGroups: readonly (readonly WorkspaceNavigationItem[])[] = [
+  workspaceNavigationGroups.overview,
+  workspaceNavigationGroups.create,
+  workspaceNavigationGroups.library,
+  workspaceNavigationGroups.publish,
+];
+
+export const workspaceNavigationItems: WorkspaceNavigationItem[] = [
+  ...workspaceSidebarGroups.flat(),
   ...workspaceNavigationGroups.utility,
 ];
 
+/** The navigation item a page belongs to. A URL under an item that is no page of the app has none. */
 export function getActiveWorkspaceItem(pathname: string) {
   const cleanPath = pathname.split(/[?#]/)[0] || "/";
+  if (!isAppPagePath(cleanPath)) return undefined;
 
   return workspaceNavigationItems.find((item) =>
     item.match.some((match) => {
@@ -188,4 +125,20 @@ export function getActiveWorkspaceItem(pathname: string) {
       return cleanPath === match || cleanPath.startsWith(`${match}/`);
     })
   );
+}
+
+const NAV_ITEM_HEIGHT = 36;
+const NAV_ITEM_GAP = 2;
+const NAV_GROUP_GAP = 20;
+
+/** Vertical offset of an item inside the sidebar nav, for the sliding active pill. */
+export function getSidebarPillOffset(href: string | undefined): number | null {
+  let offset = 0;
+  for (const group of workspaceSidebarGroups) {
+    const index = group.findIndex((item) => item.href === href);
+    if (index >= 0) return offset + index * (NAV_ITEM_HEIGHT + NAV_ITEM_GAP);
+    offset +=
+      group.length * NAV_ITEM_HEIGHT + (group.length - 1) * NAV_ITEM_GAP + NAV_GROUP_GAP;
+  }
+  return null;
 }

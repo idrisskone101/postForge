@@ -59,11 +59,11 @@ assert.match(pageSource, /listTrackedInspirationAccounts\(\)/);
 assert.doesNotMatch(pageSource, /initialAccounts=/);
 assert.match(workspaceSource, /useInspirationAccountList/);
 assert.match(workspaceSource, /handleLoadMoreAccounts/);
-const useInClone = workspaceSource.slice(
-  workspaceSource.indexOf("function handleUseInClone"),
-  workspaceSource.indexOf("function handleSetVideoRejection")
+const useInClone = readFileSync(
+  new URL("../../src/app/(app)/ugc-inspiration/inspiration-video-card.tsx", import.meta.url),
+  "utf8"
 );
-assert.match(useInClone, /buildCloneSourceUrlHandoffHref\(video\.originalUrl\)/);
+assert.match(useInClone, /href=\{buildCloneSourceUrlHandoffHref\(video\.originalUrl\)\}/);
 assert.doesNotMatch(useInClone, /postInspirationVideoUse/);
 assert.equal(
   (workspaceSource.match(/useEffect\(/g) ?? []).length,

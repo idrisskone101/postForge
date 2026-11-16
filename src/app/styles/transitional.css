@@ -1,0 +1,4 @@
+/*
+ * Transitional copy rules. Every route now renders real text, so this file
+ * holds no rules. Route tests assert that it stays that way.
+ */

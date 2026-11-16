@@ -27,9 +27,17 @@ export function filterCharacters(
   });
 }
 
+const SHORT_DATE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+
 export function formatShortDate(value: string): string {
-  return new Date(value).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
+  return SHORT_DATE.format(new Date(value));
+}
+
+export function characterDateMeta(record: CharacterRecord): string {
+  const date = formatShortDate(record.updatedAt);
+  return photoReady(record) ? date : `Draft, ${date}`;
 }

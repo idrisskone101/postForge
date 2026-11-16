@@ -1,24 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { IconButton } from "@/components/workbench/icon-button";
 
 import { VisualTile } from "./slide-preview";
-import {
-  CARD,
-  CARD_HOVER,
-  INPUT,
-  SECONDARY_BTN,
-} from "./studio-ui";
 import type { SlideshowTemplate } from "./types";
 
 export function TemplateDialog({
@@ -49,74 +39,74 @@ export function TemplateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-3xl! overflow-hidden rounded-lg border-border p-0">
-        <DialogHeader className="border-b border-border px-5 py-4 pr-14">
-          <DialogTitle className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[min(92dvh,720px)] flex-col gap-4 overflow-hidden sm:max-w-[min(760px,calc(100vw-2rem))]"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <DialogTitle className="text-[18px] font-bold leading-[22px] tracking-[-0.01em] text-fg">
             Template library
           </DialogTitle>
-          <DialogDescription className="text-[11px] text-muted-foreground">
-            Start from a proven format or a blank slideshow.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="border-b border-border p-4">
-          <div className="flex items-center gap-2.5">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search formats"
-                className={cn(INPUT, "h-9 pl-9")}
-              />
-            </div>
-            <button type="button" onClick={onCustom} className="pf-button-primary">
-              <Plus className="size-3.5" />
-              Blank
-            </button>
-          </div>
+          <IconButton icon="x" label="Close" size={30} onClick={() => onOpenChange(false)} />
         </div>
-        <div className="max-h-[64vh] overflow-y-auto p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="wb-input-wrap min-w-[180px] flex-1" data-size="36">
+            <Icon name="search" size={15} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search formats"
+              aria-label="Search formats"
+            />
+          </label>
+          <Button variant="strong" className="gap-2 pl-3" onClick={onCustom}>
+            <Icon name="plus" size={16} strokeWidth={2} />
+            Blank slideshow
+          </Button>
+        </div>
+        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1 pb-1">
           {visible.length ? (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <ul className="@container grid gap-3 sm:grid-cols-2">
               {visible.map((template) => (
-                <article
+                <li
                   key={template.id}
-                  className={cn(CARD, CARD_HOVER, "flex items-center gap-3 p-3")}
+                  // Below 300px of list width the copy has no room beside the thumbnails, so it takes its own row.
+                  className="flex min-w-0 items-center gap-3 rounded-lg bg-raised p-3 @max-[300px]:grid @max-[300px]:grid-cols-[minmax(0,1fr)_auto]"
                 >
-                  <div className="grid w-24 shrink-0 grid-cols-3 gap-0.5">
-                    {template.visualKeys.map((visualKey, index) => (
+                  <span className="flex shrink-0 gap-[3px]">
+                    {template.visualKeys.slice(0, 3).map((visualKey, index) => (
                       <VisualTile
                         key={`${visualKey}-${index}`}
                         visualKey={visualKey}
-                        className="aspect-[9/16] rounded-[4px]"
+                        className="h-[60px] w-[34px] rounded-sm"
                       />
                     ))}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-foreground">{template.name}</p>
-                    <p className="mt-0.5 text-[12px] text-muted-foreground">
-                      {template.category} · {template.slides.length} slides
-                    </p>
-                    <p className="mt-1 truncate text-[11px] text-muted-foreground">{template.hook}</p>
-                  </div>
-                  <button
-                    type="button"
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col gap-[3px] @max-[300px]:col-span-2 @max-[300px]:row-start-2">
+                    <span className="break-words text-[14px] font-semibold leading-[18px] text-fg">
+                      {template.name}
+                    </span>
+                    <span className="break-words text-[13px] leading-4 text-fg-secondary">
+                      {template.category} - {template.slides.length} slides
+                    </span>
+                  </span>
+                  <Button
+                    variant="strong"
+                    size={32}
+                    // The 40px cap on 32px pills is for stacked pills 8px apart; this one sits alone in a 60px row.
+                    className="[--wb-hit-h:44px]! @max-[300px]:col-start-2 @max-[300px]:row-start-1"
                     onClick={() => onUseTemplate(template)}
-                    className={cn(SECONDARY_BTN, "shrink-0")}
+                    aria-label={`Use the ${template.name} template`}
                   >
                     Use
-                  </button>
-                </article>
+                  </Button>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
-            <div className="grid min-h-40 place-items-center rounded-[6px] border border-dashed border-[var(--pf-border-strong)] text-center">
-              <div>
-                <Search className="mx-auto size-4 text-muted-foreground" />
-                <p className="mt-2 text-[12px] font-semibold text-foreground">No formats match</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">Try a niche or a hook phrase.</p>
-              </div>
-            </div>
+            <EmptyState icon="search" title="No formats match">
+              <Button onClick={() => setQuery("")}>Clear search</Button>
+            </EmptyState>
           )}
         </div>
       </DialogContent>

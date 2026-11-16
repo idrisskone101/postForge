@@ -24,7 +24,7 @@ export default async function AutomationBuilderPage({
 
   return (
     <>
-      {editId || applying ? null : <PlaybookOverlayStatic />}
+      {editId || applying ? null : <PlaybookOverlayStatic templateId={params.template} />}
       <AutomationBuilderClientLazy search={search} />
     </>
   );

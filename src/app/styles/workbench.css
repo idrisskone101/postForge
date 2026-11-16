@@ -1,0 +1,1400 @@
+/*
+ * Workbench primitives: panels and controls.
+ * Dimensions are taken from Paper "19 Interaction notes" (4I2-0) and the
+ * route artboards. React wrappers live in src/components/workbench.
+ */
+@layer components {
+  .wb-mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    line-height: 16px;
+  }
+
+  .wb-label {
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .wb-meta {
+    color: var(--pf-text-muted);
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .wb-fade-in {
+    animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  /* Panel */
+  .wb-panel {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 14px;
+    border-radius: var(--pf-radius-panel);
+    background: var(--pf-panel);
+    box-shadow: var(--pf-panel-shadow);
+    padding: 18px 20px 20px;
+  }
+
+  .wb-panel[data-pad="wide"] {
+    padding: 18px 24px 20px;
+  }
+
+  .wb-panel[data-pad="roomy"] {
+    padding: 24px;
+  }
+
+  .wb-panel[data-pad="tight"] {
+    padding: 12px;
+  }
+
+  .wb-panel[data-pad="none"] {
+    padding: 0;
+  }
+
+  .wb-panel-head {
+    display: flex;
+    min-height: 32px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .wb-panel-title {
+    min-width: 0;
+    color: var(--pf-text);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 20px;
+  }
+
+  .wb-panel-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--pf-hairline);
+    padding-top: 16px;
+  }
+
+  .wb-well {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-well);
+    padding: 14px;
+  }
+
+  .wb-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    padding: 10px 14px;
+    color: var(--pf-text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+    text-wrap: balance;
+  }
+
+  .wb-notice > strong {
+    color: var(--pf-text);
+    font-weight: 600;
+  }
+
+  .wb-notice[data-tone="warn"] {
+    background: var(--pf-warn-tint);
+  }
+
+  .wb-notice[data-tone="warn"] > strong {
+    color: var(--pf-warn);
+  }
+
+  .wb-notice[data-tone="bad"] {
+    background: var(--pf-bad-tint);
+  }
+
+  .wb-notice[data-tone="bad"] > strong {
+    color: var(--pf-bad);
+  }
+
+  .wb-notice[data-tone="ok"] {
+    background: var(--pf-ok-tint);
+  }
+
+  .wb-notice[data-tone="ok"] > strong {
+    color: var(--pf-ok);
+  }
+
+  /* Buttons: full pills, fill shifts in 160ms, press scales to 0.98 */
+  .wb-btn {
+    display: inline-flex;
+    height: 36px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    padding-inline: 16px;
+    color: var(--pf-text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+    user-select: none;
+    transition:
+      background-color var(--pf-dur-feedback) var(--pf-ease),
+      box-shadow var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-btn > svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .wb-btn:hover {
+    background: var(--pf-raised-strong);
+  }
+
+  .wb-btn:active {
+    background: var(--pf-raised-pressed);
+    transform: scale(0.98);
+  }
+
+  .wb-btn-40 {
+    height: 40px;
+    gap: 8px;
+    padding-inline: 18px;
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .wb-btn-40 > svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* The back pill sets its own 10px lead in shell.css; the two rules weigh the same, so it is named here. */
+  .wb-btn-40:has(> svg:first-child):not([data-icon="end"], .wb-back-pill) {
+    padding-left: 14px;
+  }
+
+  /* A trailing icon: 14px after it, and the variant's own side padding before the label */
+  .wb-btn-40:has(> svg:last-child):is([data-icon="end"], :not(:has(> svg:first-child))) {
+    gap: 6px;
+    padding-right: 14px;
+  }
+
+  .wb-btn-38 {
+    height: 38px;
+  }
+
+  .wb-btn-32 {
+    height: 32px;
+    padding-inline: 14px;
+  }
+
+  /* A leading 16px icon sits 10px from the edge; a 14px icon sets 12px itself (07 Slideshow editor, 13 Collections) */
+  .wb-btn-32:has(> svg:first-child):not([data-icon="end"], .wb-btn-block) {
+    padding-left: 10px;
+  }
+
+  .wb-btn-block {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 0%;
+    padding-inline: 12px;
+  }
+
+  .wb-btn-primary {
+    background: var(--pf-action);
+    color: var(--pf-action-fg);
+  }
+
+  /* The 40px primary: 20px beside its label, 14 / 18 around a leading icon */
+  .wb-btn-primary.wb-btn-40:not(.wb-btn-block) {
+    padding-left: 20px;
+  }
+
+  .wb-btn-primary.wb-btn-40:not(.wb-btn-block, :has(> svg)) {
+    padding-right: 20px;
+  }
+
+  .wb-btn-primary:hover {
+    background: var(--pf-action-hover);
+  }
+
+  .wb-btn-primary:active {
+    background: var(--pf-action-pressed);
+  }
+
+  .wb-btn-strong {
+    background: var(--pf-strong);
+    color: var(--pf-strong-fg);
+  }
+
+  .wb-btn-strong:hover {
+    background: var(--pf-strong-hover);
+  }
+
+  .wb-btn-strong:active {
+    background: var(--pf-strong-pressed);
+    color: var(--pf-strong-fg);
+  }
+
+  .wb-btn-outline {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--pf-outline);
+  }
+
+  .wb-btn-outline:hover {
+    background: color-mix(in srgb, var(--pf-text) 8%, transparent);
+  }
+
+  .wb-btn-outline:active {
+    background: color-mix(in srgb, var(--pf-text) 14%, transparent);
+  }
+
+  .wb-btn-danger {
+    background: var(--pf-bad-tint);
+    color: var(--pf-bad);
+  }
+
+  .wb-btn-danger:hover {
+    background: color-mix(in srgb, var(--pf-bad) 22%, var(--pf-bad-tint));
+  }
+
+  .wb-btn-danger:active {
+    background: color-mix(in srgb, var(--pf-bad) 30%, var(--pf-bad-tint));
+  }
+
+  .wb-btn-link {
+    height: 32px;
+    background: transparent;
+    padding-inline: 10px;
+    color: var(--pf-text-secondary);
+    text-decoration: underline 1px;
+    text-underline-position: from-font;
+  }
+
+  .wb-btn-link:hover,
+  .wb-btn-link:active {
+    background: transparent;
+    color: var(--pf-text);
+  }
+
+  .wb-btn:disabled,
+  .wb-btn[aria-disabled="true"] {
+    cursor: not-allowed;
+    background: var(--pf-raised);
+    box-shadow: none;
+    color: var(--pf-disabled-fg);
+    transform: none;
+    transition: none;
+  }
+
+  .wb-btn-link:disabled,
+  .wb-btn-link[aria-disabled="true"] {
+    background: transparent;
+  }
+
+  /* The primary keeps a readable disabled fill: on a white panel the raised fill disappears. */
+  .wb-btn-primary:disabled,
+  .wb-btn-primary[aria-disabled="true"] {
+    background: var(--pf-action-disabled);
+    color: var(--pf-action-disabled-fg);
+  }
+
+  /* Round icon buttons */
+  .wb-icon-btn {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    color: var(--pf-text);
+    transition:
+      background-color var(--pf-dur-feedback) var(--pf-ease),
+      color var(--pf-dur-feedback) var(--pf-ease),
+      transform var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-icon-btn > svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .wb-icon-btn:hover {
+    background: var(--pf-raised-strong);
+  }
+
+  .wb-icon-btn:active {
+    background: var(--pf-raised-pressed);
+    transform: scale(0.98);
+  }
+
+  .wb-icon-btn-40 {
+    width: 40px;
+    height: 40px;
+  }
+
+  .wb-icon-btn-40 > svg,
+  .wb-icon-btn-28 > svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .wb-icon-btn-30 {
+    width: 30px;
+    height: 30px;
+  }
+
+  .wb-icon-btn-30 > svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wb-icon-btn-28 {
+    width: 28px;
+    height: 28px;
+  }
+
+  .wb-icon-btn-strong {
+    background: var(--pf-strong);
+    color: var(--pf-strong-fg);
+  }
+
+  .wb-icon-btn-strong:hover {
+    background: var(--pf-strong-hover);
+  }
+
+  .wb-icon-btn-strong:active {
+    background: var(--pf-strong-pressed);
+  }
+
+  .wb-icon-btn-outline {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--pf-strong);
+    color: var(--pf-text-secondary);
+  }
+
+  .wb-icon-btn-ghost {
+    background: transparent;
+    color: var(--pf-text-muted);
+  }
+
+  .wb-icon-btn-ghost > svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .wb-icon-btn-ghost:hover {
+    background: var(--pf-raised);
+    color: var(--pf-text);
+  }
+
+  .wb-icon-btn:disabled,
+  .wb-icon-btn[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+    transition: none;
+  }
+
+  /* Segmented control: raised pill bed, the active segment steps up */
+  .wb-segmented {
+    display: inline-flex;
+    height: 36px;
+    max-width: 100%;
+    flex-shrink: 0;
+    gap: 2px;
+    overflow-x: auto;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    padding: 3px;
+    scrollbar-width: none;
+  }
+
+  .wb-segmented-block {
+    display: flex;
+  }
+
+  /* A pill row that scrolls sideways reads as scrollable: the overflowing edge fades over 16px and
+     items settle on a snap point clear of the fade, with 4px more for a focus ring. */
+  .wb-segmented,
+  .wb-scroll-fade {
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 20px;
+  }
+
+  /* Snapping would pull a row back after keyboard focus brought a control into view, so it rests
+     while focus is inside. */
+  :is(.wb-segmented, .wb-scroll-fade):has(:focus-visible) {
+    scroll-snap-type: none;
+  }
+
+  /* A focused control scrolls clear of the block fades too: 16px, or 24px on the deep cut, plus the ring. */
+  .wb-scroll-fade-y {
+    scroll-padding-block: 20px;
+  }
+
+  .wb-scroll-fade-y.wb-scroll-fade-deep {
+    scroll-padding-block: 28px;
+  }
+
+  /*
+   * Focus Ring Rule. A scroller or a masked box clips at its own edge, so one that holds controls and
+   * has no padding of its own takes 4px of ring room and gives it back to the layout.
+   */
+  .wb-ring-room {
+    margin: -4px;
+    padding: 4px;
+  }
+
+  /* A masked scroller that is a tab stop itself (nothing focusable inside): the mask would cut a ring
+     drawn outside its box, so the ring sits inside. */
+  :is(.wb-scroll-fade, .wb-scroll-fade-y, .wb-scroll-fade-from-xl):focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* A text bed or media element that is a tab stop itself: its wrapper, which no mask touches, draws the ring. */
+  .wb-ring-host:has(> :focus-visible) {
+    outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
+  }
+
+  .wb-ring-host > :focus-visible {
+    outline: none;
+  }
+
+  /* A control whose own children would cover an inset ring (a video, a thumbnail on its own layer)
+     draws the ring on an overlay above them. */
+  .wb-ring-over {
+    position: relative;
+  }
+
+  .wb-ring-over:focus-visible {
+    outline: none;
+  }
+
+  .wb-ring-over:focus-visible::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px var(--pf-ember);
+    content: "";
+    pointer-events: none;
+  }
+
+  :is(.wb-segmented, .wb-scroll-fade) > * {
+    scroll-snap-align: start;
+  }
+
+  /*
+   * Scroll Cut Rule. Each scroller masks its two edges by --wb-fade-start and --wb-fade-end, which
+   * rest at 0. A scroll timeline drives them where the engine has one. Where it has none,
+   * ScrollFadeFallback sets them from the scroll position, reading the axis and depth declared here.
+   */
+
+  /* The same cue for a block that scrolls down inside a fixed-height column. */
+  .wb-scroll-fade-y {
+    --wb-fade-axis: block;
+    --wb-fade-size: 16px;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--wb-fade-start),
+      #000 calc(100% - var(--wb-fade-end)),
+      transparent
+    );
+  }
+
+  /* A body that scrolls over controls takes the deeper 24px cut so a control is never sliced
+     by a hard edge. */
+  .wb-scroll-fade-deep {
+    --wb-fade-size: 24px;
+    scroll-padding-block: 28px;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .wb-scroll-fade-y {
+      animation: wb-scroll-fade linear both;
+      animation-timeline: scroll(self block);
+    }
+
+    .wb-scroll-fade-deep {
+      animation-name: wb-scroll-fade-deep;
+    }
+  }
+
+  /* A bar pinned to the viewport bottom below 1280: the page fades out over the 24px above it, so
+     what it cuts reads as scroll. The fade leaves over the last 24px of the page, where the bar
+     comes to rest in flow, and never shows on a page that does not scroll. Set --wb-stuck-fade-color to the bar's own fill. */
+  @media (max-width: 1279.98px) {
+    .wb-stuck-fade::before {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: -24px;
+      z-index: -1;
+      height: 36px;
+      background: linear-gradient(to bottom, transparent, var(--wb-stuck-fade-color, var(--pf-panel)) 24px);
+      opacity: var(--wb-stuck-fade-opacity, 0);
+      pointer-events: none;
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (max-width: 1279.98px) {
+      .wb-stuck-fade::before {
+        animation: wb-stuck-fade-out linear both;
+        animation-timeline: scroll(root block);
+        animation-range: calc(100% - 24px) 100%;
+      }
+    }
+  }
+
+  .wb-segmented,
+  .wb-scroll-fade {
+    --wb-fade-axis: inline;
+    --wb-fade-size: 16px;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--wb-fade-start),
+      #000 calc(100% - var(--wb-fade-end)),
+      transparent
+    );
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .wb-segmented,
+    .wb-scroll-fade {
+      animation: wb-scroll-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    /* A column that only scrolls on its own from 1280 (the job inspector) takes the deep cut there. */
+    .wb-scroll-fade-from-xl {
+      --wb-fade-axis: block;
+      --wb-fade-size: 24px;
+      scroll-padding-block: 28px;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        #000 var(--wb-fade-start),
+        #000 calc(100% - var(--wb-fade-end)),
+        transparent
+      );
+    }
+
+    /* A sideways rail that turns into a column from 1280 fades along the block axis there. */
+    .wb-scroll-fade-xl-y {
+      --wb-fade-axis: block;
+      scroll-padding-block: 20px;
+      scroll-snap-type: none;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        #000 var(--wb-fade-start),
+        #000 calc(100% - var(--wb-fade-end)),
+        transparent
+      );
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (min-width: 1280px) {
+      .wb-scroll-fade-from-xl {
+        animation: wb-scroll-fade-deep linear both;
+        animation-timeline: scroll(self block);
+      }
+
+      .wb-scroll-fade-xl-y {
+        animation-timeline: scroll(self block);
+      }
+    }
+  }
+
+  .wb-segment {
+    display: inline-flex;
+    height: 30px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: transparent;
+    padding-inline: 14px;
+    color: var(--pf-text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+    transition:
+      background-color var(--pf-dur-state) var(--pf-ease),
+      color var(--pf-dur-state) var(--pf-ease),
+      box-shadow var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .wb-segmented-block > .wb-segment {
+    flex: 1 1 0%;
+    padding-inline: 8px;
+  }
+
+  .wb-segment[data-icon="true"] {
+    width: 36px;
+    padding-inline: 0;
+  }
+
+  .wb-segment > svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wb-segment:hover {
+    color: var(--pf-text);
+  }
+
+  /* The bed clips at its 3px padding, so the ring sits 1px out and stays whole. It is drawn above the
+     raised neighbour, whose fill would cover the adjoining side. */
+  .wb-segment:focus-visible {
+    z-index: 1;
+    outline-offset: 1px;
+  }
+
+  .wb-segment[aria-selected="true"],
+  .wb-segment[aria-pressed="true"],
+  .wb-segment[aria-checked="true"],
+  .wb-segment[aria-current="true"],
+  .wb-segment[aria-current="page"],
+  .wb-segment[data-active="true"] {
+    background: var(--pf-segment);
+    box-shadow: var(--pf-segment-shadow);
+    color: var(--pf-text);
+    font-weight: 600;
+  }
+
+  .wb-segment-count {
+    color: var(--pf-warn);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Choosable chips and option rows: ember ring when chosen */
+  .wb-chip {
+    display: inline-flex;
+    height: 36px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-raised);
+    padding-inline: 14px;
+    color: var(--pf-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+    transition:
+      background-color var(--pf-dur-feedback) var(--pf-ease),
+      box-shadow var(--pf-dur-feedback) var(--pf-ease),
+      color var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-chip:hover {
+    background: var(--pf-raised-strong);
+  }
+
+  .wb-chip > svg {
+    display: none;
+    width: 16px;
+    height: 16px;
+    margin-left: -4px;
+  }
+
+  .wb-chip[aria-pressed="true"],
+  .wb-chip[aria-checked="true"],
+  .wb-chip[aria-selected="true"],
+  .wb-chip[data-chosen="true"] {
+    background: var(--pf-ember-wash);
+    box-shadow: inset 0 0 0 2px var(--pf-ember);
+    color: var(--pf-ember-text);
+    font-weight: 600;
+  }
+
+  .wb-chip[aria-pressed="true"] > svg,
+  .wb-chip[aria-checked="true"] > svg,
+  .wb-chip[aria-selected="true"] > svg,
+  .wb-chip[data-chosen="true"] > svg {
+    display: block;
+    animation: wb-check-in var(--pf-dur-feedback) var(--pf-ease) both;
+  }
+
+  .wb-chip:disabled {
+    cursor: not-allowed;
+    color: var(--pf-disabled-fg);
+  }
+
+  .wb-option {
+    display: flex;
+    min-height: 60px;
+    width: 100%;
+    cursor: pointer;
+    align-items: center;
+    gap: 14px;
+    border: 0;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    padding: 10px 16px;
+    color: var(--pf-text);
+    font-size: 14px;
+    line-height: 20px;
+    text-align: left;
+    transition: box-shadow var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-option[aria-pressed="true"],
+  .wb-option[aria-checked="true"],
+  .wb-option[aria-selected="true"],
+  .wb-option[data-chosen="true"] {
+    box-shadow: inset 0 0 0 2px var(--pf-ember);
+  }
+
+  .wb-radio {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--pf-radius-pill);
+    box-shadow: inset 0 0 0 1.5px var(--pf-outline);
+    color: transparent;
+  }
+
+  .wb-radio > svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  [aria-pressed="true"] > .wb-radio,
+  [aria-checked="true"] > .wb-radio,
+  [aria-selected="true"] > .wb-radio,
+  [data-chosen="true"] > .wb-radio,
+  .wb-radio[data-chosen="true"] {
+    background: var(--pf-ember);
+    box-shadow: none;
+    color: var(--pf-on-ember);
+  }
+
+  /* Fields: 12/600 label over a 42px input on the raised colour */
+  .wb-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .wb-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    border: 0;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    padding-inline: 14px;
+    color: var(--pf-text);
+    font-size: 14px;
+    line-height: 18px;
+    outline: none;
+    box-shadow: 0 0 0 0 var(--pf-ember);
+    transition: box-shadow var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  textarea.wb-input {
+    height: auto;
+    min-height: 96px;
+    padding-block: 12px;
+    line-height: 21px;
+    resize: vertical;
+  }
+
+  select.wb-input {
+    appearance: none;
+    background-image: var(--pf-select-chevron);
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    padding-right: 34px;
+  }
+
+  .wb-input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 1;
+  }
+
+  .wb-input:focus,
+  .wb-input:focus-visible,
+  .wb-input-wrap:focus-within {
+    box-shadow: 0 0 0 2px var(--pf-ember);
+    outline: none;
+  }
+
+  .wb-input[aria-invalid="true"],
+  .wb-input-wrap[data-invalid="true"] {
+    box-shadow: 0 0 0 2px var(--pf-bad);
+  }
+
+  .wb-input:disabled {
+    cursor: not-allowed;
+    color: var(--pf-disabled-fg);
+  }
+
+  .wb-input[data-size="36"] {
+    height: 36px;
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .wb-input[data-mono="true"] {
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  /* An input with a leading icon: the wrapper carries the bed and the ring */
+  .wb-input-wrap {
+    display: flex;
+    min-width: 0;
+    height: 42px;
+    align-items: center;
+    gap: 8px;
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    padding-inline: 14px;
+    color: var(--pf-text-muted);
+    box-shadow: 0 0 0 0 var(--pf-ember);
+    transition: box-shadow var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-input-wrap[data-size="36"] {
+    height: 36px;
+  }
+
+  .wb-input-wrap > svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .wb-input-wrap > input {
+    min-width: 0;
+    flex: 1 1 0%;
+    border: 0;
+    background: transparent;
+    color: var(--pf-text);
+    font-size: 13px;
+    line-height: 16px;
+    outline: none;
+  }
+
+  .wb-input-wrap > input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 1;
+  }
+
+  .wb-field-error {
+    color: var(--pf-bad);
+    font-size: 13px;
+    line-height: 16px;
+    animation: wb-fade-in var(--pf-dur-state) var(--pf-ease) both;
+  }
+
+  /* Toggle: on is ember */
+  .wb-toggle {
+    position: relative;
+    display: inline-flex;
+    width: 48px;
+    height: 28px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-track);
+    box-shadow: inset 0 0 0 1px var(--pf-track-edge);
+    padding: 3px;
+    transition:
+      background-color var(--pf-dur-state) var(--pf-ease),
+      box-shadow var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .wb-toggle::after {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-thumb);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+    content: "";
+    transition: transform var(--pf-dur-state) var(--pf-ease);
+  }
+
+  .wb-toggle[aria-checked="true"],
+  .wb-toggle[data-checked="true"] {
+    background: var(--pf-ember);
+    box-shadow: inset 0 0 0 1px transparent;
+  }
+
+  .wb-toggle[aria-checked="true"]::after,
+  .wb-toggle[data-checked="true"]::after {
+    transform: translateX(20px);
+  }
+
+  .wb-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* Range: a 6px track on the track token, the filled part and the thumb ring on the range fill */
+  .wb-range {
+    --wb-range-fill: 0%;
+    width: 100%;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    appearance: none;
+    border-radius: var(--pf-radius-pill);
+    background: transparent;
+  }
+
+  /* Keyboard focus rings the thumb, around its own 2px edge, not the whole track. */
+  .wb-range:focus-visible {
+    outline: none;
+  }
+
+  .wb-range:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
+  }
+
+  .wb-range:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--pf-ember);
+    outline-offset: 2px;
+  }
+
+  .wb-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: var(--pf-radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--pf-range-fill) var(--wb-range-fill),
+      var(--pf-track) var(--wb-range-fill)
+    );
+  }
+
+  .wb-range::-moz-range-track {
+    height: 6px;
+    border-radius: var(--pf-radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--pf-range-fill) var(--wb-range-fill),
+      var(--pf-track) var(--wb-range-fill)
+    );
+  }
+
+  .wb-range::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    appearance: none;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-thumb);
+    box-shadow: 0 0 0 2px var(--pf-range-fill);
+  }
+
+  .wb-range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: var(--pf-thumb);
+    box-shadow: 0 0 0 2px var(--pf-range-fill);
+  }
+
+  .wb-range:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* Floating dock and popover surface */
+  .wb-float {
+    border-radius: var(--pf-radius-tile);
+    background: var(--pf-raised);
+    box-shadow: var(--pf-float-shadow);
+    color: var(--pf-text);
+  }
+
+  .wb-dock {
+    display: flex;
+    min-height: 48px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    border-radius: 24px;
+    background: var(--pf-raised);
+    box-shadow: var(--pf-float-shadow);
+    padding: 6px 6px 6px 18px;
+    animation: wb-rise-in var(--pf-dur-enter) var(--pf-ease) both;
+  }
+
+  .wb-dock[data-leaving="true"] {
+    animation: wb-drop-out var(--pf-dur-exit) var(--pf-ease) both;
+    pointer-events: none;
+  }
+
+  .wb-dock-count {
+    padding-left: 4px;
+    color: var(--pf-text);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+  }
+
+  .wb-dock .wb-btn-strong:hover {
+    background: var(--pf-strong-on-raised-hover);
+  }
+
+  /*
+   * A surface drawn on the raised fill, such as a confirm dialog. Everything inside steps up one
+   * fill, so a quiet pill, an input or a disabled control still reads against it. The steps are
+   * resolved on the surface and handed to its children, because a custom property cannot read the
+   * value it replaces on the same element.
+   */
+  .wb-on-raised {
+    --wb-step-raised: var(--pf-strong);
+    --wb-step-raised-strong: var(--pf-strong-hover);
+    --wb-step-raised-pressed: var(--pf-strong-pressed);
+  }
+
+  /* Light needs the wider step: raised-strong on raised is 1.11:1 there. */
+  .dark .wb-on-raised {
+    --wb-step-raised: var(--pf-raised-strong);
+    --wb-step-raised-strong: var(--pf-strong);
+    --wb-step-raised-pressed: var(--pf-raised-strong);
+  }
+
+  .wb-on-raised > * {
+    --pf-raised: var(--wb-step-raised);
+    --pf-raised-strong: var(--wb-step-raised-strong);
+    --pf-raised-pressed: var(--wb-step-raised-pressed);
+  }
+
+  /* The muted placeholder is under 4:1 on the stepped fill. */
+  .wb-on-raised .wb-input::placeholder {
+    color: var(--pf-text-secondary);
+  }
+
+  /*
+   * Overlay motion, shared by ui/dialog, alert-dialog, sheet, menus, selects, popovers and tooltips.
+   * base-ui sets data-starting-style on mount and data-ending-style before unmount, and waits for the
+   * transition. Only opacity and the individual transform properties move: 220ms in, 160ms out.
+   */
+  .wb-overlay-backdrop,
+  .wb-overlay-dialog,
+  .wb-overlay-sheet {
+    transition-duration: var(--pf-dur-enter);
+    transition-timing-function: var(--pf-ease);
+  }
+
+  .wb-overlay-backdrop {
+    transition-property: opacity;
+  }
+
+  .wb-overlay-dialog {
+    transition-property: opacity, scale;
+  }
+
+  .wb-overlay-sheet {
+    transition-property: opacity, translate;
+  }
+
+  .wb-overlay-menu {
+    transition-property: opacity, translate;
+    transition-duration: var(--pf-dur-exit);
+    transition-timing-function: var(--pf-ease);
+  }
+
+  :is(.wb-overlay-backdrop, .wb-overlay-dialog, .wb-overlay-sheet)[data-ending-style] {
+    transition-duration: var(--pf-dur-exit);
+  }
+
+  :is(.wb-overlay-backdrop, .wb-overlay-dialog, .wb-overlay-sheet, .wb-overlay-menu):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    opacity: 0;
+  }
+
+  .wb-overlay-dialog:is([data-starting-style], [data-ending-style]) {
+    scale: 0.98;
+  }
+
+  .wb-overlay-sheet[data-side="right"]:is([data-starting-style], [data-ending-style]) {
+    translate: 100% 0;
+  }
+
+  .wb-overlay-sheet[data-side="left"]:is([data-starting-style], [data-ending-style]) {
+    translate: -100% 0;
+  }
+
+  .wb-overlay-sheet[data-side="top"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 -100%;
+  }
+
+  .wb-overlay-sheet[data-side="bottom"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 100%;
+  }
+
+  .wb-overlay-menu:is([data-starting-style], [data-ending-style]) {
+    translate: 0 -4px;
+  }
+
+  .wb-overlay-menu[data-side="top"]:is([data-starting-style], [data-ending-style]) {
+    translate: 0 4px;
+  }
+
+  .wb-overlay-menu:is([data-side="left"], [data-side="inline-start"]):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    translate: 4px 0;
+  }
+
+  .wb-overlay-menu:is([data-side="right"], [data-side="inline-end"]):is(
+      [data-starting-style],
+      [data-ending-style]
+    ) {
+    translate: -4px 0;
+  }
+
+  /* A select laid over its trigger only fades: a slide would move the chosen item off the trigger. */
+  .wb-overlay-menu[data-align-trigger="true"]:is([data-starting-style], [data-ending-style]) {
+    translate: none;
+  }
+
+  /*
+   * Toast: bottom centre of the content area. A bar pinned to the viewport bottom publishes its
+   * reach as --wb-toast-bottom (publishPinnedBar), and the toast sits above it.
+   */
+  .wb-toast-region {
+    position: fixed;
+    right: 16px;
+    bottom: calc(var(--wb-toast-bottom, 0px) + max(16px, env(safe-area-inset-bottom)));
+    left: 16px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .wb-toast {
+    display: flex;
+    width: min(420px, 100%);
+    min-height: 48px;
+    align-items: center;
+    gap: 10px;
+    border-radius: 24px;
+    background: var(--pf-raised);
+    box-shadow: var(--pf-float-shadow);
+    padding: 8px 8px 8px 14px;
+    color: var(--pf-text);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    pointer-events: auto;
+    animation: wb-rise-in var(--pf-dur-enter) var(--pf-ease) both;
+  }
+
+  .wb-toast[data-leaving="true"] {
+    animation: wb-drop-out var(--pf-dur-exit) var(--pf-ease) both;
+  }
+
+  .wb-toast-message {
+    min-width: 0;
+    flex: 1 1 0%;
+  }
+
+  .wb-toast-action {
+    display: inline-flex;
+    height: 32px;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-items: center;
+    border: 0;
+    border-radius: var(--pf-radius-pill);
+    background: color-mix(in srgb, var(--pf-text) 14%, transparent);
+    padding-inline: 14px;
+    color: var(--pf-text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 16px;
+    transition: background-color var(--pf-dur-feedback) var(--pf-ease);
+  }
+
+  .wb-toast-action:hover {
+    background: color-mix(in srgb, var(--pf-text) 22%, transparent);
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-toast-region {
+    left: calc(var(--pf-rail-w) + env(safe-area-inset-left) + 16px);
+  }
+}
+
+@media (min-width: 1280px) {
+  html:not([data-sidebar-collapsed="true"]) .wb-toast-region {
+    left: calc(
+      var(--pf-page-pad) + var(--pf-sidebar-w) + var(--pf-gap) + env(safe-area-inset-left) + 16px
+    );
+  }
+}
+
+/*
+ * Coarse pointers: every control gets a hit area of at least 44px without changing what is drawn. The
+ * area is a centred pseudo-element, so layout does not move. --wb-hit-w and --wb-hit-h cap it where
+ * neighbours sit closer than 44px apart, so two areas split the gap instead of overlapping.
+ * Ad-hoc controls opt in with .wb-hit. The toggle uses ::before because ::after is its thumb.
+ */
+@media (pointer: coarse) {
+  /* A control that is already positioned (a corner badge, a sheet close button) keeps its own position:
+     it is a containing block for the hit area as it stands. */
+  :where(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, .wb-toggle, button.wb-step, .wb-hit, label.wb-input-wrap):not(
+      [class*="absolute"],
+      [class*="fixed"],
+      [class*="sticky"]
+    ) {
+    position: relative;
+  }
+
+  :is(.wb-btn, .wb-icon-btn, .wb-segment, .wb-chip, button.wb-step, .wb-tile-check, .wb-hit, label.wb-input-wrap)::after,
+  .wb-toggle::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--wb-hit-w, 44px));
+    height: max(100%, var(--wb-hit-h, 44px));
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  /*
+   * The segmented bed scrolls sideways, so it clips anything taller than itself. On touch the box grows
+   * to 44px while the drawn bed stays 36px: the fill is clipped to the content box, the radius pair
+   * keeps that fill a pill, and the negative margin returns the 8px to the layout. A bed that sets its
+   * own height with a utility (h-10, h-[42px]) is left alone: those are already 40px or taller. A bed
+   * that sets it only below 640 (max-sm:h-auto) is left alone there and grows from 640.
+   */
+  .wb-segmented:not([class^="h-"], [class*=" h-"], [class*="max-sm:h-"]) {
+    --wb-seg-pad: 4px;
+    height: 44px;
+    align-items: center;
+    margin-block: -4px;
+    border-radius: 18px / 22px;
+    background-clip: content-box;
+    padding: 4px 0;
+
+    > :first-child {
+      margin-left: 3px;
+    }
+
+    > :last-child {
+      margin-right: 3px;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .wb-segmented[class*="max-sm:h-"]:not([class^="h-"], [class*=" h-"]) {
+      --wb-seg-pad: 4px;
+      height: 44px;
+      align-items: center;
+      margin-block: -4px;
+      border-radius: 18px / 22px;
+      background-clip: content-box;
+      padding: 4px 0;
+
+      > :first-child {
+        margin-left: 3px;
+      }
+
+      > :last-child {
+        margin-right: 3px;
+      }
+    }
+  }
+
+  /* Segments touch their neighbours and sit in a bed that scrolls: the area stays inside the segment's
+     own width and grows only into the bed's block padding (3px, or 4px on a grown bed), so it never
+     adds scroll range. */
+  .wb-segmented {
+    overflow-y: hidden;
+  }
+
+  .wb-segmented .wb-segment::after {
+    width: 100%;
+    height: min(44px, calc(100% + 2 * var(--wb-seg-pad, 3px)));
+  }
+
+  /* Chips and 32px pills stack with 8px gaps: 40px splits that gap exactly. */
+  .wb-chip,
+  .wb-btn-32 {
+    --wb-hit-h: 40px;
+  }
+}
+
+@layer components {
+  /* Toggle at the 44 by 26 size drawn on 04 Clone and 06 Slideshow */
+  .wb-toggle[data-size="26"] {
+    width: 44px;
+    height: 26px;
+  }
+
+  .wb-toggle[data-size="26"]::after {
+    width: 20px;
+    height: 20px;
+  }
+
+  .wb-toggle[data-size="26"]:is([aria-checked="true"], [data-checked="true"])::after {
+    transform: translateX(18px);
+  }
+}

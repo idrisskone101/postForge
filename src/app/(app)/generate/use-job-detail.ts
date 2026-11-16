@@ -66,6 +66,7 @@ export function useJobDetail() {
     return () => window.clearTimeout(timeoutId);
   }, [feedback]);
 
+  const dismissFeedback = useCallback(() => setFeedback(null), []);
   const showError = (message: string) => setFeedback({ tone: "error", message });
   const showSuccess = (message: string) =>
     setFeedback({ tone: "success", message });
@@ -223,6 +224,7 @@ export function useJobDetail() {
     preserveSubject,
     setPreserveSubject,
     feedback,
+    dismissFeedback,
     showSuccess,
     handleRetry,
     handleDownload,

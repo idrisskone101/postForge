@@ -15,11 +15,11 @@ export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function statusLabel(record: AutomationRecord) {
   if (record.status === "active") {
     return isAutomationExecutionEnabled(record)
-      ? "Local schedule active"
-      : "Local schedule off";
+      ? "Active"
+      : "Schedule off";
   }
   return record.status === "paused"
-    ? "Local schedule paused"
+    ? "Paused"
     : record.status === "needs_connection"
       ? "Needs connection"
       : record.status[0].toUpperCase() + record.status.slice(1);
@@ -29,10 +29,11 @@ export function localDateKey(date: Date) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
-export function currentWeekDates(now = new Date()) {
+/** Monday to Sunday of the week `weeksAhead` weeks after the one that holds `now`. */
+export function weekDatesFrom(now: Date, weeksAhead = 0) {
   const mondayOffset = (now.getDay() + 6) % 7;
   const monday = new Date(now);
-  monday.setDate(now.getDate() - mondayOffset);
+  monday.setDate(now.getDate() - mondayOffset + weeksAhead * 7);
   monday.setHours(12, 0, 0, 0);
   return DAYS.map((_, index) => {
     const date = new Date(monday);

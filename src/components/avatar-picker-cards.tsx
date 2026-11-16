@@ -1,9 +1,12 @@
 "use client";
 
-import { AlertCircle, FileJson, Image as ImageIcon, Loader2, Sparkles, Trash2, Upload, X } from "lucide-react";
+import { useId, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
+import { FileJson, Trash2 } from "lucide-react";
 import { getAvatarIdentityPackStatusLabel, getAvatarOriginLabel } from "@/lib/avatar-workflow";
 import type { Avatar } from "@/lib/avatar-picker-model";
 import { cn } from "@/lib/utils";
+import { buttonClass, Icon, IconButton, Skeleton } from "@/components/workbench";
 
 export function AvatarActionErrorNotice({
   message,
@@ -13,90 +16,126 @@ export function AvatarActionErrorNotice({
   onDismiss: () => void;
 }) {
   return (
-    <div
-      role="alert"
-      className="flex min-w-0 items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive"
-    >
-      <AlertCircle className="mt-0.5 size-4 shrink-0" />
-      <p className="min-w-0 flex-1 break-words text-xs leading-5 [overflow-wrap:anywhere]">{message}</p>
-      <button
-        type="button"
+    <div role="alert" className="wb-notice wb-fade-in items-start py-2 pr-2" data-tone="bad">
+      <p className="min-w-0 flex-1 break-words pt-[5px] text-bad [overflow-wrap:anywhere]">
+        {message}
+      </p>
+      <IconButton
+        icon="x"
+        label="Dismiss avatar error"
+        variant="ghost"
+        size={28}
         onClick={onDismiss}
-        className="grid size-6 shrink-0 place-items-center rounded-md transition-colors hover:bg-destructive/10"
-        aria-label="Dismiss avatar error"
-      >
-        <X className="size-3.5" />
-      </button>
+        className="shrink-0 text-bad"
+      />
     </div>
   );
 }
 
 export function AvatarCreationCard({
   isUploading,
+  takeFocus,
   onUpload,
   onGenerate,
   onGallery,
   onImport,
 }: {
   isUploading: boolean;
+  /** True once after the list comes back from a mode: the toggle then takes focus as it mounts. */
+  takeFocus?: () => boolean;
   onUpload: () => void;
   onGenerate: () => void;
   onGallery: () => void;
   onImport: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const menuId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const firstActionRef = useRef<HTMLButtonElement>(null);
+
+  // The control that had focus is hidden in the same commit, so focus moves before the browser can
+  // drop it to the page.
+  const openChooser = () => {
+    flushSync(() => setOpen(true));
+    firstActionRef.current?.focus();
+  };
+  const closeChooser = () => {
+    flushSync(() => setOpen(false));
+    toggleRef.current?.focus();
+  };
+
+  const actions: { key: string; label: string; icon: ReactNode; onClick: () => void; disabled?: boolean }[] = [
+    {
+      key: "upload",
+      label: isUploading ? "Uploading" : "Upload",
+      icon: <Icon name="upload" size={16} />,
+      onClick: onUpload,
+      disabled: isUploading,
+    },
+    { key: "generate", label: "Generate", icon: <Icon name="generate" size={16} />, onClick: onGenerate },
+    { key: "import", label: "Import", icon: <FileJson className="size-4" strokeWidth={1.5} />, onClick: onImport },
+    { key: "gallery", label: "Gallery", icon: <Icon name="gallery" size={16} />, onClick: onGallery },
+  ];
+
   return (
-    <div className="flex min-h-[168px] flex-col rounded-xl border border-dashed border-border bg-muted/25 p-2.5">
-      <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-lg bg-muted/35 text-center">
-        <Sparkles className="size-6 text-muted-foreground/70" />
-        <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          New Avatar
-        </p>
-        <p className="mt-1 text-[12px] leading-4 text-muted-foreground">
-          Upload, generate, import, or choose from gallery.
-        </p>
-      </div>
+    <div
+      data-avatar-creation="true"
+      className="w-full shrink-0 rounded-lg bg-raised sm:h-[216px] sm:w-[132px] [[data-avatar-stacked]_&]:h-auto [[data-avatar-stacked]_&]:w-full"
+      onKeyDown={(event) => {
+        if (open && event.key === "Escape") {
+          event.stopPropagation();
+          closeChooser();
+        }
+      }}
+    >
+      <button
+        ref={(toggle) => {
+          toggleRef.current = toggle;
+          if (toggle && takeFocus?.()) toggle.focus({ preventScroll: true });
+        }}
+        type="button"
+        hidden={open}
+        aria-expanded={open}
+        aria-controls={menuId}
+        onClick={openChooser}
+        className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-0 bg-transparent text-fg sm:h-full sm:flex-col sm:gap-2.5 [[data-avatar-stacked]_&]:h-14 [[data-avatar-stacked]_&]:flex-row [[data-avatar-stacked]_&]:gap-3"
+      >
+        <span className="grid size-9 place-items-center rounded-full bg-strong text-strong-fg">
+          <Icon name="plus" size={16} />
+        </span>
+        <span className="text-[13px] font-semibold leading-4">New character</span>
+      </button>
 
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          data-avatar-action="upload"
-          onClick={onUpload}
-          disabled={isUploading}
-          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97] disabled:opacity-50"
-        >
-          {isUploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          <span className="text-[13px] font-semibold">Upload</span>
-        </button>
-
-        <button
-          type="button"
-          data-avatar-action="generate"
-          onClick={onGenerate}
-          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-blue hover:text-accent-blue active:scale-[0.97]"
-        >
-          <Sparkles className="size-4" />
-          <span className="text-[13px] font-semibold">Generate</span>
-        </button>
-
-        <button
-          type="button"
-          data-avatar-action="import"
-          onClick={onImport}
-          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-green hover:text-accent-green active:scale-[0.97]"
-        >
-          <FileJson className="size-4" />
-          <span className="text-[13px] font-semibold">Import</span>
-        </button>
-
-        <button
-          type="button"
-          data-avatar-action="gallery"
-          onClick={onGallery}
-          className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted/35 px-2 text-muted-foreground transition-all hover:border-accent-coral hover:text-accent-coral active:scale-[0.97]"
-        >
-          <ImageIcon className="size-4" />
-          <span className="text-[13px] font-semibold">Gallery</span>
-        </button>
+      <div id={menuId} hidden={!open} className="wb-fade-in flex flex-col gap-1.5 p-2.5">
+        {/* The 132px card leaves the title row 112px. The ghost button overhangs the padding by its
+            own 6px glyph inset, so its glyph ends on the content edge and the title keeps one line. */}
+        <div className="flex items-center justify-between">
+          <span className="whitespace-nowrap text-[13px] font-semibold leading-4 text-fg">New character</span>
+          <IconButton
+            icon="x"
+            label="Close new character options"
+            variant="ghost"
+            size={28}
+            onClick={closeChooser}
+            className="-mr-1.5"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-1 [[data-avatar-stacked]_&]:grid-cols-2">
+          {actions.map((action, index) => (
+            <button
+              key={action.key}
+              ref={index === 0 ? firstActionRef : undefined}
+              type="button"
+              data-avatar-action={action.key}
+              onClick={action.onClick}
+              disabled={action.disabled}
+              className={cn(buttonClass("outline", 32, true), "justify-start")}
+            >
+              {action.icon}
+              {action.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -113,76 +152,71 @@ export type AvatarOptionView = {
 export function AvatarOptionCard({ option }: { option: AvatarOptionView }) {
   const { avatar, label, isSelected, onSelect, onDelete } = option;
   const originLabel = getAvatarOriginLabel(avatar.origin);
-  const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack);
+  const identityStatusLabel = getAvatarIdentityPackStatusLabel(avatar.identityPack, originLabel ? "short" : "full");
+  const identityFailed = avatar.identityPack?.status === "failed";
+  let metaTone = isSelected ? "text-fg-secondary" : "text-fg-muted";
+  if (identityFailed) metaTone = "text-bad";
 
   return (
-    <div
-      className={cn(
-        "group relative overflow-hidden rounded-xl border bg-muted/35 p-2.5 shadow-[var(--pf-shadow-2xs)] transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-        isSelected
-          ? "border-accent-green shadow-[0_0_0_2px_rgba(22,163,74,0.16),var(--pf-shadow-sm)]"
-          : "border-border hover:-translate-y-0.5 hover:border-accent-green/45 hover:bg-muted/55 hover:shadow-[var(--pf-shadow-md)]"
-      )}
-    >
+    <div data-avatar-option={avatar.id} className="group/avatar relative flex min-w-0 snap-start flex-col gap-2 last:-mr-1 last:pr-1">
       <button
         type="button"
+        aria-label={label}
+        aria-pressed={isSelected}
         onClick={onSelect}
-        className="block w-full text-left"
+        data-selected={isSelected ? "true" : undefined}
+        className="wb-tile h-[216px] w-full cursor-pointer border-0 p-0"
       >
-        <div className="aspect-[4/3] overflow-hidden rounded-lg bg-black">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/api/avatars/${avatar.id}`}
-            alt={label}
-            className="size-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
-          />
-        </div>
-
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <p className="min-w-0 truncate text-xs font-semibold text-foreground">
-            {label}
-          </p>
-          <span
-            className={cn(
-              "shrink-0 rounded-full px-2 py-1 text-[12px] font-bold uppercase tracking-widest",
-              isSelected
-                ? "bg-accent-green/15 text-accent-green"
-                : "bg-muted/40 text-muted-foreground"
-            )}
-          >
-            {isSelected ? "Active" : "Select"}
-          </span>
-        </div>
-
-        <div className="mt-2 flex min-h-5 flex-wrap items-center gap-1.5">
-          {originLabel && (
-            <span className="rounded-full border border-border bg-muted/45 px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-              {originLabel}
-            </span>
-          )}
-          <span
-            className={cn(
-              "rounded-full border px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
-              avatar.identityPack?.status === "completed"
-                ? "border-accent-green/25 bg-accent-green/10 text-accent-green"
-                : avatar.identityPack?.status === "failed"
-                  ? "border-destructive/30 bg-destructive/10 text-destructive"
-                  : "border-accent-blue/25 bg-accent-blue/10 text-accent-blue"
-            )}
-          >
-            {identityStatusLabel}
-          </span>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/api/avatars/${avatar.id}`} alt="" loading="lazy" decoding="async" />
+        <span className="wb-tile-check" aria-hidden="true">
+          <Icon name="check" size={12} strokeWidth={3} />
+        </span>
       </button>
 
       <button
         type="button"
         onClick={onDelete}
-        className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full bg-black/65 text-white opacity-0 transition-opacity hover:bg-destructive focus:opacity-100 group-hover:opacity-100"
         aria-label={`Delete ${label}`}
+        title={`Delete ${label}`}
+        className="wb-hit absolute right-2 top-2 z-[3] grid size-7 cursor-pointer place-items-center rounded-full border-0 bg-[var(--pf-scrim)] text-[var(--pf-on-media)] opacity-0 transition-[opacity,background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-bad focus-visible:opacity-100 group-hover/avatar:opacity-100 [@media(hover:none)]:opacity-100"
       >
-        <Trash2 className="size-3.5" />
+        <Trash2 className="size-3.5" strokeWidth={1.5} />
       </button>
+
+      <div className="flex min-w-0 flex-col">
+        <p
+          className={cn(
+            "text-[14px] leading-[18px] text-fg [overflow-wrap:anywhere]",
+            isSelected ? "font-bold" : "font-semibold"
+          )}
+        >
+          {label}
+        </p>
+        <p className={cn("flex flex-wrap gap-x-[11px] overflow-hidden text-[12px] leading-4", metaTone)}>
+          {originLabel ? <span>{originLabel}</span> : null}
+          <span className={originLabel ? WRAPPING_DOT : undefined}>{identityStatusLabel}</span>
+        </p>
+      </div>
     </div>
   );
 }
+
+export function AvatarPickerSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="Loading avatars" className="flex flex-col gap-3 sm:flex-row [[data-avatar-stacked]_&]:flex-col">
+      <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="flex flex-col gap-2">
+            <Skeleton shape="tile" className="h-[216px]" />
+            <Skeleton className="w-3/5" />
+          </div>
+        ))}
+      </div>
+      <Skeleton shape="tile" className="h-14 w-full sm:h-[216px] sm:w-[132px] [[data-avatar-stacked]_&]:h-14 [[data-avatar-stacked]_&]:w-full" />
+    </div>
+  );
+}
+
+/** A middle dot that sits in the gap before its item and is clipped away when the item wraps to a new line. */
+const WRAPPING_DOT = "relative before:absolute before:left-[-7px] before:content-['·']";

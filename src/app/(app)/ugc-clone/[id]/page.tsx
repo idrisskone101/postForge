@@ -2,13 +2,18 @@
 
 import { useCallback, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 import {
   CloneOutputReviewDetail,
   type CloneOutputReviewJob,
   type CloneOutputReviewOutput,
 } from "@/components/clone-output-review-detail";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  EmptyState,
+  Skeleton,
+  buttonClass,
+} from "@/components/workbench";
+import { CloneOutputHeader } from "./clone-output-header";
 import { usePolling } from "@/lib/hooks/use-polling";
 import { apiGet, apiPost } from "@/lib/api/client";
 import { downloadFile } from "@/lib/utils/download";
@@ -38,6 +43,8 @@ export default function UGCCloneJobPage() {
     tone: "success" | "error";
     message: string;
   } | null>(null);
+
+  const dismissFeedback = useCallback(() => setActionFeedback(null), []);
 
   const fetchJob = useCallback(
     () => apiGet<CloneOutputReviewJob>(`/api/jobs/${id}`),
@@ -141,30 +148,26 @@ export default function UGCCloneJobPage() {
     }
   };
 
-  if (isLoading && !job) {
-    return (
-      <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="w-full min-w-0 max-w-md text-center">
-          <h1 className="pf-section-title">Loading clone job</h1>
-          <p className="mt-2 text-[12px] leading-5 text-muted-foreground">
-            Fetching outputs and review status.
-          </p>
-          <Skeleton className="mx-auto mt-5 h-10 w-40 rounded-lg" />
-        </div>
-      </div>
-    );
-  }
+  if (isLoading && !job) return <CloneOutputLoading />;
 
   if (error && !job) {
+    const notFound = error.message === "Job not found";
     return (
-      <div className="pf-content-viewport grid min-w-0 place-items-center px-5">
-        <div className="pf-card w-full min-w-0 max-w-md p-6 text-center">
-          <AlertCircle className="mx-auto size-5 text-destructive" />
-          <h1 className="mt-4 pf-section-title">Clone job could not load</h1>
-          <p className="mt-2 min-w-0 break-words text-[12px] leading-5 text-muted-foreground [overflow-wrap:anywhere]">
-            {error.message}
-          </p>
-        </div>
+      <div className="pf-content-viewport flex min-w-0 flex-col gap-3">
+        <CloneOutputHeader />
+        <section className="wb-panel flex-1 justify-center">
+          <EmptyState
+            icon={notFound ? "clone" : "alert"}
+            tone={notFound ? "empty" : "error"}
+            title={notFound ? "Clone job not found" : "Clone job could not load"}
+            detail={notFound ? undefined : error.message}
+            className="min-w-0 [overflow-wrap:anywhere]"
+          >
+            <Link href="/jobs" className={buttonClass("strong")}>
+              Open jobs
+            </Link>
+          </EmptyState>
+        </section>
       </div>
     );
   }
@@ -180,20 +183,40 @@ export default function UGCCloneJobPage() {
   };
 
   return (
-    <CloneOutputReviewDetail
-      review={{
-        job: displayedJob,
-        isRetrying,
-        pendingReviewStatus,
-        handoffState,
-        actionFeedback,
-        onBack: () => router.back(),
-        onRetry: handleRetry,
-        onDownload: handleDownload,
-        onReviewStatusChange: handleReviewStatusChange,
-        onHandoff: handleHandoff,
-        onNewClone: () => router.push("/ugc-clone"),
-      }}
-    />
+    <div className="pf-content-viewport flex min-w-0 flex-col gap-3">
+      <CloneOutputHeader />
+      <CloneOutputReviewDetail
+        review={{
+          job: displayedJob,
+          isRetrying,
+          pendingReviewStatus,
+          handoffState,
+          actionFeedback,
+          onDismissFeedback: dismissFeedback,
+          onRetry: handleRetry,
+          onDownload: handleDownload,
+          onReviewStatusChange: handleReviewStatusChange,
+          onHandoff: handleHandoff,
+          onNewClone: () => router.push("/ugc-clone"),
+        }}
+      />
+    </div>
+  );
+}
+
+function CloneOutputLoading() {
+  return (
+    <div className="pf-content-viewport flex min-w-0 flex-col gap-3" aria-busy="true">
+      <CloneOutputHeader />
+      <div className="flex min-w-0 flex-1 flex-col gap-3 xl:flex-row">
+        <Skeleton shape="panel" className="block min-h-[420px] flex-1 xl:min-h-[682px]" />
+        <div className="grid content-start gap-3 lg:grid-cols-2 xl:flex xl:w-[380px] xl:shrink-0 xl:flex-col">
+          <Skeleton shape="panel" className="block h-[178px]" />
+          <Skeleton shape="panel" className="block h-[188px]" />
+          <Skeleton shape="panel" className="block h-[128px]" />
+          <Skeleton shape="panel" className="block h-[120px]" />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -34,7 +34,7 @@ export function AvatarImportMode({ handoff }: { handoff: AvatarCreatedHandoff })
       setImportRawJson(rawJson);
       setImportAvatarName(getDefaultAvatarImportName(rawJson));
     } catch {
-      setImportGenerationError("Avatar Profile JSON file could not be read.");
+      setImportGenerationError("Avatar profile JSON file could not be read.");
     }
   };
 
@@ -138,7 +138,7 @@ export function AvatarImportMode({ handoff }: { handoff: AvatarCreatedHandoff })
       onCreated(result.avatar);
     } catch (err) {
       console.error("Failed to accept imported avatar candidate:", err);
-      setImportGenerationError("Candidate could not be saved as an Avatar.");
+      setImportGenerationError("Candidate could not be saved as an avatar.");
     }
   };
 
@@ -176,10 +176,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
       if (typeof reader.result === "string") {
         resolve(reader.result);
       } else {
-        reject(new Error("Seed Reference Image could not be read."));
+        reject(new Error("Seed reference image could not be read."));
       }
     };
-    reader.onerror = () => reject(reader.error ?? new Error("Seed Reference Image could not be read."));
+    reader.onerror = () => reject(reader.error ?? new Error("Seed reference image could not be read."));
     reader.readAsDataURL(file);
   });
 }

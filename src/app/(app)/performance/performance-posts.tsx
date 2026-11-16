@@ -1,319 +1,211 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import {
-  ExternalLink,
-  FileSpreadsheet,
-  Grid2X2,
-  List,
-  Search,
-} from "lucide-react";
-import { SocialProviderIcon } from "@/components/social-provider-icon";
-import { formatDate, formatMetric } from "@/lib/performance/format";
-import {
-  accountHandle,
-  postEngagementRate,
-  type PerformancePostView,
-} from "@/lib/performance/metrics";
+import { useState, type ReactNode } from "react";
+import { BrowserLocalText } from "@/components/browser-local-text";
+import { Button } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
+import { Icon } from "@/components/workbench/icon";
+import { Panel } from "@/components/workbench/panel";
+import { Segmented } from "@/components/workbench/segmented";
+import type { PerformancePostView } from "@/lib/performance/metrics";
 import { cn } from "@/lib/utils";
-import { performanceVariant, POSTS_COLUMN_HEADERS } from "./performance-helpers";
-import type { PerformancePostsModel } from "./types";
+import { metricText, postSubline, shortDate } from "./performance-helpers";
+import type { PerformancePostsModel, PerformancePostsView } from "./types";
 
 export function PerformancePosts({ model }: { model: PerformancePostsModel }) {
-  const { posts, view, search, youtubeRawOnly, tableFrameClassName, onSearch, onView } =
-    model;
-  const headers = POSTS_COLUMN_HEADERS[performanceVariant(youtubeRawOnly)];
-
+  const { posts, view, search, onSearch, onView } = model;
   return (
-    <section className="pf-card mt-3 p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <h2 className="pf-section-title">What is working</h2>
-        <div className="flex flex-col gap-2 min-[420px]:flex-row">
-          <label className="flex h-8 items-center gap-1.5 rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-surface)] px-2">
-            <Search className="size-3 text-[var(--pf-muted)]" />
-            <span className="sr-only">Search posts</span>
-            <input
-              value={search}
-              onChange={(event) => onSearch(event.target.value)}
-              className="min-w-0 flex-1 bg-transparent text-[12px] text-[var(--pf-ink)] outline-none sm:w-28"
-              placeholder="Search posts"
-            />
-          </label>
-          <div
-            className="max-sm:hidden rounded-[8px] bg-[var(--pf-active)] p-1 sm:flex"
-            aria-label="Performance post layout"
-          >
-            <button
-              type="button"
-              aria-label="Table view"
-              aria-pressed={view === "table"}
-              onClick={() => onView("table")}
-              className={cn(
-                "grid size-6 place-items-center rounded-[6px] text-[var(--pf-muted)] transition-colors duration-[180ms]",
-                view === "table" &&
-                  "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-              )}
-            >
-              <List className="size-3" />
-            </button>
-            <button
-              type="button"
-              aria-label="Grid view"
-              aria-pressed={view === "grid"}
-              onClick={() => onView("grid")}
-              className={cn(
-                "grid size-6 place-items-center rounded-[6px] text-[var(--pf-muted)] transition-colors duration-[180ms]",
-                view === "grid" &&
-                  "bg-[var(--pf-surface)] text-[var(--pf-ink)] shadow-[var(--pf-shadow-2xs)]"
-              )}
-            >
-              <Grid2X2 className="size-3" />
-            </button>
-          </div>
-        </div>
+    <Panel pad="none" className="min-w-0 gap-0 p-5" aria-labelledby="performance-posts-title">
+      <div className="flex flex-wrap items-center gap-3 pb-3">
+        <h2 id="performance-posts-title" className="wb-panel-title min-w-0 flex-1">
+          Top posts
+        </h2>
+        <label className="wb-input-wrap w-[240px] rounded-[var(--pf-radius-pill)] px-3 [&>svg]:size-4 max-md:order-last max-md:w-full" data-size="36">
+          <Icon name="search" size={16} />
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => onSearch(event.target.value)}
+            placeholder="Search posts"
+            aria-label="Search posts"
+          />
+        </label>
+        <Segmented
+          label="Post layout"
+          value={view}
+          onChange={onView}
+          options={VIEW_OPTIONS}
+          className="h-9 gap-0 p-[3px] max-md:hidden [&>.wb-segment[aria-pressed=false]:not(:hover)]:text-fg-muted [&_svg]:size-4"
+        />
       </div>
-
-      {posts.length === 0 ? (
-        <div className="grid min-h-52 place-items-center text-center">
-          <div>
-            <Search className="mx-auto size-6 text-[var(--pf-muted)]" />
-            <p className="mt-2 text-[12px] text-[var(--pf-muted)]">
-              No posts match this source, date range, and search.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="mt-3 grid gap-2 sm:hidden">
-            {posts.map((post, index) => (
-              <PerformanceGridCard
-                key={post.id}
-                post={post}
-                index={index}
-                youtubeRawOnly={youtubeRawOnly}
-              />
-            ))}
-          </div>
-          {view === "table" ? (
-            <div className={tableFrameClassName}>
-              <div className="min-w-[700px]">
-                <div className="max-md:hidden grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] gap-3 border-b border-[var(--pf-border)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--pf-muted)] md:grid">
-                  <span>Post</span>
-                  <span>Published</span>
-                  <span>Views</span>
-                  <span>{headers.engagement}</span>
-                  <span>{headers.trailing}</span>
-                </div>
-                <div className="divide-y divide-[var(--pf-border)]">
-                  {posts.map((post, index) => (
-                    <PerformanceTableRow
-                      key={post.id}
-                      post={post}
-                      index={index}
-                      youtubeRawOnly={youtubeRawOnly}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-3 max-sm:hidden gap-2 sm:grid sm:grid-cols-2 xl:grid-cols-4">
-              {posts.map((post, index) => (
-                <PerformanceGridCard
-                  key={post.id}
-                  post={post}
-                  index={index}
-                  youtubeRawOnly={youtubeRawOnly}
-                />
-              ))}
-            </div>
-          )}
-        </>
-      )}
-    </section>
-  );
-}
-
-function PerformanceTableRow({
-  post,
-  index,
-  youtubeRawOnly,
-}: {
-  post: PerformancePostView;
-  index: number;
-  youtubeRawOnly: boolean;
-}) {
-  const rate = youtubeRawOnly ? null : postEngagementRate(post);
-  return (
-    <article className="grid min-h-16 grid-cols-[2fr_.75fr_.7fr_.8fr_.7fr] items-center gap-3 px-4 py-3 text-[12px] text-[var(--pf-muted)] transition-colors duration-[180ms] hover:bg-[var(--pf-active)]">
-      <div className="grid min-w-0 grid-cols-[40px_minmax(0,1fr)] items-center gap-3">
-        <PostThumbnail post={post} index={index} compact />
-        <div className="min-w-0">
-          <b className="block truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-            {post.title}
-          </b>
-          <span className="mt-0.5 flex items-center gap-1 text-[11px] text-[var(--pf-muted)]">
-            {post.provider ? (
-              <SocialProviderIcon provider={post.provider} className="size-3" />
-            ) : null}
-            {post.provider ? accountHandle(post.accountUsername) : "Local CSV"}
-            {post.permalink ? (
-              <Link
-                href={post.permalink}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open ${post.title}`}
-              >
-                <ExternalLink className="size-2.5" />
-              </Link>
-            ) : null}
-          </span>
-        </div>
-      </div>
-      <span>{formatDate(post.publishedAt)}</span>
-      <b
-        className={cn(
-          "tabular-nums text-[var(--pf-ink)]",
-          post.metrics.views === null && "font-normal text-[var(--pf-muted)]"
-        )}
-      >
-        {formatMetric(post.metrics.views)}
-      </b>
-      <span
-        className={cn(
-          "tabular-nums",
-          likesOrRateUnavailable(youtubeRawOnly, post.metrics.likes, rate) &&
-            "text-[var(--pf-muted)]"
-        )}
-      >
-        {likesOrRateLabel(youtubeRawOnly, post.metrics.likes, rate)}
-      </span>
-      <span
-        className={cn(
-          "tabular-nums",
-          (youtubeRawOnly ? post.metrics.comments : post.metrics.saves) ===
-            null && "text-[var(--pf-muted)]"
-        )}
-      >
-        {formatMetric(
-          youtubeRawOnly ? post.metrics.comments : post.metrics.saves
-        )}
-      </span>
-    </article>
-  );
-}
-
-function PerformanceGridCard({
-  post,
-  index,
-  youtubeRawOnly,
-}: {
-  post: PerformancePostView;
-  index: number;
-  youtubeRawOnly: boolean;
-}) {
-  return (
-    <article className="rounded-[8px] border border-[var(--pf-border)] p-2">
-      <PostThumbnail post={post} index={index} />
-      <div className="mt-2 flex items-center gap-1">
-        {post.provider ? (
-          <SocialProviderIcon provider={post.provider} className="size-3.5" />
-        ) : null}
-        <span className="truncate text-[11px] text-[var(--pf-muted)]">
-          {post.provider ? accountHandle(post.accountUsername) : "Local CSV"}
-        </span>
-      </div>
-      <h3 className="mt-1.5 truncate text-[13px] font-semibold text-[var(--pf-ink)]">
-        {post.title}
-      </h3>
-      <p className="mt-1 text-[11px] text-[var(--pf-muted)]">
-        {youtubeRawOnly
-          ? `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.likes)} likes · ${formatMetric(post.metrics.comments)} comments`
-          : `${formatMetric(post.metrics.views)} views · ${formatMetric(post.metrics.saves)} saves`}
-      </p>
-      {post.permalink ? (
-        <Link
-          href={post.permalink}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-link)]"
-        >
-          Open post <ExternalLink className="size-2.5" />
-        </Link>
+      {posts.length === 0 ? <PostsEmpty model={model} /> : null}
+      {posts.length > 0 ? (
+        <PostsTable model={model} className={view === "grid" ? "md:hidden" : undefined} />
       ) : null}
-    </article>
+      {posts.length > 0 && view === "grid" ? <PostsGrid model={model} /> : null}
+    </Panel>
   );
 }
 
-function PostThumbnail({
-  post,
-  index,
-  compact = false,
-}: {
-  post: PerformancePostView;
-  index: number;
-  compact?: boolean;
-}) {
-  const [thumbnailFailed, setThumbnailFailed] = useState(false);
-  const showThumbnail = Boolean(post.thumbnailUrl) && !thumbnailFailed;
+function PostsEmpty({ model }: { model: PerformancePostsModel }) {
+  if (model.search.trim()) {
+    return (
+      <EmptyState icon="search" title="No posts match this search" className="min-h-60">
+        <Button variant="strong" onClick={() => model.onSearch("")}>
+          Clear search
+        </Button>
+      </EmptyState>
+    );
+  }
+  return (
+    <EmptyState icon="performance" title={`No posts in the last ${model.range} days`} className="min-h-60">
+      {model.range < 90 ? (
+        <Button variant="strong" onClick={() => model.onRange(90)}>
+          Show 90 days
+        </Button>
+      ) : null}
+    </EmptyState>
+  );
+}
+
+function PostsTable({ model, className }: { model: PerformancePostsModel; className?: string }) {
+  return (
+    <div className={cn("flex min-w-0 flex-col", className)}>
+      <div className="wb-table-head max-md:hidden" aria-hidden="true">
+        <span className="min-w-0 flex-1">Post</span>
+        <span className="w-[76px] shrink-0">Published</span>
+        {METRIC_COLUMNS.map((column) => (
+          <span
+            key={column.key}
+            className={cn("shrink-0 text-right", column.width, column.wide && "max-lg:hidden")}
+          >
+            {column.label}
+          </span>
+        ))}
+      </div>
+      <ul className="flex min-w-0 flex-col">
+        {model.posts.map((post) => (
+          <PostRow key={post.id} post={post} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PostRow({ post }: { post: PerformancePostView }) {
+  return (
+    <li className="wb-row min-h-14 transition-[background-color] duration-[var(--pf-dur-feedback)] ease-pf hover:bg-raised/60 max-md:gap-3 max-md:px-0 md:h-14">
+      <span className="flex min-w-0 flex-1 items-center gap-3">
+        <PostThumb post={post} className="size-9" />
+        <span className="flex min-w-0 flex-col">
+          <PostTitle post={post} />
+          <span className="truncate text-[12px] leading-4 text-fg-muted">
+            {postSubline(post)}
+            <BrowserLocalText className="md:hidden">{` - ${shortDate(post.publishedAt)}`}</BrowserLocalText>
+          </span>
+        </span>
+      </span>
+      <BrowserLocalText className="wb-mono w-[76px] shrink-0 whitespace-nowrap text-fg-secondary max-md:hidden">
+        {shortDate(post.publishedAt)}
+      </BrowserLocalText>
+      {METRIC_COLUMNS.map((column) => {
+        const value = post.metrics[column.key];
+        return (
+          <span
+            key={column.key}
+            className={cn(
+              "wb-mono shrink-0 whitespace-nowrap text-right",
+              column.width,
+              column.strong && "font-semibold",
+              value === null ? "text-fg-muted" : "text-fg",
+              column.wide && "max-lg:hidden",
+              !column.strong && "max-md:hidden",
+              column.strong && "max-md:w-auto",
+            )}
+          >
+            {metricText(value)}
+          </span>
+        );
+      })}
+    </li>
+  );
+}
+
+function PostTitle({ post }: { post: PerformancePostView }) {
+  const className = "truncate text-[14px] font-semibold leading-[19px] text-fg";
+  if (!post.permalink) return <span className={className}>{post.title}</span>;
+  return (
+    <a
+      href={post.permalink}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(className, "rounded-sm underline-offset-[3px] hover:underline")}
+    >
+      {post.title}
+    </a>
+  );
+}
+
+function PostsGrid({ model }: { model: PerformancePostsModel }) {
+  return (
+    <ul className="grid grid-cols-3 gap-3 max-md:hidden xl:grid-cols-5">
+      {model.posts.map((post) => (
+        <li key={post.id} className="wb-tile-cell min-w-0">
+          <PostThumb post={post} className="h-[236px] w-full max-xl:h-[200px]" />
+          <span className="flex min-w-0 flex-col">
+            <PostTitle post={post} />
+            <span className="wb-tile-meta truncate">
+              {tileMeta(post, model.youtubeRawOnly)}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PostThumb({ post, className }: { post: PerformancePostView; className: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = failed ? null : post.thumbnailUrl;
   return (
     <span
       className={cn(
-        "relative grid shrink-0 place-items-center overflow-hidden rounded-[8px] border border-[var(--pf-border)] bg-[var(--pf-active)] text-[var(--pf-muted)]",
-        compact ? "size-10" : "h-32 w-full"
+        "block shrink-0 overflow-hidden rounded-lg bg-media",
+        className,
       )}
     >
-      {showThumbnail ? (
-        // eslint-disable-next-line @next/next/no-img-element
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- provider-hosted thumbnail on a third-party CDN
         <img
-          src={post.thumbnailUrl ?? undefined}
-          alt={`Thumbnail for ${post.title}`}
-          onError={() => setThumbnailFailed(true)}
+          src={src}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
           className="size-full object-cover"
         />
-      ) : (
-        <ThumbnailFallback post={post} index={index} compact={compact} />
-      )}
+      ) : null}
     </span>
   );
 }
 
-function likesOrRateUnavailable(
-  youtubeRawOnly: boolean,
-  likes: number | null,
-  rate: number | null
-) {
-  return (youtubeRawOnly ? likes : rate) === null;
-}
+const VIEW_OPTIONS = [
+  { value: "table", label: <Icon name="list" size={16} />, ariaLabel: "Table view" },
+  { value: "grid", label: <Icon name="grid" size={16} />, ariaLabel: "Grid view" },
+] as const satisfies readonly { value: PerformancePostsView; label: ReactNode; ariaLabel: string }[];
 
-function likesOrRateLabel(
-  youtubeRawOnly: boolean,
-  likes: number | null,
-  rate: number | null
-) {
-  if (youtubeRawOnly) return formatMetric(likes);
-  if (rate === null) return "—";
-  return `${rate.toFixed(1)}%`;
-}
+const METRIC_COLUMNS = [
+  { key: "views", label: "Views", width: "w-[72px]", strong: true, wide: false },
+  { key: "likes", label: "Likes", width: "w-[72px]", strong: false, wide: false },
+  { key: "comments", label: "Comments", width: "w-[84px]", strong: false, wide: false },
+  { key: "shares", label: "Shares", width: "w-[92px]", strong: false, wide: true },
+  { key: "saves", label: "Saves", width: "w-[92px]", strong: false, wide: true },
+] as const;
 
-function ThumbnailFallback({
-  post,
-  index,
-  compact,
-}: {
-  post: PerformancePostView;
-  index: number;
-  compact: boolean;
-}) {
-  if (post.provider) {
-    return (
-      <SocialProviderIcon
-        provider={post.provider}
-        className={compact ? "size-4" : "size-7"}
-      />
-    );
-  }
-  if (compact) return `0${index + 1}`;
-  return <FileSpreadsheet className="size-6" />;
+function tileMeta(post: PerformancePostView, youtube: boolean) {
+  const second = youtube
+    ? { value: post.metrics.likes, noun: "likes" }
+    : { value: post.metrics.saves, noun: "saves" };
+  const views = `${metricText(post.metrics.views)} views`;
+  return second.value === null ? views : `${views} - ${metricText(second.value)} ${second.noun}`;
 }

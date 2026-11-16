@@ -1,11 +1,7 @@
 import type { MouseEvent } from "react";
-import {
-  CheckCircle2,
-  ChevronDown,
-  Loader2,
-  Trash2,
-  Video,
-} from "lucide-react";
+import { Button, CountBadge, Icon } from "@/components/workbench";
+import { MediaImage } from "@/components/workbench/media-image";
+import { cloneSourceTitle } from "@/components/clone/clone-source-title";
 import { cn } from "@/lib/utils";
 
 export interface SavedTikTokSource {
@@ -55,107 +51,110 @@ export function TikTokSavedSources({
   }
 
   return (
-    <div>
+    <div className="flex min-w-0 flex-col gap-2.5">
       <button
         type="button"
         onClick={onToggle}
-        className="group flex w-full items-center gap-3 rounded-lg border border-border bg-muted/25 px-3 py-2 transition-colors hover:bg-muted/45"
+        aria-expanded={showSavedSources}
+        aria-controls="saved-source-grid"
+        className="wb-hit flex w-fit items-center gap-2 rounded-sm"
       >
-        <Video className="size-3.5 text-muted-foreground" />
-        <span className="flex flex-1 items-center gap-1.5 text-left text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground">
-          Saved sources ({savedSources.length})
-          <ChevronDown
-            className={cn(
-              "size-3 transition-transform",
-              showSavedSources && "rotate-180"
-            )}
-          />
-        </span>
+        <span className="wb-label">Saved sources</span>
+        <CountBadge count={savedSources.length} />
+        <Icon
+          name="chevron-down"
+          size={14}
+          className={cn(
+            "text-fg-muted transition-transform duration-[200ms] ease-pf",
+            showSavedSources && "rotate-180"
+          )}
+        />
       </button>
 
       {showSavedSources && (
         <div
+          id="saved-source-grid"
           data-saved-source-grid="true"
-          className="mt-2 grid max-h-[360px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 overflow-y-auto pr-1"
+          className="wb-scroll-fade-y wb-scroll-fade-deep -m-1.5 grid max-h-[524px] grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-x-3 gap-y-4 overflow-y-auto p-1.5 scroll-py-[30px]"
         >
-          {savedSources.map((source) => {
+          {savedSources.map((source, index) => {
             const isSelected = selectedSourceId === source.id;
+            const name = cloneSourceTitle(source.label) ?? { title: "Saved source", shortId: null };
             return (
-              <div
-                key={source.id}
-                className={cn(
-                  "group relative overflow-hidden rounded-lg border-2 transition-all",
-                  isSelected
-                    ? "border-accent-green shadow-[0_0_0_2px_rgba(22,163,74,0.2)]"
-                    : "border-border hover:border-accent-green/50"
-                )}
-              >
+              <div key={source.id} className="wb-tile-cell group relative">
                 <button
                   type="button"
                   aria-pressed={isSelected}
                   onClick={() => onSelect(source)}
-                  className="block w-full text-left focus:outline-none focus:ring-2 focus:ring-accent-green/40 focus:ring-offset-2 focus:ring-offset-background"
+                  className="flex min-w-0 flex-col gap-2 rounded-lg text-left outline-offset-4"
                 >
-                  <div className="aspect-[9/16] bg-muted flex items-center justify-center">
+                  <span
+                    className={cn(
+                      "relative block aspect-[9/16] w-full overflow-hidden rounded-lg bg-media",
+                      "transition-shadow duration-[160ms] ease-pf",
+                      isSelected && "shadow-[0_0_0_2px_var(--pf-panel),0_0_0_4px_var(--pf-ember)]"
+                    )}
+                  >
                     {source.thumbnailPath ? (
-                      <img
+                      <MediaImage
                         src={`/api/ugc-clone/sources/${source.id}/thumbnail`}
-                        alt={source.label}
+                        alt=""
+                        // The first thumbnail is the largest image in the first viewport.
+                        loading={index === 0 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "auto"}
                         className="size-full object-cover"
                       />
-                    ) : (
-                      <Video className="size-6 text-muted-foreground" />
+                    ) : null}
+                    {isSelected && (
+                      <span className="absolute left-2 top-2 grid size-[22px] animate-[wb-check-in_160ms_var(--pf-ease)] place-items-center rounded-full bg-ember text-[var(--pf-on-ember)]">
+                        <Icon name="check" size={12} strokeWidth={3} />
+                      </span>
                     )}
-                  </div>
-
-                  <div className="absolute top-1.5 right-1.5 rounded-full bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-white">
-                    {formatDuration(source.durationSec)}
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
-                    <p className="text-[11px] font-medium text-white truncate">
-                      {source.label}
-                    </p>
-                    {source.fileSizeBytes && (
-                      <p className="text-[11px] text-white/60">
-                        {formatSize(source.fileSizeBytes)}
-                      </p>
-                    )}
-                  </div>
-
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-accent-green/10 flex items-center justify-center">
-                      <CheckCircle2 className="size-6 text-accent-green drop-shadow-lg" />
-                    </div>
-                  )}
+                    <span className="wb-tile-duration">{formatDuration(source.durationSec)}</span>
+                  </span>
+                  <span className="flex min-w-0 flex-col">
+                    <span
+                      className={cn(
+                        "text-[13px] leading-4 text-fg [overflow-wrap:anywhere]",
+                        isSelected ? "font-bold" : "font-semibold"
+                      )}
+                    >
+                      {name.title}
+                    </span>
+                    {name.shortId || source.fileSizeBytes ? (
+                      <span
+                        className={cn(
+                          "flex min-w-0 items-center gap-2 text-[12px] leading-4",
+                          isSelected ? "text-fg-secondary" : "text-fg-muted"
+                        )}
+                      >
+                        {name.shortId ? <span className="wb-mono">{name.shortId}</span> : null}
+                        {source.fileSizeBytes ? (
+                          <span className="truncate">{formatSize(source.fileSizeBytes)}</span>
+                        ) : null}
+                      </span>
+                    ) : null}
+                  </span>
                 </button>
 
                 <button
-                  type="button"
-                  onClick={(e) => onDelete(source.id, e)}
-                  disabled={deletingId === source.id}
-                  className="absolute top-1.5 left-1.5 z-10 size-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/80"
-                  aria-label={`Delete ${source.label}`}
-                >
-                  {deletingId === source.id ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    <Trash2 className="size-3" />
-                  )}
-                </button>
+                    type="button"
+                    onClick={(e) => onDelete(source.id, e)}
+                    disabled={deletingId === source.id}
+                    aria-label={`Delete ${source.label}`}
+                    className="wb-hit absolute right-2 top-2 inline-flex h-7 items-center rounded-full bg-[var(--pf-scrim)] px-2.5 text-[12px] font-semibold leading-4 text-[var(--pf-on-media)] opacity-0 transition-opacity duration-[160ms] ease-pf focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-100 pointer-coarse:opacity-100"
+                  >
+                    {deletingId === source.id ? "Deleting" : "Delete"}
+                  </button>
               </div>
             );
           })}
           {sourcesNextCursor && (
-            <button
-              type="button"
-              onClick={onLoadMore}
-              disabled={isLoadingMoreSources}
-              className="col-span-full inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[12px] font-semibold transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isLoadingMoreSources && <Loader2 className="size-3.5 animate-spin" />}
-              {isLoadingMoreSources ? "Loading..." : "Load more"}
-            </button>
+            <div className="col-span-full flex justify-center">
+              <Button size={32} onClick={onLoadMore} disabled={isLoadingMoreSources}>
+                {isLoadingMoreSources ? "Loading" : "Load more"}
+              </Button>
+            </div>
           )}
         </div>
       )}
@@ -165,9 +164,8 @@ export function TikTokSavedSources({
 
 
 function formatDuration(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return m > 0 ? `${m}:${s.toString().padStart(2, "0")}` : `${s}s`;
+  const total = Math.round(sec);
+  return `${Math.floor(total / 60)}:${(total % 60).toString().padStart(2, "0")}`;
 }
 
 function formatSize(bytes: number | null) {

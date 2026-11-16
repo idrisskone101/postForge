@@ -53,6 +53,8 @@ export function useGalleryFilterReload({
         })
         .catch((error) => {
           if (requestId !== requestRef.current) return;
+          // The list on screen belongs to the old filter. Clearing it shows the error and Retry in its place.
+          applyPage({ items: [], nextCursor: null, hasMore: false });
           setLoadError(galleryLoadError(error));
         })
         .finally(() => {

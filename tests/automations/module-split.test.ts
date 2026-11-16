@@ -89,9 +89,10 @@ assert.doesNotMatch(
 );
 assert.match(overlaySource, /h-full[^"\n]*max-h-\[860px\][^"\n]*overflow-hidden/);
 assert.match(overlaySource, /pf-safe-overlay/);
-assert.match(
+assert.doesNotMatch(
   sessionSource,
-  /pf-safe-overlay[^"\n]*[\s\S]*?max-h-full[^"\n]*overflow-y-auto/
+  /role="dialog"/,
+  "review is the fourth builder step, not a dialog over the session"
 );
 assert.match(
   overlaySource,
@@ -106,7 +107,7 @@ assert.match(
   readFileSync(new URL("src/app/(app)/automations/new/page.tsx", repoRoot), "utf8"),
   /AutomationBuilderClientLazy/
 );
-assert.match(overlaySource, /<PlaybookPicker picker=\{picker\} \/>/);
+assert.match(overlaySource, /<PlaybookPicker picker=\{exiting\} \/>/);
 assert.match(sessionSource, /<AutomationPlaybookOverlay/);
 assert.doesNotMatch(
   clientSource,

@@ -1,108 +1,115 @@
-"use client";
-
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import { AccountRow } from "./social-account-row";
+import type { PublicIntegrationStatus } from "@/lib/integrations-client";
 import type { SocialProviderContent } from "./social-provider-content";
-import type { ConnectedAccountsModel } from "./types";
 
-export function ConnectedAccounts({ accounts }: { accounts: ConnectedAccountsModel }) {
-  const {
-    status,
-    displayName,
-    busy,
-    canStartOAuth,
-    youtubePolicyConsent,
-    onSync,
-    onDisconnect,
-    onConnect,
-  } = accounts;
+export function SetupDetail({
+  id,
+  open,
+  content,
+}: {
+  id: string;
+  open: boolean;
+  content: SocialProviderContent;
+}) {
   return (
-    <div className="mt-3 grid gap-2">
-      {status.accounts.map((account) => (
-        <AccountRow
-          key={account.account.id}
-          row={{
-            providerStatus: status,
-            displayName,
-            account,
-            busy,
-            onSync,
-            onDisconnect,
-            onReconnect: () =>
-              onConnect(
-                {
-                  ...status,
-                  connected: false,
-                  accounts: [],
-                  accountCount: 0,
-                },
-                youtubePolicyConsent
-              ),
-            canStartOAuth,
-          }}
-        />
+    <div id={id} hidden={!open} className="wb-fade-in rounded-lg bg-raised px-4 py-3.5">
+      <div className="flex flex-col gap-2.5">
+        <span className="wb-label">Server setup</span>
+        <p className="max-w-[68ch] break-words text-[13px] leading-5 text-fg-secondary [overflow-wrap:anywhere]">
+          {content.setup}
+        </p>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <ExternalLink href={content.documentation} strong>
+            Setup documentation
+          </ExternalLink>
+          {content.policyLinks?.map((link) => (
+            <ExternalLink key={link.href} href={link.href}>
+              {link.label}
+            </ExternalLink>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function YouTubeConsent({
+  compliance,
+  needsConsent,
+  consent,
+  onConsentChange,
+}: {
+  compliance: NonNullable<PublicIntegrationStatus["youtubeCompliance"]>;
+  needsConsent: boolean;
+  consent: boolean;
+  onConsentChange: (accepted: boolean) => void;
+}) {
+  return (
+    <div data-youtube-owner-policies className="flex flex-col gap-3 rounded-lg bg-raised px-4 py-3.5">
+      <span className="wb-label">PostForge policies for YouTube API Services</span>
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+        <ExternalLink href={compliance.privacyPolicyUrl} strong>Privacy Policy</ExternalLink>
+        <ExternalLink href={compliance.termsUrl} strong>Terms</ExternalLink>
+        <ExternalLink href={compliance.dataDeletionUrl} strong>Data deletion</ExternalLink>
+      </div>
+      {needsConsent && (
+        <label className="flex cursor-pointer items-start gap-2.5 border-t border-raised-strong pt-3 text-[13px] leading-[18px] text-fg-secondary">
+          <input
+            type="checkbox"
+            aria-label="Accept policies before connecting YouTube"
+            checked={consent}
+            onChange={(event) => onConsentChange(event.currentTarget.checked)}
+            className="mt-px size-[18px] shrink-0 cursor-pointer accent-[var(--pf-ember)]"
+          />
+          <span>
+            I have reviewed and accept PostForge&apos;s Privacy Policy and
+            Terms. I also agree that using YouTube API Services means
+            accepting YouTube&apos;s Terms of Service.
+          </span>
+        </label>
+      )}
+    </div>
+  );
+}
+
+export function PolicyLinks({ links }: { links: NonNullable<SocialProviderContent["policyLinks"]> }) {
+  return (
+    <div className="-mt-1 flex flex-wrap gap-x-4 gap-y-1.5 pb-1">
+      {links.map((link) => (
+        <a
+          key={link.href}
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-sm text-xs font-medium leading-4 text-fg-muted underline-offset-2 transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:text-fg hover:underline"
+        >
+          {link.label}
+        </a>
       ))}
     </div>
   );
 }
 
-export function DisconnectedCopy({
-  content,
-  notConfigured,
-  unavailable,
+function ExternalLink({
+  href,
+  strong = false,
+  children,
 }: {
-  content: SocialProviderContent;
-  notConfigured: boolean;
-  unavailable: boolean;
+  href: string;
+  strong?: boolean;
+  children: string;
 }) {
-  if (notConfigured) {
-    return (
-      <div className="mt-3 rounded-lg border border-dashed border-border bg-[var(--pf-surface)] p-2.5">
-        <b className="block text-[12px] text-muted-foreground">Server setup required</b>
-        <p
-          data-settings-setup="true"
-          data-settings-text={content.setup}
-          className="mt-1 min-w-0"
-        >
-          <span className="sr-only">{content.setup}</span>
-        </p>
-        <Link
-          href={content.documentation}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--pf-link)]"
-        >
-          Setup documentation <ExternalLink className="size-2.5" />
-        </Link>
-        {content.policyLinks && (
-          <div className="mt-2 flex min-w-0 flex-wrap gap-x-3 gap-y-1">
-            {content.policyLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1 break-words text-[11px] font-semibold text-[var(--pf-link)] [overflow-wrap:anywhere]"
-              >
-                {link.label} <ExternalLink className="size-2.5 shrink-0" />
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-  if (unavailable) {
-    return (
-      <p className="mt-3 min-w-0 break-words rounded-lg border border-dashed border-[var(--pf-danger)]/40 bg-[var(--pf-danger)]/10 p-2.5 text-[11px] leading-4 text-[var(--pf-danger)] [overflow-wrap:anywhere]">
-        The integration service did not return this provider. Refresh status before attempting a connection.
-      </p>
-    );
-  }
   return (
-    <p className="mt-3 rounded-lg border border-dashed border-border bg-[var(--pf-surface)] p-2.5 text-[11px] leading-4 text-muted-foreground">
-      OAuth is configured, but no account is connected to this workspace.
-    </p>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={
+        strong
+          ? "rounded-sm text-[13px] font-semibold leading-4 text-fg underline decoration-1 underline-offset-2"
+          : "rounded-sm text-[13px] font-medium leading-4 text-fg-secondary underline-offset-2 transition-colors duration-[var(--pf-dur-feedback)] ease-pf hover:text-fg hover:underline"
+      }
+    >
+      {children}
+    </a>
   );
 }

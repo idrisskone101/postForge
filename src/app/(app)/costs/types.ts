@@ -6,10 +6,20 @@ export type SpendModelStats = {
   cost: number;
 };
 
+export type SpendLogJob = {
+  title: string;
+  href: string;
+  thumbnailSrc: string | null;
+};
+
+export type SpendLogRow = CostLogEntry & { job: SpendLogJob | null };
+
 export type CostsPageClientProps = {
   totalCost: number;
   currentPeriodCost: number;
   changePercent: number;
+  /** Spend in the window before this one; null when nothing was spent before this window. */
+  previousPeriodCost: number | null;
   avgCycleCost: number;
   totalJobs: number;
   topModel: { name: string; cost: number; pct: string } | null;
@@ -19,7 +29,7 @@ export type CostsPageClientProps = {
     image: SpendModelStats;
     video: SpendModelStats;
   };
-  logs: CostLogEntry[];
+  logs: SpendLogRow[];
   logPage: number;
   logTotalCount: number;
   logHasNext: boolean;
@@ -67,6 +77,7 @@ export type SpendDashboardView = {
 export type SpendStatCardsProps = {
   dashboard: CostsPageClientProps;
   view: SpendDashboardView;
+  onEditBudget: () => void;
 };
 
 export type SpendAnalysisGridProps = {
@@ -78,11 +89,14 @@ export type SpendGenerationLogProps = {
   dashboard: CostsPageClientProps;
   view: SpendDashboardView;
   handlers: SpendPageHandlers;
+  exporter: { busy: boolean; run: () => void };
 };
 
+export type SpendLoadState = "loading" | "ready" | "error";
+
 export type SpendBudgetDialogProps = {
-  budgetInput: string;
-  onBudgetInputChange: (value: string) => void;
+  open: boolean;
+  draft: { value: string; onChange: (value: string) => void };
   onClose: () => void;
   onSave: () => void;
 };

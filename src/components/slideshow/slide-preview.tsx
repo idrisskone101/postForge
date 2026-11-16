@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   getSlideshowDimensions,
+  parseSlideshowOverlayBoxes,
+  SLIDESHOW_OVERLAY_BOXES_HEADER,
+  SLIDESHOW_OVERLAY_LAYERS,
+  type SlideshowOverlayBox,
+  type SlideshowOverlayBoxes,
+  type SlideshowOverlayLayer,
   type SlideshowRenderTextSettings,
 } from "@/lib/slideshow/text-overlay";
 
@@ -24,6 +30,7 @@ export function SlidePreview({
   className,
   showCounter,
   counter,
+  focusLayer,
 }: {
   slide: SlideshowSlide;
   aspectRatio: SlideshowAspectRatio;
@@ -32,6 +39,8 @@ export function SlidePreview({
   className?: string;
   showCounter?: boolean;
   counter?: string;
+  /** The copy field that has focus. Only a preview that passes it (the editor stage) draws frames. */
+  focusLayer?: SlideshowOverlayLayer | null;
 }) {
   const { width, height } = getSlideshowDimensions(aspectRatio);
   const displayText = phaseSettings.displayText;
@@ -46,18 +55,25 @@ export function SlidePreview({
     height,
     settings: overlayTextSettings(textSettings),
   });
-  const [fetchedOverlay, setFetchedOverlay] = useState<{
-    key: string;
-    src: string;
-  } | null>(null);
-  const overlaySrc = displayText
-    ? overlaySrcCache.get(overlayKey) ??
-      (fetchedOverlay?.key === overlayKey ? fetchedOverlay.src : null)
+  const [fetchedOverlay, setFetchedOverlay] = useState<
+    (PreviewOverlay & { key: string; slideId: string }) | null
+  >(null);
+  const overlay = displayText
+    ? overlayCache.get(overlayKey) ??
+      (fetchedOverlay?.key === overlayKey ? fetchedOverlay : null)
     : null;
+  const overlaySrc = overlay?.src ?? null;
+  // While the next render of the same slide is on its way the frame keeps its last place, so it
+  // does not blink on every keystroke.
+  const frameBoxes =
+    displayText && focusLayer !== undefined
+      ? overlay?.boxes ??
+        (fetchedOverlay?.slideId === slide.id ? fetchedOverlay.boxes : null)
+      : null;
 
   useEffect(() => {
     if (!displayText) return;
-    if (overlaySrcCache.has(overlayKey)) return;
+    if (overlayCache.has(overlayKey)) return;
 
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
@@ -72,10 +88,15 @@ export function SlidePreview({
           if (!response.ok) return;
           const svg = (await response.text()).trim();
           if (!svg.includes('data-slideshow-text-overlay="true"')) return;
-          const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-          rememberOverlaySrc(overlayKey, src);
+          const fetched = {
+            src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+            boxes: parseSlideshowOverlayBoxes(
+              response.headers.get(SLIDESHOW_OVERLAY_BOXES_HEADER),
+            ),
+          };
+          rememberOverlay(overlayKey, fetched);
           if (!controller.signal.aborted) {
-            setFetchedOverlay({ key: overlayKey, src });
+            setFetchedOverlay({ ...fetched, key: overlayKey, slideId: slide.id });
           }
         } catch (error) {
           if (error instanceof DOMException && error.name === "AbortError") return;
@@ -87,12 +108,12 @@ export function SlidePreview({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [displayText, overlayKey]);
+  }, [displayText, overlayKey, slide.id]);
 
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden rounded-[10px] bg-[#09090B] text-white",
+        "relative isolate overflow-hidden rounded-lg bg-[#09090B] text-white",
         className,
       )}
     >
@@ -126,9 +147,25 @@ export function SlidePreview({
             }
           />
         ) : null}
+        {frameBoxes
+          ? SLIDESHOW_OVERLAY_LAYERS.map((layer) => {
+              const box = frameBoxes[layer];
+              if (!box || !onCanvas(box, width, height)) return null;
+              return (
+                <span
+                  key={layer}
+                  aria-hidden="true"
+                  data-copy-frame={layer}
+                  data-active={focusLayer === layer || undefined}
+                  className="wb-copy-frame"
+                  style={frameInsets(box, frameBoxes, width, height)}
+                />
+              );
+            })
+          : null}
       </div>
       {showCounter && counter ? (
-        <span className="absolute bottom-3 right-3 z-20 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur">
+        <span className="wb-mono absolute bottom-3 right-3 z-20 rounded-full bg-[var(--pf-scrim)] px-2 py-1 text-[var(--pf-on-media)]">
           {counter}
         </span>
       ) : null}
@@ -164,15 +201,57 @@ const aspectClasses: Record<SlideshowAspectRatio, string> = {
   "16:9": "aspect-video",
 };
 
-const overlaySrcCache = new Map<string, string>();
-const OVERLAY_SRC_CACHE_LIMIT = 40;
+type PreviewOverlay = { src: string; boxes: SlideshowOverlayBoxes };
 
-function rememberOverlaySrc(key: string, src: string) {
-  if (overlaySrcCache.size >= OVERLAY_SRC_CACHE_LIMIT) {
-    const oldest = overlaySrcCache.keys().next().value;
-    if (oldest) overlaySrcCache.delete(oldest);
+// The frame sits 8px beside the copy and 4px above and below it. On a small canvas the blocks sit
+// closer than that, so the frame takes at most half the gap to the next block and leaves its lines.
+function frameInsets(
+  box: SlideshowOverlayBox,
+  boxes: SlideshowOverlayBoxes,
+  width: number,
+  height: number,
+) {
+  let above = Infinity;
+  let below = Infinity;
+  for (const other of Object.values(boxes)) {
+    if (!other || other === box) continue;
+    if (other.y + other.height <= box.y) above = Math.min(above, box.y - other.y - other.height);
+    if (other.y >= box.y + box.height) below = Math.min(below, other.y - box.y - box.height);
   }
-  overlaySrcCache.set(key, src);
+  const outset = (gap: number) =>
+    Number.isFinite(gap) ? `min(4px, ${(gap / 2 / height) * 100}%)` : "4px";
+  return {
+    left: `max(2px, calc(${(box.x / width) * 100}% - 8px))`,
+    top: `max(2px, calc(${(box.y / height) * 100}% - ${outset(above)}))`,
+    right: `max(2px, calc(${(1 - (box.x + box.width) / width) * 100}% - 8px))`,
+    bottom: `max(2px, calc(${(1 - (box.y + box.height) / height) * 100}% - ${outset(below)}))`,
+  };
+}
+
+// Copy that runs past the canvas is cut off by it. The renderer reports one box per block, sized by
+// its widest line, so a block with lines off the canvas would get a frame wider than what is shown.
+// Only a block wholly on the canvas is framed.
+function onCanvas(box: SlideshowOverlayBox, width: number, height: number) {
+  const EDGE = 1;
+  return (
+    box.width > 0 &&
+    box.height > 0 &&
+    box.x >= -EDGE &&
+    box.y >= -EDGE &&
+    box.x + box.width <= width + EDGE &&
+    box.y + box.height <= height + EDGE
+  );
+}
+
+const overlayCache = new Map<string, PreviewOverlay>();
+const OVERLAY_CACHE_LIMIT = 40;
+
+function rememberOverlay(key: string, overlay: PreviewOverlay) {
+  if (overlayCache.size >= OVERLAY_CACHE_LIMIT) {
+    const oldest = overlayCache.keys().next().value;
+    if (oldest) overlayCache.delete(oldest);
+  }
+  overlayCache.set(key, overlay);
 }
 
 function overlayTextSettings(

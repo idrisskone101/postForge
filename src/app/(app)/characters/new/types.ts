@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type {
   CharacterAttributeSection,
   CharacterAttributes,
@@ -6,6 +7,7 @@ import type {
 export type CharacterBuilderHeaderViewModel = {
   editId: string | null;
   name: string;
+  nameInvalid: boolean;
   saving: boolean;
   rendering: boolean;
   missingEditRecord: boolean;
@@ -13,15 +15,12 @@ export type CharacterBuilderHeaderViewModel = {
   readyPreviewFingerprint: string | null;
   onNameChange: (name: string) => void;
   randomizeAndRender: () => void;
-  onImport: () => void;
-  copyAttributes: () => void;
   saveCharacter: () => void;
   saveAction: { label: string; title: string | undefined };
 };
 
 export type CharacterPreviewStageViewModel = {
   name: string;
-  attributes: CharacterAttributes;
   avatarId: string | null;
   previewFileId: string | null;
   previewIsPhotographic: boolean;
@@ -30,7 +29,6 @@ export type CharacterPreviewStageViewModel = {
   previewRequiresRender: boolean;
   previewSaveBlocked: boolean;
   rerender: () => void;
-  randomizeAndRender: () => void;
   onLoadError: () => void;
 };
 
@@ -39,8 +37,19 @@ export type CharacterAttributeEditorViewModel = {
   activeSection: string;
   active: CharacterAttributeSection | undefined;
   error: string | null;
+  /** The edit link points at no saved character. The notice names that and cannot be dismissed. */
+  errorIsMissingRecord?: boolean;
   onDismissError: () => void;
   onSelectSection: (sectionId: string) => void;
   copyPrompt: () => void;
+  /** Empties the current section's attributes. Local until Save; the toast offers Undo. */
+  clearSection: () => void;
+  /** Undo sends focus back here: the toast that held it is leaving. */
+  clearButtonRef: RefObject<HTMLButtonElement | null>;
+  sectionIsEmpty: boolean;
+  onImport: () => void;
+  copyAttributes: () => void;
   selectAttribute: (key: string, value: string) => void;
+  /** Names the toasts on screen. The footer republishes where it sits when one arrives. */
+  toastKey: string;
 };

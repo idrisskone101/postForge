@@ -2,26 +2,33 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
   getActiveWorkspaceItem,
+  getSidebarPillOffset,
   workspaceNavigationGroups,
   workspaceNavigationItems,
+  workspaceSidebarGroups,
 } from "../../src/lib/workspace-navigation";
 import { routeOwnsHeader } from "../../src/lib/workspace-header-route";
 
-const primaryLabels = workspaceNavigationGroups.primary.map((item) => item.label);
-assert.deepEqual(primaryLabels, [
-  "Home",
-  "Jobs",
-  "Inspiration",
-  "Clone",
-  "Slideshow",
-  "Gallery",
-  "Automations",
-  "Performance",
-  "Spend",
-]);
+// Four unlabelled sidebar groups, in the order of the 00 Shell artboard.
+assert.deepEqual(
+  workspaceSidebarGroups.map((group) => group.map((item) => item.label)),
+  [
+    ["Home", "Jobs"],
+    ["Inspiration", "Clone", "Slideshow", "Generate"],
+    ["Gallery", "Collections", "Characters"],
+    ["Automations", "Performance", "Spend"],
+  ]
+);
 
-const toolLabels = workspaceNavigationGroups.tools.map((item) => item.label);
-assert.deepEqual(toolLabels, ["Generate", "Collections", "Characters"]);
+// The sliding active pill: 36px items, 2px item gap, 20px group gap.
+assert.equal(getSidebarPillOffset("/"), 0);
+assert.equal(getSidebarPillOffset("/jobs"), 38);
+assert.equal(getSidebarPillOffset("/ugc-inspiration"), 94);
+assert.equal(getSidebarPillOffset("/generate"), 208);
+assert.equal(getSidebarPillOffset("/gallery"), 264);
+assert.equal(getSidebarPillOffset("/costs"), 472);
+assert.equal(getSidebarPillOffset("/settings"), null);
+assert.equal(getSidebarPillOffset(undefined), null);
 
 assert.equal(getActiveWorkspaceItem("/")?.label, "Home");
 assert.equal(getActiveWorkspaceItem("/jobs")?.label, "Jobs");
@@ -30,10 +37,12 @@ assert.equal(getActiveWorkspaceItem("/ugc-inspiration")?.label, "Inspiration");
 assert.equal(getActiveWorkspaceItem("/ugc-clone")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/ugc-clone/abc123")?.label, "Clone");
 assert.equal(getActiveWorkspaceItem("/slideshow")?.label, "Slideshow");
-assert.equal(
-  getActiveWorkspaceItem("/slideshow/project-123")?.label,
-  "Slideshow"
-);
+// A URL under a navigation item that is no page of the app belongs to no item, so the not-found
+// page never shows a section's title, current item or actions.
+assert.equal(getActiveWorkspaceItem("/slideshow/project-123"), undefined);
+assert.equal(getActiveWorkspaceItem("/gallery/nope"), undefined);
+assert.equal(getActiveWorkspaceItem("/collections/nope/deeper"), undefined);
+assert.equal(getActiveWorkspaceItem("/nope"), undefined);
 assert.equal(
   getActiveWorkspaceItem("/slideshow?new=true")?.label,
   "Slideshow"
@@ -84,27 +93,27 @@ assert.equal(
   new Set(workspaceNavigationItems.map((item) => item.href)).size,
   workspaceNavigationItems.length
 );
-assert.equal(
-  workspaceNavigationItems.find((item) => item.label === "Automations")
-    ?.primaryAction.href,
-  "/automations/new"
+// One bone primary per route, only where the design has one.
+const primaryByLabel = Object.fromEntries(
+  workspaceNavigationItems.map((item) => [item.label, item.primaryAction?.href ?? null])
 );
-assert.equal(
-  workspaceNavigationItems.find((item) => item.label === "Characters")
-    ?.primaryAction.href,
-  "/characters/new"
-);
-assert.equal(
-  workspaceNavigationItems.find((item) => item.label === "Settings")
-    ?.primaryAction.href,
-  "/settings?tab=integrations"
-);
+assert.deepEqual(primaryByLabel, {
+  Home: "/ugc-clone",
+  Jobs: null,
+  Inspiration: null,
+  Clone: null,
+  Slideshow: null,
+  Generate: null,
+  Gallery: "/ugc-clone",
+  Collections: "/collections?upload=1",
+  Characters: "/characters/new",
+  Automations: "/automations/new",
+  Performance: null,
+  Spend: null,
+  Settings: null,
+});
 
-const allLabels: string[] = [
-  ...workspaceNavigationGroups.primary,
-  ...workspaceNavigationGroups.tools,
-  ...workspaceNavigationGroups.utility,
-].map((item) => item.label);
+const allLabels: string[] = workspaceNavigationItems.map((item) => item.label);
 
 assert.equal(allLabels.includes("Dashboard"), false);
 assert.equal(allLabels.includes("Launch Forge"), false);
@@ -115,79 +124,44 @@ const sidebarSource = readFileSync(
   new URL("../../src/components/sidebar.tsx", import.meta.url),
   "utf8"
 );
-const shellSource = readFileSync(
-  new URL("../../src/components/workspace-shell.tsx", import.meta.url),
+const sidebarNavSource = readFileSync(
+  new URL("../../src/components/sidebar-nav.tsx", import.meta.url),
   "utf8"
 );
 const layoutSource = readFileSync(
   new URL("../../src/app/(app)/layout.tsx", import.meta.url),
   "utf8"
 );
-const globalStyles = readFileSync(
-  new URL("../../src/app/globals.css", import.meta.url),
+const shellStyles = readFileSync(
+  new URL("../../src/app/styles/shell.css", import.meta.url),
   "utf8"
 );
 
-assert.match(shellSource, /min-w-0 overflow-x-clip/);
-assert.doesNotMatch(shellSource, /workspaceHeaderAccessory/);
-assert.doesNotMatch(globalStyles, /data-workspace-header-accessory/);
 assert.match(sidebarSource, /document\.documentElement\.dataset\.sidebarCollapsed/);
 assert.match(sidebarSource, /sidebar-brand/);
 assert.match(sidebarSource, /sidebar-header/);
+assert.match(sidebarSource, /aria-expanded=\{!desktopCollapsed\}/);
 assert.match(layoutSource, /postforge-sidebar-collapsed/);
 assert.match(layoutSource, /r\.dataset\.sidebarCollapsed="true"/);
-assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sidebar/);
-assert.match(globalStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
-assert.match(globalStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
-assert.doesNotMatch(globalStyles, /body\[data-sidebar-collapsed="true"\]/);
+assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-sidebar/);
+assert.match(shellStyles, /html\[data-sidebar-collapsed="true"\] #workspace-shell/);
+// The collapsed rail keeps the 32px brand tile visible
+assert.doesNotMatch(shellStyles, /#workspace-sidebar \.sidebar-brand \{\s*display: none;/);
+assert.match(
+  shellStyles,
+  /html\[data-sidebar-collapsed="true"\] #workspace-sidebar \.sidebar-brand \{\s*flex: 0 0 auto;/
+);
+assert.doesNotMatch(shellStyles, /body\[data-sidebar-collapsed="true"\]/);
 
-// The first-paint stylesheet defines an unlayered `.hidden`, which beats any
-// layered responsive or dark-mode utility. Rail controls written as
-// `hidden xl:flex` or `hidden dark:block` therefore never show: that once hid
-// the workspace name, the theme toggle, the collapse control, and the dark-mode
-// toggle icon. Their visibility lives in globals.css instead.
-const themeToggleSource = readFileSync(
-  new URL("../../src/components/theme-toggle.tsx", import.meta.url),
-  "utf8"
-);
-const criticalStyles = readFileSync(
-  new URL("../../src/app/dashboard-critical.css", import.meta.url),
-  "utf8"
-);
-const SHOW_VARIANT = /(?:sm|md|lg|xl|2xl|dark):(?:flex|grid|block|inline-flex|inline)\b/;
-for (const [file, source] of [
-  ["sidebar.tsx", sidebarSource],
-  ["theme-toggle.tsx", themeToggleSource],
-] as const) {
-  for (const classList of source.match(/"[^"\n]*\bhidden\b[^"\n]*"/g) ?? []) {
-    // The rail itself is the one exception: `#workspace-sidebar { display: flex }`
-    // in the first-paint stylesheet outranks `.hidden` by id.
-    if (classList.includes("fixed inset-y-0 left-0")) continue;
-    assert.doesNotMatch(classList, SHOW_VARIANT, `${file}: ${classList}`);
-  }
-}
-assert.match(
-  criticalStyles,
-  /@media \(min-width: 768px\) \{[\s\S]*?#workspace-sidebar \{\s*display: flex;/
-);
-assert.match(criticalStyles, /^\.hidden \{\s*display: none;/m);
-assert.match(sidebarSource, /"sidebar-expanded-only flex"/);
-assert.match(sidebarSource, /"sidebar-expanded-only grid"/);
-assert.match(sidebarSource, /sidebar-collapse-toggle/);
-assert.match(
-  globalStyles,
-  /#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: none;/
-);
-assert.match(
-  globalStyles,
-  /@media \(min-width: 1280px\) \{\s*#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: grid;/
-);
-assert.match(themeToggleSource, /theme-toggle-moon/);
-assert.match(themeToggleSource, /theme-toggle-sun/);
-assert.match(globalStyles, /\.dark \.theme-toggle-sun \{\s*display: block;/);
-assert.match(globalStyles, /\.dark \.theme-toggle-moon \{\s*display: none;/);
-// Before the full stylesheet loads, expanded-only rows stay out of the compact rail.
-assert.match(
-  criticalStyles,
-  /#workspace-sidebar \.sidebar-expanded-only,\s*#workspace-sidebar \.sidebar-collapse-toggle \{\s*display: none;/
-);
+// Subtraction: no group labels, no workspace card, one footer row.
+assert.doesNotMatch(sidebarSource + sidebarNavSource, /Local workspace|Self-hosted|Manage|uppercase/);
+assert.match(sidebarNavSource, /aria-current=\{active \? "page" : undefined\}/);
+assert.match(sidebarNavSource, /aria-label="Workspace navigation"/);
+assert.match(sidebarSource, /<span className="sidebar-foot-toggle">\s*<ThemeToggle \/>\s*<\/span>/);
+
+// Count badges come from the notifications poll: failures on Jobs, reviews on Gallery.
+assert.match(sidebarNavSource, /item\.label === "Jobs"[\s\S]*?counts\.generationFailures[\s\S]*?tone="bad"/);
+assert.match(sidebarNavSource, /item\.label === "Gallery"[\s\S]*?counts\.approvalsWaiting/);
+
+// Primary navigation keeps the default Link prefetch.
+assert.doesNotMatch(sidebarSource + sidebarNavSource, /prefetch=\{false\}/);

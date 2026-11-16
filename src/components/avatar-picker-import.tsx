@@ -1,13 +1,15 @@
 "use client";
 
-import { ArrowLeft, FileJson, Loader2, Sparkles, X } from "lucide-react";
+import { useId } from "react";
 import {
   getAvatarImportReadiness,
   getDefaultAvatarImportName,
   type AvatarCandidateSet,
   type AvatarSeedReferenceImage,
 } from "@/lib/avatar-workflow";
-import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { Button, buttonClass, Icon, IconButton, Meter } from "@/components/workbench";
+import { AvatarPickerModeHead } from "@/components/avatar-picker-mode-head";
 
 export type AvatarImportWorkspace = {
   rawJson: string;
@@ -47,6 +49,7 @@ export function AvatarImportPanel({
     onGenerateCandidates,
     onAcceptCandidate,
   } = workspace;
+  const fieldId = useId();
   const readiness = getAvatarImportReadiness(rawJson, seedReferenceImages.length);
   const resolvedAvatarName = avatarName ?? getDefaultAvatarImportName(rawJson);
   const candidateCount = candidateSets.reduce(
@@ -55,194 +58,167 @@ export function AvatarImportPanel({
   );
 
   return (
-    <div className="space-y-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="size-4" />
-        Back to avatars
-      </button>
+    <div className="flex min-w-0 flex-col gap-4">
+      <AvatarPickerModeHead title="Import avatar" onBack={onBack} />
 
-      <div className="rounded-xl border border-border bg-muted/35 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent-green/10 text-accent-green">
-            <FileJson className="size-5" />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">Import Avatar</h3>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Add raw Avatar Profile JSON and 1 to 5 Seed Reference Images.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+      <div className="wb-field">
+        <label htmlFor={`${fieldId}-name`} className="wb-label">
           Avatar name
         </label>
         <input
+          id={`${fieldId}-name`}
           type="text"
           value={resolvedAvatarName}
           onChange={(event) => onAvatarNameChange?.(event.target.value)}
           maxLength={40}
-          className="w-full rounded-xl border border-border bg-muted/35 px-3 py-2 text-sm font-semibold text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-accent-green/45"
-          placeholder="Imported Avatar"
+          className="wb-input"
+          placeholder="Imported avatar"
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="wb-field">
         <div className="flex items-center justify-between gap-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Avatar Profile JSON
+          <label htmlFor={`${fieldId}-json`} className="wb-label">
+            Avatar profile JSON
           </label>
-          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
+          <label className={cn(buttonClass("quiet", 32), FILE_PILL)}>
             Upload JSON
             <input
               type="file"
               accept="application/json,.json"
-              className="hidden"
+              className="sr-only"
               onChange={(event) => onJsonFileChange(event.target.files)}
             />
           </label>
         </div>
-        <Textarea
+        <textarea
+          id={`${fieldId}-json`}
           value={rawJson}
           onChange={(event) => onRawJsonChange(event.target.value)}
+          aria-invalid={readiness.jsonError ? true : undefined}
           placeholder={`{
   "name": "Imported Avatar"
 }`}
-          className="min-h-[160px] resize-y rounded-xl border-border bg-muted/35 font-mono text-xs text-foreground/90 placeholder:text-muted-foreground/70"
+          className="wb-input min-h-[140px] font-mono text-[13px] leading-5"
         />
         {readiness.jsonError && (
-          <p className="min-w-0 break-words text-xs font-medium text-destructive [overflow-wrap:anywhere]">{readiness.jsonError}</p>
+          <p className="wb-field-error min-w-0 break-words [overflow-wrap:anywhere]">{readiness.jsonError}</p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="wb-field">
         <div className="flex items-center justify-between gap-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Seed Reference Images
-          </label>
-          <label className="cursor-pointer rounded-lg border border-border px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green">
-            Upload Images
+          <span className="flex items-center gap-2">
+            <span className="wb-label">Seed reference images</span>
+            <span className="wb-mono text-fg-muted">{seedReferenceImages.length} / 5</span>
+          </span>
+          <label className={cn(buttonClass("quiet", 32), FILE_PILL)}>
+            Upload images
             <input
               type="file"
               accept="image/*"
               multiple
-              className="hidden"
+              className="sr-only"
               onChange={(event) => onSeedReferenceImagesChange(event.target.files)}
             />
           </label>
         </div>
 
         {seedReferenceImages.length > 0 ? (
-          <div className="space-y-2">
+          <ul className="flex flex-col gap-1.5">
             {seedReferenceImages.map((file, index) => (
-              <div
+              <li
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/35 px-3 py-2"
+                className="flex min-h-12 items-center gap-3 rounded-lg bg-raised py-1.5 pl-3.5 pr-2"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-foreground/90">{file.name}</p>
-                  <p className="text-[12px] text-muted-foreground">{file.type || "image"} · {Math.round(file.size / 1024)} KB</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-semibold leading-4 text-fg">{file.name}</p>
+                  <p className="wb-mono text-fg-secondary">
+                    {file.type || "image"} · {Math.round(file.size / 1024)} KB
+                  </p>
                 </div>
-                <button
-                  type="button"
+                <IconButton
+                  icon="x"
+                  label={`Remove ${file.name}`}
+                  variant="ghost"
+                  size={28}
                   onClick={() => onRemoveSeedReferenceImage(index)}
-                  aria-label={`Remove ${file.name}`}
-                  className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  <X className="size-3.5" />
-                </button>
-              </div>
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="rounded-xl border border-dashed border-border bg-muted/25 px-4 py-6 text-center text-xs text-muted-foreground">
-            Upload 1 to 5 Seed Reference Images.
-          </div>
+          <p className="rounded-lg border border-dashed border-edge px-4 py-5 text-center text-[13px] leading-4 text-fg-muted">
+            No images yet
+          </p>
         )}
 
         {readiness.seedError && (
-          <p className="min-w-0 break-words text-xs font-medium text-destructive [overflow-wrap:anywhere]">{readiness.seedError}</p>
+          <p className="wb-field-error min-w-0 break-words [overflow-wrap:anywhere]">{readiness.seedError}</p>
         )}
       </div>
 
       {generationError && (
-        <div className="min-w-0 break-words rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs font-medium text-destructive [overflow-wrap:anywhere]">
+        <p role="alert" className="wb-notice min-w-0 break-words text-bad [overflow-wrap:anywhere]" data-tone="bad">
           {generationError}
-        </div>
+        </p>
       )}
 
       {candidateCount > 0 && (
-        <div className="space-y-3 rounded-xl border border-border bg-muted/35 p-3">
+        <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <h4 className="text-sm font-semibold text-foreground">Avatar Candidates</h4>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Review generated candidates before saving one as an Avatar.
-              </p>
-            </div>
-            <button
-              type="button"
+            <h4 className="text-[14px] font-bold leading-[18px] text-fg">Avatar candidates</h4>
+            <Button
+              size={32}
               onClick={onGenerateCandidates}
               disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-              className="shrink-0 rounded-lg border border-border px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-accent-green hover:text-accent-green disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Regenerate Candidates
-            </button>
+              Regenerate candidates
+            </Button>
           </div>
 
           {isGeneratingCandidates && (
-            <div className="flex items-center gap-2 rounded-lg border border-accent-green/20 bg-accent-green/5 px-3 py-2 text-xs font-medium text-accent-green">
-              <Loader2 className="size-3.5 animate-spin" />
-              Generating another candidate set. Previous candidates stay available for review.
+            <div role="status" className="flex flex-col gap-2">
+              <p className="text-[13px] leading-4 text-fg-secondary">
+                Generating another candidate set. Previous candidates stay available for review.
+              </p>
+              <Meter label="Generating another candidate set" running className="flex-none" />
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-2">
+          {/* A set is three candidates: three columns, as drawn, or one on a phone, never two and an orphan. */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {candidateSets.flatMap((set) => set.candidates).map((candidate, index) => (
-              <div
-                key={candidate.fileId}
-                className="overflow-hidden rounded-lg border border-border bg-muted/35"
-              >
-                <div className="aspect-[3/4] bg-black">
-                  <img
-                    src={`/api/files/${candidate.fileId}`}
-                    alt={`Candidate ${index + 1}`}
-                    className="size-full object-cover"
-                  />
+              <div key={candidate.fileId} className="flex min-w-0 flex-col gap-2">
+                <div className="wb-tile h-[280px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/api/files/${candidate.fileId}`} alt={`Candidate ${index + 1}`} />
                 </div>
-                <div className="space-y-2 p-2">
-                  <p className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Candidate {index + 1}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => onAcceptCandidate?.(candidate.fileId)}
-                    className="w-full rounded-md bg-accent-coral px-2 py-1.5 text-[12px] font-semibold text-white transition-colors hover:brightness-[0.93]"
-                  >
-                    Use Candidate
-                  </button>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[13px] font-semibold leading-4 text-fg">Candidate {index + 1}</span>
+                  <Button variant="strong" size={32} onClick={() => onAcceptCandidate?.(candidate.fileId)}>
+                    Use candidate
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      <button
-        type="button"
-        onClick={onGenerateCandidates}
-        disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent-coral px-4 py-3 text-sm font-semibold text-white transition-colors hover:brightness-[0.93] disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isGeneratingCandidates ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-        Generate candidates
-      </button>
+      <div className="flex justify-end border-t border-hairline pt-4">
+        <Button
+          variant="strong"
+          onClick={onGenerateCandidates}
+          disabled={!readiness.canGenerateCandidates || isGeneratingCandidates}
+        >
+          <Icon name="generate" size={16} />
+          Generate candidates
+        </Button>
+      </div>
     </div>
   );
 }
+
+const FILE_PILL =
+  "cursor-pointer has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ember";

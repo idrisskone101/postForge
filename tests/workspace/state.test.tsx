@@ -29,16 +29,15 @@ const emptyMarkup = renderToStaticMarkup(
 );
 
 assert.match(emptyMarkup, /data-workspace-state="empty"/);
-assert.match(emptyMarkup, /data-workspace-title="Start Source Selection"/);
-assert.match(emptyMarkup, /data-workspace-copy="Track a creator to build the first cached source feed."/);
-assert.match(emptyMarkup, /Start Source Selection/);
-assert.match(emptyMarkup, /Track a creator/);
+assert.match(emptyMarkup, /<h2 class="wb-empty-title">Start Source Selection<\/h2>/);
+assert.match(emptyMarkup, /<p class="wb-empty-copy">Track a creator to build the first cached source feed\.<\/p>/);
+assert.doesNotMatch(emptyMarkup, /sr-only/);
 assert.match(emptyMarkup, /href="\/ugc-inspiration"/);
 assert.match(emptyMarkup, /Track Creator/);
 assert.match(emptyMarkup, /href="\/ugc-clone"/);
 assert.match(emptyMarkup, /Start Clone/);
-assert.match(emptyMarkup, /border-dashed/);
-assert.match(emptyMarkup, /bg-accent-blue\/12/);
+assert.match(emptyMarkup, /class="wb-empty"/);
+assert.doesNotMatch(emptyMarkup, /wb-btn-primary/);
 
 const errorMarkup = renderToStaticMarkup(
   <WorkspaceState
@@ -54,7 +53,8 @@ assert.match(errorMarkup, /data-workspace-state="error"/);
 assert.match(errorMarkup, /Gallery failed to load/);
 assert.match(errorMarkup, /Retry Gallery/);
 assert.match(errorMarkup, /type="button"/);
-assert.match(errorMarkup, /text-destructive/);
+assert.match(errorMarkup, /data-tone="error"/);
+assert.match(errorMarkup, /role="alert"/);
 
 const loadingMarkup = renderToStaticMarkup(
   <WorkspaceStateSkeleton
@@ -68,5 +68,6 @@ const loadingMarkup = renderToStaticMarkup(
 assert.match(loadingMarkup, /data-workspace-state="loading"/);
 assert.match(loadingMarkup, /Loading Gallery/);
 assert.match(loadingMarkup, /min-h-80/);
-assert.equal((loadingMarkup.match(/data-state-skeleton-line/g) ?? []).length, 3);
-assert.equal((loadingMarkup.match(/data-state-skeleton-action/g) ?? []).length, 2);
+assert.equal((loadingMarkup.match(/class="wb-skeleton/g) ?? []).length, 5);
+assert.equal((loadingMarkup.match(/data-shape="tile"/g) ?? []).length, 2);
+assert.doesNotMatch(loadingMarkup, /animate-pulse|shimmer/);

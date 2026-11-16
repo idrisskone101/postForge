@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ToastMessage } from "@/components/workbench";
 import {
   isCollectionAssetRecord,
   isCollectionRecord,
@@ -14,31 +15,37 @@ import {
   removeWorkspaceFeature,
   saveWorkspaceFeature,
 } from "@/lib/workspace-features-client";
-import { assetUrl, createCollectionRecord } from "./collections-helpers";
-import type { CollectionsPageClientProps, CollectionsWorkspace } from "./types";
+import { assetUrl, createCollectionRecord, errorMessage } from "./collections-helpers";
+import type {
+  CollectionsPageClientProps,
+  CollectionsWorkspace,
+  UploadProgress,
+} from "./types";
 
 export function useCollectionsWorkspace({
   initialRecords,
+  usage = NO_USAGE,
   openUploader = false,
 }: CollectionsPageClientProps): CollectionsWorkspace {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const handledUploadQuery = useRef(false);
   const [records, setRecords] = useState<CollectionFeatureRecord[]>(initialRecords);
-  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [active, setActive] = useState<CollectionRecord | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [pinterestOpen, setPinterestOpen] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   async function load() {
     try {
       const response = await fetchWorkspaceFeature<CollectionFeatureRecord>("collections");
       setRecords(response.records);
+      setError(null);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load collections");
+      setError(errorMessage(cause, "Unable to load collections"));
     }
   }
 
@@ -69,12 +76,14 @@ export function useCollectionsWorkspace({
     [assets, search]
   );
   const selectedAsset = assets.find((asset) => asset.id === selected) ?? null;
+  const active = collections.find((collection) => collection.id === activeId) ?? null;
   const isEmpty = assets.length === 0 && collections.length === 0;
 
-  function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(null), 1700);
-  }
+  const notify = useCallback((message: string) => {
+    setToast({ id: `${Date.now()}`, tone: "ok", message });
+  }, []);
+  const dismissToast = useCallback(() => setToast(null), []);
+  const dismissError = useCallback(() => setError(null), []);
 
   function openFilePicker() {
     inputRef.current?.click();
@@ -84,18 +93,28 @@ export function useCollectionsWorkspace({
     setSelected((current) => (current === assetId ? null : assetId));
   }
 
+  async function saveCollection(next: CollectionRecord, message: string) {
+    try {
+      const response = await saveWorkspaceFeature("collections", next);
+      setRecords(response.records);
+      notify(message);
+    } catch (cause) {
+      setError(errorMessage(cause, "Unable to save collection"));
+    }
+  }
+
   async function upload(files: FileList | File[]) {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
     if (images.length === 0) {
       setError("Choose at least one image file.");
       return;
     }
-    setUploading(true);
+    setUploadProgress({ done: 0, total: images.length });
     setError(null);
     const targetCollection = active;
     const uploadedAssetIds: string[] = [];
     try {
-      for (const file of images) {
+      for (const [index, file] of images.entries()) {
         const formData = new FormData();
         formData.append("file", file);
         const response = await fetch("/api/collection-assets", { method: "POST", body: formData });
@@ -109,6 +128,7 @@ export function useCollectionsWorkspace({
         if (body.record && isCollectionAssetRecord(body.record)) {
           uploadedAssetIds.push(body.record.id);
         }
+        setUploadProgress({ done: index + 1, total: images.length });
       }
       if (targetCollection && uploadedAssetIds.length > 0) {
         const current = await fetchWorkspaceFeature<CollectionFeatureRecord>("collections");
@@ -126,7 +146,6 @@ export function useCollectionsWorkspace({
         };
         const saved = await saveWorkspaceFeature("collections", next);
         setRecords(saved.records);
-        setActive(next);
       } else {
         await load();
       }
@@ -136,57 +155,54 @@ export function useCollectionsWorkspace({
         }`
       );
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to upload images");
+      setError(errorMessage(cause, "Unable to upload images"));
     } finally {
-      setUploading(false);
+      setUploadProgress(null);
       if (inputRef.current) inputRef.current.value = "";
     }
   }
 
-  async function createCollection() {
-    const name = window.prompt("Collection name");
-    if (!name?.trim()) return;
-    try {
-      const response = await saveWorkspaceFeature(
-        "collections",
-        createCollectionRecord(name, selected)
-      );
-      setRecords(response.records);
-      notify("Collection created");
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to create collection");
-    }
+  async function createCollection(name: string) {
+    if (!name.trim()) return;
+    await saveCollection(createCollectionRecord(name, selected), "Collection created");
+  }
+
+  async function renameCollection(collection: CollectionRecord, name: string) {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === collection.name) return;
+    await saveCollection(
+      { ...collection, name: trimmed, updatedAt: new Date().toISOString() },
+      "Collection renamed"
+    );
   }
 
   async function toggleAsset(collection: CollectionRecord, assetId: string) {
+    const included = collection.assetIds.includes(assetId);
     const next: CollectionRecord = {
       ...collection,
-      assetIds: collection.assetIds.includes(assetId)
+      assetIds: included
         ? collection.assetIds.filter((id) => id !== assetId)
         : [...collection.assetIds, assetId],
       updatedAt: new Date().toISOString(),
     };
-    const response = await saveWorkspaceFeature("collections", next);
-    setRecords(response.records);
-    setActive(next);
-    notify(next.assetIds.includes(assetId) ? "Image added" : "Image removed");
+    await saveCollection(next, included ? "Image removed" : "Image added");
   }
 
   async function deleteCollection(collection: CollectionRecord) {
-    if (!window.confirm(`Delete ${collection.name}? Its images will stay in the library.`)) {
-      return;
+    try {
+      const response = await removeWorkspaceFeature<CollectionFeatureRecord>(
+        "collections",
+        collection.id
+      );
+      setRecords(response.records);
+      setActiveId(null);
+      notify("Collection deleted");
+    } catch (cause) {
+      setError(errorMessage(cause, "Unable to delete collection"));
     }
-    const response = await removeWorkspaceFeature<CollectionFeatureRecord>(
-      "collections",
-      collection.id
-    );
-    setRecords(response.records);
-    setActive(null);
-    notify("Collection deleted");
   }
 
   async function deleteAsset(asset: CollectionAssetRecord) {
-    if (!window.confirm(`Delete ${asset.name}? This cannot be undone.`)) return;
     const response = await fetch(assetUrl(asset.id), { method: "DELETE" });
     if (!response.ok) {
       const body = (await response.json()) as { error?: string };
@@ -200,24 +216,27 @@ export function useCollectionsWorkspace({
 
   return {
     inputRef,
-    uploading,
+    uploadProgress,
     error,
     search,
     active,
-    selected,
     selectedAsset,
     pinterestOpen,
     toast,
     assets,
     collections,
+    usage,
     filteredAssets,
     isEmpty,
-    setError,
+    dismissError,
+    dismissToast,
     setSearch,
-    setActive,
+    setActiveId,
+    setSelected,
     setPinterestOpen,
     upload,
     createCollection,
+    renameCollection,
     toggleAsset,
     deleteCollection,
     deleteAsset,
@@ -227,3 +246,5 @@ export function useCollectionsWorkspace({
     toggleSelectedAsset,
   };
 }
+
+const NO_USAGE: Record<string, number> = {};

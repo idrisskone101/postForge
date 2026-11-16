@@ -17,10 +17,15 @@ import {
 import { SlideshowApiError } from "../../src/lib/slideshow/errors";
 import { parseSlideshowOverlayRequest } from "../../src/lib/slideshow/overlay-request";
 import {
+  parseSlideshowOverlayBoxes,
+  SLIDESHOW_OVERLAY_BOXES_HEADER,
   SLIDESHOW_TEXT_REFERENCE_WIDTH,
   slideshowHeadlineFontSize,
 } from "../../src/lib/slideshow/text-overlay";
-import { createSlideshowTextOverlayMarkup } from "../../src/lib/slideshow/text-overlay-satori";
+import {
+  createSlideshowTextOverlay,
+  createSlideshowTextOverlayMarkup,
+} from "../../src/lib/slideshow/text-overlay-satori";
 import { POST as overlayPost } from "../../src/app/api/slideshows/overlay/route";
 
 function readZipEntry(archive: Buffer, target: string) {
@@ -40,7 +45,7 @@ function readZipEntry(archive: Buffer, target: string) {
   throw new Error(`ZIP entry not found: ${target}`);
 }
 
-async function overlayInk(svg: string) {
+async function overlayInk(svg: string, ink: "any" | "white" = "any") {
   const { data, info } = await sharp(Buffer.from(svg))
     .ensureAlpha()
     .raw()
@@ -52,8 +57,12 @@ async function overlayInk(svg: string) {
   let count = 0;
   for (let y = 0; y < info.height; y += 1) {
     for (let x = 0; x < info.width; x += 1) {
-      const alpha = data[(y * info.width + x) * info.channels + 3];
-      if (alpha > 12) {
+      const at = (y * info.width + x) * info.channels;
+      const hit =
+        ink === "white"
+          ? data[at + 3] > 200 && data[at] > 200 && data[at + 1] > 200 && data[at + 2] > 200
+          : data[at + 3] > 12;
+      if (hit) {
         count += 1;
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x);
@@ -64,6 +73,10 @@ async function overlayInk(svg: string) {
   }
   return {
     count,
+    minX,
+    minY,
+    maxX,
+    maxY,
     width: Math.max(0, maxX - minX),
     height: Math.max(0, maxY - minY),
   };
@@ -279,6 +292,57 @@ async function main() {
   const overlayBody = await overlayResponse.text();
   assert.match(overlayBody, /data-slideshow-text-overlay="true"/);
   assert.match(overlayBody, /viewBox="0 0 1080 1920"/);
+  const overlayBoxes = parseSlideshowOverlayBoxes(
+    overlayResponse.headers.get(SLIDESHOW_OVERLAY_BOXES_HEADER),
+  );
+  assert.deepEqual(Object.keys(overlayBoxes), ["headline"]);
+  const headlineBox = overlayBoxes.headline!;
+  const headlineInk = await overlayInk(overlayBody);
+  assert.ok(headlineInk.count > 0);
+  // The plain style drops a soft shadow below the glyphs, which this ink count includes.
+  const shadowReach = 24;
+  assert.ok(headlineInk.minX >= headlineBox.x - shadowReach);
+  assert.ok(headlineInk.maxX <= headlineBox.x + headlineBox.width + shadowReach);
+  assert.ok(headlineInk.minY >= headlineBox.y - 2);
+  assert.ok(headlineInk.maxY <= headlineBox.y + headlineBox.height + shadowReach);
+  assert.ok(headlineBox.height < 400);
+  assert.deepEqual(parseSlideshowOverlayBoxes("not json"), {});
+  assert.deepEqual(
+    parseSlideshowOverlayBoxes('{"headline":{"x":1,"y":2,"width":3},"other":{}}'),
+    {},
+  );
+
+  const pillOverlay = await createSlideshowTextOverlay(
+    { id: "pill", eyebrow: "Step one", headline: "Hello overlay", body: "" },
+    1080,
+    1350,
+    { style: "solid", size: 20, align: "left" },
+  );
+  assert.deepEqual(Object.keys(pillOverlay.boxes), ["eyebrow", "headline"]);
+  const pillInk = await overlayInk(pillOverlay.markup);
+  const pillTop = pillOverlay.boxes.eyebrow!;
+  const pillBottom = pillOverlay.boxes.headline!;
+  assert.ok(Math.abs(pillInk.minY - pillTop.y) <= 2);
+  assert.ok(Math.abs(pillInk.maxY - (pillBottom.y + pillBottom.height)) <= 2);
+  assert.ok(Math.abs(pillInk.minX - pillTop.x) <= 2);
+
+  // Unpilled copy reports the width its lines take, not the width of the copy column.
+  for (const [style, align] of [["plain", "left"], ["outline", "center"], ["translucent", "right"]] as const) {
+    const short = await createSlideshowTextOverlay(
+      { id: `short-${style}`, eyebrow: "", headline: "Hi there", body: "" },
+      1080,
+      1350,
+      { style, align, size: 38, position: "center" },
+    );
+    const box = short.boxes.headline!;
+    const ink = await overlayInk(short.markup, "white");
+    assert.ok(box.width < 600, `${style} headline box hugs its line, got ${box.width}`);
+    assert.ok(ink.minX >= box.x - 8 && ink.minX <= box.x + 12, `${style} ink starts at the box, ${ink.minX} vs ${box.x}`);
+    assert.ok(
+      ink.maxX <= box.x + box.width + 8 && ink.maxX >= box.x + box.width - 12,
+      `${style} ink ends at the box, ${ink.maxX} vs ${box.x + box.width}`,
+    );
+  }
 
   const archive = await renderSlideshowArchive({
     id: "project-1",

@@ -1,7 +1,7 @@
 "use client";
 
-import { WorkspaceState } from "@/components/workspace-state";
-import { TriangleAlert } from "lucide-react";
+import { Button } from "@/components/workbench/button";
+import { EmptyState } from "@/components/workbench/empty-state";
 
 export function GalleryLoadErrorState({
   message,
@@ -11,13 +11,16 @@ export function GalleryLoadErrorState({
   onRetry: () => void;
 }) {
   return (
-    <WorkspaceState
+    <EmptyState
+      icon="alert"
       tone="error"
-      icon={TriangleAlert}
       title="Gallery failed to load"
-      description={message}
-      action={{ label: "Retry Gallery", onClick: onRetry }}
-      className="min-h-64 min-w-0 [&>p]:min-w-0 [&>p]:break-words [&>p]:[overflow-wrap:anywhere] [&_a]:shrink-0 [&_button]:shrink-0 [&_svg]:shrink-0"
-    />
+      detail={message}
+      className="min-h-[340px] [&_.wb-empty-copy]:break-words [&_.wb-empty-copy]:[overflow-wrap:anywhere]"
+    >
+      <Button variant="strong" onClick={onRetry}>
+        Retry Gallery
+      </Button>
+    </EmptyState>
   );
 }
