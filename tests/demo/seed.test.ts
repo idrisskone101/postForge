@@ -8,6 +8,7 @@ import { OUTPUT_REVIEW_STATUSES } from "../../src/lib/output-review-status";
 import { isAutomationRecord } from "../../src/lib/automations";
 import { isCollectionAssetRecord, isCollectionRecord } from "../../src/lib/collections";
 import { getModel } from "../../src/lib/ai/models";
+import { DEMO_TOUR, DEMO_TOUR_CLONE_JOB_ID } from "../../src/lib/demo/tour";
 
 async function runSeedTests() {
   // loadDemoManifest also checks every listed file exists and is not empty.
@@ -24,7 +25,7 @@ async function runSeedTests() {
   assert.equal(seed.slides.length, 15);
   assert.equal(seed.slideshowAutomations.length, 2);
   assert.equal(seed.sources.length, 1);
-  assert.equal(seed.references.length, 1);
+  assert.equal(seed.references.length, 3);
 
   // Ids are unique, and stable across restores so open links keep working.
   const ids = [
@@ -85,6 +86,17 @@ async function runSeedTests() {
     assert.equal(job.falRequestId ?? null, null);
     assert.ok(!(job.tags as string[]).includes("ugc-clone"));
   }
+
+  // The guided tour opens a clone that is really seeded, with its output file.
+  const tourClone = seed.jobs.find((job) => job.id === DEMO_TOUR_CLONE_JOB_ID);
+  assert.ok(tourClone && (tourClone.tags as string[]).includes("ugc-clone"));
+  assert.ok(seed.files.some((file) => file.jobId === DEMO_TOUR_CLONE_JOB_ID));
+  assert.ok(DEMO_TOUR.some((stop) => stop.href === `/ugc-clone/${DEMO_TOUR_CLONE_JOB_ID}`));
+
+  // One hook, three creators: every clone shares the one sample source.
+  const clones = seed.jobs.filter((job) => (job.tags as string[]).includes("ugc-clone"));
+  assert.equal(clones.length, 3);
+  assert.equal(new Set(clones.map((job) => (job.input as { avatarId: string }).avatarId)).size, 3);
 
   // Slides only point at media that lives in the workspace.
   const fileIds = new Set(seed.files.map((file) => file.id));

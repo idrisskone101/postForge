@@ -46,34 +46,34 @@ type GenerationPart = Required<Pick<DemoSeedPart, "jobs" | "files" | "costLogs">
 const SLIDESHOW = ["slideshow"];
 
 const COMPLETED_OUTPUTS: CompletedOutput[] = [
-  { path: "videos/seed/v3-priya-misting.mp4", age: { minutes: 12 }, review: "needs_review", from: "images/seed/g09-priya-misting-herbs.jpg" },
-  { path: "images/seed/g01-phone-monstera.jpg", age: { minutes: 26 }, review: "needs_review" },
-  { path: "images/seed/g03-maya-watering.jpg", age: { hours: 1, minutes: 30 }, review: "needs_review" },
-  { path: "videos/seed/v1-phone-monstera.mp4", age: { hours: 2, minutes: 10 }, review: "needs_review", from: "images/seed/g01-phone-monstera.jpg" },
-  { path: "images/seed/g07-jonah-snake-plant.jpg", age: { hours: 3, minutes: 5 }, review: "needs_review" },
-  ...slideshowOutputs("sc", { hours: 20 }),
-  { path: "images/seed/g09-priya-misting-herbs.jpg", age: { days: 1, hours: 2 }, review: "approved_output" },
-  { path: "images/seed/g05-reading-nook.jpg", age: { days: 1, hours: 6 }, review: "approved_output" },
-  { path: "videos/seed/v2-reading-nook.mp4", age: { days: 1, hours: 5 }, review: "approved_output", from: "images/seed/g05-reading-nook.jpg" },
-  { path: "images/seed/g02-repotting-flatlay.jpg", age: { days: 2, hours: 3 }, review: "approved_output" },
-  ...slideshowOutputs("sb", { days: 3, hours: 4 }),
-  { path: "images/seed/g04-peace-lily-compare.jpg", age: { days: 3, hours: 9 }, review: "needs_review" },
-  { path: "images/seed/g06-new-leaf-macro.jpg", age: { days: 4, hours: 2 }, review: "approved_output" },
-  { path: "images/seed/g08-succulent-shelf.jpg", age: { days: 5, hours: 6 }, review: "rejected_output" },
-  ...slideshowOutputs("sa", { days: 6, hours: 1 }),
-  { path: "images/seed/g10-desk-pothos.jpg", age: { days: 8, hours: 4 }, review: "approved_output" },
-  { path: "images/seed/g11-wiping-fiddle-leaf.jpg", age: { days: 11, hours: 7 }, review: "approved_output" },
-  { path: "images/seed/g12-plant-unboxing.jpg", age: { days: 14, hours: 3 }, review: "approved_output" },
-  { path: "avatars/seed/maya.jpg", age: { days: 16, hours: 2 }, review: "approved_output", tags: ["generate-avatar"] },
-  { path: "avatars/seed/priya.jpg", age: { days: 16, hours: 1 }, review: "approved_output", tags: ["generate-avatar"] },
-  { path: "avatars/seed/jonah.jpg", age: { days: 15, hours: 5 }, review: "approved_output", tags: ["generate-avatar"] },
-  { path: "avatars/seed/theo.jpg", age: { days: 15, hours: 4 }, review: "approved_output", tags: ["generate-avatar"] },
+  { path: "videos/seed/v2-mei-lisbon-tram.mp4", age: { minutes: 12 }, review: "needs_review", from: "images/seed/g03-mei-lisbon-tram.jpg" },
+  { path: "images/seed/g10-app-cafe-conversation.jpg", age: { minutes: 26 }, review: "needs_review" },
+  { path: "images/seed/g04-diego-ramen-counter.jpg", age: { hours: 1, minutes: 30 }, review: "needs_review" },
+  { path: "images/seed/g06-subway-practice.jpg", age: { hours: 3, minutes: 5 }, review: "needs_review" },
+  ...slideshowOutputs(["sc1", "sc2", "sc3", "sc4", "sc5"], { hours: 20 }),
+  { path: "videos/seed/v3-marcus-abuela.mp4", age: { days: 1, hours: 1 }, review: "approved_output", from: "images/seed/g02-marcus-abuela.jpg" },
+  { path: "images/seed/g02-marcus-abuela.jpg", age: { days: 1, hours: 2 }, review: "approved_output" },
+  { path: "images/seed/g01-ava-rome-cafe.jpg", age: { days: 1, hours: 6 }, review: "approved_output" },
+  { path: "videos/seed/v1-ava-rome-cafe.mp4", age: { days: 1, hours: 5 }, review: "approved_output", from: "images/seed/g01-ava-rome-cafe.jpg" },
+  { path: "images/seed/g11-app-nightstand-streak.jpg", age: { days: 2, hours: 3 }, review: "approved_output" },
+  ...slideshowOutputs(["sb1", "sb2", "sb3", "sb4"], { days: 3, hours: 4 }),
+  { path: "images/seed/g03-mei-lisbon-tram.jpg", age: { days: 3, hours: 9 }, review: "approved_output" },
+  { path: "images/seed/g05-trip-flatlay.jpg", age: { days: 4, hours: 2 }, review: "approved_output" },
+  // The model misspelled "los huevos" on a sticky note: a real reason to reject.
+  { path: "images/seed/g08-fridge-labels.jpg", age: { days: 5, hours: 6 }, review: "rejected_output" },
+  ...slideshowOutputs(["sa1", "sa2", "sa3", "sa4"], { days: 6, hours: 1 }),
+  { path: "images/seed/g07-gate-sunrise.jpg", age: { days: 8, hours: 4 }, review: "approved_output" },
+  { path: "images/seed/g12-rome-scooter.jpg", age: { days: 11, hours: 7 }, review: "approved_output" },
+  { path: "avatars/seed/ava.jpg", age: { days: 16, hours: 2 }, review: "approved_output", tags: ["generate-avatar"] },
+  { path: "avatars/seed/marcus.jpg", age: { days: 16, hours: 1 }, review: "approved_output", tags: ["generate-avatar"] },
+  { path: "avatars/seed/mei.jpg", age: { days: 15, hours: 5 }, review: "approved_output", tags: ["generate-avatar"] },
+  { path: "avatars/seed/diego.jpg", age: { days: 15, hours: 4 }, review: "approved_output", tags: ["generate-avatar"] },
 ];
 
-function slideshowOutputs(prefix: string, age: Age): CompletedOutput[] {
-  return [1, 2, 3, 4, 5].map((index) => ({
-    path: `images/seed/${prefix}${index}.jpg`,
-    age: { ...age, minutes: (age.minutes ?? 0) - index },
+function slideshowOutputs(keys: string[], age: Age): CompletedOutput[] {
+  return keys.map((key, index) => ({
+    path: `images/seed/${key}.jpg`,
+    age: { ...age, minutes: (age.minutes ?? 0) - index - 1 },
     review: "approved_output" as const,
     tags: SLIDESHOW,
   }));
@@ -175,13 +175,13 @@ function addCompletedOutput(
 }
 
 function unfinishedJobs(manifest: DemoManifest, now: Date): GenerationPart["jobs"] {
-  const still = manifest.asset("images/seed/g11-wiping-fiddle-leaf.jpg");
+  const still = manifest.asset("images/seed/g04-diego-ramen-counter.jpg");
   const clipPrompt =
-    "Slow handheld push in while the cloth wipes across the fiddle leaf fig leaf, soft daylight, natural movement.";
+    "Steam rises from the bowl while he laughs with the chef, slow handheld push in, warm lamp light.";
   const imagePrompt =
-    "Vertical photo of a kitchen windowsill herb garden in mismatched ceramic pots, morning light, steam rising from a kettle in the background, photorealistic. No text, no logos, no watermarks.";
+    "Vertical photo of a traveller reading a paper menu at a small Lisbon tasca, tiled walls, warm evening light, photorealistic. No text, no logos, no watermarks.";
   const failedPrompt =
-    "Time-lapse of a monstera leaf unfurling over a week, locked-off macro shot, soft studio light.";
+    "Time-lapse of a Lisbon street from dawn to night, trams passing, locked-off wide shot.";
 
   return [
     {

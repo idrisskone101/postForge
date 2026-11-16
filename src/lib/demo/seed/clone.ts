@@ -1,39 +1,70 @@
 import { calculateEstimatedCost } from "@/lib/ai/models";
+import type { OutputReviewStatus } from "@/lib/output-review-status";
 import { avatarIdFor, identityPackIdFor } from "./identities";
 import { fileIdFor, jobIdFor } from "./generation";
 import type { DemoManifest } from "./manifest";
-import { basename, before, demoId } from "./seed-utils";
+import { basename, before, demoId, type Age } from "./seed-utils";
 import type { DemoSeedPart } from "./types";
 
-const SOURCE_PATH = "tiktok-sources/seed/source-snake-plant.mp4";
-const THUMBNAIL_PATH = "thumbnails/seed/source-snake-plant.jpg";
-const REFERENCE_PATH = "ugc-references/seed/maya-snake-plant.jpg";
-const OUTPUT_PATH = "videos/seed/clone-maya-snake-plant.mp4";
+const SOURCE_PATH = "tiktok-sources/seed/source-waiter.mp4";
+const THUMBNAIL_PATH = "thumbnails/seed/source-waiter.jpg";
+const SOURCE_LABEL = "POV: the waiter answered in Spanish (sample clip)";
 
-export const CLONE_SOURCE_ID = demoId("clone-source:snake-plant");
+export const CLONE_SOURCE_ID = demoId("clone-source:waiter");
+
+type CloneTake = {
+  slug: string;
+  name: string;
+  review: OutputReviewStatus;
+  /** When the output finished, relative to the restore. */
+  age: Age;
+};
 
 /**
- * One finished Clone: a sample source clip, the reference still that puts the
- * Avatar into its scene, and the motion-transfer output. The source clip is
- * itself generated sample footage, so "View original" opens the clip here
- * rather than pointing at somebody's social post.
+ * One hook, three creators: the same sample source clip recreated by Ava,
+ * Marcus and Diego, so the Clone surface shows the creator A/B test the
+ * campaign ran. Marcus's take is the approved one the tour opens.
+ */
+const TAKES: CloneTake[] = [
+  { slug: "marcus", name: "Marcus", review: "approved_output", age: { days: 1, hours: 8 } },
+  { slug: "ava", name: "Ava", review: "needs_review", age: { hours: 5, minutes: 20 } },
+  { slug: "diego", name: "Diego", review: "needs_review", age: { hours: 4, minutes: 45 } },
+];
+
+export function cloneOutputPath(slug: string) {
+  return `videos/seed/clone-${slug}-waiter.mp4`;
+}
+
+/**
+ * The source clip is itself generated sample footage, so "View original"
+ * opens the clip here rather than pointing at somebody's social post.
  */
 export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart {
   const source = manifest.find(SOURCE_PATH);
   if (!source) return {};
 
-  const avatarId = avatarIdFor("maya");
   const sourceAt = before(now, { days: 1, hours: 9 });
   const thumbnail = manifest.find(THUMBNAIL_PATH);
   const originalUrl = `/api/ugc-clone/preview?path=${encodeURIComponent(source.path)}`;
-  const label = "Snake plant intro (sample clip)";
   const durationSec = source.durationSec ?? 5;
+  const sourceVideo = {
+    sourceId: CLONE_SOURCE_ID,
+    label: SOURCE_LABEL,
+    originalUrl,
+    localPath: source.path,
+    filename: basename(source.path),
+    durationSec,
+    width: source.width,
+    height: source.height,
+  };
 
-  const part: DemoSeedPart = {
+  const part: Required<
+    Pick<DemoSeedPart, "sources" | "references" | "jobs" | "files" | "costLogs">
+  > = {
     sources: [
       {
         id: CLONE_SOURCE_ID,
-        label,
+        label: SOURCE_LABEL,
         originalUrl,
         localPath: source.path,
         filename: basename(source.path),
@@ -46,14 +77,20 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
         updatedAt: sourceAt,
       },
     ],
+    references: [],
+    jobs: [],
+    files: [],
+    costLogs: [],
   };
 
-  const reference = manifest.find(REFERENCE_PATH);
-  const referenceId = demoId("clone-reference:maya-snake-plant");
-  if (reference) {
-    const referenceAt = before(now, { days: 1, hours: 8, minutes: 40 });
-    part.references = [
-      {
+  for (const take of TAKES) {
+    const avatarId = avatarIdFor(take.slug);
+    const reference = manifest.find(`ugc-references/seed/${take.slug}-waiter.jpg`);
+    const referenceId = demoId(`clone-reference:${take.slug}-waiter`);
+    const completedAt = before(now, take.age);
+    if (reference) {
+      const referenceAt = new Date(completedAt.getTime() - 9 * 60_000);
+      part.references.push({
         id: referenceId,
         avatarId,
         tikTokSourceId: CLONE_SOURCE_ID,
@@ -67,33 +104,19 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
         fileSizeBytes: reference.fileSizeBytes,
         createdAt: referenceAt,
         updatedAt: referenceAt,
-      },
-    ];
-  }
+      });
+    }
 
-  const output = manifest.find(OUTPUT_PATH);
-  if (!output) return part;
+    const output = manifest.find(cloneOutputPath(take.slug));
+    if (!output) continue;
+    const jobId = jobIdFor(output.path);
+    const fileId = fileIdFor(output.path);
+    const createdAt = new Date(completedAt.getTime() - 4 * 60_000);
+    const outputDuration = Math.round(output.durationSec ?? durationSec);
+    const cost = calculateEstimatedCost(output.modelId, { durationSec: outputDuration });
+    const prompt = `${take.name} recreates the waiter hook, same framing and gestures.`;
 
-  const jobId = jobIdFor(output.path);
-  const fileId = fileIdFor(output.path);
-  const completedAt = before(now, { days: 1, hours: 8 });
-  const createdAt = new Date(completedAt.getTime() - 4 * 60_000);
-  const outputDuration = Math.round(output.durationSec ?? durationSec);
-  const cost = calculateEstimatedCost(output.modelId, { durationSec: outputDuration });
-  const prompt = "Maya recreates the snake plant intro, same framing and gestures.";
-  const sourceVideo = {
-    sourceId: CLONE_SOURCE_ID,
-    label,
-    originalUrl,
-    localPath: source.path,
-    filename: basename(source.path),
-    durationSec,
-    width: source.width,
-    height: source.height,
-  };
-
-  part.jobs = [
-    {
+    part.jobs.push({
       id: jobId,
       type: "video",
       model: output.modelId,
@@ -104,13 +127,13 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
         tiktokSourceId: CLONE_SOURCE_ID,
         tiktokVideoPath: source.path,
         avatarId,
-        avatarName: "Maya",
+        avatarName: take.name,
         prompt,
         keepOriginalSound: false,
         modelId: output.modelId,
         durationSec: outputDuration,
         removeTextOverlays: false,
-        identityPackId: identityPackIdFor("maya"),
+        identityPackId: identityPackIdFor(take.slug),
         ...(reference ? { savedReferenceId: referenceId } : {}),
         sourceVideo,
         sourceVideoSnapshot: sourceVideo,
@@ -132,10 +155,8 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
       createdAt,
       startedAt: new Date(createdAt.getTime() + 3_000),
       completedAt,
-    },
-  ];
-  part.files = [
-    {
+    });
+    part.files.push({
       id: fileId,
       jobId,
       type: "video",
@@ -147,12 +168,10 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
       height: output.height,
       durationSec: output.durationSec ?? outputDuration,
       fileSizeBytes: output.fileSizeBytes,
-      reviewStatus: "needs_review",
+      reviewStatus: take.review,
       createdAt: completedAt,
-    },
-  ];
-  part.costLogs = [
-    {
+    });
+    part.costLogs.push({
       id: demoId(`cost:${output.path}`),
       jobId,
       model: output.modelId,
@@ -160,7 +179,7 @@ export function buildCloneSeed(manifest: DemoManifest, now: Date): DemoSeedPart 
       amount: cost,
       details: { durationSec: outputDuration, prompt, textErasureCost: 0 },
       createdAt: completedAt,
-    },
-  ];
+    });
+  }
   return part;
 }

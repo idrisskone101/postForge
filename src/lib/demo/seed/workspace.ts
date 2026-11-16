@@ -8,8 +8,8 @@ import { basename, before, demoId, type Age } from "./seed-utils";
 import type { DemoSeedPart } from "./types";
 
 export const COLLECTION_IDS = {
-  sunlit: demoId("collection:sunlit-apartment-jungle"),
-  terracotta: demoId("collection:terracotta-and-soil"),
+  streets: demoId("collection:cafes-and-streets-abroad"),
+  desk: demoId("collection:study-desk-details"),
 } as const;
 
 /**
@@ -42,18 +42,18 @@ export function buildWorkspaceSeed(manifest: DemoManifest, now: Date): DemoSeedP
 
 const COLLECTIONS = [
   {
-    id: COLLECTION_IDS.sunlit,
-    name: "Sunlit apartment jungle",
+    id: COLLECTION_IDS.streets,
+    name: "Cafés and streets abroad",
     prefix: "ca",
     age: { days: 13, hours: 2 },
-    labels: ["Living room", "Bedroom corner", "Bathroom shelf", "Kitchen windowsill", "Hallway", "Home office"],
+    labels: ["Lisbon tram street", "Mexico City café", "Tokyo lantern alley", "Roman piazza", "Paris bakery", "Barcelona market"],
   },
   {
-    id: COLLECTION_IDS.terracotta,
-    name: "Terracotta and soil details",
+    id: COLLECTION_IDS.desk,
+    name: "Study desk details",
     prefix: "cb",
     age: { days: 9, hours: 5 },
-    labels: ["Pot rim", "Potting soil", "Exposed roots", "Backlit leaf veins", "Water droplets", "Stacked pots"],
+    labels: ["Flashcards", "Verb table", "Earbuds and notes", "Passport and boarding pass", "Phone and cortado", "Mirror sticky notes"],
   },
 ] as const;
 
@@ -108,40 +108,40 @@ type AutomationSample = {
 
 const AUTOMATIONS: AutomationSample[] = [
   {
-    key: "quick-wins",
+    key: "phrase-of-the-day",
     template: "quick-wins",
-    name: "3 quick plant wins",
+    name: "Phrase of the day",
     status: "paused",
     days: ["Tue", "Thu", "Sat"],
     time: "08:30",
-    hook: "3 fixes for a drooping plant you can do today",
-    guidance: "One practical tip per slide, written the way a friend would say it.",
-    collectionId: COLLECTION_IDS.sunlit,
+    hook: "3 phrases that save you in any café abroad",
+    guidance: "One phrase per slide: what it means and when locals actually use it.",
+    collectionId: COLLECTION_IDS.streets,
     created: { days: 12 },
     lastRun: { days: 2, hours: 3 },
   },
   {
-    key: "myth-reality",
+    key: "language-myths",
     template: "myth-reality",
-    name: "Plant myths, corrected",
+    name: "Language myths, corrected",
     status: "paused",
     days: ["Mon", "Fri"],
     time: "12:00",
-    hook: "No, your plant does not need water every day",
+    hook: "No, you do not need to be fluent before your trip",
     guidance: "Name the myth, show what actually happens, then give the simple rule.",
-    collectionId: COLLECTION_IDS.terracotta,
+    collectionId: COLLECTION_IDS.desk,
     created: { days: 8 },
     lastRun: { days: 4, hours: 1 },
   },
   {
-    key: "story-lesson",
+    key: "first-conversation",
     template: "story-lesson",
-    name: "What my first monstera taught me",
+    name: "First real conversation stories",
     status: "draft",
     days: ["Wed"],
     time: "18:15",
-    hook: "I nearly killed my first monstera in a month",
-    guidance: "Tell it as a short personal story with one lesson per slide.",
+    hook: "I spoke Spanish with my partner's grandma for the first time",
+    guidance: "Tell it as a short personal story with one milestone per slide.",
     collectionId: null,
     created: { days: 1, hours: 4 },
     lastRun: null,
@@ -175,22 +175,22 @@ function automationRecords(now: Date): AutomationRecord[] {
 function promptTemplates(now: Date): PromptTemplateRecord[] {
   const templates = [
     {
-      key: "window-light",
-      name: "Window-light lifestyle shot",
+      key: "creator-abroad",
+      name: "Creator at a café abroad",
       prompt:
-        "Vertical lifestyle photo of [subject] beside a bright window, soft morning light, shallow depth of field, warm natural tones, shot on a smartphone, photorealistic. No text, no logos.",
+        "The same person as in the reference image, sitting at a small outdoor café table in [city], ordering from a waiter at the edge of the frame, mid sentence and confident, golden light, vertical candid travel photo, photorealistic. No text, no logos, no watermarks.",
     },
     {
-      key: "flat-lay",
-      name: "Tidy overhead flat lay",
+      key: "app-on-phone",
+      name: "Saylo screen on a phone",
       prompt:
-        "Overhead flat lay of [items] on a light oak table, soft diffused daylight, tidy editorial arrangement, earthy palette, photorealistic. No text, no logos.",
+        "Vertical candid lifestyle photo of a phone in [scene]. The screen clearly shows the Saylo language app: warm cream background, deep indigo text, coral accent, rounded sans-serif type. Screen content: [exact on-screen text]. All on-screen text spelled exactly as written. No other text, no logos.",
     },
     {
-      key: "creator-to-camera",
-      name: "Creator talking to camera",
+      key: "desk-flat-lay",
+      name: "Study desk flat lay",
       prompt:
-        "Vertical smartphone still of [creator] holding [object] at chest height and talking to the camera, bright living room, natural daylight, candid creator look, photorealistic. No text, no captions.",
+        "Overhead flat lay of [items] on a light oak desk, soft diffused daylight, tidy editorial arrangement, warm natural palette, photorealistic. No logos, no watermarks.",
     },
   ];
   return templates.map((template, index) => {
@@ -206,27 +206,30 @@ function promptTemplates(now: Date): PromptTemplateRecord[] {
   });
 }
 
-/** Rows of the sample report: title, days ago, views, likes, comments, shares, saves. */
+/**
+ * Rows of the sample report: title, days ago, views, likes, comments, shares,
+ * saves. Every title is a post that exists in this workspace, so a visitor can
+ * trace the best performer back to the slideshow and creator behind it.
+ */
 const SAMPLE_POSTS: ReadonlyArray<readonly [string, number, number, number, number, number, number]> = [
-  ["3 houseplants that survive anything", 4, 48_200, 5_310, 212, 1_480, 6_920],
-  ["Why your monstera has yellow leaves", 2, 21_700, 2_040, 164, 590, 2_310],
-  ["Snake plant intro with Maya", 1, 9_850, 870, 61, 140, 402],
-  ["The watering mistake almost everyone makes", 7, 33_900, 3_480, 298, 1_120, 4_050],
-  ["Repotting day flat lay", 9, 6_420, 512, 23, 48, 190],
-  ["Low-light plants that actually grow", 11, 27_300, 2_760, 143, 820, 3_640],
-  ["Peace lily, before and after", 13, 14_100, 1_390, 97, 260, 880],
-  ["Reading nook plant tour", 16, 8_240, 705, 38, 92, 310],
-  ["Balcony herbs in ten minutes a week", 18, 17_600, 1_820, 121, 430, 1_540],
-  ["What my first monstera taught me", 21, 11_300, 1_040, 204, 180, 620],
-  ["Wipe your leaves, here is why", 24, 5_180, 398, 19, 41, 150],
-  ["Unboxing a plant delivery", 27, 7_910, 640, 44, 77, 205],
+  ["I spoke Spanish with my partner's grandma for the first time", 3, 312_400, 41_900, 2_310, 9_840, 18_600],
+  ["POV: the waiter answered in Spanish (Marcus)", 1, 96_800, 9_120, 640, 2_210, 3_050],
+  ["3 Spanish phrases textbooks never teach you", 5, 74_300, 6_880, 412, 3_960, 11_200],
+  ["Grandma laughing at my Spanish", 1, 58_200, 7_340, 518, 1_420, 2_260],
+  ["Ordering in Rome with Ava", 1, 21_600, 1_980, 133, 310, 720],
+  ["Saylo café role-play, screen demo", 2, 18_900, 1_410, 96, 240, 1_130],
+  ["How long it takes to learn Spanish, honestly", 14, 15_300, 1_220, 188, 205, 940],
+  ["Why apps do not make you fluent", 9, 12_400, 980, 154, 170, 610],
+  ["5 phrases to learn before you board", 8, 9_860, 760, 41, 120, 880],
+  ["Rome at golden hour, phrase of the day", 11, 7_450, 690, 22, 64, 210],
+  ["The fridge label method", 12, 6_120, 470, 35, 52, 390],
 ];
 
 function performanceDataset(now: Date): PerformanceDataset {
   return {
     id: "performance-dataset",
     source: "csv",
-    accountLabel: "loamly-sample-posts.csv",
+    accountLabel: "saylo-sample-posts.csv",
     importedAt: before(now, { hours: 6 }).toISOString(),
     posts: SAMPLE_POSTS.map(([title, daysAgo, views, likes, comments, shares, saves], index) => ({
       id: `sample-post-${index + 1}`,
