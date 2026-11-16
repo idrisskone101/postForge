@@ -51,8 +51,9 @@ export function formatPublishedDate(value: string | null): string {
   });
 }
 
-export function getInspirationThumbnailSrc(videoId: string, updatedAt: string): string {
-  return `/api/ugc-inspiration/videos/${videoId}/thumbnail?v=${encodeURIComponent(updatedAt)}`;
+export function getInspirationThumbnailSrc(videoId: string, updatedAt: string, retry = 0): string {
+  const base = `/api/ugc-inspiration/videos/${videoId}/thumbnail?v=${encodeURIComponent(updatedAt)}`;
+  return retry ? `${base}&retry=${retry}` : base;
 }
 
 export function getInspirationAvatarSrc(accountId: string, updatedAt: string): string {

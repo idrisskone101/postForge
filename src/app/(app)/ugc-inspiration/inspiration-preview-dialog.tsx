@@ -180,7 +180,7 @@ function PreviewStage({
         {embedState !== "failed" && !thumbnailFailed && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+            src={getInspirationThumbnailSrc(video.id, video.updatedAt, workspace.thumbnailRetries[video.id])}
             alt=""
             aria-hidden="true"
             className="absolute inset-0 size-full object-cover"
@@ -203,11 +203,14 @@ function PreviewStage({
         )}
 
         {embedState === "loading" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-fg-secondary">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <span className="flex size-11 items-center justify-center rounded-full bg-[var(--pf-scrim)] text-[var(--pf-on-media)]">
               <Icon name="clock" size={18} />
             </span>
-            <p className="text-[13px] font-medium">Loading TikTok preview</p>
+            {/* The label sits on the cover, so it carries its own backdrop to stay readable. */}
+            <p className="rounded-full bg-[var(--pf-scrim)] px-3 py-1 text-[13px] font-medium text-[var(--pf-on-media)]">
+              Loading TikTok preview
+            </p>
           </div>
         )}
 
@@ -216,7 +219,7 @@ function PreviewStage({
             {!thumbnailFailed && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                src={getInspirationThumbnailSrc(video.id, video.updatedAt, workspace.thumbnailRetries[video.id])}
                 alt=""
                 className="absolute inset-0 size-full object-cover"
                 onError={() => markThumbnailError(video.id)}

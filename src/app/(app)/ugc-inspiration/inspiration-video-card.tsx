@@ -99,7 +99,7 @@ export function InspirationVideoCard({
           ) : (
             <>
               <MediaImage
-                src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+                src={getInspirationThumbnailSrc(video.id, video.updatedAt, workspace.thumbnailRetries[video.id])}
                 alt=""
                 loading="lazy"
                 decoding="async"

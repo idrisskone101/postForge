@@ -64,6 +64,7 @@ export function useInspirationWorkspace({
   const [copiedVideoId, setCopiedVideoId] = useState<string | null>(null);
   const [embedState, setEmbedState] = useState<"idle" | "loading" | "ready" | "failed">("idle");
   const [thumbnailErrorIds, setThumbnailErrorIds] = useState<string[]>([]);
+  const [thumbnailRetries, setThumbnailRetries] = useState<Record<string, number>>({});
   const didMountSearch = useRef(false);
   const replaceVideoPageRef = useRef<
     (query?: VideoPageQuery) => Promise<void>
@@ -316,8 +317,14 @@ export function useInspirationWorkspace({
     }
   }
 
+  // An expired cover is refreshed on the server after a first miss, so the tile tries once more.
   function markThumbnailError(videoId: string) {
     setThumbnailErrorIds((prev) => withId(prev, videoId));
+    if ((thumbnailRetries[videoId] ?? 0) >= THUMBNAIL_RETRIES) return;
+    window.setTimeout(() => {
+      setThumbnailRetries((prev) => ({ ...prev, [videoId]: (prev[videoId] ?? 0) + 1 }));
+      setThumbnailErrorIds((prev) => withoutId(prev, videoId));
+    }, THUMBNAIL_RETRY_MS);
   }
 
   function clearThumbnailError(videoId: string) {
@@ -360,6 +367,7 @@ export function useInspirationWorkspace({
     embedState,
     setEmbedState,
     thumbnailErrorIds,
+    thumbnailRetries,
     selectedAccount,
     selectedVideo,
     trackedVideoCount,
@@ -376,3 +384,6 @@ export function useInspirationWorkspace({
     clearThumbnailError,
   };
 }
+
+const THUMBNAIL_RETRIES = 2;
+const THUMBNAIL_RETRY_MS = 6000;

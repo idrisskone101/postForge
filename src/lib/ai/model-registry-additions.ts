@@ -131,7 +131,7 @@ export const MODEL_REGISTRY_ADDITIONS: Record<string, ModelDefinition> = {
       videoToVideo: true,
     },
     defaults: { aspectRatio: "9:16", duration: 5 },
-    limits: { minDuration: 3, maxDuration: 30, aspectRatios: ["9:16", "16:9", "1:1"] },
+    limits: { minDuration: 3, maxDuration: 30, aspectRatios: [] },
   },
   "kling-4.0-flash": {
     id: "kling-4.0-flash",
@@ -196,7 +196,7 @@ export const MODEL_REGISTRY_ADDITIONS: Record<string, ModelDefinition> = {
       nativeAudio: true,
     },
     defaults: { aspectRatio: "9:16", duration: 8 },
-    limits: { minDuration: 4, maxDuration: 30, aspectRatios: ["9:16", "16:9", "1:1"] },
+    limits: { minDuration: 4, maxDuration: 30, aspectRatios: [] },
   },
   "wan-3.0": {
     id: "wan-3.0",
@@ -226,7 +226,7 @@ export const MODEL_REGISTRY_ADDITIONS: Record<string, ModelDefinition> = {
       nativeAudio: true,
     },
     defaults: { aspectRatio: "9:16", duration: 5 },
-    limits: { minDuration: 2, maxDuration: 30, aspectRatios: ["9:16", "16:9", "1:1"] },
+    limits: { minDuration: 2, maxDuration: 30, aspectRatios: [] },
   },
   "gemini-omni-flash-1.2": {
     id: "gemini-omni-flash-1.2",
