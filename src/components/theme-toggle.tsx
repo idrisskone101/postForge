@@ -6,12 +6,19 @@ import { cn } from "@/lib/utils";
 export function ThemeToggle({ className }: { className?: string }) {
   const toggle = () => {
     const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("postforge-theme", next ? "dark" : "light");
-    } catch {
-      // Theme still toggles for the session when storage is unavailable.
-    }
+    const apply = () => {
+      document.documentElement.classList.toggle("dark", next);
+      try {
+        localStorage.setItem("postforge-theme", next ? "dark" : "light");
+      } catch {
+        // Theme still toggles for the session when storage is unavailable.
+      }
+    };
+    // The whole page cross-fades between themes. Without view transitions, or with reduced motion,
+    // the colours switch at once as before.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || typeof document.startViewTransition !== "function") return apply();
+    document.startViewTransition(apply);
   };
 
   return (

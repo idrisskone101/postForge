@@ -203,6 +203,13 @@
   }
 }
 
+/* The theme toggle cross-fades the whole page through a view transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--pf-dur-state);
+  animation-timing-function: var(--pf-ease);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
