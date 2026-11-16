@@ -13,6 +13,7 @@ import {
   readWorkspaceFeatureRecords,
   updateWorkspaceFeatureRecords,
 } from "@/lib/workspace-feature-store";
+import { isDemoMode } from "@/lib/demo/mode";
 
 const SCHEDULER_INTERVAL_MS = 30_000;
 const STALE_THRESHOLD_MS = SCHEDULER_INTERVAL_MS * 3;
@@ -166,6 +167,8 @@ async function runWorkerTickWithoutOverlap() {
 }
 
 export function ensureAutomationSchedulerRunning() {
+  // Sample automations in the demo workspace are display-only.
+  if (isDemoMode()) return;
   if (!schedulerIsRunning()) {
     globalForAutomationScheduler.__postforge_automation_scheduler_ticking = false;
     globalForAutomationScheduler.__postforge_automation_scheduler_heartbeat =

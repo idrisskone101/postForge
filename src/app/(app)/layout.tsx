@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { ClickFocus } from "@/components/click-focus";
+import { DemoBlockedNotice } from "@/components/demo-blocked-notice";
 import { FocusReveal } from "@/components/focus-reveal";
 import { ScrollFadeFallback } from "@/components/scroll-fade-fallback";
 import { ShellStateSync } from "@/components/shell-state-sync";
 import { Sidebar } from "@/components/sidebar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { isMissingPagePath } from "@/lib/app-routes";
+import { isDemoMode } from "@/lib/demo/mode";
 import { getActiveWorkspaceItem } from "@/lib/workspace-navigation";
 import { readWorkspaceName } from "@/lib/workspace-name";
 import { FIRST_PAINT_CSS } from "../first-paint-css";
@@ -45,6 +47,7 @@ export default async function AppLayout({
           </a>
           <Sidebar initialWorkspaceName={workspaceName} />
           <WorkspaceShell pathname={pathname}>{children}</WorkspaceShell>
+          {isDemoMode() ? <DemoBlockedNotice /> : null}
         </div>
         <FocusReveal />
         <ClickFocus />
@@ -64,9 +67,12 @@ export async function generateMetadata(): Promise<Metadata> {
       : isMissingPagePath(pathname)
         ? "Page not found"
         : getActiveWorkspaceItem(pathname)?.label;
+  const product = isDemoMode() ? "PostForge demo" : "PostForge";
   return {
-    title: section ? `${section} - PostForge` : "PostForge",
-    description: "Self-hosted AI content generation platform",
+    title: section ? `${section} - ${product}` : product,
+    description: isDemoMode()
+      ? "Demo workspace for PostForge, a self-hosted AI content pipeline. Sample data only."
+      : "Self-hosted AI content generation platform",
   };
 }
 

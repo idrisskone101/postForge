@@ -9,6 +9,7 @@ import { downloadFromUrl, storage } from "@/lib/storage";
 import { clearCloneQueueLock, ensureCloneQueueSchema } from "@/lib/ugc/clone-queue-store";
 import { processCloneJob } from "@/lib/ugc/generate-clone";
 import type { GenerationJob } from "@/generated/prisma/client";
+import { isDemoMode } from "@/lib/demo/mode";
 
 const UGC_CLONE_TAG = "ugc-clone";
 const DEFAULT_ACTIVE_LIMIT = 2;
@@ -52,6 +53,8 @@ function isWorkerRunning(): boolean {
 }
 
 export function ensureCloneWorkerRunning(): void {
+  // Sample clone jobs in the demo workspace must never be claimed and run.
+  if (isDemoMode()) return;
   if (!globalForCloneWorker.__postforge_clone_worker_inflight) {
     globalForCloneWorker.__postforge_clone_worker_inflight = new Set<string>();
   }

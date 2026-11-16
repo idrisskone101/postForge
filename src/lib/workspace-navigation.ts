@@ -1,4 +1,5 @@
 import { isAppPagePath } from "@/lib/app-routes";
+import { isDemoMode } from "@/lib/demo/mode";
 
 export type WorkspaceNavigationLabel =
   | "Home"
@@ -31,7 +32,7 @@ export type WorkspaceNavigationItem = {
   primaryAction?: WorkspacePrimaryAction;
 };
 
-export const workspaceNavigationGroups = {
+const fullWorkspaceNavigationGroups = {
   overview: [
     {
       label: "Home",
@@ -88,6 +89,17 @@ export const workspaceNavigationGroups = {
   ],
   utility: [{ label: "Settings", href: "/settings", match: ["/settings"] }],
 } as const satisfies Record<string, WorkspaceNavigationItem[]>;
+
+/** The demo workspace does not carry Inspiration, which shows other creators' posts. */
+export function withoutInspiration(
+  items: readonly WorkspaceNavigationItem[]
+): WorkspaceNavigationItem[] {
+  return items.filter((item) => item.href !== "/ugc-inspiration");
+}
+
+export const workspaceNavigationGroups = isDemoMode()
+  ? { ...fullWorkspaceNavigationGroups, create: withoutInspiration(fullWorkspaceNavigationGroups.create) }
+  : fullWorkspaceNavigationGroups;
 
 /** Sidebar order: four unlabelled groups separated by a 20px gap. */
 export const workspaceSidebarGroups: readonly (readonly WorkspaceNavigationItem[])[] = [

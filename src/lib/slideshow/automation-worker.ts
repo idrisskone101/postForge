@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { automationInclude } from "@/lib/slideshow/automation-draft";
 import { processDueAutomation } from "@/lib/slideshow/automation-run";
+import { isDemoMode } from "@/lib/demo/mode";
 
 const DEFAULT_TICK_INTERVAL_MS = 30_000;
 const DEFAULT_BATCH_SIZE = 5;
@@ -45,6 +46,8 @@ function isWorkerRunning() {
 }
 
 export function ensureSlideshowAutomationWorkerRunning(): void {
+  // Sample automations in the demo workspace are display-only.
+  if (isDemoMode()) return;
   if (process.env.SLIDESHOW_AUTOMATION_WORKER_DISABLED === "1") return;
   if (isWorkerRunning()) return;
 

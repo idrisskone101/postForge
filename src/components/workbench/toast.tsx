@@ -6,7 +6,7 @@ import { Icon } from "./icon";
 
 export type ToastMessage = {
   id: string;
-  tone: "ok" | "bad";
+  tone: "ok" | "warn" | "bad";
   message: string;
   /** One inline action, e.g. Undo or Retry. */
   action?: { label: string; onClick: () => void };
@@ -18,7 +18,7 @@ type ToastProps = {
 };
 
 /**
- * One toast. Success leaves after 5s; failures stay until dismissed.
+ * One toast. Success and warnings leave after 5s; failures stay until dismissed.
  * Render toasts inside a `<div className="wb-toast-region">`.
  */
 export function Toast({ toast, onDismiss }: ToastProps) {
@@ -41,7 +41,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       data-leaving={leaving ? "true" : undefined}
     >
       <span className={cn("wb-status-badge", "size-5")} data-tone={tone}>
-        <Icon name={tone === "bad" ? "exclamation" : "check"} size={12} strokeWidth={3} />
+        <Icon name={TONE_ICON[tone]} size={12} strokeWidth={3} />
       </span>
       <span className="wb-toast-message">{toast.message}</span>
       {toast.action && (
@@ -70,5 +70,6 @@ export function Toast({ toast, onDismiss }: ToastProps) {
   );
 }
 
+const TONE_ICON = { ok: "check", warn: "exclamation", bad: "exclamation" } as const;
 const AUTO_DISMISS_MS = 5000;
 const EXIT_MS = 160;

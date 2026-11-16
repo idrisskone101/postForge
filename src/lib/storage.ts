@@ -1,4 +1,6 @@
+import { isDemoMode } from "./demo/mode";
 import { DatabaseStorageDriver } from "./storage/database";
+import { DemoStorageDriver } from "./storage/demo";
 import { LocalStorageDriver } from "./storage/local";
 import {
   RailwayS3StorageDriver,
@@ -39,6 +41,10 @@ export async function downloadFromUrl(
 }
 
 function createStorageProvider(): StorageProvider {
+  // A demo build never touches the operator's bucket or output folder,
+  // whatever STORAGE_DRIVER says.
+  if (isDemoMode()) return new DemoStorageDriver();
+
   switch (process.env.STORAGE_DRIVER) {
     case "local":
       return new LocalStorageDriver();

@@ -8,9 +8,11 @@ import { getCostSummary } from "@/lib/costs/tracker";
 import { getHomeActiveJobCutoff } from "@/lib/jobs/home-active";
 import { getPendingReviewHomeJobs } from "@/lib/jobs/home-review";
 import { getHomeJobProductionMetadata } from "@/lib/jobs/home-production-context";
+import { isDemoMode } from "@/lib/demo/mode";
 import { workspaceNavigationGroups } from "@/lib/workspace-navigation";
 import { HomeCockpit } from "./home-cockpit";
 import { cloneSourceTitle } from "@/components/clone/clone-source-title";
+import { HomeDemoIntro } from "./home-demo-intro";
 import { HomeLoadFailed } from "./home-failed";
 import HomeLoading from "./home-loading";
 import type { HomeDashboard as HomeDashboardData, HomeJob } from "./home-types";
@@ -26,6 +28,7 @@ export default async function HomePage() {
           {HOME_PRIMARY.label}
         </Link>
       </PageHeader>
+      {isDemoMode() ? <HomeDemoIntro /> : null}
       <Suspense fallback={<HomeLoading />}>
         <HomeDashboard />
       </Suspense>

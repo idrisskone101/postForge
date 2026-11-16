@@ -6,6 +6,8 @@ import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from 
 import { SidebarNav, SidebarNavItem } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icon } from "@/components/workbench/icon";
+import { StatusChip } from "@/components/workbench/status-chip";
+import { demoResetIntervalMinutes, isDemoMode } from "@/lib/demo/mode";
 import { lockPageScroll } from "@/lib/page-scroll-lock";
 import { readOptionalStorage, writeOptionalStorage } from "@/lib/optional-storage";
 import { isPublicPolicyPath } from "@/lib/public-policy-routes";
@@ -74,6 +76,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
     <>
       <div id="workspace-mobile-bar">
         <PostForgeBrand name={workspaceName} />
+        {DEMO && <DemoBadge className="mr-auto" />}
         <button
           type="button"
           ref={menuButtonRef}
@@ -143,6 +146,7 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
         <div className="sidebar-top">
           <div className="sidebar-header">
             <PostForgeBrand name={workspaceName} />
+            {DEMO && <DemoBadge className="sidebar-expanded-only" />}
             <button
               type="button"
               onClick={toggleCollapsed}
@@ -166,6 +170,19 @@ export function Sidebar({ initialWorkspaceName }: { initialWorkspaceName?: strin
 
 const SETTINGS_ITEM = workspaceNavigationGroups.utility[0];
 const COLLAPSED_STORAGE_KEY = "postforge-sidebar-collapsed";
+
+const DEMO = isDemoMode();
+
+/** Demo builds only: says the workspace is sample data that restores itself. */
+function DemoBadge({ className }: { className?: string }) {
+  const minutes = demoResetIntervalMinutes();
+  const cadence = minutes === 60 ? "every hour" : `every ${minutes} minutes`;
+  return (
+    <span title={`Sample data. The demo restores itself ${cadence}.`} className={className}>
+      <StatusChip>Demo</StatusChip>
+    </span>
+  );
+}
 
 function SidebarFoot({ active, onNavigate }: { active: boolean; onNavigate?: () => void }) {
   return (
