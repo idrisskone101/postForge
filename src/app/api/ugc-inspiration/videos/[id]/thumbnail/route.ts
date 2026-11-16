@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { resolveTikTokThumbnailWithYtDlp } from "@/lib/inspiration/fresh-thumbnail";
 
 const REQUEST_TIMEOUT_MS = 10_000;
 const IMAGE_ACCEPT_HEADER =
@@ -189,7 +190,9 @@ export async function GET(
       }
     }
 
-    const freshUrl = await resolveFreshThumbnailUrl(video.originalUrl);
+    const freshUrl =
+      (await resolveFreshThumbnailUrl(video.originalUrl)) ??
+      (await resolveTikTokThumbnailWithYtDlp(video.originalUrl));
     if (freshUrl && !attempted.has(freshUrl)) {
       const image = await fetchImageBytes(freshUrl);
       if (image) {
