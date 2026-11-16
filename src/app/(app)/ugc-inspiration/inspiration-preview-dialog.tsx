@@ -176,13 +176,23 @@ function PreviewStage({
   return (
     <div className="flex min-h-[272px] min-w-0 items-center justify-center bg-well p-4 lg:p-6">
       <div className="relative aspect-[9/16] h-[clamp(240px,37dvh,560px)] max-w-full overflow-hidden rounded-lg bg-media lg:h-full">
+        {/* TikTok's player paints a few seconds after its page loads, so the cover sits behind it meanwhile. */}
+        {embedState !== "failed" && !thumbnailFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={getInspirationThumbnailSrc(video.id, video.updatedAt)}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 size-full object-cover"
+          />
+        )}
         {embedState !== "failed" && (
           <iframe
             key={video.id}
             src={video.embedUrl ?? `https://www.tiktok.com/embed/v3/${video.externalVideoId}`}
             title={`TikTok preview for ${video.creatorHandle}`}
             className={cn(
-              "size-full transition-opacity duration-[var(--pf-dur-state)] ease-pf",
+              "relative size-full transition-opacity duration-[var(--pf-dur-state)] ease-pf",
               embedState === "loading" ? "opacity-0" : "opacity-100"
             )}
             allow="encrypted-media; picture-in-picture"
