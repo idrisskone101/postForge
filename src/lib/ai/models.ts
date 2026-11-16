@@ -162,7 +162,12 @@ function explicitImageSize(aspectRatio: string) {
 
 // Endpoints that size by aspect_ratio, or whose safety_tolerance scale differs
 // from the "6" every image payload starts with.
+// The Nano Banana endpoints take aspect_ratio and have no image_size field; an image_size is
+// ignored and fal falls back to its own default ratio ("auto" or 1:1).
 const FAL_IMAGE_SIZING: Record<string, (aspectRatio: string) => Record<string, unknown>> = {
+  "nano-banana": (aspectRatio) => ({ aspect_ratio: aspectRatio }),
+  "nano-banana-2": (aspectRatio) => ({ aspect_ratio: aspectRatio }),
+  "nano-banana-pro": (aspectRatio) => ({ aspect_ratio: aspectRatio }),
   "nano-banana-2.1": (aspectRatio) => ({ aspect_ratio: aspectRatio }),
   "muse-image": (aspectRatio) => ({ aspect_ratio: aspectRatio, output_format: "png" }),
   "flux-3": (aspectRatio) => ({ aspect_ratio: aspectRatio, resolution: "1k", safety_tolerance: 4 }),

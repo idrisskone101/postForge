@@ -83,7 +83,11 @@ assert.equal(ideogram.payload.image_size, "portrait_16_9");
 const zImage = buildImageProviderRequest({ prompt: "Fast", model: "z-image-turbo", aspectRatio: "16:9" });
 assert.deepEqual(zImage.payload.image_size, { width: 2048, height: 1152 });
 
-const nanoBanana2 = buildImageProviderRequest({ prompt: "Legacy", model: "nano-banana-2", aspectRatio: "9:16" });
-assert.equal(nanoBanana2.payload.image_size, "portrait_9_16");
+// fal's Nano Banana schemas take aspect_ratio and have no image_size field.
+for (const model of ["nano-banana", "nano-banana-2", "nano-banana-pro"]) {
+  const request = buildImageProviderRequest({ prompt: "Ratio", model, aspectRatio: "9:16" });
+  assert.equal(request.payload.aspect_ratio, "9:16", `${model} sends aspect_ratio`);
+  assert.equal(request.payload.image_size, undefined, `${model} sends no image_size`);
+}
 
 console.log("generate-image payload tests passed");
