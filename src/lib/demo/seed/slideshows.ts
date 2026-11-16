@@ -37,10 +37,10 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
       settings: {
         aspectRatio: "9:16",
         imageGrid: "none",
-        darkOverlay: { enabled: true, opacity: 45 },
+        darkOverlay: { enabled: true, opacity: 35 },
         displayText: true,
         phaseSettings: DEFAULT_PROJECT_SETTINGS.phaseSettings,
-        textSettings: TEXT,
+        textSettings: { ...TEXT, size: project.text.size, position: project.text.position },
         includeCta: true,
         preventRepeats: true,
         language: "English",
@@ -94,16 +94,16 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
         },
         settings: {
           fontFamily: TEXT.font,
-          fontSize: TEXT.size,
+          fontSize: project.text.size,
           textColor: DEFAULT_SLIDE_SETTINGS.textColor,
           textStyle: TEXT.style,
           textAlign: TEXT.align,
-          verticalPosition: TEXT.position,
+          verticalPosition: project.text.position,
           textWidth: TEXT.width,
           backgroundRadius: TEXT.backgroundRadius,
           padded: true,
         },
-        layout: { text: { x: 50, y: 50, width: TEXT.width } },
+        layout: { text: { x: 50, y: project.text.position === "top" ? 24 : 50, width: TEXT.width } },
         createdAt: updatedAt,
         updatedAt,
       });
@@ -130,6 +130,12 @@ type SampleProject = {
   status: SlideshowProjectStatus;
   age: Age;
   exports: Age[];
+  /**
+   * Project-wide copy size and position. Long hooks need a smaller size to fit
+   * the 9:16 frame, and decks that end on a Saylo app shot keep their copy at
+   * the top so the phone screen stays visible.
+   */
+  text: { size: number; position: "top" | "center" };
   slides: SlideCopy[];
 };
 
@@ -144,8 +150,9 @@ const PROJECTS: SampleProject[] = [
     status: "draft",
     age: { hours: 19 },
     exports: [],
+    text: { size: 36, position: "center" },
     slides: [
-      { image: "sc1", eyebrow: "", headline: "You understand Spanish but freeze when you speak", body: "It is not your memory. It is your practice." },
+      { image: "sc1", eyebrow: "", headline: "Why you freeze when you speak Spanish", body: "It is not your memory. It is your practice." },
       { image: "sc2", eyebrow: "01", headline: "You trained your eyes, not your mouth", body: "Flashcards and tapping teach you to recognise words." },
       { image: "sc3", eyebrow: "02", headline: "Speaking is its own skill", body: "It only grows when you say things out loud." },
       { image: "sc4", eyebrow: "03", headline: "Practise the real moments", body: "Ordering, small talk, asking for directions." },
@@ -160,12 +167,13 @@ const PROJECTS: SampleProject[] = [
     status: "ready",
     age: { days: 3, hours: 3 },
     exports: [{ days: 3, hours: 1 }],
+    text: { size: 34, position: "top" },
     slides: [
-      { image: "sb1", eyebrow: "", headline: "I spoke Spanish with my partner's grandma for the first time", body: "Two years of nodding along at dinner. Not anymore." },
+      { image: "sb1", eyebrow: "", headline: "I spoke Spanish with my partner's grandma", body: "After two years of nodding along at dinner." },
       { image: "sb2", eyebrow: "Week 1", headline: "Ten minutes a night", body: "I practised real conversations with an AI tutor before bed." },
       { image: "sb3", eyebrow: "Week 6", headline: "The first sentence was the hardest", body: "She switched to Spanish and never switched back." },
       { image: "sb4", eyebrow: "Week 8", headline: "Then she told me stories", body: "Ones my partner had never heard either." },
-      { image: "g11-app-nightstand-streak", eyebrow: "", headline: "Start with tonight", body: "Saylo builds the conversations you actually need." },
+      { image: "sb5", eyebrow: "", headline: "Start with tonight", body: "Saylo builds the conversations you actually need." },
     ],
   },
   {
@@ -176,12 +184,13 @@ const PROJECTS: SampleProject[] = [
     status: "ready",
     age: { days: 6 },
     exports: [{ days: 5, hours: 22 }, { days: 4, hours: 6 }],
+    text: { size: 38, position: "top" },
     slides: [
       { image: "sa1", eyebrow: "", headline: "3 Spanish phrases textbooks never teach you", body: "And locals use them every day" },
       { image: "sa2", eyebrow: "01", headline: "¿Qué onda?", body: "What's up. Use it with friends instead of ¿Cómo estás?" },
       { image: "sa3", eyebrow: "02", headline: "Ahorita", body: "Right now. Which can mean in five minutes, or never." },
       { image: "sa4", eyebrow: "03", headline: "Me late", body: "I'm into it. Say it when a plan sounds good." },
-      { image: "g10-app-cafe-conversation", eyebrow: "", headline: "Say them out loud", body: "Saylo's tutor listens and corrects your accent." },
+      { image: "sa5", eyebrow: "", headline: "Say them out loud", body: "" },
     ],
   },
 ];

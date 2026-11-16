@@ -23,7 +23,7 @@ export function HomeDemoIntro() {
             <li key={stop.href} className="flex">
               <Link
                 href={stop.href}
-                className="group flex w-full items-start gap-3 rounded-[12px] bg-raised p-4 transition-colors duration-150 hover:bg-raised-strong"
+                className="group flex w-full items-center gap-3 rounded-[12px] bg-raised px-4 py-3 sm:items-start sm:py-4 transition-colors duration-150 hover:bg-raised-strong"
               >
                 <span
                   aria-hidden="true"
@@ -33,12 +33,14 @@ export function HomeDemoIntro() {
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="text-[14px] font-semibold leading-5 text-fg">{stop.title}</span>
-                  <span className="text-[13px] leading-[18px] text-fg-muted">{stop.detail}</span>
+                  <span className="hidden text-[13px] leading-[18px] text-fg-muted sm:block">
+                    {stop.detail}
+                  </span>
                 </span>
                 <Icon
                   name="chevron-right"
                   size={16}
-                  className="mt-0.5 shrink-0 text-fg-muted transition-transform duration-150 group-hover:translate-x-0.5"
+                  className="shrink-0 text-fg-muted sm:mt-0.5 transition-transform duration-150 group-hover:translate-x-0.5"
                 />
               </Link>
             </li>

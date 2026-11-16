@@ -208,21 +208,20 @@ function promptTemplates(now: Date): PromptTemplateRecord[] {
 
 /**
  * Rows of the sample report: title, days ago, views, likes, comments, shares,
- * saves. Every title is a post that exists in this workspace, so a visitor can
- * trace the best performer back to the slideshow and creator behind it.
+ * saves. Every title is a post made from an approved item in this workspace and
+ * published after that item existed, so a visitor can trace the best performer
+ * back to the slideshow and creator behind it.
  */
 const SAMPLE_POSTS: ReadonlyArray<readonly [string, number, number, number, number, number, number]> = [
-  ["I spoke Spanish with my partner's grandma for the first time", 3, 312_400, 41_900, 2_310, 9_840, 18_600],
+  ["I spoke Spanish with my partner's grandma for the first time", 2, 312_400, 41_900, 2_310, 9_840, 18_600],
   ["POV: the waiter answered in Spanish (Marcus)", 1, 96_800, 9_120, 640, 2_210, 3_050],
   ["3 Spanish phrases textbooks never teach you", 5, 74_300, 6_880, 412, 3_960, 11_200],
-  ["Grandma laughing at my Spanish", 1, 58_200, 7_340, 518, 1_420, 2_260],
+  ["Grandma laughing at my Spanish", 0, 58_200, 7_340, 518, 1_420, 2_260],
   ["Ordering in Rome with Ava", 1, 21_600, 1_980, 133, 310, 720],
-  ["Saylo café role-play, screen demo", 2, 18_900, 1_410, 96, 240, 1_130],
-  ["How long it takes to learn Spanish, honestly", 14, 15_300, 1_220, 188, 205, 940],
-  ["Why apps do not make you fluent", 9, 12_400, 980, 154, 170, 610],
+  ["Ordering in Portuguese on a Lisbon hill", 3, 17_900, 1_520, 104, 260, 690],
+  ["What I pack to practise on a trip", 3, 9_200, 740, 38, 95, 1_020],
   ["5 phrases to learn before you board", 8, 9_860, 760, 41, 120, 880],
   ["Rome at golden hour, phrase of the day", 11, 7_450, 690, 22, 64, 210],
-  ["The fridge label method", 12, 6_120, 470, 35, 52, 390],
 ];
 
 function performanceDataset(now: Date): PerformanceDataset {

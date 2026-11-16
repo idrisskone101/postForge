@@ -24,6 +24,23 @@ assert.equal(
 assert.equal(sunburst.payload.image_size, "landscape_16_9");
 assert.equal(sunburst.payload.quality, "high");
 
+const gpt26 = buildImageProviderRequest({
+  prompt: "Phone on a cafe table showing a language app",
+  model: "gpt-image-2.6",
+  aspectRatio: "9:16",
+});
+assert.equal(gpt26.endpoint, "openai/gpt-image-2.6/flare/text-to-image");
+assert.equal(gpt26.payload.quality, "high");
+assert.deepEqual(gpt26.payload.image_size, GPT_IMAGE_2_PORTRAIT_9_16);
+
+const gpt26Sunburst = buildImageProviderRequest({
+  prompt: "Nightstand lifestyle",
+  model: "gpt-image-2.6-sunburst",
+  aspectRatio: "16:9",
+});
+assert.equal(gpt26Sunburst.endpoint, "openai/gpt-image-2.6/sunburst/text-to-image");
+assert.equal(gpt26Sunburst.payload.image_size, "landscape_16_9");
+
 const gpt2 = buildImageProviderRequest({
   prompt: "legacy",
   model: "gpt-image-2",

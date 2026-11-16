@@ -1,14 +1,7 @@
-import { demoId } from "./seed/seed-utils";
-
 /**
  * The guided path through the demo workspace, shown on Home in a demo build.
- * Each stop opens a seeded item, and seeded ids are stable across restores,
- * so these links keep working. `tests/demo/seed.test.ts` checks the clone
- * stop still points at a seeded job.
+ * Each stop opens the surface where that part of the campaign lives.
  */
-export const DEMO_TOUR_CLONE_PATH = "videos/seed/clone-marcus-waiter.mp4";
-export const DEMO_TOUR_CLONE_JOB_ID = demoId(`job:${DEMO_TOUR_CLONE_PATH}`);
-
 export type DemoTourStop = {
   title: string;
   detail: string;
@@ -24,11 +17,11 @@ export const DEMO_TOUR: readonly DemoTourStop[] = [
   {
     title: "One hook, three creators",
     detail: "A sample TikTok recreated by Marcus, Ava and Diego to test who lands it.",
-    href: `/ugc-clone/${DEMO_TOUR_CLONE_JOB_ID}`,
+    href: "/ugc-clone",
   },
   {
     title: "The carousel that won",
-    detail: "Marcus's story slideshow, closing on a Saylo screen drawn by GPT Image 2.6.",
+    detail: "Open Marcus's story in Drafts. It closes on a Saylo screen drawn by GPT Image 2.6.",
     href: "/slideshow",
   },
   {

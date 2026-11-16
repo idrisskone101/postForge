@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T23:23:05.318Z",
+  "generatedAt": "2026-11-16T23:45:38.255Z",
   "assets": [
     {
       "key": "ava",
@@ -517,8 +517,8 @@
       "mimeType": "image/jpeg",
       "width": 928,
       "height": 1152,
-      "fileSizeBytes": 152714,
-      "prompt": "Overhead flat lay on a light oak desk: a passport, a printed boarding pass, white wireless earbuds in an open case, a smartphone lying face down, a small spiral notebook with neat handwritten Spanish vocabulary, a pencil and a cup of black coffee. Soft diffused daylight, tidy editorial arrangement, warm natural palette, photorealistic. No logos, no watermarks.",
+      "fileSizeBytes": 116239,
+      "prompt": "Overhead flat lay on a light oak desk: a plain dark green passport cover with no emblem or lettering, a plain white travel ticket with no airline name, no logo and no printed names, plain white unbranded earbuds in a plain case, a smartphone lying face down, a small spiral notebook with neat handwritten Spanish vocabulary, a pencil and a cup of black coffee. Soft diffused daylight, tidy editorial arrangement, warm natural palette, photorealistic. No logos, no brand names, no watermarks.",
       "modelId": "nano-banana-2",
       "falEndpoint": "fal-ai/nano-banana-2",
       "aspectRatio": "4:5",
@@ -547,8 +547,8 @@
       "mimeType": "image/jpeg",
       "width": 1376,
       "height": 768,
-      "fileSizeBytes": 149592,
-      "prompt": "Wide photo of an airport departure gate at sunrise: a traveller with a canvas backpack sits by floor-to-ceiling windows looking out at a plane on the tarmac, warm orange light streaming in, long shadows across the floor, calm and hopeful mood, photorealistic. No readable signs. No text, no logos, no watermarks.",
+      "fileSizeBytes": 161068,
+      "prompt": "Wide photo of an airport departure gate at sunrise: a traveller with a canvas backpack sits by floor-to-ceiling windows looking out at a plain all-white plane with no livery, no lettering and no tail logo, warm orange light streaming in, long shadows across the floor, calm and hopeful mood, photorealistic. No readable signs. No text, no logos, no watermarks.",
       "modelId": "nano-banana-2",
       "falEndpoint": "fal-ai/nano-banana-2",
       "aspectRatio": "16:9",
@@ -767,8 +767,8 @@
       "mimeType": "image/jpeg",
       "width": 768,
       "height": 1376,
-      "fileSizeBytes": 103971,
-      "prompt": "A messy pile of handwritten vocabulary flashcards and a highlighted grammar workbook on a desk, in the lower half of the frame, a plain warm wall above. Composed with a calm, uncluttered area in the upper-middle of the frame for a caption, slightly muted exposure, vertical composition, photorealistic. No text, no logos, no watermarks.",
+      "fileSizeBytes": 97298,
+      "prompt": "A messy pile of handwritten Spanish vocabulary flashcards, only Spanish words such as hablar, entender, la cuenta and despacio, beside a highlighted Spanish grammar workbook with no readable title, on a desk in the lower half of the frame, a plain warm wall above. Composed with a calm, uncluttered area in the upper-middle of the frame for a caption, slightly muted exposure, vertical composition, photorealistic. No logos, no watermarks.",
       "modelId": "nano-banana-2",
       "falEndpoint": "fal-ai/nano-banana-2",
       "aspectRatio": "9:16",
@@ -962,8 +962,8 @@
       "mimeType": "image/jpeg",
       "width": 1024,
       "height": 1024,
-      "fileSizeBytes": 118967,
-      "prompt": "Close-up of a passport and a printed boarding pass on a wooden table, soft daylight, no readable personal details, soft natural light, shallow depth of field, photorealistic. No logos, no watermarks.",
+      "fileSizeBytes": 81881,
+      "prompt": "Close-up of a plain dark green passport cover with no emblem or lettering and a plain white travel ticket with no airline name, logo or printed names on a wooden table, soft natural light, shallow depth of field, photorealistic. No logos, no watermarks.",
       "modelId": "nano-banana-2",
       "falEndpoint": "fal-ai/nano-banana-2",
       "aspectRatio": "1:1",
@@ -1204,6 +1204,36 @@
       "referenceKeys": [
         "g02-marcus-abuela"
       ]
+    },
+    {
+      "key": "sa5",
+      "path": "images/seed/sa5.jpg",
+      "group": "slideshow",
+      "kind": "image",
+      "mimeType": "image/jpeg",
+      "width": 1152,
+      "height": 2048,
+      "fileSizeBytes": 220032,
+      "prompt": "Vertical candid lifestyle photo, shot on a smartphone, composed for a caption: the top third of the frame is a calm, softly blurred sunny European sidewalk cafe with plenty of empty space; in the lower two thirds a hand holds a modern smartphone upright facing the camera above a marble cafe table with a cappuccino. The phone screen clearly shows a clean, modern language-learning app called Saylo, rendered crisply and legibly. App design: warm cream background (#FFF7EE), deep indigo text (#1E1B4B), coral accent (#FF6B4A), rounded geometric sans-serif type. Screen content from top to bottom: status bar time 9:41; bold wordmark \"Saylo\"; a coral pill tag \"Cafe role-play · Spanish\"; a white chat bubble labelled \"Your tutor\" reading \"¡Hola! ¿Qué te pongo?\"; a deep indigo chat bubble labelled \"You said\" reading \"Un café con leche, por favor.\"; a small green pill \"Great accent · 94%\"; at the bottom a large round coral microphone button. All on-screen text spelled exactly as written. Warm late-morning light, shallow depth of field. No other text, no logos, no watermarks.",
+      "modelId": "gpt-image-2.6",
+      "falEndpoint": "openai/gpt-image-2.6/flare/text-to-image",
+      "aspectRatio": "9:16",
+      "referenceKeys": []
+    },
+    {
+      "key": "sb5",
+      "path": "images/seed/sb5.jpg",
+      "group": "slideshow",
+      "kind": "image",
+      "mimeType": "image/jpeg",
+      "width": 1152,
+      "height": 2048,
+      "fileSizeBytes": 167120,
+      "prompt": "Vertical candid lifestyle photo of a bedroom at night, composed for a caption: the top third of the frame is a calm, dim, softly blurred wall and warm lamp glow with plenty of empty space; in the lower two thirds a smartphone stands upright in a simple wooden stand on a wooden nightstand beside a glass of water and plain cloth-bound books with blank spines. The phone screen glows and clearly shows a clean, modern language-learning app called Saylo, rendered crisply and legibly. App design: warm cream background (#FFF7EE), deep indigo (#1E1B4B), coral accent (#FF6B4A), rounded geometric sans-serif type. Screen content from top to bottom: status bar time 9:41; bold wordmark \"Saylo\"; small grey line \"Good evening, Marcus\"; a deep indigo rounded card with the label \"Speaking streak\", a huge white number \"12\" and the line \"nights in a row\"; a white rounded card with the grey line \"Tonight · 10 minutes\" and the bold title \"Dinner with family\"; at the bottom a wide coral pill button \"Start speaking\". All on-screen text spelled exactly as written. Cozy, calm, photorealistic. No other text, no book titles, no logos, no watermarks.",
+      "modelId": "gpt-image-2.6",
+      "falEndpoint": "openai/gpt-image-2.6/flare/text-to-image",
+      "aspectRatio": "9:16",
+      "referenceKeys": []
     }
   ]
 }

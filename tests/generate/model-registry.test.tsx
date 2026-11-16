@@ -69,6 +69,23 @@ assert.deepEqual(
   mapAspectRatioToFalFormat("1:1", "gpt-image-2.5-sunburst"),
   "square_hd",
 );
+assert.equal(getModel("gpt-image-2.6")?.name, "GPT Image 2.6");
+assert.equal(
+  getModel("gpt-image-2.6")?.endpoint,
+  "openai/gpt-image-2.6/flare/text-to-image",
+);
+assert.deepEqual(
+  mapAspectRatioToFalFormat("9:16", "gpt-image-2.6"),
+  GPT_IMAGE_2_PORTRAIT_9_16,
+);
+assert.equal(
+  getModel("gpt-image-2.6-sunburst")?.endpoint,
+  "openai/gpt-image-2.6/sunburst/text-to-image",
+);
+assert.deepEqual(
+  mapAspectRatioToFalFormat("1:1", "gpt-image-2.6-sunburst"),
+  "square_hd",
+);
 assert.equal(getModel("seedream-5.0-pro")?.pricing.amount, 0.0675);
 assert.equal(getModel("flux-2-flex")?.capabilities.textToImage, true);
 assert.equal(getModel("pixverse-swap")?.capabilities.subjectSwap, true);
