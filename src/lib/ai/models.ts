@@ -79,10 +79,14 @@ const ASPECT_RATIO_FAL_MAP: Record<string, string> = {
 };
 
 export function usesGptImageFalPayload(modelId: string): boolean {
-  return modelId === "gpt-image-2" || modelId.startsWith("gpt-image-2.5");
+  return (
+    modelId === "gpt-image-2" ||
+    modelId.startsWith("gpt-image-2.5") ||
+    modelId.startsWith("gpt-image-2.6")
+  );
 }
 
-// GPT Image 2 / 2.5 have no portrait_9_16 preset; closest portrait options
+// GPT Image 2 / 2.5 / 2.6 have no portrait_9_16 preset; closest portrait options
 // are portrait_16_9 (576x1024) and portrait_4_3 (768x1024). A true 9:16
 // requires an explicit { width, height } object (multiples of 16, max edge
 // 3840px, aspect ratio <= 3:1, 655,360..8,294,400 total pixels).

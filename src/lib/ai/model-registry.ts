@@ -102,6 +102,40 @@ export const MODEL_REGISTRY: Record<string, ModelDefinition> = {
       aspectRatios: ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"],
     },
   },
+  "gpt-image-2.6": {
+    id: "gpt-image-2.6",
+    name: "GPT Image 2.6",
+    type: "image",
+    provider: "fal",
+    endpoint: "openai/gpt-image-2.6/flare/text-to-image",
+    // fal bills GPT Image 2.6 by tokens like 2.5; this is a high-quality
+    // ~9:16 per-image estimate.
+    pricing: { unit: "per_image", amount: 0.055 },
+    capabilities: {
+      textToImage: true,
+    },
+    defaults: { aspectRatio: "9:16", numImages: 1 },
+    limits: {
+      maxImages: 1,
+      aspectRatios: ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"],
+    },
+  },
+  "gpt-image-2.6-sunburst": {
+    id: "gpt-image-2.6-sunburst",
+    name: "GPT Image 2.6 Sunburst",
+    type: "image",
+    provider: "fal",
+    endpoint: "openai/gpt-image-2.6/sunburst/text-to-image",
+    pricing: { unit: "per_image", amount: 0.055 },
+    capabilities: {
+      textToImage: true,
+    },
+    defaults: { aspectRatio: "9:16", numImages: 1 },
+    limits: {
+      maxImages: 1,
+      aspectRatios: ["9:16", "16:9", "1:1", "4:5", "3:2", "4:3"],
+    },
+  },
   "seedream-5.0-pro": {
     id: "seedream-5.0-pro",
     name: "Seedream 5.0 Pro",

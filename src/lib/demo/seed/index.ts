@@ -10,7 +10,7 @@ export { loadDemoManifest } from "./manifest";
 export type { DemoSeed } from "./types";
 
 /**
- * The complete sample workspace for the fictional Loamly brand. Pure: the same
+ * The complete sample workspace for the fictional Saylo brand. Pure: the same
  * manifest and clock always produce the same rows, so a restore is repeatable.
  */
 export function buildDemoSeed(manifest: DemoManifest, now: Date): DemoSeed {

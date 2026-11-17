@@ -5,8 +5,25 @@ demo workspace is how someone else can look at it without seeing the operator's
 real generations: the same code, deployed a second time as a **demo build**
 with its own database that only ever holds sample content.
 
-The sample content is for Loamly, a fictional plant-care app. The media was
-generated with the same models the app uses and ships in `demo/assets/`.
+The sample content is one launch campaign ("Speak before you go") for Saylo, a
+fictional AI speaking-tutor app. Every file was generated with the models the app
+itself registers and ships in `demo/assets/`:
+
+- Four creators (Ava, Marcus, Mei, Diego), each with an Avatar portrait and an
+  identity pack, appear across the gallery, the slideshows and the clones.
+- One sample source clip is cloned by three creators, so Clone shows a creator
+  A/B test on the same hook.
+- Two app shots show the Saylo UI on a phone. GPT Image 2.6 draws the screen
+  itself; nothing is composited.
+- Three slideshows (a phrase listicle, Marcus's story and a problem/fix draft),
+  three automations, two collections and three prompt templates belong to the
+  same campaign.
+- The Performance CSV lists the posts that exist in the workspace, so the best
+  performer traces back to its slideshow and creator. It is labelled as sample
+  data and never stands in for a Connection.
+
+Home shows a campaign tour in a demo build (`src/lib/demo/tour.ts`). Each stop
+links to a seeded item; seeded ids are stable, so the links survive a restore.
 
 ## What a demo build does differently
 
@@ -24,7 +41,7 @@ inlines the flag, so the shell, the middleware and the server always agree.
 | Limits | Open access means anyone can write, so writes are bounded: request bodies over 64 KB are refused, edits and heavy renders (exports, thumbnails) are capped at 30 a minute per visitor and 120 overall, and the workspace is restored early if it grows past 1,500 rows or 25 MB of stored JSON. |
 | Background work | The fal poller, clone worker, automation scheduler, slideshow automation worker and storage backfills do not start. |
 | Slides | May only reference media already in the workspace, so a visitor cannot point a slide at a remote or inline image. |
-| Connections | TikTok, Instagram and YouTube stay "not connected". Performance reads one local CSV dataset named `loamly-sample-posts.csv`. |
+| Connections | TikTok, Instagram and YouTube stay "not connected". Performance reads one local CSV dataset named `saylo-sample-posts.csv`. |
 
 One visitor's edits are visible to other visitors until the next restore.
 
@@ -54,8 +71,8 @@ Nothing in a demo build needs them.
 
 ## Working on the sample set
 
-- `demo/assets/manifest.json` lists every sample file with its prompt, model
-  and dimensions. The seed in `src/lib/demo/seed/` turns it into rows; prices
+- `demo/assets/manifest.json` lists every sample file with its prompt, model,
+  fal endpoint, references and dimensions. The seed in `src/lib/demo/seed/` turns it into rows; prices
   come from the model registry.
 - `pnpm demo:seed` restores a local demo database by hand. Point
   `DATABASE_URL` at a scratch database first.

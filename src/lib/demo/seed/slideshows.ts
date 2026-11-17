@@ -37,10 +37,10 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
       settings: {
         aspectRatio: "9:16",
         imageGrid: "none",
-        darkOverlay: { enabled: true, opacity: 45 },
+        darkOverlay: { enabled: true, opacity: 35 },
         displayText: true,
         phaseSettings: DEFAULT_PROJECT_SETTINGS.phaseSettings,
-        textSettings: TEXT,
+        textSettings: { ...TEXT, size: project.text.size, position: project.text.position },
         includeCta: true,
         preventRepeats: true,
         language: "English",
@@ -66,7 +66,7 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
     });
 
     project.slides.forEach((slide, position) => {
-      const image = manifest.asset(`images/seed/${project.prefix}${position + 1}.jpg`);
+      const image = manifest.asset(`images/seed/${slide.image}.jpg`);
       const slideId = demoId(`slide:${project.prefix}${position + 1}`);
       part.slides.push({
         id: slideId,
@@ -94,16 +94,16 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
         },
         settings: {
           fontFamily: TEXT.font,
-          fontSize: TEXT.size,
+          fontSize: project.text.size,
           textColor: DEFAULT_SLIDE_SETTINGS.textColor,
           textStyle: TEXT.style,
           textAlign: TEXT.align,
-          verticalPosition: TEXT.position,
+          verticalPosition: project.text.position,
           textWidth: TEXT.width,
           backgroundRadius: TEXT.backgroundRadius,
           padded: true,
         },
-        layout: { text: { x: 50, y: 50, width: TEXT.width } },
+        layout: { text: { x: 50, y: project.text.position === "top" ? 24 : 50, width: TEXT.width } },
         createdAt: updatedAt,
         updatedAt,
       });
@@ -114,7 +114,13 @@ export function buildSlideshowSeed(manifest: DemoManifest, now: Date): DemoSeedP
   return part;
 }
 
-type SlideCopy = { eyebrow: string; headline: string; body: string };
+type SlideCopy = {
+  /** File name under images/seed, without the extension. */
+  image: string;
+  eyebrow: string;
+  headline: string;
+  body: string;
+};
 
 type SampleProject = {
   prefix: "sa" | "sb" | "sc";
@@ -124,6 +130,12 @@ type SampleProject = {
   status: SlideshowProjectStatus;
   age: Age;
   exports: Age[];
+  /**
+   * Project-wide copy size and position. Long hooks need a smaller size to fit
+   * the 9:16 frame, and decks that end on a Saylo app shot keep their copy at
+   * the top so the phone screen stays visible.
+   */
+  text: { size: number; position: "top" | "center" };
   slides: SlideCopy[];
 };
 
@@ -132,50 +144,53 @@ const VISUAL_KEYS = ["mint-room", "lime-paper", "paper-stack", "coral-glow", "bl
 const PROJECTS: SampleProject[] = [
   {
     prefix: "sc",
-    title: "The 10-minute Sunday plant reset",
-    description: "Routine carousel for the weekend series.",
-    caption: "Ten minutes on Sunday keeps every plant alive through the week. #plantcare #houseplants",
+    title: "Why you understand Spanish but freeze when you speak",
+    description: "Problem and fix carousel, draft for next week.",
+    caption: "Understanding and speaking are two different skills. Here is how to train the second one. #learnspanish #languagelearning",
     status: "draft",
     age: { hours: 19 },
     exports: [],
+    text: { size: 36, position: "center" },
     slides: [
-      { eyebrow: "", headline: "The 10-minute Sunday plant reset", body: "A small routine that keeps everything alive" },
-      { eyebrow: "Step 1", headline: "Water what is dry", body: "Check the soil with a finger before you pour." },
-      { eyebrow: "Step 2", headline: "Wipe the leaves", body: "Dust blocks light. A damp cloth is enough." },
-      { eyebrow: "Step 3", headline: "Rotate each pot", body: "A quarter turn keeps growth even." },
-      { eyebrow: "", headline: "Make it a habit", body: "Loamly sets the reminder so Sunday takes care of itself." },
+      { image: "sc1", eyebrow: "", headline: "Why you freeze when you speak Spanish", body: "It is not your memory. It is your practice." },
+      { image: "sc2", eyebrow: "01", headline: "You trained your eyes, not your mouth", body: "Flashcards and tapping teach you to recognise words." },
+      { image: "sc3", eyebrow: "02", headline: "Speaking is its own skill", body: "It only grows when you say things out loud." },
+      { image: "sc4", eyebrow: "03", headline: "Practise the real moments", body: "Ordering, small talk, asking for directions." },
+      { image: "sc5", eyebrow: "", headline: "Ten minutes of talking a day", body: "Saylo's tutor answers back, so you stop freezing." },
     ],
   },
   {
     prefix: "sb",
-    title: "Why your monstera has yellow leaves",
-    description: "Problem and fix carousel for the monstera series.",
-    caption: "Yellow leaves are a message, not a death sentence. Three causes and the fix for each. #monstera #plantcare",
+    title: "I spoke Spanish with my partner's grandma for the first time",
+    description: "Story carousel with Marcus. Best performer of the launch.",
+    caption: "Two years of nodding along at family dinners. Then ten minutes a night with Saylo. #learnspanish #storytime",
     status: "ready",
     age: { days: 3, hours: 3 },
-    exports: [],
+    exports: [{ days: 3, hours: 1 }],
+    text: { size: 34, position: "top" },
     slides: [
-      { eyebrow: "", headline: "Your monstera is trying to tell you something", body: "Yellow leaves usually mean one of three things" },
-      { eyebrow: "01", headline: "Too much water", body: "Soggy soil suffocates roots. Let the top 5 cm dry out first." },
-      { eyebrow: "02", headline: "Not enough light", body: "A dark corner slows growth and fades the older leaves." },
-      { eyebrow: "03", headline: "It has outgrown its pot", body: "Roots circling the bottom mean it is time to size up." },
-      { eyebrow: "", headline: "Track it in Loamly", body: "Log watering and light so the next leaf comes in green." },
+      { image: "sb1", eyebrow: "", headline: "I spoke Spanish with my partner's grandma", body: "After two years of nodding along at dinner." },
+      { image: "sb2", eyebrow: "Week 1", headline: "Ten minutes a night", body: "I practised real conversations with an AI tutor before bed." },
+      { image: "sb3", eyebrow: "Week 6", headline: "The first sentence was the hardest", body: "She switched to Spanish and never switched back." },
+      { image: "sb4", eyebrow: "Week 8", headline: "Then she told me stories", body: "Ones my partner had never heard either." },
+      { image: "sb5", eyebrow: "", headline: "Start with tonight", body: "Saylo builds the conversations you actually need." },
     ],
   },
   {
     prefix: "sa",
-    title: "3 houseplants that survive anything",
-    description: "Beginner listicle, first carousel in the series.",
-    caption: "Three plants that forgive a missed week (or three). Save this for your next plant shop trip. #houseplants #beginnerplants",
+    title: "3 Spanish phrases textbooks never teach you",
+    description: "Phrase listicle, first carousel of the launch.",
+    caption: "The phrases you actually hear in Mexico City. Save this before your trip. #learnspanish #mexicocity",
     status: "ready",
     age: { days: 6 },
     exports: [{ days: 5, hours: 22 }, { days: 4, hours: 6 }],
+    text: { size: 38, position: "top" },
     slides: [
-      { eyebrow: "", headline: "3 houseplants that survive anything", body: "Even if you forget them for weeks" },
-      { eyebrow: "01", headline: "Snake plant", body: "Low light, dry soil, total neglect. It just keeps going." },
-      { eyebrow: "02", headline: "Golden pothos", body: "Trails anywhere and droops to tell you it is thirsty." },
-      { eyebrow: "03", headline: "ZZ plant", body: "Stores water in its roots, so a missed month is fine." },
-      { eyebrow: "", headline: "Not sure when to water?", body: "Loamly reminds you for each plant." },
+      { image: "sa1", eyebrow: "", headline: "3 Spanish phrases textbooks never teach you", body: "And locals use them every day" },
+      { image: "sa2", eyebrow: "01", headline: "¿Qué onda?", body: "What's up. Use it with friends instead of ¿Cómo estás?" },
+      { image: "sa3", eyebrow: "02", headline: "Ahorita", body: "Right now. Which can mean in five minutes, or never." },
+      { image: "sa4", eyebrow: "03", headline: "Me late", body: "I'm into it. Say it when a plan sounds good." },
+      { image: "sa5", eyebrow: "", headline: "Say them out loud", body: "" },
     ],
   },
 ];
@@ -197,9 +212,9 @@ function slideshowAutomations(now: Date): NonNullable<DemoSeedPart["slideshowAut
 
   return [
     {
-      id: demoId("slideshow-automation:weekly-tips"),
+      id: demoId("slideshow-automation:weekly-phrases"),
       projectId: projectIdFor("sa"),
-      name: "Weekly plant-care tips",
+      name: "Weekly Spanish phrase drops",
       status: "active",
       schedule: {
         cadence: "Mon, Wed, Fri · 09:00",
@@ -210,13 +225,13 @@ function slideshowAutomations(now: Date): NonNullable<DemoSeedPart["slideshowAut
       contentSettings: {
         preventRepeats: true,
         hooks: [
-          "3 houseplants that survive anything",
-          "The watering mistake almost everyone makes",
-          "Low-light plants that actually grow",
+          "3 Spanish phrases textbooks never teach you",
+          "5 ways to order coffee like a local",
+          "Phrases that make the waiter smile",
         ],
         visualPolicy: "reuse",
         imageModel: "nano-banana-2",
-        imageCollectionId: COLLECTION_IDS.sunlit,
+        imageCollectionId: COLLECTION_IDS.streets,
         successfulRunCount: weeklyRuns.length,
         runHistory: weeklyRuns.map((run) => run.toISOString()),
       },
@@ -228,9 +243,9 @@ function slideshowAutomations(now: Date): NonNullable<DemoSeedPart["slideshowAut
       updatedAt: before(now, { days: 2 }),
     },
     {
-      id: demoId("slideshow-automation:sunday-reset"),
-      projectId: projectIdFor("sc"),
-      name: "Sunday reset series",
+      id: demoId("slideshow-automation:story-series"),
+      projectId: projectIdFor("sb"),
+      name: "First real conversation stories",
       status: "paused",
       schedule: {
         cadence: "Sun · 10:30",
@@ -240,7 +255,10 @@ function slideshowAutomations(now: Date): NonNullable<DemoSeedPart["slideshowAut
       },
       contentSettings: {
         preventRepeats: true,
-        hooks: ["The 10-minute Sunday plant reset", "Reset your plant shelf in one coffee"],
+        hooks: [
+          "I spoke Spanish with my partner's grandma for the first time",
+          "The day I ordered in Italian without panicking",
+        ],
         visualPolicy: "fresh-ai",
         imageModel: "nano-banana-2",
         successfulRunCount: 0,
